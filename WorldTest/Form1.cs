@@ -25,37 +25,34 @@ namespace WorldTest
             generator = new GalaxyGenerator();
             galaxy = generator.Generate();
 
-            pictureBox1.Image = RenderGalaxy(galaxy, pictureBox1.Size);
+            DetermineScaleAndOffset(
+                new Vector3(-generator.InitialRadius, -generator.InitialRadius, -generator.InitialRadius * generator.GalacticThicknessScale),
+                new Vector3(generator.InitialRadius, generator.InitialRadius, generator.InitialRadius * generator.GalacticThicknessScale)
+            );
+            pictureBox1.Image = RenderGalaxy(galaxy);
             btnStep.Enabled = true;
         }
 
         private void btnStep_Click(object sender, EventArgs e)
         {
-            generator.SimulateTimeStep(galaxy, 0.1);
-            pictureBox1.Image = RenderGalaxy(galaxy, pictureBox1.Size);
+            generator.SimulateTimeStep(galaxy, 0.03);
+            pictureBox1.Image = RenderGalaxy(galaxy);
         }
 
-        private Bitmap RenderGalaxy(Galaxy galaxy, Size dimensions)
+        private double scale, xOffset, yOffset;
+        private void DetermineScaleAndOffset(Vector3 minExtent, Vector3 maxExtent)
         {
-            Bitmap b = new Bitmap(dimensions.Width, dimensions.Height);
+            xOffset = -minExtent.X; yOffset = -minExtent.Y;
 
-            // determine the actual size of the galaxy
-            Vector3 minExtent = new Vector3(), maxExtent = new Vector3();
-            foreach ( var star in galaxy.Stars )
-            {
-                minExtent.X = Math.Min(minExtent.X, star.Position.X);
-                maxExtent.X = Math.Max(maxExtent.X, star.Position.X);
-
-                minExtent.Y = Math.Min(minExtent.Y, star.Position.Y);
-                maxExtent.Y = Math.Max(maxExtent.Y, star.Position.Y);
-            }
-
-            double xOffset = -minExtent.X, yOffset = -minExtent.Y;
-
-            double scale = Math.Min(
-                (maxExtent.X - minExtent.X) / dimensions.Width,
-                (maxExtent.Y - minExtent.Y) / dimensions.Height
+            scale = 1.0 / Math.Min(
+                (maxExtent.X - minExtent.X) / pictureBox1.Width,
+                (maxExtent.Y - minExtent.Y) / pictureBox1.Height
             );
+        }
+
+        private Bitmap RenderGalaxy(Galaxy galaxy)
+        {
+            Bitmap b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
 
             using (Graphics g = Graphics.FromImage(b))
             {
@@ -65,7 +62,7 @@ namespace WorldTest
                 foreach (var star in galaxy.Stars)
                 {
                     double radius = 2;
-                    g.FillEllipse(starBrush, (float)((star.Position.X * scale + xOffset) - radius), (float)((star.Position.Y * scale + yOffset) - radius), (float)(radius + radius), (float)(radius + radius));
+                    g.FillEllipse(starBrush, (float)((star.Position.X + xOffset) * scale - radius), (float)((star.Position.Y + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
                 }
             }
 
