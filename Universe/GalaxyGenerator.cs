@@ -17,7 +17,7 @@ namespace Universe
 
             BulgeWeighting = 0.15;
             ArmWeighting = 0.55;
-            HaloWeighting = 0.3;
+            DiscWeighting = 0.3;
             
             ArmTightness = 0.15;
             BulgeScale = 0.15;
@@ -32,7 +32,7 @@ namespace Universe
 
         public double BulgeWeighting { get; set; }
         public double ArmWeighting { get; set; }
-        public double HaloWeighting { get; set; }
+        public double DiscWeighting { get; set; }
 
         public double ArmTightness { get; set; }
         public double BulgeScale { get; set; }
@@ -63,19 +63,19 @@ namespace Universe
         private void PlaceStars(Galaxy g, Random r)
         {
             // determine how many stars should go in each component of the galaxy
-            double weightingTot = BulgeWeighting + ArmWeighting + HaloWeighting;
+            double weightingTot = BulgeWeighting + ArmWeighting + DiscWeighting;
             int starsInBulge = (int)Math.Floor(BulgeWeighting / weightingTot * NumStars);
             int starsInArms = (int)Math.Floor(ArmWeighting/ weightingTot * NumStars);
-            int starsInHalo = (int)Math.Floor(HaloWeighting / weightingTot * NumStars);
+            int starsInDisc = (int)Math.Floor(DiscWeighting / weightingTot * NumStars);
 
-            if (starsInBulge + starsInArms + starsInHalo < NumStars)
+            if (starsInBulge + starsInArms + starsInDisc < NumStars)
             {
                 starsInBulge++;
-                if (starsInBulge + starsInArms + starsInHalo < NumStars)
+                if (starsInBulge + starsInArms + starsInDisc < NumStars)
                 {
                     starsInArms++;
-                    if (starsInBulge + starsInArms + starsInHalo < NumStars)
-                        starsInHalo++;
+                    if (starsInBulge + starsInArms + starsInDisc < NumStars)
+                        starsInDisc++;
                 }
             }
 
@@ -95,9 +95,9 @@ namespace Universe
                 g.Stars.Add(s);
             }
 
-            // populate the halo
+            // populate the disc
             stdDev = GalacticRadius * stdDevScale;
-            for (int i = 0; i < starsInHalo; i++)
+            for (int i = 0; i < starsInDisc; i++)
             {
                 Star s = new Star();
                 s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
