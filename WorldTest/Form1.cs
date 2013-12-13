@@ -47,19 +47,52 @@ namespace WorldTest
         {
             Bitmap b = new Bitmap(pictureBox1.Width, pictureBox1.Height);
 
-            using (Graphics g = Graphics.FromImage(b))
+            using (Graphics graphics = Graphics.FromImage(b))
             {
-                g.FillRectangle(new SolidBrush(Color.Black), 0, 0, b.Width, b.Height);
-                Brush starBrush = new SolidBrush(Color.White);
-
-                foreach (var star in galaxy.Stars)
-                {
-                    double radius = 2;
-                    g.FillEllipse(starBrush, (float)((star.Position.X + xOffset) * scale - radius), (float)((star.Position.Y + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
-                }
+                graphics.FillRectangle(new SolidBrush(Color.Black), 0, 0, b.Width, b.Height);
+                
+                if (rbTopDown.Checked)
+                    RenderTopDown(galaxy, graphics, b.Width, b.Height);
+                else if (rbSide.Checked)
+                    RenderSideOn(galaxy, graphics, b.Width, b.Height);
+                else if (rbHRDiagram.Checked)
+                    RenderHRDiagram(galaxy, graphics, b.Width, b.Height);
             }
 
             return b;
+        }
+
+        private void RenderTopDown(Galaxy galaxy, Graphics graphics, int width, int height)
+        {
+            Brush starBrush = new SolidBrush(Color.White);
+
+            foreach (var star in galaxy.Stars)
+            {
+                double radius = 2;
+                graphics.FillEllipse(starBrush, (float)((star.Position.X + xOffset) * scale - radius), (float)((star.Position.Y + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
+            }
+        }
+
+        private void RenderSideOn(Galaxy galaxy, Graphics graphics, int width, int height)
+        {
+            Brush starBrush = new SolidBrush(Color.White);
+            double halfHeight = height / 2.0;
+
+            foreach (var star in galaxy.Stars)
+            {
+                double radius = 2;
+                graphics.FillEllipse(starBrush, (float)((star.Position.X + xOffset) * scale - radius), (float)(star.Position.Z * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
+            }
+        }
+
+        private void RenderHRDiagram(Galaxy galaxy, Graphics graphics, int width, int height)
+        {
+
+        }
+
+        private void ViewChanged(object sender, EventArgs e)
+        {
+            pictureBox1.Image = RenderGalaxy(galaxy);
         }
     }
 }
