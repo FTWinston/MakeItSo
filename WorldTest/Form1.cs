@@ -64,24 +64,21 @@ namespace WorldTest
 
         private void RenderTopDown(Galaxy galaxy, Graphics graphics, int width, int height)
         {
-            Brush starBrush = new SolidBrush(Color.White);
-
             foreach (var star in galaxy.Stars)
             {
-                double radius = 2;
-                graphics.FillEllipse(starBrush, (float)((star.Position.X + xOffset) * scale - radius), (float)((star.Position.Y + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
+                double radius = star.Luminosity * 1.25;
+                graphics.FillEllipse(new SolidBrush(star.Color), (float)((star.Position.X + xOffset) * scale - radius), (float)((star.Position.Y + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
             }
         }
 
         private void RenderSideOn(Galaxy galaxy, Graphics graphics, int width, int height)
         {
-            Brush starBrush = new SolidBrush(Color.White);
             double halfHeight = height / 2.0;
 
             foreach (var star in galaxy.Stars)
             {
-                double radius = 2;
-                graphics.FillEllipse(starBrush, (float)((star.Position.X + xOffset) * scale - radius), (float)(star.Position.Z * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
+                double radius = star.Luminosity * 1.25;
+                graphics.FillEllipse(new SolidBrush(star.Color), (float)((star.Position.X + xOffset) * scale - radius), (float)(star.Position.Z * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
             }
         }
 

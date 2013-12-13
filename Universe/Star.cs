@@ -10,7 +10,7 @@ namespace Universe
     {
         // these are not ideal value!
         public Star(Random r)
-            : this(r.Normal(6500, 1750), r.NextDouble() * 20, Math.Max(SolarMass * 0.08, r.Normal(SolarMass, SolarMass * 0.25)))
+            : this(r.Normal(6500, 1750), Math.Max(0.01, r.Normal(1.5, 0.5)), Math.Max(SolarMass * 0.08, r.Normal(SolarMass, SolarMass * 0.25)))
         {
         }
 
