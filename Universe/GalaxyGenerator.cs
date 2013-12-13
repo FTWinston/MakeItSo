@@ -12,23 +12,18 @@ namespace Universe
             NumStars = 800;
             GalacticRadius = 2000;
             VerticalScale = 0.1;
-            StellarMassMean = 50000000;
-            StellarMassStdDev = 20000000;
 
             Random r = new Random();
-            BulgeWeighting = NormalDistribution(r, 0.15, 0.05);
-            ArmWeighting = NormalDistribution(r, 0.55, 0.05);
-            DiscWeighting = NormalDistribution(r, 0.3, 0.05);
-            ArmTightness = NormalDistribution(r, 0.20, 0.05);
-            ArmWidth = NormalDistribution(r, 9, 0.75);
+            BulgeWeighting = r.Normal(0.15, 0.05);
+            ArmWeighting = r.Normal(0.55, 0.05);
+            DiscWeighting = r.Normal(0.3, 0.05);
+            ArmTightness = r.Normal(0.20, 0.05);
+            ArmWidth = r.Normal(9, 0.75);
         }
 
         public int NumStars { get; set;}
         public double GalacticRadius { get; set; }
         public double VerticalScale { get; set; }
-
-        public double StellarMassMean { get; set; }
-        public double StellarMassStdDev { get; set; }
 
         public double BulgeWeighting { get; set; }
         public double ArmWeighting { get; set; }
@@ -84,13 +79,12 @@ namespace Universe
             double stdDev = GalacticRadius * stdDevScale * bulgeScale;
             for (int i = 0; i < starsInBulge; i++)
             {
-                Star s = new Star();
-                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+                Star s = new Star(r);
 
                 s.Position = new Vector3(
-                    NormalDistribution(r, 0, stdDev),
-                    NormalDistribution(r, 0, stdDev),
-                    NormalDistribution(r, 0, stdDev)
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev)
                 );
                 
                 g.Stars.Add(s);
@@ -100,21 +94,20 @@ namespace Universe
             stdDev = GalacticRadius * stdDevScale;
             for (int i = 0; i < starsInDisc; i++)
             {
-                Star s = new Star();
-                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+                Star s = new Star(r);
 
                 s.Position = new Vector3(
-                    NormalDistribution(r, 0, stdDev),
-                    NormalDistribution(r, 0, stdDev),
-                    NormalDistribution(r, 0, stdDev * VerticalScale)
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev * VerticalScale)
                 );
 
                 g.Stars.Add(s);
             }
 
             // populate the arms along two logarithmic spirals... adjust armScale so that the spiral just about reaches GalacticRadius at t=tMax
-            double t = NormalDistribution(r, 0.95, 0.15), tMax = NormalDistribution(r, 9, 0.75);
-            double armScale = NormalDistribution(r, 0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
+            double t = r.Normal(0.95, 0.15), tMax = r.Normal(9, 0.75);
+            double armScale = r.Normal(0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
             double dt = (tMax - t) / starsInArms * 2;
             double armOffset = r.NextDouble() * Math.PI;
 
@@ -123,35 +116,25 @@ namespace Universe
                 stdDev = ArmWidth * 0.25 + 0.75 * ArmWidth * t;
                 double radius = armScale * Math.Exp(ArmTightness * t);
 
-                Star s = new Star();
-                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+                Star s = new Star(r);
                 s.Position = new Vector3(
-                    (radius + NormalDistribution(r, 0, stdDev)) * Math.Cos(t + armOffset),
-                    (radius + NormalDistribution(r, 0, stdDev)) * Math.Sin(t + armOffset),
-                    NormalDistribution(r, 0, stdDev)
+                    (radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset),
+                    (radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset),
+                    r.Normal(0, stdDev)
                 );
 
                 g.Stars.Add(s);
 
-                s = new Star();
-                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+                s = new Star(r);
                 s.Position = new Vector3(
-                    (radius + NormalDistribution(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI),
-                    (radius + NormalDistribution(r, 0, stdDev)) * Math.Sin(t + armOffset + Math.PI),
-                    NormalDistribution(r, 0, stdDev)
+                    (radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset + Math.PI),
+                    (radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset + Math.PI),
+                    r.Normal(0, stdDev)
                 );
 
                 g.Stars.Add(s);
                 t += dt;
             } while ( t <= tMax );
-        }
-
-        private static double NormalDistribution(Random r, double mean, double stdDev)
-        {
-            double u1 = r.NextDouble(); //these are uniform(0,1) random doubles
-            double u2 = r.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            return mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
         }
     }
 }

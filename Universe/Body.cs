@@ -15,7 +15,7 @@ namespace Universe
     public abstract class MassiveBody : Body
     {
         // exerts gravity, somehow
-        public double Radius { get; set; }
+        public double Radius { get; protected set; }
     }
 
     public abstract class AtmosphericBody : MassiveBody
