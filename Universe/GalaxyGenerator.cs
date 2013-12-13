@@ -20,6 +20,7 @@ namespace Universe
             ArmWeighting = NormalDistribution(r, 0.55, 0.05);
             DiscWeighting = NormalDistribution(r, 0.3, 0.05);
             ArmTightness = NormalDistribution(r, 0.20, 0.05);
+            ArmWidth = NormalDistribution(r, 9, 0.75);
         }
 
         public int NumStars { get; set;}
@@ -33,8 +34,9 @@ namespace Universe
         public double ArmWeighting { get; set; }
         public double DiscWeighting { get; set; }
         public double ArmTightness { get; set; }
+        public double ArmWidth { get; set; }
 
-        const double armWidth = 8;
+        
         const double bulgeScale = 0.25;
         const double stdDevScale = 0.3;
 
@@ -111,14 +113,14 @@ namespace Universe
             }
 
             // populate the arms along two logarithmic spirals... adjust armScale so that the spiral just about reaches GalacticRadius at t=tMax
-            double t = NormalDistribution(r, 0.95, 0.15), tMax = NormalDistribution(r, Math.PI * 3.2, Math.PI / 3);
+            double t = NormalDistribution(r, 0.95, 0.15), tMax = NormalDistribution(r, 9, 0.75);
             double armScale = NormalDistribution(r, 0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
             double dt = (tMax - t) / starsInArms * 2;
             double armOffset = r.NextDouble() * Math.PI;
 
             do
             {
-                stdDev = armWidth * 0.25 + 0.75 * armWidth * t;
+                stdDev = ArmWidth * 0.25 + 0.75 * ArmWidth * t;
                 double radius = armScale * Math.Exp(ArmTightness * t);
 
                 Star s = new Star();
@@ -126,7 +128,7 @@ namespace Universe
                 s.Position = new Vector3(
                     (radius + NormalDistribution(r, 0, stdDev)) * Math.Cos(t + armOffset),
                     (radius + NormalDistribution(r, 0, stdDev)) * Math.Sin(t + armOffset),
-                    NormalDistribution(r, 0, armWidth * t)
+                    NormalDistribution(r, 0, stdDev)
                 );
 
                 g.Stars.Add(s);
@@ -136,7 +138,7 @@ namespace Universe
                 s.Position = new Vector3(
                     (radius + NormalDistribution(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI),
                     (radius + NormalDistribution(r, 0, stdDev)) * Math.Sin(t + armOffset + Math.PI),
-                    NormalDistribution(r, 0, armWidth * t)
+                    NormalDistribution(r, 0, stdDev)
                 );
 
                 g.Stars.Add(s);
