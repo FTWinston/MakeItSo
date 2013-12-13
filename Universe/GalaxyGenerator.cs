@@ -10,25 +10,42 @@ namespace Universe
         public GalaxyGenerator()
         {
             NumStars = 500;
-            InitialRadius = 2000;
-            GalacticThicknessScale = 0.1;
-        }
-        public int NumStars { get; set;}
-        public double InitialRadius { get; set; }
-        public double GalacticThicknessScale { get; set; }
+            GalacticRadius = 2000;
+            VerticalScale = 0.1;
+            StellarMassMean = 50000000;
+            StellarMassStdDev = 20000000;
 
-        private double G;
+            BulgeWeighting = 0.15;
+            ArmWeighting = 0.55;
+            HaloWeighting = 0.3;
+            
+            ArmTightness = 0.15;
+            BulgeScale = 0.15;
+        }
+
+        public int NumStars { get; set;}
+        public double GalacticRadius { get; set; }
+        public double VerticalScale { get; set; }
+
+        public double StellarMassMean { get; set; }
+        public double StellarMassStdDev { get; set; }
+
+        public double BulgeWeighting { get; set; }
+        public double ArmWeighting { get; set; }
+        public double HaloWeighting { get; set; }
+
+        public double ArmTightness { get; set; }
+        public double BulgeScale { get; set; }
+
+        private const double stdDevScale = 0.3;
 
         public Galaxy Generate()
         {
             Galaxy g = new Galaxy();
+            Random r = new Random();
 
-            // for r = 2000, G = 0.001.
-            // for r = 200, G = 0.00001. This can't be a linear relationship. 
-            G = 0.1;
-
-            // place stars randomly within the "initial radius", giving them angular velocity
-            PlaceStars(g, NumStars, InitialRadius);
+            // place stars within the galaxy
+            PlaceStars(g, r);
 
             // simulate gravity for a few turns
 
@@ -43,58 +60,93 @@ namespace Universe
             return g;
         }
 
-        private void PlaceStars(Galaxy g, int numStars, double radius)
+        private void PlaceStars(Galaxy g, Random r)
         {
-            var thickness = radius * 0.1;
-            Random r = new Random();
-            const double minMass = 1000000, maxMass = 1000000000, massRange = maxMass - minMass;
-            for (int i = 0; i < numStars; i++)
+            // determine how many stars should go in each component of the galaxy
+            double weightingTot = BulgeWeighting + ArmWeighting + HaloWeighting;
+            int starsInBulge = (int)Math.Floor(BulgeWeighting / weightingTot * NumStars);
+            int starsInArms = (int)Math.Floor(ArmWeighting/ weightingTot * NumStars);
+            int starsInHalo = (int)Math.Floor(HaloWeighting / weightingTot * NumStars);
+
+            if (starsInBulge + starsInArms + starsInHalo < NumStars)
+            {
+                starsInBulge++;
+                if (starsInBulge + starsInArms + starsInHalo < NumStars)
+                {
+                    starsInArms++;
+                    if (starsInBulge + starsInArms + starsInHalo < NumStars)
+                        starsInHalo++;
+                }
+            }
+
+            // populate the central bulge
+            double stdDev = GalacticRadius * stdDevScale * BulgeScale;
+            for (int i = 0; i < starsInBulge; i++)
             {
                 Star s = new Star();
-                s.Mass = r.NextDouble() * massRange + minMass;
+                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
 
-                // probably ought to go for a normal distrubution ... at least on the z-axis
-                s.Position = Vector3.RandomWithin(r, -radius, -radius, -thickness, radius, radius, thickness);
-
-                s.Velocity = DetermineInitialAngularVelocity(s.Position);
+                s.Position = new Vector3(
+                    NormalDistribution(r, 0, stdDev),
+                    NormalDistribution(r, 0, stdDev),
+                    NormalDistribution(r, 0, stdDev)
+                );
+                
                 g.Stars.Add(s);
             }
+
+            // populate the halo
+            stdDev = GalacticRadius * stdDevScale;
+            for (int i = 0; i < starsInHalo; i++)
+            {
+                Star s = new Star();
+                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+
+                s.Position = new Vector3(
+                    NormalDistribution(r, 0, stdDev),
+                    NormalDistribution(r, 0, stdDev),
+                    NormalDistribution(r, 0, stdDev * VerticalScale)
+                );
+
+                g.Stars.Add(s);
+            }
+
+            // populate the arms
+            double t = 0, tMax = 10, a = 180, b = 0.20;
+            double dt = tMax / starsInArms * 2;
+
+            do
+            {
+                Star s = new Star();
+                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+                s.Position = new Vector3(
+                    a * Math.Exp(b * t) * Math.Cos(t),
+                    a * Math.Exp(b * t) * Math.Sin(t),
+                    NormalDistribution(r, 0, stdDev * VerticalScale)
+                );
+
+                g.Stars.Add(s);
+
+
+                s = new Star();
+                s.Mass = NormalDistribution(r, StellarMassMean, StellarMassStdDev);
+                s.Position = new Vector3(
+                    a * Math.Exp(b * t) * Math.Cos(t + Math.PI),
+                    a * Math.Exp(b * t) * Math.Sin(t + Math.PI),
+                    NormalDistribution(r, 0, stdDev * VerticalScale)
+                );
+
+                g.Stars.Add(s);
+                t += dt;
+            } while ( t <= tMax );
         }
 
-        private static Vector3 DetermineInitialAngularVelocity(Vector3 position)
+        private static double NormalDistribution(Random r, double mean, double stdDev)
         {
-            const double scale = 1;
-            Vector3 velocity = new Vector3(
-                scale * position.Y,
-                -scale * position.X,
-                0
-            );
-
-            return velocity;
-        }
-
-        public void SimulateTimeStep(Galaxy g, double dt)
-        {
-            foreach (var star in g.Stars)
-                star.Velocity += SumAcceleration(star, g.Stars) * dt;
-
-            foreach (var star in g.Stars)
-                star.Position += star.Velocity * dt;
-        }
-
-        private Vector3 SumAcceleration(Star star, IList<Star> list)
-        {
-            const double maxAccel = .1;
-
-            // a = G m / r^2
-            Vector3 a = new Vector3();
-            foreach (var other in list)
-                if (other != star)
-                {
-                    a += (other.Position - star.Position).ToUnit() * Math.Min(G * other.Mass / star.Position.DistanceSquared(other.Position), maxAccel);
-                }
-
-            return a;
+            double u1 = r.NextDouble(); //these are uniform(0,1) random doubles
+            double u2 = r.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+            return mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
         }
     }
 }

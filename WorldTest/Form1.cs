@@ -26,16 +26,9 @@ namespace WorldTest
             galaxy = generator.Generate();
 
             DetermineScaleAndOffset(
-                new Vector3(-generator.InitialRadius, -generator.InitialRadius, -generator.InitialRadius * generator.GalacticThicknessScale),
-                new Vector3(generator.InitialRadius, generator.InitialRadius, generator.InitialRadius * generator.GalacticThicknessScale)
+                new Vector3(-generator.GalacticRadius, -generator.GalacticRadius, -generator.GalacticRadius * generator.VerticalScale),
+                new Vector3(generator.GalacticRadius, generator.GalacticRadius, generator.GalacticRadius * generator.VerticalScale)
             );
-            pictureBox1.Image = RenderGalaxy(galaxy);
-            btnStep.Enabled = true;
-        }
-
-        private void btnStep_Click(object sender, EventArgs e)
-        {
-            generator.SimulateTimeStep(galaxy, 0.03);
             pictureBox1.Image = RenderGalaxy(galaxy);
         }
 
