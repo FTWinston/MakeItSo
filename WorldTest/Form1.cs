@@ -84,12 +84,83 @@ namespace WorldTest
 
         private void RenderHRDiagram(Galaxy galaxy, Graphics graphics, int width, int height)
         {
+            const double magMin = -10, magMax = 19.2;
+            const double colorMin = -.35, colorMax = 2.25;
 
+            const float borderFraction = 0.12f, borderMax = 70, bigTickSize = 5, smallTickSize = 3;
+
+            float xmin = Math.Min(width * borderFraction, borderMax);
+            float xmax = Math.Max(width - width * borderFraction, width - borderMax);
+            float ymin = Math.Min(height * borderFraction, borderMax);
+            float ymax = Math.Max(height - height * borderFraction, height - borderMax);
+
+            // draw axes & labels
+            Pen lines = new Pen(Color.White); Brush text = new SolidBrush(Color.FromArgb(255, 255, 220));
+            Font labels = new Font(FontFamily.GenericMonospace, 10);
+            graphics.DrawLine(lines, xmin, ymin, xmin, ymax);
+            graphics.DrawLine(lines, xmin, ymax, xmax, ymax);
+
+            float lx = xmin / 3, ly = height / 2;
+            graphics.TranslateTransform(lx, ly);
+            graphics.RotateTransform(270);
+            graphics.DrawStringAligned("Absolute magnitude", TextAlignment.Center, labels, text, 0, 0);
+            graphics.ResetTransform();
+
+            lx = width / 2; ly = (float)(height - ymin / 3);
+            graphics.DrawStringAligned("Color (B-V)", TextAlignment.Center, labels, text, lx, ly);
+
+            // draw tick marks
+            for (int mag = (int)Math.Ceiling(magMin); mag <= magMax; mag++)
+            {
+                float y = (float)ScaleToFit(magMin, magMax, ymin, ymax, mag);
+
+                float tickSize;
+                if (mag % 5 == 0)
+                {
+                    tickSize = bigTickSize;
+                    graphics.DrawStringAligned(mag.ToString(), TextAlignment.Right, labels, text, xmin - tickSize * 1.5f, y);
+                }
+                else
+                    tickSize = smallTickSize;
+
+                graphics.DrawLine(lines, (float)(xmin - tickSize), y, xmin, y);
+            }
+
+            for (int color = (int)Math.Ceiling(colorMin * 10); color < colorMax * 10; color++)
+            {
+                float x = (float)ScaleToFit(colorMin, colorMax, xmin, xmax, color / 10.0);
+
+                float tickSize;
+                if (color % 5 == 0)
+                {
+                    tickSize = bigTickSize;
+                    graphics.DrawStringAligned((color/10.0).ToString(), TextAlignment.Top, labels, text, x, ymax + tickSize * 1.5f);
+                }
+                else
+                    tickSize = smallTickSize;
+
+                graphics.DrawLine(lines, x, ymax + tickSize, x, ymax);
+            }
+
+            // plot the points
+            foreach (var star in galaxy.Stars)
+            {
+                float x = xmin + (float)ScaleToFit(colorMin, colorMax, xmin, xmax, star.BVColor);
+                float y = ymin + (float)ScaleToFit(magMin, magMax, ymin, ymax, star.AbsMagnitude);
+                graphics.FillRectangle(new SolidBrush(star.Color), x, y, 1, 1);
+            }
+        }
+
+        private double ScaleToFit(double inputMin, double inputMax, double outputMin, double outputMax, double input)
+        {
+            double fraction = (input - inputMin) / (inputMax - inputMin);
+            return outputMin + fraction * (outputMax - outputMin);
         }
 
         private void ViewChanged(object sender, EventArgs e)
         {
-            pictureBox1.Image = RenderGalaxy(galaxy);
+            if (galaxy != null)
+                pictureBox1.Image = RenderGalaxy(galaxy);
         }
     }
 }

@@ -45,6 +45,14 @@ namespace Universe
             }
         }
 
+        public double BVColor
+        {
+            get
+            {
+                return -2.5 * Math.Log(3.05 * Math.Exp(26000 / Temperature - 1) / Math.Exp(32700 / Temperature - 1));
+            }
+        }
+
         public string SpectralClass
         {
             get
