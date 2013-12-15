@@ -30,7 +30,7 @@ namespace Universe
 
         private const double StephanBoltzmann =  0.0000000567037321; // W m^-2 K^-4
         private const double SolarMass = 1989000000000000000000000000000.0; // kg
-        private const double SolarAbsMagnitude = 4.8;
+        private const double SolarAbsMagnitude = 4.83;
 
         public string Name { get; set; }
 
@@ -40,16 +40,30 @@ namespace Universe
         {
             get
             {
-                // Msun - Mstar = 2.5 log ( Lstar / Lsun)
-                return 2.5 * Math.Log(Luminosity) - SolarAbsMagnitude;
+                // Msun - Mstar = 2.5 log (Lstar / Lsun)
+                return SolarAbsMagnitude - 2.5 * Math.Log(Luminosity);
             }
         }
 
+        private const double Cbv = 0.6;
         public double BVColor
         {
             get
             {
-                return -2.5 * Math.Log(3.05 * Math.Exp(26000 / Temperature - 1) / Math.Exp(32700 / Temperature - 1));
+                // BV color index of the sun (~5780 K) should be 0.66... or 0.648 according to somewhere else.
+                // defined as -2.5 log(Flux5500/Flux4400) + C
+                //return -2.5 * Math.Log10(3.05 * Math.Exp(26000 / Temperature - 1) / Math.Exp(32700 / Temperature - 1)) + Cbv;
+
+                // So this fudge gives 0.692 for the sun, and -.067 for vega.
+                // These are what astronomers use, for simplicity, seemingly.
+                // The mind boggles, slightly. THEY'RE NOT EXACT!
+                if (Temperature < 9141)
+                    return -3.684 * Math.Log10(Temperature) + 14.551;
+                else
+                {
+                    var logT = Math.Log10(Temperature);
+                    return 0.344 * logT * logT - 3.402 * logT + 8.037;
+                }
             }
         }
 

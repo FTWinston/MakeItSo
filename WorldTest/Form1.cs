@@ -90,9 +90,8 @@ namespace WorldTest
             const float borderFraction = 0.12f, borderMax = 70, bigTickSize = 5, smallTickSize = 3;
 
             float xmin = Math.Min(width * borderFraction, borderMax);
-            float xmax = Math.Max(width - width * borderFraction, width - borderMax);
             float ymin = Math.Min(height * borderFraction, borderMax);
-            float ymax = Math.Max(height - height * borderFraction, height - borderMax);
+            float xmax = width - xmin, ymax = height - ymin;
 
             // draw axes & labels
             Pen lines = new Pen(Color.White); Brush text = new SolidBrush(Color.FromArgb(255, 255, 220));
@@ -142,13 +141,39 @@ namespace WorldTest
                 graphics.DrawLine(lines, x, ymax + tickSize, x, ymax);
             }
 
+            Star maxColor, minColor, maxMag, minMag;
+            maxColor = minColor = maxMag = minMag = galaxy.Stars[0];
+
             // plot the points
             foreach (var star in galaxy.Stars)
             {
-                float x = xmin + (float)ScaleToFit(colorMin, colorMax, xmin, xmax, star.BVColor);
-                float y = ymin + (float)ScaleToFit(magMin, magMax, ymin, ymax, star.AbsMagnitude);
+                float x = (float)ScaleToFit(colorMin, colorMax, xmin, xmax, star.BVColor);
+                float y = (float)ScaleToFit(magMin, magMax, ymin, ymax, star.AbsMagnitude);
                 graphics.FillRectangle(new SolidBrush(star.Color), x, y, 1, 1);
+
+                if (star.BVColor < minColor.BVColor)
+                    minColor = star;
+                else if (star.BVColor > maxColor.BVColor)
+                    maxColor = star;
+
+                if (star.AbsMagnitude < minMag.AbsMagnitude)
+                    minMag = star;
+                else if (star.AbsMagnitude > maxMag.AbsMagnitude)
+                    maxMag = star;
             }
+
+            graphics.DrawStringAligned(
+                string.Format(@"Max color: {0} (B-V), {1} K
+Min color: {2} (B-V), {3} K
+Max mag: {4} (abs), {5} lum
+Min mag: {6} (abs), {7} lum",
+maxColor.BVColor.ToString("F3"), maxColor.Temperature.ToString("F3"),
+minColor.BVColor.ToString("F3"), minColor.Temperature.ToString("F3"),
+maxMag.AbsMagnitude.ToString("F3"), maxMag.Luminosity.ToString("F3"),
+minMag.AbsMagnitude.ToString("F3"), minMag.Luminosity.ToString("F3")
+),
+                TextAlignment.TopRight, labels, text, width - 2, 2
+            );
         }
 
         private double ScaleToFit(double inputMin, double inputMax, double outputMin, double outputMax, double input)
