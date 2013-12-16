@@ -79,7 +79,7 @@ namespace Universe
             double stdDev = GalacticRadius * stdDevScale * bulgeScale;
             for (int i = 0; i < starsInBulge; i++)
             {
-                Star s = new Star(r, r.NextDouble() * 4 + 0.2);
+                Star s = Star.CreateMainSequence(r);
 
                 s.Position = new Vector3(
                     r.Normal(0, stdDev),
@@ -94,7 +94,7 @@ namespace Universe
             stdDev = GalacticRadius * stdDevScale;
             for (int i = 0; i < starsInDisc; i++)
             {
-                Star s = new Star(r, r.NextDouble() * 4 + 0.2);
+                Star s = Star.CreateMainSequence(r);
 
                 s.Position = new Vector3(
                     r.Normal(0, stdDev),
@@ -116,7 +116,7 @@ namespace Universe
                 stdDev = ArmWidth * 0.25 + 0.75 * ArmWidth * t;
                 double radius = armScale * Math.Exp(ArmTightness * t);
 
-                Star s = new Star(r, r.NextDouble() * 4 + 0.2);
+                Star s = Star.CreateMainSequence(r);
                 s.Position = new Vector3(
                     (radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset),
                     (radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset),
@@ -125,7 +125,7 @@ namespace Universe
 
                 g.Stars.Add(s);
 
-                s = new Star(r, r.NextDouble() * 4 + 0.2);
+                s = Star.CreateMainSequence(r);
                 s.Position = new Vector3(
                     (radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset + Math.PI),
                     (radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset + Math.PI),

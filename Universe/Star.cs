@@ -8,45 +8,40 @@ namespace Universe
 {
     public class Star : AtmosphericBody
     {
-        // these are not ideal value!
-        public Star(Random r)
-            : this(r.Normal(6500, 1750), Math.Max(0.01, r.Normal(1.5, 0.5)), Math.Max(SolarMass * 0.08, r.Normal(SolarMass, SolarMass * 0.25)))
+        public static Star CreateMainSequence(Random r)
         {
-        }
+            double solarMasses = Math.Max(0.1, r.Normal(1.3, 0.4, 1.5));
+            double mass = solarMasses * SolarMass;
 
-        public Star(Random r, double solarMasses)
-        {
-            Mass = solarMasses * SolarMass;
-
-            // for a main-sequence star only, currently, determine luminosity, radius & temperature.
+            //temperature = SolarTemperature * Math.Pow(Luminosity * Math.Sqrt(Radius), 0.25); // according to yahoo answers
+            double temperature = 0.000000000000001 * Math.Pow(mass, 0.62); // http://www.astro.soton.ac.uk/~pac/PH112/notes/notes/node99.html ... though there should be a constant
 
             // Mass-luminosity relation from http://en.wikipedia.org/wiki/Mass%E2%80%93luminosity_relation
+            double luminosity;
             if (solarMasses <= 0.43)
-                Luminosity = 0.23 * Math.Pow(solarMasses, 2.3);
+                luminosity = 0.23 * Math.Pow(solarMasses, 2.3);
             else if (solarMasses <= 2)
-                Luminosity = Math.Pow(solarMasses, 4);
+                luminosity = Math.Pow(solarMasses, 4);
             else if (solarMasses <= 20)
-                Luminosity = 1.505964 * Math.Pow(solarMasses, 3.5) - 0.0252982 * Math.Pow(solarMasses, 4.5);
+                luminosity = 1.505964 * Math.Pow(solarMasses, 3.5) - 0.0252982 * Math.Pow(solarMasses, 4.5);
             else
-                Luminosity = 3200 * solarMasses;
+                luminosity = 3200 * solarMasses;
 
-            Luminosity *= r.NextDouble() * 0.8 + 0.6;
+            // now let's randomize things slightly
+            luminosity *= r.Normal(1, 0.15);
+            temperature *= r.Normal(1, 0.05);
 
-            Radius = Math.Pow(Mass, 0.738); // according to yahoo answers
-            //Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
-
-            //Temperature = SolarTemperature * Math.Pow(Luminosity * Math.Sqrt(Radius), 0.25); // according to yahoo answers
-            Temperature = 0.000000000000001 * Math.Pow(Mass, 0.62); // http://www.astro.soton.ac.uk/~pac/PH112/notes/notes/node99.html ... though there should be a constant
-
-            DetermineColor();
+            return new Star(mass, luminosity, temperature);
         }
 
-        public Star(double temperature, double luminosity, double mass)
+        private Star(double mass, double luminosity, double temperature)
         {
             Temperature = temperature;
             Luminosity = luminosity;
             Mass = mass;
-            Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
+
+            Radius = Math.Pow(Mass, 0.738); // according to yahoo answers
+            //Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
 
             DetermineColor();
         }
