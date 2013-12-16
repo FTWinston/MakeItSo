@@ -66,7 +66,7 @@ namespace WorldTest
         {
             foreach (var star in galaxy.Stars)
             {
-                double radius = star.Luminosity * 1.25;
+                double radius = Math.Max(0.5, star.Luminosity * .01);
                 graphics.FillEllipse(new SolidBrush(star.Color), (float)((star.Position.X + xOffset) * scale - radius), (float)((star.Position.Y + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
             }
         }
@@ -77,7 +77,7 @@ namespace WorldTest
 
             foreach (var star in galaxy.Stars)
             {
-                double radius = star.Luminosity * 1.25;
+                double radius = Math.Max(0.5, star.Luminosity * .01);
                 graphics.FillEllipse(new SolidBrush(star.Color), (float)((star.Position.X + xOffset) * scale - radius), (float)(star.Position.Z * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
             }
         }

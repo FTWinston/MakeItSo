@@ -14,16 +14,39 @@ namespace Universe
         {
         }
 
+        public Star(Random r, double solarMasses)
+        {
+            Mass = solarMasses * SolarMass;
+
+            // for a main-sequence star only, currently, determine luminosity, radius & temperature.
+
+            // Mass-luminosity relation from http://en.wikipedia.org/wiki/Mass%E2%80%93luminosity_relation
+            if (solarMasses <= 0.43)
+                Luminosity = 0.23 * Math.Pow(solarMasses, 2.3);
+            else if (solarMasses <= 2)
+                Luminosity = Math.Pow(solarMasses, 4);
+            else if (solarMasses <= 20)
+                Luminosity = 1.505964 * Math.Pow(solarMasses, 3.5) - 0.0252982 * Math.Pow(solarMasses, 4.5);
+            else
+                Luminosity = 3200 * solarMasses;
+
+            Luminosity *= r.NextDouble() * 0.8 + 0.6;
+
+            Radius = Math.Pow(Mass, 0.738); // according to yahoo answers
+            //Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
+
+            //Temperature = SolarTemperature * Math.Pow(Luminosity * Math.Sqrt(Radius), 0.25); // according to yahoo answers
+            Temperature = 0.000000000000001 * Math.Pow(Mass, 0.62); // http://www.astro.soton.ac.uk/~pac/PH112/notes/notes/node99.html ... though there should be a constant
+
+            DetermineColor();
+        }
+
         public Star(double temperature, double luminosity, double mass)
         {
             Temperature = temperature;
             Luminosity = luminosity;
-
-            Radius = Math.Sqrt(Luminosity / ( 4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature));
-
-            // for main sequence stars, L / Lsun ~= (M / Msun)^3.9
-            // ... but only for main sequence stars. And that's not exact.
             Mass = mass;
+            Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
 
             DetermineColor();
         }
@@ -31,6 +54,7 @@ namespace Universe
         private const double StephanBoltzmann =  0.0000000567037321; // W m^-2 K^-4
         private const double SolarMass = 1989000000000000000000000000000.0; // kg
         private const double SolarAbsMagnitude = 4.83;
+        //private const double SolarTemperature = 5779.6; // K
 
         public string Name { get; set; }
 
