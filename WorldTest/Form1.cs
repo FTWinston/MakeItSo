@@ -67,7 +67,7 @@ namespace WorldTest
             foreach (var star in galaxy.Stars)
             {
                 double radius = Math.Max(0.5, star.Luminosity * .01);
-                graphics.FillEllipse(new SolidBrush(GetColor(star.Color)), (float)((star.Position.x + xOffset) * scale - radius), (float)((star.Position.z + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
+                graphics.FillEllipse(new SolidBrush(star.Color.ToSystemColor()), (float)((star.Position.x + xOffset) * scale - radius), (float)((star.Position.z + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
             }
         }
 
@@ -78,7 +78,7 @@ namespace WorldTest
             foreach (var star in galaxy.Stars)
             {
                 double radius = Math.Max(0.5, star.Luminosity * .01);
-                graphics.FillEllipse(new SolidBrush(GetColor(star.Color)), (float)((star.Position.x + xOffset) * scale - radius), (float)(star.Position.y * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
+                graphics.FillEllipse(new SolidBrush(star.Color.ToSystemColor()), (float)((star.Position.x + xOffset) * scale - radius), (float)(star.Position.y * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
             }
         }
 
@@ -149,7 +149,7 @@ namespace WorldTest
             {
                 float x = (float)ScaleToFit(colorMin, colorMax, xmin, xmax, star.BVColor);
                 float y = (float)ScaleToFit(magMin, magMax, ymin, ymax, star.AbsMagnitude);
-                graphics.FillRectangle(new SolidBrush(GetColor(star.Color)), x, y, 1, 1);
+                graphics.FillRectangle(new SolidBrush(star.Color.ToSystemColor()), x, y, 1, 1);
 
                 if (star.BVColor < minColor.BVColor)
                     minColor = star;
@@ -186,11 +186,6 @@ minMag.AbsMagnitude.ToString("F3"), minMag.Luminosity.ToString("F3")
         {
             if (galaxy != null)
                 pictureBox1.Image = RenderGalaxy(galaxy);
-        }
-
-        private Color GetColor(UnityEngine.Color uColor)
-        {
-            return Color.FromArgb((int)(uColor.r * 255), (int)(uColor.g * 255), (int)(uColor.b * 255));
         }
     }
 }
