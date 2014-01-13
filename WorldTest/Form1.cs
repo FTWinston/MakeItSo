@@ -30,6 +30,8 @@ namespace WorldTest
                 new UnityEngine.Vector3(generator.GalacticRadius, generator.GalacticRadius, generator.GalacticRadius * generator.VerticalScale)
             );
             pictureBox1.Image = RenderGalaxy(galaxy);
+            
+            btnGrid.Enabled = true;
         }
 
         private double scale, xOffset, yOffset;
@@ -186,6 +188,11 @@ minMag.AbsMagnitude.ToString("F3"), minMag.Luminosity.ToString("F3")
         {
             if (galaxy != null)
                 pictureBox1.Image = RenderGalaxy(galaxy);
+        }
+
+        private void btnGrid_Click(object sender, EventArgs e)
+        {
+            galaxy.CalculateRenderCells();
         }
     }
 }

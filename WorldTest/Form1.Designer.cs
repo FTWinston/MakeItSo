@@ -33,6 +33,7 @@
             this.rbTopDown = new System.Windows.Forms.RadioButton();
             this.rbSide = new System.Windows.Forms.RadioButton();
             this.rbHRDiagram = new System.Windows.Forms.RadioButton();
+            this.btnGrid = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -94,11 +95,23 @@
             this.rbHRDiagram.UseVisualStyleBackColor = true;
             this.rbHRDiagram.CheckedChanged += new System.EventHandler(this.ViewChanged);
             // 
+            // btnGrid
+            // 
+            this.btnGrid.Enabled = false;
+            this.btnGrid.Location = new System.Drawing.Point(469, 12);
+            this.btnGrid.Name = "btnGrid";
+            this.btnGrid.Size = new System.Drawing.Size(75, 23);
+            this.btnGrid.TabIndex = 3;
+            this.btnGrid.Text = "Analyse";
+            this.btnGrid.UseVisualStyleBackColor = true;
+            this.btnGrid.Click += new System.EventHandler(this.btnGrid_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(556, 551);
+            this.Controls.Add(this.btnGrid);
             this.Controls.Add(this.rbHRDiagram);
             this.Controls.Add(this.rbSide);
             this.Controls.Add(this.rbTopDown);
@@ -119,6 +132,7 @@
         private System.Windows.Forms.RadioButton rbTopDown;
         private System.Windows.Forms.RadioButton rbSide;
         private System.Windows.Forms.RadioButton rbHRDiagram;
+        private System.Windows.Forms.Button btnGrid;
     }
 }
 
