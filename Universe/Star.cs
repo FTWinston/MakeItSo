@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Drawing;
+using UnityEngine;
 
 namespace Universe
 {
     public class Star : AtmosphericBody
     {
-        public static Star CreateMainSequence(Random r)
+        public static Star CreateMainSequence(System.Random r)
         {
             double solarMasses = Math.Max(0.1, r.Normal(1.3, 0.4, 1.5));
             double mass = solarMasses * SolarMass;
@@ -46,7 +46,7 @@ namespace Universe
             DetermineColor();
         }
 
-        private const double StephanBoltzmann =  0.0000000567037321; // W m^-2 K^-4
+        private const double StephanBoltzmann = 0.0000000567037321; // W m^-2 K^-4
         private const double SolarMass = 1989000000000000000000000000000.0; // kg
         private const double SolarAbsMagnitude = 4.83;
         //private const double SolarTemperature = 5779.6; // K
@@ -166,7 +166,7 @@ namespace Universe
                 }
             }
 
-            Color = Color.FromArgb((int)r, (int)g, (int)b);
+            Color = new Color((float)r / 255f, (float)g / 255f, (float)b / 255f);
         }
 
         /// <summary>

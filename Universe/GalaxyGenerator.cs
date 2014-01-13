@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using UnityEngine;
 
 namespace Universe
 {
@@ -11,9 +12,9 @@ namespace Universe
         {
             NumStars = 2000;
             GalacticRadius = 2000;
-            VerticalScale = 0.1;
+            VerticalScale = 0.1f;
 
-            Random r = new Random();
+            System.Random r = new System.Random();
             BulgeWeighting = r.Normal(0.15, 0.05);
             ArmWeighting = r.Normal(0.55, 0.05);
             DiscWeighting = r.Normal(0.3, 0.05);
@@ -22,8 +23,8 @@ namespace Universe
         }
 
         public int NumStars { get; set;}
-        public double GalacticRadius { get; set; }
-        public double VerticalScale { get; set; }
+        public float GalacticRadius { get; set; }
+        public float VerticalScale { get; set; }
 
         public double BulgeWeighting { get; set; }
         public double ArmWeighting { get; set; }
@@ -38,7 +39,7 @@ namespace Universe
         public Galaxy Generate()
         {
             Galaxy g = new Galaxy();
-            Random r = new Random();
+            System.Random r = new System.Random();
 
             // place stars within the galaxy
             PlaceStars(g, r);
@@ -56,7 +57,7 @@ namespace Universe
             return g;
         }
 
-        private void PlaceStars(Galaxy g, Random r)
+        private void PlaceStars(Galaxy g, System.Random r)
         {
             // determine how many stars should go in each component of the galaxy
             double weightingTot = BulgeWeighting + ArmWeighting + DiscWeighting;
@@ -82,9 +83,9 @@ namespace Universe
                 Star s = Star.CreateMainSequence(r);
 
                 s.Position = new Vector3(
-                    r.Normal(0, stdDev),
-                    r.Normal(0, stdDev),
-                    r.Normal(0, stdDev)
+                    (float)r.Normal(0, stdDev),
+                    (float)r.Normal(0, stdDev),
+                    (float)r.Normal(0, stdDev)
                 );
                 
                 g.Stars.Add(s);
@@ -97,9 +98,9 @@ namespace Universe
                 Star s = Star.CreateMainSequence(r);
 
                 s.Position = new Vector3(
-                    r.Normal(0, stdDev),
-                    r.Normal(0, stdDev),
-                    r.Normal(0, stdDev * VerticalScale)
+                    (float)r.Normal(0, stdDev),
+                    (float)r.Normal(0, stdDev * VerticalScale),
+                    (float)r.Normal(0, stdDev)
                 );
 
                 g.Stars.Add(s);
@@ -118,18 +119,18 @@ namespace Universe
 
                 Star s = Star.CreateMainSequence(r);
                 s.Position = new Vector3(
-                    (radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset),
-                    (radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset),
-                    r.Normal(0, stdDev)
+                    (float)((radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset)),
+                    (float)r.Normal(0, stdDev),
+                    (float)((radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset))
                 );
 
                 g.Stars.Add(s);
 
                 s = Star.CreateMainSequence(r);
                 s.Position = new Vector3(
-                    (radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset + Math.PI),
-                    (radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset + Math.PI),
-                    r.Normal(0, stdDev)
+                    (float)((radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
+                    (float)r.Normal(0, stdDev),
+                    (float)((radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
                 );
 
                 g.Stars.Add(s);
