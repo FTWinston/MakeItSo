@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -10,7 +9,7 @@ namespace Universe
     {
         public static Star CreateMainSequence(System.Random r)
         {
-            double solarMasses = Math.Max(0.1, r.Normal(1.3, 0.4, 1.5));
+            double solarMasses = Math.Max(0.1, Helper.Normal(r, 1.3, 0.4, 1.5));
             double mass = solarMasses * SolarMass;
 
             //temperature = SolarTemperature * Math.Pow(Luminosity * Math.Sqrt(Radius), 0.25); // according to yahoo answers
@@ -28,8 +27,8 @@ namespace Universe
                 luminosity = 3200 * solarMasses;
 
             // now let's randomize things slightly
-            luminosity *= r.Normal(1, 0.15);
-            temperature *= r.Normal(1, 0.05);
+            luminosity *= Helper.Normal(r, 1, 0.15);
+            temperature *= Helper.Normal(r, 1, 0.05);
 
             return new Star(mass, luminosity, temperature);
         }

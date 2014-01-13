@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -15,11 +14,11 @@ namespace Universe
             VerticalScale = 0.1f;
 
             System.Random r = new System.Random();
-            BulgeWeighting = r.Normal(0.15, 0.05);
-            ArmWeighting = r.Normal(0.55, 0.05);
-            DiscWeighting = r.Normal(0.3, 0.05);
-            ArmTightness = r.Normal(0.20, 0.05);
-            ArmWidth = r.Normal(9, 0.75);
+            BulgeWeighting = Helper.Normal(r, 0.15, 0.05);
+            ArmWeighting = Helper.Normal(r, 0.55, 0.05);
+            DiscWeighting = Helper.Normal(r, 0.3, 0.05);
+            ArmTightness = Helper.Normal(r, 0.20, 0.05);
+            ArmWidth = Helper.Normal(r, 9, 0.75);
         }
 
         public int NumStars { get; set;}
@@ -83,9 +82,9 @@ namespace Universe
                 Star s = Star.CreateMainSequence(r);
 
                 s.Position = new Vector3(
-                    (float)r.Normal(0, stdDev),
-                    (float)r.Normal(0, stdDev),
-                    (float)r.Normal(0, stdDev)
+                    (float)Helper.Normal(r, 0, stdDev),
+                    (float)Helper.Normal(r, 0, stdDev),
+                    (float)Helper.Normal(r, 0, stdDev)
                 );
                 
                 g.Stars.Add(s);
@@ -98,17 +97,17 @@ namespace Universe
                 Star s = Star.CreateMainSequence(r);
 
                 s.Position = new Vector3(
-                    (float)r.Normal(0, stdDev),
-                    (float)r.Normal(0, stdDev * VerticalScale),
-                    (float)r.Normal(0, stdDev)
+                    (float)Helper.Normal(r, 0, stdDev),
+                    (float)Helper.Normal(r, 0, stdDev * VerticalScale),
+                    (float)Helper.Normal(r, 0, stdDev)
                 );
 
                 g.Stars.Add(s);
             }
 
             // populate the arms along two logarithmic spirals... adjust armScale so that the spiral just about reaches GalacticRadius at t=tMax
-            double t = r.Normal(0.95, 0.15), tMax = r.Normal(9, 0.75);
-            double armScale = r.Normal(0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
+            double t = Helper.Normal(r, 0.95, 0.15), tMax = Helper.Normal(r, 9, 0.75);
+            double armScale = Helper.Normal(r, 0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
             double dt = (tMax - t) / starsInArms * 2;
             double armOffset = r.NextDouble() * Math.PI;
 
@@ -119,18 +118,18 @@ namespace Universe
 
                 Star s = Star.CreateMainSequence(r);
                 s.Position = new Vector3(
-                    (float)((radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset)),
-                    (float)r.Normal(0, stdDev),
-                    (float)((radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset))
+                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset)),
+                    (float)Helper.Normal(r, 0, stdDev),
+                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset))
                 );
 
                 g.Stars.Add(s);
 
                 s = Star.CreateMainSequence(r);
                 s.Position = new Vector3(
-                    (float)((radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
-                    (float)r.Normal(0, stdDev),
-                    (float)((radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
+                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
+                    (float)Helper.Normal(r, 0, stdDev),
+                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
                 );
 
                 g.Stars.Add(s);
