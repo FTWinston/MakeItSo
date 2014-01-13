@@ -57,7 +57,7 @@ namespace Universe
             Console.WriteLine("Max extent: " + maxExtent);
             Console.WriteLine(string.Format("Render cell grid: {0}x{1}x{2} = {3}", xMax, yMax, zMax, xMax * yMax * zMax));
 
-            int starsInTotal = 0, starsVisibleTotal = 0;
+            var allCells = new List<RenderCell>();
 #endif
 
             renderCells = new RenderCell[xMax, yMax, zMax];
@@ -94,17 +94,33 @@ namespace Universe
                             rc.StarsInCell = cellStars;
                             rc.StarsToRender = visibleStars;
                             renderCells[x, y, z] = rc;
+#if DEBUG
+                            allCells.Add(rc);
+#endif
                         }
 
 #if DEBUG
-                        starsInTotal += cellStars.Count;
-                        starsVisibleTotal += visibleStars.Count;
+                        else
+                        {
+                            RenderCell rc = new RenderCell();
+                            rc.StarsInCell = new List<Star>();
+                            rc.StarsToRender = new List<Star>();
+                            allCells.Add(rc);
+                        }
 #endif
                     }
 
 #if DEBUG
-            Console.WriteLine("Stars in cell: " + (float)starsInTotal / (xMax * yMax * zMax));
-            Console.WriteLine("Stars visible from cell: " + (float)starsVisibleTotal/(xMax*yMax*zMax));
+            Console.WriteLine(string.Format("Stars in cell: {0} mean, {1} min, {2} max",
+                allCells.Sum((c)=>c.StarsInCell.Count)/allCells.Count,
+                allCells.Min((c) => c.StarsInCell.Count),
+                allCells.Max((c) => c.StarsInCell.Count)
+            ));
+            Console.WriteLine(string.Format("Stars visible from cell: {0} mean, {1} min, {2} max",
+                allCells.Sum((c) => c.StarsToRender.Count) / allCells.Count,
+                allCells.Min((c) => c.StarsToRender.Count),
+                allCells.Max((c) => c.StarsToRender.Count)
+            ));
 #endif
         }
 
