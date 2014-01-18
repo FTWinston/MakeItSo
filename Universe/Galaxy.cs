@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace Universe
         float cellSize;
 
         const float avgStarsPerCell = 5;
-        const double angularDiameterCutoff = 0.02; // a 1-radius sphere 100 units distant. Probably too big?
+        public const double angularDiameterCutoff = 0.00275; // 1-pixel size for 1920x1080 at 60° FOV
 
         public void CalculateRenderCells()
         {
@@ -81,7 +82,7 @@ namespace Universe
                                 // is this star big enough to be seen from the current region?
                                 Vector3 closest = ClosestPoint(star.Position, boundsMin, boundsMax);
                                 float distance = Vector3.Distance(closest, star.Position);
-                                double angularDiameter = 2 * Math.Asin(star.Radius / distance); // star.Radius is HUGE! That's not what we're using in-game. Need to use the same scale, though ultimately them being different seems pointless.
+                                double angularDiameter = 2 * star.Radius / distance;
 
                                 if (angularDiameter > angularDiameterCutoff)
                                     visibleStars.Add(star);

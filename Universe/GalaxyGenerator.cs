@@ -10,20 +10,23 @@ namespace Universe
         public GalaxyGenerator()
         {
             NumStars = 2000;
-            GalacticRadius = 2000;
-            VerticalScale = 0.1f;
+            GalacticRadius = 1000000000000;
+            VerticalScale = 0.1;
+            StellarScale = 0.0000000000000005;
 
             System.Random r = new System.Random();
             BulgeWeighting = Helper.Normal(r, 0.15, 0.05);
             ArmWeighting = Helper.Normal(r, 0.55, 0.05);
             DiscWeighting = Helper.Normal(r, 0.3, 0.05);
             ArmTightness = Helper.Normal(r, 0.20, 0.05);
-            ArmWidth = Helper.Normal(r, 9, 0.75);
+            ArmWidth = Helper.Normal(r, 9, 0.75) * GalacticRadius / 2000;
         }
 
         public int NumStars { get; set;}
-        public float GalacticRadius { get; set; }
-        public float VerticalScale { get; set; }
+        public double GalacticRadius { get; set; }
+        public double VerticalScale { get; set; }
+
+        public double StellarScale { get; set; }
 
         public double BulgeWeighting { get; set; }
         public double ArmWeighting { get; set; }
@@ -79,7 +82,7 @@ namespace Universe
             double stdDev = GalacticRadius * stdDevScale * bulgeScale;
             for (int i = 0; i < starsInBulge; i++)
             {
-                Star s = Star.CreateMainSequence(r);
+                Star s = Star.CreateMainSequence(r, StellarScale);
 
                 s.Position = new Vector3(
                     (float)Helper.Normal(r, 0, stdDev),
@@ -94,7 +97,7 @@ namespace Universe
             stdDev = GalacticRadius * stdDevScale;
             for (int i = 0; i < starsInDisc; i++)
             {
-                Star s = Star.CreateMainSequence(r);
+                Star s = Star.CreateMainSequence(r, StellarScale);
 
                 s.Position = new Vector3(
                     (float)Helper.Normal(r, 0, stdDev),
@@ -116,7 +119,7 @@ namespace Universe
                 stdDev = ArmWidth * 0.25 + 0.75 * ArmWidth * t;
                 double radius = armScale * Math.Exp(ArmTightness * t);
 
-                Star s = Star.CreateMainSequence(r);
+                Star s = Star.CreateMainSequence(r, StellarScale);
                 s.Position = new Vector3(
                     (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset)),
                     (float)Helper.Normal(r, 0, stdDev),
@@ -125,7 +128,7 @@ namespace Universe
 
                 g.Stars.Add(s);
 
-                s = Star.CreateMainSequence(r);
+                s = Star.CreateMainSequence(r, StellarScale);
                 s.Position = new Vector3(
                     (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
                     (float)Helper.Normal(r, 0, stdDev),

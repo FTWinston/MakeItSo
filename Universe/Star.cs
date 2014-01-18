@@ -7,7 +7,7 @@ namespace Universe
 {
     public class Star : AtmosphericBody
     {
-        public static Star CreateMainSequence(System.Random r)
+        public static Star CreateMainSequence(System.Random r, double stellarScale)
         {
             double solarMasses = Math.Max(0.1, Helper.Normal(r, 1.3, 0.4, 1.5));
             double mass = solarMasses * SolarMass;
@@ -30,16 +30,16 @@ namespace Universe
             luminosity *= Helper.Normal(r, 1, 0.15);
             temperature *= Helper.Normal(r, 1, 0.05);
 
-            return new Star(mass, luminosity, temperature);
+            return new Star(mass, luminosity, temperature, stellarScale);
         }
 
-        private Star(double mass, double luminosity, double temperature)
+        private Star(double mass, double luminosity, double temperature, double stellarScale)
         {
             Temperature = temperature;
             Luminosity = luminosity;
             Mass = mass;
 
-            Radius = Math.Pow(Mass, 0.738); // according to yahoo answers
+            Radius = stellarScale * Math.Pow(Mass, 0.738); // according to yahoo answers
             //Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
 
             DetermineColor();

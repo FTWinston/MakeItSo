@@ -25,9 +25,10 @@ namespace WorldTest
             generator = new GalaxyGenerator();
             galaxy = generator.Generate();
 
+            float r = (float)generator.GalacticRadius, height = (float)(generator.GalacticRadius * generator.VerticalScale);
             DetermineScaleAndOffset(
-                new UnityEngine.Vector3(-generator.GalacticRadius, -generator.GalacticRadius, -generator.GalacticRadius * generator.VerticalScale),
-                new UnityEngine.Vector3(generator.GalacticRadius, generator.GalacticRadius, generator.GalacticRadius * generator.VerticalScale)
+                new UnityEngine.Vector3(-r, -r, -height),
+                new UnityEngine.Vector3(r, r, height)
             );
             pictureBox1.Image = RenderGalaxy(galaxy);
             
