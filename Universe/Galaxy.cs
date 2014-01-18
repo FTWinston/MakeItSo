@@ -15,7 +15,7 @@ namespace Universe
         float cellSize;
 
         const float avgStarsPerCell = 5;
-        public const double angularDiameterCutoff = 0.00275; // 1-pixel size for 1920x1080 at 60° FOV
+        public double angularDiameterCutoff = 0.00275; // 1-pixel size for 1920x1080 at 60° FOV
 
         public void CalculateRenderCells()
         {
