@@ -23,5 +23,10 @@ namespace Universe
 
             return mean + (stdNormal >= 0 ? stdDevUpper : stdDevLower) * stdNormal;
         }
+
+        public static long Long(Random r)
+        {
+            return (r.Next() << 32) + Math.Abs(r.Next());
+        }
     }
 }

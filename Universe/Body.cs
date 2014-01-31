@@ -7,8 +7,8 @@ namespace Universe
 {
     public abstract class Body
     {
-        public Vector3 Position { get; set; }
-        public Vector3 Velocity { get; set; }
+        public RealVector Position { get; set; }
+        public RealVector Velocity { get; set; }
         public double Mass { get; set; } // only MassiveBodies need this for gravity. But I guess we might have some other use for it at some point...
 
         public GameObject Renderer { get; set; }

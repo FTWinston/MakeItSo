@@ -84,10 +84,10 @@ namespace Universe
             {
                 Star s = Star.CreateMainSequence(r, StellarScale);
 
-                s.Position = new Vector3(
-                    (float)Helper.Normal(r, 0, stdDev),
-                    (float)Helper.Normal(r, 0, stdDev),
-                    (float)Helper.Normal(r, 0, stdDev)
+                s.Position = RealVector.Create(
+                    Helper.Normal(r, 0, stdDev),
+                    Helper.Normal(r, 0, stdDev),
+                    Helper.Normal(r, 0, stdDev)
                 );
                 
                 g.Stars.Add(s);
@@ -99,10 +99,10 @@ namespace Universe
             {
                 Star s = Star.CreateMainSequence(r, StellarScale);
 
-                s.Position = new Vector3(
-                    (float)Helper.Normal(r, 0, stdDev),
-                    (float)Helper.Normal(r, 0, stdDev * VerticalScale),
-                    (float)Helper.Normal(r, 0, stdDev)
+                s.Position = RealVector.Create(
+                    Helper.Normal(r, 0, stdDev),
+                    Helper.Normal(r, 0, stdDev * VerticalScale),
+                    Helper.Normal(r, 0, stdDev)
                 );
 
                 g.Stars.Add(s);
@@ -120,19 +120,19 @@ namespace Universe
                 double radius = armScale * Math.Exp(ArmTightness * t);
 
                 Star s = Star.CreateMainSequence(r, StellarScale);
-                s.Position = new Vector3(
-                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset)),
-                    (float)Helper.Normal(r, 0, stdDev),
-                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset))
+                s.Position = RealVector.Create(
+                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset)),
+                    Helper.Normal(r, 0, stdDev),
+                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset))
                 );
 
                 g.Stars.Add(s);
 
                 s = Star.CreateMainSequence(r, StellarScale);
-                s.Position = new Vector3(
-                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
-                    (float)Helper.Normal(r, 0, stdDev),
-                    (float)((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
+                s.Position = RealVector.Create(
+                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
+                    Helper.Normal(r, 0, stdDev),
+                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
                 );
 
                 g.Stars.Add(s);

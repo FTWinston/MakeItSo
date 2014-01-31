@@ -10,17 +10,17 @@ namespace Universe
     {
         public List<Star> Stars = new List<Star>();
         
-        Vector3 minExtent, maxExtent;
+        RealVector minExtent, maxExtent;
         RenderCell[, ,] renderCells;
         float cellSize;
 
         const float avgStarsPerCell = 5;
-        public double angularDiameterCutoff = 0.00275; // 1-pixel size for 1920x1080 at 60° FOV
+        public Real angularDiameterCutoff = 0.00275; // 1-pixel size for 1920x1080 at 60° FOV
 
         public void CalculateRenderCells()
         {
-            minExtent = Vector3.zero;
-            maxExtent = Vector3.zero;
+            minExtent = RealVector.zero;
+            maxExtent = RealVector.zero;
 
             foreach (var star in Stars)
             {
@@ -44,13 +44,13 @@ namespace Universe
             // these should be extended so as to encompass the max visibility range of all stars in the galaxy
 
             // cell VOLUME is proportional to the number of stars. Cell length therefore proportional to cube root of # of stars
-            Vector3 extent = maxExtent - minExtent;
-            float cellVol = avgStarsPerCell * extent.x * extent.y * extent.z / Stars.Count;
+            RealVector extent = maxExtent - minExtent;
+            float cellVol = (float)(avgStarsPerCell * extent.x * extent.y * extent.z / Stars.Count);
             cellSize = (float)Math.Pow(cellVol, 0.333333333333333333);
-
-            int xMax = (int)Math.Ceiling(extent.x / cellSize);
-            int yMax = (int)Math.Ceiling(extent.y / cellSize);
-            int zMax = (int)Math.Ceiling(extent.z / cellSize);
+            
+            int xMax = (int)Real.Ceiling(extent.x / cellSize);
+            int yMax = (int)Real.Ceiling(extent.y / cellSize);
+            int zMax = (int)Real.Ceiling(extent.z / cellSize);
 
 #if DEBUG
             Console.WriteLine("Min extent: " + minExtent);
@@ -68,8 +68,8 @@ namespace Universe
                         var cellStars = new List<Star>();
                         var visibleStars = new List<Star>();
 
-                        Vector3 boundsMin = minExtent + new Vector3(x * cellSize, y * cellSize, z * cellSize);
-                        Vector3 boundsMax = boundsMin + new Vector3(cellSize, cellSize, cellSize);
+                        RealVector boundsMin = minExtent + RealVector.Create(x * cellSize, y * cellSize, z * cellSize);
+                        RealVector boundsMax = boundsMin + RealVector.Create(cellSize, cellSize, cellSize);
 
                         foreach (var star in Stars)
                             if (Within(star.Position, boundsMin, boundsMax))
@@ -80,9 +80,9 @@ namespace Universe
                             else
                             {
                                 // is this star big enough to be seen from the current region?
-                                Vector3 closest = ClosestPoint(star.Position, boundsMin, boundsMax);
-                                float distance = Vector3.Distance(closest, star.Position);
-                                double angularDiameter = 2 * star.Radius / distance;
+                                RealVector closest = ClosestPoint(star.Position, boundsMin, boundsMax);
+                                Real distance = RealVector.Distance(closest, star.Position);
+                                Real angularDiameter = 2 * star.Radius / distance;
 
                                 if (angularDiameter > angularDiameterCutoff)
                                     visibleStars.Add(star);
@@ -124,7 +124,7 @@ namespace Universe
 #endif
         }
 
-        public RenderCell GetRenderCell(Vector3 location)
+        public RenderCell GetRenderCell(RealVector location)
         {
             location -= minExtent;
 
@@ -141,7 +141,7 @@ namespace Universe
             return renderCells[x,y,z];
         }
 
-        private bool Within(Vector3 pos, Vector3 boundsMin, Vector3 boundsMax)
+        private bool Within(RealVector pos, RealVector boundsMin, RealVector boundsMax)
         {
             for (int i = 0; i < 3; i++)
                 if (pos[i] < boundsMin[i] || pos[i] > boundsMax[i])
@@ -149,9 +149,9 @@ namespace Universe
             return true;
         }
 
-        private Vector3 ClosestPoint(Vector3 pos, Vector3 boundsMin, Vector3 boundsMax)
+        private RealVector ClosestPoint(RealVector pos, RealVector boundsMin, RealVector boundsMax)
         {
-            Vector3 vec = new Vector3();
+            RealVector vec = RealVector.zero;
 
             for (int i = 0; i < 3; i++)
             {
