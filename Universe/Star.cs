@@ -30,7 +30,9 @@ namespace Universe
             luminosity *= r.Normal(1, 0.15);
             temperature *= r.Normal(1, 0.05);
 
-            return new Star(mass, luminosity, temperature, stellarScale);
+            Star s = new Star(mass, luminosity, temperature, stellarScale);
+            s.SystemSeed = r.Next();
+            return s;
         }
 
         private Star(double mass, double luminosity, double temperature, double stellarScale)
@@ -173,5 +175,8 @@ namespace Universe
         /// But this is their *actual* color, whatever that means
         /// </summary>
         public Color Color { get; private set; }
+
+        public int SystemSeed { get; private set; }
+        public StarSystem System { get; set; }
     }
 }
