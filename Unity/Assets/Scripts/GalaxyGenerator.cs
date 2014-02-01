@@ -26,7 +26,7 @@ public class GalaxyGenerator : MonoBehaviour
 		{
 			GameObject star = (GameObject)Instantiate(starTemplate);
 			star.transform.parent = galaxyObject;
-			star.transform.position = starInfo.Position;
+			star.transform.position = (Vector3)starInfo.Position;
 
 			float r = (float)starInfo.Radius;
 			star.transform.localScale = new UnityEngine.Vector3(r, r, r);
@@ -43,7 +43,7 @@ public class GalaxyGenerator : MonoBehaviour
     // scale all stars so that they have a minimum "on screen" size
     void Update()
     {
-        var time = DateTime.Now;
+        //var time = DateTime.Now;
         var position = -galaxyObject.position;
         foreach (var star in galaxy.Stars)
         {
@@ -81,12 +81,12 @@ public class GalaxyGenerator : MonoBehaviour
                 alpha = Math.Min(1f, (float)(1000000000000000000000.0 * star.Luminosity / dist / dist));
             }
 
-            star.Renderer.active = alpha > 0.001f;
+            star.Renderer.SetActive(alpha > 0.001f);
 
             star.Renderer.transform.localScale = scale;
             star.Renderer.renderer.material.color = star.Color * alpha;
         }
 
-        var duration = DateTime.Now - time;
+        //var duration = DateTime.Now - time;
     }
 }

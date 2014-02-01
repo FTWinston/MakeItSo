@@ -27,14 +27,15 @@ _ReSharper*/
 [Tt]est[Rr]esult*
 Unity/Temp/
 Unity/Obj/
+Unity/Build/
 Unity/UnityGenerated/
 Unity/Library/
 Unity/ExportedObj/
+Unity/*.sln
+Unity/*.csproj
 *.svd
 *.userprefs
-*.csproj
 *.pidb
-*.sln
 *.user
 *.unityproj
 Unity/.DS_Store
@@ -44,4 +45,4 @@ Unity/.Spotlight-V100
 Unity/.Trashes
 Unity/Icon?
 Unity/ehthumbs.db
-Unity/Assets/Universe.dll
+Universe.dll

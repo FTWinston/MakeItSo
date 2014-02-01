@@ -582,5 +582,14 @@ namespace Universe {
         {
             return Real.Sqrt(DistanceSq(one, other));
         }
+
+        public static explicit operator UnityEngine.Vector3(RealVector src)
+        {
+            UnityEngine.Vector3 vec;
+            vec.x = (float)src.x;
+            vec.y = (float)src.y;
+            vec.z = (float)src.z;
+            return vec;
+        }
     }
 }
