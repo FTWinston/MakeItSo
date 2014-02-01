@@ -45,4 +45,5 @@ Unity/.Spotlight-V100
 Unity/.Trashes
 Unity/Icon?
 Unity/ehthumbs.db
-Universe.dll
+Unity/Assets/*.dll
+Unity/Assets/*.dll.meta

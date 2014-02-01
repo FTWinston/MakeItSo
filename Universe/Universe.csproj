@@ -55,12 +55,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Body.cs" />
-    <Compile Include="NumericExtensions.cs" />
+    <Compile Include="Fixed.cs" />
     <Compile Include="Galaxy.cs" />
     <Compile Include="GalaxyGenerator.cs" />
-    <Compile Include="Fixed.cs" />
+    <Compile Include="NumericExtensions.cs" />
     <Compile Include="Star.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ForTheWin\Engine\Engine.Shared\Engine.Shared.csproj">
+      <Project>{48db214a-092c-46fc-8de9-b8292a238786}</Project>
+      <Name>Engine.Shared</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

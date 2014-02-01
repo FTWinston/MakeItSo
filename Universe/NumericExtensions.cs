@@ -25,13 +25,13 @@ namespace Universe
             return mean + (stdNormal >= 0 ? stdDevUpper : stdDevLower) * stdNormal;
         }
 
-        public static Fixed NormalReal(this Random r, double mean, double stdDif)
+        public static Fixed NormalFixed(this Random r, double mean, double stdDif)
         {
             double normal = Normal(r, mean, stdDif);
             return Fixed.Create(normal);
         }
 
-        public static Fixed NormalReal(this Random r, double mean, double stdDevLower, double stdDevUpper)
+        public static Fixed NormalFixed(this Random r, double mean, double stdDevLower, double stdDevUpper)
         {
             double normal = Normal(r, mean, stdDevLower, stdDevUpper);
             return Fixed.Create(normal);

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Universe {
+namespace Universe
+{
     // if switching to Forge, this should be replaced with the class included in Forge.Utilities
     public struct Fixed {
         public long RawValue;

@@ -26,10 +26,10 @@ public class GalaxyGenerator : MonoBehaviour
 		{
 			GameObject star = (GameObject)Instantiate(starTemplate);
 			star.transform.parent = galaxyObject;
-			star.transform.position = (Vector3)starInfo.Position;
+            star.transform.position = (Vector3)starInfo.Position;
 
 			float r = (float)starInfo.Radius;
-			star.transform.localScale = new UnityEngine.Vector3(r, r, r);
+            star.transform.localScale = new UnityEngine.Vector3(r, r, r);
 
             star.renderer.material.color = starInfo.Color;
 
