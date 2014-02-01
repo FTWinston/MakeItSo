@@ -55,10 +55,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Body.cs" />
-    <Compile Include="Helper.cs" />
+    <Compile Include="NumericExtensions.cs" />
     <Compile Include="Galaxy.cs" />
     <Compile Include="GalaxyGenerator.cs" />
-    <Compile Include="Real.cs" />
+    <Compile Include="Fixed.cs" />
     <Compile Include="Star.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

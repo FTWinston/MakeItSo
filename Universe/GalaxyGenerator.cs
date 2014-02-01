@@ -15,11 +15,11 @@ namespace Universe
             StellarScale = 0.0000000000000005;
 
             System.Random r = new System.Random();
-            BulgeWeighting = Helper.Normal(r, 0.15, 0.05);
-            ArmWeighting = Helper.Normal(r, 0.55, 0.05);
-            DiscWeighting = Helper.Normal(r, 0.3, 0.05);
-            ArmTightness = Helper.Normal(r, 0.20, 0.05);
-            ArmWidth = Helper.Normal(r, 9, 0.75) * GalacticRadius / 2000;
+            BulgeWeighting = r.Normal(0.15, 0.05);
+            ArmWeighting = r.Normal(0.55, 0.05);
+            DiscWeighting = r.Normal(0.3, 0.05);
+            ArmTightness = r.Normal(0.20, 0.05);
+            ArmWidth = r.Normal(9, 0.75) * GalacticRadius / 2000;
         }
 
         public int NumStars { get; set;}
@@ -84,10 +84,10 @@ namespace Universe
             {
                 Star s = Star.CreateMainSequence(r, StellarScale);
 
-                s.Position = RealVector.Create(
-                    Helper.Normal(r, 0, stdDev),
-                    Helper.Normal(r, 0, stdDev),
-                    Helper.Normal(r, 0, stdDev)
+                s.Position = FixedVector.Create(
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev)
                 );
                 
                 g.Stars.Add(s);
@@ -99,18 +99,18 @@ namespace Universe
             {
                 Star s = Star.CreateMainSequence(r, StellarScale);
 
-                s.Position = RealVector.Create(
-                    Helper.Normal(r, 0, stdDev),
-                    Helper.Normal(r, 0, stdDev * VerticalScale),
-                    Helper.Normal(r, 0, stdDev)
+                s.Position = FixedVector.Create(
+                    r.Normal(0, stdDev),
+                    r.Normal(0, stdDev * VerticalScale),
+                    r.Normal(0, stdDev)
                 );
 
                 g.Stars.Add(s);
             }
 
             // populate the arms along two logarithmic spirals... adjust armScale so that the spiral just about reaches GalacticRadius at t=tMax
-            double t = Helper.Normal(r, 0.95, 0.15), tMax = Helper.Normal(r, 9, 0.75);
-            double armScale = Helper.Normal(r, 0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
+            double t = r.Normal(0.95, 0.15), tMax = r.Normal(9, 0.75);
+            double armScale = r.Normal(0.75, 0.05) * GalacticRadius / Math.Exp(ArmTightness * tMax);
             double dt = (tMax - t) / starsInArms * 2;
             double armOffset = r.NextDouble() * Math.PI;
 
@@ -120,19 +120,19 @@ namespace Universe
                 double radius = armScale * Math.Exp(ArmTightness * t);
 
                 Star s = Star.CreateMainSequence(r, StellarScale);
-                s.Position = RealVector.Create(
-                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset)),
-                    Helper.Normal(r, 0, stdDev),
-                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset))
+                s.Position = FixedVector.Create(
+                    ((radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset)),
+                    r.Normal(0, stdDev),
+                    ((radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset))
                 );
 
                 g.Stars.Add(s);
 
                 s = Star.CreateMainSequence(r, StellarScale);
-                s.Position = RealVector.Create(
-                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
-                    Helper.Normal(r, 0, stdDev),
-                    ((radius + Helper.Normal(r, 0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
+                s.Position = FixedVector.Create(
+                    ((radius + r.Normal(0, stdDev)) * Math.Cos(t + armOffset + Math.PI)),
+                    r.Normal(0, stdDev),
+                    ((radius + r.Normal(0, stdDev)) * Math.Sin(t + armOffset + Math.PI))
                 );
 
                 g.Stars.Add(s);

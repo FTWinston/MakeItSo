@@ -9,7 +9,7 @@ namespace Universe
     {
         public static Star CreateMainSequence(System.Random r, double stellarScale)
         {
-            double solarMasses = Math.Max(0.1, Helper.Normal(r, 1.3, 0.4, 1.5));
+            double solarMasses = Math.Max(0.1, r.Normal(1.3, 0.4, 1.5));
             double mass = solarMasses * SolarMass;
 
             //temperature = SolarTemperature * Math.Pow(Luminosity * Math.Sqrt(Radius), 0.25); // according to yahoo answers
@@ -27,8 +27,8 @@ namespace Universe
                 luminosity = 3200 * solarMasses;
 
             // now let's randomize things slightly
-            luminosity *= Helper.Normal(r, 1, 0.15);
-            temperature *= Helper.Normal(r, 1, 0.05);
+            luminosity *= r.Normal(1, 0.15);
+            temperature *= r.Normal(1, 0.05);
 
             return new Star(mass, luminosity, temperature, stellarScale);
         }
@@ -39,7 +39,7 @@ namespace Universe
             Luminosity = luminosity;
             Mass = mass;
 
-            Radius = stellarScale * Math.Pow(Mass, 0.738); // according to yahoo answers
+            Radius = 50000;//stellarScale * Math.Pow(Mass, 0.738); // according to yahoo answers
             //Radius = Math.Sqrt(Luminosity / (4 * Math.PI * StephanBoltzmann * Temperature * Temperature * Temperature * Temperature)); // from wikipedia
 
             DetermineColor();

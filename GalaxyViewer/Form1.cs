@@ -25,24 +25,25 @@ namespace WorldTest
             generator = new GalaxyGenerator();
             galaxy = generator.Generate();
 
-            float r = (float)generator.GalacticRadius, height = (float)(generator.GalacticRadius * generator.VerticalScale);
+            double r = generator.GalacticRadius, height = generator.GalacticRadius * generator.VerticalScale;
             DetermineScaleAndOffset(
-                new UnityEngine.Vector3(-r, -r, -height),
-                new UnityEngine.Vector3(r, r, height)
+                FixedVector.Create(-r, -r, -height),
+                FixedVector.Create(r, r, height)
             );
             pictureBox1.Image = RenderGalaxy(galaxy);
             
             btnGrid.Enabled = true;
         }
 
-        private double scale, xOffset, yOffset;
-        private void DetermineScaleAndOffset(UnityEngine.Vector3 minExtent, UnityEngine.Vector3 maxExtent)
+        private double scale;
+        Fixed xOffset, yOffset;
+        private void DetermineScaleAndOffset(FixedVector minExtent, FixedVector maxExtent)
         {
             xOffset = -minExtent.x; yOffset = -minExtent.y;
 
             scale = 1.0 / Math.Min(
-                (maxExtent.x - minExtent.x) / pictureBox1.Width,
-                (maxExtent.x - minExtent.y) / pictureBox1.Height
+                (double)(maxExtent.x - minExtent.x) / pictureBox1.Width,
+                (double)(maxExtent.y - minExtent.y) / pictureBox1.Height
             );
         }
 
@@ -70,7 +71,7 @@ namespace WorldTest
             foreach (var star in galaxy.Stars)
             {
                 double radius = Math.Max(0.5, star.Luminosity * .01);
-                graphics.FillEllipse(new SolidBrush(star.Color.ToSystemColor()), (float)((star.Position.x + xOffset) * scale - radius), (float)((star.Position.z + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
+                graphics.FillEllipse(new SolidBrush(star.Color.ToSystemColor()), (float)((double)(star.Position.x + xOffset) * scale - radius), (float)((double)(star.Position.z + yOffset) * scale - radius), (float)(radius + radius), (float)(radius + radius));
             }
         }
 
@@ -81,7 +82,7 @@ namespace WorldTest
             foreach (var star in galaxy.Stars)
             {
                 double radius = Math.Max(0.5, star.Luminosity * .01);
-                graphics.FillEllipse(new SolidBrush(star.Color.ToSystemColor()), (float)((star.Position.x + xOffset) * scale - radius), (float)(star.Position.y * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
+                graphics.FillEllipse(new SolidBrush(star.Color.ToSystemColor()), (float)((double)(star.Position.x + xOffset) * scale - radius), (float)((double)star.Position.y * scale - radius + halfHeight), (float)(radius + radius), (float)(radius + radius));
             }
         }
 

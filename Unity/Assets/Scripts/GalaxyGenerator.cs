@@ -50,9 +50,9 @@ public class GalaxyGenerator : MonoBehaviour
             var dist = (star.Renderer.GetComponent<Transform>().localPosition - position).magnitude;
 
             float r = (float)star.Radius;
-            Vector3 scale = new UnityEngine.Vector3(r, r, r);
+            Vector3 scale = new Vector3(r, r, r);
 
-            var angularDiam = 2 * star.Radius / dist;
+            double angularDiam = 2 * star.Radius / dist;
             float alpha = 1f;
 
             if (angularDiam < galaxy.angularDiameterCutoff)
