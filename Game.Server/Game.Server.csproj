@@ -50,7 +50,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\AI\BaseAI.cs" />
+    <Compile Include="Command\AI\EngineeringAI.cs" />
+    <Compile Include="Command\AI\ScienceAI.cs" />
+    <Compile Include="Command\AI\TacticalAI.cs" />
+    <Compile Include="Command\AI\HelmAI.cs" />
+    <Compile Include="Command\AI\CommandAI.cs" />
+    <Compile Include="Command\AI\FleetAI.cs" />
+    <Compile Include="Command\Controllers\BaseController.cs" />
+    <Compile Include="Command\Controllers\EngineeringController.cs" />
+    <Compile Include="Command\Controllers\ScienceController.cs" />
+    <Compile Include="Command\Controllers\TacticalController.cs" />
+    <Compile Include="Command\Controllers\HelmController.cs" />
+    <Compile Include="Command\Controllers\CommandController.cs" />
+    <Compile Include="Command\Objective.cs" />
+    <Compile Include="Command\AI\StrategicAI.cs" />
+    <Compile Include="Command\AI\Strategy.cs" />
+    <Compile Include="Command\Players\BasePlayer.cs" />
+    <Compile Include="Command\Players\EngineeringPlayer.cs" />
+    <Compile Include="Command\Players\SciencePlayer.cs" />
+    <Compile Include="Command\Players\ViewscreenPlayer.cs" />
+    <Compile Include="Command\Players\TacticalPlayer.cs" />
+    <Compile Include="Command\Players\HelmPlayer.cs" />
+    <Compile Include="Command\Players\CommandPlayer.cs" />
+    <Compile Include="Command\ShipController.cs" />
+    <Compile Include="Command\Stations\IBaseStation.cs" />
+    <Compile Include="Command\Stations\IEngineeringStation.cs" />
+    <Compile Include="Command\Stations\IScienceStation.cs" />
+    <Compile Include="Command\Stations\ITacticalStation.cs" />
+    <Compile Include="Command\Stations\IHelmStation.cs" />
+    <Compile Include="Command\Stations\ICommandStation.cs" />
     <Compile Include="GameServer.cs" />
+    <Compile Include="Ship.cs" />
     <Compile Include="TestObject.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -67,6 +98,10 @@
       <Project>{fe1009e2-7000-4565-bc7a-b1f3e0a5c7d5}</Project>
       <Name>Universe</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Command\AI\Strategies\" />
+    <Folder Include="Command\Objectives\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
