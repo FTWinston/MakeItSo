@@ -1,0 +1,126 @@
+body {
+	background-color: #fff; margin: 0; padding: 0;
+	font: 14px Helvetica, Arial, sans-serif;
+	
+   -moz-user-select: none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+
+body > div {
+	width: 100%;
+	height: 100%;
+}
+
+p {
+	margin: 0.65em;
+}
+
+#errorMsg {
+	white-space: pre-line;
+}
+
+#systemSelect .playerIdentifier {
+	font-size: 20em;
+	float: left;
+	width: 40%;
+	height: 100%;
+	text-align: center;
+}
+
+#systemList {
+	float:left;
+	width:60%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#systemList li {
+	font-size: 2em;
+	padding: 0.5em;
+}
+
+#systemList li.prompt {
+	padding-left: 0em;
+	padding-bottom: 1em;
+}
+
+#systemList li.option, #setupLink, .backLink, .confirmLink {
+	cursor: pointer;
+}
+
+#setupLink.taken {
+	cursor: not-allowed;
+}
+
+#systemList li.option.selected {
+	text-decoration: underline;
+}
+
+#systemList li.option.taken, #setupLink.taken {
+	color: #999;
+	border-color: #999;
+}
+
+#setupLink {
+	position: fixed;
+	width: 4em;
+	height:4em;
+	right: 1em;
+	bottom: 1em;
+	border: solid black 1px;
+	background-color: #fff;
+	text-align: center;
+}
+
+.backLink {
+	position: fixed;
+	left: 1em;
+	bottom: 1em;
+	font-size: 2em;
+}
+
+.confirmLink {
+	position: fixed;
+	right: 1em;
+	bottom: 1em;
+	font-size: 2em;
+}
+
+#gameSetup {
+	overflow: auto;
+}
+
+#gameSetup ul {
+	list-style: none;
+}
+
+#gameSetup ul li.prompt {
+	padding-top: 0.5em;
+	padding-bottom: 0.25em;
+}
+
+#gameSetup ul li.option {
+	padding: 0.5em;
+	font-size: 1.25em;
+	border: solid black 1px;
+	border-radius: 0.5em;
+	display: inline-block;
+	cursor: pointer;
+}
+
+#gameSetup ul li.option.selected {
+	background-color: #ccc;
+}
+
+/*
+@media (max-width: 700px) {
+	body {
+		font-size: 1em;
+	}
+}
+*/

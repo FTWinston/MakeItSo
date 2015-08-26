@@ -1,0 +1,54 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Make It So: Websocket Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" type="text/css" href="style.css" />
+    <script src="jquery-2.1.4.min.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
+    <div id="systemSelect">
+        <div class="playerIdentifier"></div>
+        <ul id="systemList">
+            <li class="prompt">Select systems to control:</li>
+            <li class="option" value="0">System #0</li>
+            <li class="option" value="1">System #1</li>
+            <li class="option" value="2">System #2</li>
+        </ul>
+		<div id="setupLink">Setup game</div>
+    </div>
+	<div id="gameSetup" style="display:none">
+		<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
+		
+		<ul id="gameType">
+			<li class="prompt">Do you wish to play with just your own crew, or with others?</li>
+			<li class="option selected" value="solo">Play a solo-crew game</li>
+			<li class="option" value="join">Join a multi-crew game</li>
+			<li class="option" value="host">Host a multi-crew game</li>
+		</ul>
+		
+		<p id="gameTypeDescription"></p>
+		
+		<ul id="gameMode">
+			<li class="prompt">Select the game mode you wish to play:</li>
+			<li class="option selected" value="exploration">Exploration</li>
+			<li class="option" value="arena">Arena</li>
+			<li class="option" value="endurance">Endurance</li>
+		</ul>
+		
+		<p id="gameModeDescription"></p>
+		
+		<div class="backLink">go back</div>
+		<div class="confirmLink">start game</div>
+	</div>
+	<div id="error" style="display:none">
+		<p id="errorMsg"></p>
+	</div>
+	
+	<div id="gameActive" style="display:none">
+		<div id="forward">forward</div>
+	</div>
+</body>
+</html>
