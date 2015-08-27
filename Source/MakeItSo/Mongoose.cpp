@@ -15,10 +15,10 @@
 // Alternatively, you can license this library under a commercial
 // license, as set out in <http://cesanta.com/>.
 
-#ifdef WEB_SERVER_TEST
-#include "stdafx.h"
-#else
+#ifndef WEB_SERVER_TEST
 #include "MakeItSo.h"
+#else
+#include "stdafx.h"
 #endif
 
 #include "Mongoose.h"

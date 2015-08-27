@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#ifdef WEB_SERVER_TEST
-#include "stdafx.h"
-#else
+#ifndef WEB_SERVER_TEST
 #include "MakeItSo.h"
+#else
+#include "stdafx.h"
 #endif
 
 #include "CrewManager.h"
