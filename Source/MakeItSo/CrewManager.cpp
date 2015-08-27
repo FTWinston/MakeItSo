@@ -1,8 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#ifdef WEB_SERVER_TEST
+#include "stdafx.h"
+#else
 #include "MakeItSo.h"
+#endif
+
 #include "CrewManager.h"
+
+#ifndef WEB_SERVER_TEST
 #include "InterfaceUtilities.h"
+#endif
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -31,6 +39,7 @@ void UCrewManager::Init()
 	mg_set_option(server, "document_root", "../WebRoot");
 	mg_set_option(server, "listening_port", "8080");
 
+#ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
 	APlayerController* PlayerController = GetOuterAPlayerController();
 	FString port = FString(mg_get_option(server, "listening_port"));
@@ -38,6 +47,7 @@ void UCrewManager::Init()
 		*InterfaceUtilities::GetLocalIP(),
 		*port
 	));
+#endif
 }
 
 UCrewManager::~UCrewManager()
@@ -65,8 +75,10 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
 	
+#ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
 	//PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, *conn->remote_ip));
+#endif
 
 	// update this client as to whether or not each system is currently claimed
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
@@ -84,8 +96,10 @@ void UCrewManager::EndConnection(mg_connection *conn)
 {
 	ConnectionInfo *info = (ConnectionInfo*)conn->connection_param;
 
+#ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
 	//PlayerController->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
+#endif
 
 	currentConnections.erase(info);
 
@@ -242,6 +256,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 		SendCrewMessage(System_t::All, "game+"); // game started
 	}
+#ifndef WEB_SERVER_TEST
 	else if (MATCHES(info, "+forward"))
 	{
 		InputKey(EKeys::W, EInputEvent::IE_Pressed, 1, false);
@@ -250,6 +265,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		InputKey(EKeys::W, EInputEvent::IE_Released, 0, false);
 	}
+#endif
 }
 
 void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, bool adding)

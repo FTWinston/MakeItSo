@@ -6,3 +6,4 @@ Saved
 *.sln
 *.suo
 MakeItSo.opensdf
+WebTest/Debug/*

@@ -2,7 +2,9 @@
 
 #pragma once
 
+#ifndef WEB_SERVER_TEST
 #include "GameFramework/PlayerInput.h"
+#endif
 #include "Mongoose.h"
 #include <set>
 #include <string>

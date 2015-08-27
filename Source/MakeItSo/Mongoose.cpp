@@ -15,7 +15,12 @@
 // Alternatively, you can license this library under a commercial
 // license, as set out in <http://cesanta.com/>.
 
+#ifdef WEB_SERVER_TEST
+#include "stdafx.h"
+#else
 #include "MakeItSo.h"
+#endif
+
 #include "Mongoose.h"
 
 #define MONGOOSE_NO_AUTH
@@ -112,12 +117,16 @@ typedef SSIZE_T ssize_t;
 #ifndef FD_SETSIZE
 #define FD_SETSIZE 1024
 #endif
+#ifndef WEB_SERVER_TEST
 #include "AllowWindowsPlatformTypes.h"
+#endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <process.h>
+#ifndef WEB_SERVER_TEST
 #include "HideWindowsPlatformTypes.h"
+#endif
 #ifndef EINPROGRESS
 #define EINPROGRESS WSAEINPROGRESS
 #endif
