@@ -90,8 +90,17 @@ choice prompt, choice description {
 	padding-bottom: 0.25em;
 }
 
+choice toggleClicker {
+	border-radius: 0;
+}
 
+choice toggleClicker:first-of-type {
+	border-radius: 2em 0 0 2em;
+}
 
+choice toggleClicker:last-of-type {
+	border-radius: 0 2em 2em 0;
+}
 
 
 
