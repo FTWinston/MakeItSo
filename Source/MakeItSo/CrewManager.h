@@ -19,9 +19,9 @@ class ConnectionInfo;
 class MAKEITSO_API UCrewManager : public UPlayerInput
 {
 public:
-	~UCrewManager();
+	virtual void BeginDestroy();
 
-	enum System_t : uint32
+	enum System_t
 	{
 		All = ~0,
 		Station0 = 0,
@@ -31,10 +31,10 @@ public:
 		MAX_SHIP_SYSTEMS
 	};
 
-	static UCrewManager *Instance;
+	static int EventReceived(mg_connection *conn, enum mg_event ev);
 
 	void Init();
-	void Poll() { mg_poll_server(server, 100); }
+	void Poll() { mg_poll_server(server, 1); }
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
 	void SendCrewMessage(System_t system, const char *message, ...);
 
@@ -68,5 +68,5 @@ public:
 
 	mg_connection *connection;
 	int identifier;
-	uint32 shipSystemFlags;
+	int shipSystemFlags;
 };

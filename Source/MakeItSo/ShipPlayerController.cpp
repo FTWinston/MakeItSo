@@ -27,6 +27,6 @@ void AShipPlayerController::PreProcessInput(const float DeltaTime, const bool bG
 {
 	if (PlayerInput)
 	{
-		UCrewManager::Instance->Poll();
+		((UCrewManager*)PlayerInput)->Poll();
 	}
 }

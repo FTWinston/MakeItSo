@@ -20,22 +20,25 @@
 #define snprintf _snprintf_s
 #endif
 
-UCrewManager *UCrewManager::Instance = NULL;
-
-int EventReceived(mg_connection *conn, enum mg_event ev)
+int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 {
-	return UCrewManager::Instance->HandleEvent(conn, ev);
+	auto crewManager = (UCrewManager*)conn->server_param;
+#ifndef WEB_SERVER_TEST
+	APlayerController* PlayerController = crewManager->GetOuterAPlayerController();
+	PlayerController->ClientMessage(TEXT("Got some network event\n"));
+	return MG_TRUE;
+#endif
+
+	return crewManager->HandleEvent(conn, ev);
 }
 
 void UCrewManager::Init()
 {
-	Instance = this;
-
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 	
 	mg_handler_t handler = EventReceived;
-	server = mg_create_server(NULL, handler);
+	server = mg_create_server(this, handler);
 	mg_set_option(server, "document_root", "../WebRoot");
 	mg_set_option(server, "listening_port", "8080");
 
@@ -50,12 +53,12 @@ void UCrewManager::Init()
 #endif
 }
 
-UCrewManager::~UCrewManager()
+void UCrewManager::BeginDestroy()
 {
-	mg_destroy_server(&server);
-
-	if (Instance == this)
-		Instance = NULL;
+	if (server)
+		mg_destroy_server(&server);
+	
+	Super::BeginDestroy();
 }
 
 void UCrewManager::SetupConnection(mg_connection *conn)
@@ -77,7 +80,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	
 #ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
-	//PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, *conn->remote_ip));
+	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, *conn->remote_ip));
 #endif
 
 	// update this client as to whether or not each system is currently claimed
@@ -98,7 +101,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 #ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
-	//PlayerController->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
+	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
 #endif
 
 	currentConnections.erase(info);
@@ -331,7 +334,7 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 
 void UCrewManager::SendCrewMessage(System_t system, const char *message, ...)
 {
-	uint32 systemFlags = system == System_t::All ? System_t::All : 1 << (uint32)system;
+	int systemFlags = system == System_t::All ? System_t::All : 1 << system;
 
 	va_list args;
 	va_start(args, message);
