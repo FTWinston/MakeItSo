@@ -39,6 +39,7 @@ function messageReceived(ev) {
 	else if (m[0] == 'game+') {
 		$('#systemSelect, #gameSetup').hide();
 		$('#gameActive').show();
+		$('#systemSwitcher choice toggleClicker:visible:first').click();
 		$('#btnSetupGame').removeClass('disabled');
 	}
 	else if (m[0] == 'game-') {
@@ -118,17 +119,32 @@ $(function () {
 	});
 	
 	$('choice toggleClicker:first-of-type').click();
+	$('system, #systemSwitcher choice toggleClicker').hide();
 	
 	
 	
 	
 	
+	
+	$('#systemSwitcher choice toggleClicker').click(function () {
+		var btn = $(this);
+		var system = btn.attr('value');
+		$('system#' + system).show().siblings('system').hide();
+	});
 	
 	$('#systemList li.option').click(function () {
 		var btn = $(this);
-		var operation = btn.hasClass('selected') ? '-sys ' : '+sys ';
+		var nowSelected = !btn.hasClass('selected');
+		var operation = nowSelected ? '+sys ' : '-sys ';
 		btn.toggleClass('selected');
-		ws.send(operation + btn.attr('value'));
+		var sysNumber = btn.attr('value');
+		ws.send(operation + sysNumber);
+		
+		var button = $('#systemSwitcher choice toggleClicker[value="system' + sysNumber + '"]');
+		if (nowSelected)
+			button.show();
+		else
+			button.hide();
 	});
 	
 	$('#btnSetupGame').click(function () {

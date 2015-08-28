@@ -331,7 +331,7 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 
 void UCrewManager::SendCrewMessage(System_t system, const char *message, ...)
 {
-	int systemFlags = 1 << (int)system;
+	uint32 systemFlags = system == System_t::All ? System_t::All : 1 << (uint32)system;
 
 	va_list args;
 	va_start(args, message);

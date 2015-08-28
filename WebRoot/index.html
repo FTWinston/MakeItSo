@@ -51,15 +51,20 @@
 	</screen>
 
 	<screen id="gameActive" style="display:none">
-		<div id="systemList">
-			<clicker id="btnPause"></clicker>
+		<div id="systemSwitcher">
+			<choice>
+				<toggleClicker value="system0">system 0</toggleClicker>
+				<toggleClicker value="system1">system 1</toggleClicker>
+				<toggleClicker value="system2">system 2</toggleClicker>
+			</choice>
+			<clicker id="btnPause" class="color8">pause</clicker>
 		</div>
 		
 		<system id="system0">
-			<heldClicker id="btnForward">forward</heldClicker>
-			<heldClicker id="btnBackward">backward</heldClicker>
-			<heldClicker id="btnRight">left</heldClicker>
-			<heldClicker id="btnLeft">right</heldClicker>
+			<heldClicker class="color1" id="btnForward">forward</heldClicker>
+			<heldClicker class="color1" id="btnBackward">backward</heldClicker>
+			<heldClicker class="color1" id="btnRight">left</heldClicker>
+			<heldClicker class="color1" id="btnLeft">right</heldClicker>
 		</system>
 		<system id="system1">
 			

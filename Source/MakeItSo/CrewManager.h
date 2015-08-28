@@ -21,9 +21,9 @@ class MAKEITSO_API UCrewManager : public UPlayerInput
 public:
 	~UCrewManager();
 
-	enum System_t
+	enum System_t : uint32
 	{
-		All = ~0, // this doesn't work!
+		All = ~0,
 		Station0 = 0,
 		Station1,
 		Station2,
@@ -68,5 +68,5 @@ public:
 
 	mg_connection *connection;
 	int identifier;
-	int shipSystemFlags;
+	uint32 shipSystemFlags;
 };

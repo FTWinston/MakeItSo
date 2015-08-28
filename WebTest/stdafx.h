@@ -13,6 +13,8 @@
 
 #define MAKEITSO_API 
 
+#define uint32 unsigned int
+
 #define UFUNCTION(a, b) 
 
 class UPlayerInput {
