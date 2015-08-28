@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title>Make It So: Websocket Test</title>
+    <title>Make It So: Bridge Console</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="jquery-2.1.4.min.js"></script>
     <script src="script.js"></script>
 </head>
 <body>
-    <div id="systemSelect">
+    <screen id="systemSelect">
         <div class="playerIdentifier"></div>
         <ul id="systemList">
             <li class="prompt">Select systems to control:</li>
@@ -17,38 +17,61 @@
             <li class="option" value="1">System #1</li>
             <li class="option" value="2">System #2</li>
         </ul>
-		<div id="setupLink">Setup game</div>
-    </div>
-	<div id="gameSetup" style="display:none">
+		<clicker id="btnSetupGame">Setup game</clicker>
+		<clicker id="btnCloseSystemSelect" style="display:none">Done</clicker>
+    </screen>
+
+	<screen id="gameSetup" style="display:none">
 		<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 		
-		<ul id="gameType">
-			<li class="prompt">Do you wish to play with just your own crew, or with others?</li>
-			<li class="option selected" value="solo">Play a solo-crew game</li>
-			<li class="option" value="join">Join a multi-crew game</li>
-			<li class="option" value="host">Host a multi-crew game</li>
-		</ul>
+		<choice id="chGameType">
+			<prompt>Do you wish to play with just your own crew, or with others?</prompt>
+			<toggleClicker value="solo" show="#chGameMode" hide="#chGameMode toggleClicker[value='arena']" description="Play against the computer, with no other human crews.">Play a solo-crew game</toggleClicker>
+			<toggleClicker value="join" hide="#chGameMode" description="Join a game being hosted by another human crew.">Join a multi-crew game</toggleClicker>
+			<toggleClicker value="host" show="#chGameMode, #chGameMode toggleClicker[value='arena']" description="Host a game which other human crews can connect to.">Host a multi-crew game</toggleClicker>
+			<description />
+		</choice>
 		
-		<p id="gameTypeDescription"></p>
+		<choice id="chGameMode">
+			<prompt>Select the game mode you wish to play:</prompt>
+			<toggleClicker value="exploration" description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</toggleClicker>
+			<toggleClicker value="arena" description="Human-crewed ships compete to death in a single star system.">Arena</toggleClicker>
+			<toggleClicker value="endurance" description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</toggleClicker>
+			<description />
+		</choice>
 		
-		<ul id="gameMode">
-			<li class="prompt">Select the game mode you wish to play:</li>
-			<li class="option selected" value="exploration">Exploration</li>
-			<li class="option" value="arena">Arena</li>
-			<li class="option" value="endurance">Endurance</li>
-		</ul>
-		
-		<p id="gameModeDescription"></p>
-		
-		<div class="backLink">go back</div>
-		<div class="confirmLink">start game</div>
-	</div>
-	<div id="error" style="display:none">
+		<buttonGroup>
+			<clicker id="btnSetupBack">go back</clicker>
+			<confirmClicker id="btnStartGame">start game</confirmClicker>
+		</buttonGroup>
+	</screen>
+
+	<screen id="error" style="display:none">
 		<p id="errorMsg"></p>
-	</div>
-	
-	<div id="gameActive" style="display:none">
-		<div id="forward">forward</div>
-	</div>
+	</screen>
+
+	<screen id="gameActive" style="display:none">
+		<div id="systemList">
+			<clicker id="btnPause"></clicker>
+		</div>
+		
+		<system id="system0">
+			<heldClicker id="btnForward">forward</heldClicker>
+			<heldClicker id="btnBackward">backward</heldClicker>
+			<heldClicker id="btnRight">left</heldClicker>
+			<heldClicker id="btnLeft">right</heldClicker>
+		</system>
+		<system id="system1">
+			
+		</system>
+		<system id="system2">
+			
+		</system>
+	</screen>
+
+	<screen id="gameActive" style="display:none">
+		<clicker id="btnResumeGame">resume game</clicker>
+		<confirmClicker id="btnEndGame">end game</confirmClicker>
+	</screen>
 </body>
 </html>

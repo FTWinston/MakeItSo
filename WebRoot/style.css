@@ -1,5 +1,6 @@
 body {
-	background-color: #fff; margin: 0; padding: 0;
+	background-color: #333; margin: 0; padding: 0;
+	color: #ccc;
 	font: 14px Helvetica, Arial, sans-serif;
 	
    -moz-user-select: none;
@@ -17,6 +18,84 @@ body > div {
 p {
 	margin: 0.65em;
 }
+
+clicker, heldClicker, toggleClicker, confirmClicker {
+	display: inline-block;
+	border: solid #ccc 2px;
+	border-radius: 2em;
+
+	text-align: center;
+	padding: 0.5em;
+	font-size: 1.25em;
+	
+	cursor: pointer;
+}
+
+clicker:not(.disabled):active, heldClicker.held, toggleClicker:not(.disabled):active, confirmClicker:not(.disabled):active {
+	color: #333;
+	background-color: #ccc;
+}
+
+toggleClicker {
+	border-style: dotted;
+}
+
+toggleClicker.enabled {
+	color: #333;
+	background-color: #aaa;
+	border-style: solid;
+}
+
+heldClicker {
+	border-width: 5px;
+	border-style: double;
+}
+
+confirmClicker {
+	border-radius: 0.25em 1.25em 0.25em 1.25em;
+}
+
+confirmClicker.primed {
+	background-color: #f66;
+	border-color: #f66;
+	color: #333;
+}
+
+confirmClicker.primed:active {
+	background-color: #000;
+	color: #f66;
+}
+
+confirmClicker.primed::before {
+	content: "Confirm: ";
+}
+
+confirmClicker.primed::after {
+	content: "?";
+}
+
+.disabled {
+	cursor: not-allowed;
+	color: #666;
+}
+
+choice, buttonGroup {
+	margin: 2em;
+	display:block;
+}
+
+choice prompt, choice description {
+	display:block;
+	padding-top: 0.5em;
+	padding-bottom: 0.25em;
+}
+
+
+
+
+
+
+
 
 #errorMsg {
 	white-space: pre-line;
@@ -44,77 +123,44 @@ p {
 	padding: 0.5em;
 }
 
-#systemList li.prompt {
+#systemList .prompt {
 	padding-left: 0em;
 	padding-bottom: 1em;
 }
 
-#systemList li.option, #setupLink, .backLink, .confirmLink {
+#systemList li.option {
 	cursor: pointer;
-}
-
-#setupLink.taken {
-	cursor: not-allowed;
 }
 
 #systemList li.option.selected {
 	text-decoration: underline;
 }
 
-#systemList li.option.taken, #setupLink.taken {
+#systemList li.option.taken {
 	color: #999;
 	border-color: #999;
 }
 
-#setupLink {
+#btnSetupGame {
 	position: fixed;
-	width: 4em;
-	height:4em;
 	right: 1em;
 	bottom: 1em;
-	border: solid black 1px;
-	background-color: #fff;
-	text-align: center;
 }
 
-.backLink {
+.btnSetupBack {
 	position: fixed;
 	left: 1em;
 	bottom: 1em;
-	font-size: 2em;
 }
 
-.confirmLink {
+.btnStartGame {
 	position: fixed;
 	right: 1em;
 	bottom: 1em;
-	font-size: 2em;
 }
 
 #gameSetup {
 	overflow: auto;
-}
-
-#gameSetup ul {
-	list-style: none;
-}
-
-#gameSetup ul li.prompt {
-	padding-top: 0.5em;
-	padding-bottom: 0.25em;
-}
-
-#gameSetup ul li.option {
-	padding: 0.5em;
-	font-size: 1.25em;
-	border: solid black 1px;
-	border-radius: 0.5em;
-	display: inline-block;
-	cursor: pointer;
-}
-
-#gameSetup ul li.option.selected {
-	background-color: #ccc;
 }
 
 /*

@@ -18,4 +18,3 @@ int _tmain(int argc, _TCHAR* argv[])
 	delete manager;
 	return 0;
 }
-

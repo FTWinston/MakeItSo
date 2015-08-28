@@ -23,7 +23,7 @@ public:
 
 	enum System_t
 	{
-		All = ~0,
+		All = ~0, // this doesn't work!
 		Station0 = 0,
 		Station1,
 		Station2,

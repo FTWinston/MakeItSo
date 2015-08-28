@@ -24,10 +24,10 @@ function messageReceived(ev) {
 		$('#systemList li[value="' + m[1] + '"]').addClass('taken');
 	}
 	else if (m[0] == 'setup+') {
-		$('#setupLink').removeClass('taken');
+		$('#btnSetupGame').removeClass('disabled');
 	}
 	else if (m[0] == 'setup-') {
-		$('#setupLink').addClass('taken');
+		$('#btnSetupGame').addClass('disabled');
 	}
 	else if (m[0] == 'setup') {
 		$('#systemSelect').hide();
@@ -37,9 +37,9 @@ function messageReceived(ev) {
 		showError('This ship is full: there is no room for you to join.');
 	}
 	else if (m[0] == 'game+') {
-		$('#systemSelect, gameSetup').hide();
+		$('#systemSelect, #gameSetup').hide();
 		$('#gameActive').show();
-		$('#setupLink').removeClass('taken');
+		$('#btnSetupGame').removeClass('disabled');
 	}
 	else if (m[0] == 'game-') {
 		$('#gameActive').hide();
@@ -61,6 +61,69 @@ function showError(msg) {
 }
 
 $(function () {
+	$('body').on('click', 'clicker.disabled, toggleClicker.disabled, confirmClicker.disabled, heldClicker.disabled', function (event) {
+		event.stopImmediatePropagation();
+	});
+	
+	$('toggleClicker').click(function () {
+		$(this).toggleClass('enabled');
+	});
+	
+	$('confirmClicker').click(function (event) {
+		var clicker = $(this);
+		if (!clicker.hasClass('primed'))
+			event.stopImmediatePropagation();
+		clicker.toggleClass('primed');
+	});
+	
+	$('body').on('mouseleave', 'confirmClicker.primed', function() {
+		$(this).removeClass('primed');
+	});
+	
+	$('body').on('mousedown', 'heldClicker:not(.disabled)', function() {
+		$(this).addClass('held');
+	});
+	
+	$('body').on('mouseup', 'heldClicker:not(.disabled)', function() {
+		$(this).removeClass('held');
+	});
+	
+	$('body').on('mouseleave', 'heldClicker.held:not(.disabled)', function() {
+		$(this).mouseup();
+	});
+	
+	$('choice toggleClicker').click(function () {
+		var btn = $(this);
+		
+		if (!btn.hasClass('enabled'))
+			btn.addClass('enabled');
+		else
+			btn.siblings('toggleClicker.enabled').removeClass('enabled');
+	});
+	
+	$('choice').on('click', 'toggleClicker.enabled', function () {
+		var clicker = $(this);
+		var desc = clicker.attr('description');
+		var display = clicker.siblings('description');
+		
+		var hide = clicker.attr('hide');
+		if (hide != undefined)
+			$(hide).hide();
+		
+		var show = clicker.attr('show');
+		if (show != undefined)
+			$(show).show();
+		
+		display.text(desc);
+	});
+	
+	$('choice toggleClicker:first-of-type').click();
+	
+	
+	
+	
+	
+	
 	$('#systemList li.option').click(function () {
 		var btn = $(this);
 		var operation = btn.hasClass('selected') ? '-sys ' : '+sys ';
@@ -68,82 +131,22 @@ $(function () {
 		ws.send(operation + btn.attr('value'));
 	});
 	
-	$('#setupLink').click(function () {
-		if ($(this).hasClass('taken'))
-			return;
-		
+	$('#btnSetupGame').click(function () {
 		ws.send('+setup');
 	});
-	$('#gameSetup .backLink').click(function() {
+	
+	$('#btnSetupBack').click(function() {
 		ws.send('-setup');
 		$('#gameSetup').hide();
 		$('#systemSelect').show();
 	});
 	
-	$('#gameSetup ul li.option').click(function () {
-		var btn = $(this);
-		
-		if (btn.hasClass('selected'))
-			return;
-		
-		btn.addClass('selected');
-		btn.siblings('.option.selected').removeClass('selected');
-	});
-	
-	$('#gameSetup ul li.option:first-child').click();
-	
-	$('#gameType li.option').click(function () {
-		var option = this.getAttribute('value');
-		var val = '';
-		
-		var arena = $('#gameMode li.option[value="arena"]');
-		arena.removeClass('disabled');
-		
-		var showSetup = true;
-		
-		if (option == 'solo') {
-			val = 'Play against the computer, with no other human crews.';
-			arena.addClass('disabled');
-		}
-		else if (option == 'join') {
-			val = 'Join a game being hosted by another human crew.';
-			showSetup = false;
-		}
-		else if (option == 'host')
-			val = 'Host a game which other human crews can connect to.';
-		
-		document.getElementById('gameTypeDescription').innerHTML = val;
-		
-		var elements = $('#gameMode, #gameModeDescription');
-		if (showSetup)
-			elements.show();
-		else
-			elements.hide();
-	});
-	
-	$('#gameMode li.option').click(function () {
-		var option = this.getAttribute('value');
-		var val = '';
-		
-		if (option == 'exploration')
-			val = 'Carry out missions, explore the galaxy, and boldly go where no one has gone before.';
-		else if (option == 'arena')
-			val = 'Human-crewed ships compete to death in a single star system.';
-		else if (option == 'endurance')
-			val = 'Survive for as long as possible against endless waves of computer-controlled ships.';
-		
-		document.getElementById('gameModeDescription').innerHTML = val;
-	});
-	
-	$('#confirmLink').click(function () {
+	$('#btnStartGame').click(function () {
 		ws.send('startGame');
 	});
 	
-	$('#forward').mousedown(function(){
-		ws.send('+forward');
-	}).mouseup(function(){
-		ws.send('-forward');
-	}).mouseleave(function(){
-		ws.send('-forward');
-	});
+	$('#btnForward').mousedown(function(){ ws.send('+forward'); }).mouseup(function(){ ws.send('-forward'); });
+	$('#btnBackward').mousedown(function(){ ws.send('+backward'); }).mouseup(function(){ ws.send('-backward'); });
+	$('#btnLeft').mousedown(function(){ ws.send('+left'); }).mouseup(function(){ ws.send('-left'); });
+	$('#btnRight').mousedown(function(){ ws.send('+right'); }).mouseup(function(){ ws.send('-right'); });
 });
