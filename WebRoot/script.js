@@ -57,7 +57,7 @@ function showError(msg) {
 	
 	$('#errorMsg').text(msg);
 	
-	$('body > div').hide();
+	$('screen').hide();
 	$('#error').show();
 }
 
@@ -90,6 +90,14 @@ $(function () {
 	});
 	
 	$('body').on('mouseleave', 'heldClicker.held:not(.disabled)', function() {
+		$(this).mouseup();
+	});
+	
+	$('body').on('touchstart', 'clicker, heldClicker:not(.disabled)', function() {
+		$(this).mousedown();
+	});
+	
+	$('body').on('touchend', 'heldClicker.held:not(.disabled)', function() {
 		$(this).mouseup();
 	});
 	
