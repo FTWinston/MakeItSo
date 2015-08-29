@@ -173,4 +173,6 @@ $(function () {
 	$('#btnBackward').mousedown(function(){ ws.send('+backward'); }).mouseup(function(){ ws.send('-backward'); });
 	$('#btnLeft').mousedown(function(){ ws.send('+left'); }).mouseup(function(){ ws.send('-left'); });
 	$('#btnRight').mousedown(function(){ ws.send('+right'); }).mouseup(function(){ ws.send('-right'); });
+	$('#btnUp').mousedown(function(){ ws.send('+up'); }).mouseup(function(){ ws.send('-up'); });
+	$('#btnDown').mousedown(function(){ ws.send('+down'); }).mouseup(function(){ ws.send('-down'); });
 });

@@ -28,24 +28,44 @@ int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 
 void UCrewManager::Init()
 {
+	nextConnectionIdentifer = 0;
+	connectionInSetup = NULL;
+	currentConnections = new TSet<ConnectionInfo*>();
+
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 	
-	mg_handler_t handler = EventReceived;
-	server = mg_create_server(this, handler);
+	server = mg_create_server(this, EventReceived);
 #ifdef WEB_SERVER_TEST
 	mg_set_option(server, "document_root", "../WebRoot");
 #else
 	FString rootPath = FPaths::GameDir() / TEXT("WebRoot");
-	APlayerController* PlayerController = GetOuterAPlayerController();
-	//PlayerController->ClientMessage(FString::Printf(TEXT("Web root path is %s\n"), *rootPath));
 	mg_set_option(server, "document_root", TCHAR_TO_ANSI(*rootPath));
+	APlayerController* PlayerController = GetOuterAPlayerController();
 #endif
-	mg_set_option(server, "listening_port", "8080");
+
+	// try port 80 for convenience. If that's in use, try 8080. If that's in use, get any old port.
+	const char *error = mg_set_option(server, "listening_port", "80");
+	if (error)
+	{
+		error = mg_set_option(server, "listening_port", "8080");
+		if (error)
+		{
+			error = mg_set_option(server, "listening_port", "0");
+
+			if (error)
+			{
+#ifndef WEB_SERVER_TEST
+				PlayerController->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
+#endif
+			}
+		}
+	}
 
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
-	FString port = FString(mg_get_option(server, "listening_port"));
+	const char *chPort = mg_get_option(server, "listening_port");
+	FString port = FString(chPort);
 	PlayerController->ClientMessage(FString::Printf(TEXT("Local address is %s:%s\n"), 
 		*InterfaceUtilities::GetLocalIP(), *port));
 #endif
@@ -56,6 +76,8 @@ void UCrewManager::BeginDestroy()
 	if (server)
 		mg_destroy_server(&server);
 	
+	delete currentConnections;
+
 #ifndef WEB_SERVER_TEST
 	Super::BeginDestroy();
 #endif
@@ -73,14 +95,14 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	ConnectionInfo *info = new ConnectionInfo(conn, identifier);
 	conn->connection_param = info;
 
-	currentConnections.insert(info);
+	currentConnections->Add(info);
 
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
 	
 #ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, *conn->remote_ip));
+//	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, *FString((const char*)(*conn->remote_ip))));
 #endif
 
 	// update this client as to whether or not each system is currently claimed
@@ -104,7 +126,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
 #endif
 
-	currentConnections.erase(info);
+	currentConnections->Remove(info);
 
 	// decrement the counts of each system this user was using
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
@@ -119,13 +141,11 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	if (connectionInSetup == info)
 	{
-		ConnectionInfo *other;
 		connectionInSetup = NULL;
 
 		// send "setup not in use" message to all
-		for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
+		for (auto& other : *currentConnections)
 		{
-			other = *it;
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "setup+");
 		}
 	}
@@ -146,11 +166,11 @@ int UCrewManager::GetNewUniqueIdentifier()
 
 		// has user with this ID?
 		bool alreadyGot = false;
-		for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
-			if ((*it)->identifier == identifier)
+		for (auto& other : *currentConnections)
+			if (other->identifier == identifier)
 			{
-			alreadyGot = true;
-			break;
+				alreadyGot = true;
+				break;
 			}
 		if (!alreadyGot)
 			return identifier;
@@ -162,6 +182,11 @@ int UCrewManager::GetNewUniqueIdentifier()
 
 int UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
 {
+#ifndef WEB_SERVER_TEST
+	APlayerController* PlayerController = GetOuterAPlayerController();
+	PlayerController->ClientMessage(FString::Printf(TEXT("HandleEvent called with a %i event. nextConnectionIdentifer is %i\n"), (int)ev, nextConnectionIdentifer));
+#endif
+
 	switch (ev)
 	{
 	case MG_AUTH:
@@ -214,10 +239,8 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		mg_websocket_printf(info->connection, WEBSOCKET_OPCODE_TEXT, "setup");
 
 		// send "setup in use" message to all others
-		ConnectionInfo *other;
-		for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
+		for (auto& other : *currentConnections)
 		{
-			other = *it;
 			if (other != info)
 				mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "setup-");
 		}
@@ -230,10 +253,8 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		connectionInSetup = NULL;
 
 		// send "setup not in use" message to all
-		ConnectionInfo *other;
-		for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
+		for (auto& other : *currentConnections)
 		{
-			other = *it;
 			if (other != info)
 				mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "setup+");
 		}
@@ -262,9 +283,49 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 #ifndef WEB_SERVER_TEST
 	else if (MATCHES(info, "+forward"))
 	{
-		InputKey(EKeys::W, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::LeftShift, EInputEvent::IE_Pressed, 1, false);
 	}
 	else if (MATCHES(info, "-forward"))
+	{
+		InputKey(EKeys::LeftShift, EInputEvent::IE_Released, 0, false);
+	}
+	else if (MATCHES(info, "+backward"))
+	{
+		InputKey(EKeys::LeftControl, EInputEvent::IE_Pressed, 1, false);
+	}
+	else if (MATCHES(info, "-backward"))
+	{
+		InputKey(EKeys::LeftControl, EInputEvent::IE_Released, 0, false);
+	}
+	else if (MATCHES(info, "+left"))
+	{
+		InputKey(EKeys::A, EInputEvent::IE_Pressed, 1, false);
+	}
+	else if (MATCHES(info, "-left"))
+	{
+		InputKey(EKeys::A, EInputEvent::IE_Released, 0, false);
+	}
+	else if (MATCHES(info, "+right"))
+	{
+		InputKey(EKeys::D, EInputEvent::IE_Pressed, 1, false);
+	}
+	else if (MATCHES(info, "-right"))
+	{
+		InputKey(EKeys::D, EInputEvent::IE_Released, 0, false);
+	}
+	else if (MATCHES(info, "+up"))
+	{
+		InputKey(EKeys::S, EInputEvent::IE_Pressed, 1, false);
+	}
+	else if (MATCHES(info, "-up"))
+	{
+		InputKey(EKeys::S, EInputEvent::IE_Released, 0, false);
+	}
+	else if (MATCHES(info, "+down"))
+	{
+		InputKey(EKeys::W, EInputEvent::IE_Pressed, 1, false);
+	}
+	else if (MATCHES(info, "-down"))
 	{
 		InputKey(EKeys::W, EInputEvent::IE_Released, 0, false);
 	}
@@ -294,8 +355,6 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, 
 
 void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSystemIndex, bool adding)
 {
-	ConnectionInfo *other;
-
 	int count = shipSystemCounts[shipSystemIndex];
 	if (!adding)
 		if (count > 1)
@@ -305,10 +364,8 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 			int shipSystemFlag = 1 << shipSystemIndex;
 
 			// find the one user using this system, and tell them its not in use by anyone else
-			for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
+			for (auto& other : *currentConnections)
 			{
-				other = *it;
-
 				if (info == other)
 					continue;
 
@@ -321,9 +378,8 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 			return;
 		}
 
-	for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
+	for (auto& other : *currentConnections)
 	{
-		other = *it;
 		// don't tell the player selecting a system whether it is now in use... they know
 		if (info == other)
 			continue;
@@ -339,11 +395,8 @@ void UCrewManager::SendCrewMessage(System_t system, const char *message, ...)
 	va_list args;
 	va_start(args, message);
 
-	ConnectionInfo *other;
-	for (auto it = currentConnections.begin(); it != currentConnections.end(); it++)
+	for (auto& other : *currentConnections)
 	{
-		other = *it;
-
 		if ((other->shipSystemFlags & systemFlags) != 0)
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message, args);
 	}

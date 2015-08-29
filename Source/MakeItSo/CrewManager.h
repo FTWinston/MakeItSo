@@ -6,8 +6,6 @@
 #include "GameFramework/PlayerInput.h"
 #endif
 #include "Mongoose.h"
-#include <set>
-#include <string>
 
 #define MAX_CREW_CONNECTIONS 26
 
@@ -46,14 +44,14 @@ private:
 	void ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, bool adding);
 	void SendSystemSelectionMessage(ConnectionInfo *info, int shipSystemIndex, bool adding);
 
-	mg_server *server = NULL;
+	mg_server *server;
 
-	int nextConnectionIdentifer = 0;
-	const int maxConnectionIdentifer = 26;
+	int nextConnectionIdentifer;
+	static const int maxConnectionIdentifer = 26;
 	int shipSystemCounts[MAX_SHIP_SYSTEMS];
 
-	std::set<ConnectionInfo*> currentConnections;
-	ConnectionInfo *connectionInSetup = NULL;
+	TSet<ConnectionInfo*> *currentConnections;
+	ConnectionInfo *connectionInSetup;
 };
 
 class ConnectionInfo
