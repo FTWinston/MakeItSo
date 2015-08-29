@@ -41,33 +41,15 @@ void UCrewManager::Init()
 #else
 	FString rootPath = FPaths::GameDir() / TEXT("WebRoot");
 	mg_set_option(server, "document_root", TCHAR_TO_ANSI(*rootPath));
-	APlayerController* PlayerController = GetOuterAPlayerController();
 #endif
 
-	// try port 80 for convenience. If that's in use, try 8080. If that's in use, get any old port.
-	const char *error = mg_set_option(server, "listening_port", "80");
-	if (error)
-	{
-		error = mg_set_option(server, "listening_port", "8080");
-		if (error)
-		{
-			error = mg_set_option(server, "listening_port", "0");
-
-			if (error)
-			{
-#ifndef WEB_SERVER_TEST
-				PlayerController->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
-#endif
-			}
-		}
-	}
+	AllocateListenPort();
+	FString url = GetLocalURL();
 
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
-	const char *chPort = mg_get_option(server, "listening_port");
-	FString port = FString(chPort);
-	PlayerController->ClientMessage(FString::Printf(TEXT("Local address is %s:%s\n"), 
-		*InterfaceUtilities::GetLocalIP(), *port));
+	APlayerController* PlayerController = GetOuterAPlayerController();
+	PlayerController->ClientMessage(FString::Printf(TEXT("Local address is %s\n"), *url));
 #endif
 }
 
@@ -81,6 +63,42 @@ void UCrewManager::BeginDestroy()
 #ifndef WEB_SERVER_TEST
 	Super::BeginDestroy();
 #endif
+}
+
+void UCrewManager::AllocateListenPort()
+{
+	// try port 80 for user convenience
+	const char *error = mg_set_option(server, "listening_port", "80");
+	if (!error)
+		return;
+
+	// if that's in use, try port 8080
+	error = mg_set_option(server, "listening_port", "8080");
+	if (!error)
+		return;
+
+	// failing that, select a port automatically
+	error = mg_set_option(server, "listening_port", "0");
+	if (!error)
+		return;
+
+#ifndef WEB_SERVER_TEST
+	APlayerController* PlayerController = GetOuterAPlayerController();
+	PlayerController->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
+#endif
+}
+
+FString UCrewManager::GetLocalURL()
+{
+	const char *port = mg_get_option(server, "listening_port");
+	bool showPort = strcmp(port, "80") != 0;
+	
+	FString ipAddress = InterfaceUtilities::GetLocalIP();
+
+	if (!showPort)
+		return ipAddress;
+
+	return FString::Printf(TEXT("%s:%s\n"), *ipAddress, *FString(port));
 }
 
 void UCrewManager::SetupConnection(mg_connection *conn)
@@ -102,7 +120,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	
 #ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
-//	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, *FString((const char*)(*conn->remote_ip))));
+	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
 #endif
 
 	// update this client as to whether or not each system is currently claimed
@@ -182,11 +200,6 @@ int UCrewManager::GetNewUniqueIdentifier()
 
 int UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
 {
-#ifndef WEB_SERVER_TEST
-	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("HandleEvent called with a %i event. nextConnectionIdentifer is %i\n"), (int)ev, nextConnectionIdentifer));
-#endif
-
 	switch (ev)
 	{
 	case MG_AUTH:
@@ -220,7 +233,6 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 #define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s", (int)info->connection->content_len - sizeof(offset) + 1, info->connection->content + sizeof(offset) - 1)
 
-	//printf("received: %.*s\n", content_len, content);
 	if (STARTS_WITH(info, "+sys ") || STARTS_WITH(info, "-sys "))
 	{
 		char buffer[10];
@@ -328,6 +340,14 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	else if (MATCHES(info, "-down"))
 	{
 		InputKey(EKeys::W, EInputEvent::IE_Released, 0, false);
+	}
+	else
+	{
+		// write all unrecognised commands to the console
+		char buffer[128];
+		EXTRACT(info, buffer, "");
+		APlayerController* PlayerController = GetOuterAPlayerController();
+		PlayerController->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
 	}
 #endif
 }

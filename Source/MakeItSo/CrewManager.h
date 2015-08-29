@@ -37,6 +37,9 @@ public:
 	void SendCrewMessage(System_t system, const char *message, ...);
 
 private:
+	void AllocateListenPort();
+	FString GetLocalURL();
+
 	void SetupConnection(mg_connection *conn);
 	void EndConnection(mg_connection *conn);
 	int GetNewUniqueIdentifier();
