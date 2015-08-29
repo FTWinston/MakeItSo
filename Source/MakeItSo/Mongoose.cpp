@@ -21,7 +21,9 @@
 #include "stdafx.h"
 #endif
 
-#include "Mongoose.h"
+#ifndef WEB_SERVER_TEST
+#include "AllowWindowsPlatformTypes.h"
+#endif
 
 #define MONGOOSE_NO_AUTH
 #define MONGOOSE_NO_CGI
@@ -117,16 +119,10 @@ typedef SSIZE_T ssize_t;
 #ifndef FD_SETSIZE
 #define FD_SETSIZE 1024
 #endif
-#ifndef WEB_SERVER_TEST
-#include "AllowWindowsPlatformTypes.h"
-#endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <process.h>
-#ifndef WEB_SERVER_TEST
-#include "HideWindowsPlatformTypes.h"
-#endif
 #ifndef EINPROGRESS
 #define EINPROGRESS WSAEINPROGRESS
 #endif
@@ -1101,7 +1097,7 @@ static void ns_handle_udp(struct ns_connection *ls) {
 }
 
 static void ns_add_to_set(sock_t sock, fd_set *set, sock_t *max_fd) {
-  if ( (sock != INVALID_SOCKET) && (sock < FD_SETSIZE) ) {
+  if ( (sock != INVALID_SOCKET) /*&& (sock < FD_SETSIZE)*/ ) {
     FD_SET(sock, set);
     if (*max_fd == INVALID_SOCKET || sock > *max_fd) {
       *max_fd = sock;
@@ -1393,7 +1389,7 @@ typedef struct stat file_stat_t;
 typedef pid_t process_id_t;
 #endif                  //////// End of platform-specific defines and includes
 
-#include "mongoose.h"
+#include "Mongoose.h"
 
 #define MAX_REQUEST_SIZE 16384
 #define IOBUF_SIZE 8192
@@ -2114,8 +2110,8 @@ static process_id_t start_process(char *interp, const char *cmd,
 
   CreatePipe(&a[0], &a[1], NULL, 0);
   CreatePipe(&b[0], &b[1], NULL, 0);
-  DuplicateHandle(me, a[0], me, &si.hStdInput, 0, MG_TRUE, flags);
-  DuplicateHandle(me, b[1], me, &si.hStdOutput, 0, MG_TRUE, flags);
+  DuplicateHandle(me, a[0], me, &si.hStdInput, 0, TRUE, flags);
+  DuplicateHandle(me, b[1], me, &si.hStdOutput, 0, TRUE, flags);
 
   if (interp == NULL && (fp = fopen(cmd, "r")) != NULL) {
     buf[0] = buf[1] = '\0';
@@ -3067,6 +3063,9 @@ static void send_websocket_handshake(struct mg_connection *conn,
   mg_write(conn, buf, strlen(buf));
 }
 
+#define MG_S_WEBSOCKET_PING_DATA_LEN 16
+static const char s_websocket_ping_data[] = "4d6f6e676f6f7365"; /* Mongoose */
+
 static size_t deliver_websocket_frame(struct connection *conn) {
   // Having buf unsigned char * is important, as it is used below in arithmetic
   unsigned char *buf = (unsigned char *) conn->ns_conn->recv_iobuf.buf;
@@ -3093,6 +3092,7 @@ static size_t deliver_websocket_frame(struct connection *conn) {
   buffered = frame_len > 0 && frame_len <= buf_len;
 
   if (buffered) {
+    int opcode = buf[0] & 0x0f;
     conn->mg_conn.content_len = data_len;
     conn->mg_conn.content = (char *) buf + header_len;
     conn->mg_conn.wsbits = buf[0];
@@ -3104,11 +3104,19 @@ static size_t deliver_websocket_frame(struct connection *conn) {
       }
     }
 
-    // Call the handler and remove frame from the iobuf
-    if (call_user(conn, MG_REQUEST) == MG_FALSE ||
-        (buf[0] & 0x0f) == WEBSOCKET_OPCODE_CONNECTION_CLOSE) {
-      conn->ns_conn->flags |= NSF_FINISHED_SENDING_DATA;
+    if (opcode == WEBSOCKET_OPCODE_PONG &&
+        data_len == MG_S_WEBSOCKET_PING_DATA_LEN &&
+        memcmp(buf + header_len, s_websocket_ping_data,
+               MG_S_WEBSOCKET_PING_DATA_LEN) == 0) {
+      DBG(("ws pong"));
+      /* This is a response to our ping, swallow it. */
+    } else {
+      if (call_user(conn, MG_REQUEST) == MG_FALSE ||
+          opcode == WEBSOCKET_OPCODE_CONNECTION_CLOSE) {
+        conn->ns_conn->flags |= NSF_FINISHED_SENDING_DATA;
+      }
     }
+
     iobuf_remove(&conn->ns_conn->recv_iobuf, frame_len);
   }
 
@@ -3204,7 +3212,9 @@ static void send_websocket_handshake_if_requested(struct mg_connection *conn) {
 
 static void ping_idle_websocket_connection(struct connection *conn, time_t t) {
   if (t - conn->ns_conn->last_io_time > MONGOOSE_USE_WEBSOCKET_PING_INTERVAL) {
-    mg_websocket_write(&conn->mg_conn, WEBSOCKET_OPCODE_PING, "", 0);
+    DBG(("ws ping"));
+    mg_websocket_write(&conn->mg_conn, WEBSOCKET_OPCODE_PING,
+                       s_websocket_ping_data, MG_S_WEBSOCKET_PING_DATA_LEN);
   }
 }
 #else
@@ -5536,3 +5546,7 @@ struct mg_server *mg_create_server(void *server_data, mg_handler_t handler) {
   server->event_handler = handler;
   return server;
 }
+
+#ifndef WEB_SERVER_TEST
+#include "HideWindowsPlatformTypes.h"
+#endif

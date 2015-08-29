@@ -23,12 +23,6 @@
 int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 {
 	auto crewManager = (UCrewManager*)conn->server_param;
-#ifndef WEB_SERVER_TEST
-	APlayerController* PlayerController = crewManager->GetOuterAPlayerController();
-	PlayerController->ClientMessage(TEXT("Got some network event\n"));
-	return MG_TRUE;
-#endif
-
 	return crewManager->HandleEvent(conn, ev);
 }
 
@@ -39,17 +33,21 @@ void UCrewManager::Init()
 	
 	mg_handler_t handler = EventReceived;
 	server = mg_create_server(this, handler);
+#ifdef WEB_SERVER_TEST
 	mg_set_option(server, "document_root", "../WebRoot");
+#else
+	FString rootPath = FPaths::GameDir() / TEXT("WebRoot");
+	APlayerController* PlayerController = GetOuterAPlayerController();
+	//PlayerController->ClientMessage(FString::Printf(TEXT("Web root path is %s\n"), *rootPath));
+	mg_set_option(server, "document_root", TCHAR_TO_ANSI(*rootPath));
+#endif
 	mg_set_option(server, "listening_port", "8080");
 
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
-	APlayerController* PlayerController = GetOuterAPlayerController();
 	FString port = FString(mg_get_option(server, "listening_port"));
 	PlayerController->ClientMessage(FString::Printf(TEXT("Local address is %s:%s\n"), 
-		*InterfaceUtilities::GetLocalIP(),
-		*port
-	));
+		*InterfaceUtilities::GetLocalIP(), *port));
 #endif
 }
 
@@ -58,7 +56,9 @@ void UCrewManager::BeginDestroy()
 	if (server)
 		mg_destroy_server(&server);
 	
+#ifndef WEB_SERVER_TEST
 	Super::BeginDestroy();
+#endif
 }
 
 void UCrewManager::SetupConnection(mg_connection *conn)
