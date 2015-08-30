@@ -50,6 +50,8 @@ void UCrewManager::Init()
 	// display address info that web clients should connect to
 	APlayerController* PlayerController = GetOuterAPlayerController();
 	PlayerController->ClientMessage(FString::Printf(TEXT("Local address is %s\n"), *url));
+#else
+	printf("Listening on port %s\n", url);
 #endif
 }
 
@@ -93,12 +95,16 @@ FString UCrewManager::GetLocalURL()
 	const char *port = mg_get_option(server, "listening_port");
 	bool showPort = strcmp(port, "80") != 0;
 	
+#ifndef WEB_SERVER_TEST
 	FString ipAddress = InterfaceUtilities::GetLocalIP();
 
 	if (!showPort)
 		return ipAddress;
 
 	return FString::Printf(TEXT("%s:%s\n"), *ipAddress, *FString(port));
+#else
+	return port;
+#endif
 }
 
 void UCrewManager::SetupConnection(mg_connection *conn)

@@ -175,11 +175,6 @@ $(function () {
 	$('choice toggleClicker:first-of-type').click();
 	$('system, #systemSwitcher choice toggleClicker').hide();
 	
-	
-	
-	
-	
-	
 	$('#systemSwitcher choice toggleClicker').click(function () {
 		var btn = $(this);
 		var system = btn.attr('value');
