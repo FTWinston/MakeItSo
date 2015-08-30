@@ -6,7 +6,6 @@ ws.onclose = shutdown;
 ws.onmessage = messageReceived;
 
 function messageReceived(ev) {
-	console.log(ev);
 	var m = (ev.data || '').split(' ', 2);
 
 	if (m[0] == 'id') {
@@ -64,10 +63,12 @@ function showError(msg) {
 $(function () {
 	$('body').on('click', 'clicker.disabled, toggleClicker.disabled, confirmClicker.disabled, heldClicker.disabled', function (event) {
 		event.stopImmediatePropagation();
-	});
-	
-	$('toggleClicker').click(function () {
-		$(this).toggleClass('enabled');
+	}).on('mousedown', 'toggleClicker:not(.enabled):not(.down)', function () {
+		$(this).addClass('enabled down');
+	}).on('mousedown', 'toggleClicker.enabled:not(.down)', function () {
+		$(this).removeClass('enabled').addClass('down');
+	}).on('mouseup', 'toggleClicker.down', function () {
+		$(this).removeClass('down');
 	});
 	
 	$('confirmClicker').click(function (event) {
@@ -79,26 +80,71 @@ $(function () {
 	
 	$('body').on('mouseleave', 'confirmClicker.primed', function() {
 		$(this).removeClass('primed');
-	});
-	
-	$('body').on('mousedown', 'heldClicker:not(.disabled)', function() {
+	}).on('mousedown', 'heldClicker:not(.disabled)', function() {
 		$(this).addClass('held');
-	});
-	
-	$('body').on('mouseup', 'heldClicker:not(.disabled)', function() {
+	}).on('mouseup', 'heldClicker:not(.disabled)', function() {
 		$(this).removeClass('held');
-	});
-	
-	$('body').on('mouseleave', 'heldClicker.held:not(.disabled)', function() {
+	}).on('mouseleave', 'heldClicker.held:not(.disabled)', function() {
 		$(this).mouseup();
-	});
-	
-	$('body').on('touchstart', 'clicker, heldClicker:not(.disabled)', function() {
+	}).on('touchstart', 'clicker, heldClicker:not(.disabled)', function() {
 		$(this).mousedown();
+	}).on('touchend', 'heldClicker.held:not(.disabled)', function() {
+		$(this).mouseup();
+	}).on('mousedown', 'clicker[action]:not([down])', function () {
+		ws.send($(this).attr('action'));
+	}).on('mouseup', 'clicker[action]', function () {
+		$(this).removeClass('down');
 	});
 	
-	$('body').on('touchend', 'heldClicker.held:not(.disabled)', function() {
-		$(this).mouseup();
+	$('confirmClicker[action]').click(function () {
+		ws.send($(this).addClass('down').attr('action'));
+	});
+	
+	$('body').on('mousedown', 'heldClicker[start]:not(.down)', function () {
+		ws.send($(this).addClass('down').attr('start'));
+	}).on('mouseup', 'heldClicker[stop]', function () {
+		ws.send($(this).removeClass('down').attr('stop'));
+	}).on('mousedown', 'toggleClicker:not(.enabled)[start]:not(.down)', function () {
+		ws.send($(this).addClass('down').attr('start'));
+	}).on('mousedown', 'toggleClicker.enabled[stop]:not(.down)', function () {
+		ws.send($(this).attr('stop'));
+	});
+	
+	var keyPresses = {};
+	$('clicker[key], heldClicker[key], toggleClicker[key], confirmClicker[key]').each(function () {
+		var clicker = $(this);
+		var keyCode = clicker.attr('key').charCodeAt(0);
+		
+		if (keyPresses.hasOwnProperty(keyCode))
+			keyPresses[keyCode].push(clicker);
+		else
+			keyPresses[keyCode] = [clicker];
+	});
+	
+	$(document).keydown(function(e){
+		var presses = keyPresses[e.which];
+		if (presses === undefined)
+			return;
+		for (var i=0; i<presses.length; i++) {
+			var button = presses[i];
+			if (button.is(':visible'))
+			{
+				button.mousedown();
+				break;
+			}
+		}
+	}).keyup(function(e){
+		var presses = keyPresses[e.which];
+		if (presses === undefined)
+			return;
+		for (var i=0; i<presses.length; i++) {
+			var button = presses[i];
+			if (button.is(':visible'))
+			{
+				button.mouseup().click();
+				break;
+			}
+		}
 	});
 	
 	$('choice toggleClicker').click(function () {
@@ -155,24 +201,8 @@ $(function () {
 			button.hide();
 	});
 	
-	$('#btnSetupGame').click(function () {
-		ws.send('+setup');
-	});
-	
-	$('#btnSetupBack').click(function() {
-		ws.send('-setup');
+	$('#btnSetupBack').mousedown(function() {
 		$('#gameSetup').hide();
 		$('#systemSelect').show();
 	});
-	
-	$('#btnStartGame').click(function () {
-		ws.send('startGame');
-	});
-	
-	$('#btnForward').mousedown(function(){ ws.send('+forward'); }).mouseup(function(){ ws.send('-forward'); });
-	$('#btnBackward').mousedown(function(){ ws.send('+backward'); }).mouseup(function(){ ws.send('-backward'); });
-	$('#btnLeft').mousedown(function(){ ws.send('+left'); }).mouseup(function(){ ws.send('-left'); });
-	$('#btnRight').mousedown(function(){ ws.send('+right'); }).mouseup(function(){ ws.send('-right'); });
-	$('#btnUp').mousedown(function(){ ws.send('+up'); }).mouseup(function(){ ws.send('-up'); });
-	$('#btnDown').mousedown(function(){ ws.send('+down'); }).mouseup(function(){ ws.send('-down'); });
 });

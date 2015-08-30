@@ -17,7 +17,7 @@
             <li class="option" value="1">System #1</li>
             <li class="option" value="2">System #2</li>
         </ul>
-		<clicker id="btnSetupGame" class="color4">Setup game</clicker>
+		<clicker id="btnSetupGame" class="color4" action="+setup">Setup game</clicker>
 		<clicker id="btnCloseSystemSelect" class="color4" style="display:none">Done</clicker>
     </screen>
 
@@ -41,8 +41,8 @@
 		</choice>
 		
 		<buttonGroup>
-			<clicker id="btnSetupBack" class="color3">go back</clicker>
-			<confirmClicker id="btnStartGame" class="color4">start game</confirmClicker>
+			<clicker id="btnSetupBack" class="color3" action="-setup">go back</clicker>
+			<confirmClicker id="btnStartGame" class="color4" action="startGame">start game</confirmClicker>
 		</buttonGroup>
 	</screen>
 
@@ -61,12 +61,12 @@
 		</div>
 		
 		<system id="system0">
-			<heldClicker class="color1" id="btnLeft">left</heldClicker>
-			<heldClicker class="color1" id="btnRight">right</heldClicker>
-			<heldClicker class="color1" id="btnUp">up</heldClicker>
-			<heldClicker class="color1" id="btnDown">down</heldClicker>
-			<heldClicker class="color2" id="btnForward">forward</heldClicker>
-			<heldClicker class="color2" id="btnBackward">backward</heldClicker>
+			<heldClicker class="color1" id="btnLeft" key="A" start="+left" stop="-left">left</heldClicker>
+			<heldClicker class="color1" id="btnRight" key="D" start="+right" stop="-right">right</heldClicker>
+			<heldClicker class="color1" id="btnUp" key="S" start="+up" stop="-up">up</heldClicker>
+			<heldClicker class="color1" id="btnDown" key="W" start="+down" stop="-down">down</heldClicker>
+			<heldClicker class="color2" id="btnForward" key="R" start="+forward" stop="-forward">accelerate</heldClicker>
+			<toggleClicker class="color2" id="btnBackward" key="F" start="+backward" stop="-backward">brake</toggleClicker>
 		</system>
 		<system id="system1">
 			
