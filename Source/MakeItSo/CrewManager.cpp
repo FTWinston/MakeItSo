@@ -167,6 +167,8 @@ void UCrewManager::EndConnection(mg_connection *conn)
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "setup+");
 		}
 	}
+
+	delete info;
 }
 
 int UCrewManager::GetNewUniqueIdentifier()
@@ -218,8 +220,6 @@ int UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
 	case MG_CLOSE:
 		if (conn->is_websocket)
 			EndConnection(conn);
-
-		free(conn->connection_param);
 		return MG_TRUE;
 	default:
 		return MG_FALSE;
