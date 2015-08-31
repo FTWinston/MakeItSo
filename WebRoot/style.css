@@ -227,24 +227,6 @@ clicker.color8:not(.disabled):active, heldClicker.color8.held, toggleClicker.col
 	border-color: #999;
 }
 
-#btnSetupGame {
-	position: fixed;
-	right: 1em;
-	bottom: 1em;
-}
-
-.btnSetupBack {
-	position: fixed;
-	left: 1em;
-	bottom: 1em;
-}
-
-.btnStartGame {
-	position: fixed;
-	right: 1em;
-	bottom: 1em;
-}
-
 #gameSetup {
 	overflow: auto;
 }

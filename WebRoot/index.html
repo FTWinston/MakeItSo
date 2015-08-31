@@ -18,7 +18,9 @@
             <li class="option" value="2">System #2</li>
         </ul>
 		<clicker id="btnSetupGame" class="color4" action="+setup">Setup game</clicker>
-		<clicker id="btnCloseSystemSelect" class="color4" style="display:none">Done</clicker>
+		
+		<clicker id="btnResumeGame" class="color4" action="resume" style="display:none">resume game</clicker>
+		<confirmClicker id="btnEndGame" class="color3" action="quit" style="display:none">end game</confirmClicker>
     </screen>
 
 	<screen id="gameSetup" style="display:none">
@@ -74,11 +76,6 @@
 		<system id="system2">
 			
 		</system>
-	</screen>
-
-	<screen id="gamePaused" style="display:none">
-		<clicker id="btnResumeGame" action="resume">resume game</clicker>
-		<confirmClicker id="btnEndGame" action="quit">end game</confirmClicker>
 	</screen>
 </body>
 </html>

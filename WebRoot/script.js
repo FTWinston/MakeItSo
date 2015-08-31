@@ -48,15 +48,19 @@ function messageReceived(ev) {
 	else if (cmd == 'game-') {
 		var blame = m.length > 1 ? 'User \'' + m[1] + '\' ended the game.' : 'The game has ended.'
 		showError(blame + ' Please wait...', false);
+		
+		$('#btnResumeGame, #btnEndGame').hide();
+		$('#btnSetupGame').show();
+		
 		setTimeout(function() { $('#error').hide(); $('#systemSelect').show(); }, 3000);
 	}
 	else if (cmd == 'pause+') {
-		$('#gameActive').hide();
-		$('#gamePaused').show();
+		$('#gameActive, #btnSetupGame').hide();
+		$('#systemSelect, #btnResumeGame, #btnEndGame').show();
 	}
 	else if (cmd == 'pause-') {
-		$('#gamePaused').hide();
-		$('#gameActive').show();
+		$('#systemSelect, #btnResumeGame, #btnEndGame').hide();
+		$('#gameActive, #btnSetupGame').show();
 	}
 };
 
