@@ -28,6 +28,8 @@ int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 
 void UCrewManager::Init()
 {
+	crewState = CrewState_t::Setup;
+
 	nextConnectionIdentifer = 0;
 	connectionInSetup = NULL;
 	currentConnections = new TSet<ConnectionInfo*>();
@@ -109,6 +111,12 @@ FString UCrewManager::GetLocalURL()
 
 void UCrewManager::SetupConnection(mg_connection *conn)
 {
+	if (crewState == CrewState_t::Active)
+	{
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
+		return;
+	}
+
 	int identifier = GetNewUniqueIdentifier();
 	if (identifier == -1)
 	{
@@ -123,6 +131,8 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
+
+	// todo: indicate to the client whether the game is currently active or not. If it is, they cannot select systems or start a new game, show a "please wait" error message instead.
 	
 #ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
@@ -216,7 +226,8 @@ int UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
 		if (conn->is_websocket)
 		{
 			ConnectionInfo *info = (ConnectionInfo*)conn->connection_param;
-			HandleWebsocketMessage(info);
+			if (info) // if this connection hasn't been allocated a crew position, don't let them do stuff
+				HandleWebsocketMessage(info);
 			return MG_TRUE;
 		}
 		return MG_FALSE;
@@ -248,7 +259,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (MATCHES(info, "+setup"))
 	{
-		if (connectionInSetup != NULL)
+		if (connectionInSetup != NULL || crewState != CrewState_t::Setup)
 			return;
 
 		connectionInSetup = info;
@@ -265,7 +276,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (MATCHES(info, "-setup"))
 	{
-		if (connectionInSetup != info)
+		if (connectionInSetup != info || crewState != CrewState_t::Setup)
 			return;
 
 		connectionInSetup = NULL;
@@ -291,12 +302,56 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	*/
 	else if (MATCHES(info, "startGame"))
 	{
-		if (connectionInSetup != info)
+		if (connectionInSetup != info || crewState != CrewState_t::Setup)
 			return;
 
+		crewState = CrewState_t::Active;
 		connectionInSetup = NULL; // game started, no one is setting it up anymore
 
 		SendCrewMessage(System_t::All, "game+"); // game started
+
+#ifndef WEB_SERVER_TEST
+		//actually start the game!
+#endif
+	}
+	else if (MATCHES(info, "pause"))
+	{
+		if (crewState != CrewState_t::Active)
+			return;
+
+		crewState = CrewState_t::Paused;
+		SendCrewMessage(System_t::All, "pause+");
+
+#ifndef WEB_SERVER_TEST
+		//actually pause the game!
+#endif
+	}
+	else if (MATCHES(info, "resume"))
+	{
+		if (crewState != CrewState_t::Paused)
+			return;
+
+		crewState = CrewState_t::Active;
+		SendCrewMessage(System_t::All, "pause-");
+
+#ifndef WEB_SERVER_TEST
+		//actually unpause the game!
+#endif
+	}
+	else if (MATCHES(info, "quit"))
+	{
+		if (crewState != CrewState_t::Paused)
+			return;
+
+		crewState = CrewState_t::Setup;
+
+		char buffer[16];
+		sprintf(buffer, "game- %c", 'A' + info->identifier);
+		SendCrewMessage(System_t::All, buffer);
+
+#ifndef WEB_SERVER_TEST
+		//actually end the game!
+#endif
 	}
 #ifndef WEB_SERVER_TEST
 	else if (MATCHES(info, "+forward"))
@@ -414,18 +469,13 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 	}
 }
 
-void UCrewManager::SendCrewMessage(System_t system, const char *message, ...)
+void UCrewManager::SendCrewMessage(System_t system, const char *message)
 {
 	int systemFlags = system == System_t::All ? System_t::All : 1 << system;
-
-	va_list args;
-	va_start(args, message);
 
 	for (auto& other : *currentConnections)
 	{
 		if ((other->shipSystemFlags & systemFlags) != 0)
-			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message, args);
+			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message);
 	}
-
-	va_end(args);
 }

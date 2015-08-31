@@ -19,6 +19,12 @@ class MAKEITSO_API UCrewManager : public UPlayerInput
 public:
 	virtual void BeginDestroy();
 
+	enum CrewState_t {
+		Setup = 0,
+		Active = 1,
+		Paused = 2
+	};
+
 	enum System_t
 	{
 		All = ~0,
@@ -34,7 +40,7 @@ public:
 	void Init();
 	void Poll() { mg_poll_server(server, 1); }
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
-	void SendCrewMessage(System_t system, const char *message, ...);
+	void SendCrewMessage(System_t system, const char *message);
 
 private:
 	void AllocateListenPort();
@@ -49,6 +55,7 @@ private:
 
 	mg_server *server;
 
+	CrewState_t crewState;
 	int nextConnectionIdentifer;
 	static const int maxConnectionIdentifer = 26;
 	int shipSystemCounts[MAX_SHIP_SYSTEMS];

@@ -57,7 +57,7 @@
 				<toggleClicker value="system1">system 1</toggleClicker>
 				<toggleClicker value="system2">system 2</toggleClicker>
 			</choice>
-			<clicker id="btnPause" class="color8">pause</clicker>
+			<clicker id="btnPause" class="color8" action="pause">pause</clicker>
 		</div>
 		
 		<system id="system0">
@@ -76,9 +76,9 @@
 		</system>
 	</screen>
 
-	<screen id="gameActive" style="display:none">
-		<clicker id="btnResumeGame">resume game</clicker>
-		<confirmClicker id="btnEndGame">end game</confirmClicker>
+	<screen id="gamePaused" style="display:none">
+		<clicker id="btnResumeGame" action="resume">resume game</clicker>
+		<confirmClicker id="btnEndGame" action="quit">end game</confirmClicker>
 	</screen>
 </body>
 </html>

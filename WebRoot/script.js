@@ -7,52 +7,70 @@ ws.onmessage = messageReceived;
 
 function messageReceived(ev) {
 	var m = (ev.data || '').split(' ', 2);
-
-	if (m[0] == 'id') {
+	var cmd = m[0];
+	
+	if (cmd == 'id') {
 		$('.playerIdentifier').text(m[1]);
 	}
-	else if (m[0] == 'msg') {
+	else if (cmd == 'msg') {
 		var div = document.createElement('div');
 		div.innerHTML = m[1];
 		document.getElementById('messages').appendChild(div);
 	}
-	else if (m[0] == 'sys+') {
+	else if (cmd == 'sys+') {
 		$('#systemList li[value="' + m[1] + '"]').removeClass('taken');
 	}
-	else if (m[0] == 'sys-') {
+	else if (cmd == 'sys-') {
 		$('#systemList li[value="' + m[1] + '"]').addClass('taken');
 	}
-	else if (m[0] == 'setup+') {
+	else if (cmd == 'setup+') {
 		$('#btnSetupGame').removeClass('disabled');
 	}
-	else if (m[0] == 'setup-') {
+	else if (cmd == 'setup-') {
 		$('#btnSetupGame').addClass('disabled');
 	}
-	else if (m[0] == 'setup') {
+	else if (cmd == 'setup') {
 		$('#systemSelect').hide();
 		$('#gameSetup').show();
 	}
-	else if (m[0] == 'full') {
+	else if (cmd == 'full') {
 		showError('This ship is full: there is no room for you to join.');
 	}
-	else if (m[0] == 'game+') {
+	else if (cmd == 'started') {
+		showError('This game has already started: wait for the crew to pause or end the game, then try again.');
+	}
+	else if (cmd == 'game+') {
 		$('#systemSelect, #gameSetup').hide();
 		$('#gameActive').show();
 		$('#systemSwitcher choice toggleClicker:visible:first').click();
 		$('#btnSetupGame').removeClass('disabled');
 	}
-	else if (m[0] == 'game-') {
+	else if (cmd == 'game-') {
+		var blame = m.length > 1 ? 'User \'' + m[1] + '\' ended the game.' : 'The game has ended.'
+		showError(blame + ' Please wait...', false);
+		setTimeout(function() { $('#error').hide(); $('#systemSelect').show(); }, 3000);
+	}
+	else if (cmd == 'pause+') {
 		$('#gameActive').hide();
-		$('#systemSelect').show();
+		$('#gamePaused').show();
+	}
+	else if (cmd == 'pause-') {
+		$('#gamePaused').hide();
+		$('#gameActive').show();
 	}
 };
 
 function shutdown(ev) {
-	showError("The connection to your ship has been lost.\nIf the game's still running, check your connection and try refreshing the page.");
+	showError("The connection to your ship has been lost.\nIf the game's still running, check your network connection.");
 }
 
-function showError(msg) {
-	$(document).add('*').off();
+function showError(msg, fatal) {
+	fatal = typeof fatal !== 'undefined' ? fatal : true;
+	
+	if (fatal) {
+		$(document).add('*').off();
+		msg +='\n\nRefresh the page to continue.';
+	}
 	
 	$('#errorMsg').text(msg);
 	
