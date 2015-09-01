@@ -96,12 +96,12 @@ choice toggleClicker {
 	border-radius: 0;
 }
 
-choice toggleClicker:first-of-type {
+choice toggleClicker:first-of-type, choice toggleClicker.first {
 	border-top-left-radius: 2em;
 	border-bottom-left-radius: 2em;
 }
 
-choice toggleClicker:last-of-type {
+choice toggleClicker:last-of-type, choice toggleClicker.last {
 	border-top-right-radius: 2em;
 	border-bottom-right-radius: 2em;
 }

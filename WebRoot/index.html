@@ -19,11 +19,11 @@
         </ul>
 		<clicker id="btnSetupGame" class="color4" action="+setup">Setup game</clicker>
 		
-		<clicker id="btnResumeGame" class="color4" action="resume" style="display:none">resume game</clicker>
-		<confirmClicker id="btnEndGame" class="color3" action="quit" style="display:none">end game</confirmClicker>
+		<clicker id="btnResumeGame" class="color4" action="resume" style="display: none">resume game</clicker>
+		<confirmClicker id="btnEndGame" class="color3" action="quit" style="display: none">end game</confirmClicker>
     </screen>
 
-	<screen id="gameSetup" style="display:none">
+	<screen id="gameSetup" style="display: none">
 		<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 		
 		<choice id="chGameType" class="color1">
@@ -37,8 +37,8 @@
 		<choice id="chGameMode" class="color2">
 			<prompt>Select the game mode you wish to play:</prompt>
 			<toggleClicker value="exploration" description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</toggleClicker>
-			<toggleClicker value="arena" description="Human-crewed ships compete to death in a single star system.">Arena</toggleClicker>
 			<toggleClicker value="endurance" description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</toggleClicker>
+			<toggleClicker value="arena" description="Human-crewed ships compete to death in a single star system.">Arena</toggleClicker>
 			<description />
 		</choice>
 		
@@ -48,11 +48,11 @@
 		</buttonGroup>
 	</screen>
 
-	<screen id="error" style="display:none">
+	<screen id="error" style="display: none">
 		<p id="errorMsg"></p>
 	</screen>
 
-	<screen id="gameActive" style="display:none">
+	<screen id="gameActive" style="display: none">
 		<div id="systemSwitcher">
 			<choice class="color5">
 				<toggleClicker value="system0">system 0</toggleClicker>

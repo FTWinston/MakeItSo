@@ -83,6 +83,20 @@ function showError(msg, fatal) {
 }
 
 $(function () {
+	var _oldhide = $.fn.hide;
+	$.fn.hide = function(speed, callback) {
+		var retval = _oldhide.apply(this,arguments);
+		$(this).trigger('showhide');
+		return retval;
+	}
+	
+	var _oldshow = $.fn.show;
+	$.fn.show = function(speed, callback) {
+		var retval = _oldshow.apply(this,arguments);
+		$(this).trigger('showhide');
+		return retval;
+	}
+	
 	$(document).on('click', 'clicker.disabled, toggleClicker.disabled, confirmClicker.disabled, heldClicker.disabled', function (event) {
 		event.stopImmediatePropagation();
 	}).on('mousedown', 'toggleClicker:not(.enabled):not(.down)', function () {
@@ -192,6 +206,14 @@ $(function () {
 			$(show).show();
 		
 		display.text(desc);
+	});
+	
+	$(document).on('showhide', 'choice toggleClicker', function () {
+		console.log('checking show/hide');
+		var choice = $(this).parent();
+		choice.children().removeClass('first last');
+		choice.children('toggleClicker:not([style*="display: none"]):first').addClass('first');
+		choice.children('toggleClicker:not([style*="display: none"]):last').addClass('last');
 	});
 	
 	$('choice toggleClicker:first-of-type').click();
