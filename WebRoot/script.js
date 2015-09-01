@@ -83,7 +83,7 @@ function showError(msg, fatal) {
 }
 
 $(function () {
-	$('body').on('click', 'clicker.disabled, toggleClicker.disabled, confirmClicker.disabled, heldClicker.disabled', function (event) {
+	$(document).on('click', 'clicker.disabled, toggleClicker.disabled, confirmClicker.disabled, heldClicker.disabled', function (event) {
 		event.stopImmediatePropagation();
 	}).on('mousedown', 'toggleClicker:not(.enabled):not(.down)', function () {
 		$(this).addClass('enabled down');
@@ -100,7 +100,7 @@ $(function () {
 		clicker.toggleClass('primed');
 	});
 	
-	$('body').on('mouseleave', 'confirmClicker.primed', function() {
+	$(document).on('mouseleave', 'confirmClicker.primed', function() {
 		$(this).removeClass('primed');
 	}).on('mousedown', 'heldClicker:not(.disabled)', function() {
 		$(this).addClass('held');
@@ -122,7 +122,7 @@ $(function () {
 		ws.send($(this).addClass('down').attr('action'));
 	});
 	
-	$('body').on('mousedown', 'heldClicker[start]:not(.down)', function () {
+	$(document).on('mousedown', 'heldClicker[start]:not(.down)', function () {
 		ws.send($(this).addClass('down').attr('start'));
 	}).on('mouseup', 'heldClicker[stop]', function () {
 		ws.send($(this).removeClass('down').attr('stop'));

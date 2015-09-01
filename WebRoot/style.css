@@ -97,11 +97,13 @@ choice toggleClicker {
 }
 
 choice toggleClicker:first-of-type {
-	border-radius: 2em 0 0 2em;
+	border-top-left-radius: 2em;
+	border-bottom-left-radius: 2em;
 }
 
 choice toggleClicker:last-of-type {
-	border-radius: 0 2em 2em 0;
+	border-top-right-radius: 2em;
+	border-bottom-right-radius: 2em;
 }
 
 clicker.color1, heldClicker.color1, toggleClicker.color1, confirmClicker.color1:not(.primed), choice.color1 toggleClicker {
