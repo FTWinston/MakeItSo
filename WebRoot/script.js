@@ -11,6 +11,8 @@ function messageReceived(ev) {
 	
 	if (cmd == 'id') {
 		$('.playerIdentifier').text(m[1]);
+		$('#error').hide();
+		$('#systemSelect').show();
 	}
 	else if (cmd == 'msg') {
 		var div = document.createElement('div');
