@@ -154,14 +154,20 @@ $(function () {
 	
 	$(document).keydown(function(e){
 		var presses = keyPresses[e.which];
-		if (presses === undefined)
+		if (presses === undefined) {
+			if (e.which == 112) {
+				console.log('help key pressed');
+				$('body').toggleClass('showKeys');
+				e.preventDefault();
+			}
 			return;
+		}
 		for (var i=0; i<presses.length; i++) {
 			var button = presses[i];
 			if (button.is(':visible'))
 			{
 				button.mousedown();
-				break;
+				return;
 			}
 		}
 	}).keyup(function(e){
@@ -173,7 +179,7 @@ $(function () {
 			if (button.is(':visible'))
 			{
 				button.mouseup().click();
-				break;
+				return;
 			}
 		}
 	});
