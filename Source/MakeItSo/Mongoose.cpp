@@ -56,6 +56,8 @@
 
 #define NS_SKELETON_VERSION "2.1.0"
 
+#pragma warning(disable : 4996) // supposedly these warnings can be disabled by the following - aye right: #define _CRT_SECURE_NO_WARNINGS
+
 #undef UNICODE                  // Use ANSI WinAPI functions
 #undef _UNICODE                 // Use multibyte encoding on Windows
 #ifndef _MBCS
