@@ -6,27 +6,28 @@
 
 void AShipPlayerController::InitInputSystem()
 {
-	if (PlayerInput == NULL)
-	{
-		UCrewManager *crewManager = NewObject<UCrewManager>(this);
-		crewManager->Init();
-
-		PlayerInput = crewManager;
-	}
-
 	Super::InitInputSystem();
 
+	if (UCrewManager::Instance == NULL)
+	{
+		UCrewManager::Instance = NewNamedObject<UCrewManager>(NULL, TEXT("CrewManager"), RF_Standalone | RF_RootSet);
+		UCrewManager::Instance->Init(this);
+	}
+	else
+		UCrewManager::Instance->LinkController(this);
+
+
 	// how to send a crew message, as it stands
-	//if (PlayerInput)
+	//if (UCrewManager::Instance)
 	//{
-	//	UCrewManager::Instance->SendCrewMessage(UCrewManager::System_t::All, "hello world");
+	//	UCrewManager::Instance->SendCrewMessage(CrewManager::ESystem::AllSystems, "hello world");
 	//}
 }
 
 void AShipPlayerController::PreProcessInput(const float DeltaTime, const bool bGamePaused)
 {
-	if (PlayerInput)
+	if (UCrewManager::Instance)
 	{
-		((UCrewManager*)PlayerInput)->Poll();
+		UCrewManager::Instance->Poll();
 	}
 }

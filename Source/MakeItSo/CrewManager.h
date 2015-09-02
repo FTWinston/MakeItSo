@@ -14,18 +14,16 @@ class ConnectionInfo;
 /**
 *
 */
-class MAKEITSO_API UCrewManager : public UPlayerInput
+class MAKEITSO_API UCrewManager : public UObject
 {
 public:
-	virtual void BeginDestroy();
-
-	enum CrewState_t {
+	enum ECrewState {
 		Setup = 0,
 		Active = 1,
 		Paused = 2
 	};
 
-	enum System_t
+	enum ESystem
 	{
 		Station0 = 0,
 		Station1,
@@ -38,19 +36,26 @@ public:
 		Everyone
 	};
 
-	static int EventReceived(mg_connection *conn, enum mg_event ev);
+	void Init(APlayerController *controller);
+	virtual void BeginDestroy();
 
-	void Init();
+	void LinkController(APlayerController *controller);
 	void Poll() { mg_poll_server(server, 1); }
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
-	void SendCrewMessage(System_t system, const char *message);
+	void SendCrewMessage(ESystem system, const char *message);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static FString GetLocalURL();
+	static int EventReceived(mg_connection *conn, enum mg_event ev);
+	
+	static UCrewManager *Instance;
 
 private:
 	void PauseGame(bool state);
 	void AllocateListenPort();
+#ifndef WEB_SERVER_TEST
+	void InputKey(FKey key, bool down);
+#endif
 	static FString GetLocalIP();
 
 	void SetupConnection(mg_connection *conn);
@@ -61,8 +66,9 @@ private:
 	void SendSystemSelectionMessage(ConnectionInfo *info, int shipSystemIndex, bool adding);
 
 	static mg_server *server;
+	APlayerController *controller;
 
-	CrewState_t crewState;
+	ECrewState crewState;
 	int nextConnectionIdentifer;
 	static const int maxConnectionIdentifer = 26;
 	int shipSystemCounts[MAX_SHIP_SYSTEMS];

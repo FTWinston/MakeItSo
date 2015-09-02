@@ -32,17 +32,18 @@
 #define snprintf _snprintf_s
 #endif
 
+UCrewManager *UCrewManager::Instance = NULL;
 mg_server *UCrewManager::server = NULL;
 
 int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 {
-	auto crewManager = (UCrewManager*)conn->server_param;
-	return crewManager->HandleEvent(conn, ev);
+	return Instance->HandleEvent(conn, ev);
 }
 
-void UCrewManager::Init()
+void UCrewManager::Init(APlayerController *controller)
 {
-	crewState = CrewState_t::Setup;
+	LinkController(controller);
+	crewState = ECrewState::Setup;
 
 	nextConnectionIdentifer = 0;
 	connectionInSetup = NULL;
@@ -51,10 +52,9 @@ void UCrewManager::Init()
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 	
-	if (server)
-		mg_destroy_server(&server);
+	if (server == NULL)
+		server = mg_create_server(this, EventReceived);
 
-	server = mg_create_server(this, EventReceived);
 #ifdef WEB_SERVER_TEST
 	mg_set_option(server, "document_root", "../WebRoot");
 #else
@@ -67,8 +67,8 @@ void UCrewManager::Init()
 
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
-	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("Listening on %s\n"), *url));
+	if (controller != NULL)
+		controller->ClientMessage(FString::Printf(TEXT("Listening on %s\n"), *url));
 #else
 	wprintf(L"Listening on %s\n", url.c_str());
 #endif
@@ -78,36 +78,35 @@ void UCrewManager::BeginDestroy()
 {
 	if (server)
 		mg_destroy_server(&server);
+
 	server = NULL;
 
 	delete currentConnections;
+}
 
-#ifndef WEB_SERVER_TEST
-	Super::BeginDestroy();
-#endif
+void UCrewManager::LinkController(APlayerController *controller)
+{
+	this->controller = controller; // do we need to null this when the level changes?
 }
 
 void UCrewManager::PauseGame(bool state)
 {
 	if (state)
 	{
-		crewState = CrewState_t::Paused;
-		SendCrewMessage(System_t::Everyone, "pause+");
+		crewState = ECrewState::Paused;
+		SendCrewMessage(ESystem::Everyone, "pause+");
 	}
 	else
 	{
-		crewState = CrewState_t::Active;
+		crewState = ECrewState::Active;
 
-		SendCrewMessage(System_t::AllStations, "pause-");
-		SendCrewMessage(System_t::NoStations, "started"); // game resumed, keep out
+		SendCrewMessage(ESystem::AllStations, "pause-");
+		SendCrewMessage(ESystem::NoStations, "started"); // game resumed, keep out
 	}
 
 #ifndef WEB_SERVER_TEST
-	APlayerController* const playerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
-	if (playerController != NULL)
-	{
-		playerController->SetPause(state);
-	}
+	if (controller != NULL)
+		controller->SetPause(state);
 #endif
 }
 
@@ -129,8 +128,8 @@ void UCrewManager::AllocateListenPort()
 		return;
 
 #ifndef WEB_SERVER_TEST
-	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
+	if (controller != NULL)
+		controller->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
 #endif
 }
 
@@ -222,19 +221,19 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
 
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
-	if (crewState == CrewState_t::Active)
+	if (crewState == ECrewState::Active)
 	{
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
 		return;
 	}
-	else if (crewState == CrewState_t::Paused)
+	else if (crewState == ECrewState::Paused)
 	{
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "pause+");
 	}
 
 #ifndef WEB_SERVER_TEST
-	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
+	if (controller != NULL)
+		controller->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
 #endif
 
 	// update this client as to whether or not each system is currently claimed
@@ -254,8 +253,8 @@ void UCrewManager::EndConnection(mg_connection *conn)
 	ConnectionInfo *info = (ConnectionInfo*)conn->connection_param;
 
 #ifndef WEB_SERVER_TEST
-	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
+	if (controller != NULL)
+		controller->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
 #endif
 
 	currentConnections->Remove(info);
@@ -373,7 +372,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (MATCHES(info, "+setup"))
 	{
-		if (connectionInSetup != NULL || crewState != CrewState_t::Setup)
+		if (connectionInSetup != NULL || crewState != ECrewState::Setup)
 			return;
 
 		connectionInSetup = info;
@@ -390,7 +389,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (MATCHES(info, "-setup"))
 	{
-		if (connectionInSetup != info || crewState != CrewState_t::Setup)
+		if (connectionInSetup != info || crewState != ECrewState::Setup)
 			return;
 
 		connectionInSetup = NULL;
@@ -416,112 +415,120 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	*/
 	else if (MATCHES(info, "startGame"))
 	{
-		if (connectionInSetup != info || crewState != CrewState_t::Setup)
+		if (connectionInSetup != info || crewState != ECrewState::Setup)
 			return;
 
 		connectionInSetup = NULL; // game started, no one is setting it up anymore
-		crewState = CrewState_t::Active;
+		crewState = ECrewState::Active;
 
-		SendCrewMessage(System_t::AllStations, "game+"); // game started
-		SendCrewMessage(System_t::NoStations, "started"); // game started, keep out
+		SendCrewMessage(ESystem::AllStations, "game+"); // game started
+		SendCrewMessage(ESystem::NoStations, "started"); // game started, keep out
 
 
 #ifndef WEB_SERVER_TEST
-		//actually start the game!
+		//todo: this should consider the game mode/type selected
+		UGameplayStatics::OpenLevel(GEngine->GetWorld(), TEXT("FlyingExampleMap"));
 #endif
 	}
 	else if (MATCHES(info, "pause"))
 	{
-		if (crewState != CrewState_t::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
+		if (crewState != ECrewState::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
 			return;
 
 		PauseGame(true); //actually pause the game!
 	}
 	else if (MATCHES(info, "resume"))
 	{
-		if (crewState != CrewState_t::Paused)
+		if (crewState != ECrewState::Paused)
 			return;
 
 		PauseGame(false);
 	}
 	else if (MATCHES(info, "quit"))
 	{
-		if (crewState != CrewState_t::Paused)
+		if (crewState != ECrewState::Paused)
 			return;
 
-		crewState = CrewState_t::Setup;
+		crewState = ECrewState::Setup;
 
 		char buffer[16];
 		snprintf(buffer, sizeof(buffer), "game- %c", 'A' + info->identifier);
-		SendCrewMessage(System_t::Everyone, buffer);
+		SendCrewMessage(ESystem::Everyone, buffer);
 
 #ifndef WEB_SERVER_TEST
-		//actually end the game!
+		UGameplayStatics::OpenLevel(GEngine->GetWorld(), TEXT("Main"));
 #endif
 	}
 #ifndef WEB_SERVER_TEST
 	else if (MATCHES(info, "+forward"))
 	{
-		InputKey(EKeys::LeftShift, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::LeftShift, true);
 	}
 	else if (MATCHES(info, "-forward"))
 	{
-		InputKey(EKeys::LeftShift, EInputEvent::IE_Released, 0, false);
+		InputKey(EKeys::LeftShift, false);
 	}
 	else if (MATCHES(info, "+backward"))
 	{
-		InputKey(EKeys::LeftControl, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::LeftControl, true);
 	}
 	else if (MATCHES(info, "-backward"))
 	{
-		InputKey(EKeys::LeftControl, EInputEvent::IE_Released, 0, false);
+		InputKey(EKeys::LeftControl, false);
 	}
 	else if (MATCHES(info, "+left"))
 	{
-		InputKey(EKeys::A, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::A, true);
 	}
 	else if (MATCHES(info, "-left"))
 	{
-		InputKey(EKeys::A, EInputEvent::IE_Released, 0, false);
+		InputKey(EKeys::A, false);
 	}
 	else if (MATCHES(info, "+right"))
 	{
-		InputKey(EKeys::D, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::D, true);
 	}
 	else if (MATCHES(info, "-right"))
 	{
-		InputKey(EKeys::D, EInputEvent::IE_Released, 0, false);
+		InputKey(EKeys::D, false);
 	}
 	else if (MATCHES(info, "+up"))
 	{
-		InputKey(EKeys::S, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::S, true);
 	}
 	else if (MATCHES(info, "-up"))
 	{
-		InputKey(EKeys::S, EInputEvent::IE_Released, 0, false);
+		InputKey(EKeys::S, false);
 	}
 	else if (MATCHES(info, "+down"))
 	{
-		InputKey(EKeys::W, EInputEvent::IE_Pressed, 1, false);
+		InputKey(EKeys::W, true);
 	}
 	else if (MATCHES(info, "-down"))
 	{
-		InputKey(EKeys::W, EInputEvent::IE_Released, 0, false);
+		InputKey(EKeys::W, false);
 	}
 	else
 	{
 		// write all unrecognised commands to the console
 		char buffer[128];
 		EXTRACT(info, buffer, "");
-		APlayerController* PlayerController = GetOuterAPlayerController();
-		PlayerController->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
+		if (controller != NULL)
+			controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
 	}
 #endif
 }
 
+#ifndef WEB_SERVER_TEST
+void UCrewManager::InputKey(FKey key, bool pressed)
+{
+	controller->InputKey(key, pressed ? EInputEvent::IE_Pressed : EInputEvent::IE_Released, pressed ? 1 : 0, false);
+}
+#endif
+
 void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, bool adding)
 {
-	if (crewState == CrewState_t::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
+	if (crewState == ECrewState::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
 		return;
 
 	int shipSystemFlag = 1 << shipSystemIndex;
@@ -575,19 +582,19 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 	}
 }
 
-void UCrewManager::SendCrewMessage(System_t system, const char *message)
+void UCrewManager::SendCrewMessage(ESystem system, const char *message)
 {
 	bool includeNoSystems = false;
 	int systemFlags;
 
 	switch (system)
 	{
-	case System_t::Everyone:
+	case ESystem::Everyone:
 		includeNoSystems = true;
-	case System_t::AllStations:
+	case ESystem::AllStations:
 		systemFlags = ~0; // every system flag should be set
 		break;
-	case System_t::NoStations:
+	case ESystem::NoStations:
 		systemFlags = 0; // no system flag should be set
 		includeNoSystems = true;
 		break;

@@ -22,6 +22,5 @@
 #define Add insert
 #define Remove erase
 
-class UPlayerInput {
-
-};
+class UObject {};
+class APlayerController {};
