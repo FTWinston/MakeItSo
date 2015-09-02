@@ -108,44 +108,36 @@ $(function () {
 		$(this).removeClass('enabled').addClass('down');
 	}).on('mouseup', 'toggleClicker.down', function () {
 		$(this).removeClass('down');
-	});
-	
-	$('confirmClicker').click(function (event) {
+	}).on('click', 'confirmClicker', function (event) {
 		var clicker = $(this);
 		if (!clicker.hasClass('primed'))
 			event.stopImmediatePropagation();
 		clicker.toggleClass('primed');
-	});
-	
-	$(document).on('mouseleave', 'confirmClicker.primed', function() {
+	}).on('mouseleave', 'confirmClicker.primed', function() {
 		$(this).removeClass('primed');
 	}).on('mousedown', 'heldClicker:not(.disabled)', function() {
 		$(this).addClass('held');
 	}).on('mouseup', 'heldClicker:not(.disabled)', function() {
 		$(this).removeClass('held');
-	}).on('mouseleave', 'heldClicker.held:not(.disabled)', function() {
+	}).on('mouseleave', 'heldClicker.held:not(.disabled), toggleClicker.down:not(.disabled)', function() {
 		$(this).mouseup();
-	}).on('touchstart', 'clicker, heldClicker:not(.disabled)', function() {
+	}).on('touchstart', 'clicker, heldClicker:not(.disabled), toggleClicker, confirmClicker', function() {
 		$(this).mousedown();
-	}).on('touchend', 'heldClicker.held:not(.disabled)', function() {
+	}).on('touchend', 'heldClicker.held:not(.disabled), toggleClicker, confirmClicker', function() {
 		$(this).mouseup();
 	}).on('mousedown', 'clicker[action]:not([down])', function () {
 		ws.send($(this).attr('action'));
 	}).on('mouseup', 'clicker[action]', function () {
 		$(this).removeClass('down');
-	});
-	
-	$('confirmClicker[action]').click(function () {
+	}).on('click', 'confirmClicker[action]', function () {
 		ws.send($(this).addClass('down').attr('action'));
-	});
-	
-	$(document).on('mousedown', 'heldClicker[start]:not(.down)', function () {
+	}).on('mousedown', 'heldClicker[start]:not(.down)', function () {
 		ws.send($(this).addClass('down').attr('start'));
 	}).on('mouseup', 'heldClicker[stop]', function () {
 		ws.send($(this).removeClass('down').attr('stop'));
-	}).on('mousedown', 'toggleClicker:not(.enabled)[start]:not(.down)', function () {
+	}).on('mousedown', 'toggleClicker.enabled[start]:not(.down)', function () {
 		ws.send($(this).addClass('down').attr('start'));
-	}).on('mousedown', 'toggleClicker.enabled[stop]:not(.down)', function () {
+	}).on('mousedown', 'toggleClicker:not(.enabled)[stop]:not(.down)', function () {
 		ws.send($(this).attr('stop'));
 	});
 	
@@ -186,17 +178,16 @@ $(function () {
 		}
 	});
 	
-	$('choice toggleClicker').click(function () {
-		var btn = $(this);
-		
-		if (!btn.hasClass('enabled'))
-			btn.addClass('enabled');
-		else
-			btn.siblings('toggleClicker.enabled').removeClass('enabled');
-	});
-	
-	$('choice').on('click', 'toggleClicker.enabled', function () {
+	$(document).on('mousedown', 'choice toggleClicker', function () {
 		var clicker = $(this);
+		
+		if (!clicker.hasClass('enabled')) {
+			clicker.addClass('enabled');
+			return;
+		}
+		
+		clicker.siblings('toggleClicker.enabled').removeClass('enabled');
+		
 		var desc = clicker.attr('description');
 		var display = clicker.siblings('description');
 		
@@ -212,7 +203,6 @@ $(function () {
 	});
 	
 	$(document).on('showhide', 'choice toggleClicker', function () {
-		console.log('checking show/hide');
 		var choice = $(this).parent();
 		choice.children().removeClass('first last');
 		choice.children('toggleClicker:not([style*="display: none"]):first').addClass('first');
@@ -222,7 +212,7 @@ $(function () {
 	$('choice toggleClicker:first-of-type').click();
 	$('system, #systemSwitcher choice toggleClicker').hide();
 	
-	$('#systemSwitcher choice toggleClicker').click(function () {
+	$('#systemSwitcher choice toggleClicker').mousedown(function () {
 		var btn = $(this);
 		var system = btn.attr('value');
 		$('system#' + system).show().siblings('system').hide();
