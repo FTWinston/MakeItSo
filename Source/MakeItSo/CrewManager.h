@@ -27,12 +27,15 @@ public:
 
 	enum System_t
 	{
-		All = ~0,
 		Station0 = 0,
 		Station1,
 		Station2,
 
-		MAX_SHIP_SYSTEMS
+		MAX_SHIP_SYSTEMS,
+
+		AllStations,
+		NoStations,
+		Everyone
 	};
 
 	static int EventReceived(mg_connection *conn, enum mg_event ev);

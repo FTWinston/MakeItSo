@@ -111,12 +111,6 @@ FString UCrewManager::GetLocalURL()
 
 void UCrewManager::SetupConnection(mg_connection *conn)
 {
-	if (crewState == CrewState_t::Active)
-	{
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
-		return;
-	}
-
 	int identifier = GetNewUniqueIdentifier();
 	if (identifier == -1)
 	{
@@ -132,8 +126,17 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
 
-	// todo: indicate to the client whether the game is currently active or not. If it is, they cannot select systems or start a new game, show a "please wait" error message instead.
-	
+	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
+	if (crewState == CrewState_t::Active)
+	{
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
+		return;
+	}
+	else if (crewState == CrewState_t::Paused)
+	{
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "pause+");
+	}
+
 #ifndef WEB_SERVER_TEST
 	APlayerController* PlayerController = GetOuterAPlayerController();
 	PlayerController->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
@@ -305,10 +308,12 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		if (connectionInSetup != info || crewState != CrewState_t::Setup)
 			return;
 
-		crewState = CrewState_t::Active;
 		connectionInSetup = NULL; // game started, no one is setting it up anymore
+		crewState = CrewState_t::Active;
 
-		SendCrewMessage(System_t::All, "game+"); // game started
+		SendCrewMessage(System_t::AllStations, "game+"); // game started
+		SendCrewMessage(System_t::NoStations, "started"); // game started, keep out
+
 
 #ifndef WEB_SERVER_TEST
 		//actually start the game!
@@ -316,11 +321,11 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (MATCHES(info, "pause"))
 	{
-		if (crewState != CrewState_t::Active)
+		if (crewState != CrewState_t::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
 			return;
 
 		crewState = CrewState_t::Paused;
-		SendCrewMessage(System_t::All, "pause+");
+		SendCrewMessage(System_t::Everyone, "pause+");
 
 #ifndef WEB_SERVER_TEST
 		//actually pause the game!
@@ -332,7 +337,9 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 			return;
 
 		crewState = CrewState_t::Active;
-		SendCrewMessage(System_t::All, "pause-");
+
+		SendCrewMessage(System_t::AllStations, "pause-");
+		SendCrewMessage(System_t::NoStations, "started"); // game resumed, keep out
 
 #ifndef WEB_SERVER_TEST
 		//actually unpause the game!
@@ -347,7 +354,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 		char buffer[16];
 		sprintf(buffer, "game- %c", 'A' + info->identifier);
-		SendCrewMessage(System_t::All, buffer);
+		SendCrewMessage(System_t::Everyone, buffer);
 
 #ifndef WEB_SERVER_TEST
 		//actually end the game!
@@ -415,7 +422,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, bool adding)
 {
-	if (shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
+	if (crewState == CrewState_t::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
 		return;
 
 	int shipSystemFlag = 1 << shipSystemIndex;
@@ -471,11 +478,28 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 
 void UCrewManager::SendCrewMessage(System_t system, const char *message)
 {
-	int systemFlags = system == System_t::All ? System_t::All : 1 << system;
+	bool includeNoSystems = false;
+	int systemFlags;
+
+	switch (system)
+	{
+	case System_t::Everyone:
+		includeNoSystems = true;
+	case System_t::AllStations:
+		systemFlags = ~0; // every system flag should be set
+		break;
+	case System_t::NoStations:
+		systemFlags = 0; // no system flag should be set
+		includeNoSystems = true;
+		break;
+	default:
+		systemFlags = 1 << system; // only the flag for the given system should be set
+		break;
+	}
 
 	for (auto& other : *currentConnections)
 	{
-		if ((other->shipSystemFlags & systemFlags) != 0)
+		if ((includeNoSystems && other->shipSystemFlags == 0) || (other->shipSystemFlags & systemFlags) != 0)
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message);
 	}
 }

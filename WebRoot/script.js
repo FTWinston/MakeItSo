@@ -37,7 +37,7 @@ function messageReceived(ev) {
 		showError('This ship is full: there is no room for you to join.');
 	}
 	else if (cmd == 'started') {
-		showError('This game has already started: wait for the crew to pause or end the game, then try again.');
+		showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
 	}
 	else if (cmd == 'game+') {
 		$('#systemSelect, #gameSetup').hide();
@@ -55,7 +55,7 @@ function messageReceived(ev) {
 		setTimeout(function() { $('#error').hide(); $('#systemSelect').show(); }, 3000);
 	}
 	else if (cmd == 'pause+') {
-		$('#gameActive, #btnSetupGame').hide();
+		$('#gameActive, #btnSetupGame, #error').hide();
 		$('#systemSelect, #btnResumeGame, #btnEndGame').show();
 	}
 	else if (cmd == 'pause-') {
@@ -73,6 +73,7 @@ function showError(msg, fatal) {
 	
 	if (fatal) {
 		$(document).add('*').off();
+		ws.close();
 		msg +='\n\nRefresh the page to continue.';
 	}
 	
