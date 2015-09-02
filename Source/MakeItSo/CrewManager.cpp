@@ -2,6 +2,8 @@
 
 #ifndef WEB_SERVER_TEST
 #include "MakeItSo.h"
+#include "Engine/Engine.h"
+#include "Runtime/Engine/Public/EngineGlobals.h"
 #else
 #include "stdafx.h"
 #endif
@@ -85,6 +87,30 @@ void UCrewManager::BeginDestroy()
 #endif
 }
 
+void UCrewManager::PauseGame(bool state)
+{
+	if (state)
+	{
+		crewState = CrewState_t::Paused;
+		SendCrewMessage(System_t::Everyone, "pause+");
+	}
+	else
+	{
+		crewState = CrewState_t::Active;
+
+		SendCrewMessage(System_t::AllStations, "pause-");
+		SendCrewMessage(System_t::NoStations, "started"); // game resumed, keep out
+	}
+
+#ifndef WEB_SERVER_TEST
+	APlayerController* const playerController = Cast<APlayerController>(GEngine->GetFirstLocalPlayerController(GetWorld()));
+	if (playerController != NULL)
+	{
+		playerController->SetPause(state);
+	}
+#endif
+}
+
 void UCrewManager::AllocateListenPort()
 {
 	// try port 80 for user convenience
@@ -133,7 +159,6 @@ FString UCrewManager::GetLocalIP()
 	}
 
 	char *ip = inet_ntoa(*(struct in_addr *)host->h_addr);
-	//sprintf(client_ipstring, ip);
 
 	WSACleanup();
 
@@ -270,8 +295,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	if (!anySystems)
 	{
-		crewState = CrewState_t::Paused;
-		SendCrewMessage(System_t::Everyone, "pause+");
+		PauseGame(true);
 	}
 
 	delete info;
@@ -411,26 +435,14 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		if (crewState != CrewState_t::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
 			return;
 
-		crewState = CrewState_t::Paused;
-		SendCrewMessage(System_t::Everyone, "pause+");
-
-#ifndef WEB_SERVER_TEST
-		//actually pause the game!
-#endif
+		PauseGame(true); //actually pause the game!
 	}
 	else if (MATCHES(info, "resume"))
 	{
 		if (crewState != CrewState_t::Paused)
 			return;
 
-		crewState = CrewState_t::Active;
-
-		SendCrewMessage(System_t::AllStations, "pause-");
-		SendCrewMessage(System_t::NoStations, "started"); // game resumed, keep out
-
-#ifndef WEB_SERVER_TEST
-		//actually unpause the game!
-#endif
+		PauseGame(false);
 	}
 	else if (MATCHES(info, "quit"))
 	{
@@ -440,7 +452,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		crewState = CrewState_t::Setup;
 
 		char buffer[16];
-		sprintf(buffer, "game- %c", 'A' + info->identifier);
+		snprintf(buffer, sizeof(buffer), "game- %c", 'A' + info->identifier);
 		SendCrewMessage(System_t::Everyone, buffer);
 
 #ifndef WEB_SERVER_TEST

@@ -49,6 +49,7 @@ public:
 	static FString GetLocalURL();
 
 private:
+	void PauseGame(bool state);
 	void AllocateListenPort();
 	static FString GetLocalIP();
 
