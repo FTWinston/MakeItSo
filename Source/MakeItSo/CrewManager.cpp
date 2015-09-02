@@ -187,6 +187,23 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		}
 	}
 
+	// if there are no connections in currentConnections with any ship system set, automatically pause the game
+	bool anySystems = false;
+	for (auto& other : *currentConnections)
+	{
+		if (other->shipSystemFlags != 0)
+		{
+			anySystems = true;
+			break;
+		}
+	}
+
+	if (!anySystems)
+	{
+		crewState = CrewState_t::Paused;
+		SendCrewMessage(System_t::Everyone, "pause+");
+	}
+
 	delete info;
 }
 
