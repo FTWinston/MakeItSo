@@ -46,7 +46,7 @@ public:
 	void SendCrewMessage(System_t system, const char *message);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
-	FString GetLocalURL();
+	static FString GetLocalURL();
 
 private:
 	void AllocateListenPort();
@@ -59,7 +59,7 @@ private:
 	void ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, bool adding);
 	void SendSystemSelectionMessage(ConnectionInfo *info, int shipSystemIndex, bool adding);
 
-	mg_server *server;
+	static mg_server *server;
 
 	CrewState_t crewState;
 	int nextConnectionIdentifer;

@@ -8,10 +8,6 @@
 
 #include "CrewManager.h"
 
-#ifndef WEB_SERVER_TEST
-#include "InterfaceUtilities.h"
-#endif
-
 #ifdef WIN32
 
 #ifndef WEB_SERVER_TEST
@@ -34,6 +30,8 @@
 #define snprintf _snprintf_s
 #endif
 
+mg_server *UCrewManager::server = NULL;
+
 int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 {
 	auto crewManager = (UCrewManager*)conn->server_param;
@@ -51,6 +49,9 @@ void UCrewManager::Init()
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 	
+	if (server)
+		mg_destroy_server(&server);
+
 	server = mg_create_server(this, EventReceived);
 #ifdef WEB_SERVER_TEST
 	mg_set_option(server, "document_root", "../WebRoot");
@@ -75,7 +76,8 @@ void UCrewManager::BeginDestroy()
 {
 	if (server)
 		mg_destroy_server(&server);
-	
+	server = NULL;
+
 	delete currentConnections;
 
 #ifndef WEB_SERVER_TEST
