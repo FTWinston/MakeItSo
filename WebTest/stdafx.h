@@ -10,13 +10,14 @@
 #include <stdio.h>
 #include <tchar.h>]
 #include <set>
+#include <string>
 
 #define MAKEITSO_API 
 
 #define UFUNCTION(a, b)
 
 #define TSet std::set
-#define FString const char*
+#define FString std::wstring
 
 #define Add insert
 #define Remove erase

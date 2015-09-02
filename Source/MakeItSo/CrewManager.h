@@ -45,9 +45,12 @@ public:
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
 	void SendCrewMessage(System_t system, const char *message);
 
+	UFUNCTION(BlueprintCallable, Category = MISUtils)
+	FString GetLocalURL();
+
 private:
 	void AllocateListenPort();
-	FString GetLocalURL();
+	static FString GetLocalIP();
 
 	void SetupConnection(mg_connection *conn);
 	void EndConnection(mg_connection *conn);

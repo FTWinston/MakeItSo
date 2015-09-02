@@ -12,6 +12,20 @@
 #include "InterfaceUtilities.h"
 #endif
 
+#ifdef WIN32
+
+#ifndef WEB_SERVER_TEST
+#include "AllowWindowsPlatformTypes.h"
+#endif
+
+#include "winsock.h"
+
+#ifndef WEB_SERVER_TEST
+#include "HideWindowsPlatformTypes.h"
+#endif
+
+#endif
+
 #include <stdio.h>
 #include <stdarg.h>
 #include <tchar.h>
@@ -51,9 +65,9 @@ void UCrewManager::Init()
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
 	APlayerController* PlayerController = GetOuterAPlayerController();
-	PlayerController->ClientMessage(FString::Printf(TEXT("Local address is %s\n"), *url));
+	PlayerController->ClientMessage(FString::Printf(TEXT("Listening on %s\n"), *url));
 #else
-	printf("Listening on port %s\n", url);
+	wprintf(L"Listening on %s\n", url.c_str());
 #endif
 }
 
@@ -92,20 +106,74 @@ void UCrewManager::AllocateListenPort()
 #endif
 }
 
+FString UCrewManager::GetLocalIP()
+{
+#ifdef WIN32
+	WSADATA wsaData;
+	WORD wVersionRequested = MAKEWORD(2, 0); // previously was 1, 1
+
+	if (::WSAStartup(wVersionRequested, &wsaData) != 0)
+		return FString(TEXT("ERROR_NO_WINSOCK"));
+
+	char hostname[255];
+	if (gethostname(hostname, sizeof(hostname)) == SOCKET_ERROR)
+	{
+		WSACleanup();
+		return FString(TEXT("ERROR_GET_HOST"));
+	}
+
+	struct hostent *host = gethostbyname(hostname);
+
+	if (host == NULL)
+	{
+		WSACleanup();
+		return FString(TEXT("ERROR_NO_HOST"));
+	}
+
+	char *ip = inet_ntoa(*(struct in_addr *)host->h_addr);
+	//sprintf(client_ipstring, ip);
+
+	WSACleanup();
+
+#ifdef WEB_SERVER_TEST
+	std::string strIP = ip;
+
+	FString wstrIP(strIP.length(), L' ');
+	std::copy(strIP.begin(), strIP.end(), wstrIP.begin());
+
+	return wstrIP;
+#else
+	return FString(ANSI_TO_TCHAR(ip));
+#endif
+
+#else
+	return FString(TEXT("ERROR_NO_WIN32"));
+#endif
+}
+
 FString UCrewManager::GetLocalURL()
 {
 	const char *port = mg_get_option(server, "listening_port");
 	bool showPort = strcmp(port, "80") != 0;
 	
-#ifndef WEB_SERVER_TEST
-	FString ipAddress = InterfaceUtilities::GetLocalIP();
+	FString ipAddress = GetLocalIP();
 
 	if (!showPort)
 		return ipAddress;
 
+#ifndef WEB_SERVER_TEST
 	return FString::Printf(TEXT("%s:%s\n"), *ipAddress, *FString(port));
 #else
-	return port;
+	FString url = ipAddress;
+
+	url += TEXT(":");
+
+	std::string strPort = port;
+	std::wstring wstrPort(strPort.length(), L' ');
+	std::copy(strPort.begin(), strPort.end(), wstrPort.begin());
+
+	url += wstrPort;
+	return url;
 #endif
 }
 
