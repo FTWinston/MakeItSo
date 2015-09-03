@@ -14,7 +14,9 @@
 
 #define MAKEITSO_API 
 
-#define UFUNCTION(a, b)
+#define UCLASS() 
+#define GENERATED_BODY() 
+#define UFUNCTION(a, b) 
 
 #define TSet std::set
 #define FString std::wstring

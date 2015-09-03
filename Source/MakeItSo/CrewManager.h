@@ -14,8 +14,11 @@ class ConnectionInfo;
 /**
 *
 */
+UCLASS()
 class MAKEITSO_API UCrewManager : public UObject
 {
+	GENERATED_BODY()
+
 public:
 	enum ECrewState {
 		Setup = 0,

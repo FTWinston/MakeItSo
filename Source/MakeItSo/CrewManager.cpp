@@ -42,6 +42,7 @@ int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 
 void UCrewManager::Init(APlayerController *controller)
 {
+	Instance = this;
 	LinkController(controller);
 	crewState = ECrewState::Setup;
 
