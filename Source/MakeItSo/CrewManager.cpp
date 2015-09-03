@@ -428,7 +428,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 #ifndef WEB_SERVER_TEST
 		//todo: this should consider the game mode/type selected
-		UGameplayStatics::OpenLevel(GEngine->GetWorld(), TEXT("FlyingExampleMap"));
+		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
 #endif
 	}
 	else if (MATCHES(info, "pause"))
@@ -457,7 +457,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		SendCrewMessage(ESystem::Everyone, buffer);
 
 #ifndef WEB_SERVER_TEST
-		UGameplayStatics::OpenLevel(GEngine->GetWorld(), TEXT("Main"));
+		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Main"));
 #endif
 	}
 #ifndef WEB_SERVER_TEST
