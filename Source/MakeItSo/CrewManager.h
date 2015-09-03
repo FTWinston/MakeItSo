@@ -11,6 +11,8 @@
 
 class ConnectionInfo;
 
+#include "CrewManager.Generated.h"
+
 /**
 *
 */

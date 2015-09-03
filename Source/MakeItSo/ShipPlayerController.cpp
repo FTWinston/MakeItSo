@@ -10,7 +10,7 @@ void AShipPlayerController::InitInputSystem()
 
 	if (UCrewManager::Instance == NULL)
 	{
-		UCrewManager::Instance = NewNamedObject<UCrewManager>(NULL, TEXT("CrewManager"), RF_Standalone | RF_RootSet);
+		UCrewManager::Instance = NewObject<UCrewManager>(GetTransientPackage(), NAME_None, RF_Standalone | RF_RootSet);
 		UCrewManager::Instance->Init(this);
 	}
 	else
