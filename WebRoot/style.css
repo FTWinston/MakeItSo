@@ -19,7 +19,7 @@ p {
 	margin: 0.65em;
 }
 
-clicker, heldClicker, toggleClicker, confirmClicker {
+clicker {
 	display: inline-block;
 	border: solid #ccc 2px;
 	border-radius: 1.5em;
@@ -31,48 +31,48 @@ clicker, heldClicker, toggleClicker, confirmClicker {
 	cursor: pointer;
 }
 
-clicker:not(.disabled):active, heldClicker.held, toggleClicker:not(.disabled):active, toggleClicker.enabled:not(.disabled), confirmClicker:not(.disabled):active {
+clicker:not(.disabled):active, clicker.held, clicker.enabled:not(.disabled) {
 	color: #333;
 	background-color: #ccc;
 }
 
-toggleClicker {
+clicker[type="toggle"] {
 	border-style: dotted;
 }
 
-toggleClicker.enabled {
+clicker[type="toggle"].enabled {
 	border-style: solid;
 }
 
-heldClicker {
+clicker[type="held"] {
 	border-width: 5px;
 	border-style: double;
 }
 
-heldClicker.held, confirmClicker:not(.primed):active {
+clicker.held, clicker[type="confirm"]:not(.primed):active {
 	color: #333 !important;
 }
 
-confirmClicker {
+clicker[type="confirm"] {
 	border-radius: 0.25em 1.25em 0.25em 1.25em;
 }
 
-confirmClicker.primed:hover {
+clicker[type="confirm"].primed:hover {
 	background-color: #f66;
 	border-color: #f66;
 	color: #333;
 }
 
-confirmClicker.primed:active {
+clicker[type="confirm"].primed:active {
 	background-color: #333;
 	color: #f66;
 }
 
-confirmClicker.primed::before {
+clicker[type="confirm"].primed::before {
 	content: "Confirm: ";
 }
 
-confirmClicker.primed::after {
+clicker[type="confirm"].primed::after {
 	content: "?";
 }
 
@@ -104,26 +104,26 @@ choice prompt, choice description {
 	padding-bottom: 0.25em;
 }
 
-choice toggleClicker, .table clicker, .table heldClicker, .table toggleClicker {
+choice clicker, .table clicker {
 	border-radius: 0;
 }
 
-choice toggleClicker:first-of-type, choice toggleClicker.first {
+choice clicker:first-of-type, choice clicker.first, .table clicker:first-of-type, .table clicker.first {
 	border-top-left-radius: 1.5em;
 	border-bottom-left-radius: 1.5em;
 }
 
-choice toggleClicker:last-of-type, choice toggleClicker.last {
+choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .table clicker.last {
 	border-top-right-radius: 1.5em;
 	border-bottom-right-radius: 1.5em;
 }
 
-.table row:not(:last-of-type) * {
+.table row:not(.rounded):not(:last-of-type) * {
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
 }
 
-.table row:not(:first-of-type) * {
+.table row:not(.rounded):not(:first-of-type) * {
 	border-top-left-radius: 0;
 	border-top-right-radius: 0;
 }
@@ -138,8 +138,9 @@ choice toggleClicker:last-of-type, choice toggleClicker.last {
 	display: table-row;
 }
 
-.table row div {
+.table row spacer {
 	text-align: center;
+	font-size: 1.25em;
 }
 
 .table row * {
@@ -164,84 +165,77 @@ body.showKeys [key]:before {
 	vertical-align: middle;
 }
 
-clicker.color1, heldClicker.color1, toggleClicker.color1, confirmClicker.color1:not(.primed), .color1 toggleClicker {
+clicker.color1, .color1 clicker {
 	border-color: #f90;
 	color: #f90;
 }
 
-clicker.color1:not(.disabled):active, heldClicker.color1.held, toggleClicker.color1:not(.disabled):active, toggleClicker.color1.enabled:not(.disabled), .color1 toggleClicker:not(.disabled):active, .color1 toggleClicker.enabled:not(.disabled), confirmClicker.color1:not(.primed):not(.disabled):active {
+clicker.color1:not(.disabled):active, clicker.color1.held, clicker.color1.enabled:not(.disabled), .color1 clicker:not(.disabled):active, .color1 clicker.held, .color1 clicker.enabled:not(.disabled) {
 	background-color: #f90;
 }
 
-clicker.color2, heldClicker.color2, toggleClicker.color2, confirmClicker.color2:not(.primed), .color2 toggleClicker {
+clicker.color2, .color2 clicker {
 	border-color: #c9c;
 	color: #c9c;
 }
 
-clicker.color2:not(.disabled):active, heldClicker.color2.held, toggleClicker.color2:not(.disabled):active, toggleClicker.color2.enabled:not(.disabled), .color2 toggleClicker:not(.disabled):active, .color2 toggleClicker.enabled:not(.disabled), confirmClicker.color2:not(.primed):not(.disabled):active {
+clicker.color2:not(.disabled):active, clicker.color2.held, clicker.color2.enabled:not(.disabled), .color2 clicker:not(.disabled):active, .color2 clicker.held, .color2 clicker.enabled:not(.disabled) {
 	background-color: #c9c;
 }
 
-clicker.color3, heldClicker.color3, toggleClicker.color3, confirmClicker.color3:not(.primed), .color3 toggleClicker {
+clicker.color3, .color3 clicker {
 	border-color: #c66;
 	color: #c66;
 }
 
-clicker.color3:not(.disabled):active, heldClicker.color3.held, toggleClicker.color3:not(.disabled):active, toggleClicker.color3.enabled:not(.disabled), .color3 toggleClicker:not(.disabled):active, .color3 toggleClicker.enabled:not(.disabled), confirmClicker.color3:not(.primed):not(.disabled):active {
+clicker.color3:not(.disabled):active, clicker.color3.held, clicker.color3.enabled:not(.disabled), .color3 clicker:not(.disabled):active, .color3 clicker.held, .color3 clicker.enabled:not(.disabled) {
 	background-color: #c66;
 }
 
-clicker.color4, heldClicker.color4, toggleClicker.color4, confirmClicker.color4:not(.primed), .color4 toggleClicker {
+clicker.color4, .color4 clicker {
 	border-color: #99c;
 	color: #99c;
 }
 
-clicker.color4:not(.disabled):active, heldClicker.color4.held, toggleClicker.color4:not(.disabled):active, toggleClicker.color4.enabled:not(.disabled), .color4 toggleClicker:not(.disabled):active, .color4 toggleClicker.enabled:not(.disabled), confirmClicker.color4:not(.primed):not(.disabled):active {
+clicker.color4:not(.disabled):active, clicker.color4.held, clicker.color4.enabled:not(.disabled), .color4 clicker:not(.disabled):active, .color4 clicker.held, .color4 clicker.enabled:not(.disabled) {
 	background-color: #99c;
 }
 
-clicker.color5, heldClicker.color5, toggleClicker.color5, confirmClicker.color5:not(.primed), .color5 toggleClicker {
+clicker.color5, .color5 clicker {
 	border-color: #fc9;
 	color: #fc9;
 }
 
-clicker.color5:not(.disabled):active, heldClicker.color5.held, toggleClicker.color5:not(.disabled):active, toggleClicker.color5.enabled:not(.disabled), .color5 toggleClicker:not(.disabled):active, .color5 toggleClicker.enabled:not(.disabled), confirmClicker.color5:not(.primed):not(.disabled):active {
+clicker.color5:not(.disabled):active, clicker.color5.held, clicker.color5.enabled:not(.disabled), .color5 clicker:not(.disabled):active, .color5 clicker.held, .color5 clicker.enabled:not(.disabled) {
 	background-color: #fc9;
 }
 
-clicker.color6, heldClicker.color6, toggleClicker.color6, confirmClicker.color6:not(.primed), .color6 toggleClicker {
+clicker.color6, .color6 clicker {
 	border-color: #99f;
 	color: #99f;
 }
 
-clicker.color6:not(.disabled):active, heldClicker.color6.held, toggleClicker.color6:not(.disabled):active, toggleClicker.color6.enabled:not(.disabled), .color6 toggleClicker:not(.disabled):active, .color6 toggleClicker.enabled:not(.disabled), confirmClicker.color6:not(.primed):not(.disabled):active {
+clicker.color6:not(.disabled):active, clicker.color6.held, clicker.color6.enabled:not(.disabled), .color6 clicker:not(.disabled):active, .color6 clicker.held, .color6 clicker.enabled:not(.disabled) {
 	background-color: #99f;
 }
 
-clicker.color7, heldClicker.color7, toggleClicker.color7, confirmClicker.color7:not(.primed), .color7 toggleClicker {
+clicker.color7, .color7 clicker {
 	border-color: #f96;
 	color: #f96;
 }
 
-clicker.color7:not(.disabled):active, heldClicker.color7.held, toggleClicker.color7:not(.disabled):active, toggleClicker.color7.enabled:not(.disabled), .color7 toggleClicker:not(.disabled):active, .color7 toggleClicker.enabled:not(.disabled), confirmClicker.color7:not(.primed):not(.disabled):active {
+clicker.color7:not(.disabled):active, clicker.color7.held, clicker.color7.enabled:not(.disabled), .color7 clicker:not(.disabled):active, .color7 clicker.held, .color7 clicker.enabled:not(.disabled) {
 	background-color: #f96;
 }
 
-clicker.color8, heldClicker.color8, toggleClicker.color8, confirmClicker.color8:not(.primed), .color8 toggleClicker {
+clicker.color8, .color8 clicker {
 	border-color: #c69;
 	color: #c69;
 }
 
-clicker.color8:not(.disabled):active, heldClicker.color8.held, toggleClicker.color8:not(.disabled):active, toggleClicker.color8.enabled:not(.disabled), .color8 toggleClicker:not(.disabled):active, .color8 toggleClicker.enabled:not(.disabled), confirmClicker.color8:not(.primed):not(.disabled):active {
+clicker.color8:not(.disabled):active, clicker.color8.held, clicker.color8.enabled:not(.disabled), .color8 clicker:not(.disabled):active, .color8 clicker.held, .color8 clicker.enabled:not(.disabled) {
 	background-color: #c69;
 }
-
-
-
-
-
-
-
 
 #errorMsg {
 	white-space: pre-line;

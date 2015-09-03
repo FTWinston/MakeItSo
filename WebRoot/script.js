@@ -70,7 +70,7 @@ function shutdown(ev) {
 function switchToGame() {
 	$('screen, #btnResumeGame, #btnEndGame').hide();
 	$('#gameActive, #btnSetupGame').show();
-	$('#systemSwitcher choice toggleClicker:visible:first').mousedown().mouseup();
+	$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup();
 }
 
 function showError(msg, fatal) {
@@ -103,49 +103,49 @@ $(function () {
 		return retval;
 	}
 	
-	$(document).on('click', 'clicker.disabled, toggleClicker.disabled, confirmClicker.disabled, heldClicker.disabled', function (event) {
+	$(document).on('click', 'clicker.disabled', function (event) {
 		event.stopImmediatePropagation();
-	}).on('mousedown', 'toggleClicker:not(.enabled):not(.down)', function () {
+	}).on('mousedown', 'clicker[type="toggle"]:not(.enabled):not(.down)', function () {
 		$(this).addClass('enabled down');
-	}).on('mousedown', 'toggleClicker.enabled:not(.down)', function () {
+	}).on('mousedown', 'clicker[type="toggle"].enabled:not(.down)', function () {
 		$(this).removeClass('enabled').addClass('down');
-	}).on('mouseup', 'toggleClicker.down', function () {
+	}).on('mouseup', 'clicker[type="toggle"].down', function () {
 		$(this).removeClass('down');
-	}).on('click', 'confirmClicker', function (event) {
+	}).on('click', 'clicker[type="confirm"]', function (event) {
 		var clicker = $(this);
 		if (!clicker.hasClass('primed'))
 			event.stopImmediatePropagation();
 		clicker.toggleClass('primed');
-	}).on('mouseleave', 'confirmClicker.primed', function() {
+	}).on('mouseleave', 'clicker[type="confirm"].primed', function() {
 		$(this).removeClass('primed');
-	}).on('mousedown', 'heldClicker:not(.disabled)', function() {
+	}).on('mousedown', 'clicker[type="held"]:not(.disabled)', function() {
 		$(this).addClass('held');
-	}).on('mouseup', 'heldClicker:not(.disabled)', function() {
+	}).on('mouseup', 'clicker[type="held"]:not(.disabled)', function() {
 		$(this).removeClass('held');
-	}).on('mouseleave', 'heldClicker.held:not(.disabled), toggleClicker.down:not(.disabled)', function() {
+	}).on('mouseleave', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"].down:not(.disabled)', function() {
 		$(this).mouseup();
-	}).on('touchstart', 'clicker, heldClicker:not(.disabled), toggleClicker, confirmClicker', function() {
+	}).on('touchstart', 'clicker:not(.disabled)', function() {
 		$(this).mousedown();
-	}).on('touchend', 'heldClicker.held:not(.disabled), toggleClicker, confirmClicker', function() {
+	}).on('touchend', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"], clicker[type="confirm"]', function() {
 		$(this).mouseup();
-	}).on('mousedown', 'clicker[action]:not([down])', function () {
+	}).on('mousedown', 'clicker[type="push"][action]:not([down])', function () {
 		ws.send($(this).attr('action'));
-	}).on('mouseup', 'clicker[action]', function () {
+	}).on('mouseup', 'clicker[type="push"][action]', function () {
 		$(this).removeClass('down');
-	}).on('click', 'confirmClicker[action]', function () {
+	}).on('click', 'clicker[type="confirm"][action]', function () {
 		ws.send($(this).addClass('down').attr('action'));
-	}).on('mousedown', 'heldClicker[start]:not(.down)', function () {
+	}).on('mousedown', 'clicker[type="held"][start]:not(.down)', function () {
 		ws.send($(this).addClass('down').attr('start'));
-	}).on('mouseup', 'heldClicker[stop]', function () {
+	}).on('mouseup', 'clicker[type="held"][stop]', function () {
 		ws.send($(this).removeClass('down').attr('stop'));
-	}).on('mousedown', 'toggleClicker.enabled[start]:not(.down)', function () {
+	}).on('mousedown', 'clicker[type="toggle"].enabled[start]:not(.down)', function () {
 		ws.send($(this).addClass('down').attr('start'));
-	}).on('mousedown', 'toggleClicker:not(.enabled)[stop]:not(.down)', function () {
+	}).on('mousedown', 'clicker[type="toggle"]:not(.enabled)[stop]:not(.down)', function () {
 		ws.send($(this).attr('stop'));
 	});
 	
 	var keyPresses = {};
-	$('clicker[key], heldClicker[key], toggleClicker[key], confirmClicker[key]').each(function () {
+	$('clicker[key]').each(function () {
 		var clicker = $(this);
 		var keyCode = clicker.attr('key').charCodeAt(0);
 		
@@ -187,11 +187,11 @@ $(function () {
 		}
 	});
 	
-	$(document).on('mousedown', 'choice toggleClicker', function () {
+	$(document).on('mousedown', 'choice clicker[type="toggle"]', function () {
 		var clicker = $(this);
 				
 		var choice = clicker.closest('choice');
-		choice.find('toggleClicker.enabled').removeClass('enabled');
+		choice.find('clicker[type="toggle"].enabled').removeClass('enabled');
 		clicker.addClass('enabled');
 			
 		var desc = clicker.attr('description');
@@ -208,24 +208,24 @@ $(function () {
 		display.text(desc);
 	});
 	
-	$(document).on('showhide', 'choice toggleClicker, .table toggleClicker, .table clicker, .table heldClicker', function () {
+	$(document).on('showhide', 'choice clicker, .table clicker', function () {
 		var choice = $(this).parent();
 		choice.children().removeClass('first last');
-		choice.children('toggleClicker:not([style*="display: none"]):first').addClass('first');
-		choice.children('toggleClicker:not([style*="display: none"]):last').addClass('last');
+		choice.children('clicker:not([style*="display: none"]):first').addClass('first');
+		choice.children('clicker:not([style*="display: none"]):last').addClass('last');
 	});
 	
 	$('choice:has(row), buttonGroup:has(row)').addClass('table');
 	
-	$('system, #systemSwitcher choice toggleClicker').hide();
+	$('system, #systemSwitcher choice clicker').hide();
 	
-	$('#systemSwitcher choice toggleClicker').mousedown(function () {
+	$('#systemSwitcher choice clicker').mousedown(function () {
 		var btn = $(this);
 		var system = btn.attr('value');
 		$('system#' + system).show().siblings('system').hide();
 	});
 	
-	$('choice toggleClicker:first-of-type').mousedown().mouseup();
+	$('choice > clicker[type="toggle"]:first-of-type, choice row:first-of-type clicker[type="toggle"]:first-of-type').mousedown().mouseup();
 	
 	$('#systemList li.option').click(function () {
 		var btn = $(this);
@@ -235,7 +235,7 @@ $(function () {
 		var sysNumber = btn.attr('value');
 		ws.send(operation + sysNumber);
 		
-		var button = $('#systemSwitcher choice toggleClicker[value="system' + sysNumber + '"]');
+		var button = $('#systemSwitcher choice clicker[value="system' + sysNumber + '"]');
 		if (nowSelected)
 			button.show();
 		else
