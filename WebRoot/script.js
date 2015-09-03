@@ -42,9 +42,7 @@ function messageReceived(ev) {
 		showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
 	}
 	else if (cmd == 'game+') {
-		$('#systemSelect, #gameSetup').hide();
-		$('#gameActive').show();
-		$('#systemSwitcher choice toggleClicker:visible:first').click();
+		switchToGame();
 		$('#btnSetupGame').removeClass('disabled');
 	}
 	else if (cmd == 'game-') {
@@ -61,13 +59,18 @@ function messageReceived(ev) {
 		$('#systemSelect, #btnResumeGame, #btnEndGame').show();
 	}
 	else if (cmd == 'pause-') {
-		$('#systemSelect, #btnResumeGame, #btnEndGame').hide();
-		$('#gameActive, #btnSetupGame').show();
+		switchToGame();
 	}
 };
 
 function shutdown(ev) {
 	showError("The connection to your ship has been lost.\nIf the game's still running, check your network connection.");
+}
+
+function switchToGame() {
+	$('screen, #btnResumeGame, #btnEndGame').hide();
+	$('#gameActive, #btnSetupGame').show();
+	$('#systemSwitcher choice toggleClicker:visible:first').mousedown().mouseup();
 }
 
 function showError(msg, fatal) {
@@ -215,7 +218,6 @@ $(function () {
 		choice.children('toggleClicker:not([style*="display: none"]):last').addClass('last');
 	});
 	
-	$('choice toggleClicker:first-of-type').click();
 	$('system, #systemSwitcher choice toggleClicker').hide();
 	
 	$('#systemSwitcher choice toggleClicker').mousedown(function () {
@@ -223,6 +225,8 @@ $(function () {
 		var system = btn.attr('value');
 		$('system#' + system).show().siblings('system').hide();
 	});
+	
+	$('choice toggleClicker:first-of-type').mousedown().mouseup();
 	
 	$('#systemList li.option').click(function () {
 		var btn = $(this);
