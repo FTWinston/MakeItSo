@@ -63,15 +63,61 @@
 		</div>
 		
 		<system id="system0">
-			<heldClicker class="color1" id="btnLeft" key="A" start="+left" stop="-left">left</heldClicker>
-			<heldClicker class="color1" id="btnRight" key="D" start="+right" stop="-right">right</heldClicker>
-			<heldClicker class="color1" id="btnUp" key="S" start="+up" stop="-up">up</heldClicker>
-			<heldClicker class="color1" id="btnDown" key="W" start="+down" stop="-down">down</heldClicker>
-			<heldClicker class="color2" id="btnForward" key="R" start="+forward" stop="-forward">accelerate</heldClicker>
-			<toggleClicker class="color2" id="btnBackward" key="F" start="+backward" stop="-backward">brake</toggleClicker>
+			<heldClicker class="color1" key="A" start="+left" stop="-left">left</heldClicker>
+			<heldClicker class="color1" key="D" start="+right" stop="-right">right</heldClicker>
+			<heldClicker class="color1" key="S" start="+up" stop="-up">up</heldClicker>
+			<heldClicker class="color1" key="W" start="+down" stop="-down">down</heldClicker>
+			<heldClicker class="color2" key="R" start="+forward" stop="-forward">accelerate</heldClicker>
+			<toggleClicker class="color2" key="F" start="+backward" stop="-backward">brake</toggleClicker>
 		</system>
 		<system id="system1">
-			
+			<section>
+				<buttonGroup class="color3 inline">
+					<row>
+						<div></div>
+						<heldClicker key="W" start="+viewup" stop="-viewup">&#8593;</heldClicker>
+						<div></div>
+					</row>
+					<row>
+						<heldClicker key="A" start="+viewleft" stop="-viewleft">&#8592;</heldClicker>
+						<div>Pan</div>
+						<heldClicker key="D" start="+viewright" stop="-viewright">&#8594;</heldClicker>
+					</row>
+					<row>
+						<div></div>
+						<heldClicker key="S" start="+viewdown" stop="-viewdown">&#8595;</heldClicker>
+						<div></div>
+					</row>
+				</buttonGroup>
+				
+				<buttonGroup class="color5 inline">
+					<row>
+						<heldClicker key="R" start="+zoomin" stop="-zoomin">&#8607;</heldClicker>
+					</row>
+					<row>
+						<div>Zoom</div>
+					</row>
+					<row>
+						<heldClicker key="T" start="+zoomout" stop="-zoomout">&#8609;</heldClicker>
+					</row>
+				</buttonGroup>
+			</section>
+			<section>
+				<choice class="color2 inline">
+					<row>
+						<toggleClicker key="F" start="view forward">forward</toggleClicker>
+						<toggleClicker key="G" start="view port">port</toggleClicker>
+						<toggleClicker key="H" start="view starboard">starboard</toggleClicker>
+					</row>
+					<row>
+						<toggleClicker key="C" start="view starboard">aft</toggleClicker>
+						<toggleClicker key="V" start="view starboard">dorsal</toggleClicker>
+						<toggleClicker key="B" start="view starboard">ventral</toggleClicker>
+					</row>
+				</choice>
+				<toggleClicker class="color3" key="N" start="+chase" stop="-chase">chase mode</toggleClicker>
+				<toggleClicker class="color5" key="M" start="+viewcomms" stop="-viewcomms">comms channel</toggleClicker>
+			</section>
 		</system>
 		<system id="system2">
 			

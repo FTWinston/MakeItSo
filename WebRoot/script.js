@@ -189,14 +189,11 @@ $(function () {
 	
 	$(document).on('mousedown', 'choice toggleClicker', function () {
 		var clicker = $(this);
-		
-		if (!clicker.hasClass('enabled')) {
-			clicker.addClass('enabled');
-			return;
-		}
-		
-		clicker.siblings('toggleClicker.enabled').removeClass('enabled');
-		
+				
+		var choice = clicker.closest('choice');
+		choice.find('toggleClicker.enabled').removeClass('enabled');
+		clicker.addClass('enabled');
+			
 		var desc = clicker.attr('description');
 		var display = clicker.siblings('description');
 		
@@ -211,12 +208,14 @@ $(function () {
 		display.text(desc);
 	});
 	
-	$(document).on('showhide', 'choice toggleClicker', function () {
+	$(document).on('showhide', 'choice toggleClicker, .table toggleClicker, .table clicker, .table heldClicker', function () {
 		var choice = $(this).parent();
 		choice.children().removeClass('first last');
 		choice.children('toggleClicker:not([style*="display: none"]):first').addClass('first');
 		choice.children('toggleClicker:not([style*="display: none"]):last').addClass('last');
 	});
+	
+	$('choice:has(row), buttonGroup:has(row)').addClass('table');
 	
 	$('system, #systemSwitcher choice toggleClicker').hide();
 	
