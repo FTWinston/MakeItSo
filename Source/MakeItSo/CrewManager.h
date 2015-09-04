@@ -4,6 +4,7 @@
 
 #ifndef WEB_SERVER_TEST
 #include "GameFramework/PlayerInput.h"
+#include "CrewManager.Generated.h"
 #endif
 #include "Mongoose.h"
 #include "CrewManager.Generated.h"
