@@ -1,13 +1,19 @@
-
-
 #pragma once
+
+#include "Engine/GameEngine.h"
+#include "MakeItSoEngine.generated.h"
 
 /**
  * 
  */
-class MAKEITSO_API MakeItSoEngine
+UCLASS()
+class MAKEITSO_API UMakeItSoEngine : public UGameEngine
 {
-public:
-	MakeItSoEngine();
-	~MakeItSoEngine();
+	GENERATED_UCLASS_BODY()
+
+
+	// When engine starts
+	void Init(class IEngineLoop* InEngineLoop);
+	// Close engine
+	void PreExit();
 };

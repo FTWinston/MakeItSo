@@ -26,3 +26,9 @@
 
 class UObject {};
 class APlayerController {};
+
+class Super
+{
+public:
+	static void BeginDestroy() {}
+};

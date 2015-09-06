@@ -83,6 +83,8 @@ void UCrewManager::BeginDestroy()
 	server = nullptr;
 
 	delete currentConnections;
+
+	Super::BeginDestroy();
 }
 
 void UCrewManager::LinkController(APlayerController *controller)

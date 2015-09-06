@@ -6,12 +6,12 @@
 #include "GameFramework/PlayerInput.h"
 #endif
 #include "Mongoose.h"
+#include "CrewManager.Generated.h"
 
 #define MAX_CREW_CONNECTIONS 26
 
 class ConnectionInfo;
 
-#include "CrewManager.Generated.h"
 
 /**
 *

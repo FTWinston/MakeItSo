@@ -1,12 +1,23 @@
-
-
 #include "MakeItSo.h"
 #include "MakeItSoEngine.h"
+#include "CrewManager.h"
 
-MakeItSoEngine::MakeItSoEngine()
+UMakeItSoEngine::UMakeItSoEngine(const FObjectInitializer& foi)
+	: Super(foi)
+{}
+
+void UMakeItSoEngine::Init(class IEngineLoop* InEngineLoop)
 {
+	Super::Init(InEngineLoop);
 }
 
-MakeItSoEngine::~MakeItSoEngine()
+void UMakeItSoEngine::PreExit()
 {
+	Super::PreExit();
+
+	if (UCrewManager::Instance)
+	{
+		UCrewManager::Instance->ConditionalBeginDestroy();
+		UCrewManager::Instance = nullptr;
+	}
 }
