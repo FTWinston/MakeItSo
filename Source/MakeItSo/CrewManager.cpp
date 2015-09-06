@@ -32,8 +32,8 @@
 #define snprintf _snprintf_s
 #endif
 
-UCrewManager *UCrewManager::Instance = NULL;
-mg_server *UCrewManager::server = NULL;
+UCrewManager *UCrewManager::Instance = nullptr;
+mg_server *UCrewManager::server = nullptr;
 
 int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 {
@@ -47,13 +47,13 @@ void UCrewManager::Init(APlayerController *controller)
 	crewState = ECrewState::Setup;
 
 	nextConnectionIdentifer = 0;
-	connectionInSetup = NULL;
+	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
 
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 	
-	if (server == NULL)
+	if (!server)
 		server = mg_create_server(this, EventReceived);
 
 #ifdef WEB_SERVER_TEST
@@ -68,7 +68,7 @@ void UCrewManager::Init(APlayerController *controller)
 
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
-	if (controller != NULL)
+	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Listening on %s\n"), *url));
 #else
 	wprintf(L"Listening on %s\n", url.c_str());
@@ -80,7 +80,7 @@ void UCrewManager::BeginDestroy()
 	if (server)
 		mg_destroy_server(&server);
 
-	server = NULL;
+	server = nullptr;
 
 	delete currentConnections;
 }
@@ -106,7 +106,7 @@ void UCrewManager::PauseGame(bool state)
 	}
 
 #ifndef WEB_SERVER_TEST
-	if (controller != NULL)
+	if (controller)
 		controller->SetPause(state);
 #endif
 }
@@ -129,7 +129,7 @@ void UCrewManager::AllocateListenPort()
 		return;
 
 #ifndef WEB_SERVER_TEST
-	if (controller != NULL)
+	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
 #endif
 }
@@ -152,7 +152,7 @@ FString UCrewManager::GetLocalIP()
 
 	struct hostent *host = gethostbyname(hostname);
 
-	if (host == NULL)
+	if (!host)
 	{
 		WSACleanup();
 		return FString(TEXT("ERROR_NO_HOST"));
@@ -233,7 +233,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	}
 
 #ifndef WEB_SERVER_TEST
-	if (controller != NULL)
+	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
 #endif
 
@@ -245,7 +245,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	}
 
 	// if someone is in setup, tell this client
-	if (connectionInSetup != NULL)
+	if (connectionInSetup)
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "setup-");
 }
 
@@ -254,7 +254,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 	ConnectionInfo *info = (ConnectionInfo*)conn->connection_param;
 
 #ifndef WEB_SERVER_TEST
-	if (controller != NULL)
+	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
 #endif
 
@@ -273,7 +273,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	if (connectionInSetup == info)
 	{
-		connectionInSetup = NULL;
+		connectionInSetup = nullptr;
 
 		// send "setup not in use" message to all
 		for (auto& other : *currentConnections)
@@ -373,7 +373,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (MATCHES(info, "+setup"))
 	{
-		if (connectionInSetup != NULL || crewState != ECrewState::Setup)
+		if (connectionInSetup != nullptr || crewState != ECrewState::Setup)
 			return;
 
 		connectionInSetup = info;
@@ -393,7 +393,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		if (connectionInSetup != info || crewState != ECrewState::Setup)
 			return;
 
-		connectionInSetup = NULL;
+		connectionInSetup = nullptr;
 
 		// send "setup not in use" message to all
 		for (auto& other : *currentConnections)
@@ -419,7 +419,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		if (connectionInSetup != info || crewState != ECrewState::Setup)
 			return;
 
-		connectionInSetup = NULL; // game started, no one is setting it up anymore
+		connectionInSetup = nullptr; // game started, no one is setting it up anymore
 		crewState = ECrewState::Active;
 
 		SendCrewMessage(ESystem::AllStations, "game+"); // game started
@@ -514,7 +514,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		// write all unrecognised commands to the console
 		char buffer[128];
 		EXTRACT(info, buffer, "");
-		if (controller != NULL)
+		if (controller)
 			controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
 	}
 #endif

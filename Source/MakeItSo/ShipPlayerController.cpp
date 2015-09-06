@@ -8,7 +8,7 @@ void AShipPlayerController::InitInputSystem()
 {
 	Super::InitInputSystem();
 
-	if (UCrewManager::Instance == NULL)
+	if (!UCrewManager::Instance)
 	{
 		UCrewManager::Instance = NewObject<UCrewManager>(GetTransientPackage(), NAME_None, RF_Standalone | RF_RootSet);
 		UCrewManager::Instance->Init(this);
