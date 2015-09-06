@@ -5,6 +5,13 @@ ws.onerror = shutdown;
 ws.onclose = shutdown;
 ws.onmessage = messageReceived;
 
+var unloadEvent = function (e) {	
+	var confirmationMessage = 'The game is still active.';
+
+	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+	return confirmationMessage; //Webkit, Safari, Chrome etc.
+};
+
 function messageReceived(ev) {
 	var m = (ev.data || '').split(' ', 2);
 	var cmd = m[0];
@@ -42,7 +49,7 @@ function messageReceived(ev) {
 		showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
 	}
 	else if (cmd == 'game+') {
-		switchToGame();
+		switchToGame(true);
 		$('#btnSetupGame').removeClass('disabled');
 	}
 	else if (cmd == 'game-') {
@@ -57,9 +64,10 @@ function messageReceived(ev) {
 	else if (cmd == 'pause+') {
 		$('#gameActive, #btnSetupGame, #error').hide();
 		$('#systemSelect, #btnResumeGame, #btnEndGame').show();
+		switchToGame(false);
 	}
 	else if (cmd == 'pause-') {
-		switchToGame();
+		switchToGame(true);
 	}
 };
 
@@ -67,10 +75,17 @@ function shutdown(ev) {
 	showError("The connection to your ship has been lost.\nIf the game's still running, check your network connection.");
 }
 
-function switchToGame() {
-	$('screen, #btnResumeGame, #btnEndGame').hide();
-	$('#gameActive, #btnSetupGame').show();
-	$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup();
+function switchToGame(intoGame) {
+	if (intoGame) {
+		window.addEventListener('beforeunload', unloadEvent);
+		
+		$('screen, #btnResumeGame, #btnEndGame').hide();
+		$('#gameActive, #btnSetupGame').show();
+		$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup();
+	}
+	else {
+		window.removeEventListener('beforeunload', unloadEvent);
+	}
 }
 
 function showError(msg, fatal) {
@@ -82,6 +97,7 @@ function showError(msg, fatal) {
 		msg +='\n\nRefresh the page to continue.';
 	}
 	
+	switchToGame(false);
 	$('#errorMsg').text(msg);
 	
 	$('screen').hide();
