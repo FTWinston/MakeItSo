@@ -18,6 +18,8 @@
             <li class="option" value="1">System #1</li>
             <li class="option" value="2">System #2</li>
         </ul>
+		
+		<clicker type="toggle" id="btnTouchToggle" class="color7">Touch interface</clicker>
 		<clicker type="push" id="btnSetupGame" class="color4" action="+setup">Setup game</clicker>
 		
 		<clicker type="push" id="btnResumeGame" class="color4" action="resume" style="display: none">resume game</clicker>
@@ -64,7 +66,7 @@
 		</div>
 		
 		<system id="system0">
-			<buttonGroup class="color1 inline" caption="rotation">
+			<buttonGroup class="color1 inline nonTouchMode" caption="rotation">
 				<row>
 					<spacer></spacer>
 					<clicker type="held" key="W" start="+down" stop="-down">down</clicker>
@@ -81,8 +83,11 @@
 					</spacer>
 				</row>
 			</buttonGroup>
+			<touchArea class="color1 touchMode inline" caption="rotation" direction="both" mode="continuous">
+				This is a touch area. Honest
+			</touchArea>
 			
-			<buttonGroup class="color2 inline">
+			<buttonGroup class="color2 inline nonTouchMode">
 				<row>
 					<clicker type="held" class="color2" key="R" start="+forward" stop="-forward">accelerate</clicker>
 				</row>
@@ -90,8 +95,11 @@
 					<clicker type="toggle" class="color2" key="F" start="+backward" stop="-backward">brake</clicker>
 				</row>
 			</buttonGroup>
+			<touchArea class="color2 touchMode inline" direction="vertical" mode="continuous">
+				This too
+			</touchArea>
 			
-			<buttonGroup class="color3 inline" caption="translation">
+			<buttonGroup class="color3 inline nonTouchMode" caption="translation">
 				<row>
 					<spacer></spacer>
 					<clicker type="held" key="I" start="+moveforward" stop="-moveforward">forward</clicker>
@@ -108,6 +116,9 @@
 					<spacer></spacer>
 				</row>
 			</buttonGroup>
+			<touchArea class="color3 touchMode inline" caption="translation" direction="both" mode="continuous">
+				And also this
+			</touchArea>
 		</system>
 		<system id="system1">
 			<section>

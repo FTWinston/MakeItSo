@@ -89,7 +89,7 @@ clicker[type="confirm"].primed::after {
 	display: inline-table;
 }
 
-row section {
+row section, touchArea {
 	display: block;
 }
 
@@ -244,6 +244,32 @@ clicker.color8, .color8 clicker {
 
 clicker.color8:not(.disabled):active, clicker.color8.held, clicker.color8.enabled:not(.disabled), .color8 clicker:not(.disabled):active, .color8 clicker.held, .color8 clicker.enabled:not(.disabled) {
 	background-color: #c69;
+}
+
+touchArea {
+	border: solid #ccc 1px;
+	width: 10em;
+	height: 10em;
+}
+
+touchArea[direction="horizontal"] {
+	height: 3em;
+}
+
+touchArea[direction="vertical"] {
+	width: 3em;
+}
+
+touchArea[mode="continuous"] {
+	background: radial-gradient(#999 #000);
+}
+
+touchArea[direction="horizontal"][mode="continuous"] {
+	background: linear-gradient(to right, #000, #999);
+}
+
+touchArea[direction="vertical"][mode="continuous"] {
+	background: linear-gradient(#999, #000);
 }
 
 #errorMsg {

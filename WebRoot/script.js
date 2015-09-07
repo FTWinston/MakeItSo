@@ -99,6 +99,20 @@ function showError(msg, fatal) {
 
 
 $(function () {
+	var btnTouch = $('#btnTouchToggle');
+	if (Features.TouchInterface == FeatureState.Unavailable)
+		btnTouch.hide();
+	else {
+		if (Features.TouchInterface == FeatureState.Enabled)
+			btnTouch.addClass('enabled');
+		btnTouch.mousedown(function () {
+			var on = btnTouch.hasClass('enabled');
+			Features.TouchInterface = on ? FeatureState.Enabled : FeatureState.Disabled;
+			$('.touchMode').toggle(on);
+			$('.nonTouchMode').toggle(!on);
+		});
+	}
+	
 	$('#systemList li.option').click(function () {
 		var btn = $(this);
 		var nowSelected = !btn.hasClass('selected');

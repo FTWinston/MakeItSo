@@ -1,5 +1,16 @@
 if (!window.console) { window.console = { log: function() {} } };
 
+var FeatureState = {
+	Unavailable: 0,
+	Disabled: 1,
+	Enabled: 2
+};
+
+var Features = {
+	Vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
+	TouchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? (Vibration == FeatureState.Unavailable ? FeatureState.Disabled : FeatureState.Enabled) : FeatureState.Unavailable
+};
+
 var SwipeDir = {
 	Up: 0,
 	Down: 1,
