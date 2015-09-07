@@ -95,7 +95,16 @@ row section {
 
 choice, buttonGroup {
 	margin: 2em;
-	display:block;
+	display: block;
+	position: relative;
+}
+
+buttonGroup[caption]::before, choice[caption]::before {
+	content: attr(caption);
+	color: #ccc;
+	position: absolute;
+    bottom: -1em;
+    left: 0.5em;
 }
 
 choice prompt, choice description {

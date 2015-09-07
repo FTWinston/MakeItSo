@@ -63,12 +63,50 @@
 		</div>
 		
 		<system id="system0">
-			<clicker type="held" class="color1" key="A" start="+left" stop="-left">left</clicker>
-			<clicker type="held" class="color1" key="D" start="+right" stop="-right">right</clicker>
-			<clicker type="held" class="color1" key="S" start="+up" stop="-up">up</clicker>
-			<clicker type="held" class="color1" key="W" start="+down" stop="-down">down</clicker>
-			<clicker type="held" class="color2" key="R" start="+forward" stop="-forward">accelerate</clicker>
-			<clicker type="toggle" class="color2" key="F" start="+backward" stop="-backward">brake</clicker>
+			<buttonGroup class="color1 inline" caption="rotation">
+				<row>
+					<spacer></spacer>
+					<clicker type="held" key="W" start="+down" stop="-down">down</clicker>
+					</spacer>
+				</row>
+				<row class="rounded">
+					<clicker type="held" key="A" start="+left" stop="-left">left</clicker>
+					<clicker type="press" action="stoprotate">stop</clicker>
+					<clicker type="held" key="D" start="+right" stop="-right">right</clicker>
+				</row>
+				<row>
+					<spacer></spacer>
+					<clicker type="held" key="S" start="+up" stop="-up">up</clicker>
+					</spacer>
+				</row>
+			</buttonGroup>
+			
+			<buttonGroup class="color2 inline">
+				<row>
+					<clicker type="held" class="color2" key="R" start="+forward" stop="-forward">accelerate</clicker>
+				</row>
+				<row>
+					<clicker type="toggle" class="color2" key="F" start="+backward" stop="-backward">brake</clicker>
+				</row>
+			</buttonGroup>
+			
+			<buttonGroup class="color3 inline" caption="translation">
+				<row>
+					<spacer></spacer>
+					<clicker type="held" key="I" start="+moveforward" stop="-moveforward">forward</clicker>
+					<spacer></spacer>
+				</row>
+				<row class="rounded">
+					<clicker type="held" key="J" start="+moveleft" stop="-moveleft">left</clicker>
+					<clicker type="press" action="stoptranslate">stop</clicker>
+					<clicker type="held" key="L" start="+moveright" stop="-moveright">right</clicker>
+				</row>
+				<row>
+					<spacer></spacer>
+					<clicker type="held" key="K" start="+moveback" stop="-moveback">back</clicker>
+					<spacer></spacer>
+				</row>
+			</buttonGroup>
 		</system>
 		<system id="system1">
 			<section>
