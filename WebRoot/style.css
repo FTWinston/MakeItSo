@@ -261,7 +261,7 @@ touchArea[direction="vertical"] {
 }
 
 touchArea[mode="continuous"] {
-	background: radial-gradient(#999 #000);
+	background: radial-gradient(#999, #000);
 }
 
 touchArea[direction="horizontal"][mode="continuous"] {

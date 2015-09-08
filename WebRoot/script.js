@@ -100,17 +100,22 @@ function showError(msg, fatal) {
 
 $(function () {
 	var btnTouch = $('#btnTouchToggle');
-	if (Features.TouchInterface == FeatureState.Unavailable)
+	if (Features.TouchInterface == FeatureState.Unavailable) {
 		btnTouch.hide();
+		$('.touchMode').hide();
+	}
 	else {
 		if (Features.TouchInterface == FeatureState.Enabled)
 			btnTouch.addClass('enabled');
-		btnTouch.mousedown(function () {
+
+		var toggleTouch = function () {
 			var on = btnTouch.hasClass('enabled');
 			Features.TouchInterface = on ? FeatureState.Enabled : FeatureState.Disabled;
 			$('.touchMode').toggle(on);
 			$('.nonTouchMode').toggle(!on);
-		});
+		}
+		btnTouch.mousedown(toggleTouch);
+		toggleTouch();
 	}
 	
 	$('#systemList li.option').click(function () {
