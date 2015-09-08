@@ -18,7 +18,7 @@ var SwipeDir = {
 	Right: 3
 };
 
-function swipedetect(surface, minDist, maxTime, callback) {
+function detectSwipe(surface, minDist, maxTime, callback) {
 	if (minDist === undefined)
 		minDist = 100;
 	if (maxTime === undefined)
@@ -64,7 +64,7 @@ function swipedetect(surface, minDist, maxTime, callback) {
 	}, false);
 }
 
-function movedetect(surface, callback) {
+function detectMovement(surface, callback) {
 	var ongoingTouches = {};
 	var distX; var distY;
 	
@@ -88,12 +88,7 @@ function movedetect(surface, callback) {
 			
 			distX = currentTouch.pageX - prevTouch.pageX;
 			distY = currentTouch.pageY - prevTouch.pageY;
-			
-			// by not updating the previous positions, the "difference" will always be relative to where the current touch started
-			// this means that you don't have to keep moving your hand to keep the output moving, you just have to hold it (once it has already moved).
-			//prevTouch.pageX = currentTouch.pageX;
-			//prevTouch.pageY = currentTouch.pageY;
-			
+
 			callback(distX, distY);
 		}
 	}, false);
@@ -102,13 +97,15 @@ function movedetect(surface, callback) {
 		e.preventDefault();
 		
 		for (var i=0; i<e.changedTouches.length; i++) {
-			ongoingTouches[currentTouch.identifier] = undefined;
+			var touch = e.changedTouches[i];
+			ongoingTouches[touch.identifier] = undefined;
+			callback(0, 0);
 		}
 	};
 	
 	surface.addEventListener('touchend', touchEnd, false);
-	el.addEventListener('touchcancel', touchEnd, false);
-	el.addEventListener('touchleave', touchEnd, false);
+	surface.addEventListener('touchcancel', touchEnd, false);
+	surface.addEventListener('touchleave', touchEnd, false);
 }
 
 $(function () {

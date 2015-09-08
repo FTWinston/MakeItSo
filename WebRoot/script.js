@@ -145,4 +145,10 @@ $(function () {
 		var system = btn.attr('value');
 		$('system#' + system).show().siblings('system').hide();
 	});
+	
+	$('touchArea[mode="continuous"]').each(function () {
+		detectMovement(this, function (x, y) {
+			console.log('moved ' + x + ' x ' + y);
+		});
+	});
 });
