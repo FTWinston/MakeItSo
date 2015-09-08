@@ -8,7 +8,7 @@ var FeatureState = {
 
 var Features = {
 	Vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
-	TouchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? (Vibration == FeatureState.Unavailable ? FeatureState.Disabled : FeatureState.Enabled) : FeatureState.Unavailable
+	TouchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
 };
 
 var SwipeDir = {
@@ -128,10 +128,8 @@ $(function () {
 	
 	$(document).on('click', 'clicker.disabled', function (event) {
 		event.stopImmediatePropagation();
-	}).on('mousedown', 'clicker[type="toggle"]:not(.enabled):not(.down)', function () {
-		$(this).addClass('enabled down');
-	}).on('mousedown', 'clicker[type="toggle"].enabled:not(.down)', function () {
-		$(this).removeClass('enabled').addClass('down');
+	}).on('mousedown', 'clicker[type="toggle"]:not(.down)', function () {
+		$(this).addClass('down').toggleClass('enabled');
 	}).on('mouseup', 'clicker[type="toggle"].down', function () {
 		$(this).removeClass('down');
 	}).on('click', 'clicker[type="confirm"]', function (event) {
@@ -147,10 +145,12 @@ $(function () {
 		$(this).removeClass('held');
 	}).on('mouseleave', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"].down:not(.disabled)', function() {
 		$(this).mouseup();
-	}).on('touchstart', 'clicker:not(.disabled)', function() {
+	}).on('touchstart', 'clicker:not(.disabled)', function(e) {
 		$(this).mousedown();
-	}).on('touchend', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"], clicker[type="confirm"]', function() {
+		e.preventDefault();
+	}).on('touchend', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"], clicker[type="confirm"]', function(e) {
 		$(this).mouseup();
+		e.preventDefault();
 	}).on('mousedown', 'clicker[type="push"][action]:not([down])', function () {
 		ws.send($(this).attr('action'));
 	}).on('mouseup', 'clicker[type="push"][action]', function () {

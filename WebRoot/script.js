@@ -109,11 +109,11 @@ $(function () {
 			btnTouch.addClass('enabled');
 
 		var toggleTouch = function () {
-			var on = btnTouch.hasClass('enabled');
+			var on = !btnTouch.hasClass('enabled');
 			Features.TouchInterface = on ? FeatureState.Enabled : FeatureState.Disabled;
 			$('.touchMode').toggle(on);
 			$('.nonTouchMode').toggle(!on);
-		}
+		};
 		btnTouch.mousedown(toggleTouch);
 		toggleTouch();
 	}
