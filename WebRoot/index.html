@@ -83,11 +83,11 @@
 					</spacer>
 				</row>
 			</buttonGroup>
-			<touchArea class="color1 touchMode inline" caption="rotation" direction="both" mode="continuous">
+			<touchArea id="touchRotation" class="color1 touchMode inline" caption="rotation" direction="both" mode="continuous">
 				This is a touch area. Honest
 			</touchArea>
 			
-			<buttonGroup class="color2 inline nonTouchMode">
+			<buttonGroup id="touchAcceleration" class="color2 inline nonTouchMode">
 				<row>
 					<clicker type="held" class="color2" key="R" start="+forward" stop="-forward">accelerate</clicker>
 				</row>
@@ -99,7 +99,7 @@
 				This too
 			</touchArea>
 			
-			<buttonGroup class="color3 inline nonTouchMode" caption="translation">
+			<buttonGroup id="touchTranslation" class="color3 inline nonTouchMode" caption="translation">
 				<row>
 					<spacer></spacer>
 					<clicker type="held" key="I" start="+moveforward" stop="-moveforward">forward</clicker>

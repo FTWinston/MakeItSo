@@ -145,10 +145,61 @@ $(function () {
 		var system = btn.attr('value');
 		$('system#' + system).show().siblings('system').hide();
 	});
+
+	detectMovement($('#touchRotation')[0], function (x, y) {
+		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
+		var scale = 1/50;
+		if (x < 0)
+			ws.send('+left ' + (-x * scale));
+		else if (x == 0) {
+			ws.send('-left');
+			ws.send('-right');
+		}
+		else
+			ws.send('+right ' + (y * scale));
+		
+		if (y < 0)
+			ws.send('+up ' + (-y * scale));
+		else if (y == 0) {
+			ws.send('-up');
+			ws.send('-down');
+		}
+		else
+			ws.send('+down ' + (y * scale));
+	});
 	
-	$('touchArea[mode="continuous"]').each(function () {
-		detectMovement(this, function (x, y) {
-			console.log('moved ' + x + ' x ' + y);
-		});
+	detectMovement($('#touchAcceleration')[0], function (x, y) {
+		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
+		var scale = 1/50;
+		if (y < 0)
+			ws.send('+forward ' + (-y * scale));
+		else if (y == 0) {
+			ws.send('-forward');
+			ws.send('-backward');
+		}
+		else
+			ws.send('+backward ' + (y * scale));
+	});
+	
+	detectMovement($('#touchTranslation')[0], function (x, y) {
+		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
+		var scale = 1/50;
+		if (x < 0)
+			ws.send('+rotleft ' + (-x * scale));
+		else if (x == 0) {
+			ws.send('-moveleft');
+			ws.send('-moveright');
+		}
+		else
+			ws.send('+moveright ' + (y * scale));
+		
+		if (y < 0)
+			ws.send('+moveup ' + (-y * scale));
+		else if (y == 0) {
+			ws.send('-moveup');
+			ws.send('-movedown');
+		}
+		else
+			ws.send('+movedown ' + (y * scale));
 	});
 });
