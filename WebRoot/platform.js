@@ -142,10 +142,10 @@ $(function () {
 		$(this).removeClass('held');
 	}).on('mouseleave', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"].down:not(.disabled)', function() {
 		$(this).mouseup();
-	}).on('touchstart', 'clicker:not(.disabled)', function(e) {
+	}).on('touchstart', 'clicker:not(.disabled):not([type="confirm"])', function(e) {
 		$(this).mousedown();
 		e.preventDefault();
-	}).on('touchend', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"], clicker[type="confirm"]', function(e) {
+	}).on('touchend', 'clicker[type="held"].held:not(.disabled), clicker[type="toggle"]', function(e) {
 		$(this).mouseup();
 		e.preventDefault();
 	}).on('mousedown', 'clicker[type="push"][action]:not([down])', function () {
