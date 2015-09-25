@@ -105,9 +105,13 @@ $(function () {
 		$('.touchMode').hide();
 	}
 	else {
-		if (Features.TouchInterface == FeatureState.Enabled)
+		if (Features.TouchInterface == FeatureState.Enabled) {
 			btnTouch.addClass('enabled');
-
+			$('.nonTouchMode').hide();
+		}
+		else {
+			$('.touchMode').hide();
+		}
 		var toggleTouch = function () {
 			var on = !btnTouch.hasClass('enabled');
 			Features.TouchInterface = on ? FeatureState.Enabled : FeatureState.Disabled;
@@ -115,7 +119,7 @@ $(function () {
 			$('.nonTouchMode').toggle(!on);
 		};
 		btnTouch.mousedown(toggleTouch);
-		toggleTouch();
+		
 	}
 	
 	$('#systemList li.option').click(function () {
