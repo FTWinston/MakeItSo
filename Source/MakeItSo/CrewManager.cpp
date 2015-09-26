@@ -511,6 +511,18 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		InputKey(EKeys::W, false);
 	}
+	else if (STARTS_WITH(info, "yaw "))
+	{
+		char buffer[10];
+		EXTRACT(info, buffer, "yaw "); // this crashes (sometimes) unless buffer length is ~30
+		InputAxis(EKeys::Gamepad_LeftX, atof(buffer));
+	}
+	else if (STARTS_WITH(info, "pitch "))
+	{
+		char buffer[10];
+		EXTRACT(info, buffer, "pitch "); // this crashes (sometimes) unless buffer length is ~30
+		InputAxis(EKeys::Gamepad_LeftY, atof(buffer));
+	}
 	else
 	{
 		// write all unrecognised commands to the console
@@ -526,6 +538,15 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 void UCrewManager::InputKey(FKey key, bool pressed)
 {
 	controller->InputKey(key, pressed ? EInputEvent::IE_Pressed : EInputEvent::IE_Released, pressed ? 1 : 0, false);
+}
+
+void UCrewManager::InputAxis(FKey key, float value)
+{
+	if (value > 1)
+		value = 1;
+	if (value < -1)
+		value = -1;
+	controller->InputAxis(key, value, 1, 1, true);
 }
 #endif
 

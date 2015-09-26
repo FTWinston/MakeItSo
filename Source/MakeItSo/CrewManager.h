@@ -60,6 +60,7 @@ private:
 	void AllocateListenPort();
 #ifndef WEB_SERVER_TEST
 	void InputKey(FKey key, bool down);
+	void InputAxis(FKey key, float value);
 #endif
 	static FString GetLocalIP();
 
