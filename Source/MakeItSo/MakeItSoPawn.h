@@ -35,12 +35,14 @@ protected:
 
 	/** Bound to the thrust axis */
 	void ThrustInput(float Val);
+	void ThrustInputSide(float Val);
+	void ThrustInputVertical(float Val);
 	
 	/** Bound to the vertical axis */
-	void MoveUpInput(float Val);
+	void PitchInput(float Val);
 
 	/** Bound to the horizontal axis */
-	void MoveRightInput(float Val);
+	void YawInput(float Val);
 
 private:
 
@@ -61,7 +63,7 @@ private:
 	float MinSpeed;
 
 	/** Current forward speed */
-	float CurrentForwardSpeed;
+	float CurrentForwardSpeed, CurrentRightSpeed, CurrentUpSpeed;
 
 	/** Current yaw speed */
 	float CurrentYawSpeed;

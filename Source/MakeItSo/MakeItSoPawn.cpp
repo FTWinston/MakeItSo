@@ -38,15 +38,24 @@ AMakeItSoPawn::AMakeItSoPawn()
 	Acceleration = 500.f;
 	TurnSpeed = 50.f;
 	MaxSpeed = 4000.f;
-	MinSpeed = 500.f;
+	MinSpeed = 0.f;
 	CurrentForwardSpeed = 500.f;
+	CurrentRightSpeed = 0.f;
+	CurrentUpSpeed = 0.f;
 }
 
 void AMakeItSoPawn::Tick(float DeltaSeconds)
 {
-	const FVector LocalMove = FVector(CurrentForwardSpeed * DeltaSeconds, 0.f, 0.f);
+	const FVector LocalMove = FVector(CurrentForwardSpeed * DeltaSeconds, CurrentRightSpeed * DeltaSeconds, CurrentUpSpeed * DeltaSeconds);
+	
+	// this shows the input is getting ever more negative, all the time - even when in the menu.
+	// it then "resets" when the game starts, or we hit something.
+	// it seems to be adding -5, -2, -2 each tick to forward / right / up
+	// uh... why is there a PAWN in the main menu?
 
-	// Move plan forwards (with sweep so we stop when we collide with things)
+	//GetWorld()->GetFirstPlayerController()->ClientMessage(FString::Printf(TEXT("Current speed: %f, %f, %f\n"), CurrentForwardSpeed, CurrentRightSpeed, CurrentUpSpeed));
+
+	// Move ship forwards (with sweep so we stop when we collide with things)
 	AddActorLocalOffset(LocalMove, true);
 
 	// Calculate change in rotation this frame
@@ -68,6 +77,8 @@ void AMakeItSoPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* O
 
 	// Set velocity to zero upon collision
 	CurrentForwardSpeed = 0.f;
+	CurrentRightSpeed = 0.f;
+	CurrentUpSpeed = 0.f;
 }
 
 
@@ -76,9 +87,14 @@ void AMakeItSoPawn::SetupPlayerInputComponent(class UInputComponent* InputCompon
 	check(InputComponent);
 
 	// Bind our control axis' to callback functions
-	InputComponent->BindAxis("Thrust", this, &AMakeItSoPawn::ThrustInput);
-	InputComponent->BindAxis("MoveUp", this, &AMakeItSoPawn::MoveUpInput);
-	InputComponent->BindAxis("MoveRight", this, &AMakeItSoPawn::MoveRightInput);
+	//InputComponent->BindAction("Stop", EInputEvent::IE_Pressed, this, );
+	//InputComponent->GetAxisValue ... no corresponding SetAxisValue
+	InputComponent->BindAxis("HelmThrust", this, &AMakeItSoPawn::ThrustInput);
+	InputComponent->BindAxis("HelmThrustSide", this, &AMakeItSoPawn::ThrustInputSide);
+	InputComponent->BindAxis("HelmThrustVertical", this, &AMakeItSoPawn::ThrustInputVertical);
+
+	InputComponent->BindAxis("HelmPitch", this, &AMakeItSoPawn::PitchInput);
+	InputComponent->BindAxis("HelmYaw", this, &AMakeItSoPawn::YawInput);
 }
 
 void AMakeItSoPawn::ThrustInput(float Val)
@@ -90,10 +106,34 @@ void AMakeItSoPawn::ThrustInput(float Val)
 	// Calculate new speed
 	float NewForwardSpeed = CurrentForwardSpeed + (GetWorld()->GetDeltaSeconds() * CurrentAcc);
 	// Clamp between MinSpeed and MaxSpeed
-	CurrentForwardSpeed = FMath::Clamp(NewForwardSpeed, MinSpeed, MaxSpeed);
+	CurrentForwardSpeed = FMath::Clamp(NewForwardSpeed, -MaxSpeed, MaxSpeed);
 }
 
-void AMakeItSoPawn::MoveUpInput(float Val)
+void AMakeItSoPawn::ThrustInputSide(float Val)
+{
+	// Is there no input?
+	bool bHasInput = !FMath::IsNearlyEqual(Val, 0.f);
+	// If input is not held down, reduce speed
+	float CurrentAcc = bHasInput ? (Val * Acceleration) : (-0.2f * Acceleration);
+	// Calculate new speed
+	float NewSpeed = CurrentRightSpeed + (GetWorld()->GetDeltaSeconds() * CurrentAcc);
+	// Clamp between MinSpeed and MaxSpeed
+	CurrentRightSpeed = FMath::Clamp(NewSpeed, -MaxSpeed, MaxSpeed);
+}
+
+void AMakeItSoPawn::ThrustInputVertical(float Val)
+{
+	// Is there no input?
+	bool bHasInput = !FMath::IsNearlyEqual(Val, 0.f);
+	// If input is not held down, reduce speed
+	float CurrentAcc = bHasInput ? (Val * Acceleration) : (-0.2f * Acceleration);
+	// Calculate new speed
+	float NewSpeed = CurrentUpSpeed + (GetWorld()->GetDeltaSeconds() * CurrentAcc);
+	// Clamp between MinSpeed and MaxSpeed
+	CurrentUpSpeed = FMath::Clamp(NewSpeed, -MaxSpeed, MaxSpeed);
+}
+
+void AMakeItSoPawn::PitchInput(float Val)
 {
 	// Target pitch speed is based in input
 	float TargetPitchSpeed = (Val * TurnSpeed * -1.f);
@@ -105,7 +145,7 @@ void AMakeItSoPawn::MoveUpInput(float Val)
 	CurrentPitchSpeed = FMath::FInterpTo(CurrentPitchSpeed, TargetPitchSpeed, GetWorld()->GetDeltaSeconds(), 2.f);
 }
 
-void AMakeItSoPawn::MoveRightInput(float Val)
+void AMakeItSoPawn::YawInput(float Val)
 {
 	// Target yaw speed is based on input
 	float TargetYawSpeed = (Val * TurnSpeed);
