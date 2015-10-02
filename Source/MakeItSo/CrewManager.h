@@ -30,9 +30,14 @@ public:
 
 	enum ESystem
 	{
-		Station0 = 0,
-		Station1,
-		Station2,
+		Helm = 0,
+		Communications,
+		Sensors,
+		Weapons,
+		Shields,
+		DamageControl,
+		PowerManagement,
+		Deflector,
 
 		MAX_SHIP_SYSTEMS,
 

@@ -122,6 +122,16 @@ $(function () {
 		
 	}
 	
+	$('#gameActive > system').each(function () {
+		var sys = $(this);
+		var id = sys.attr('id');
+		var idNum = id.replace('system', '');
+		var name = sys.attr('name');
+		
+		$('#systemSwitcher > .systems').append('<clicker type="toggle" value="' + id + '">' + name + '</clicker>');
+		$('#systemList').append('<li class="option" value="' + idNum + '">' + name + '</li>');
+	});
+	
 	$('#systemList li.option').click(function () {
 		var btn = $(this);
 		var nowSelected = !btn.hasClass('selected');

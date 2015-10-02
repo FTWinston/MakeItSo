@@ -14,9 +14,6 @@
         <div class="playerIdentifier"></div>
         <ul id="systemList">
             <li class="prompt">Select systems to control:</li>
-            <li class="option" value="0">System #0</li>
-            <li class="option" value="1">System #1</li>
-            <li class="option" value="2">System #2</li>
         </ul>
 		
 		<clicker type="toggle" id="btnTouchToggle" class="color7">Touch interface</clicker>
@@ -57,15 +54,11 @@
 
 	<screen id="gameActive" style="display: none">
 		<div id="systemSwitcher">
-			<choice class="color5">
-				<clicker type="toggle" value="system0">system 0</clicker>
-				<clicker type="toggle" value="system1">system 1</clicker>
-				<clicker type="toggle" value="system2">system 2</clicker>
-			</choice>
+			<choice class="systems color5"></choice>
 			<clicker type="push" id="btnPause" class="color8" action="pause">pause</clicker>
 		</div>
 		
-		<system id="system0">
+		<system id="system0" name="Helm">
 			<buttonGroup class="color1 inline nonTouchMode" caption="rotation">
 				<row>
 					<spacer></spacer>
@@ -120,7 +113,7 @@
 				And also this
 			</touchArea>
 		</system>
-		<system id="system1">
+		<system id="system1" name="Viewscreen">
 			<section>
 				<buttonGroup class="color3 inline">
 					<row>
@@ -169,7 +162,22 @@
 				<clicker type="toggle" class="color8" key="M" start="+viewcomms" stop="-viewcomms">comms channel</clicker>
 			</section>
 		</system>
-		<system id="system2">
+		<system id="system2" name="Sensors">
+			
+		</system>
+		<system id="system3" name="Weapons">
+			
+		</system>
+		<system id="system4" name="Shields">
+			
+		</system>
+		<system id="system5" name="Damage Control">
+			
+		</system>
+		<system id="system6" name="Power">
+			
+		</system>
+		<system id="system7" name="Deflector">
 			
 		</system>
 	</screen>
