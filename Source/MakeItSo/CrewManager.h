@@ -11,7 +11,7 @@
 #define MAX_CREW_CONNECTIONS 26
 
 class ConnectionInfo;
-
+class AShipPlayerController;
 
 /**
 *
@@ -46,10 +46,10 @@ public:
 		Everyone
 	};
 
-	void Init(APlayerController *controller);
+	void Init(AShipPlayerController *controller);
 	virtual void BeginDestroy();
 
-	void LinkController(APlayerController *controller);
+	void LinkController(AShipPlayerController *controller);
 	void Poll() { mg_poll_server(server, 1); }
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
 	void SendCrewMessage(ESystem system, const char *message);
@@ -77,7 +77,7 @@ private:
 	void SendSystemSelectionMessage(ConnectionInfo *info, int shipSystemIndex, bool adding);
 
 	static mg_server *server;
-	APlayerController *controller;
+	AShipPlayerController *controller;
 
 	ECrewState crewState;
 	int nextConnectionIdentifer;

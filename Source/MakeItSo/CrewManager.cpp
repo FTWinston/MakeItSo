@@ -4,11 +4,13 @@
 #include "MakeItSo.h"
 #include "Engine/Engine.h"
 #include "Runtime/Engine/Public/EngineGlobals.h"
+#include "ShipPlayerController.h"
 #else
 #include "stdafx.h"
 #endif
 
 #include "CrewManager.h"
+#include "KeyBindings.h"
 
 #ifdef WIN32
 
@@ -40,7 +42,7 @@ int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 	return Instance->HandleEvent(conn, ev);
 }
 
-void UCrewManager::Init(APlayerController *controller)
+void UCrewManager::Init(AShipPlayerController *controller)
 {
 	Instance = this;
 	LinkController(controller);
@@ -87,7 +89,7 @@ void UCrewManager::BeginDestroy()
 	Super::BeginDestroy();
 }
 
-void UCrewManager::LinkController(APlayerController *controller)
+void UCrewManager::LinkController(AShipPlayerController *controller)
 {
 	this->controller = controller; // do we need to null this when the level changes?
 }
@@ -526,6 +528,39 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		char buffer[10];
 		EXTRACT(info, buffer, "pitch "); // this crashes (sometimes) unless buffer length is ~30
 		InputAxis(EKeys::Gamepad_LeftY, atof(buffer));
+	}
+	
+	else if (MATCHES(info, "+moveleft"))
+	{
+		InputKey(EKeys::J, true);
+	}
+	else if (MATCHES(info, "-moveleft"))
+	{
+		InputKey(EKeys::J, false);
+	}
+	else if (MATCHES(info, "+moveright"))
+	{
+		InputKey(EKeys::L, true);
+	}
+	else if (MATCHES(info, "-moveright"))
+	{
+		InputKey(EKeys::L, false);
+	}
+	else if (MATCHES(info, "+moveup"))
+	{
+		InputKey(EKeys::I, true);
+	}
+	else if (MATCHES(info, "-moveup"))
+	{
+		InputKey(EKeys::I, false);
+	}
+	else if (MATCHES(info, "+movedown"))
+	{
+		InputKey(EKeys::K, true);
+	}
+	else if (MATCHES(info, "-movedown"))
+	{
+		InputKey(EKeys::K, false);
 	}
 	else
 	{

@@ -18,4 +18,15 @@ public:
 
 protected:
 	virtual void InitInputSystem();
+
+	/** Bound to the thrust axis */
+	void ThrustInput(float Val);
+	void ThrustInputSide(float Val);
+	void ThrustInputVertical(float Val);
+
+	/** Bound to the vertical axis */
+	void PitchInput(float Val);
+
+	/** Bound to the horizontal axis */
+	void YawInput(float Val);
 };
