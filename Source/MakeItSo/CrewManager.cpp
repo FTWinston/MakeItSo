@@ -5,12 +5,12 @@
 #include "Engine/Engine.h"
 #include "Runtime/Engine/Public/EngineGlobals.h"
 #include "ShipPlayerController.h"
+#include "KeyBindings.h"
 #else
 #include "stdafx.h"
 #endif
 
 #include "CrewManager.h"
-#include "KeyBindings.h"
 
 #ifdef WIN32
 
