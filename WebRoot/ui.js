@@ -1,14 +1,14 @@
 var GameClient = React.createClass({
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting, please wait' };
+        return { activeScreen: 'error', errorMessage: 'Connecting...' };
     },
 	render: function() {
 		return (
 			<div>
-				<SystemSelect active={this.state.activeScreen == 'systems'} gameActive={false} />
-				<GameSetup active={this.state.activeScreen == 'setup'} />
-				<GameRoot active={this.state.activeScreen == 'game'} />
-				<ErrorDisplay active={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
+				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={false} />
+				<GameSetup show={this.state.activeScreen == 'setup'} />
+				<GameRoot show={this.state.activeScreen == 'game'} />
+				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
 	},
@@ -17,13 +17,16 @@ var GameClient = React.createClass({
 	},
 	setActiveScreen(screen) {
 		this.setState({ activeScreen: screen });
+	},
+	showError(message) {
+		setState({ activeScreen: 'error', errorMessage: message });
 	}
 });
 
 var SystemSelect = React.createClass({
 	render: function() {
 		return (
-			<screen id="systemSelect" style={{display: this.props.active ? null : 'none'}}>
+			<screen id="systemSelect" style={{display: this.props.show ? null : 'none'}}>
 				<div className="playerIdentifier"></div>
 				<ul id="systemList">
 					<li className="prompt">Select systems to control:</li>
@@ -43,7 +46,7 @@ var SystemSelect = React.createClass({
 var GameSetup = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameSetup" style={{display: this.props.active ? null : 'none'}}>
+			<screen id="gameSetup" style={{display: this.props.show ? null : 'none'}}>
 			</screen>
 		);
 	}
@@ -52,7 +55,7 @@ var GameSetup = React.createClass({
 var GameRoot = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameActive" style={{display: this.props.active ? null : 'none'}}>
+			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
 			</screen>
 		);
 	}
@@ -101,11 +104,10 @@ var ToggleButton = React.createClass({
 });
 
 
-
-
 gameClient = ReactDOM.render(
-  <GameClient />,
-  document.getElementById('gameRoot')
+	<GameClient />,
+	document.getElementById('gameRoot'),
+	createConnection
 );
 
 /*

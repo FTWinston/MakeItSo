@@ -1,8 +1,15 @@
+"use strict";
+
 if (!window.console) { window.console = { log: function() {} } };
 
-var ws = new WebSocket('ws://' + location.host + '/ws');
-ws.onerror = ws.onclose = function (e) { showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection."); }
-ws.onmessage = messageReceived;
+var ws;
+
+function createConnection()
+{
+	ws = new WebSocket('ws://' + location.host + '/ws');
+	ws.onerror = ws.onclose = function (e) { showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection."); }
+	ws.onmessage = messageReceived;
+}
 
 var unloadEvent = function (e) {	
 	var confirmationMessage = 'The game is still active.';
