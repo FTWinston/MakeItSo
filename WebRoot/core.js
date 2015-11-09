@@ -17,8 +17,7 @@ function messageReceived(ev) {
 	
 	if (cmd == 'id') {
 		$('.playerIdentifier').text(m[1]);
-		$('#error').hide();
-		$('#systemSelect').show();
+		gameClient.setActiveScreen('systems');
 	}
 	else if (cmd == 'msg') {
 		var div = document.createElement('div');
@@ -38,8 +37,7 @@ function messageReceived(ev) {
 		$('#btnSetupGame').addClass('disabled');
 	}
 	else if (cmd == 'setup') {
-		$('#systemSelect').hide();
-		$('#gameSetup').show();
+		gameClient.setActiveScreen('setup');
 	}
 	else if (cmd == 'full') {
 		showError('This ship is full: there is no room for you to join.');
@@ -58,11 +56,13 @@ function messageReceived(ev) {
 		$('#btnResumeGame, #btnEndGame').hide();
 		$('#btnSetupGame').show();
 		
-		setTimeout(function() { $('#error').hide(); $('#systemSelect').show(); }, 3000);
+		setTimeout(function() { gameClient.setActiveScreen('systems'); }, 3000);
 	}
 	else if (cmd == 'pause+') {
-		$('#gameActive, #btnSetupGame, #error').hide();
-		$('#systemSelect, #btnResumeGame, #btnEndGame').show();
+		$('#btnSetupGame, #error').hide();
+		$('#btnResumeGame, #btnEndGame').show();
+		
+		gameClient.setActiveScreen('systems');
 		switchToGame(false);
 	}
 	else if (cmd == 'pause-') {
@@ -74,8 +74,11 @@ function switchToGame(intoGame) {
 	if (intoGame) {
 		window.addEventListener('beforeunload', unloadEvent);
 		
-		$('screen, #btnResumeGame, #btnEndGame').hide();
-		$('#gameActive, #btnSetupGame').show();
+		$('#btnResumeGame, #btnEndGame').hide();
+		$('#btnSetupGame').show();
+		
+		gameClient.setActiveScreen('game');
+		
 		$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup();
 	}
 	else {

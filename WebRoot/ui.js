@@ -1,20 +1,26 @@
 var GameClient = React.createClass({
+	getInitialState: function() {
+        return { activeScreen: "error" };
+    },
 	render: function() {
 		return (
 			<div>
-				<SystemSelect/>
-				<GameSetup/>
-				<GameActive/>
-				<ErrorDisplay/>
+				<SystemSelect active={this.state.activeScreen == 'systems'} />
+				<GameSetup active={this.state.activeScreen == 'setup'} />
+				<GameRoot active={this.state.activeScreen == 'game'} />
+				<ErrorDisplay active={this.state.activeScreen == 'error'} />
 			</div>
 		);
+	},
+	setActiveScreen(screen) {
+		this.setState({ activeScreen: screen });
 	}
 });
 
 var SystemSelect = React.createClass({
 	render: function() {
 		return (
-			<screen id="systemSelect" style={{display:"none"}}>
+			<screen id="systemSelect" style={{display: this.props.active ? "block" : "none"}}>
 				<div className="playerIdentifier"></div>
 				<ul id="systemList">
 					<li className="prompt">Select systems to control:</li>
@@ -33,16 +39,16 @@ var SystemSelect = React.createClass({
 var GameSetup = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameSetup" style={{display:"none"}}>
+			<screen id="gameSetup" style={{display: this.props.active ? "block" : "none"}}>
 			</screen>
 		);
 	}
 });
 
-var GameActive = React.createClass({
+var GameRoot = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameActive" style={{display:"none"}}>
+			<screen id="gameActive" style={{display: this.props.active ? "block" : "none"}}>
 			</screen>
 		);
 	}
@@ -51,7 +57,7 @@ var GameActive = React.createClass({
 var ErrorDisplay = React.createClass({
 	render: function() {
 		return (
-			<screen id="error">
+			<screen id="error" style={{display: this.props.active ? "block" : "none"}}>
 				Connecting, please wait...
 			</screen>
 		);
@@ -64,7 +70,7 @@ var ErrorDisplay = React.createClass({
 
 
 
-ReactDOM.render(
+gameClient = ReactDOM.render(
   <GameClient />,
   document.getElementById('gameRoot')
 );
