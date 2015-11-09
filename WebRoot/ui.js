@@ -1,16 +1,19 @@
 var GameClient = React.createClass({
 	getInitialState: function() {
-        return { activeScreen: "error" };
+        return { activeScreen: 'error', errorMessage: 'Connecting, please wait' };
     },
 	render: function() {
 		return (
 			<div>
-				<SystemSelect active={this.state.activeScreen == 'systems'} />
+				<SystemSelect active={this.state.activeScreen == 'systems'} gameActive={false} />
 				<GameSetup active={this.state.activeScreen == 'setup'} />
 				<GameRoot active={this.state.activeScreen == 'game'} />
-				<ErrorDisplay active={this.state.activeScreen == 'error'} />
+				<ErrorDisplay active={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
+	},
+	setGameActive(active) {
+		// ...
 	},
 	setActiveScreen(screen) {
 		this.setState({ activeScreen: screen });
@@ -20,17 +23,18 @@ var GameClient = React.createClass({
 var SystemSelect = React.createClass({
 	render: function() {
 		return (
-			<screen id="systemSelect" style={{display: this.props.active ? "block" : "none"}}>
+			<screen id="systemSelect" style={{display: this.props.active ? null : 'none'}}>
 				<div className="playerIdentifier"></div>
 				<ul id="systemList">
 					<li className="prompt">Select systems to control:</li>
 				</ul>
 				
-				<clicker type="toggle" id="btnTouchToggle" className="color7">Touch interface</clicker>
-				<clicker type="push" id="btnSetupGame" className="color4" action="+setup">Setup game</clicker>
+				<ToggleButton color="7">touch interface</ToggleButton>
 				
-				<clicker type="push" id="btnResumeGame" className="color4" action="resume" style={{display:"none"}}>resume game</clicker>
-				<clicker type="confirm" id="btnEndGame" className="color3" action="quit" style={{display:"none"}}>end game</clicker>
+				<PushButton action="+setup" color="4" show={!this.props.gameActive}>setup game</PushButton>
+				<PushButton action="resume" color="4" show={this.props.gameActive}>resume game</PushButton>
+				
+				<ConfirmButton action="quit" color="3" show={this.props.gameActive}>end game</ConfirmButton>
 			</screen>
 		);
 	}
@@ -39,7 +43,7 @@ var SystemSelect = React.createClass({
 var GameSetup = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameSetup" style={{display: this.props.active ? "block" : "none"}}>
+			<screen id="gameSetup" style={{display: this.props.active ? null : 'none'}}>
 			</screen>
 		);
 	}
@@ -48,7 +52,7 @@ var GameSetup = React.createClass({
 var GameRoot = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameActive" style={{display: this.props.active ? "block" : "none"}}>
+			<screen id="gameActive" style={{display: this.props.active ? null : 'none'}}>
 			</screen>
 		);
 	}
@@ -57,8 +61,8 @@ var GameRoot = React.createClass({
 var ErrorDisplay = React.createClass({
 	render: function() {
 		return (
-			<screen id="error" style={{display: this.props.active ? "block" : "none"}}>
-				Connecting, please wait...
+			<screen id="error" style={{display: this.props.show ? '' : 'none'}}>
+				{this.props.message}
 			</screen>
 		);
 	}
@@ -66,6 +70,35 @@ var ErrorDisplay = React.createClass({
 
 
 
+var PushButton = React.createClass({
+	render: function() {
+		return (
+			<clicker type="push" style={{display: this.props.show == undefined || this.props.show ? null : 'none'}} action={this.props.action} className={'color' + this.props.color}>
+				{this.props.children}
+			</clicker>
+		);
+	}
+});
+
+var ConfirmButton = React.createClass({
+	render: function() {
+		return (
+			<clicker type="confirm" style={{display: this.props.show == undefined || this.props.show ? null : 'none'}} action={this.props.action} className={'color' + this.props.color}>
+				{this.props.children}
+			</clicker>
+		);
+	}
+});
+
+var ToggleButton = React.createClass({
+	render: function() {
+		return (
+			<clicker type="toggle" style={{display: this.props.show == undefined || this.props.show ? null : 'none'}} start={this.props.startAction} stop={this.props.stopAction} className={'color' + this.props.color}>
+				{this.props.children}
+			</clicker>
+		);
+	}
+});
 
 
 

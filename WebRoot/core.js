@@ -96,10 +96,8 @@ function showError(msg, fatal) {
 	}
 	
 	switchToGame(false);
-	$('#errorMsg').text(msg);
 	
-	$('screen').hide();
-	$('#error').show();
+	gameClient.showError(msg);
 }
 
 /*
