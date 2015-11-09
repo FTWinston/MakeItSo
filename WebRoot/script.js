@@ -1,103 +1,75 @@
-var ws = new WebSocket('ws://' + location.host + '/ws');
-ws.onerror = ws.onclose = function (e) { showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection."); }
-ws.onmessage = messageReceived;
+var GameClient = React.createClass({
+	render: function() {
+		return (
+			<div>
+				<SystemSelect/>
+				<GameSetup/>
+				<GameActive/>
+				<ErrorDisplay/>
+			</div>
+		);
+	}
+});
 
-var unloadEvent = function (e) {	
-	var confirmationMessage = 'The game is still active.';
+var SystemSelect = React.createClass({
+	render: function() {
+		return (
+			<screen id="systemSelect" style={{display:"none"}}>
+				<div className="playerIdentifier"></div>
+				<ul id="systemList">
+					<li className="prompt">Select systems to control:</li>
+				</ul>
+				
+				<clicker type="toggle" id="btnTouchToggle" className="color7">Touch interface</clicker>
+				<clicker type="push" id="btnSetupGame" className="color4" action="+setup">Setup game</clicker>
+				
+				<clicker type="push" id="btnResumeGame" className="color4" action="resume" style={{display:"none"}}>resume game</clicker>
+				<clicker type="confirm" id="btnEndGame" className="color3" action="quit" style={{display:"none"}}>end game</clicker>
+			</screen>
+		);
+	}
+});
 
-	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-	return confirmationMessage; //Webkit, Safari, Chrome etc.
-};
+var GameSetup = React.createClass({
+	render: function() {
+		return (
+			<screen id="gameSetup" style={{display:"none"}}>
+			</screen>
+		);
+	}
+});
 
-function messageReceived(ev) {
-	var m = (ev.data || '').split(' ', 2);
-	var cmd = m[0];
-	
-	if (cmd == 'id') {
-		$('.playerIdentifier').text(m[1]);
-		$('#error').hide();
-		$('#systemSelect').show();
+var GameActive = React.createClass({
+	render: function() {
+		return (
+			<screen id="gameActive" style={{display:"none"}}>
+			</screen>
+		);
 	}
-	else if (cmd == 'msg') {
-		var div = document.createElement('div');
-		div.innerHTML = m[1];
-		document.getElementById('messages').appendChild(div);
-	}
-	else if (cmd == 'sys+') {
-		$('#systemList li[value="' + m[1] + '"]').removeClass('taken');
-	}
-	else if (cmd == 'sys-') {
-		$('#systemList li[value="' + m[1] + '"]').addClass('taken');
-	}
-	else if (cmd == 'setup+') {
-		$('#btnSetupGame').removeClass('disabled');
-	}
-	else if (cmd == 'setup-') {
-		$('#btnSetupGame').addClass('disabled');
-	}
-	else if (cmd == 'setup') {
-		$('#systemSelect').hide();
-		$('#gameSetup').show();
-	}
-	else if (cmd == 'full') {
-		showError('This ship is full: there is no room for you to join.');
-	}
-	else if (cmd == 'started') {
-		showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
-	}
-	else if (cmd == 'game+') {
-		switchToGame(true);
-		$('#btnSetupGame').removeClass('disabled');
-	}
-	else if (cmd == 'game-') {
-		var blame = m.length > 1 ? 'User \'' + m[1] + '\' ended the game.' : 'The game has ended.'
-		showError(blame + ' Please wait...', false);
-		
-		$('#btnResumeGame, #btnEndGame').hide();
-		$('#btnSetupGame').show();
-		
-		setTimeout(function() { $('#error').hide(); $('#systemSelect').show(); }, 3000);
-	}
-	else if (cmd == 'pause+') {
-		$('#gameActive, #btnSetupGame, #error').hide();
-		$('#systemSelect, #btnResumeGame, #btnEndGame').show();
-		switchToGame(false);
-	}
-	else if (cmd == 'pause-') {
-		switchToGame(true);
-	}
-};
+});
 
-function switchToGame(intoGame) {
-	if (intoGame) {
-		window.addEventListener('beforeunload', unloadEvent);
-		
-		$('screen, #btnResumeGame, #btnEndGame').hide();
-		$('#gameActive, #btnSetupGame').show();
-		$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup();
+var ErrorDisplay = React.createClass({
+	render: function() {
+		return (
+			<screen id="error">
+				Connecting, please wait...
+			</screen>
+		);
 	}
-	else {
-		window.removeEventListener('beforeunload', unloadEvent);
-	}
-}
-
-function showError(msg, fatal) {
-	fatal = typeof fatal !== 'undefined' ? fatal : true;
-	
-	if (fatal) {
-		$(document).add('*').off();
-		ws.close();
-		msg +='\n\nRefresh the page to continue.';
-	}
-	
-	switchToGame(false);
-	$('#errorMsg').text(msg);
-	
-	$('screen').hide();
-	$('#error').show();
-}
+});
 
 
+
+
+
+
+
+ReactDOM.render(
+  <GameClient />,
+  document.getElementById('gameRoot')
+);
+
+/*
 $(function () {
 	var btnTouch = $('#btnTouchToggle');
 	if (Features.TouchInterface == FeatureState.Unavailable) {
@@ -202,3 +174,5 @@ $(function () {
 			ws.send('+movedown ' + (y * scale));
 	});
 });
+
+*/

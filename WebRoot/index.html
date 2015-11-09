@@ -5,24 +5,18 @@
     <title>Make It So: Bridge Console</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" type="text/css" href="style.css" />
-    <script src="jquery-2.1.4.min.js"></script>
-	<script src="platform.js"></script>
-    <script src="script.js"></script>
+    <script src="lib/jquery-2.1.4.min.js"></script> <!-- might not need this! -->
+	
+	<script src="lib/react.js"></script>
+    <script src="lib/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.23/browser.min.js"></script> <!-- offline transform the jsx, and remove this include -->
+	
+	<script src="core.js"></script>
+    <script type="text/babel" src="script.js"></script> <!-- when using offline transform, remove this type attribute -->
 </head>
 <body>
-    <screen id="systemSelect" style="display: none">
-        <div class="playerIdentifier"></div>
-        <ul id="systemList">
-            <li class="prompt">Select systems to control:</li>
-        </ul>
-		
-		<clicker type="toggle" id="btnTouchToggle" class="color7">Touch interface</clicker>
-		<clicker type="push" id="btnSetupGame" class="color4" action="+setup">Setup game</clicker>
-		
-		<clicker type="push" id="btnResumeGame" class="color4" action="resume" style="display: none">resume game</clicker>
-		<clicker type="confirm" id="btnEndGame" class="color3" action="quit" style="display: none">end game</clicker>
-    </screen>
-
+	<div id="gameRoot"></div>
+<!--
 	<screen id="gameSetup" style="display: none">
 		<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 		
@@ -46,10 +40,6 @@
 			<clicker type="push" id="btnSetupBack" class="color3" action="-setup">go back</clicker>
 			<clicker type="confirm" id="btnStartGame" class="color4" action="startGame">start game</clicker>
 		</buttonGroup>
-	</screen>
-
-	<screen id="error">
-		<p id="errorMsg">Connecting, please wait...</p>
 	</screen>
 
 	<screen id="gameActive" style="display: none">
@@ -181,5 +171,6 @@
 			
 		</system>
 	</screen>
+-->
 </body>
 </html>

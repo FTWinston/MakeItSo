@@ -272,7 +272,7 @@ touchArea[direction="vertical"][mode="continuous"] {
 	background: linear-gradient(#999, #000);
 }
 
-#errorMsg {
+#error {
 	white-space: pre-line;
 }
 
