@@ -276,7 +276,7 @@ touchArea[direction="vertical"][mode="continuous"] {
 	white-space: pre-line;
 }
 
-#systemSelect .playerIdentifier {
+.playerIdentifier {
 	font-size: 20em;
 	float: left;
 	width: 40%;

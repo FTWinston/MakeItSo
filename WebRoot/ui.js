@@ -1,43 +1,68 @@
 var GameClient = React.createClass({
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting...' };
+        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, playerID: null };
     },
 	render: function() {
 		return (
 			<div>
-				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={false} />
+				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
 				<GameRoot show={this.state.activeScreen == 'game'} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
 	},
-	setGameActive(active) {
-		// ...
-	},
 	setActiveScreen(screen) {
-		this.setState({ activeScreen: screen });
+		var newState = {activeScreen: screen};
+		if (!this.state.gameActive && screen == 'active')
+		{
+			newState.gameActive = true;
+			//$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup(); // todo: remove this
+		}
+		if (screen != 'error')
+			newState.errorMessage = null;
+		
+		if (screen == 'active')
+			window.addEventListener('beforeunload', unloadEvent);
+		else
+			window.removeEventListener('beforeunload', unloadEvent);
+		
+		this.setState(newState);
 	},
-	showError(message) {
-		setState({ activeScreen: 'error', errorMessage: message });
+	showError(message, fatal) {
+		fatal = typeof fatal !== 'undefined' ? fatal : true;
+		
+		if (fatal) {
+			ws.close();
+			message +='\n\nRefresh the page to continue.';
+		}
+		
+		this.setState({ errorMessage: message, gameActive: false });
+		this.setActiveScreen('error');
+	},
+	setPlayerID(val) {
+		this.setState({ playerID: val });
+	},
+	setupScreenInUse(val) {
+		this.setState({ setupInProgress: val });
 	}
 });
 
 var SystemSelect = React.createClass({
 	render: function() {
 		return (
-			<screen id="systemSelect" style={{display: this.props.show ? null : 'none'}}>
-				<div className="playerIdentifier"></div>
+			<screen style={{display: this.props.show ? null : 'none'}}>
+				<div className="playerIdentifier">{this.props.playerID}</div>
 				<ul id="systemList">
 					<li className="prompt">Select systems to control:</li>
 				</ul>
 				
 				<ToggleButton color="7">touch interface</ToggleButton>
 				
-				<PushButton action="+setup" color="4" show={!this.props.gameActive}>setup game</PushButton>
-				<PushButton action="resume" color="4" show={this.props.gameActive}>resume game</PushButton>
+				<PushButton action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</PushButton>
+				<PushButton action="resume" color="4" visible={this.props.gameActive}>resume game</PushButton>
 				
-				<ConfirmButton action="quit" color="3" show={this.props.gameActive}>end game</ConfirmButton>
+				<ConfirmButton action="quit" color="3" visible={this.props.gameActive}>end game</ConfirmButton>
 			</screen>
 		);
 	}
@@ -72,35 +97,176 @@ var ErrorDisplay = React.createClass({
 });
 
 
-
 var PushButton = React.createClass({
+	getDefaultProps: function() {
+		return { visible: true, disabled: false, action: null };
+	},
 	render: function() {
+		var classes = 'color' + this.props.color;
+		if (this.props.disabled)
+			classes += ' disabled';
+		
 		return (
-			<clicker type="push" style={{display: this.props.show == undefined || this.props.show ? null : 'none'}} action={this.props.action} className={'color' + this.props.color}>
+			<clicker type="push" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} className={classes}>
 				{this.props.children}
 			</clicker>
 		);
-	}
+	},
+	mouseDown: function(e) {
+		if (this.props.disabled || this.pressed || this.props.action == null)
+			return;
+		
+		this.pressed = true;
+		ws.send(this.props.action);
+	},
+	mouseUp: function(e) {
+		this.pressed = false;
+	},
+	touchStart: function(e) {
+		this.mouseDown(e);
+		e.preventDefault();
+	},
+	touchEnd: function(e) {
+		this.mouseUp(e);
+		e.preventDefault();
+	},
+	pressed: false
 });
 
 var ConfirmButton = React.createClass({
+	getDefaultProps: function() {
+		return { visible: true, disabled: false, action: null };
+	},
+	getInitialState: function() {
+        return { primed: false };
+    },
 	render: function() {
+		var classes = 'color' + this.props.color;
+		if (this.props.disabled)
+			classes += ' disabled';
+		if (this.state.primed)
+			classes += ' primed';
+		
 		return (
-			<clicker type="confirm" style={{display: this.props.show == undefined || this.props.show ? null : 'none'}} action={this.props.action} className={'color' + this.props.color}>
+			<clicker type="confirm" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} onMouseLeave={this.mouseLeave} className={classes}>
 				{this.props.children}
 			</clicker>
 		);
+	},
+	click: function(e) {
+		if (this.props.disabled)
+			return;
+
+		if (!this.state.primed) {
+			this.setState({ primed: true });
+			return;
+		}
+		
+		if (this.props.action != null)
+			ws.send(this.props.action);
+		this.setState({ primed: false });
+	},
+	mouseLeave: function(e) {
+		this.setState({ primed: false });
 	}
 });
 
 var ToggleButton = React.createClass({
+	getDefaultProps: function() {
+		return { visible: true, disabled: false, startAction: null, stopAction: null };
+	},
+	getInitialState: function() {
+        return { active: false };
+    },
 	render: function() {
+		var classes = 'color' + this.props.color;
+		if (this.props.disabled)
+			classes += ' disabled';
+		if (this.state.active)
+			classes += ' enabled';
+		
 		return (
-			<clicker type="toggle" style={{display: this.props.show == undefined || this.props.show ? null : 'none'}} start={this.props.startAction} stop={this.props.stopAction} className={'color' + this.props.color}>
+			<clicker type="toggle" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes}>
 				{this.props.children}
 			</clicker>
 		);
-	}
+	},
+	mouseDown: function(e) {
+		if (this.props.disabled || this.pressed)
+			return;
+
+		var nowActive = !this.state.active;
+		
+		var action = nowActive ? this.props.startAction : this.props.stopAction;
+		if (action != null)
+			ws.send(action);
+		
+		this.pressed = true;
+		this.setState({ active: nowActive });
+	},
+	mouseUp: function(e) {
+		this.pressed = false;
+	},
+	touchStart: function(e) {
+		this.mouseDown(e);
+		e.preventDefault();
+	},
+	touchEnd: function(e) {
+		this.mouseUp(e);
+		e.preventDefault();
+	},
+	pressed: false
+});
+
+var HeldButton = React.createClass({
+	getDefaultProps: function() {
+		return { visible: true, disabled: false, startAction: null, stopAction: null };
+	},
+	getInitialState: function() {
+        return { held: false };
+    },
+	render: function() {
+		var classes = 'color' + this.props.color;
+		if (this.props.disabled)
+			classes += ' disabled';
+		if (this.state.held)
+			classes += ' held';
+		
+		return (
+			<clicker type="held" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes}>
+				{this.props.children}
+			</clicker>
+		);
+	},
+	mouseDown: function(e) {
+		if (this.props.disabled || this.state.held)
+			return;
+		
+		if (this.props.startAction != null)
+			ws.send(action);
+		
+		this.setState({ held: true });
+	},
+	mouseUp: function(e) {
+		if (this.props.disabled || !this.state.held)
+			
+		if (this.props.stopAction != null)
+			ws.send(action);
+		
+		this.setState({ held: false });
+	},
+	touchStart: function(e) {
+		this.mouseDown(e);
+		e.preventDefault();
+	},
+	touchEnd: function(e) {
+		if (this.props.disabled)
+			return;
+		
+		this.mouseUp(e);
+		e.preventDefault();
+	},
+	pressed: false
 });
 
 
@@ -109,6 +275,13 @@ gameClient = ReactDOM.render(
 	document.getElementById('gameRoot'),
 	createConnection
 );
+
+var unloadEvent = function (e) {	
+	var confirmationMessage = 'The game is still active.';
+
+	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+	return confirmationMessage; //Webkit, Safari, Chrome etc.
+};
 
 /*
 $(function () {
