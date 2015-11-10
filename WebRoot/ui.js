@@ -45,6 +45,9 @@ var GameClient = React.createClass({
 	},
 	setupScreenInUse(val) {
 		this.setState({ setupInProgress: val });
+	},
+	gameAlreadyStarted() {
+		this.setState({ gameActive: true });
 	}
 });
 
@@ -91,7 +94,7 @@ var GameSetup = React.createClass({
 				</choice>
 				
 				<buttonGroup>
-					<PushButton action="-setup" color="3">go back</PushButton>
+					<PushButton action="-setup" localAction={function () {gameClient.setActiveScreen('systems')}} color="3">go back</PushButton>
 					<ConfirmButton action="startGame" color="4">start game</ConfirmButton>
 				</buttonGroup>
 			</screen>
@@ -121,7 +124,7 @@ var ErrorDisplay = React.createClass({
 
 var PushButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, action: null };
+		return { visible: true, disabled: false, action: null, localAction: null };
 	},
 	render: function() {
 		var classes = 'color' + this.props.color;
@@ -129,30 +132,21 @@ var PushButton = React.createClass({
 			classes += ' disabled';
 		
 		return (
-			<clicker type="push" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} className={classes}>
+			<clicker type="push" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} className={classes}>
 				{this.props.children}
 			</clicker>
 		);
 	},
-	mouseDown: function(e) {
-		if (this.props.disabled || this.pressed || this.props.action == null)
+	click: function(e) {
+		if (this.props.disabled)
 			return;
 		
-		this.pressed = true;
-		ws.send(this.props.action);
-	},
-	mouseUp: function(e) {
-		this.pressed = false;
-	},
-	touchStart: function(e) {
-		this.mouseDown(e);
-		e.preventDefault();
-	},
-	touchEnd: function(e) {
-		this.mouseUp(e);
-		e.preventDefault();
-	},
-	pressed: false
+		if (this.props.action != null)
+			ws.send(this.props.action);
+		
+		if (this.props.localAction != null)
+			this.props.localAction();
+	}
 });
 
 var ConfirmButton = React.createClass({

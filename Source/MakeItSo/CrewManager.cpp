@@ -233,7 +233,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	}
 	else if (crewState == ECrewState::Paused)
 	{
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "pause+");
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "paused");
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -297,7 +297,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		}
 	}
 
-	if (!anySystems)
+	if (!anySystems && crewState == ECrewState::Active)
 	{
 		PauseGame(true);
 	}

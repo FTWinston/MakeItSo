@@ -36,7 +36,12 @@ function messageReceived(ev) {
 		gameClient.showError('This ship is full: there is no room for you to join.', true);
 	}
 	else if (cmd == 'started') {
+		gameClient.gameAlreadyStarted();
 		gameClient.showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
+	}
+	else if (cmd == 'paused') {
+		gameClient.gameAlreadyStarted();
+		gameClient.setActiveScreen('systems');
 	}
 	else if (cmd == 'game+') {
 		gameClient.setActiveScreen('game');

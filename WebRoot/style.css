@@ -64,7 +64,7 @@ clicker[type="confirm"].primed:hover {
 }
 
 clicker[type="confirm"].primed:active {
-	background-color: #333;
+	background-color: #333 !important;
 	color: #f66;
 }
 
@@ -274,6 +274,9 @@ touchArea[direction="vertical"][mode="continuous"] {
 
 #error {
 	white-space: pre-line;
+	position:relative;
+	top: 1em;
+	left: 1em;
 }
 
 .playerIdentifier {
