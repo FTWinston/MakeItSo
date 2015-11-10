@@ -106,6 +106,136 @@ var GameRoot = React.createClass({
 	render: function() {
 		return (
 			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
+
+
+				<div id="systemSwitcher">
+					<choice className="systems color5"></choice>
+					<clicker type="push" id="btnPause" className="color8" action="pause">pause</clicker>
+				</div>
+				
+				<system id="system0" name="Helm">
+					<buttonGroup className="color1 inline nonTouchMode" caption="rotation">
+						<row>
+							<spacer></spacer>
+							<clicker type="held" key="W" start="+down" stop="-down">down</clicker>
+							<spacer></spacer>
+						</row>
+						<row className="rounded">
+							<clicker type="held" key="A" start="+left" stop="-left">left</clicker>
+							<clicker type="press" action="stoprotate">stop</clicker>
+							<clicker type="held" key="D" start="+right" stop="-right">right</clicker>
+						</row>
+						<row>
+							<spacer></spacer>
+							<clicker type="held" key="S" start="+up" stop="-up">up</clicker>
+							<spacer></spacer>
+						</row>
+					</buttonGroup>
+					<touchArea id="touchRotation" className="color1 touchMode inline" caption="rotation" direction="both" mode="continuous">
+						This is a touch area. Honest
+					</touchArea>
+					
+					<buttonGroup id="touchAcceleration" className="color2 inline nonTouchMode">
+						<row>
+							<clicker type="held" className="color2" key="R" start="+forward" stop="-forward">accelerate</clicker>
+						</row>
+						<row>
+							<clicker type="toggle" className="color2" key="F" start="+backward" stop="-backward">brake</clicker>
+						</row>
+					</buttonGroup>
+					<touchArea className="color2 touchMode inline" direction="vertical" mode="continuous">
+						This too
+					</touchArea>
+					
+					<buttonGroup id="touchTranslation" className="color3 inline nonTouchMode" caption="translation">
+						<row>
+							<spacer></spacer>
+							<clicker type="held" key="I" start="+moveup" stop="-moveup">up</clicker>
+							<spacer></spacer>
+						</row>
+						<row className="rounded">
+							<clicker type="held" key="J" start="+moveleft" stop="-moveleft">left</clicker>
+							<clicker type="press" action="stoptranslate">stop</clicker>
+							<clicker type="held" key="L" start="+moveright" stop="-moveright">right</clicker>
+						</row>
+						<row>
+							<spacer></spacer>
+							<clicker type="held" key="K" start="+movedown" stop="-movedown">down</clicker>
+							<spacer></spacer>
+						</row>
+					</buttonGroup>
+					<touchArea className="color3 touchMode inline" caption="translation" direction="both" mode="continuous">
+						And also this
+					</touchArea>
+				</system>
+				<system id="system1" name="Viewscreen">
+					<section>
+						<buttonGroup className="color3 inline">
+							<row>
+								<spacer></spacer>
+								<clicker type="held" key="W" start="+viewup" stop="-viewup">&#8679;</clicker>
+								<spacer></spacer>
+							</row>
+							<row className="rounded">
+								<clicker type="held" key="A" start="+viewleft" stop="-viewleft">&#8678;</clicker>
+								<spacer>Pan</spacer>
+								<clicker type="held" key="D" start="+viewright" stop="-viewright">&#8680;</clicker>
+							</row>
+							<row>
+								<spacer></spacer>
+								<clicker type="held" key="S" start="+viewdown" stop="-viewdown">&#8681;</clicker>
+								<spacer></spacer>
+							</row>
+						</buttonGroup>
+						
+						<buttonGroup className="color5 inline">
+							<row>
+								<clicker type="held" key="R" start="+zoomin" stop="-zoomin">&#8679;</clicker>
+							</row>
+							<row>
+								<spacer>Zoom</spacer>
+							</row>
+							<row>
+								<clicker type="held" key="T" start="+zoomout" stop="-zoomout">&#8681;</clicker>
+							</row>
+						</buttonGroup>
+					</section>
+					<section>
+						<choice className="color2 inline">
+							<row>
+								<clicker type="toggle" key="F" start="view forward">forward</clicker>
+								<clicker type="toggle" key="G" start="view port">port</clicker>
+								<clicker type="toggle" key="H" start="view starboard">starboard</clicker>
+							</row>
+							<row>
+								<clicker type="toggle" key="C" start="view starboard">aft</clicker>
+								<clicker type="toggle" key="V" start="view starboard">dorsal</clicker>
+								<clicker type="toggle" key="B" start="view starboard">ventral</clicker>
+							</row>
+						</choice>
+						<clicker type="toggle" className="color4" key="N" start="+chase" stop="-chase">chase mode</clicker>
+						<clicker type="toggle" className="color8" key="M" start="+viewcomms" stop="-viewcomms">comms channel</clicker>
+					</section>
+				</system>
+				<system id="system2" name="Sensors">
+					
+				</system>
+				<system id="system3" name="Weapons">
+					
+				</system>
+				<system id="system4" name="Shields">
+					
+				</system>
+				<system id="system5" name="Damage Control">
+					
+				</system>
+				<system id="system6" name="Power">
+					
+				</system>
+				<system id="system7" name="Deflector">
+					
+				</system>
+			
 			</screen>
 		);
 	}
