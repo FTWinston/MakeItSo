@@ -85,13 +85,11 @@ var GameSetup = React.createClass({
 					<description />
 				</choice>
 				
-				<choice id="chGameMode" className="color2">
-					<prompt>Select the game mode you wish to play:</prompt>
-					<clicker type="toggle" value="exploration" description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</clicker>
-					<clicker type="toggle" value="endurance" description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</clicker>
-					<clicker type="toggle" value="arena" description="Human-crewed ships compete to death in a single star system.">Arena</clicker>
-					<description />
-				</choice>
+				<Choice color="2" prompt="Select the game mode you wish to play:">
+					<ToggleButton description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</ToggleButton>
+					<ToggleButton description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</ToggleButton>
+					<ToggleButton description="Human-crewed ships compete to death in a single star system.">Arena</ToggleButton>
+				</Choice>
 				
 				<buttonGroup>
 					<PushButton action="-setup" localAction={function () {gameClient.setActiveScreen('systems')}} color="3">go back</PushButton>
@@ -254,10 +252,12 @@ var ErrorDisplay = React.createClass({
 
 var PushButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, action: null, localAction: null };
+		return { visible: true, disabled: false, action: null, localAction: null, color: null };
 	},
 	render: function() {
-		var classes = 'color' + this.props.color;
+		var classes = '';
+		if (this.props.color != null)
+			classes += 'color' + this.props.color;
 		if (this.props.disabled)
 			classes += ' disabled';
 		
@@ -281,13 +281,15 @@ var PushButton = React.createClass({
 
 var ConfirmButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, action: null };
+		return { visible: true, disabled: false, action: null, color: null };
 	},
 	getInitialState: function() {
         return { primed: false };
     },
 	render: function() {
-		var classes = 'color' + this.props.color;
+		var classes = '';
+		if (this.props.color != null)
+			classes += 'color' + this.props.color;
 		if (this.props.disabled)
 			classes += ' disabled';
 		if (this.state.primed)
@@ -319,13 +321,19 @@ var ConfirmButton = React.createClass({
 
 var ToggleButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, startAction: null, stopAction: null };
+		return { visible: true, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null };
 	},
 	getInitialState: function() {
         return { active: false };
     },
+	componentDidMount: function() {
+		if (this.props.onMounted != null)
+			this.props.onMounted(this);
+	},
 	render: function() {
-		var classes = 'color' + this.props.color;
+		var classes = '';
+		if (this.props.color != null)
+			classes += 'color' + this.props.color;
 		if (this.props.disabled)
 			classes += ' disabled';
 		if (this.state.active)
@@ -341,11 +349,17 @@ var ToggleButton = React.createClass({
 		if (this.props.disabled || this.pressed)
 			return;
 
+		if (this.state.active && this.props.inChoice)
+			return;
+		
 		var nowActive = !this.state.active;
 		
 		var action = nowActive ? this.props.startAction : this.props.stopAction;
 		if (action != null)
 			ws.send(action);
+		
+		if (this.props.onSelected != null)
+			this.props.onSelected(this);
 		
 		this.pressed = true;
 		this.setState({ active: nowActive });
@@ -361,18 +375,23 @@ var ToggleButton = React.createClass({
 		this.mouseUp(e);
 		e.preventDefault();
 	},
+	setActive: function(val) {
+		this.setState({ active: val });
+	},
 	pressed: false
 });
 
 var HeldButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, startAction: null, stopAction: null };
+		return { visible: true, disabled: false, startAction: null, stopAction: null, color: null };
 	},
 	getInitialState: function() {
         return { held: false };
     },
 	render: function() {
-		var classes = 'color' + this.props.color;
+		var classes = '';
+		if (this.props.color != null)
+			classes += 'color' + this.props.color;
 		if (this.props.disabled)
 			classes += ' disabled';
 		if (this.state.held)
@@ -413,6 +432,43 @@ var HeldButton = React.createClass({
 		e.preventDefault();
 	},
 	pressed: false
+});
+
+var Choice = React.createClass({
+	getDefaultProps: function() {
+		return { prompt: null, color: null };
+	},
+	render: function() {
+		var self = this;
+		var props = { inChoice: true, onSelected: self.childSelected, onMounted: self.childMounted };
+		
+		if (this.props.color != null)
+			props.color = this.props.color;
+		
+		var children = React.Children.map(this.props.children, function (c, index) {
+            return React.cloneElement(c, props);
+		});
+		
+		return (
+			<choice>
+				<prompt></prompt>
+				{children}
+				<description/>
+			</choice>
+		);
+	},
+	mountedChildren: [],
+	childMounted: function(child) {
+		if (this.mountedChildren.length == 0)
+			child.setActive(true);
+		this.mountedChildren.push(child);
+	},
+	childSelected: function(child) {
+		for (var i = 0; i < this.mountedChildren.length; i++) {
+			if (this.mountedChildren[i] != child)
+				this.mountedChildren[i].setActive(false);
+		}
+	}
 });
 
 

@@ -76,9 +76,9 @@ clicker[type="confirm"].primed::after {
 	content: "?";
 }
 
-.disabled {
+clicker.disabled {
 	cursor: not-allowed;
-	color: #666;
+	color: #666 !important;
 }
 
 .inline {
@@ -174,75 +174,75 @@ body.showKeys [key]:before {
 	vertical-align: middle;
 }
 
-clicker.color1, .color1 clicker {
+clicker.color1 {
 	border-color: #f90;
 	color: #f90;
 }
 
-clicker.color1:not(.disabled):active, clicker.color1.held, clicker.color1.enabled:not(.disabled), .color1 clicker:not(.disabled):active, .color1 clicker.held, .color1 clicker.enabled:not(.disabled) {
+clicker.color1:not(.disabled):active, clicker.color1.held, clicker.color1.enabled:not(.disabled) {
 	background-color: #f90;
 }
 
-clicker.color2, .color2 clicker {
+clicker.color2 {
 	border-color: #c9c;
 	color: #c9c;
 }
 
-clicker.color2:not(.disabled):active, clicker.color2.held, clicker.color2.enabled:not(.disabled), .color2 clicker:not(.disabled):active, .color2 clicker.held, .color2 clicker.enabled:not(.disabled) {
+clicker.color2:not(.disabled):active, clicker.color2.held, clicker.color2.enabled:not(.disabled) {
 	background-color: #c9c;
 }
 
-clicker.color3, .color3 clicker {
+clicker.color3 {
 	border-color: #c66;
 	color: #c66;
 }
 
-clicker.color3:not(.disabled):active, clicker.color3.held, clicker.color3.enabled:not(.disabled), .color3 clicker:not(.disabled):active, .color3 clicker.held, .color3 clicker.enabled:not(.disabled) {
+clicker.color3:not(.disabled):active, clicker.color3.held, clicker.color3.enabled:not(.disabled) {
 	background-color: #c66;
 }
 
-clicker.color4, .color4 clicker {
+clicker.color4 {
 	border-color: #99c;
 	color: #99c;
 }
 
-clicker.color4:not(.disabled):active, clicker.color4.held, clicker.color4.enabled:not(.disabled), .color4 clicker:not(.disabled):active, .color4 clicker.held, .color4 clicker.enabled:not(.disabled) {
+clicker.color4:not(.disabled):active, clicker.color4.held, clicker.color4.enabled:not(.disabled) {
 	background-color: #99c;
 }
 
-clicker.color5, .color5 clicker {
+clicker.color5 {
 	border-color: #fc9;
 	color: #fc9;
 }
 
-clicker.color5:not(.disabled):active, clicker.color5.held, clicker.color5.enabled:not(.disabled), .color5 clicker:not(.disabled):active, .color5 clicker.held, .color5 clicker.enabled:not(.disabled) {
+clicker.color5:not(.disabled):active, clicker.color5.held, clicker.color5.enabled:not(.disabled) {
 	background-color: #fc9;
 }
 
-clicker.color6, .color6 clicker {
+clicker.color6 {
 	border-color: #99f;
 	color: #99f;
 }
 
-clicker.color6:not(.disabled):active, clicker.color6.held, clicker.color6.enabled:not(.disabled), .color6 clicker:not(.disabled):active, .color6 clicker.held, .color6 clicker.enabled:not(.disabled) {
+clicker.color6:not(.disabled):active, clicker.color6.held, clicker.color6.enabled:not(.disabled) {
 	background-color: #99f;
 }
 
-clicker.color7, .color7 clicker {
+clicker.color7 {
 	border-color: #f96;
 	color: #f96;
 }
 
-clicker.color7:not(.disabled):active, clicker.color7.held, clicker.color7.enabled:not(.disabled), .color7 clicker:not(.disabled):active, .color7 clicker.held, .color7 clicker.enabled:not(.disabled) {
+clicker.color7:not(.disabled):active, clicker.color7.held, clicker.color7.enabled:not(.disabled) {
 	background-color: #f96;
 }
 
-clicker.color8, .color8 clicker {
+clicker.color8 {
 	border-color: #c69;
 	color: #c69;
 }
 
-clicker.color8:not(.disabled):active, clicker.color8.held, clicker.color8.enabled:not(.disabled), .color8 clicker:not(.disabled):active, .color8 clicker.held, .color8 clicker.enabled:not(.disabled) {
+clicker.color8:not(.disabled):active, clicker.color8.held, clicker.color8.enabled:not(.disabled) {
 	background-color: #c69;
 }
 
