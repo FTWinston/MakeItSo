@@ -316,11 +316,6 @@ touchArea[direction="vertical"][mode="continuous"] {
 	border-color: #999;
 }
 
-#gameSetup {
-	overflow: auto;
-}
-
-
 #systemSwitcher {
 	height: 3em;
 	border-bottom: solid #ccc 1px;

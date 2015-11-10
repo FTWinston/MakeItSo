@@ -71,7 +71,29 @@ var SystemSelect = React.createClass({
 var GameSetup = React.createClass({
 	render: function() {
 		return (
-			<screen id="gameSetup" style={{display: this.props.show ? null : 'none'}}>
+			<screen style={{display: this.props.show ? null : 'none', overflow: 'auto'}}>
+				<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
+				
+				<choice id="chGameType" className="color1">
+					<prompt>Do you wish to play with just your own crew, or with others?</prompt>
+					<clicker type="toggle" value="solo" show="#chGameMode" hide="#chGameMode clicker[value='arena']" description="Play against the computer, with no other human crews.">Play a solo-crew game</clicker>
+					<clicker type="toggle" value="join" hide="#chGameMode" description="Join a game being hosted by another human crew.">Join a multi-crew game</clicker>
+					<clicker type="toggle" value="host" show="#chGameMode, #chGameMode clicker[value='arena']" description="Host a game which other human crews can connect to.">Host a multi-crew game</clicker>
+					<description />
+				</choice>
+				
+				<choice id="chGameMode" className="color2">
+					<prompt>Select the game mode you wish to play:</prompt>
+					<clicker type="toggle" value="exploration" description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</clicker>
+					<clicker type="toggle" value="endurance" description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</clicker>
+					<clicker type="toggle" value="arena" description="Human-crewed ships compete to death in a single star system.">Arena</clicker>
+					<description />
+				</choice>
+				
+				<buttonGroup>
+					<PushButton action="-setup" color="3">go back</PushButton>
+					<ConfirmButton action="startGame" color="4">start game</ConfirmButton>
+				</buttonGroup>
 			</screen>
 		);
 	}
@@ -89,7 +111,7 @@ var GameRoot = React.createClass({
 var ErrorDisplay = React.createClass({
 	render: function() {
 		return (
-			<screen id="error" style={{display: this.props.show ? '' : 'none'}}>
+			<screen id="error" style={{display: this.props.show ? null : 'none'}}>
 				{this.props.message}
 			</screen>
 		);
@@ -331,11 +353,6 @@ $(function () {
 			button.show();
 		else
 			button.hide();
-	});
-	
-	$('#btnSetupBack').mousedown(function() {
-		$('#gameSetup').hide();
-		$('#systemSelect').show();
 	});
 	
 	$('system, #systemSwitcher choice clicker').hide();

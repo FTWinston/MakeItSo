@@ -20,31 +20,6 @@
 		<screen id="error">Loading...</screen>
 	</div>
 <!--
-	<screen id="gameSetup" style="display: none">
-		<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
-		
-		<choice id="chGameType" class="color1">
-			<prompt>Do you wish to play with just your own crew, or with others?</prompt>
-			<clicker type="toggle" value="solo" show="#chGameMode" hide="#chGameMode clicker[value='arena']" description="Play against the computer, with no other human crews.">Play a solo-crew game</clicker>
-			<clicker type="toggle" value="join" hide="#chGameMode" description="Join a game being hosted by another human crew.">Join a multi-crew game</clicker>
-			<clicker type="toggle" value="host" show="#chGameMode, #chGameMode clicker[value='arena']" description="Host a game which other human crews can connect to.">Host a multi-crew game</clicker>
-			<description />
-		</choice>
-		
-		<choice id="chGameMode" class="color2">
-			<prompt>Select the game mode you wish to play:</prompt>
-			<clicker type="toggle" value="exploration" description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</clicker>
-			<clicker type="toggle" value="endurance" description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</clicker>
-			<clicker type="toggle" value="arena" description="Human-crewed ships compete to death in a single star system.">Arena</clicker>
-			<description />
-		</choice>
-		
-		<buttonGroup>
-			<clicker type="push" id="btnSetupBack" class="color3" action="-setup">go back</clicker>
-			<clicker type="confirm" id="btnStartGame" class="color4" action="startGame">start game</clicker>
-		</buttonGroup>
-	</screen>
-
 	<screen id="gameActive" style="display: none">
 		<div id="systemSwitcher">
 			<choice class="systems color5"></choice>
