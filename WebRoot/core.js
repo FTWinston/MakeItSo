@@ -18,10 +18,10 @@ function messageReceived(ev) {
 		gameClient.setActiveScreen('systems');
 	}
 	else if (cmd == 'sys+') {
-		$('#systemList li[value="' + m[1] + '"]').removeClass('taken'); // todo: change me
+		gameClient.markSystemInUse(m[1], false);
 	}
 	else if (cmd == 'sys-') {
-		$('#systemList li[value="' + m[1] + '"]').addClass('taken'); // todo: change me
+		gameClient.markSystemInUse(m[1], true);
 	}
 	else if (cmd == 'setup+') {
 		gameClient.setupScreenInUse(false);

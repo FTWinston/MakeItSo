@@ -5,9 +5,9 @@ var GameClient = React.createClass({
 	render: function() {
 		return (
 			<div>
-				<SystemSelect ref="systems" show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} />
+				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} />
+				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
@@ -15,24 +15,50 @@ var GameClient = React.createClass({
 	registerSystem: function(name, id) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
-			systems.push({name: name, index: id});
+			systems[id] = {name: name, index: id, selected: false, usedByOther: false};
+			return {systems: systems};
+		});
+	},
+	systemSelectionChanged: function (id, state) {
+		this.setState(function(previousState, currentProps) {
+			var systems = previousState.systems;
+			systems[id].selected = state;
+			return {systems: systems};
+		});
+	},
+	markSystemInUse: function(id, state) {
+		this.setState(function(previousState, currentProps) {
+			var systems = previousState.systems;
+			systems[id].usedByOther = state;
 			return {systems: systems};
 		});
 	},
 	setActiveScreen(screen) {
 		var newState = {activeScreen: screen};
-		if (!this.state.gameActive && screen == 'active')
+		if (!this.state.gameActive && screen == 'game')
 			newState.gameActive = true;
 		
 		if (screen != 'error')
 			newState.errorMessage = null;
 		
-		if (screen == 'active')
+		this.setState(newState);
+		
+		if (screen == 'game')
+		{
+			// when switching to the game, ensure a selected system is the "current" one
+			if (!this.state.systems[this.refs.game.state.currentSystem].selected)
+			{
+				for (var i=0; i<this.state.systems.length; i++)
+					if (this.state.systems[i].selected) {
+						this.refs.game.setState({currentSystem: i});
+						break;
+					}
+			}
+			
 			window.addEventListener('beforeunload', unloadEvent);
+		}
 		else
 			window.removeEventListener('beforeunload', unloadEvent);
-		
-		this.setState(newState);
 	},
 	showError(message, fatal) {
 		fatal = typeof fatal !== 'undefined' ? fatal : true;
@@ -58,11 +84,12 @@ var GameClient = React.createClass({
 
 var SystemSelect = React.createClass({
 	getDefaultProps: function() {
-		return { systems: [] };
+		return { systems: [], selectionChanged: null };
 	},
 	render: function() {
+		var self = this;
 		var systems = this.props.systems.map(function(system) {
-			return <SystemPicker key={system.index} name={system.name} />
+			return <SystemPicker key={system.index} system={system} selectionChanged={self.props.selectionChanged} />
 		});
 		
 		return (
@@ -86,26 +113,20 @@ var SystemSelect = React.createClass({
 
 var SystemPicker = React.createClass({
 	render: function() {
+		var classes = "option";
+		if (this.props.system.selected)
+			classes += " selected";
+		if (this.props.system.usedByOther)
+			classes += " taken";
+		
 		return (
-			<li className="option" onClick={this.clicked}>{this.props.name}</li>
+			<li className={classes} onClick={this.clicked}>{this.props.system.name}</li>
 		);
 	},
 	clicked: function() {
-		/*
-		todo: implement this in react
-		var btn = $(this);
-		var nowSelected = !btn.hasClass('selected');
-		var operation = nowSelected ? '+sys ' : '-sys ';
-		btn.toggleClass('selected');
-		var sysNumber = btn.attr('value');
-		ws.send(operation + sysNumber);
-		
-		var button = $('#systemSwitcher choice clicker[value="system' + sysNumber + '"]');
-		if (nowSelected)
-			button.show();
-		else
-			button.hide();
-		*/
+		var nowSelected = !this.props.system.selected;
+		ws.send((nowSelected ? '+sys ' : '-sys ') + this.props.system.index);
+		this.props.selectionChanged(this.props.system.index, nowSelected);
 	}
 });
 
@@ -128,7 +149,7 @@ var GameSetup = React.createClass({
 				</Choice>
 				
 				<ButtonGroup>
-					<PushButton action="-setup" localAction={function () {gameClient.setActiveScreen('systems')}} color="3">go back</PushButton>
+					<PushButton action="-setup" onClicked={function () {gameClient.setActiveScreen('systems')}} color="3">go back</PushButton>
 					<ConfirmButton action="startGame" color="4">start game</ConfirmButton>
 				</ButtonGroup>
 			</screen>
@@ -154,38 +175,36 @@ var GameSetup = React.createClass({
 });
 
 var GameRoot = React.createClass({
+	getInitialState: function() {
+		return { currentSystem: -1 };
+	},
 	render: function() {		
 		var self = this;
+		var index = -1;
 		var switchers = this.props.systems.map(function(system) {
-			return <ToggleButton key={system.index} onSelected={self.switcherSelected}>{system.name}</ToggleButton>;
+			index++;
+			return <ToggleButton key={system.index} forceEnable={system.selected && system.index == self.state.currentSystem} visible={system.selected} onSelected={function() {self.setState({currentSystem: system.index})}}>{system.name}</ToggleButton>
 		});
 	
 		return (
 			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
 				<div id="systemSwitcher">
-					<Choice color="5" ref="switcher" />
+					<Choice color="5">
+						{switchers}
+					</Choice>
 					<PushButton action="pause" color="8">pause</PushButton>
-					{switchers}
 				</div>
 				
-				<Helm registerCallback={this.props.registerSystem} />
-				<Viewscreen registerCallback={this.props.registerSystem} />
-				<Sensors registerCallback={this.props.registerSystem} />
-				<Weapons registerCallback={this.props.registerSystem} />
-				<Shields registerCallback={this.props.registerSystem} />
-				<DamageControl registerCallback={this.props.registerSystem} />
-				<PowerManagement registerCallback={this.props.registerSystem} />
-				<Deflector registerCallback={this.props.registerSystem} />
+				<Helm registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 0} />
+				<Viewscreen registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 1} />
+				<Sensors registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 2} />
+				<Weapons registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 3} />
+				<Shields registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 4} />
+				<DamageControl registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 5} />
+				<PowerManagement registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 6} />
+				<Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} />
 			</screen>
 		);
-	},
-	switcherSelected: function(switcher) {
-		/*
-		todo: implement this in react
-		var btn = $(this);
-		var system = btn.attr('value');
-		$('system#' + system).show().siblings('system').hide();
-		*/
 	}
 });
 
@@ -203,7 +222,7 @@ var Helm = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 				<ButtonGroup inline={true} color="1" style={{display: this.props.touchMode ? "none" : null}} caption="rotation">
 					<row>
 						<spacer></spacer>
@@ -269,7 +288,7 @@ var Viewscreen = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 				<section>
 					<ButtonGroup inline={true} color="3">
 						<row>
@@ -329,7 +348,7 @@ var Sensors = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 					
 			</system>
 		);
@@ -343,7 +362,7 @@ var Weapons = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 					
 			</system>
 		);
@@ -357,7 +376,7 @@ var Shields = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 					
 			</system>
 		);
@@ -371,7 +390,7 @@ var DamageControl = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 					
 			</system>
 		);
@@ -385,7 +404,7 @@ var PowerManagement = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 					
 			</system>
 		);
@@ -399,7 +418,7 @@ var Deflector = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system>
+			<system style={{display: this.props.visible ? null : 'none'}}>
 					
 			</system>
 		);
@@ -419,7 +438,7 @@ var ErrorDisplay = React.createClass({
 
 var PushButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, action: null, localAction: null, color: null };
+		return { visible: true, disabled: false, action: null, onClicked: null, color: null };
 	},
 	render: function() {
 		var classes = '';
@@ -441,8 +460,8 @@ var PushButton = React.createClass({
 		if (this.props.action != null)
 			ws.send(this.props.action);
 		
-		if (this.props.localAction != null)
-			this.props.localAction();
+		if (this.props.onClicked != null)
+			this.props.onClicked();
 	}
 });
 
