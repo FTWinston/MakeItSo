@@ -1,24 +1,29 @@
 var GameClient = React.createClass({
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, playerID: null };
+        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, playerID: null, systems: [] };
     },
 	render: function() {
 		return (
 			<div>
-				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} />
+				<SystemSelect ref="systems" show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot show={this.state.activeScreen == 'game'} />
+				<GameRoot show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
 	},
+	registerSystem: function(name, id) {
+		this.setState(function(previousState, currentProps) {
+			var systems = previousState.systems;
+			systems.push({name: name, index: id});
+			return {systems: systems};
+		});
+	},
 	setActiveScreen(screen) {
 		var newState = {activeScreen: screen};
 		if (!this.state.gameActive && screen == 'active')
-		{
 			newState.gameActive = true;
-			//$('#systemSwitcher choice clicker:visible:first').mousedown().mouseup(); // todo: remove this
-		}
+		
 		if (screen != 'error')
 			newState.errorMessage = null;
 		
@@ -52,12 +57,20 @@ var GameClient = React.createClass({
 });
 
 var SystemSelect = React.createClass({
+	getDefaultProps: function() {
+		return { systems: [] };
+	},
 	render: function() {
+		var systems = this.props.systems.map(function(system) {
+			return <SystemPicker key={system.index} name={system.name} />
+		});
+		
 		return (
 			<screen style={{display: this.props.show ? null : 'none'}}>
 				<div className="playerIdentifier">{this.props.playerID}</div>
 				<ul id="systemList">
 					<li className="prompt">Select systems to control:</li>
+					{systems}
 				</ul>
 				
 				<ToggleButton color="7">touch interface</ToggleButton>
@@ -68,6 +81,31 @@ var SystemSelect = React.createClass({
 				<ConfirmButton action="quit" color="3" visible={this.props.gameActive}>end game</ConfirmButton>
 			</screen>
 		);
+	}
+});
+
+var SystemPicker = React.createClass({
+	render: function() {
+		return (
+			<li className="option" onClick={this.clicked}>{this.props.name}</li>
+		);
+	},
+	clicked: function() {
+		/*
+		todo: implement this in react
+		var btn = $(this);
+		var nowSelected = !btn.hasClass('selected');
+		var operation = nowSelected ? '+sys ' : '-sys ';
+		btn.toggleClass('selected');
+		var sysNumber = btn.attr('value');
+		ws.send(operation + sysNumber);
+		
+		var button = $('#systemSwitcher choice clicker[value="system' + sysNumber + '"]');
+		if (nowSelected)
+			button.show();
+		else
+			button.hide();
+		*/
 	}
 });
 
@@ -116,140 +154,254 @@ var GameSetup = React.createClass({
 });
 
 var GameRoot = React.createClass({
-	render: function() {
+	render: function() {		
+		var self = this;
+		var switchers = this.props.systems.map(function(system) {
+			return <ToggleButton key={system.index} onSelected={self.switcherSelected}>{system.name}</ToggleButton>;
+		});
+	
 		return (
 			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
-
-
 				<div id="systemSwitcher">
-					<choice className="systems color5"></choice>
-					<clicker type="push" id="btnPause" className="color8" action="pause">pause</clicker>
+					<Choice color="5" ref="switcher" />
+					<PushButton action="pause" color="8">pause</PushButton>
+					{switchers}
 				</div>
 				
-				<system id="system0" name="Helm">
-					<buttonGroup className="color1 inline nonTouchMode" caption="rotation">
-						<row>
-							<spacer></spacer>
-							<clicker type="held" key="W" start="+down" stop="-down">down</clicker>
-							<spacer></spacer>
-						</row>
-						<row className="rounded">
-							<clicker type="held" key="A" start="+left" stop="-left">left</clicker>
-							<clicker type="press" action="stoprotate">stop</clicker>
-							<clicker type="held" key="D" start="+right" stop="-right">right</clicker>
-						</row>
-						<row>
-							<spacer></spacer>
-							<clicker type="held" key="S" start="+up" stop="-up">up</clicker>
-							<spacer></spacer>
-						</row>
-					</buttonGroup>
-					<touchArea id="touchRotation" className="color1 touchMode inline" caption="rotation" direction="both" mode="continuous">
-						This is a touch area. Honest
-					</touchArea>
-					
-					<buttonGroup id="touchAcceleration" className="color2 inline nonTouchMode">
-						<row>
-							<clicker type="held" className="color2" key="R" start="+forward" stop="-forward">accelerate</clicker>
-						</row>
-						<row>
-							<clicker type="toggle" className="color2" key="F" start="+backward" stop="-backward">brake</clicker>
-						</row>
-					</buttonGroup>
-					<touchArea className="color2 touchMode inline" direction="vertical" mode="continuous">
-						This too
-					</touchArea>
-					
-					<buttonGroup id="touchTranslation" className="color3 inline nonTouchMode" caption="translation">
-						<row>
-							<spacer></spacer>
-							<clicker type="held" key="I" start="+moveup" stop="-moveup">up</clicker>
-							<spacer></spacer>
-						</row>
-						<row className="rounded">
-							<clicker type="held" key="J" start="+moveleft" stop="-moveleft">left</clicker>
-							<clicker type="press" action="stoptranslate">stop</clicker>
-							<clicker type="held" key="L" start="+moveright" stop="-moveright">right</clicker>
-						</row>
-						<row>
-							<spacer></spacer>
-							<clicker type="held" key="K" start="+movedown" stop="-movedown">down</clicker>
-							<spacer></spacer>
-						</row>
-					</buttonGroup>
-					<touchArea className="color3 touchMode inline" caption="translation" direction="both" mode="continuous">
-						And also this
-					</touchArea>
-				</system>
-				<system id="system1" name="Viewscreen">
-					<section>
-						<buttonGroup className="color3 inline">
-							<row>
-								<spacer></spacer>
-								<clicker type="held" key="W" start="+viewup" stop="-viewup">&#8679;</clicker>
-								<spacer></spacer>
-							</row>
-							<row className="rounded">
-								<clicker type="held" key="A" start="+viewleft" stop="-viewleft">&#8678;</clicker>
-								<spacer>Pan</spacer>
-								<clicker type="held" key="D" start="+viewright" stop="-viewright">&#8680;</clicker>
-							</row>
-							<row>
-								<spacer></spacer>
-								<clicker type="held" key="S" start="+viewdown" stop="-viewdown">&#8681;</clicker>
-								<spacer></spacer>
-							</row>
-						</buttonGroup>
-						
-						<buttonGroup className="color5 inline">
-							<row>
-								<clicker type="held" key="R" start="+zoomin" stop="-zoomin">&#8679;</clicker>
-							</row>
-							<row>
-								<spacer>Zoom</spacer>
-							</row>
-							<row>
-								<clicker type="held" key="T" start="+zoomout" stop="-zoomout">&#8681;</clicker>
-							</row>
-						</buttonGroup>
-					</section>
-					<section>
-						<choice className="color2 inline">
-							<row>
-								<clicker type="toggle" key="F" start="view forward">forward</clicker>
-								<clicker type="toggle" key="G" start="view port">port</clicker>
-								<clicker type="toggle" key="H" start="view starboard">starboard</clicker>
-							</row>
-							<row>
-								<clicker type="toggle" key="C" start="view starboard">aft</clicker>
-								<clicker type="toggle" key="V" start="view starboard">dorsal</clicker>
-								<clicker type="toggle" key="B" start="view starboard">ventral</clicker>
-							</row>
-						</choice>
-						<clicker type="toggle" className="color4" key="N" start="+chase" stop="-chase">chase mode</clicker>
-						<clicker type="toggle" className="color8" key="M" start="+viewcomms" stop="-viewcomms">comms channel</clicker>
-					</section>
-				</system>
-				<system id="system2" name="Sensors">
-					
-				</system>
-				<system id="system3" name="Weapons">
-					
-				</system>
-				<system id="system4" name="Shields">
-					
-				</system>
-				<system id="system5" name="Damage Control">
-					
-				</system>
-				<system id="system6" name="Power">
-					
-				</system>
-				<system id="system7" name="Deflector">
-					
-				</system>
-			
+				<Helm registerCallback={this.props.registerSystem} />
+				<Viewscreen registerCallback={this.props.registerSystem} />
+				<Sensors registerCallback={this.props.registerSystem} />
+				<Weapons registerCallback={this.props.registerSystem} />
+				<Shields registerCallback={this.props.registerSystem} />
+				<DamageControl registerCallback={this.props.registerSystem} />
+				<PowerManagement registerCallback={this.props.registerSystem} />
+				<Deflector registerCallback={this.props.registerSystem} />
 			</screen>
+		);
+	},
+	switcherSelected: function(switcher) {
+		/*
+		todo: implement this in react
+		var btn = $(this);
+		var system = btn.attr('value');
+		$('system#' + system).show().siblings('system').hide();
+		*/
+	}
+});
+
+var ShipSystemMixin = {
+	componentDidMount: function () {
+		if (this.props.registerCallback != null)
+			this.props.registerCallback(this.props.name, this.props.index);
+	},
+};
+
+var Helm = React.createClass({
+	getDefaultProps: function() {
+		return { touchMode: false, registerCallback: null, name: "Helm", index: 0 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+				<ButtonGroup inline={true} color="1" style={{display: this.props.touchMode ? "none" : null}} caption="rotation">
+					<row>
+						<spacer></spacer>
+						<HeldButton hotkey="W" startAction="+down" stopAction="-down">down</HeldButton>
+						<spacer></spacer>
+					</row>
+					<row className="rounded">
+						<HeldButton hotkey="A" startAction="+left" stopAction="-left">left</HeldButton>
+						<PushButton action="stoprotate">stop</PushButton>
+						<HeldButton hotkey="D" startAction="+right" stopAction="-right">right</HeldButton>
+					</row>
+					<row>
+						<spacer></spacer>
+						<HeldButton hotkey="S" startAction="+up" stopAction="-up">up</HeldButton>
+						<spacer></spacer>
+					</row>
+				</ButtonGroup>
+				<touchArea id="touchRotation" className="color1 inline" style={{display: this.props.touchMode ? null : "none"}} caption="rotation" direction="both" mode="continuous">
+					This is a touch area. Honest
+				</touchArea>
+				
+				<ButtonGroup inline={true} color="2" style={{display: this.props.touchMode ? "none" : null}}>
+					<row>
+						<HeldButton hotkey="R" startAction="+forward" stopAction="-forward">accelerate</HeldButton>
+					</row>
+					<row>
+						<ToggleButton hotkey="F" startAction="+backward" stopAction="-backward">brake</ToggleButton>
+					</row>
+				</ButtonGroup>
+				<touchArea id="touchAcceleration" className="color2 inline" style={{display: this.props.touchMode ? null : "none"}} direction="vertical" mode="continuous">
+					This too
+				</touchArea>
+				
+				<ButtonGroup inline={true} color="3" style={{display: this.props.touchMode ? "none" : null}} caption="translation">
+					<row>
+						<spacer></spacer>
+						<HeldButton hotkey="I" startAction="+moveup" stopAction="-moveup">up</HeldButton>
+						<spacer></spacer>
+					</row>
+					<row className="rounded">
+						<HeldButton hotkey="J" startAction="+moveleft" stopAction="-moveleft">left</HeldButton>
+						<PushButton action="stoptranslate">stop</PushButton>
+						<HeldButton hotkey="L" startAction="+moveright" stopAction="-moveright">right</HeldButton>
+					</row>
+					<row>
+						<spacer></spacer>
+						<HeldButton hotkey="K" startAction="+movedown" stopAction="-movedown">down</HeldButton>
+						<spacer></spacer>
+					</row>
+				</ButtonGroup>
+				<touchArea id="touchTranslation" className="color3 inline" style={{display: this.props.touchMode ? null : "none"}} caption="translation" direction="both" mode="continuous">
+					And also this
+				</touchArea>
+			</system>
+		);
+	}
+});
+
+var Viewscreen = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Viewscreen", index: 1 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+				<section>
+					<ButtonGroup inline={true} color="3">
+						<row>
+							<spacer></spacer>
+							<HeldButton hotkey="W" startAction="+viewup" stopAction="-viewup">&#8679;</HeldButton>
+							<spacer></spacer>
+						</row>
+						<row className="rounded">
+							<HeldButton hotkey="A" startAction="+viewleft" stopAction="-viewleft">&#8678;</HeldButton>
+							<spacer>Pan</spacer>
+							<HeldButton hotkey="D" startAction="+viewright" stopAction="-viewright">&#8680;</HeldButton>
+						</row>
+						<row>
+							<spacer></spacer>
+							<HeldButton hotkey="S" startAction="+viewdown" stopAction="-viewdown">&#8681;</HeldButton>
+							<spacer></spacer>
+						</row>
+					</ButtonGroup>
+					
+					<ButtonGroup inline={true} color="5">
+						<row>
+							<HeldButton hotkey="R" startAction="+zoomin" stopAction="-zoomin">&#8679;</HeldButton>
+						</row>
+						<row>
+							<spacer>Zoom</spacer>
+						</row>
+						<row>
+							<HeldButton hotkey="T" startAction="+zoomout" stopAction="-zoomout">&#8681;</HeldButton>
+						</row>
+					</ButtonGroup>
+				</section>
+				<section>
+					<Choice inline={true} color="2">
+						<row>
+							<ToggleButton hotkey="F" startAction="view forward">forward</ToggleButton>
+							<ToggleButton hotkey="G" startAction="view port">port</ToggleButton>
+							<ToggleButton hotkey="H" startAction="view starboard">starboard</ToggleButton>
+						</row>
+						<row>
+							<ToggleButton hotkey="C" startAction="view starboard">aft</ToggleButton>
+							<ToggleButton hotkey="V" startAction="view starboard">dorsal</ToggleButton>
+							<ToggleButton hotkey="B" startAction="view starboard">ventral</ToggleButton>
+						</row>
+					</Choice>
+					<ToggleButton color="4" hotkey="N" startAction="+chase" stopAction="-chase">chase mode</ToggleButton>
+					<ToggleButton color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">comms channel</ToggleButton>
+				</section>
+			</system>
+		);
+	}
+});
+
+var Sensors = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Sensors", index: 2 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+					
+			</system>
+		);
+	}
+});
+
+var Weapons = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Weapons", index: 3 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+					
+			</system>
+		);
+	}
+});
+
+var Shields = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Shields", index: 4 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+					
+			</system>
+		);
+	}
+});
+
+var DamageControl = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Damage Control", index: 5 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+					
+			</system>
+		);
+	}
+});
+
+var PowerManagement = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Power", index: 6 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+					
+			</system>
+		);
+	}
+});
+
+var Deflector = React.createClass({
+	getDefaultProps: function() {
+		return { registerCallback: null, name: "Deflector", index: 7 };
+	},
+	mixins: [ShipSystemMixin],
+	render: function() {
+		return (
+			<system>
+					
+			</system>
 		);
 	}
 });
@@ -336,7 +488,7 @@ var ConfirmButton = React.createClass({
 
 var ToggleButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null };
+		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, hotkey: null };
 	},
 	getInitialState: function() {
         return { active: this.props.forceEnable, pressed: false };
@@ -408,7 +560,7 @@ var ToggleButton = React.createClass({
 
 var HeldButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, startAction: null, stopAction: null, color: null };
+		return { visible: true, disabled: false, startAction: null, stopAction: null, color: null, hotkey: null };
 	},
 	getInitialState: function() {
         return { held: false };
@@ -433,7 +585,7 @@ var HeldButton = React.createClass({
 			return;
 		
 		if (this.props.startAction != null)
-			ws.send(action);
+			ws.send(this.props.startAction);
 		
 		this.setState({ held: true });
 	},
@@ -441,7 +593,7 @@ var HeldButton = React.createClass({
 		if (this.props.disabled || !this.state.held)
 			
 		if (this.props.stopAction != null)
-			ws.send(action);
+			ws.send(this.props.stopAction);
 		
 		this.setState({ held: false });
 	},
@@ -460,7 +612,7 @@ var HeldButton = React.createClass({
 
 var ButtonGroup = React.createClass({
 	getDefaultProps: function() {
-		return { color: null, disabled: false };
+		return { color: null, disabled: false, inline: false, caption: null };
 	},
 	render: function() {
 		var children = this.props.children;
@@ -478,7 +630,7 @@ var ButtonGroup = React.createClass({
 		}
 		
 		return (
-			<buttonGroup>
+			<buttonGroup className={{display: this.props.inline ? "inline" : null}} caption={this.props.caption}>
 				{children}
 			</buttonGroup>
 		);
@@ -487,7 +639,7 @@ var ButtonGroup = React.createClass({
 
 var Choice = React.createClass({
 	getDefaultProps: function() {
-		return { prompt: null, color: null, disabled: false };
+		return { prompt: null, color: null, disabled: false, inline: false };
 	},
 	getInitialState: function() {
         return { description: null, mountedChildren: [] };
@@ -507,7 +659,7 @@ var Choice = React.createClass({
 		});
 		
 		return (
-			<choice>
+			<choice className={{display: this.props.inline ? "inline" : null}}>
 				<prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
 				{children}
 				<description style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
@@ -566,39 +718,6 @@ $(function () {
 		btnTouch.mousedown(toggleTouch);
 		
 	}
-	
-	$('#gameActive > system').each(function () {
-		var sys = $(this);
-		var id = sys.attr('id');
-		var idNum = id.replace('system', '');
-		var name = sys.attr('name');
-		
-		$('#systemSwitcher > .systems').append('<clicker type="toggle" value="' + id + '">' + name + '</clicker>');
-		$('#systemList').append('<li class="option" value="' + idNum + '">' + name + '</li>');
-	});
-	
-	$('#systemList li.option').click(function () {
-		var btn = $(this);
-		var nowSelected = !btn.hasClass('selected');
-		var operation = nowSelected ? '+sys ' : '-sys ';
-		btn.toggleClass('selected');
-		var sysNumber = btn.attr('value');
-		ws.send(operation + sysNumber);
-		
-		var button = $('#systemSwitcher choice clicker[value="system' + sysNumber + '"]');
-		if (nowSelected)
-			button.show();
-		else
-			button.hide();
-	});
-	
-	$('system, #systemSwitcher choice clicker').hide();
-	
-	$('#systemSwitcher choice clicker').mousedown(function () {
-		var btn = $(this);
-		var system = btn.attr('value');
-		$('system#' + system).show().siblings('system').hide();
-	});
 
 	detectMovement($('#touchRotation')[0], function (x, y) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
