@@ -77,26 +77,41 @@ var GameSetup = React.createClass({
 			<screen style={{display: this.props.show ? null : 'none', overflow: 'auto'}}>
 				<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 				
-				<choice id="chGameType" className="color1">
-					<prompt>Do you wish to play with just your own crew, or with others?</prompt>
-					<clicker type="toggle" value="solo" show="#chGameMode" hide="#chGameMode clicker[value='arena']" description="Play against the computer, with no other human crews.">Play a solo-crew game</clicker>
-					<clicker type="toggle" value="join" hide="#chGameMode" description="Join a game being hosted by another human crew.">Join a multi-crew game</clicker>
-					<clicker type="toggle" value="host" show="#chGameMode, #chGameMode clicker[value='arena']" description="Host a game which other human crews can connect to.">Host a multi-crew game</clicker>
-					<description />
-				</choice>
-				
-				<Choice color="2" prompt="Select the game mode you wish to play:">
-					<ToggleButton description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</ToggleButton>
-					<ToggleButton description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</ToggleButton>
-					<ToggleButton description="Human-crewed ships compete to death in a single star system.">Arena</ToggleButton>
+				<Choice color="1" prompt="Do you wish to play with just your own crew, or with others?">
+					<ToggleButton onSelected={this.hideArena} showGameMode hideArena description="Play against the computer, with no other human crews.">Play a solo-crew game</ToggleButton>
+					<ToggleButton onSelected={this.hideGameMode} description="Join a game being hosted by another human crew.">Join a multi-crew game</ToggleButton>
+					<ToggleButton onSelected={this.showGameMode} description="Host a game which other human crews can connect to.">Host a multi-crew game</ToggleButton>
 				</Choice>
 				
-				<buttonGroup>
+				<Choice color="2" disabled={this.disableGameMode} prompt="Select the game mode you wish to play:">
+					<ToggleButton forceEnable={this.disableArena && this.refs.arena.state.active} description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</ToggleButton>
+					<ToggleButton description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</ToggleButton>
+					<ToggleButton ref="arena" disabled={this.disableArena} description="Human-crewed ships compete to death in a single star system.">Arena</ToggleButton>
+				</Choice>
+				
+				<ButtonGroup>
 					<PushButton action="-setup" localAction={function () {gameClient.setActiveScreen('systems')}} color="3">go back</PushButton>
 					<ConfirmButton action="startGame" color="4">start game</ConfirmButton>
-				</buttonGroup>
+				</ButtonGroup>
 			</screen>
 		);
+	},
+	disableGameMode: false,
+	disableArena: false,
+	showGameMode: function() {
+		this.disableGameMode = false;
+		this.disableArena = false;
+		this.forceUpdate();
+	},
+	hideGameMode: function() {
+		this.disableGameMode = true;
+		this.disableArena = false;
+		this.forceUpdate();
+	},
+	hideArena: function() {
+		this.disableGameMode = false;
+		this.disableArena = true;
+		this.forceUpdate();
 	}
 });
 
@@ -321,14 +336,18 @@ var ConfirmButton = React.createClass({
 
 var ToggleButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null };
+		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null };
 	},
 	getInitialState: function() {
-        return { active: false };
+        return { active: this.props.forceEnable, pressed: false };
     },
 	componentDidMount: function() {
 		if (this.props.onMounted != null)
 			this.props.onMounted(this);
+	},
+	componentWillReceiveProps: function(nextProps) {
+		if (nextProps.forceEnable && !this.state.active)
+			this.setActive(true);
 	},
 	render: function() {
 		var classes = '';
@@ -346,7 +365,7 @@ var ToggleButton = React.createClass({
 		);
 	},
 	mouseDown: function(e) {
-		if (this.props.disabled || this.pressed)
+		if (this.props.disabled || this.state.pressed)
 			return;
 
 		if (this.state.active && this.props.inChoice)
@@ -358,14 +377,15 @@ var ToggleButton = React.createClass({
 		if (action != null)
 			ws.send(action);
 		
-		if (this.props.onSelected != null)
+		if (nowActive && this.props.onSelected != null)
 			this.props.onSelected(this);
+		if (nowActive && this.props.onSelectedChoice != null)
+			this.props.onSelectedChoice(this);
 		
-		this.pressed = true;
-		this.setState({ active: nowActive });
+		this.setState({ active: nowActive, pressed: true });
 	},
 	mouseUp: function(e) {
-		this.pressed = false;
+		this.setState({ pressed: false });
 	},
 	touchStart: function(e) {
 		this.mouseDown(e);
@@ -377,8 +397,13 @@ var ToggleButton = React.createClass({
 	},
 	setActive: function(val) {
 		this.setState({ active: val });
-	},
-	pressed: false
+		
+		if (val && this.props.onSelected != null)
+			this.props.onSelected(this);
+		
+		if (val && this.props.onSelectedChoice != null)
+			this.props.onSelectedChoice(this);
+	}
 });
 
 var HeldButton = React.createClass({
@@ -430,20 +455,52 @@ var HeldButton = React.createClass({
 		
 		this.mouseUp(e);
 		e.preventDefault();
+	}
+});
+
+var ButtonGroup = React.createClass({
+	getDefaultProps: function() {
+		return { color: null, disabled: false };
 	},
-	pressed: false
+	render: function() {
+		var children = this.props.children;
+		
+		if (this.props.color != null || this.props.disabled) {
+			var props = {};
+			if (this.props.color != null)
+				props.color = this.props.color;
+			if (this.props.disabled)
+				props.disabled = true;
+			
+			children = React.Children.map(children, function (c, index) {
+				return React.cloneElement(c, props);
+			});
+		}
+		
+		return (
+			<buttonGroup>
+				{children}
+			</buttonGroup>
+		);
+	}
 });
 
 var Choice = React.createClass({
 	getDefaultProps: function() {
-		return { prompt: null, color: null };
+		return { prompt: null, color: null, disabled: false };
 	},
+	getInitialState: function() {
+        return { description: null, mountedChildren: [] };
+    },
 	render: function() {
 		var self = this;
-		var props = { inChoice: true, onSelected: self.childSelected, onMounted: self.childMounted };
+		var props = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted };
 		
 		if (this.props.color != null)
 			props.color = this.props.color;
+		
+		if (this.props.disabled)
+			props.disabled = true;
 		
 		var children = React.Children.map(this.props.children, function (c, index) {
             return React.cloneElement(c, props);
@@ -451,23 +508,23 @@ var Choice = React.createClass({
 		
 		return (
 			<choice>
-				<prompt></prompt>
+				<prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
 				{children}
-				<description/>
+				<description style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
 			</choice>
 		);
 	},
-	mountedChildren: [],
 	childMounted: function(child) {
-		if (this.mountedChildren.length == 0)
+		if (this.state.mountedChildren.length == 0)
 			child.setActive(true);
-		this.mountedChildren.push(child);
+		this.state.mountedChildren.push(child);
 	},
 	childSelected: function(child) {
-		for (var i = 0; i < this.mountedChildren.length; i++) {
-			if (this.mountedChildren[i] != child)
-				this.mountedChildren[i].setActive(false);
+		for (var i = 0; i < this.state.mountedChildren.length; i++) {
+			if (this.state.mountedChildren[i] != child)
+				this.state.mountedChildren[i].setActive(false);
 		}
+		this.setState({description: child.props.description});
 	}
 });
 

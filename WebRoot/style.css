@@ -40,7 +40,7 @@ clicker[type="toggle"] {
 	border-style: dotted;
 }
 
-clicker[type="toggle"].enabled {
+clicker[type="toggle"].enabled:not(.disabled) {
 	border-style: solid;
 }
 
@@ -76,7 +76,7 @@ clicker[type="confirm"].primed::after {
 	content: "?";
 }
 
-clicker.disabled {
+.disabled {
 	cursor: not-allowed;
 	color: #666 !important;
 }
@@ -315,8 +315,8 @@ touchArea[direction="vertical"][mode="continuous"] {
 }
 
 #systemList li.option.taken {
-	color: #999;
-	border-color: #999;
+	color: #777;
+	border-color: #777;
 }
 
 #systemSwitcher {
