@@ -507,7 +507,7 @@ var ConfirmButton = React.createClass({
 
 var ToggleButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, hotkey: null };
+		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, hotkey: null, first: false, last: false };
 	},
 	getInitialState: function() {
         return { active: this.props.forceEnable, pressed: false };
@@ -528,6 +528,10 @@ var ToggleButton = React.createClass({
 			classes += ' disabled';
 		if (this.state.active)
 			classes += ' enabled';
+		if (this.props.first)
+			classes += ' first';
+		if (this.props.last)
+			classes += ' last';
 		
 		return (
 			<clicker type="toggle" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes}>
@@ -634,22 +638,33 @@ var ButtonGroup = React.createClass({
 		return { color: null, disabled: false, inline: false, caption: null };
 	},
 	render: function() {
-		var children = this.props.children;
+		var props = {}, gcProps = {};
+		if (this.props.color != null)
+			gcProps.color = props.color = this.props.color;
+		if (this.props.disabled)
+			gcProps.disabled = props.disabled = true;
 		
-		if (this.props.color != null || this.props.disabled) {
-			var props = {};
-			if (this.props.color != null)
-				props.color = this.props.color;
-			if (this.props.disabled)
-				props.disabled = true;
+		var isTable = false;
+		var children = React.Children.map(this.props.children, function (c, index) {
+			if (c.type == "row") {
+				isTable = true;
+				
+				props.children = React.Children.map(c.props.children, function (gc, i) {
+					return React.cloneElement(gc, gcProps);
+				});
+			}
 			
-			children = React.Children.map(children, function (c, index) {
-				return React.cloneElement(c, props);
-			});
-		}
+			var child = React.cloneElement(c, props);
+			delete props.children;
+			return child;
+		});
+		
+		var classes = this.props.inline ? 'inline' : '';
+		if (isTable)
+			classes += ' table';
 		
 		return (
-			<buttonGroup className={{display: this.props.inline ? "inline" : null}} caption={this.props.caption}>
+			<buttonGroup className={classes} caption={this.props.caption}>
 				{children}
 			</buttonGroup>
 		);
@@ -665,20 +680,54 @@ var Choice = React.createClass({
     },
 	render: function() {
 		var self = this;
-		var props = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted };
+		var props = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted, first: false, last: false };
+		var gcProps = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted, first: false, last: false };
 		
 		if (this.props.color != null)
-			props.color = this.props.color;
+			gcProps.color = props.color = this.props.color;
 		
 		if (this.props.disabled)
-			props.disabled = true;
+			gcProps.disabled = props.disabled = true;
 		
+		// find the first and last visible children, to mark them as such
+		var firstIndex = 0, lastIndex = this.props.children.length - 1;
+		while (firstIndex < this.props.children.length && !this.props.children[firstIndex].props.visible) {
+			firstIndex++;
+		}
+		while (lastIndex > 0 && !this.props.children[lastIndex].props.visible) {
+			lastIndex--;
+		}
+		
+		var isTable = false;
 		var children = React.Children.map(this.props.children, function (c, index) {
-            return React.cloneElement(c, props);
+			if (index == firstIndex)
+				props.first = true;
+			if (index == lastIndex)
+				props.last = true;
+			
+			if (c.type == "row") {
+				isTable = true;
+				
+				props.children = React.Children.map(c.props.children, function (gc, i) {
+					return React.cloneElement(gc, gcProps);
+				});
+			}
+			
+            var child = React.cloneElement(c, props);
+			
+			props.first = false;
+			props.last = false;
+			delete props.children;
+			
+			return child;
 		});
 		
+		var classes = this.props.inline ? 'inline' : '';
+		if (isTable)
+			classes += ' table';
+		
 		return (
-			<choice className={{display: this.props.inline ? "inline" : null}}>
+			<choice className={classes}>
 				<prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
 				{children}
 				<description style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>

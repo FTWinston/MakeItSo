@@ -170,21 +170,6 @@ function detectMovement(surface, callback) {
 }
 
 $(function () {
-	var _oldhide = $.fn.hide;
-	$.fn.hide = function(speed, callback) {
-		var retval = _oldhide.apply(this,arguments);
-		$(this).trigger('showhide');
-		return retval;
-	}
-	
-	var _oldshow = $.fn.show;
-	$.fn.show = function(speed, callback) {
-		var retval = _oldshow.apply(this,arguments);
-		$(this).trigger('showhide');
-		return retval;
-	}
-	
-	
 	var keyPresses = {};
 	$('clicker[key]').each(function () {
 		var clicker = $(this);
@@ -226,37 +211,5 @@ $(function () {
 			}
 		}
 	});
-	
-	$(document).on('mousedown', 'choice clicker[type="toggle"]', function () {
-		var clicker = $(this);
-				
-		var choice = clicker.closest('choice');
-		choice.find('clicker[type="toggle"].enabled').removeClass('enabled');
-		clicker.addClass('enabled');
-			
-		var desc = clicker.attr('description');
-		var display = clicker.siblings('description');
-		
-		var hide = clicker.attr('hide');
-		if (hide != undefined)
-			$(hide).hide();
-		
-		var show = clicker.attr('show');
-		if (show != undefined)
-			$(show).show();
-		
-		display.text(desc);
-	});
-	
-	$(document).on('showhide', 'choice clicker, .table clicker', function () {
-		var choice = $(this).parent();
-		choice.children().removeClass('first last');
-		choice.children('clicker:not([style*="display: none"]):first').addClass('first');
-		choice.children('clicker:not([style*="display: none"]):last').addClass('last');
-	});
-	
-	$('choice:has(row), buttonGroup:has(row)').addClass('table');
-	
-	$('choice > clicker[type="toggle"]:first-of-type, choice row:first-of-type clicker[type="toggle"]:first-of-type').mousedown().mouseup();
 });
 */
