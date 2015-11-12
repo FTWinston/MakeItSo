@@ -189,7 +189,7 @@ var GameRoot = React.createClass({
 		return (
 			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
 				<div id="systemSwitcher">
-					<Choice color="5">
+					<Choice inline={true} color="5">
 						{switchers}
 					</Choice>
 					<PushButton action="pause" color="8">pause</PushButton>
@@ -728,9 +728,9 @@ var Choice = React.createClass({
 		
 		return (
 			<choice className={classes}>
-				<prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
+				<prompt style={{display: this.props.prompt == null ? 'none' : null}} className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
 				{children}
-				<description style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
+				<description style={{display: this.state.description == null ? 'none' : null}} style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
 			</choice>
 		);
 	},

@@ -28,6 +28,9 @@ clicker {
 	padding: 0.5em;
 	font-size: 1.25em;
 	
+	margin-left: 0.1em;
+	margin-right: 0.1em;
+	
 	cursor: pointer;
 }
 
@@ -115,6 +118,10 @@ choice prompt, choice description {
 
 choice clicker, .table clicker {
 	border-radius: 0;
+}
+
+row > clicker {
+	margin: 0em;
 }
 
 choice clicker:first-of-type, choice clicker.first, .table clicker:first-of-type, .table clicker.first {
@@ -327,7 +334,6 @@ touchArea[direction="vertical"][mode="continuous"] {
 
 #systemSwitcher choice {
 	margin: 0em;
-	display: inline-block;
 }
 
 system {
