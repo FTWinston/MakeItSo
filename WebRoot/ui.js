@@ -1,13 +1,13 @@
 var GameClient = React.createClass({
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, playerID: null, systems: [] };
+        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, touchMode: false, playerID: null, systems: [] };
     },
 	render: function() {
 		return (
 			<div>
-				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} />
+				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} touchMode={this.state.touchMode} touchModeChanged={this.touchModeChanged} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} />
+				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} touchMode={this.state.touchMode} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
@@ -33,7 +33,7 @@ var GameClient = React.createClass({
 			return {systems: systems};
 		});
 	},
-	setActiveScreen(screen) {
+	setActiveScreen: function(screen) {
 		var newState = {activeScreen: screen};
 		if (!this.state.gameActive && screen == 'game')
 			newState.gameActive = true;
@@ -60,7 +60,7 @@ var GameClient = React.createClass({
 		else
 			window.removeEventListener('beforeunload', unloadEvent);
 	},
-	showError(message, fatal) {
+	showError: function(message, fatal) {
 		fatal = typeof fatal !== 'undefined' ? fatal : true;
 		
 		if (fatal) {
@@ -71,14 +71,17 @@ var GameClient = React.createClass({
 		this.setState({ errorMessage: message, gameActive: false });
 		this.setActiveScreen('error');
 	},
-	setPlayerID(val) {
+	setPlayerID: function(val) {
 		this.setState({ playerID: val });
 	},
-	setupScreenInUse(val) {
+	setupScreenInUse: function(val) {
 		this.setState({ setupInProgress: val });
 	},
-	gameAlreadyStarted() {
+	gameAlreadyStarted: function() {
 		this.setState({ gameActive: true });
+	},
+	touchModeChanged: function(val) {
+		this.setState({touchMode: val});
 	}
 });
 
@@ -100,7 +103,7 @@ var SystemSelect = React.createClass({
 					{systems}
 				</ul>
 				
-				<ToggleButton color="7">touch interface</ToggleButton>
+				<ToggleButton color="7" forceEnable={this.props.touchMode} onSelected={function() {self.props.touchModeChanged(true)}} onDeselected={function() {self.props.touchModeChanged(false)}}>touch interface</ToggleButton>
 				
 				<PushButton action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</PushButton>
 				<PushButton action="resume" color="4" visible={this.props.gameActive}>resume game</PushButton>
@@ -195,14 +198,14 @@ var GameRoot = React.createClass({
 					<PushButton action="pause" color="8">pause</PushButton>
 				</div>
 				
-				<Helm registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 0} />
-				<Viewscreen registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 1} />
-				<Sensors registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 2} />
-				<Weapons registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 3} />
-				<Shields registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 4} />
-				<DamageControl registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 5} />
-				<PowerManagement registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 6} />
-				<Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} />
+				<Helm registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 0} index={0} touchMode={this.props.touchMode} />
+				<Viewscreen registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 1} index={1} touchMode={this.props.touchMode} />
+				<Sensors registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 2} index={2} touchMode={this.props.touchMode} />
+				<Weapons registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 3} index={3} touchMode={this.props.touchMode} />
+				<Shields registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 4} index={4} touchMode={this.props.touchMode} />
+				<DamageControl registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 5} index={5} touchMode={this.props.touchMode} />
+				<PowerManagement registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 6} index={6} touchMode={this.props.touchMode} />
+				<Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} index={7} touchMode={this.props.touchMode} />
 			</screen>
 		);
 	}
@@ -217,13 +220,13 @@ var ShipSystemMixin = {
 
 var Helm = React.createClass({
 	getDefaultProps: function() {
-		return { touchMode: false, registerCallback: null, name: "Helm", index: 0 };
+		return { touchMode: false, registerCallback: null, name: "Helm" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
-				<ButtonGroup inline={true} color="1" style={{display: this.props.touchMode ? "none" : null}} caption="rotation">
+				<ButtonGroup inline={true} color="1" visible={!this.props.touchMode} caption="rotation">
 					<row>
 						<spacer></spacer>
 						<HeldButton hotkey="W" startAction="+down" stopAction="-down">down</HeldButton>
@@ -244,7 +247,7 @@ var Helm = React.createClass({
 					This is a touch area. Honest
 				</touchArea>
 				
-				<ButtonGroup inline={true} color="2" style={{display: this.props.touchMode ? "none" : null}}>
+				<ButtonGroup inline={true} color="2" visible={!this.props.touchMode}>
 					<row>
 						<HeldButton hotkey="R" startAction="+forward" stopAction="-forward">accelerate</HeldButton>
 					</row>
@@ -256,7 +259,7 @@ var Helm = React.createClass({
 					This too
 				</touchArea>
 				
-				<ButtonGroup inline={true} color="3" style={{display: this.props.touchMode ? "none" : null}} caption="translation">
+				<ButtonGroup inline={true} color="3" visible={!this.props.touchMode} caption="translation">
 					<row>
 						<spacer></spacer>
 						<HeldButton hotkey="I" startAction="+moveup" stopAction="-moveup">up</HeldButton>
@@ -283,7 +286,7 @@ var Helm = React.createClass({
 
 var Viewscreen = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Viewscreen", index: 1 };
+		return { registerCallback: null, name: "Viewscreen" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -343,7 +346,7 @@ var Viewscreen = React.createClass({
 
 var Sensors = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Sensors", index: 2 };
+		return { registerCallback: null, name: "Sensors" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -357,7 +360,7 @@ var Sensors = React.createClass({
 
 var Weapons = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Weapons", index: 3 };
+		return { registerCallback: null, name: "Weapons" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -371,7 +374,7 @@ var Weapons = React.createClass({
 
 var Shields = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Shields", index: 4 };
+		return { registerCallback: null, name: "Shields" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -385,7 +388,7 @@ var Shields = React.createClass({
 
 var DamageControl = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Damage Control", index: 5 };
+		return { registerCallback: null, name: "Damage Control" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -399,7 +402,7 @@ var DamageControl = React.createClass({
 
 var PowerManagement = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Power", index: 6 };
+		return { registerCallback: null, name: "Power" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -413,7 +416,7 @@ var PowerManagement = React.createClass({
 
 var Deflector = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Deflector", index: 7 };
+		return { registerCallback: null, name: "Deflector" };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
@@ -507,7 +510,7 @@ var ConfirmButton = React.createClass({
 
 var ToggleButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, hotkey: null, first: false, last: false };
+		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, onDeselected: null, hotkey: null, first: false, last: false };
 	},
 	getInitialState: function() {
         return { active: this.props.forceEnable, pressed: false };
@@ -552,10 +555,14 @@ var ToggleButton = React.createClass({
 		if (action != null)
 			ws.send(action);
 		
-		if (nowActive && this.props.onSelected != null)
-			this.props.onSelected(this);
-		if (nowActive && this.props.onSelectedChoice != null)
-			this.props.onSelectedChoice(this);
+		if (nowActive) {
+			if (this.props.onSelected != null)
+				this.props.onSelected(this);
+			if (this.props.onSelectedChoice != null)
+				this.props.onSelectedChoice(this);
+		}
+		else if (this.props.onDeselected != null)
+			this.props.onDeselected(this);
 		
 		this.setState({ active: nowActive, pressed: true });
 	},
@@ -635,7 +642,7 @@ var HeldButton = React.createClass({
 
 var ButtonGroup = React.createClass({
 	getDefaultProps: function() {
-		return { color: null, disabled: false, inline: false, caption: null };
+		return { color: null, disabled: false, inline: false, visible: true, caption: null };
 	},
 	render: function() {
 		var props = {}, gcProps = {};
@@ -664,7 +671,7 @@ var ButtonGroup = React.createClass({
 			classes += ' table';
 		
 		return (
-			<buttonGroup className={classes} caption={this.props.caption}>
+			<buttonGroup className={classes} caption={this.props.caption} style={{display: this.props.visible ? null : 'none'}}>
 				{children}
 			</buttonGroup>
 		);
@@ -673,7 +680,7 @@ var ButtonGroup = React.createClass({
 
 var Choice = React.createClass({
 	getDefaultProps: function() {
-		return { prompt: null, color: null, disabled: false, inline: false };
+		return { prompt: null, color: null, disabled: false, inline: false, visible: true };
 	},
 	getInitialState: function() {
         return { description: null, mountedChildren: [] };
@@ -727,7 +734,7 @@ var Choice = React.createClass({
 			classes += ' table';
 		
 		return (
-			<choice className={classes}>
+			<choice className={classes} style={{display: this.props.visible ? null : 'none'}}>
 				<prompt style={{display: this.props.prompt == null ? 'none' : null}} className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
 				{children}
 				<description style={{display: this.state.description == null ? 'none' : null}} style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
@@ -768,23 +775,6 @@ $(function () {
 	if (Features.TouchInterface == FeatureState.Unavailable) {
 		btnTouch.hide();
 		$('.touchMode').hide();
-	}
-	else {
-		if (Features.TouchInterface == FeatureState.Enabled) {
-			btnTouch.addClass('enabled');
-			$('.nonTouchMode').hide();
-		}
-		else {
-			$('.touchMode').hide();
-		}
-		var toggleTouch = function () {
-			var on = !btnTouch.hasClass('enabled');
-			Features.TouchInterface = on ? FeatureState.Enabled : FeatureState.Disabled;
-			$('.touchMode').toggle(on);
-			$('.nonTouchMode').toggle(!on);
-		};
-		btnTouch.mousedown(toggleTouch);
-		
 	}
 
 	detectMovement($('#touchRotation')[0], function (x, y) {
