@@ -1,10 +1,68 @@
+var Hotkeys = {
+	bindings: {},
+	showHotkeys: false,
+	register: function(hotkey, button) {
+		var keyCode = hotkey.charCodeAt(0);
+			
+		if (this.bindings.hasOwnProperty(keyCode))
+			this.bindings[keyCode].push(button);
+		else
+			this.bindings[keyCode] = [button];
+	},
+	initialize: function() {
+		document.onkeydown = this.onKeyDown;
+		document.onkeyup = this.onKeyUp;
+	},
+	onKeyDown: function(e) {
+		var presses = Hotkeys.bindings[e.which];
+		if (presses === undefined) {
+			if (e.which == 112) {
+				Hotkeys.showHotkeys = !Hotkeys.showHotkeys;
+				gameClient.showHotkeys(Hotkeys.showHotkeys);
+				
+				e.preventDefault();
+			}
+			return;
+		}
+		
+		for (var i=0; i<presses.length; i++) {
+			var button = presses[i];
+			
+			if (button.isVisible())
+			{
+				if (button.mouseDown != undefined)
+					button.mouseDown();
+				return;
+			}
+		}
+	},
+	onKeyUp: function(e){
+		var presses = Hotkeys.bindings[e.which];
+		if (presses === undefined)
+			return;
+		
+		for (var i=0; i<presses.length; i++) {
+			var button = presses[i];
+			
+			if (button.isVisible())
+			{
+				if (button.mouseUp != undefined)
+					button.mouseUp();
+				if (button.click != undefined)
+					button.click();
+				return;
+			}
+		}
+	}
+}
+
 var GameClient = React.createClass({
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, touchMode: false, playerID: null, systems: [] };
+        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, touchMode: false, showHotkeys: false, playerID: null, systems: [] };
     },
 	render: function() {
 		return (
-			<div>
+			<div className={this.state.showHotkeys ? 'showKeys' : null}>
 				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} touchMode={this.state.touchMode} touchModeChanged={this.touchModeChanged} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
 				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} touchMode={this.state.touchMode} />
@@ -55,10 +113,16 @@ var GameClient = React.createClass({
 					}
 			}
 			
-			window.addEventListener('beforeunload', unloadEvent);
+			window.addEventListener('beforeunload', this.unloadEvent);
 		}
 		else
-			window.removeEventListener('beforeunload', unloadEvent);
+			window.removeEventListener('beforeunload', this.unloadEvent);
+	},
+	unloadEvent: function (e) {	
+		var confirmationMessage = 'The game is still active.';
+
+		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
+		return confirmationMessage; //Webkit, Safari, Chrome etc.
 	},
 	showError: function(message, fatal) {
 		fatal = typeof fatal !== 'undefined' ? fatal : true;
@@ -82,6 +146,13 @@ var GameClient = React.createClass({
 	},
 	touchModeChanged: function(val) {
 		this.setState({touchMode: val});
+	},
+	showHotkeys: function(val) {
+		this.setState({showHotkeys: val});
+	},
+	componentDidMount: function () {
+		createConnection();
+		Hotkeys.initialize();
 	}
 });
 
@@ -438,20 +509,36 @@ var ErrorDisplay = React.createClass({
 	}
 });
 
-
-var PushButton = React.createClass({
-	getDefaultProps: function() {
-		return { visible: true, disabled: false, action: null, onClicked: null, color: null };
+var ButtonMixin = {
+	componentDidMount: function() {
+		if (this.props.hotkey != null)
+			Hotkeys.register(this.props.hotkey, this);
 	},
-	render: function() {
+	isVisible: function() {
+		return this.refs.btn.offsetParent !== null && this.props.visible;
+	},
+	prepClasses: function() {
 		var classes = '';
 		if (this.props.color != null)
 			classes += 'color' + this.props.color;
 		if (this.props.disabled)
 			classes += ' disabled';
-		
+		if (this.props.first)
+			classes += ' first';
+		if (this.props.last)
+			classes += ' last';
+		return classes;
+	}
+};
+
+var PushButton = React.createClass({
+	getDefaultProps: function() {
+		return { visible: true, disabled: false, action: null, onClicked: null, color: null, hotkey: null };
+	},
+	mixins: [ButtonMixin],
+	render: function() {
 		return (
-			<clicker type="push" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} className={classes}>
+			<clicker ref="btn" type="push" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} className={this.prepClasses()} data-hotkey={this.props.hotkey}>
 				{this.props.children}
 			</clicker>
 		);
@@ -470,22 +557,19 @@ var PushButton = React.createClass({
 
 var ConfirmButton = React.createClass({
 	getDefaultProps: function() {
-		return { visible: true, disabled: false, action: null, color: null };
+		return { visible: true, disabled: false, action: null, color: null, hotkey: null };
 	},
 	getInitialState: function() {
         return { primed: false };
     },
+	mixins: [ButtonMixin],
 	render: function() {
-		var classes = '';
-		if (this.props.color != null)
-			classes += 'color' + this.props.color;
-		if (this.props.disabled)
-			classes += ' disabled';
+		var classes = this.prepClasses();
 		if (this.state.primed)
 			classes += ' primed';
 		
 		return (
-			<clicker type="confirm" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} onMouseLeave={this.mouseLeave} className={classes}>
+			<clicker ref="btn" type="confirm" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} onMouseLeave={this.mouseLeave} className={classes} data-hotkey={this.props.hotkey}>
 				{this.props.children}
 			</clicker>
 		);
@@ -515,6 +599,7 @@ var ToggleButton = React.createClass({
 	getInitialState: function() {
         return { active: this.props.forceEnable, pressed: false };
     },
+	mixins: [ButtonMixin],
 	componentDidMount: function() {
 		if (this.props.onMounted != null)
 			this.props.onMounted(this);
@@ -524,20 +609,12 @@ var ToggleButton = React.createClass({
 			this.setActive(true);
 	},
 	render: function() {
-		var classes = '';
-		if (this.props.color != null)
-			classes += 'color' + this.props.color;
-		if (this.props.disabled)
-			classes += ' disabled';
+		var classes = this.prepClasses();
 		if (this.state.active)
 			classes += ' enabled';
-		if (this.props.first)
-			classes += ' first';
-		if (this.props.last)
-			classes += ' last';
 		
 		return (
-			<clicker type="toggle" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes}>
+			<clicker ref="btn" type="toggle" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes} data-hotkey={this.props.hotkey}>
 				{this.props.children}
 			</clicker>
 		);
@@ -595,17 +672,14 @@ var HeldButton = React.createClass({
 	getInitialState: function() {
         return { held: false };
     },
+	mixins: [ButtonMixin],
 	render: function() {
-		var classes = '';
-		if (this.props.color != null)
-			classes += 'color' + this.props.color;
-		if (this.props.disabled)
-			classes += ' disabled';
+		var classes = this.prepClasses();
 		if (this.state.held)
 			classes += ' held';
 		
 		return (
-			<clicker type="held" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes}>
+			<clicker ref="btn" type="held" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onTouchStart={this.touchStart} onTouchEnd={this.touchEnd} onMouseLeave={this.mouseUp} className={classes} data-hotkey={this.props.hotkey}>
 				{this.props.children}
 			</clicker>
 		);
@@ -671,7 +745,7 @@ var ButtonGroup = React.createClass({
 			classes += ' table';
 		
 		return (
-			<buttonGroup className={classes} caption={this.props.caption} style={{display: this.props.visible ? null : 'none'}}>
+			<buttonGroup className={classes} data-caption={this.props.caption} style={{display: this.props.visible ? null : 'none'}}>
 				{children}
 			</buttonGroup>
 		);
@@ -758,16 +832,8 @@ var Choice = React.createClass({
 
 gameClient = ReactDOM.render(
 	<GameClient />,
-	document.getElementById('gameRoot'),
-	createConnection
+	document.getElementById('gameRoot')
 );
-
-var unloadEvent = function (e) {	
-	var confirmationMessage = 'The game is still active.';
-
-	(e || window.event).returnValue = confirmationMessage; //Gecko + IE
-	return confirmationMessage; //Webkit, Safari, Chrome etc.
-};
 
 /*
 $(function () {

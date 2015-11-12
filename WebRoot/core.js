@@ -168,48 +168,4 @@ function detectMovement(surface, callback) {
 	surface.addEventListener('touchcancel', touchEnd, false);
 	surface.addEventListener('touchleave', touchEnd, false);
 }
-
-$(function () {
-	var keyPresses = {};
-	$('clicker[key]').each(function () {
-		var clicker = $(this);
-		var keyCode = clicker.attr('key').charCodeAt(0);
-		
-		if (keyPresses.hasOwnProperty(keyCode))
-			keyPresses[keyCode].push(clicker);
-		else
-			keyPresses[keyCode] = [clicker];
-	});
-	
-	$(document).keydown(function(e){
-		var presses = keyPresses[e.which];
-		if (presses === undefined) {
-			if (e.which == 112) {
-				$('body').toggleClass('showKeys');
-				e.preventDefault();
-			}
-			return;
-		}
-		for (var i=0; i<presses.length; i++) {
-			var button = presses[i];
-			if (button.is(':visible'))
-			{
-				button.mousedown();
-				return;
-			}
-		}
-	}).keyup(function(e){
-		var presses = keyPresses[e.which];
-		if (presses === undefined)
-			return;
-		for (var i=0; i<presses.length; i++) {
-			var button = presses[i];
-			if (button.is(':visible'))
-			{
-				button.mouseup().click();
-				return;
-			}
-		}
-	});
-});
 */

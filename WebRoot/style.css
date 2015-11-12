@@ -102,8 +102,8 @@ choice, buttonGroup {
 	position: relative;
 }
 
-buttonGroup[caption]::before, choice[caption]::before {
-	content: attr(caption);
+buttonGroup[data-caption]::before, choice[data-caption]::before {
+	content: attr(data-caption);
 	color: #ccc;
 	position: absolute;
     bottom: -1em;
@@ -163,13 +163,13 @@ choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .
 	display: table-cell;
 }
 
-body.showKeys [key] {
+.showKeys clicker[data-hotkey] {
 	position: relative;
 	color: transparent !important;
 }
 
-body.showKeys [key]:before {
-	content: "[" attr(key) "] ";
+.showKeys clicker[data-hotkey]:before {
+	content: "[" attr(data-hotkey) "] ";
 	color: #ccc;
 	position: absolute;
     top: 0;
