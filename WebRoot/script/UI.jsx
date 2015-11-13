@@ -1,5 +1,11 @@
 if (!window.console) { window.console = { log: function() {} } };
 
+window.FeatureState = {
+	Unavailable: 0,
+	Disabled: 1,
+	Enabled: 2
+};
+
 window.Hotkeys = {
 	bindings: {},
 	showHotkeys: false,
@@ -531,24 +537,3 @@ window.AxisInput = React.createClass({
 			movementCallback(dx * this.props.scale, dy * this.props.scale);
 	}
 });
-
-/*
-var FeatureState = {
-	Unavailable: 0,
-	Disabled: 1,
-	Enabled: 2
-};
-
-var Features = {
-	Vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
-	TouchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
-};
-
-$(function () {
-	var btnTouch = $('#btnTouchToggle');
-	if (Features.TouchInterface == FeatureState.Unavailable) {
-		btnTouch.hide();
-		$('.touchMode').hide();
-	}
-});
-*/

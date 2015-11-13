@@ -56,14 +56,15 @@ window.GameClient = React.createClass({
 		}
 	},
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, touchMode: false, showHotkeys: false, playerID: null, systems: [] };
+        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null, systems: [], vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
+		touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable };
     },
 	render: function() {
 		return (
 			<div className={this.state.showHotkeys ? 'showKeys' : null}>
-				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} touchMode={this.state.touchMode} touchModeChanged={this.touchModeChanged} />
+				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} touchMode={this.state.touchMode} />
+				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} touchMode={this.state.touchInterface == FeatureState.Enabled} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);

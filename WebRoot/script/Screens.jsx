@@ -26,7 +26,7 @@ window.SystemSelect = React.createClass({
 					{systems}
 				</ul>
 				
-				<ToggleButton color="7" forceEnable={this.props.touchMode} onSelected={function() {self.props.touchModeChanged(true)}} onDeselected={function() {self.props.touchModeChanged(false)}}>touch interface</ToggleButton>
+				<ToggleButton color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceEnable={this.props.touchMode == FeatureState.Enabled} onSelected={function() {self.props.touchModeChanged(true)}} onDeselected={function() {self.props.touchModeChanged(false)}}>touch interface</ToggleButton>
 				
 				<PushButton action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</PushButton>
 				<PushButton action="resume" color="4" visible={this.props.gameActive}>resume game</PushButton>
