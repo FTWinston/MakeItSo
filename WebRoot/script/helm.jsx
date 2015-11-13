@@ -23,9 +23,8 @@ window.Helm = React.createClass({
 						<spacer></spacer>
 					</row>
 				</ButtonGroup>
-				<touchArea id="touchRotation" className="color1 inline" style={{display: this.props.touchMode ? null : "none"}} caption="rotation" direction="both" mode="continuous">
-					This is a touch area. Honest
-				</touchArea>
+				
+				<AxisInput visible={this.props.touchMode} direction="both" caption="rotation" color="1" scale={0.02} movementCallback={this.touchRotation} />
 				
 				<ButtonGroup inline={true} color="2" visible={!this.props.touchMode}>
 					<row>
@@ -35,9 +34,8 @@ window.Helm = React.createClass({
 						<ToggleButton hotkey="F" startAction="+backward" stopAction="-backward">brake</ToggleButton>
 					</row>
 				</ButtonGroup>
-				<touchArea id="touchAcceleration" className="color2 inline" style={{display: this.props.touchMode ? null : "none"}} direction="vertical" mode="continuous">
-					This too
-				</touchArea>
+				
+				<AxisInput visible={this.props.touchMode} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
 				
 				<ButtonGroup inline={true} color="3" visible={!this.props.touchMode} caption="translation">
 					<row>
@@ -56,10 +54,44 @@ window.Helm = React.createClass({
 						<spacer></spacer>
 					</row>
 				</ButtonGroup>
-				<touchArea id="touchTranslation" className="color3 inline" style={{display: this.props.touchMode ? null : "none"}} caption="translation" direction="both" mode="continuous">
-					And also this
-				</touchArea>
+				
+				<AxisInput visible={this.props.touchMode} direction="both" caption="translation" scale={0.02} color="3" movementCallback={this.touchTranslation} />
 			</system>
 		);
+	},
+	touchRotation: function (dx, dy) {
+		gameClient.socket.send('yaw ' + dx);
+		gameClient.socket.send('pitch ' + dx);
+	},
+	touchForwardBack: function (dx, dy) {
+		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
+		if (dy < 0)
+			gameClient.socket.send('+forward ' + (-dy));
+		else if (dy == 0) {
+			gameClient.socket.send('-forward');
+			gameClient.socket.send('-backward');
+		}
+		else
+			gameClient.socket.send('+backward ' + dy);
+	},
+	touchTranslation: function (dx, dy) {
+		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
+		if (dx < 0)
+			gameClient.socket.send('+moveleft ' + (-dx));
+		else if (dx == 0) {
+			gameClient.socket.send('-moveleft');
+			gameClient.socket.send('-moveright');
+		}
+		else
+			gameClient.socket.send('+moveright ' + dx);
+		
+		if (dy < 0)
+			gameClient.socket.send('+moveup ' + (-dy));
+		else if (dy == 0) {
+			gameClient.socket.send('-moveup');
+			gameClient.socket.send('-movedown');
+		}
+		else
+			gameClient.socket.send('+movedown ' + dy);
 	}
 });

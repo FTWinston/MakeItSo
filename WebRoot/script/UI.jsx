@@ -58,6 +58,142 @@ window.Hotkeys = {
 	}
 }
 
+window.TouchFunctions = {
+	SwipeDir: {
+		Up: 0,
+		Down: 1,
+		Left: 2,
+		Right: 3
+	},
+	detectSwipe: function(surface, minDist, maxTime, callback) {
+		if (minDist === undefined)
+			minDist = 100;
+		if (maxTime === undefined)
+			maxTime = 500;
+		
+		var swipedir,
+		startX, startY,
+		distX, distY,
+		maxPerpDist = minDist * 0.67,
+		startTime, duration;
+
+		surface.addEventListener('touchstart', function(e) {
+			var touch = e.changedTouches[0];
+			swipedir = 'none';
+			dist = 0;
+			startX = touch.pageX;
+			startY = touch.pageY;
+			startTime = new Date().getTime(); // record time when finger first makes contact with surface
+			e.preventDefault();
+		}, false);
+
+		surface.addEventListener('touchmove', function(e) {
+			e.preventDefault(); // prevent scrolling when inside DIV
+		}, false);
+
+		surface.addEventListener('touchend', function(e) {
+			e.preventDefault();
+			
+			var touch = e.changedTouches[0];
+			distX = touch.pageX - startX;
+			distY = touch.pageY - startY;
+			duration = new Date().getTime() - startTime;
+			if (duration > maxTime)
+				return;
+		
+			if (Math.abs(distX) >= minDist && Math.abs(distY) <= maxPerpDist) {
+				swipedir = (distX < 0) ? SwipeDir.Left : SwipeDir.Right;
+			}
+			else if (Math.abs(distY) >= minDist && Math.abs(distX) <= maxPerpDist) {
+				swipedir = (distY < 0) ? SwipeDir.Up : SwipeDir.Down;
+			}
+			callback(swipedir);
+		}, false);
+	},
+	detectTap: function(surface, maxDist, maxTime, callback) {
+		if (maxDist === undefined)
+			maxDist = 75;
+		if (maxTime === undefined)
+			maxTime = 750;
+		
+		var startX, startY,
+		distX, distY,
+		startTime, duration;
+
+		surface.addEventListener('touchstart', function(e) {
+			var touch = e.changedTouches[0];
+			dist = 0;
+			startX = touch.pageX;
+			startY = touch.pageY;
+			startTime = new Date().getTime(); // record time when finger first makes contact with surface
+			e.preventDefault();
+		}, false);
+
+		surface.addEventListener('touchmove', function(e) {
+			e.preventDefault(); // prevent scrolling when inside DIV
+		}, false);
+
+		surface.addEventListener('touchend', function(e) {
+			e.preventDefault();
+			
+			var touch = e.changedTouches[0];
+			distX = touch.pageX - startX;
+			distY = touch.pageY - startY;
+			duration = new Date().getTime() - startTime;
+			if (duration > maxTime)
+				return;
+
+			if (Math.abs(distX) > maxDist || Math.abs(distY) > maxDist)
+				return;
+			
+			callback();
+		}, false);
+	},
+	detectMovement: function(surface, callback) {
+		var ongoingTouches = {};
+		var distX; var distY;
+		
+		surface.addEventListener('touchstart', function(e) {
+			e.preventDefault();
+			
+			for (var i=0; i<e.changedTouches.length; i++) {
+				var touch = e.changedTouches[i];
+				ongoingTouches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
+			}
+		}, false);
+
+		surface.addEventListener('touchmove', function(e) {
+			e.preventDefault();
+			
+			for (var i=0; i<e.touches.length; i++) {
+				var currentTouch = e.touches[i]; // if using changedTouches instead, additional (stationary) presses wouldn't slow movement
+				var prevTouch = ongoingTouches[currentTouch.identifier];
+				if (prevTouch === undefined)
+					continue;
+				
+				distX = currentTouch.pageX - prevTouch.pageX;
+				distY = currentTouch.pageY - prevTouch.pageY;
+
+				callback(distX, distY);
+			}
+		}, false);
+
+		var touchEnd = function(e) {
+			e.preventDefault();
+			
+			for (var i=0; i<e.changedTouches.length; i++) {
+				var touch = e.changedTouches[i];
+				ongoingTouches[touch.identifier] = undefined;
+				callback(0, 0);
+			}
+		};
+		
+		surface.addEventListener('touchend', touchEnd, false);
+		surface.addEventListener('touchcancel', touchEnd, false);
+		surface.addEventListener('touchleave', touchEnd, false);
+	}
+};
+
 var ButtonMixin = {
 	componentDidMount: function() {
 		if (this.props.hotkey != null)
@@ -378,6 +514,24 @@ window.Choice = React.createClass({
 	}
 });
 
+window.AxisInput = React.createClass({
+	getDefaultProps: function() {
+		return { visible: true, direction: 'both', caption: null, color: null, movementCallback: null, scale: 1 };
+	},
+	render: function() {
+		return (
+			<touchArea ref="area" className="inline" style={{display: this.props.visible ? null : 'none'}} data-caption={this.props.caption} data-direction={this.props.direction} data-mode="continuous"></touchArea>
+		);
+	},
+	componentDidMount: function () {
+		TouchFunctions.detectMovement(this.refs.area, this.onMovement);
+	},
+	onMovement: function (dx, dy) {
+		if (movementCallback != null)
+			movementCallback(dx * this.props.scale, dy * this.props.scale);
+	}
+});
+
 /*
 var FeatureState = {
 	Unavailable: 0,
@@ -390,151 +544,11 @@ var Features = {
 	TouchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
 };
 
-var SwipeDir = {
-	Up: 0,
-	Down: 1,
-	Left: 2,
-	Right: 3
-};
-
-function detectSwipe(surface, minDist, maxTime, callback) {
-	if (minDist === undefined)
-		minDist = 100;
-	if (maxTime === undefined)
-		maxTime = 500;
-	
-	var swipedir,
-	startX, startY,
-	distX, distY,
-	maxPerpDist = minDist * 0.67,
-	startTime, duration;
-
-	surface.addEventListener('touchstart', function(e) {
-		var touch = e.changedTouches[0];
-		swipedir = 'none';
-		dist = 0;
-		startX = touch.pageX;
-		startY = touch.pageY;
-		startTime = new Date().getTime(); // record time when finger first makes contact with surface
-		e.preventDefault();
-	}, false);
-
-	surface.addEventListener('touchmove', function(e) {
-		e.preventDefault(); // prevent scrolling when inside DIV
-	}, false);
-
-	surface.addEventListener('touchend', function(e) {
-		e.preventDefault();
-		
-		var touch = e.changedTouches[0];
-		distX = touch.pageX - startX;
-		distY = touch.pageY - startY;
-		duration = new Date().getTime() - startTime;
-		if (duration > maxTime)
-			return;
-	
-		if (Math.abs(distX) >= minDist && Math.abs(distY) <= maxPerpDist) {
-			swipedir = (distX < 0) ? SwipeDir.Left : SwipeDir.Right;
-		}
-		else if (Math.abs(distY) >= minDist && Math.abs(distX) <= maxPerpDist) {
-			swipedir = (distY < 0) ? SwipeDir.Up : SwipeDir.Down;
-		}
-		callback(swipedir);
-	}, false);
-}
-
-function detectMovement(surface, callback) {
-	var ongoingTouches = {};
-	var distX; var distY;
-	
-	surface.addEventListener('touchstart', function(e) {
-		e.preventDefault();
-		
-		for (var i=0; i<e.changedTouches.length; i++) {
-			var touch = e.changedTouches[i];
-			ongoingTouches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
-		}
-	}, false);
-
-	surface.addEventListener('touchmove', function(e) {
-		e.preventDefault();
-		
-		for (var i=0; i<e.touches.length; i++) {
-			var currentTouch = e.touches[i]; // if using changedTouches instead, additional (stationary) presses wouldn't slow movement
-			var prevTouch = ongoingTouches[currentTouch.identifier];
-			if (prevTouch === undefined)
-				continue;
-			
-			distX = currentTouch.pageX - prevTouch.pageX;
-			distY = currentTouch.pageY - prevTouch.pageY;
-
-			callback(distX, distY);
-		}
-	}, false);
-
-	var touchEnd = function(e) {
-		e.preventDefault();
-		
-		for (var i=0; i<e.changedTouches.length; i++) {
-			var touch = e.changedTouches[i];
-			ongoingTouches[touch.identifier] = undefined;
-			callback(0, 0);
-		}
-	};
-	
-	surface.addEventListener('touchend', touchEnd, false);
-	surface.addEventListener('touchcancel', touchEnd, false);
-	surface.addEventListener('touchleave', touchEnd, false);
-}
-
 $(function () {
 	var btnTouch = $('#btnTouchToggle');
 	if (Features.TouchInterface == FeatureState.Unavailable) {
 		btnTouch.hide();
 		$('.touchMode').hide();
 	}
-
-	detectMovement($('#touchRotation')[0], function (x, y) {
-		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
-		var scale = 1/50;
-		gameClient.socket.send('yaw ' + (x * scale));
-		gameClient.socket.send('pitch ' + (y * scale));
-	});
-	
-	detectMovement($('#touchAcceleration')[0], function (x, y) {
-		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
-		var scale = 1/50;
-		if (y < 0)
-			gameClient.socket.send('+forward ' + (-y * scale));
-		else if (y == 0) {
-			gameClient.socket.send('-forward');
-			gameClient.socket.send('-backward');
-		}
-		else
-			gameClient.socket.send('+backward ' + (y * scale));
-	});
-	
-	detectMovement($('#touchTranslation')[0], function (x, y) {
-		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
-		var scale = 1/50;
-		if (x < 0)
-			gameClient.socket.send('+rotleft ' + (-x * scale));
-		else if (x == 0) {
-			gameClient.socket.send('-moveleft');
-			gameClient.socket.send('-moveright');
-		}
-		else
-			gameClient.socket.send('+moveright ' + (y * scale));
-		
-		if (y < 0)
-			gameClient.socket.send('+moveup ' + (-y * scale));
-		else if (y == 0) {
-			gameClient.socket.send('-moveup');
-			gameClient.socket.send('-movedown');
-		}
-		else
-			gameClient.socket.send('+movedown ' + (y * scale));
-	});
 });
-
 */
