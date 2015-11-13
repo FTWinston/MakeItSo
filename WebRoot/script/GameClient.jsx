@@ -54,6 +54,13 @@ window.GameClient = React.createClass({
 		else if (cmd == 'pause-') {
 			this.setActiveScreen('game');
 		}
+		else {
+			var system = parseInt(cmd);
+			if (isNaN(system) || system < 0 || system > this.state.systems.length)
+				console.error('Unrecognised command from server: ' + cmd);
+			else
+				this.state.systems[i].receiveMessage(m[1]);
+		}
 	},
 	getInitialState: function() {
         return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null, systems: [], vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,

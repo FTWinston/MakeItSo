@@ -139,4 +139,7 @@ window.ShipSystemMixin = {
 		if (this.props.registerCallback != null)
 			this.props.registerCallback(this.props.name, this.props.index);
 	},
+	receiveMessage: function (msg) {
+		console.error(this.constructor.displayName + ' system failed to handle message: ' + msg);
+	}
 };
