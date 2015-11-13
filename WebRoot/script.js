@@ -1,3 +1,7 @@
+"use strict";
+
+if (!window.console) { window.console = { log: function() {} } };
+
 var Hotkeys = {
 	bindings: {},
 	showHotkeys: false,
@@ -57,6 +61,62 @@ var Hotkeys = {
 }
 
 var GameClient = React.createClass({
+	socket: null,
+	createConnection: function() {
+		this.socket = new WebSocket('ws://' + location.host + '/ws');
+		this.socket.onerror = this.socket.onclose = function (e) { this.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }
+		this.socket.onmessage = this.messageReceived;
+	},
+	messageReceived: function (ev) {
+		var m = (ev.data || '').split(' ', 2);
+		var cmd = m[0];
+		
+		if (cmd == 'id') {
+			this.setPlayerID(m[1]);
+			this.setActiveScreen('systems');
+		}
+		else if (cmd == 'sys+') {
+			this.markSystemInUse(m[1], false);
+		}
+		else if (cmd == 'sys-') {
+			this.markSystemInUse(m[1], true);
+		}
+		else if (cmd == 'setup+') {
+			this.setupScreenInUse(false);
+		}
+		else if (cmd == 'setup-') {
+			this.setupScreenInUse(true);
+		}
+		else if (cmd == 'setup') {
+			this.setActiveScreen('setup');
+		}
+		else if (cmd == 'full') {
+			this.showError('This ship is full: there is no room for you to join.', true);
+		}
+		else if (cmd == 'started') {
+			this.gameAlreadyStarted();
+			this.showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
+		}
+		else if (cmd == 'paused') {
+			this.gameAlreadyStarted();
+			this.setActiveScreen('systems');
+		}
+		else if (cmd == 'game+') {
+			this.setActiveScreen('game');
+		}
+		else if (cmd == 'game-') {
+			var blame = m.length > 1 ? 'User \'' + m[1] + '\' ended the game.' : 'The game has ended.';
+			this.showError(blame + ' Please wait...', false);
+
+			setTimeout(function() { gameClient.setActiveScreen('systems'); }, 3000);
+		}
+		else if (cmd == 'pause+') {
+			this.setActiveScreen('systems');
+		}
+		else if (cmd == 'pause-') {
+			this.setActiveScreen('game');
+		}
+	},
 	getInitialState: function() {
         return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, touchMode: false, showHotkeys: false, playerID: null, systems: [] };
     },
@@ -128,7 +188,7 @@ var GameClient = React.createClass({
 		fatal = typeof fatal !== 'undefined' ? fatal : true;
 		
 		if (fatal) {
-			ws.close();
+			this.socket.close();
 			message +='\n\nRefresh the page to continue.';
 		}
 		
@@ -151,7 +211,7 @@ var GameClient = React.createClass({
 		this.setState({showHotkeys: val});
 	},
 	componentDidMount: function () {
-		createConnection();
+		this.createConnection();
 		Hotkeys.initialize();
 	}
 });
@@ -199,7 +259,7 @@ var SystemPicker = React.createClass({
 	},
 	clicked: function() {
 		var nowSelected = !this.props.system.selected;
-		ws.send((nowSelected ? '+sys ' : '-sys ') + this.props.system.index);
+		gameClient.socket.send((nowSelected ? '+sys ' : '-sys ') + this.props.system.index);
 		this.props.selectionChanged(this.props.system.index, nowSelected);
 	}
 });
@@ -548,7 +608,7 @@ var PushButton = React.createClass({
 			return;
 		
 		if (this.props.action != null)
-			ws.send(this.props.action);
+			gameClient.socket.send(this.props.action);
 		
 		if (this.props.onClicked != null)
 			this.props.onClicked();
@@ -584,7 +644,7 @@ var ConfirmButton = React.createClass({
 		}
 		
 		if (this.props.action != null)
-			ws.send(this.props.action);
+			gameClient.socket.send(this.props.action);
 		this.setState({ primed: false });
 	},
 	mouseLeave: function(e) {
@@ -630,7 +690,7 @@ var ToggleButton = React.createClass({
 		
 		var action = nowActive ? this.props.startAction : this.props.stopAction;
 		if (action != null)
-			ws.send(action);
+			gameClient.socket.send(action);
 		
 		if (nowActive) {
 			if (this.props.onSelected != null)
@@ -689,7 +749,7 @@ var HeldButton = React.createClass({
 			return;
 		
 		if (this.props.startAction != null)
-			ws.send(this.props.startAction);
+			gameClient.socket.send(this.props.startAction);
 		
 		this.setState({ held: true });
 	},
@@ -697,7 +757,7 @@ var HeldButton = React.createClass({
 		if (this.props.disabled || !this.state.held)
 			
 		if (this.props.stopAction != null)
-			ws.send(this.props.stopAction);
+			gameClient.socket.send(this.props.stopAction);
 		
 		this.setState({ held: false });
 	},
@@ -836,6 +896,114 @@ gameClient = ReactDOM.render(
 );
 
 /*
+var FeatureState = {
+	Unavailable: 0,
+	Disabled: 1,
+	Enabled: 2
+};
+
+var Features = {
+	Vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
+	TouchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
+};
+
+var SwipeDir = {
+	Up: 0,
+	Down: 1,
+	Left: 2,
+	Right: 3
+};
+
+function detectSwipe(surface, minDist, maxTime, callback) {
+	if (minDist === undefined)
+		minDist = 100;
+	if (maxTime === undefined)
+		maxTime = 500;
+	
+	var swipedir,
+	startX, startY,
+	distX, distY,
+	maxPerpDist = minDist * 0.67,
+	startTime, duration;
+
+	surface.addEventListener('touchstart', function(e) {
+		var touch = e.changedTouches[0];
+		swipedir = 'none';
+		dist = 0;
+		startX = touch.pageX;
+		startY = touch.pageY;
+		startTime = new Date().getTime(); // record time when finger first makes contact with surface
+		e.preventDefault();
+	}, false);
+
+	surface.addEventListener('touchmove', function(e) {
+		e.preventDefault(); // prevent scrolling when inside DIV
+	}, false);
+
+	surface.addEventListener('touchend', function(e) {
+		e.preventDefault();
+		
+		var touch = e.changedTouches[0];
+		distX = touch.pageX - startX;
+		distY = touch.pageY - startY;
+		duration = new Date().getTime() - startTime;
+		if (duration > maxTime)
+			return;
+	
+		if (Math.abs(distX) >= minDist && Math.abs(distY) <= maxPerpDist) {
+			swipedir = (distX < 0) ? SwipeDir.Left : SwipeDir.Right;
+		}
+		else if (Math.abs(distY) >= minDist && Math.abs(distX) <= maxPerpDist) {
+			swipedir = (distY < 0) ? SwipeDir.Up : SwipeDir.Down;
+		}
+		callback(swipedir);
+	}, false);
+}
+
+function detectMovement(surface, callback) {
+	var ongoingTouches = {};
+	var distX; var distY;
+	
+	surface.addEventListener('touchstart', function(e) {
+		e.preventDefault();
+		
+		for (var i=0; i<e.changedTouches.length; i++) {
+			var touch = e.changedTouches[i];
+			ongoingTouches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
+		}
+	}, false);
+
+	surface.addEventListener('touchmove', function(e) {
+		e.preventDefault();
+		
+		for (var i=0; i<e.touches.length; i++) {
+			var currentTouch = e.touches[i]; // if using changedTouches instead, additional (stationary) presses wouldn't slow movement
+			var prevTouch = ongoingTouches[currentTouch.identifier];
+			if (prevTouch === undefined)
+				continue;
+			
+			distX = currentTouch.pageX - prevTouch.pageX;
+			distY = currentTouch.pageY - prevTouch.pageY;
+
+			callback(distX, distY);
+		}
+	}, false);
+
+	var touchEnd = function(e) {
+		e.preventDefault();
+		
+		for (var i=0; i<e.changedTouches.length; i++) {
+			var touch = e.changedTouches[i];
+			ongoingTouches[touch.identifier] = undefined;
+			callback(0, 0);
+		}
+	};
+	
+	surface.addEventListener('touchend', touchEnd, false);
+	surface.addEventListener('touchcancel', touchEnd, false);
+	surface.addEventListener('touchleave', touchEnd, false);
+}
+
 $(function () {
 	var btnTouch = $('#btnTouchToggle');
 	if (Features.TouchInterface == FeatureState.Unavailable) {
@@ -846,43 +1014,43 @@ $(function () {
 	detectMovement($('#touchRotation')[0], function (x, y) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		var scale = 1/50;
-		ws.send('yaw ' + (x * scale));
-		ws.send('pitch ' + (y * scale));
+		gameClient.socket.send('yaw ' + (x * scale));
+		gameClient.socket.send('pitch ' + (y * scale));
 	});
 	
 	detectMovement($('#touchAcceleration')[0], function (x, y) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		var scale = 1/50;
 		if (y < 0)
-			ws.send('+forward ' + (-y * scale));
+			gameClient.socket.send('+forward ' + (-y * scale));
 		else if (y == 0) {
-			ws.send('-forward');
-			ws.send('-backward');
+			gameClient.socket.send('-forward');
+			gameClient.socket.send('-backward');
 		}
 		else
-			ws.send('+backward ' + (y * scale));
+			gameClient.socket.send('+backward ' + (y * scale));
 	});
 	
 	detectMovement($('#touchTranslation')[0], function (x, y) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		var scale = 1/50;
 		if (x < 0)
-			ws.send('+rotleft ' + (-x * scale));
+			gameClient.socket.send('+rotleft ' + (-x * scale));
 		else if (x == 0) {
-			ws.send('-moveleft');
-			ws.send('-moveright');
+			gameClient.socket.send('-moveleft');
+			gameClient.socket.send('-moveright');
 		}
 		else
-			ws.send('+moveright ' + (y * scale));
+			gameClient.socket.send('+moveright ' + (y * scale));
 		
 		if (y < 0)
-			ws.send('+moveup ' + (-y * scale));
+			gameClient.socket.send('+moveup ' + (-y * scale));
 		else if (y == 0) {
-			ws.send('-moveup');
-			ws.send('-movedown');
+			gameClient.socket.send('-moveup');
+			gameClient.socket.send('-movedown');
 		}
 		else
-			ws.send('+movedown ' + (y * scale));
+			gameClient.socket.send('+movedown ' + (y * scale));
 	});
 });
 
