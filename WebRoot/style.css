@@ -354,6 +354,12 @@ system {
 	padding: 1em;
 }
 
+.text {
+	white-space: pre-line;
+	padding: 0.75em;
+	background-color: #000;
+	border: solid 1px grey;
+}
 
 /*
 @media (max-width: 700px) {

@@ -2,6 +2,9 @@ window.Helm = React.createClass({
 	getDefaultProps: function() {
 		return { touchMode: false, registerCallback: null, name: "Helm" };
 	},
+	getInitialState: function () {
+		return { forwardSpeed: 0, lateralSpeed: 0, verticalSpeed: 0, pitchAngle: 0, yawAngle: 0, rollAngle: 0, warpFactor: 0 };
+	},
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
@@ -14,7 +17,7 @@ window.Helm = React.createClass({
 					</row>
 					<row className="rounded">
 						<HeldButton hotkey="A" startAction="+left" stopAction="-left">left</HeldButton>
-						<PushButton action="stoprotate">stop</PushButton>
+						<ToggleButton startAction="stoprotate">stop</ToggleButton>
 						<HeldButton hotkey="D" startAction="+right" stopAction="-right">right</HeldButton>
 					</row>
 					<row>
@@ -28,10 +31,13 @@ window.Helm = React.createClass({
 				
 				<ButtonGroup inline={true} color="2" visible={!this.props.touchMode}>
 					<row>
-						<HeldButton hotkey="R" startAction="+forward" stopAction="-forward">accelerate</HeldButton>
+						<HeldButton hotkey="R" startAction="+forward" stopAction="-forward">forward</HeldButton>
 					</row>
 					<row>
-						<ToggleButton hotkey="F" startAction="+backward" stopAction="-backward">brake</ToggleButton>
+						<ToggleButton hotkey="F">stop</ToggleButton>
+					</row>
+					<row>
+						<HeldButton hotkey="V" startAction="+backward" stopAction="-backward">backward</HeldButton>
 					</row>
 				</ButtonGroup>
 				
@@ -45,7 +51,7 @@ window.Helm = React.createClass({
 					</row>
 					<row className="rounded">
 						<HeldButton hotkey="J" startAction="+moveleft" stopAction="-moveleft">left</HeldButton>
-						<PushButton action="stoptranslate">stop</PushButton>
+						<ToggleButton startAction="stoptranslate">stop</ToggleButton>
 						<HeldButton hotkey="L" startAction="+moveright" stopAction="-moveright">right</HeldButton>
 					</row>
 					<row>
@@ -56,6 +62,30 @@ window.Helm = React.createClass({
 				</ButtonGroup>
 				
 				<AxisInput visible={this.props.touchMode} direction="both" caption="translation" scale={0.02} color="3" movementCallback={this.touchTranslation} />
+				
+				<ButtonGroup inline={true} color="4" caption="warp factor">
+					<row>
+						<PushButton hotkey="T" action="warpup">increase</PushButton>
+					</row>
+					<row>
+						<PushButton hotkey="G" action="warpdown">decrease</PushButton>
+					</row>
+					<row>
+						<ToggleButton hotkey="B" startAction="warpstop">stop</ToggleButton>
+					</row>
+				</ButtonGroup>
+				
+				<div className="text">
+					Forward speed: {this.state.forwardSpeed} m/s{'\n'}
+					Lateral speed: {this.state.lateralSpeed} m/s{'\n'}
+					Vertical speed: {this.state.verticalSpeed} m/s{'\n\n'}
+					
+					Warp factor: {this.state.warpFactor}{'\n\n'}
+					
+					Pitch: {this.state.pitchAngle}°{'\n'}
+					Yaw: {this.state.yawAngle}°{'\n'}
+					Roll: {this.state.rollAngle}°
+				</div>
 			</system>
 		);
 	},

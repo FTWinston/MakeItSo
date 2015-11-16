@@ -2,6 +2,9 @@ window.Viewscreen = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null, name: "Viewscreen" };
 	},
+	getInitialState: function () {
+		return { zoomFactor: 1, pitchAngle: 0, yawAngle: 0 };
+	},
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
@@ -53,6 +56,13 @@ window.Viewscreen = React.createClass({
 					<ToggleButton color="4" hotkey="N" startAction="+chase" stopAction="-chase">chase mode</ToggleButton>
 					<ToggleButton color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">comms channel</ToggleButton>
 				</section>
+				
+				
+				<div className="text">
+					Magnification: {this.state.zoomFactor}x{'\n'}
+					Pitch: {this.state.pitchAngle}°{'\n'}
+					Yaw: {this.state.yawAngle}°
+				</div>
 			</system>
 		);
 	}
