@@ -226,13 +226,26 @@ window.PushButton = React.createClass({
 	getDefaultProps: function() {
 		return { visible: true, disabled: false, action: null, onClicked: null, color: null, hotkey: null };
 	},
+	getInitialState: function() {
+		return { pressed: false };
+	},
 	mixins: [ButtonMixin],
 	render: function() {
+		var classes = this.prepClasses();
+		if (this.state.pressed)
+			classes += ' enabled';
+		
 		return (
-			<clicker ref="btn" type="push" style={{display: this.props.visible ? null : 'none'}} onClick={this.click} className={this.prepClasses()} data-hotkey={this.props.hotkey}>
+			<clicker ref="btn" type="push" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown} onMouseUp={this.mouseUp} onMouseLeave={this.mouseUp} onClick={this.click} className={classes} data-hotkey={this.props.hotkey}>
 				{this.props.children}
 			</clicker>
 		);
+	},
+	mouseDown: function(e) {
+		this.setState({ pressed: true });
+	},
+	mouseUp: function(e) {
+		this.setState({ pressed: false });
 	},
 	click: function(e) {
 		if (this.props.disabled)
