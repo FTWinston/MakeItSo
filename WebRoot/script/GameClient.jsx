@@ -2,7 +2,7 @@ window.GameClient = React.createClass({
 	socket: null,
 	createConnection: function() {
 		this.socket = new WebSocket('ws://' + location.host + '/ws');
-		this.socket.onerror = this.socket.onclose = function (e) { this.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }
+		this.socket.onerror = this.socket.onclose = function (e) { gameClient.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }
 		this.socket.onmessage = this.messageReceived;
 	},
 	messageReceived: function (ev) {
