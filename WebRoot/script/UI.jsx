@@ -17,6 +17,14 @@ window.Hotkeys = {
 		else
 			this.bindings[keyCode] = [button];
 	},
+	unregister: function(hotkey, button) {
+		var keyCode = hotkey.charCodeAt(0);
+		
+		var keys = this.bindings[keyCode];
+		var pos = keys.indexOf(button);
+		if (pos != -1)
+			keys.splice(pos, 1);
+	},
 	initialize: function() {
 		document.onkeydown = this.onKeyDown;
 		document.onkeyup = this.onKeyUp;
@@ -80,15 +88,15 @@ window.TouchFunctions = {
 		var swipedir,
 		startX, startY,
 		distX, distY,
-		maxPerpDist = minDist * 0.67,
+		maxPerpScale = 0.67,
 		startTime, duration;
 
 		surface.addEventListener('touchstart', function(e) {
 			var touch = e.changedTouches[0];
-			swipedir = 'none';
-			dist = 0;
-			startX = touch.pageX;
-			startY = touch.pageY;
+			swipedir = null;
+			distX = 0; distY = 0;
+			startX = touch.clientX;
+			startY = touch.clientY;
 			startTime = new Date().getTime(); // record time when finger first makes contact with surface
 			e.preventDefault();
 		}, false);
@@ -101,19 +109,21 @@ window.TouchFunctions = {
 			e.preventDefault();
 			
 			var touch = e.changedTouches[0];
-			distX = touch.pageX - startX;
-			distY = touch.pageY - startY;
+			distX = touch.clientX - startX;
+			distY = touch.clientY - startY;
 			duration = new Date().getTime() - startTime;
+			
 			if (duration > maxTime)
 				return;
-		
-			if (Math.abs(distX) >= minDist && Math.abs(distY) <= maxPerpDist) {
-				swipedir = (distX < 0) ? SwipeDir.Left : SwipeDir.Right;
-			}
-			else if (Math.abs(distY) >= minDist && Math.abs(distX) <= maxPerpDist) {
-				swipedir = (distY < 0) ? SwipeDir.Up : SwipeDir.Down;
-			}
-			callback(swipedir);
+
+			var absX = Math.abs(distX), absY = Math.abs(distY);
+			if (absX >= minDist && absY <= maxPerpScale * absX)
+				swipedir = (distX < 0) ? TouchFunctions.SwipeDir.Left : TouchFunctions.SwipeDir.Right;
+			else if (absY >= minDist && absX <= maxPerpScale * absY)
+				swipedir = (distY < 0) ? TouchFunctions.SwipeDir.Up : TouchFunctions.SwipeDir.Down;
+			else
+				return;
+			callback(swipedir, startX, startY);
 		}, false);
 	},
 	detectTap: function(surface, maxDist, maxTime, callback) {
@@ -128,9 +138,9 @@ window.TouchFunctions = {
 
 		surface.addEventListener('touchstart', function(e) {
 			var touch = e.changedTouches[0];
-			dist = 0;
-			startX = touch.pageX;
-			startY = touch.pageY;
+			distX = 0; distY = 0;
+			startX = touch.clientX;
+			startY = touch.clientY;
 			startTime = new Date().getTime(); // record time when finger first makes contact with surface
 			e.preventDefault();
 		}, false);
@@ -143,8 +153,8 @@ window.TouchFunctions = {
 			e.preventDefault();
 			
 			var touch = e.changedTouches[0];
-			distX = touch.pageX - startX;
-			distY = touch.pageY - startY;
+			distX = touch.clientX - startX;
+			distY = touch.clientY - startY;
 			duration = new Date().getTime() - startTime;
 			if (duration > maxTime)
 				return;
@@ -152,7 +162,7 @@ window.TouchFunctions = {
 			if (Math.abs(distX) > maxDist || Math.abs(distY) > maxDist)
 				return;
 			
-			callback();
+			callback(startX, startY);
 		}, false);
 	},
 	detectMovement: function(surface, callback) {
@@ -164,7 +174,7 @@ window.TouchFunctions = {
 			
 			for (var i=0; i<e.changedTouches.length; i++) {
 				var touch = e.changedTouches[i];
-				ongoingTouches[touch.identifier] = { pageX: touch.pageX, pageY: touch.pageY };
+				ongoingTouches[touch.identifier] = { clientX: touch.clientX, clientY: touch.clientY };
 			}
 		}, false);
 
@@ -177,8 +187,8 @@ window.TouchFunctions = {
 				if (prevTouch === undefined)
 					continue;
 				
-				distX = currentTouch.pageX - prevTouch.pageX;
-				distY = currentTouch.pageY - prevTouch.pageY;
+				distX = currentTouch.clientX - prevTouch.clientX;
+				distY = currentTouch.clientY - prevTouch.clientY;
 
 				callback(distX, distY);
 			}

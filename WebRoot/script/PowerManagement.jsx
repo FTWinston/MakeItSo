@@ -10,10 +10,13 @@ window.PowerManagement = React.createClass({
 		var distribSize = Math.min(this.props.width * 0.8, this.props.height);
 		var cardWidth = this.props.width - distribSize;
 		
+		var distribution = this.props.visible ? <PowerDistribution ref="distribution" width={distribSize} height={distribSize} /> : null;
+		var cards = this.props.visible ? <PowerCards ref="cards" width={cardWidth} height={this.props.height} /> : null;
+		
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
-				<PowerDistribution ref="distribution" width={distribSize} height={distribSize} visible={this.props.visible} />
-				<PowerCards ref="cards" width={cardWidth} height={this.props.height} />
+				{distribution}
+				{cards}
 			</system>
 		);
 	}
@@ -21,37 +24,94 @@ window.PowerManagement = React.createClass({
 
 window.PowerDistribution = React.createClass({
 	getDefaultProps: function() {
-		return { visible: false, width: 0, height: 0 };
+		return { width: 0, height: 0 };
 	},
 	getInitialState: function () {
 		return { };
 	},
 	componentDidMount: function () {
 		this.createItems();
-		
-		if (this.props.visible)
-			requestAnimationFrame(() => {this.update()});
+		var component = this;
+		this.refs.canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
+		this.refs.canvas.addEventListener('mousedown', function(e) {
+			var rect = component.refs.canvas.getBoundingClientRect();
+			component.clicked(e.which, e.clientX - rect.left, e.clientY - rect.top);
+		});
+		TouchFunctions.detectSwipe(this.refs.canvas, 10, undefined, this.swiped);
+		TouchFunctions.detectTap(this.refs.canvas, 10, undefined, this.tapped);
+		requestAnimationFrame(this.update);
+	},
+	componentWillUnmount: function() {
+		cancelAnimationFrame(this.anim);
 	},
 	componentDidUpdate: function (prevProps, prevState) {
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
 			this.createItems();
 		
-		if (this.props.visible)
-			requestAnimationFrame(() => {this.update()});
+		requestAnimationFrame(this.update);
 	},
 	render: function() {
 		return (
 			<canvas ref="canvas" width={this.props.width} height={this.props.height} />
 		);
 	},
+	tapped: function (x, y) {
+		this.clearSelection();
+		requestAnimationFrame(this.update);
+	},
+	swiped: function(dir, x, y) {
+		var rect = this.refs.canvas.getBoundingClientRect();
+		
+		if (dir == TouchFunctions.SwipeDir.Up)
+			this.changeNode(x - rect.left, y - rect.top, true, true);
+		else if (dir == TouchFunctions.SwipeDir.Down)
+			this.changeNode(x - rect.left, y - rect.top, false, true);
+		else
+			this.clearSelection();
+		requestAnimationFrame(this.update);
+	},
+	clicked: function(btn, x, y) {
+		this.changeNode(x, y, btn == 1, false);
+		requestAnimationFrame(this.update);
+	},
+	clearSelection: function() {
+		if (this.selectedNode != null) {
+			this.selectedNode.selected = false;
+			this.selectedNode = null;
+		}
+	},
+	changeNode: function(x, y, increase, swiped) {
+		this.clearSelection();
+	
+		for (var i=0; i<this.nodes.length; i++) {
+			var node = swiped ? this.nodes[i].touchbounds : this.nodes[i].bounds;
+			if (x >= node.x && x <= node.x + node.width && y >= node.y && y <= node.y + node.height) {
+				this.selectedNode = this.nodes[i];
+				this.selectedNode.selected = true;
+				break;
+			}
+		}
+		
+		if (this.selectedNode == null)
+			return;
+		
+		if (increase) {
+			if (this.centerNode.value == 0)
+				return;
+			this.selectedNode.value ++;
+			this.centerNode.value --;
+		}
+		else if (this.selectedNode.value > 0) {
+			this.selectedNode.value --;
+			this.centerNode.value ++;
+		}
+	},
 	update: function() {
 		for (var i=0; i<this.items.length; i++)
 			this.items[i].update();
-		
-		if (this.props.visible)
-			requestAnimationFrame(() => {this.update()});
 	},
 	createItems: function() {
+		this.selectedNode = null;
 		var context = this.refs.canvas.getContext('2d');
 		this.items = []; this.nodes = [];
 		
@@ -116,7 +176,8 @@ window.PowerDistribution = React.createClass({
 		node = new PowerNode(context, cx - offset, cy - offset, size * 0.072);
 		this.items.push(node); this.nodes.push(node);
 		
-		this.items.push(new PowerNodeCentral(context, cx, cy, size * 0.18));
+		this.centerNode = new PowerNodeCentral(context, cx, cy, size * 0.18);
+		this.items.push(this.centerNode);
 	}
 });
 				
@@ -131,7 +192,7 @@ window.PowerCards = React.createClass({
 function PowerWireCurved(context, x, y, r, startA, endA, value, width) {
 	this.context = context; this.x = x; this.y = y; this.r = r; this.startA = startA; this.endA = endA; this.value = value; this.width = width;
 	this.update = function() {
-		this.context.strokeStyle = "#00CC00";
+		this.context.strokeStyle = '#00CC00';
 		this.context.lineWidth = this.width;
 		
 		this.context.beginPath();
@@ -143,7 +204,7 @@ function PowerWireCurved(context, x, y, r, startA, endA, value, width) {
 function PowerWireStraight(context, x1, y1, x2, y2, value, width) {
 	this.context = context; this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2; this.value = value; this.width = width;
 	this.update = function() {
-		this.context.strokeStyle = "#00CC00";
+		this.context.strokeStyle = '#00CC00';
 		this.context.lineWidth = this.width;
 		
 		this.context.beginPath();
@@ -153,26 +214,43 @@ function PowerWireStraight(context, x1, y1, x2, y2, value, width) {
 	}
 };
 
-
-function PowerNode(context, x, y, r) {	
+function PowerNode(context, x, y, r) {
 	this.context = context; this.x = x; this.y = y; this.r = r;
-	this.bounds = {x: x - r, y: y - r, width: r + r, height: r + r};
+	this.bounds = {x: x - r, y: y - r, width: r * 2, height: r * 2};
+	this.touchbounds = {x: x - r * 2, y: y - r * 2, width: r * 4, height: r * 4};
+	this.value = 1; this.selected = false;
 	this.update = function() {
-		this.context.fillStyle = "#0099FF";
+		this.context.fillStyle = '#0099FF';
 		
 		this.context.beginPath();
 		this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-		this.context.fill();	
+		this.context.fill();
+		
+		this.context.strokeStyle = this.selected ? '#CCCCFF' : '#0099FF';
+		this.context.stroke();
+		
+		this.context.font = this.r * 1.65 + 'px Arial';
+		this.context.fillStyle = this.value > 0 ? 'black' : 'red';
+		this.context.textAlign = 'center';
+		this.context.textBaseline = "middle";
+		this.context.fillText(this.value, this.x, this.y);
 	}
 };
 
-function PowerNodeCentral(context, x, y, r) {	
+function PowerNodeCentral(context, x, y, r) {
 	this.context = context; this.x = x; this.y = y; this.r = r;
+	this.value = 5;
 	this.update = function() {
-		this.context.fillStyle = "#FFCCCC";
+		this.context.fillStyle = '#FFCCCC';
 		
 		this.context.beginPath();
 		this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-		this.context.fill();	
+		this.context.fill();
+		
+		this.context.font = this.r + 'px Arial';
+		this.context.fillStyle = this.value > 0 ? 'black' : 'red';
+		this.context.textAlign = 'center';
+		this.context.textBaseline = "middle";
+		this.context.fillText(this.value, this.x, this.y);
 	}
 };
