@@ -31,33 +31,22 @@ window.PowerDistribution = React.createClass({
 	},
 	componentDidMount: function () {
 		this.createItems();
-		var component = this;
-		this.refs.canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
-		this.refs.canvas.addEventListener('mousedown', function(e) {
-			var rect = component.refs.canvas.getBoundingClientRect();
-			component.clicked(e.which, e.clientX - rect.left, e.clientY - rect.top);
-		});
-		TouchFunctions.detectSwipe(this.refs.canvas, 10, undefined, this.swiped);
-		TouchFunctions.detectTap(this.refs.canvas, 10, undefined, this.tapped);
-		requestAnimationFrame(this.update);
-	},
-	componentWillUnmount: function() {
-		cancelAnimationFrame(this.anim);
+		requestAnimationFrame(this.refs.canvas.draw);
 	},
 	componentDidUpdate: function (prevProps, prevState) {
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
 			this.createItems();
 		
-		requestAnimationFrame(this.update);
+		requestAnimationFrame(this.refs.canvas.draw);
 	},
 	render: function() {
 		return (
-			<canvas ref="canvas" width={this.props.width} height={this.props.height} />
+			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="10" maxTapDist="10" onSwipe={this.swiped} onTap={this.tapped} onMouseDown={this.clicked} />
 		);
 	},
 	tapped: function (x, y) {
 		this.clearSelection();
-		requestAnimationFrame(this.update);
+		requestAnimationFrame(this.refs.canvas.draw);
 	},
 	swiped: function(dir, x, y) {
 		var rect = this.refs.canvas.getBoundingClientRect();
@@ -68,11 +57,11 @@ window.PowerDistribution = React.createClass({
 			this.changeNode(x - rect.left, y - rect.top, false, true);
 		else
 			this.clearSelection();
-		requestAnimationFrame(this.update);
+		requestAnimationFrame(this.refs.canvas.draw);
 	},
 	clicked: function(btn, x, y) {
 		this.changeNode(x, y, btn == 1, false);
-		requestAnimationFrame(this.update);
+		requestAnimationFrame(this.refs.canvas.draw);
 	},
 	clearSelection: function() {
 		if (this.selectedNode != null) {
@@ -106,27 +95,23 @@ window.PowerDistribution = React.createClass({
 			this.centerNode.value ++;
 		}
 	},
-	update: function() {
-		for (var i=0; i<this.items.length; i++)
-			this.items[i].update();
-	},
 	createItems: function() {
 		this.selectedNode = null;
-		var context = this.refs.canvas.getContext('2d');
-		this.items = []; this.nodes = [];
+		var items = []; this.nodes = [];
+		this.refs.canvas.clearItems();
 		
 		var cx = this.props.width / 2, cy = this.props.height / 2;
 		var size = Math.min(this.props.width, this.props.height);
 		
 		var r1 = size * 0.28, r2 = size * 0.38, r3 = size * 0.48;
 		
-		this.items.push(new PowerWireStraight(context, cx, cy, cx + r1, cy, 1, size * 0.01));
-		this.items.push(new PowerWireStraight(context, cx, cy, cx - r1, cy, 1, size * 0.01));
-		this.items.push(new PowerWireStraight(context, cx, cy, cx, cy + r1, 1, size * 0.01));
-		this.items.push(new PowerWireStraight(context, cx, cy, cx, cy - r1, 1, size * 0.01));
+		items.push(new PowerWireStraight(cx, cy, cx + r1, cy, 1, size * 0.01));
+		items.push(new PowerWireStraight(cx, cy, cx - r1, cy, 1, size * 0.01));
+		items.push(new PowerWireStraight(cx, cy, cx, cy + r1, 1, size * 0.01));
+		items.push(new PowerWireStraight(cx, cy, cx, cy - r1, 1, size * 0.01));
 		
 		for (var angle = Math.PI / 4; angle < Math.PI * 2; angle += Math.PI / 2)
-			this.items.push(new PowerWireStraight(context,
+			items.push(new PowerWireStraight(
 				cx + Math.cos(angle) * r1,
 				cy + Math.sin(angle) * r1,
 				cx + Math.cos(angle) * r2,
@@ -134,7 +119,7 @@ window.PowerDistribution = React.createClass({
 			1, size * 0.01));
 			
 		for (var angle = Math.PI / 8; angle < Math.PI * 2; angle += Math.PI / 4)
-			this.items.push(new PowerWireStraight(context,
+			items.push(new PowerWireStraight(
 				cx + Math.cos(angle) * r2,
 				cy + Math.sin(angle) * r2,
 				cx + Math.cos(angle) * r3,
@@ -146,38 +131,40 @@ window.PowerDistribution = React.createClass({
 		for (var i=0; i<3; i++) {
 			var r = radii[i];
 		
-			this.items.push(new PowerWireCurved(context, cx, cy, r, 0, Math.PI * 0.25, 1, size * 0.01));
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 0.25, Math.PI * 0.5, 1, size * 0.01));
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 0.5, Math.PI * 0.75, 1, size * 0.01));
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 0.75, Math.PI * 1, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, 0, Math.PI * 0.25, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 0.25, Math.PI * 0.5, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 0.5, Math.PI * 0.75, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 0.75, Math.PI * 1, 1, size * 0.01));
 			
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 1, Math.PI * 1.25, 1, size * 0.01));
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 1.25, Math.PI * 1.5, 1, size * 0.01));
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 1.5, Math.PI * 1.75, 1, size * 0.01));
-			this.items.push(new PowerWireCurved(context, cx, cy, r, Math.PI * 1.75, Math.PI * 2, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 1, Math.PI * 1.25, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 1.25, Math.PI * 1.5, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 1.5, Math.PI * 1.75, 1, size * 0.01));
+			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 1.75, Math.PI * 2, 1, size * 0.01));
 		}
 		
-		var node = new PowerNode(context, cx + r2, cy, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
-		node = new PowerNode(context, cx - r2, cy, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
-		node = new PowerNode(context, cx, cy + r2, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
-		node = new PowerNode(context, cx, cy - r2, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
+		var node = new PowerNode(cx + r2, cy, size * 0.072);
+		items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx - r2, cy, size * 0.072);
+		items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx, cy + r2, size * 0.072);
+		items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx, cy - r2, size * 0.072);
+		items.push(node); this.nodes.push(node);
 		
 		var offset = Math.cos(Math.PI / 4) * r3;
-		node = new PowerNode(context, cx + offset, cy + offset, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
-		node = new PowerNode(context, cx + offset, cy - offset, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
-		node = new PowerNode(context, cx - offset, cy + offset, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
-		node = new PowerNode(context, cx - offset, cy - offset, size * 0.072);
-		this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx + offset, cy + offset, size * 0.072);
+		items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx + offset, cy - offset, size * 0.072);
+		items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx - offset, cy + offset, size * 0.072);
+		items.push(node); this.nodes.push(node);
+		node = new PowerNode(cx - offset, cy - offset, size * 0.072);
+		items.push(node); this.nodes.push(node);
 		
-		this.centerNode = new PowerNodeCentral(context, cx, cy, size * 0.18);
-		this.items.push(this.centerNode);
+		this.centerNode = new PowerNodeCentral(cx, cy, size * 0.18);
+		items.push(this.centerNode);
+		
+		this.refs.canvas.addItems(items);
 	}
 });
 				
@@ -189,68 +176,68 @@ window.PowerCards = React.createClass({
 	}
 });
 
-function PowerWireCurved(context, x, y, r, startA, endA, value, width) {
-	this.context = context; this.x = x; this.y = y; this.r = r; this.startA = startA; this.endA = endA; this.value = value; this.width = width;
-	this.update = function() {
-		this.context.strokeStyle = '#00CC00';
-		this.context.lineWidth = this.width;
+function PowerWireCurved(x, y, r, startA, endA, value, width) {
+	this.x = x; this.y = y; this.r = r; this.startA = startA; this.endA = endA; this.value = value; this.width = width;
+	this.draw = function(ctx) {
+		ctx.strokeStyle = '#00CC00';
+		ctx.lineWidth = this.width;
 		
-		this.context.beginPath();
-		this.context.arc(this.x, this.y, this.r, this.startA, this.endA);
-		this.context.stroke();	
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.r, this.startA, this.endA);
+		ctx.stroke();	
 	}
 };
 
-function PowerWireStraight(context, x1, y1, x2, y2, value, width) {
-	this.context = context; this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2; this.value = value; this.width = width;
-	this.update = function() {
-		this.context.strokeStyle = '#00CC00';
-		this.context.lineWidth = this.width;
+function PowerWireStraight(x1, y1, x2, y2, value, width) {
+	this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2; this.value = value; this.width = width;
+	this.draw = function(ctx) {
+		ctx.strokeStyle = '#00CC00';
+		ctx.lineWidth = this.width;
 		
-		this.context.beginPath();
-		this.context.moveTo(this.x1, this.y1);
-		this.context.lineTo(this.x2, this.y2);
-		this.context.stroke();	
+		ctx.beginPath();
+		ctx.moveTo(this.x1, this.y1);
+		ctx.lineTo(this.x2, this.y2);
+		ctx.stroke();	
 	}
 };
 
-function PowerNode(context, x, y, r) {
-	this.context = context; this.x = x; this.y = y; this.r = r;
+function PowerNode(x, y, r) {
+	this.x = x; this.y = y; this.r = r;
 	this.bounds = {x: x - r, y: y - r, width: r * 2, height: r * 2};
 	this.touchbounds = {x: x - r * 2, y: y - r * 2, width: r * 4, height: r * 4};
 	this.value = 1; this.selected = false;
-	this.update = function() {
-		this.context.fillStyle = '#0099FF';
+	this.draw = function(ctx) {
+		ctx.fillStyle = '#0099FF';
 		
-		this.context.beginPath();
-		this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-		this.context.fill();
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+		ctx.fill();
 		
-		this.context.strokeStyle = this.selected ? '#CCCCFF' : '#0099FF';
-		this.context.stroke();
+		ctx.strokeStyle = this.selected ? '#CCCCFF' : '#0099FF';
+		ctx.stroke();
 		
-		this.context.font = this.r * 1.65 + 'px Arial';
-		this.context.fillStyle = this.value > 0 ? 'black' : 'red';
-		this.context.textAlign = 'center';
-		this.context.textBaseline = "middle";
-		this.context.fillText(this.value, this.x, this.y);
+		ctx.font = this.r * 1.65 + 'px Arial';
+		ctx.fillStyle = this.value > 0 ? 'black' : 'red';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = "middle";
+		ctx.fillText(this.value, this.x, this.y);
 	}
 };
 
-function PowerNodeCentral(context, x, y, r) {
-	this.context = context; this.x = x; this.y = y; this.r = r;
+function PowerNodeCentral(x, y, r) {
+	this.x = x; this.y = y; this.r = r;
 	this.value = 5;
-	this.update = function() {
-		this.context.fillStyle = '#FFCCCC';
+	this.draw = function(ctx) {
+		ctx.fillStyle = '#FFCCCC';
 		
-		this.context.beginPath();
-		this.context.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-		this.context.fill();
+		ctx.beginPath();
+		ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+		ctx.fill();
 		
-		this.context.font = this.r + 'px Arial';
-		this.context.fillStyle = this.value > 0 ? 'black' : 'red';
-		this.context.textAlign = 'center';
-		this.context.textBaseline = "middle";
-		this.context.fillText(this.value, this.x, this.y);
+		ctx.font = this.r + 'px Arial';
+		ctx.fillStyle = this.value > 0 ? 'black' : 'red';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = "middle";
+		ctx.fillText(this.value, this.x, this.y);
 	}
 };
