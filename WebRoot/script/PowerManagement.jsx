@@ -46,43 +46,44 @@ window.PowerDistribution = React.createClass({
 	},
 	tapped: function (x, y) {
 		this.clearSelection();
-		requestAnimationFrame(this.refs.canvas.draw);
 	},
 	swiped: function(dir, x, y) {
 		var rect = this.refs.canvas.getBoundingClientRect();
 		
 		if (dir == TouchFunctions.SwipeDir.Up)
-			this.changeNode(x - rect.left, y - rect.top, true, true);
+			this.tryChangeNode(x - rect.left, y - rect.top, true, true);
 		else if (dir == TouchFunctions.SwipeDir.Down)
-			this.changeNode(x - rect.left, y - rect.top, false, true);
+			this.tryChangeNode(x - rect.left, y - rect.top, false, true);
 		else
 			this.clearSelection();
-		requestAnimationFrame(this.refs.canvas.draw);
+		
 	},
 	clicked: function(btn, x, y) {
-		this.changeNode(x, y, btn == 1, false);
-		requestAnimationFrame(this.refs.canvas.draw);
+		this.tryChangeNode(x, y, btn == 1, false);
 	},
 	clearSelection: function() {
 		if (this.selectedNode != null) {
 			this.selectedNode.selected = false;
 			this.selectedNode = null;
 		}
+		requestAnimationFrame(this.refs.canvas.draw);
 	},
-	changeNode: function(x, y, increase, swiped) {
-		this.clearSelection();
-	
+	tryChangeNode: function(x, y, increase, swiped) {
 		for (var i=0; i<this.nodes.length; i++) {
 			var node = swiped ? this.nodes[i].touchbounds : this.nodes[i].bounds;
 			if (x >= node.x && x <= node.x + node.width && y >= node.y && y <= node.y + node.height) {
-				this.selectedNode = this.nodes[i];
-				this.selectedNode.selected = true;
-				break;
+				this.changeNode(this.nodes[i], increase);
+				return;
 			}
 		}
 		
-		if (this.selectedNode == null)
-			return;
+		this.clearSelection();
+	},
+	changeNode: function(node, increase) {
+		this.clearSelection();
+	
+		node.selected = true;
+		this.selectedNode = node;
 		
 		if (increase) {
 			if (this.centerNode.value == 0)
@@ -95,7 +96,12 @@ window.PowerDistribution = React.createClass({
 			this.centerNode.value ++;
 		}
 	},
+	nodes: [],
 	createItems: function() {
+		for (var i=0; i<this.nodes.length; i++)
+			this.nodes[i].dispose();
+
+		var component = this;
 		this.selectedNode = null;
 		var items = []; this.nodes = [];
 		this.refs.canvas.clearItems();
@@ -142,23 +148,29 @@ window.PowerDistribution = React.createClass({
 			items.push(new PowerWireCurved(cx, cy, r, Math.PI * 1.75, Math.PI * 2, 1, size * 0.01));
 		}
 		
-		var node = new PowerNode(cx + r2, cy, size * 0.072);
+		var node = new PowerNode(this, cx + r2, cy, size * 0.072, 'D');
 		items.push(node); this.nodes.push(node);
-		node = new PowerNode(cx - r2, cy, size * 0.072);
+		
+		node = new PowerNode(this, cx - r2, cy, size * 0.072, 'A');
 		items.push(node); this.nodes.push(node);
-		node = new PowerNode(cx, cy + r2, size * 0.072);
+		
+		node = new PowerNode(this, cx, cy + r2, size * 0.072, 'X');
 		items.push(node); this.nodes.push(node);
-		node = new PowerNode(cx, cy - r2, size * 0.072);
+		
+		node = new PowerNode(this, cx, cy - r2, size * 0.072, 'W');
 		items.push(node); this.nodes.push(node);
 		
 		var offset = Math.cos(Math.PI / 4) * r3;
-		node = new PowerNode(cx + offset, cy + offset, size * 0.072);
+		node = new PowerNode(this, cx + offset, cy + offset, size * 0.072, 'C');
 		items.push(node); this.nodes.push(node);
-		node = new PowerNode(cx + offset, cy - offset, size * 0.072);
+		
+		node = new PowerNode(this, cx + offset, cy - offset, size * 0.072, 'E');
 		items.push(node); this.nodes.push(node);
-		node = new PowerNode(cx - offset, cy + offset, size * 0.072);
+		
+		node = new PowerNode(this, cx - offset, cy + offset, size * 0.072, 'Z');
 		items.push(node); this.nodes.push(node);
-		node = new PowerNode(cx - offset, cy - offset, size * 0.072);
+		
+		node = new PowerNode(this, cx - offset, cy - offset, size * 0.072, 'Q');
 		items.push(node); this.nodes.push(node);
 		
 		this.centerNode = new PowerNodeCentral(cx, cy, size * 0.18);
@@ -201,7 +213,8 @@ function PowerWireStraight(x1, y1, x2, y2, value, width) {
 	}
 };
 
-function PowerNode(x, y, r) {
+function PowerNode(component, x, y, r, hotkey) {
+	this.component = component; this.hotkey = hotkey;
 	this.x = x; this.y = y; this.r = r;
 	this.bounds = {x: x - r, y: y - r, width: r * 2, height: r * 2};
 	this.touchbounds = {x: x - r * 2, y: y - r * 2, width: r * 4, height: r * 4};
@@ -213,8 +226,11 @@ function PowerNode(x, y, r) {
 		ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
 		ctx.fill();
 		
-		ctx.strokeStyle = this.selected ? '#CCCCFF' : '#0099FF';
-		ctx.stroke();
+		if (this.selected)
+		{
+			ctx.strokeStyle = '#CCCCFF';
+			ctx.stroke();
+		}
 		
 		ctx.font = this.r * 1.65 + 'px Arial';
 		ctx.fillStyle = this.value > 0 ? 'black' : 'red';
@@ -222,6 +238,10 @@ function PowerNode(x, y, r) {
 		ctx.textBaseline = "middle";
 		ctx.fillText(this.value, this.x, this.y);
 	}
+	this.isVisible = function() { return true; }
+	this.mouseDown = function(e) { this.component.changeNode(this, !e.shiftKey); }
+	this.dispose = function() { Hotkeys.unregister(this.hotkey, this); }
+	Hotkeys.register(this.hotkey, this);
 };
 
 function PowerNodeCentral(x, y, r) {

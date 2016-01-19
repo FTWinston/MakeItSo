@@ -47,7 +47,7 @@ window.Hotkeys = {
 			if (button.isVisible())
 			{
 				if (button.mouseDown != undefined)
-					button.mouseDown();
+					button.mouseDown(e);
 				return;
 			}
 		}
@@ -63,9 +63,9 @@ window.Hotkeys = {
 			if (button.isVisible())
 			{
 				if (button.mouseUp != undefined)
-					button.mouseUp();
+					button.mouseUp(e);
 				if (button.click != undefined)
-					button.click();
+					button.click(e);
 				return;
 			}
 		}
