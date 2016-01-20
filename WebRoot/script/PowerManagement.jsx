@@ -35,8 +35,8 @@ window.PowerDistribution = React.createClass({
 	},
 	componentWillUnmount: function() {
 		for (var i=0; i<this.nodes.length; i++)
-			this.nodes[i].dispose();
-		this.node = [];
+			this.nodes[i].unlink();
+		this.node = []; this.items = [];
 	},
 	componentDidUpdate: function (prevProps, prevState) {
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
@@ -103,7 +103,7 @@ window.PowerDistribution = React.createClass({
 	nodes: [],
 	createItems: function() {
 		for (var i=0; i<this.nodes.length; i++)
-			this.nodes[i].dispose();
+			this.nodes[i].unlink();
 
 		var component = this;
 		this.selectedNode = null;
@@ -264,7 +264,7 @@ PowerNode.prototype.isVisible = function() { return this.component.isVisible(); 
 
 PowerNode.prototype.keyDown = function(e) { this.component.changeNode(this, !e.shiftKey); }
 
-PowerNode.prototype.dispose = function() {
+PowerNode.prototype.unlink = function() {
 	if (this.hotkey != null)
 		Hotkeys.unregister(this.hotkey, this);
 }
