@@ -593,7 +593,7 @@ window.Canvas = React.createClass({
 	},
 	render: function() {
 		return (
-			<canvas ref="canvas" width={this.props.width} height={this.props.height} />
+			<canvas ref="canvas" width={this.props.width} height={this.props.height} style={this.props.style} />
 		);
 	},
 	getContext: function(type) {
