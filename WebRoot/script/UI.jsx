@@ -46,8 +46,8 @@ window.Hotkeys = {
 			
 			if (button.isVisible())
 			{
-				if (button.mouseDown != undefined)
-					button.mouseDown(e);
+				if (button.keyDown != undefined)
+					button.keyDown(e);
 				return;
 			}
 		}
@@ -62,10 +62,10 @@ window.Hotkeys = {
 			
 			if (button.isVisible())
 			{
-				if (button.mouseUp != undefined)
-					button.mouseUp(e);
-				if (button.click != undefined)
-					button.click(e);
+				if (button.keyUp != undefined)
+					button.keyUp(e);
+				if (button.keyPress != undefined)
+					button.keyPress(e);
 				return;
 			}
 		}
@@ -233,7 +233,10 @@ var ButtonMixin = {
 		if (this.props.last)
 			classes += ' last';
 		return classes;
-	}
+	},
+	keyDown: function(e) { if (this.mouseDown != undefined) this.mouseDown(); },
+	keyUp: function(e) { if (this.mouseUp != undefined) this.mouseUp(); },
+	keyPress: function(e) { if (this.click != undefined) this.click(); }
 };
 
 window.PushButton = React.createClass({
@@ -554,9 +557,6 @@ window.Canvas = React.createClass({
 			onSwipe: null, onTap: null, onMouseDown: null, onMouseUp: null, onClick: null
 		};
 	},
-	getInitialState: function() {
-		return { items: [] };
-	},
 	componentDidMount: function () {
 		var component = this;
 		this.refs.canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
@@ -580,29 +580,24 @@ window.Canvas = React.createClass({
 			});
 		
 		if (this.props.onSwipe != null)
-			TouchFunctions.detectSwipe(this.refs.canvas, this.props.minSwipeDist, this.props.maxSwipeTime, this.props.onSwipe);
+			TouchFunctions.detectSwipe(this.refs.canvas, this.props.minSwipeDist, this.props.maxSwipeTime, function(dir,x,y) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.props.onSwipe(dir, x - rect.left, y - rect.top);
+			});
 		
 		if (this.props.onTap != null)
-			TouchFunctions.detectTap(this.refs.canvas, this.props.maxTapDist, this.props.maxTapTime, this.props.onTap);
+			TouchFunctions.detectTap(this.refs.canvas, this.props.maxTapDist, this.props.maxTapTime, function(x,y) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.props.onTap(x - rect.left, y - rect.top);
+			});
 	},
 	render: function() {
 		return (
 			<canvas ref="canvas" width={this.props.width} height={this.props.height} />
 		);
 	},
-	addItems: function(items) {
-		var existing = this.items == null ? [] : this.items;
-		//this.setState({items: existing.concat(items)});
-		this.items = existing.concat(items);
-	},
-	clearItems: function(items) {
-		this.items = [];
-	},
-	draw: function() {
-		var ctx = this.refs.canvas.getContext('2d');
-		ctx.clearRect(0, 0, this.props.width, this.props.height);
-		for (var i=0; i<this.items.length; i++)
-			this.items[i].draw(ctx);
+	getContext: function(type) {
+		return this.refs.canvas.getContext(type);
 	}
 });
 
