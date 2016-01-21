@@ -30,9 +30,8 @@ window.PowerDistribution = React.createClass({
 		return { };
 	},
 	componentDidMount: function () {
-		this.createItems();
-		this.calculateRoutes();
-		this.allocatePower();
+		this._createItems();
+		this._allocatePower();
 		requestAnimationFrame(this.draw);
 	},
 	componentWillUnmount: function() {
@@ -42,38 +41,39 @@ window.PowerDistribution = React.createClass({
 	},
 	componentDidUpdate: function (prevProps, prevState) {
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
-			this.createItems();
+			this._createItems();
 		
 		requestAnimationFrame(this.draw);
 	},
 	render: function() {
 		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="10" maxTapDist="10" onSwipe={this.swiped} onTap={this.tapped} onMouseDown={this.clicked} />
+			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="10" maxTapDist="10" onSwipe={this._swiped} onTap={this._tapped} onMouseDown={this._clicked} />
 		);
 	},
-	tapped: function (x, y) {
-		this.clearSelection();
+	_tapped: function (x, y) {
+		this._clearSelection();
+		requestAnimationFrame(this.draw);
 	},
-	swiped: function(dir, x, y) {
+	_swiped: function(dir, x, y) {
 		if (dir == TouchFunctions.SwipeDir.Up)
-			this.tryChangeNode(x, y, true, true);
+			this._tryChangeNode(x, y, true, true);
 		else if (dir == TouchFunctions.SwipeDir.Down)
-			this.tryChangeNode(x, y, false, true);
-		else
-			this.clearSelection();
-		
+			this._tryChangeNode(x, y, false, true);
+		else {
+			this._clearSelection();
+			requestAnimationFrame(this.draw);
+		}		
 	},
-	clicked: function(btn, x, y) {
-		this.tryChangeNode(x, y, btn == 1, false);
+	_clicked: function(btn, x, y) {
+		this._tryChangeNode(x, y, btn == 1, false);
 	},
-	clearSelection: function() {
+	_clearSelection: function() {
 		if (this.selectedNode != null) {
 			this.selectedNode.selected = false;
 			this.selectedNode = null;
 		}
-		requestAnimationFrame(this.draw);
 	},
-	tryChangeNode: function(x, y, increase, swiped) {
+	_tryChangeNode: function(x, y, increase, swiped) {
 		for (var i=0; i<this.nodes.length; i++) {
 			var bounds = this.nodes[i].getBounds(swiped);
 			if (x >= bounds.x && x <= bounds.x + bounds.width
@@ -83,10 +83,11 @@ window.PowerDistribution = React.createClass({
 			}
 		}
 		
-		this.clearSelection();
+		this._clearSelection();
+		requestAnimationFrame(this.draw);
 	},
 	changeNode: function(node, increase) {
-		this.clearSelection();
+		this._clearSelection();
 	
 		node.selected = true;
 		this.selectedNode = node;
@@ -103,10 +104,11 @@ window.PowerDistribution = React.createClass({
 		}
 		else
 			return;
-		this.allocatePower();
+		this._allocatePower();
+		requestAnimationFrame(this.draw);
 	},
 	nodes: [],
-	createItems: function() {
+	_createItems: function() {
 		for (var i=0; i<this.nodes.length; i++)
 			this.nodes[i].unlink();
 
@@ -146,7 +148,7 @@ window.PowerDistribution = React.createClass({
 		for (var angle = 0; angle < 2; angle += 0.125)
 			this.items.push(new PowerWireCurved(cx, cy, r2, Math.PI * angle, Math.PI * (angle + 0.125), size * 0.01));
 		
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.875, Math.PI * 0.125, size * 0.01));
+		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * -0.125, Math.PI * 0.125, size * 0.01));
 		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.125, Math.PI * 0.25, size * 0.01));
 		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.25, Math.PI * 0.375, size * 0.01));
 		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.375, Math.PI * 0.625, size * 0.01));
@@ -157,7 +159,7 @@ window.PowerDistribution = React.createClass({
 		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.25, Math.PI * 1.375, size * 0.01));
 		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.375, Math.PI * 1.625, size * 0.01));
 		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.625, Math.PI * 1.75, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.75, Math.PI * 0.875, size * 0.01));
+		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.75, Math.PI * 1.875, size * 0.01));
 		
 		var node = new PowerNode(this, cx + r2, cy, size * 0.072, 'D');
 		this.items.push(node); this.nodes.push(node);
@@ -187,39 +189,39 @@ window.PowerDistribution = React.createClass({
 		this.centerNode = new PowerNode(this, cx, cy, size * 0.18, null, true);
 		this.items.push(this.centerNode);
 		
-		this.linkItems(60, 0); this.linkItems(60, 1); this.linkItems(6, 2); this.linkItems(60, 3);
-		this.linkItems(0, 16); this.linkItems(0, 23); this.linkItems(1, 19); this.linkItems(1, 20);
-		this.linkItems(2, 17); this.linkItems(2, 18); this.linkItems(3, 21); this.linkItems(3, 22);
+		this._linkItems(60, 0); this._linkItems(60, 1); this._linkItems(60, 2); this._linkItems(60, 3);
+		this._linkItems(0, 16); this._linkItems(0, 23); this._linkItems(1, 19); this._linkItems(1, 20);
+		this._linkItems(2, 17); this._linkItems(2, 18); this._linkItems(3, 21); this._linkItems(3, 22);
 		
-		this.linkItems(16, 17); this.linkItems(16, 23); this.linkItems(16, 4); this.linkItems(17, 18);
-		this.linkItems(17, 4); this.linkItems(18, 19); this.linkItems(18, 5); this.linkItems(19, 20);
-		this.linkItems(19, 5); this.linkItems(20, 21); this.linkItems(20, 6); this.linkItems(21, 22);
-		this.linkItems(21, 6); this.linkItems(22, 23); this.linkItems(22, 7); this.linkItems(23, 7);
+		this._linkItems(16, 17); this._linkItems(16, 23); this._linkItems(16, 4); this._linkItems(17, 18);
+		this._linkItems(17, 18); this._linkItems(17, 4); this._linkItems(18, 19); this._linkItems(18, 5); this._linkItems(19, 20);
+		this._linkItems(19, 5); this._linkItems(20, 21); this._linkItems(20, 6); this._linkItems(21, 22);
+		this._linkItems(21, 6); this._linkItems(22, 23); this._linkItems(22, 7); this._linkItems(23, 7);
 		
-		this.linkItems(4, 25); this.linkItems(4, 26); this.linkItems(5, 29); this.linkItems(5, 30);
-		this.linkItems(6, 33); this.linkItems(6, 34); this.linkItems(7, 37); this.linkItems(7, 38);
+		this._linkItems(4, 25); this._linkItems(4, 26); this._linkItems(5, 29); this._linkItems(5, 30);
+		this._linkItems(6, 33); this._linkItems(6, 34); this._linkItems(7, 37); this._linkItems(7, 38);
 		
-		this.linkItems(24, 52); this.linkItems(24, 8); this.linkItems(24, 25); this.linkItems(25, 8);
-		this.linkItems(25, 26); this.linkItems(26, 9); this.linkItems(26, 27); this.linkItems(27, 9);
-		this.linkItems(27, 54); this.linkItems(28, 10); this.linkItems(28, 29); this.linkItems(29, 10);
-		this.linkItems(29, 30); this.linkItems(30, 11); this.linkItems(30, 31); this.linkItems(31, 11);
-		this.linkItems(31, 53); this.linkItems(32, 53); this.linkItems(32, 12); this.linkItems(32, 33);
-		this.linkItems(33, 12); this.linkItems(33, 34); this.linkItems(34, 13); this.linkItems(34, 35);
-		this.linkItems(35, 13); this.linkItems(35, 55); this.linkItems(36, 55); this.linkItems(36, 14);
-		this.linkItems(36, 37); this.linkItems(37, 14); this.linkItems(37, 38); this.linkItems(38, 15);
-		this.linkItems(38, 39); this.linkItems(39, 15); this.linkItems(39, 52);
+		this._linkItems(24, 52); this._linkItems(24, 8); this._linkItems(24, 25); this._linkItems(25, 8);
+		this._linkItems(25, 26); this._linkItems(26, 9); this._linkItems(26, 27); this._linkItems(27, 9);
+		this._linkItems(27, 54); this._linkItems(28, 54);this._linkItems(28, 10); this._linkItems(28, 29); this._linkItems(29, 10);
+		this._linkItems(29, 30); this._linkItems(30, 11); this._linkItems(30, 31); this._linkItems(31, 11);
+		this._linkItems(31, 53); this._linkItems(32, 53); this._linkItems(32, 12); this._linkItems(32, 33);
+		this._linkItems(33, 12); this._linkItems(33, 34); this._linkItems(34, 13); this._linkItems(34, 35);
+		this._linkItems(35, 13); this._linkItems(35, 55); this._linkItems(36, 55); this._linkItems(36, 14);
+		this._linkItems(36, 37); this._linkItems(37, 14); this._linkItems(37, 38); this._linkItems(38, 15);
+		this._linkItems(38, 39); this._linkItems(39, 15); this._linkItems(39, 52);
 		
-		this.linkItems(8, 40); this.linkItems(8, 41); this.linkItems(9, 42); this.linkItems(9, 43);
-		this.linkItems(10, 43); this.linkItems(10, 44); this.linkItems(11, 45); this.linkItems(11, 46);
-		this.linkItems(12, 46); this.linkItems(12, 47); this.linkItems(13, 48); this.linkItems(13, 49);
-		this.linkItems(14, 49); this.linkItems(14, 50); this.linkItems(15, 51); this.linkItems(15, 40);
+		this._linkItems(8, 40); this._linkItems(8, 41); this._linkItems(9, 42); this._linkItems(9, 43);
+		this._linkItems(10, 43); this._linkItems(10, 44); this._linkItems(11, 45); this._linkItems(11, 46);
+		this._linkItems(12, 46); this._linkItems(12, 47); this._linkItems(13, 48); this._linkItems(13, 49);
+		this._linkItems(14, 49); this._linkItems(14, 50); this._linkItems(15, 51); this._linkItems(15, 40);
 		
-		this.linkItems(40, 51); this.linkItems(40, 41); this.linkItems(41, 56); this.linkItems(42, 56);
-		this.linkItems(42, 43); this.linkItems(43, 44); this.linkItems(44, 58); this.linkItems(45, 58);
-		this.linkItems(45, 46); this.linkItems(46, 47); this.linkItems(47, 59); this.linkItems(48, 59);
-		this.linkItems(48, 49); this.linkItems(49, 50); this.linkItems(50, 57); this.linkItems(51, 57);
+		this._linkItems(40, 51); this._linkItems(40, 41); this._linkItems(41, 56); this._linkItems(42, 56);
+		this._linkItems(42, 43); this._linkItems(43, 44); this._linkItems(44, 58); this._linkItems(45, 58);
+		this._linkItems(45, 46); this._linkItems(46, 47); this._linkItems(47, 59); this._linkItems(48, 59);
+		this._linkItems(48, 49); this._linkItems(49, 50); this._linkItems(50, 57); this._linkItems(51, 57);
 	},
-	linkItems: function(a, b) {
+	_linkItems: function(a, b) {
 		var itemA = this.items[a], itemB = this.items[b];
 		itemA.links.push(itemB);
 		itemB.links.push(itemA);
@@ -232,23 +234,74 @@ window.PowerDistribution = React.createClass({
 			this.items[i].draw(ctx);
 	},
 	isVisible: function() { return this.props.visibility.props.visible; },
-	calculateRoutes: function() {
-		// Based on Dijkstra's algorithm, calculate every route from the center node to each other node. Each route should store a list of the "node" objects it comprises.
-	},
-	allocatePower: function() {
-		// set the "load" of every wire to 0
+	_allocatePower: function() {
 		for (var i=0; i<this.items.length; i++)
 			this.items[i].load = 0;
+			
+		// for each unit of power allocated to any node, allocate it along the best path to that node.
+		for (var i=0; i<this.nodes.length; i++) {
+			var node = this.nodes[i];
+			for (var j=0; j<node.value; j++) {
+				if (!this._calculateDistanceTo(this.centerNode, node)) {
+					node.value --;
+					this.centernode.value ++;
+					break;
+				}
+				var walk = node;
+				while (walk != this.centerNode) {
+					walk.load ++;
+					walk = walk.bestLink;	
+				}
+			}
+		}
+	},
+	_calculateDistanceTo: function(fromNode, toNode) {
+		// set the "load" of every wire to 0
+		for (var i=0; i<this.items.length; i++) {
+			var item = this.items[i];
+			item.distanceTo = Number.MAX_VALUE;
+			item.bestLink = undefined;
+		}
+		var unvisited = this.items.concat([]);
+		fromNode.distanceTo = 0;
 		
-		/*
-		For each unit of power allocated to any node,
-		Sort all the routes to that node only - excluding those that use unpassable wires
-		for the "shortest" route to that node, increase the load on each wire of that route by 1.
-		*/
+		while (unvisited.length > 0) {
+			// find the node with the smallest distanceTo value
+			var bestDist = Number.MAX_VALUE, bestIndex = -1;
+			for (var i=0; i<unvisited.length; i++) {
+				var dist = unvisited[i].distanceTo;
+				if (dist < bestDist) {
+					bestIndex = i;
+					bestDist = dist;
+				}
+			}
+			if (bestDist == Number.MAX_VALUE)
+				return false; // a break in the network means it is not possible to reach any more nodes
+			
+			var node = unvisited[bestIndex];
+			//if (node == toNode);
+				//return true;
+			
+			unvisited.splice(bestIndex, 1);
+			
+			// loop over all unvisited neighbours of this node. Determine that based on their bestLink being undefined.
+			for (var i=0; i<node.links.length; i++) {
+				var test = node.links[i];
+				var dist = node.distanceTo + test.load;
+				
+				if (dist >= test.distanceTo)
+					continue;
+				
+				test.distanceTo = dist;
+				test.bestLink = node;
+			}
+		}
+		return toNode.bestLink !== undefined;
 	},
 	wireChanged: function(wireNum, broken) {
 		this.items[wireNum].broken = broken;
-		this.allocatePower();
+		this._allocatePower();
+		requestAnimationFrame(this.draw);
 	}
 });
 				
@@ -267,17 +320,17 @@ function PowerWire() {
 }
 
 PowerWire.prototype.getColor = function() {
+	if (this.broken)
+		return '#666666';
+	
 	switch(this.load) {
-	case 0:  return '#00CC00';
-	case 1:  return '#29D100';
-	case 2:  return '#55D600';
-	case 3:  return '#83DB00';
-	case 4:  return '#B3E000';
-	case 5:  return '#E5E500';
-	case 6:  return '#EABB00';
-	case 7:  return '#EF8F00';
-	case 8:  return '#F46100';
-	case 9:  return '#F93100';
+		case 0: return '#00CC00';
+		case 1: return '#3CD300';
+		case 2: return '#7CDA00';
+		case 3: return '#C1E100';
+		case 4: return '#E9C700';
+		case 5: return '#F08900';
+		case 6: return '#F74600';
 	default: return '#FF0000';
 	}
 };
