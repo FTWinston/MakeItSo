@@ -257,8 +257,8 @@ window.PowerDistribution = React.createClass({
 			var node = this.nodes[i];
 			for (var j=0; j<node.value; j++) {
 				if (!this._calculateDistanceTo(this.centerNode, node)) {
-					node.value --;
-					this.centernode.value ++;
+					this.centerNode.value += node.value;
+					node.value = 0;
 					break;
 				}
 				var walk = node;
@@ -290,15 +290,17 @@ window.PowerDistribution = React.createClass({
 				}
 			}
 			if (bestDist == Number.MAX_VALUE)
-				return false; // a break in the network means it is not possible to reach any more nodes
+				break; // a break in the network means it is not possible to reach any more nodes
 			
 			var node = unvisited[bestIndex];
-			//if (node == toNode);
-				//return true;
-			
 			unvisited.splice(bestIndex, 1);
 			
-			// loop over all unvisited neighbours of this node. Determine that based on their bestLink being undefined.
+			if (node.broken) {
+				node.distanceTo = Number.MAX_VALUE;
+				continue;
+			}
+			
+			// loop over all neighbours of this node
 			for (var i=0; i<node.links.length; i++) {
 				var test = node.links[i];
 				var dist = node.distanceTo + test.load;
