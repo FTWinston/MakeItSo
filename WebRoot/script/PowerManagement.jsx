@@ -31,17 +31,17 @@ window.PowerDistribution = React.createClass({
 	},
 	componentDidMount: function () {
 		this._createItems();
+		this._setItemSizes();
 		this._allocatePower();
 		requestAnimationFrame(this.draw);
 	},
 	componentWillUnmount: function() {
 		for (var i=0; i<this.nodes.length; i++)
 			this.nodes[i].unlink();
-		this.node = []; this.items = [];
 	},
 	componentDidUpdate: function (prevProps, prevState) {
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
-			this._createItems();
+			this._setItemSizes();
 		
 		requestAnimationFrame(this.draw);
 	},
@@ -109,84 +109,46 @@ window.PowerDistribution = React.createClass({
 	},
 	nodes: [],
 	_createItems: function() {
-		for (var i=0; i<this.nodes.length; i++)
-			this.nodes[i].unlink();
-
+		if (this.items !== undefined)
+			return; // don't overwrite existing items
 		var component = this;
 		this.selectedNode = null;
 		this.items = []; this.nodes = [];
 		
-		var cx = this.props.width / 2, cy = this.props.height / 2;
-		var size = Math.min(this.props.width, this.props.height);
-		
-		var r1 = size * 0.28, r2 = size * 0.38, r3 = size * 0.48;
-		
-		this.items.push(new PowerWireStraight(cx, cy, cx + r1, cy, size * 0.01));
-		this.items.push(new PowerWireStraight(cx, cy, cx - r1, cy, size * 0.01));
-		this.items.push(new PowerWireStraight(cx, cy, cx, cy + r1, size * 0.01));
-		this.items.push(new PowerWireStraight(cx, cy, cx, cy - r1, size * 0.01));
-		
-		for (var angle = Math.PI / 4; angle < Math.PI * 2; angle += Math.PI / 2)
-			this.items.push(new PowerWireStraight(
-				cx + Math.cos(angle) * r1,
-				cy + Math.sin(angle) * r1,
-				cx + Math.cos(angle) * r2,
-				cy + Math.sin(angle) * r2,
-			size * 0.01));
-			
-		for (var angle = Math.PI / 8; angle < Math.PI * 2; angle += Math.PI / 4)
-			this.items.push(new PowerWireStraight(
-				cx + Math.cos(angle) * r2,
-				cy + Math.sin(angle) * r2,
-				cx + Math.cos(angle) * r3,
-				cy + Math.sin(angle) * r3,
-			size * 0.01));
+		for (var i=0; i<16; i++)
+			this.items.push(new PowerWireStraight());
 		
 		for (var angle = 0; angle < 2; angle += 0.25)
-			this.items.push(new PowerWireCurved(cx, cy, r1, Math.PI * angle, Math.PI * (angle + 0.25), size * 0.01));
+			this.items.push(new PowerWireCurved(Math.PI * angle, Math.PI * (angle + 0.25)));
 		
 		for (var angle = 0; angle < 2; angle += 0.125)
-			this.items.push(new PowerWireCurved(cx, cy, r2, Math.PI * angle, Math.PI * (angle + 0.125), size * 0.01));
+			this.items.push(new PowerWireCurved(Math.PI * angle, Math.PI * (angle + 0.125)));
 		
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * -0.125, Math.PI * 0.125, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.125, Math.PI * 0.25, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.25, Math.PI * 0.375, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.375, Math.PI * 0.625, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.625, Math.PI * 0.75, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.75, Math.PI * 0.875, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 0.875, Math.PI * 1.125, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.125, Math.PI * 1.25, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.25, Math.PI * 1.375, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.375, Math.PI * 1.625, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.625, Math.PI * 1.75, size * 0.01));
-		this.items.push(new PowerWireCurved(cx, cy, r3, Math.PI * 1.75, Math.PI * 1.875, size * 0.01));
+		this.items.push(new PowerWireCurved(Math.PI * -0.125, Math.PI * 0.125));
+		this.items.push(new PowerWireCurved(Math.PI * 0.125, Math.PI * 0.25));
+		this.items.push(new PowerWireCurved(Math.PI * 0.25, Math.PI * 0.375));
+		this.items.push(new PowerWireCurved(Math.PI * 0.375, Math.PI * 0.625));
+		this.items.push(new PowerWireCurved(Math.PI * 0.625, Math.PI * 0.75));
+		this.items.push(new PowerWireCurved(Math.PI * 0.75, Math.PI * 0.875));
+		this.items.push(new PowerWireCurved(Math.PI * 0.875, Math.PI * 1.125));
+		this.items.push(new PowerWireCurved(Math.PI * 1.125, Math.PI * 1.25));
+		this.items.push(new PowerWireCurved(Math.PI * 1.25, Math.PI * 1.375));
+		this.items.push(new PowerWireCurved(Math.PI * 1.375, Math.PI * 1.625));
+		this.items.push(new PowerWireCurved(Math.PI * 1.625, Math.PI * 1.75));
+		this.items.push(new PowerWireCurved(Math.PI * 1.75, Math.PI * 1.875));
 		
-		var node = new PowerNode(this, cx + r2, cy, size * 0.072, 'D');
+		var node = new PowerNode(this, 'D');
 		this.items.push(node); this.nodes.push(node);
 		
-		node = new PowerNode(this, cx - r2, cy, size * 0.072, 'A');
-		this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'A'); this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'X'); this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'W'); this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'C'); this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'E'); this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'Z'); this.items.push(node); this.nodes.push(node);
+		node = new PowerNode(this, 'Q'); this.items.push(node); this.nodes.push(node);
 		
-		node = new PowerNode(this, cx, cy + r2, size * 0.072, 'X');
-		this.items.push(node); this.nodes.push(node);
-		
-		node = new PowerNode(this, cx, cy - r2, size * 0.072, 'W');
-		this.items.push(node); this.nodes.push(node);
-		
-		var offset = Math.cos(Math.PI / 4) * r3;
-		node = new PowerNode(this, cx + offset, cy + offset, size * 0.072, 'C');
-		this.items.push(node); this.nodes.push(node);
-		
-		node = new PowerNode(this, cx + offset, cy - offset, size * 0.072, 'E');
-		this.items.push(node); this.nodes.push(node);
-		
-		node = new PowerNode(this, cx - offset, cy + offset, size * 0.072, 'Z');
-		this.items.push(node); this.nodes.push(node);
-		
-		node = new PowerNode(this, cx - offset, cy - offset, size * 0.072, 'Q');
-		this.items.push(node); this.nodes.push(node);
-		
-		this.centerNode = new PowerNode(this, cx, cy, size * 0.18, null, true);
+		this.centerNode = new PowerNode(this, null, true);
 		this.items.push(this.centerNode);
 		
 		this._linkItems(60, 0); this._linkItems(60, 1); this._linkItems(60, 2); this._linkItems(60, 3);
@@ -220,6 +182,58 @@ window.PowerDistribution = React.createClass({
 		this._linkItems(42, 43); this._linkItems(43, 44); this._linkItems(44, 58); this._linkItems(45, 58);
 		this._linkItems(45, 46); this._linkItems(46, 47); this._linkItems(47, 59); this._linkItems(48, 59);
 		this._linkItems(48, 49); this._linkItems(49, 50); this._linkItems(50, 57); this._linkItems(51, 57);
+	},
+	_setItemSizes: function() {
+		// split this out, so items are only updated rather than recreated each time
+		
+		var cx = this.props.width / 2, cy = this.props.height / 2;
+		var size = Math.min(this.props.width, this.props.height);
+		
+		var r1 = size * 0.28, r2 = size * 0.38, r3 = size * 0.48;
+		
+		this.items[0].setSize(cx, cy, cx + r1, cy, size * 0.01);
+		this.items[1].setSize(cx, cy, cx - r1, cy, size * 0.01);
+		this.items[2].setSize(cx, cy, cx, cy + r1, size * 0.01);
+		this.items[3].setSize(cx, cy, cx, cy - r1, size * 0.01);
+		
+		var i = 4;
+		for (var angle = Math.PI / 4; angle < Math.PI * 2; angle += Math.PI / 2)
+			this.items[i++].setSize(
+				cx + Math.cos(angle) * r1,
+				cy + Math.sin(angle) * r1,
+				cx + Math.cos(angle) * r2,
+				cy + Math.sin(angle) * r2,
+			size * 0.01);
+			
+		for (var angle = Math.PI / 8; angle < Math.PI * 2; angle += Math.PI / 4)
+			this.items[i++].setSize(
+				cx + Math.cos(angle) * r2,
+				cy + Math.sin(angle) * r2,
+				cx + Math.cos(angle) * r3,
+				cy + Math.sin(angle) * r3,
+			size * 0.01);
+		
+		while (i < 24)
+			this.items[i++].setSize(cx, cy, r1, size * 0.01);
+		
+		while (i < 40)
+			this.items[i++].setSize(cx, cy, r2, size * 0.01);
+		
+		while (i < 52)
+			this.items[i++].setSize(cx, cy, r3, size * 0.01);
+		
+		this.nodes[0].setSize(cx + r2, cy, size * 0.072);
+		this.nodes[1].setSize(cx - r2, cy, size * 0.072);
+		this.nodes[2].setSize(cx, cy + r2, size * 0.072);
+		this.nodes[3].setSize(cx, cy - r2, size * 0.072);
+		
+		var offset = Math.cos(Math.PI / 4) * r3;
+		this.nodes[4].setSize(cx + offset, cy + offset, size * 0.072);
+		this.nodes[5].setSize(cx + offset, cy - offset, size * 0.072);
+		this.nodes[6].setSize(cx - offset, cy + offset, size * 0.072);
+		this.nodes[7].setSize(cx - offset, cy - offset, size * 0.072);
+		
+		this.centerNode.setSize(cx, cy, size * 0.18);
 	},
 	_linkItems: function(a, b) {
 		var itemA = this.items[a], itemB = this.items[b];
@@ -335,13 +349,17 @@ PowerWire.prototype.getColor = function() {
 	}
 };
 
-function PowerWireCurved(x, y, r, startA, endA, width) {
-	this.x = x; this.y = y; this.r = r; this.startA = startA; this.endA = endA; this.width = width; 
+function PowerWireCurved(startA, endA) {
+	this.startA = startA; this.endA = endA; 
 	PowerWire.call(this);
-};
+}
 
 PowerWireCurved.prototype = Object.create(PowerWire.prototype);
 PowerWireCurved.constructor = PowerWireCurved;
+
+PowerWireCurved.prototype.setSize = function(x, y, r, width) {
+	this.x = x; this.y = y; this.r = r; this.width = width;
+};
 
 PowerWireCurved.prototype.draw = function(ctx) {
 	ctx.strokeStyle = this.getColor();
@@ -352,13 +370,16 @@ PowerWireCurved.prototype.draw = function(ctx) {
 	ctx.stroke();	
 };
 
-function PowerWireStraight(x1, y1, x2, y2, width) {
-	this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2; this.width = width; 
+function PowerWireStraight() {
 	PowerWire.call(this);
-};
+}
 
 PowerWireStraight.prototype = Object.create(PowerWire.prototype);
 PowerWireStraight.constructor = PowerWireStraight;
+
+PowerWireStraight.prototype.setSize = function(x1, y1, x2, y2, width) {
+	this.x1 = x1; this.y1 = y1; this.x2 = x2; this.y2 = y2; this.width = width;
+};
 
 PowerWireStraight.prototype.draw = function(ctx) {
 	ctx.strokeStyle = this.getColor();
@@ -370,19 +391,22 @@ PowerWireStraight.prototype.draw = function(ctx) {
 	ctx.stroke();	
 };
 
-function PowerNode(component, x, y, r, hotkey, central) {
+function PowerNode(component, hotkey, central) {
 	this.component = component; this.hotkey = hotkey; this.central = central;
-	this.x = x; this.y = y; this.r = r;
 	this.value = central === true ? 5 : 1; this.selected = false;
 	
 	if (this.hotkey != null)
 		Hotkeys.register(this.hotkey, this);
 	
 	PowerWire.call(this);
-};
+}
 
 PowerNode.prototype = Object.create(PowerWire.prototype);
 PowerNode.constructor = PowerNode;
+
+PowerNode.prototype.setSize = function(x, y, r) {
+	this.x = x; this.y = y; this.r = r;
+};
 
 PowerNode.prototype.draw = function(ctx) {
 	ctx.fillStyle = this.central ? '#FFCCCC' : '#0099FF';
