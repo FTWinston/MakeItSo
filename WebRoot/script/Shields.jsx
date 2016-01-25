@@ -188,9 +188,9 @@ ShieldData.prototype.swapValues = function(x, y) {
 	
 	var combo = 0;
 	if (tmp2 !== undefined)
-		combo += this.checkMatchingGroup(x, y);
+		combo += this.checkMatchingGroup(x, y, 2);
 	if (tmp1 !== undefined && !tmp1.isMatch(tmp2))
-		combo += this.checkMatchingGroup(x + 1, y);
+		combo += this.checkMatchingGroup(x + 1, y, 2);
 	
 	return combo;
 };
@@ -215,9 +215,12 @@ ShieldData.prototype.addFallingBlock = function(block, x, y) {
 	this.data[index] = block;
 };
 
-ShieldData.prototype.checkMatchingGroup = function(x, y) {
+ShieldData.prototype.checkMatchingGroup = function(x, y, comboLifetime) {
 	var block = this.getBlock(x,y);
 	if (block === undefined)
+		return 0;
+	
+	if (block.type == ShieldBlock.prototype.BlockType.ActiveCombo)
 		return 0;
 	
 	var matches = [];
@@ -229,10 +232,12 @@ ShieldData.prototype.checkMatchingGroup = function(x, y) {
 	while (maxX < this.cols - 1 && block.isMatch(this.getBlock(maxX + 1, y)))
 		maxX ++;
 	
+	var comboBlocks = [];
+	
 	var numX = maxX - minX + 1;
 	if (numX >= this.minMatchNum) {
 		for (var tx=minX; tx<=maxX; tx++)
-			this.data[this.index(tx, y)] = undefined;
+			comboBlocks.push(this.getBlock(tx, y));
 	}
 	else
 		numX = 0;
@@ -246,7 +251,7 @@ ShieldData.prototype.checkMatchingGroup = function(x, y) {
 	var numY = maxY - minY + 1;
 	if (numY >= this.minMatchNum) {
 		for (var ty=minY; ty<=maxY; ty++)
-			this.data[this.index(x, ty)] = undefined;
+			comboBlocks.push(this.getBlock(x, ty));
 		
 		if (numX > 0)
 			numY --;
@@ -254,17 +259,37 @@ ShieldData.prototype.checkMatchingGroup = function(x, y) {
 	else
 		numY = 0;
 	
+	for (var i=0; i<comboBlocks.length; i++) {
+		var block = comboBlocks[i];
+		block.type = ShieldBlock.prototype.BlockType.ActiveCombo;
+		block.color = comboLifetime;
+	}
+	
 	return numX + numY;
 }
 
 ShieldData.prototype.applyGravity = function() {
 	var stoppedBlocks = [];
-	
+	var lastRow = this.rows - 1;
 	for (var x = 0; x < this.cols; x++)
-		for (var y = this.rows - 2; y >= 0; y--) {
+		for (var y = lastRow; y >= 0; y--) {
 			var bAbove = this.getBlock(x, y);
 			if (bAbove === undefined)
 				continue;
+			// remove "active combo" blocks, or progress them towards removal
+			else if (bAbove.type == ShieldBlock.prototype.BlockType.ActiveCombo) {
+				bAbove.color --;
+				if (bAbove.color == 0)
+					this.data[this.index(x, y)] = undefined;
+				continue;
+			}
+			else if (y == lastRow) {
+				if (bAbove.falling) {
+					stoppedBlocks.push({x: x, y: y});
+					bAbove.falling = false;
+				}
+				continue;
+			}
 			
 			var bBelow = this.getBlock(x, y + 1)
 			if (bBelow === undefined) {
@@ -281,7 +306,7 @@ ShieldData.prototype.applyGravity = function() {
 	
 	for (var i=0; i<stoppedBlocks.length; i++) {
 		var pos = stoppedBlocks[i];
-		this.checkMatchingGroup(pos.x, pos.y);
+		this.checkMatchingGroup(pos.x, pos.y, 1);
 	}
 };
 
@@ -305,7 +330,8 @@ function ShieldBlock(color, type) {
 
 ShieldBlock.prototype.BlockType = {
 	Normal: 1,
-	Damage: 2
+	ActiveCombo: 2,
+	Damage: 3
 };
 
 ShieldBlock.prototype.isMatch = function(b) {
@@ -317,7 +343,10 @@ ShieldBlock.prototype.canMove = function() {
 };
 
 ShieldBlock.prototype.draw = function(ctx, x, y, width, height, colors) {		
-	ctx.fillStyle = colors[this.color];
+	if (this.type == this.BlockType.ActiveCombo)
+		ctx.fillStyle = '#ffffff';
+	else
+		ctx.fillStyle = colors[this.color];
 	ctx.beginPath();
 	ctx.rect(width * x + width * 0.05, height * y + height * 0.05, width * 0.9, height * 0.9);
 	ctx.fill();
