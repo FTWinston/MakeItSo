@@ -10,7 +10,7 @@ window.Hotkeys = {
 	bindings: {},
 	showHotkeys: false,
 	register: function(hotkey, button) {
-		var keyCode = hotkey.charCodeAt(0);
+		var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
 			
 		if (this.bindings.hasOwnProperty(keyCode))
 			this.bindings[keyCode].push(button);
@@ -18,7 +18,7 @@ window.Hotkeys = {
 			this.bindings[keyCode] = [button];
 	},
 	unregister: function(hotkey, button) {
-		var keyCode = hotkey.charCodeAt(0);
+		var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
 		
 		var keys = this.bindings[keyCode];
 		var pos = keys.indexOf(button);

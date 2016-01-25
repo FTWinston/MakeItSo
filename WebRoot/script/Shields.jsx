@@ -4,12 +4,10 @@ window.Shields = React.createClass({
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
-		var shield1 = this.props.visible ? <ShieldDisplay ref="s1" width={this.props.width/2.1} height={this.props.height} visibility={this} right={false} /> : null;
-		var shield2 = this.props.visible ? <ShieldDisplay ref="s2" width={this.props.width/2.1} height={this.props.height} visibility={this} right={true} /> : null;
+		var shield = this.props.visible ? <ShieldDisplay ref="shield" width={this.props.width*0.85} height={this.props.height} visibility={this} /> : null;
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
-				{shield1}
-				{shield2}
+				{shield}
 			</system>
 		);
 	}
@@ -17,7 +15,7 @@ window.Shields = React.createClass({
 
 window.ShieldDisplay = React.createClass({
 	getDefaultProps: function() {
-		return { width: 0, height: 0, x: 0, y: 0, cellsTall: 25, cellsWide: 18, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff'] };
+		return { width: 0, height: 0, x: 0, y: 0, cellsTall: 24, cellsWide: 36, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff'] };
 	},
 	componentDidMount: function () {
 		var startX = Math.floor(this.props.cellsWide / 2), startY = Math.floor(this.props.cellsTall / 2);
@@ -27,30 +25,33 @@ window.ShieldDisplay = React.createClass({
 		
 		this.readProps(this.props);
 
-		for (var i=0; i<6; i++) {
-			var row = [];
-			for (var j=0; j<this.props.cellsWide; j++)
-				row.push(Math.floor(Math.random() * this.props.colors.length));
-			this.data.addRow(row);
-		}
+		for (var x=0; x<this.props.cellsWide; x++)
+			for (var y=2; y<this.props.cellsTall; y++) {
+				var color = Math.floor(Math.random() * this.props.colors.length);
+				var block = new ShieldBlock(color, ShieldBlock.prototype.BlockType.Normal);
+				this.data.placeBlock(block, x, y);
+			}
 		
 		requestAnimationFrame(this.draw);
+		this.interval = setInterval(this.applyGravity,400);
 		
-		Hotkeys.register(this.props.right ? 'I' : 'W', this);
-		Hotkeys.register(this.props.right ? 'K' : 'S', this);
-		Hotkeys.register(this.props.right ? 'J' : 'A', this);
-		Hotkeys.register(this.props.right ? 'L' : 'D', this);
-		Hotkeys.register(this.props.right ? 'N' : ' ', this);
+		Hotkeys.register(37, this);
+		Hotkeys.register(38, this);
+		Hotkeys.register(39, this);
+		Hotkeys.register(40, this);
+		Hotkeys.register(' ', this);
 	},
 	componentWillUnmount: function() {
 		this.cursor = null;
 		this.data = null;
 		
-		Hotkeys.unregister(this.props.right ? 'I' : 'W', this);
-		Hotkeys.unregister(this.props.right ? 'K' : 'S', this);
-		Hotkeys.unregister(this.props.right ? 'J' : 'A', this);
-		Hotkeys.unregister(this.props.right ? 'L' : 'D', this);
-		Hotkeys.unregister(this.props.right ? 'N' : ' ', this);
+		clearInterval(this.interval);
+		
+		Hotkeys.unregister(37, this);
+		Hotkeys.unregister(38, this);
+		Hotkeys.unregister(39, this);
+		Hotkeys.unregister(40, this);
+		Hotkeys.unregister(' ', this);
 	},
 	componentWillReceiveProps: function (nextProps) {
 		this.readProps(nextProps);
@@ -91,35 +92,41 @@ window.ShieldDisplay = React.createClass({
 	draw: function() {
 		var ctx = this.refs.canvas.getContext('2d');
 
+		this.drawBackground(ctx);
+		
+		var xBorder = this.cellWidth * 0.05, yBorder = this.cellHeight * 0.05;
+		for (var y=0; y<this.props.cellsTall; y++)
+			for (var x=0; x<this.props.cellsWide; x++) {
+				var block = this.data.getBlock(x, y);
+				if (block !== undefined)
+					block.draw(ctx, x, y, this.cellWidth, this.cellHeight, this.props.colors);
+			}
+
+		this.cursor.draw(ctx);
+	},
+	drawBackground: function(ctx) {
 		ctx.fillStyle = '#000000';
 		ctx.beginPath();
 		ctx.rect(0, 0, this.props.width, this.props.height);
 		ctx.fill();
 		
-		for (var y=0; y<this.props.cellsTall; y++) {
-			var ypos = this.cellHeight * (this.props.cellsTall - y - 1);
-			
-			for (var x=0; x<this.props.cellsWide; x++) {
-				var value = this.data.getValue(x, y);
-				if (value === undefined)
-					continue;
-				
-				ctx.fillStyle = this.props.colors[value];
-				ctx.beginPath();
-				ctx.rect(this.cellWidth * x, ypos, this.cellWidth, this.cellHeight);
-				ctx.fill();
-			}
+		ctx.strokeStyle = '#999999';
+		ctx.lineWidth = this.cellWidth * 0.075;
+		ctx.beginPath();
+		for (var x=6; x<this.props.cellsWide; x+=6) {
+			ctx.moveTo(x * this.cellWidth, 0);
+			ctx.lineTo(x * this.cellWidth, this.props.height);
 		}
-		this.cursor.draw(ctx);
+		ctx.stroke();
 	},
 	keyDown: function(e) {
-		if (e.which == 87)
+		if (e.which == 38)
 			this.moveUp();
-		else if (e.which == 83)
+		else if (e.which == 40)
 			this.moveDown();
-		else if (e.which == 65)
+		else if (e.which == 37)
 			this.moveLeft();
-		else if (e.which == 68)
+		else if (e.which == 39)
 			this.moveRight();
 		else if (e.which == 32)
 			this.swap();
@@ -128,14 +135,18 @@ window.ShieldDisplay = React.createClass({
 		
 		requestAnimationFrame(this.draw);
 	},
+	applyGravity() {
+		this.data.applyGravity();
+		requestAnimationFrame(this.draw);
+	},
 	isVisible: function() {
 		return this.props.visibility.props.visible;
 	},
 	moveUp: function() {
-		this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
+		this.cursor.y = Math.max(this.cursor.y - 1, 0);
 	},
 	moveDown: function() {
-		this.cursor.y = Math.max(this.cursor.y - 1, 0);
+		this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
 	},
 	moveLeft: function() {
 		this.cursor.x = Math.max(this.cursor.x - 1, 0);
@@ -150,18 +161,6 @@ window.ShieldDisplay = React.createClass({
 	}
 });
 
-function ShieldCursor(x, y) {
-	this.x = x; this.y = y;
-};
-
-ShieldCursor.prototype.draw = function(ctx) {
-	ctx.strokeStyle = '#FFFFFF';
-	ctx.lineWidth = this.xscale * 0.15;
-	ctx.beginPath();
-	ctx.rect(this.x * this.xscale, (this.cellsTall - this.y - 1) * this.yscale, 2 * this.xscale, this.yscale);
-	ctx.stroke();
-};
-
 function ShieldData(cols, rows) {
 	this.cols = cols; this.rows = rows;
 	this.data = Array(cols * rows);
@@ -172,24 +171,26 @@ ShieldData.prototype.index = function(x, y) {
 	return y * this.cols + x
 }
 
-ShieldData.prototype.getValue = function(x, y) {
+ShieldData.prototype.getBlock = function(x, y) {
 	return this.data[this.index(x,y)];
-};
-
-ShieldData.prototype.setValue = function(x, y, val) {
-	this.data[this.index(x,y)] = val;
 };
 
 ShieldData.prototype.swapValues = function(x, y) {
 	var i1 = this.index(x, y), i2 = this.index(x + 1, y);
-	var tmp = this.data[i1];
-	this.data[i1] = this.data[i2];
-	this.data[i2] = tmp;
+	var tmp1 = this.data[i1], tmp2 = this.data[i2];
 	
-	var combo = this.data[i1] != tmp ? this.checkGroup(i1) : 0;
-	combo += this.checkGroup(i2);
+	if (tmp1 !== undefined && !tmp1.canMove())
+		return;
+	if (tmp2 !== undefined && !tmp2.canMove())
+		return;
 	
-	this.applyGravity(i1, i2);
+	this.data[i1] = tmp2; this.data[i2] = tmp1;
+	
+	var combo = 0;
+	if (tmp2 !== undefined)
+		combo += this.checkMatchingGroup(x, y);
+	if (tmp1 !== undefined && !tmp1.isMatch(tmp2))
+		combo += this.checkMatchingGroup(x + 1, y);
 	
 	return combo;
 };
@@ -203,68 +204,114 @@ ShieldData.prototype.isFull = function() {
 	return false;
 }
 
-ShieldData.prototype.addRow = function(row) {
-	// remove the last row (we checked it wasn't full already, right?)	
-	var i1 = this.index(0, this.rows - 1);
-	this.data.splice(i1, this.cols);
-	
-	// add a row of new data
-	for (var i=0; i<this.cols && i<row.length; i++)
-		this.data.unshift(row[i]);
-}
+ShieldData.prototype.placeBlock = function(block, x, y) {
+	var index = this.index(x,y);
+	this.data[index] = block;
+};
 
-ShieldData.prototype.checkGroup = function(start) {
-	var color = this.data[start];
-	if (color == undefined)
+ShieldData.prototype.addFallingBlock = function(block, x, y) {
+	block.falling = true;
+	var index = this.index(x,y);
+	this.data[index] = block;
+};
+
+ShieldData.prototype.checkMatchingGroup = function(x, y) {
+	var block = this.getBlock(x,y);
+	if (block === undefined)
 		return 0;
 	
 	var matches = [];
+	var minX = x, maxX = x, minY = y, maxY = y;
 	
-	var queue = [start];
-	do
-	{
-		var w = queue.pop(), e = w;
-		do {
-			w--;
-		} while (w >= 0 && (w % this.cols) != this.cols - 1 && this.data[w] == color);
+	while (minX > 0 && block.isMatch(this.getBlock(minX - 1,y)))
+		minX --;
+	
+	while (maxX < this.cols - 1 && block.isMatch(this.getBlock(maxX + 1, y)))
+		maxX ++;
+	
+	var numX = maxX - minX + 1;
+	if (numX >= this.minMatchNum) {
+		for (var tx=minX; tx<=maxX; tx++)
+			this.data[this.index(tx, y)] = undefined;
+	}
+	else
+		numX = 0;
+	
+	while (minY > 0 && block.isMatch(this.getBlock(x, minY - 1)))
+		minY --;
+	
+	while (maxY < this.rows - 1 && block.isMatch(this.getBlock(x, maxY + 1)))
+		maxY ++;
+	
+	var numY = maxY - minY + 1;
+	if (numY >= this.minMatchNum) {
+		for (var ty=minY; ty<=maxY; ty++)
+			this.data[this.index(x, ty)] = undefined;
 		
-		do {
-			e++;
-		} while (e < this.data.length && (e % this.cols) != 0 && this.data[e] == color);
-		
-		for (var i=w+1; i<e; i++) {
-			this.data[i] = undefined;
-			matches.push(i);
-			
-			var n = i + this.cols;
-			if (n < this.data.length && this.data[n] == color)
-				queue.push(n);
-			
-			var s = i - this.cols;
-			if (s >= 0 && this.data[s] == color)
-				queue.push(s);
-		}
-	} while (queue.length > 0);
+		if (numX > 0)
+			numY --;
+	}
+	else
+		numY = 0;
 	
-	if (matches.length >= this.minMatchNum)
-		return matches.length;
-	
-	// put things back to original color
-	for (var i=0; i<matches.length; i++)
-		this.data[matches[i]] = color;
-	
-	return 0;
+	return numX + numY;
 }
 
-ShieldData.prototype.applyGravity = function(skip1, skip2) {
-	for (var i=this.cols; i<this.data.length; i++) {
-		if (i == skip1 || i == skip2)
-			continue;
-		
-		var below = i - this.cols;
+ShieldData.prototype.applyGravity = function() {
+	for (var i=this.data.length - this.cols - 1; i >= 0; i--) {
+		var below = i + this.cols;
 		if (this.data[below] === undefined) {
 			this.data[below] = this.data[i];
 			this.data[i] = undefined;
 		}
 	}
 }
+
+function ShieldCursor(x, y) {
+	this.x = x; this.y = y;
+};
+
+ShieldCursor.prototype.draw = function(ctx) {
+	ctx.strokeStyle = '#FFFFFF';
+	ctx.lineWidth = this.xscale * 0.15;
+	ctx.beginPath();
+	ctx.rect(this.x * this.xscale, this.y * this.yscale, 2 * this.xscale, this.yscale);
+	ctx.stroke();
+};
+
+function ShieldBlock(color, type) {
+	this.color = color;
+	this.type = type;
+}
+
+ShieldBlock.prototype.BlockType = {
+	Normal: 1,
+	Damage: 2
+};
+
+ShieldBlock.prototype.isMatch = function(b) {
+	return b !== undefined && this.color == b.color && this.type == b.type;
+};
+
+ShieldBlock.prototype.canMove = function() {
+	return this.type != this.BlockType.Damage;
+};
+
+ShieldBlock.prototype.draw = function(ctx, x, y, width, height, colors) {		
+	ctx.fillStyle = colors[this.color];
+	ctx.beginPath();
+	ctx.rect(width * x + width * 0.05, height * y + height * 0.05, width * 0.9, height * 0.9);
+	ctx.fill();
+	
+	if (this.type == this.BlockType.Damage) {
+		ctx.strokeStyle = '#999999';
+		ctx.lineWidth = width * 0.15;
+		
+		ctx.beginPath();
+		ctx.moveTo(width * x, height * y);
+		ctx.lineTo(width * (x + 1), height * (y + 1));
+		ctx.moveTo(width * (x + 1), height * y);
+		ctx.lineTo(width * x, height * (y + 1));
+		ctx.stroke();
+	}
+};
