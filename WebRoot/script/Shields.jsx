@@ -65,11 +65,8 @@ window.ShieldDisplay = React.createClass({
 		this.cursor.cellsTall = props.cellsTall;
 	},
 	render: function() {
-		var style = this.props.right ? 
-		{ position: 'absolute', right: '0' } : undefined;
-		
 		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="20" maxTapDist="10" onSwipe={this.swiped} onTap={this.tapped} onMouseDown={this.clicked} style={style} />
+			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="20" maxTapDist="10" onSwipe={this.swiped} onTap={this.tapped} onMouseDown={this.clicked} />
 		);
 	},
 	tapped: function (x, y) {
