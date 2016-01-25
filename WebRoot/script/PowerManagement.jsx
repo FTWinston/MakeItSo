@@ -427,7 +427,7 @@ PowerNode.prototype.draw = function(ctx) {
 	ctx.font = size + 'px Arial';
 	ctx.fillStyle = this.value > 0 ? 'black' : 'red';
 	ctx.textAlign = 'center';
-	ctx.textBaseline = "middle";
+	ctx.textBaseline = 'middle';
 	ctx.fillText(this.value, this.x, this.y);
 }
 

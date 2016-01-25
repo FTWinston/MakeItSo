@@ -19,7 +19,6 @@ window.ShieldDisplay = React.createClass({
 	},
 	componentDidMount: function () {
 		var startX = Math.floor(this.props.cellsWide / 2), startY = Math.floor(this.props.cellsTall / 2);
-		this.cellWidth = this.props.width / this.props.cellsWide; this.cellHeight = this.props.height / this.props.cellsTall;
 		this.cursor = new ShieldCursor(startX, startY);
 		this.data = new ShieldData(this.props.cellsWide, this.props.cellsTall);
 		
@@ -60,9 +59,9 @@ window.ShieldDisplay = React.createClass({
 		requestAnimationFrame(this.draw);
 	},
 	readProps: function(props) {
-		this.cellWidth = props.width / props.cellsWide; this.cellHeight = props.height / props.cellsTall;
+		this.cellWidth = props.width / props.cellsWide; this.cellHeight = props.height * 0.95 / props.cellsTall;
 		this.cursor.xscale = props.width / props.cellsWide;
-		this.cursor.yscale = props.height / props.cellsTall;
+		this.cursor.yscale = props.height * 0.95 / props.cellsTall;
 		this.cursor.cellsTall = props.cellsTall;
 	},
 	render: function() {
@@ -107,8 +106,23 @@ window.ShieldDisplay = React.createClass({
 	drawBackground: function(ctx) {
 		ctx.fillStyle = '#000000';
 		ctx.beginPath();
-		ctx.rect(0, 0, this.props.width, this.props.height);
+		ctx.rect(0, 0, this.props.width, this.props.height * 0.95);
 		ctx.fill();
+		
+		ctx.clearRect(0, this.props.height * 0.95, this.props.width, this.props.height * 0.05);
+		
+		// write column labels
+		var size = Math.min(this.props.height * 0.04, this.props.width / 50);
+		ctx.font = size + 'px Arial';
+		ctx.fillStyle = '#cccccc';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'bottom';
+		ctx.fillText('port: ' + this.data.getFillPercentage(0, 5) + ' %', this.props.width / 12, this.props.height);
+		ctx.fillText('starboard: ' + this.data.getFillPercentage(6, 11) + '%', this.props.width * 3 / 12, this.props.height);
+		ctx.fillText('bow: ' + this.data.getFillPercentage(12, 17) + '%', this.props.width * 5 / 12, this.props.height);
+		ctx.fillText('stern: ' + this.data.getFillPercentage(18, 23) + '%', this.props.width * 7 / 12, this.props.height);
+		ctx.fillText('dorsal: ' + this.data.getFillPercentage(24, 29) + '%', this.props.width * 9 / 12, this.props.height);
+		ctx.fillText('ventral: ' + this.data.getFillPercentage(30, 35) + '%', this.props.width * 11 / 12, this.props.height);
 		
 		ctx.strokeStyle = '#999999';
 		ctx.lineWidth = this.cellWidth * 0.075;
@@ -189,7 +203,7 @@ ShieldData.prototype.swapValues = function(x, y) {
 	var combo = 0;
 	if (tmp2 !== undefined)
 		combo += this.checkMatchingGroup(x, y, 2);
-	if (tmp1 !== undefined && !tmp1.isMatch(tmp2))
+	if (tmp1 !== undefined)
 		combo += this.checkMatchingGroup(x + 1, y, 2);
 	
 	return combo;
@@ -217,10 +231,7 @@ ShieldData.prototype.addFallingBlock = function(block, x, y) {
 
 ShieldData.prototype.checkMatchingGroup = function(x, y, comboLifetime) {
 	var block = this.getBlock(x,y);
-	if (block === undefined)
-		return 0;
-	
-	if (block.type == ShieldBlock.prototype.BlockType.ActiveCombo)
+	if (block === undefined || block.type == ShieldBlock.prototype.BlockType.ActiveCombo)
 		return 0;
 	
 	var matches = [];
@@ -267,6 +278,19 @@ ShieldData.prototype.checkMatchingGroup = function(x, y, comboLifetime) {
 	
 	return numX + numY;
 }
+
+ShieldData.prototype.getFillPercentage = function(x1, x2) {
+	var i1 = this.index(x1, 0), i2 = this.index(x2, this.rows - 1);
+	
+	var numCells = i2 - i1 - 1, numBlocks = 0;
+	for (var i=i1; i<=i2; i++) {
+		var block = this.data[i];
+		if (block !== undefined && !block.isDamage())
+			numBlocks ++;
+	}
+	
+	return Math.round(100 * numBlocks / numCells);
+};
 
 ShieldData.prototype.applyGravity = function() {
 	var stoppedBlocks = [];
@@ -337,6 +361,10 @@ ShieldBlock.prototype.BlockType = {
 ShieldBlock.prototype.isMatch = function(b) {
 	return b !== undefined && this.color == b.color && this.type == b.type;
 };
+
+ShieldBlock.prototype.isDamage = function() {
+	return this.type == this.BlockType.Damage;
+}
 
 ShieldBlock.prototype.canMove = function() {
 	return this.type != this.BlockType.Damage;
