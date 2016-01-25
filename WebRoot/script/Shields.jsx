@@ -168,7 +168,7 @@ function ShieldData(cols, rows) {
 }
 
 ShieldData.prototype.index = function(x, y) {
-	return y * this.cols + x
+	return x * this.rows + y;
 }
 
 ShieldData.prototype.getBlock = function(x, y) {
@@ -258,14 +258,32 @@ ShieldData.prototype.checkMatchingGroup = function(x, y) {
 }
 
 ShieldData.prototype.applyGravity = function() {
-	for (var i=this.data.length - this.cols - 1; i >= 0; i--) {
-		var below = i + this.cols;
-		if (this.data[below] === undefined) {
-			this.data[below] = this.data[i];
-			this.data[i] = undefined;
+	var stoppedBlocks = [];
+	
+	for (var x = 0; x < this.cols; x++)
+		for (var y = this.rows - 2; y >= 0; y--) {
+			var bAbove = this.getBlock(x, y);
+			if (bAbove === undefined)
+				continue;
+			
+			var bBelow = this.getBlock(x, y + 1)
+			if (bBelow === undefined) {
+				var i1 = this.index(x, y), i2 = this.index(x, y + 1);
+				this.data[i1] = undefined;
+				this.data[i2] = bAbove;
+				bAbove.falling = true;
+			}
+			else if (bAbove.falling) {
+				stoppedBlocks.push({x: x, y: y});
+				bAbove.falling = false;
+			}
 		}
+	
+	for (var i=0; i<stoppedBlocks.length; i++) {
+		var pos = stoppedBlocks[i];
+		this.checkMatchingGroup(pos.x, pos.y);
 	}
-}
+};
 
 function ShieldCursor(x, y) {
 	this.x = x; this.y = y;
@@ -282,6 +300,7 @@ ShieldCursor.prototype.draw = function(ctx) {
 function ShieldBlock(color, type) {
 	this.color = color;
 	this.type = type;
+	this.falling = false;
 }
 
 ShieldBlock.prototype.BlockType = {
