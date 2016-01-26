@@ -21,9 +21,6 @@
 #define TSet std::set
 #define FString std::wstring
 
-#define Add insert
-#define Remove erase
-
 class UObject {};
 class APlayerController {};
 

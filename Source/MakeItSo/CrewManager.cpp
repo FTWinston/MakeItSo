@@ -42,7 +42,7 @@ int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 	return Instance->HandleEvent(conn, ev);
 }
 
-void UCrewManager::Init(AShipPlayerController *controller)
+FString UCrewManager::Init(AShipPlayerController *controller)
 {
 	Instance = this;
 	LinkController(controller);
@@ -72,9 +72,9 @@ void UCrewManager::Init(AShipPlayerController *controller)
 	// display address info that web clients should connect to
 	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Listening on %s\n"), *url));
-#else
-	wprintf(L"Listening on %s\n", url.c_str());
 #endif
+
+	return url;
 }
 
 void UCrewManager::BeginDestroy()
@@ -220,7 +220,11 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	ConnectionInfo *info = new ConnectionInfo(conn, identifier);
 	conn->connection_param = info;
 
+#ifndef WEB_SERVER_TEST
 	currentConnections->Add(info);
+#else
+	currentConnections->insert(info);
+#endif
 
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
@@ -260,9 +264,10 @@ void UCrewManager::EndConnection(mg_connection *conn)
 #ifndef WEB_SERVER_TEST
 	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
-#endif
-
 	currentConnections->Remove(info);
+#else
+	currentConnections->erase(info);
+#endif
 
 	// decrement the counts of each system this user was using
 	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)

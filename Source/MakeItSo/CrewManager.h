@@ -46,7 +46,7 @@ public:
 		Everyone
 	};
 
-	void Init(AShipPlayerController *controller);
+	FString Init(AShipPlayerController *controller);
 	virtual void BeginDestroy();
 
 	void LinkController(AShipPlayerController *controller);

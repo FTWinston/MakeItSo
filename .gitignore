@@ -8,3 +8,5 @@ Saved
 MakeItSo.opensdf
 WebTest/Debug/*
 *.opensdf
+WebTest/FakeServer/Debug/*
+WebTest/Release/*
