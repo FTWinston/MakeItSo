@@ -6,18 +6,19 @@ window.GameClient = React.createClass({
 		this.socket.onmessage = this.messageReceived;
 	},
 	messageReceived: function (ev) {
-		var m = (ev.data || '').split(' ', 2);
-		var cmd = m[0];
+		var data = (ev.data || ''), pos = data.indexOf(' ');
+		var cmd = pos == -1 ? data : data.substr(0, pos);
+		data = pos == -1 ? null : data.substr(pos + 1);
 		
 		if (cmd == 'id') {
-			this.setPlayerID(m[1]);
+			this.setPlayerID(data);
 			this.setActiveScreen('systems');
 		}
 		else if (cmd == 'sys+') {
-			this.markSystemInUse(m[1], false);
+			this.markSystemInUse(data, false);
 		}
 		else if (cmd == 'sys-') {
-			this.markSystemInUse(m[1], true);
+			this.markSystemInUse(data, true);
 		}
 		else if (cmd == 'setup+') {
 			this.setupScreenInUse(false);
@@ -43,7 +44,7 @@ window.GameClient = React.createClass({
 			this.setActiveScreen('game');
 		}
 		else if (cmd == 'game-') {
-			var blame = m.length > 1 ? 'User \'' + m[1] + '\' ended the game.' : 'The game has ended.';
+			var blame = data != null ? 'User \'' + data + '\' ended the game.' : 'The game has ended.';
 			this.showError(blame + ' Please wait...', false);
 
 			setTimeout(function() { gameClient.setActiveScreen('systems'); }, 3000);
@@ -55,11 +56,12 @@ window.GameClient = React.createClass({
 			this.setActiveScreen('game');
 		}
 		else {
-			var system = parseInt(cmd);
+			if (cmd.length > 1)
+			var system = parseInt(cmd.substr(0,1));
 			if (isNaN(system) || system < 0 || system > this.state.systems.length)
 				console.error('Unrecognised command from server: ' + cmd);
 			else
-				this.state.systems[i].receiveMessage(m[1]);
+				this.state.systems[system].receiveMessage(cmd.substr(1), data);
 		}
 	},
 	getInitialState: function() {
@@ -76,10 +78,10 @@ window.GameClient = React.createClass({
 			</div>
 		);
 	},
-	registerSystem: function(name, id) {
+	registerSystem: function(name, id, receiveMessage) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
-			systems[id] = {name: name, index: id, selected: false, usedByOther: false};
+			systems[id] = {name: name, index: id, selected: false, usedByOther: false, receiveMessage: receiveMessage};
 			return {systems: systems};
 		});
 	},

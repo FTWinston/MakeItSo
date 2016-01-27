@@ -19,6 +19,28 @@ window.PowerManagement = React.createClass({
 				{cards}
 			</system>
 		);
+	},
+	receiveMessage: function (msg, data) {
+		switch(msg) {
+			case 'break':
+				var node = parseInt(data);
+				if (isNaN(node)) {
+					console.error('Power management a numeric parameter its "' + msg + '" message, got: ' + data);
+					return;
+				}
+				this.refs.distribution.wireChanged(node, true);
+				break;
+			case 'fix':
+				var node = parseInt(data);
+				if (isNaN(node)) {
+					console.error('Power management a numeric parameter its "' + msg + '" message, got: ' + data);
+					return;
+				}
+				this.refs.distribution.wireChanged(node, false);
+				break;
+			default:
+				console.error('Power management received unexpected message: "' + msg + '" with data: ' + data);
+		}
 	}
 });
 
@@ -137,9 +159,7 @@ window.PowerDistribution = React.createClass({
 		this.items.push(new PowerWireCurved(Math.PI * 1.625, Math.PI * 1.75));
 		this.items.push(new PowerWireCurved(Math.PI * 1.75, Math.PI * 1.875));
 		
-		var node = new PowerNode(this, 'D');
-		this.items.push(node); this.nodes.push(node);
-		
+		var node = new PowerNode(this, 'D'); this.items.push(node); this.nodes.push(node);
 		node = new PowerNode(this, 'A'); this.items.push(node); this.nodes.push(node);
 		node = new PowerNode(this, 'X'); this.items.push(node); this.nodes.push(node);
 		node = new PowerNode(this, 'W'); this.items.push(node); this.nodes.push(node);

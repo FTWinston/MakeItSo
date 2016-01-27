@@ -655,6 +655,13 @@ void UCrewManager::SendCrewMessage(ESystem system, const char *message)
 	bool includeNoSystems = false;
 	int systemFlags;
 
+#ifndef WEB_SERVER_TEST
+	FString withSystem = FString::Printf(TEXT("%i%s\n"), system, message);
+#else
+	std::string withSystem = std::to_string(system);
+	withSystem += message;
+#endif
+
 	switch (system)
 	{
 	case ESystem::Everyone:
@@ -667,6 +674,7 @@ void UCrewManager::SendCrewMessage(ESystem system, const char *message)
 		includeNoSystems = true;
 		break;
 	default:
+		message = withSystem.c_str();
 		systemFlags = 1 << system; // only the flag for the given system should be set
 		break;
 	}

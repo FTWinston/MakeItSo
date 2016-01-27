@@ -10,6 +10,21 @@ window.Shields = React.createClass({
 				{shield}
 			</system>
 		);
+	},
+	receiveMessage: function (msg, data) {
+		switch(msg) {
+			case 'set':
+				var values = data.split(' ');
+				if (values.length != 3) {
+					console.error('Shields expected 3 parameters to its "' + msg + '" message, got: ' + data);
+					return;
+				}
+				var index = parseInt(values[0]), type = parseInt(values[1]), color = parseInt(values[2]);
+				this.refs.shield.setBlock(index, type, color);
+				break;
+			default:
+				console.error('Shields received unexpected message: "' + msg + '" with data: ' + data);
+		}
 	}
 });
 
@@ -22,13 +37,13 @@ window.ShieldDisplay = React.createClass({
 		this.cursor = new ShieldCursor(startX, startY);
 		this.data = new ShieldData(this.props.cellsWide, this.props.cellsTall);
 		
-		this.readProps(this.props);
+		this._readProps(this.props);
 
 		for (var x=0; x<this.props.cellsWide; x++)
 			for (var y=2; y<this.props.cellsTall; y++) {
 				var color = Math.floor(Math.random() * this.props.colors.length);
 				var block = new ShieldBlock(color, ShieldBlock.prototype.BlockType.Normal);
-				this.data.placeBlock(block, x, y);
+				this.data.setBlock(block, x, y);
 			}
 		
 		requestAnimationFrame(this.draw);
@@ -53,12 +68,12 @@ window.ShieldDisplay = React.createClass({
 		Hotkeys.unregister(' ', this);
 	},
 	componentWillReceiveProps: function (nextProps) {
-		this.readProps(nextProps);
+		this._readProps(nextProps);
 	},
 	componentDidUpdate: function (prevProps, prevState) {
 		requestAnimationFrame(this.draw);
 	},
-	readProps: function(props) {
+	_readProps: function(props) {
 		this.cellWidth = props.width / props.cellsWide; this.cellHeight = props.height * 0.95 / props.cellsTall;
 		this.cursor.xscale = props.width / props.cellsWide;
 		this.cursor.yscale = props.height * 0.95 / props.cellsTall;
@@ -66,29 +81,29 @@ window.ShieldDisplay = React.createClass({
 	},
 	render: function() {
 		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="20" maxTapDist="10" onSwipe={this.swiped} onTap={this.tapped} onMouseDown={this.clicked} />
+			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="20" maxTapDist="10" onSwipe={this._swiped} onTap={this._tapped} />
 		);
 	},
-	tapped: function (x, y) {
-		this.swap();
+	_tapped: function (x, y) {
+		this._swap();
 		requestAnimationFrame(this.draw);
 	},
-	swiped: function(dir, x, y) {
+	_swiped: function(dir, x, y) {
 		if (dir == TouchFunctions.SwipeDir.Up)
-			this.moveUp();
+			this._moveUp();
 		else if (dir == TouchFunctions.SwipeDir.Down)
-			this.moveDown();
+			this._moveDown();
 		else if (dir == TouchFunctions.SwipeDir.Left)
-			this.moveLeft();
+			this._moveLeft();
 		else if (dir == TouchFunctions.SwipeDir.Right)
-			this.moveRight();
+			this._moveRight();
 		
 		requestAnimationFrame(this.draw);
 	},
 	draw: function() {
 		var ctx = this.refs.canvas.getContext('2d');
 
-		this.drawBackground(ctx);
+		this._drawBackground(ctx);
 		
 		var xBorder = this.cellWidth * 0.05, yBorder = this.cellHeight * 0.05;
 		for (var y=0; y<this.props.cellsTall; y++)
@@ -100,7 +115,7 @@ window.ShieldDisplay = React.createClass({
 
 		this.cursor.draw(ctx);
 	},
-	drawBackground: function(ctx) {
+	_drawBackground: function(ctx) {
 		ctx.fillStyle = '#000000';
 		ctx.beginPath();
 		ctx.rect(0, 0, this.props.width, this.props.height * 0.95);
@@ -132,15 +147,15 @@ window.ShieldDisplay = React.createClass({
 	},
 	keyDown: function(e) {
 		if (e.which == 38)
-			this.moveUp();
+			this._moveUp();
 		else if (e.which == 40)
-			this.moveDown();
+			this._moveDown();
 		else if (e.which == 37)
-			this.moveLeft();
+			this._moveLeft();
 		else if (e.which == 39)
-			this.moveRight();
+			this._moveRight();
 		else if (e.which == 32)
-			this.swap();
+			this._swap();
 		else
 			return;
 		
@@ -153,22 +168,27 @@ window.ShieldDisplay = React.createClass({
 	isVisible: function() {
 		return this.props.visibility.props.visible;
 	},
-	moveUp: function() {
+	_moveUp: function() {
 		this.cursor.y = Math.max(this.cursor.y - 1, 0);
 	},
-	moveDown: function() {
+	_moveDown: function() {
 		this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
 	},
-	moveLeft: function() {
+	_moveLeft: function() {
 		this.cursor.x = Math.max(this.cursor.x - 1, 0);
 	},
-	moveRight: function() {
+	_moveRight: function() {
 		this.cursor.x = Math.min(this.cursor.x + 1, this.props.cellsWide - 2);
 	},
-	swap: function() {
+	_swap: function() {
 		var combo = this.data.swapValues(this.cursor.x, this.cursor.y);
 		if (combo > 0)
 			console.log('removed ' + combo + ' blocks');
+	},
+	setBlock: function(index, type, color) {
+		var block = new ShieldBlock(color, type);
+		block.falling = true;
+		this.data.data[index] = block;
 	}
 });
 
@@ -215,12 +235,7 @@ ShieldData.prototype.isFull = function() {
 	return false;
 }
 
-ShieldData.prototype.placeBlock = function(block, x, y) {
-	var index = this.index(x,y);
-	this.data[index] = block;
-};
-
-ShieldData.prototype.addFallingBlock = function(block, x, y) {
+ShieldData.prototype.setBlock = function(block, x, y) {
 	block.falling = true;
 	var index = this.index(x,y);
 	this.data[index] = block;

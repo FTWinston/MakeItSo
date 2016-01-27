@@ -153,9 +153,6 @@ window.GameRoot = React.createClass({
 window.ShipSystemMixin = {
 	componentDidMount: function () {
 		if (this.props.registerCallback != null)
-			this.props.registerCallback(this.props.name, this.props.index);
-	},
-	receiveMessage: function (msg) {
-		console.error(this.constructor.displayName + ' system failed to handle message: ' + msg);
+			this.props.registerCallback(this.props.name, this.props.index, this.receiveMessage);
 	}
 };

@@ -16,6 +16,9 @@ window.Weapons = React.createClass({
 				{targetInfo}
 			</system>
 		);
+	},
+	receiveMessage: function (msg, data) {
+		console.log('Weapons received a message: ' + msg + ' with data: ' + data);
 	}
 });
 
