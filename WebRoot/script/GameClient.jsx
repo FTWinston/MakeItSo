@@ -56,17 +56,35 @@ window.GameClient = React.createClass({
 			this.setActiveScreen('game');
 		}
 		else {
-			if (cmd.length > 1)
-			var system = parseInt(cmd.substr(0,1));
-			if (isNaN(system) || system < 0 || system > this.state.systems.length)
+			var sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
+			if (isNaN(sysNum) || sysNum < 0 || sysNum > this.state.systems.length)
 				console.error('Unrecognised command from server: ' + cmd);
-			else
-				this.state.systems[system].receiveMessage(cmd.substr(1), data);
+			else {
+				cmd = cmd.substr(1);
+				var system = this.state.systems[sysNum];
+				if (system === undefined)
+					console.error('Received command for system #' + sysNum + ', which was not selected by this client: ' + cmd);
+				else
+					system.receiveMessage(cmd, data);
+			}
 		}
 	},
 	getInitialState: function() {
-        return { activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null, systems: [], vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
-		touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable };
+        return {
+		activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
+		systems: [
+			{name: "Helm", index: 0, selected: false, usedByOther: false},
+			{name: "Viewscreen", index: 1, selected: false, usedByOther: false},
+			{name: "Sensors", index: 2, selected: false, usedByOther: false},
+			{name: "Weapons", index: 3, selected: false, usedByOther: false},
+			{name: "Shields", index: 4, selected: false, usedByOther: false},
+			{name: "Damage Control", index: 5, selected: false, usedByOther: false},
+			{name: "Power", index: 6, selected: false, usedByOther: false},
+			{name: "Deflector", index: 7, selected: false, usedByOther: false}
+		],
+		vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
+		touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
+		};
     },
 	render: function() {
 		return (
@@ -78,10 +96,10 @@ window.GameClient = React.createClass({
 			</div>
 		);
 	},
-	registerSystem: function(name, id, receiveMessage) {
+	registerSystem: function(id, receiveMessage) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
-			systems[id] = {name: name, index: id, selected: false, usedByOther: false, receiveMessage: receiveMessage};
+			systems[id].receiveMessage = receiveMessage;
 			return {systems: systems};
 		});
 	},
@@ -112,8 +130,7 @@ window.GameClient = React.createClass({
 		if (screen == 'game')
 		{
 			// when switching to the game, ensure a selected system is the "current" one
-			if (!this.state.systems[this.refs.game.state.currentSystem].selected)
-			{
+			if (!this.state.systems[this.refs.game.state.currentSystem].selected) {
 				for (var i=0; i<this.state.systems.length; i++)
 					if (this.state.systems[i].selected) {
 						this.refs.game.setState({currentSystem: i});

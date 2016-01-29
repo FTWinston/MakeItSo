@@ -361,7 +361,6 @@ window.ToggleButton = React.createClass({
 		}
 		else if (this.props.onDeselected != null)
 			this.props.onDeselected(this);
-		
 		this.setState({ active: nowActive, pressed: true });
 	},
 	mouseUp: function(e) {

@@ -1,13 +1,12 @@
 window.Shields = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Shields" };
+		return { registerCallback: null };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
-		var shield = this.props.visible ? <ShieldDisplay ref="shield" width={this.props.width*0.85} height={this.props.height} visibility={this} /> : null;
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
-				{shield}
+				<ShieldDisplay ref="shield" width={this.props.width*0.85} height={this.props.height} visible={this.props.visible} />
 			</system>
 		);
 	},
@@ -32,6 +31,7 @@ window.ShieldDisplay = React.createClass({
 	getDefaultProps: function() {
 		return { width: 0, height: 0, x: 0, y: 0, cellsTall: 24, cellsWide: 36, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff'] };
 	},
+	mixins: [CanvasComponentMixin],
 	componentDidMount: function () {
 		var startX = Math.floor(this.props.cellsWide / 2), startY = Math.floor(this.props.cellsTall / 2);
 		this.cursor = new ShieldCursor(startX, startY);
@@ -46,7 +46,6 @@ window.ShieldDisplay = React.createClass({
 				this.data.setBlock(block, x, y);
 			}
 		
-		requestAnimationFrame(this.draw);
 		this.interval = setInterval(this.applyGravity,400);
 		
 		Hotkeys.register(37, this);
@@ -70,9 +69,6 @@ window.ShieldDisplay = React.createClass({
 	componentWillReceiveProps: function (nextProps) {
 		this._readProps(nextProps);
 	},
-	componentDidUpdate: function (prevProps, prevState) {
-		requestAnimationFrame(this.draw);
-	},
 	_readProps: function(props) {
 		this.cellWidth = props.width / props.cellsWide; this.cellHeight = props.height * 0.95 / props.cellsTall;
 		this.cursor.xscale = props.width / props.cellsWide;
@@ -86,7 +82,7 @@ window.ShieldDisplay = React.createClass({
 	},
 	_tapped: function (x, y) {
 		this._swap();
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
 	_swiped: function(dir, x, y) {
 		if (dir == TouchFunctions.SwipeDir.Up)
@@ -98,9 +94,11 @@ window.ShieldDisplay = React.createClass({
 		else if (dir == TouchFunctions.SwipeDir.Right)
 			this._moveRight();
 		
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
 	draw: function() {
+		if (!this.props.visible)
+			return;
 		var ctx = this.refs.canvas.getContext('2d');
 
 		this._drawBackground(ctx);
@@ -159,15 +157,13 @@ window.ShieldDisplay = React.createClass({
 		else
 			return;
 		
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
 	applyGravity() {
 		this.data.applyGravity();
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
-	isVisible: function() {
-		return this.props.visibility.props.visible;
-	},
+	isVisible: function() { return this.props.visible; },
 	_moveUp: function() {
 		this.cursor.y = Math.max(this.cursor.y - 1, 0);
 	},

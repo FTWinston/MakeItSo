@@ -1,6 +1,6 @@
 window.Helm = React.createClass({
 	getDefaultProps: function() {
-		return { touchMode: false, registerCallback: null, name: "Helm" };
+		return { touchMode: false, registerCallback: null };
 	},
 	getInitialState: function () {
 		return { forwardSpeed: 0, lateralSpeed: 0, verticalSpeed: 0, pitchAngle: 0, yawAngle: 0, rollAngle: 0, warpFactor: 0 };

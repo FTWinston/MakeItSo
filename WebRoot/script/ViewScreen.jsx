@@ -1,6 +1,6 @@
 window.Viewscreen = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Viewscreen" };
+		return { registerCallback: null };
 	},
 	getInitialState: function () {
 		return { zoomFactor: 1, pitchAngle: 0, yawAngle: 0 };

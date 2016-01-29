@@ -125,8 +125,25 @@ window.GameRoot = React.createClass({
 			return <ToggleButton key={system.index} forceEnable={system.selected && system.index == self.state.currentSystem} visible={system.selected} onSelected={function() {self.setState({currentSystem: system.index})}}>{system.name}</ToggleButton>
 		});
 		
-		var switcher = this.refs.switcher;
-		var systemWidth = this.state.width, systemHeight = this.state.height - (switcher === undefined ? 0 : switcher.offsetHeight);
+		var systemWidth = this.state.width, systemHeight = this.state.height - (this.refs.switcher === undefined ? 0 : this.refs.switcher.offsetHeight);
+		
+		var elements = [
+			<Helm registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 0} index={0} key={0} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<Viewscreen registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 1} index={1} key={1} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<Sensors registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 2} index={2} key={2} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<Weapons registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 3} index={3} key={3} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<Shields registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 4} index={4} key={4} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<DamageControl registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 5} index={5} key={5} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<PowerManagement registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 6} index={6} key={6} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
+			<Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} index={7} key={7} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
+		];
+		
+		var screens = [];
+		for (var i=0; i<this.props.systems.length; i++) {
+			var system = this.props.systems[i];
+			if (system.selected)
+				screens.push(elements[i]);
+		}
 		
 		return (
 			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
@@ -136,15 +153,7 @@ window.GameRoot = React.createClass({
 					</Choice>
 					<PushButton action="pause" color="8">pause</PushButton>
 				</div>
-				
-				<Helm registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 0} index={0} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<Viewscreen registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 1} index={1} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<Sensors registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 2} index={2} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<Weapons registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 3} index={3} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<Shields registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 4} index={4} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<DamageControl registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 5} index={5} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<PowerManagement registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 6} index={6} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
-				<Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} index={7} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
+				{screens}
 			</screen>
 		);
 	}
@@ -153,6 +162,24 @@ window.GameRoot = React.createClass({
 window.ShipSystemMixin = {
 	componentDidMount: function () {
 		if (this.props.registerCallback != null)
-			this.props.registerCallback(this.props.name, this.props.index, this.receiveMessage);
+			this.props.registerCallback(this.props.index, this.receiveMessage);
+	},
+	componentWillUnmount: function() {
+		if (this.props.registerCallback != null)
+			this.props.registerCallback(this.props.index, undefined);
+	}
+};
+
+window.CanvasComponentMixin = {
+	componentDidMount: function () {
+		if (this.props.visible)
+			this.redraw();
+	},
+	componentDidUpdate: function (prevProps, prevState) {
+		if ((!prevProps.visible && this.props.visible) || prevProps.width != this.props.width || prevProps.height != this.props.height)
+			this.redraw();
+	},
+	redraw: function() {
+		requestAnimationFrame(this.draw);
 	}
 };

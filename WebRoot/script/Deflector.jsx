@@ -1,6 +1,6 @@
 window.Deflector = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Deflector" };
+		return { registerCallback: null };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {

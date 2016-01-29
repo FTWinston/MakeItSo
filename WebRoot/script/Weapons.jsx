@@ -1,19 +1,16 @@
 window.Weapons = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Weapons" };
+		return { registerCallback: null };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
 		var selectWidth = this.props.width * 0.6;
 		var infoWidth = this.props.width - selectWidth;
 		
-		var targetSelect = this.props.visible ? <WeaponTargetSelect ref="select" width={selectWidth} height={this.props.height} visibility={this} /> : null;
-		var targetInfo = this.props.visible ? <WeaponTargetInfo ref="info" width={infoWidth} height={this.props.height} /> : null;
-		
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
-				{targetSelect}
-				{targetInfo}
+				<WeaponTargetSelect ref="select" width={selectWidth} height={this.props.height} visible={this} />
+				<WeaponTargetInfo ref="info" width={infoWidth} height={this.props.height} visible={this} />
 			</system>
 		);
 	},
@@ -23,13 +20,7 @@ window.Weapons = React.createClass({
 });
 
 window.WeaponTargetSelect = React.createClass({
-	componentDidMount: function () {
-		requestAnimationFrame(this.draw);
-	},
-	componentDidUpdate: function (prevProps, prevState) {
-		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
-			requestAnimationFrame(this.draw);
-	},
+	mixins: [CanvasComponentMixin],
 	render: function() {
 		return (
 			<Canvas ref="canvas" width={this.props.width} height={this.props.height} onTap={this._tapped} onMouseDown={this._clicked} />
@@ -44,6 +35,8 @@ window.WeaponTargetSelect = React.createClass({
 		;
 	},
 	draw: function() {
+		if (!this.props.visible)
+			return;
 		var ctx = this.refs.canvas.getContext('2d');
 		
 		ctx.fillStyle = '#000000';
@@ -79,13 +72,7 @@ window.WeaponTargetSelect = React.createClass({
 });
 
 window.WeaponTargetInfo = React.createClass({
-	componentDidMount: function () {
-		requestAnimationFrame(this.draw);
-	},
-	componentDidUpdate: function (prevProps, prevState) {
-		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
-			requestAnimationFrame(this.draw);
-	},
+	mixins: [CanvasComponentMixin],
 	render: function() {
 		return (
 			<Canvas ref="canvas" width={this.props.width} height={this.props.height} onTap={this._tapped} onMouseDown={this._clicked} />
@@ -100,6 +87,8 @@ window.WeaponTargetInfo = React.createClass({
 		;
 	},
 	draw: function() {
+		if (!this.props.visible)
+			return;
 		var ctx = this.refs.canvas.getContext('2d');
 		ctx.clearRect(0, 0, this.props.width, this.props.height);
 	}

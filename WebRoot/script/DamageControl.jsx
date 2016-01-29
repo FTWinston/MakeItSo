@@ -1,6 +1,6 @@
 window.DamageControl = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Damage Control" };
+		return { registerCallback: null };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {

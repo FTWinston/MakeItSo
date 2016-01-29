@@ -1,6 +1,6 @@
 window.PowerManagement = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Power", width: 0, height: 0 };
+		return { registerCallback: null };
 	},
 	getInitialState: function () {
 		return { };
@@ -10,13 +10,10 @@ window.PowerManagement = React.createClass({
 		var distribSize = Math.min(this.props.width * 0.8, this.props.height);
 		var cardWidth = this.props.width - distribSize;
 		
-		var distribution = this.props.visible ? <PowerDistribution ref="distribution" width={distribSize} height={distribSize} visibility={this} /> : null;
-		var cards = this.props.visible ? <PowerCards ref="cards" width={cardWidth} height={this.props.height} /> : null;
-		
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
-				{distribution}
-				{cards}
+				<PowerDistribution ref="distribution" width={distribSize} height={distribSize} visible={this.props.visible} />
+				<PowerCards ref="cards" width={cardWidth} height={this.props.height} />
 			</system>
 		);
 	},
@@ -51,11 +48,11 @@ window.PowerDistribution = React.createClass({
 	getInitialState: function () {
 		return { };
 	},
+	mixins: [CanvasComponentMixin],
 	componentDidMount: function () {
 		this._createItems();
 		this._setItemSizes();
 		this._allocatePower();
-		requestAnimationFrame(this.draw);
 	},
 	componentWillUnmount: function() {
 		for (var i=0; i<this.nodes.length; i++)
@@ -64,8 +61,6 @@ window.PowerDistribution = React.createClass({
 	componentDidUpdate: function (prevProps, prevState) {
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
 			this._setItemSizes();
-		
-		requestAnimationFrame(this.draw);
 	},
 	render: function() {
 		return (
@@ -74,7 +69,7 @@ window.PowerDistribution = React.createClass({
 	},
 	_tapped: function (x, y) {
 		this._clearSelection();
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
 	_swiped: function(dir, x, y) {
 		if (dir == TouchFunctions.SwipeDir.Up)
@@ -83,7 +78,7 @@ window.PowerDistribution = React.createClass({
 			this._tryChangeNode(x, y, false, true);
 		else {
 			this._clearSelection();
-			requestAnimationFrame(this.draw);
+			this.redraw();
 		}		
 	},
 	_clicked: function(btn, x, y) {
@@ -106,7 +101,7 @@ window.PowerDistribution = React.createClass({
 		}
 		
 		this._clearSelection();
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
 	changeNode: function(node, increase) {
 		this._clearSelection();
@@ -127,7 +122,7 @@ window.PowerDistribution = React.createClass({
 		else
 			return;
 		this._allocatePower();
-		requestAnimationFrame(this.draw);
+		this.redraw();
 	},
 	nodes: [],
 	_createItems: function() {
@@ -261,13 +256,15 @@ window.PowerDistribution = React.createClass({
 		itemB.links.push(itemA);
 	},
 	draw: function() {
+		if (!this.props.visible)
+			return;
 		var ctx = this.refs.canvas.getContext('2d');
 		ctx.clearRect(0, 0, this.props.width, this.props.height);
 		
 		for (var i=0; i<this.items.length; i++)
 			this.items[i].draw(ctx);
 	},
-	isVisible: function() { return this.props.visibility.props.visible; },
+	isVisible: function() { return this.props.visible; },
 	_allocatePower: function() {
 		for (var i=0; i<this.items.length; i++)
 			this.items[i].load = 0;

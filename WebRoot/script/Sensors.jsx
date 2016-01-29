@@ -1,6 +1,6 @@
 window.Sensors = React.createClass({
 	getDefaultProps: function() {
-		return { registerCallback: null, name: "Sensors" };
+		return { registerCallback: null };
 	},
 	mixins: [ShipSystemMixin],
 	render: function() {
