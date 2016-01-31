@@ -43,7 +43,7 @@ window.PowerManagement = React.createClass({
 
 window.PowerDistribution = React.createClass({
 	getDefaultProps: function() {
-		return { width: 0, height: 0 };
+		return { minSwipeDist: 20, maxTapDist: 10 };
 	},
 	getInitialState: function () {
 		return { };
@@ -62,16 +62,11 @@ window.PowerDistribution = React.createClass({
 		if (prevProps.width != this.props.width || prevProps.height != this.props.height)
 			this._setItemSizes();
 	},
-	render: function() {
-		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="10" maxTapDist="10" onSwipe={this._swiped} onTap={this._tapped} onMouseDown={this._clicked} />
-		);
-	},
-	_tapped: function (x, y) {
+	onTap: function (x, y) {
 		this._clearSelection();
 		this.redraw();
 	},
-	_swiped: function(dir, x, y) {
+	onSwipe: function(dir, x, y) {
 		if (dir == TouchFunctions.SwipeDir.Up)
 			this._tryChangeNode(x, y, true, true);
 		else if (dir == TouchFunctions.SwipeDir.Down)
@@ -81,7 +76,7 @@ window.PowerDistribution = React.createClass({
 			this.redraw();
 		}		
 	},
-	_clicked: function(btn, x, y) {
+	onMouseDown: function(btn, x, y) {
 		this._tryChangeNode(x, y, btn == 1, false);
 	},
 	_clearSelection: function() {

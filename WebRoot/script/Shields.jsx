@@ -29,7 +29,7 @@ window.Shields = React.createClass({
 
 window.ShieldDisplay = React.createClass({
 	getDefaultProps: function() {
-		return { width: 0, height: 0, x: 0, y: 0, cellsTall: 24, cellsWide: 36, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff'] };
+		return { x: 0, y: 0, cellsTall: 24, cellsWide: 36, minSwipeDist: 20, maxTapDist: 10, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff'] };
 	},
 	mixins: [CanvasComponentMixin],
 	componentDidMount: function () {
@@ -75,16 +75,11 @@ window.ShieldDisplay = React.createClass({
 		this.cursor.yscale = props.height * 0.95 / props.cellsTall;
 		this.cursor.cellsTall = props.cellsTall;
 	},
-	render: function() {
-		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} minSwipeDist="20" maxTapDist="10" onSwipe={this._swiped} onTap={this._tapped} />
-		);
-	},
-	_tapped: function (x, y) {
+	onTap: function (x, y) {
 		this._swap();
 		this.redraw();
 	},
-	_swiped: function(dir, x, y) {
+	onSwipe: function(dir, x, y) {
 		if (dir == TouchFunctions.SwipeDir.Up)
 			this._moveUp();
 		else if (dir == TouchFunctions.SwipeDir.Down)

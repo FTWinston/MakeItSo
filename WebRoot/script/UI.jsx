@@ -549,57 +549,6 @@ window.Choice = React.createClass({
 	}
 });
 
-window.Canvas = React.createClass({
-	getDefaultProps: function() {
-		return {
-			width: 300, height: 200, minSwipeDist: undefined, maxTapDist: undefined, maxSwipeTime: undefined, maxTapTime: undefined,
-			onSwipe: null, onTap: null, onMouseDown: null, onMouseUp: null, onClick: null
-		};
-	},
-	componentDidMount: function () {
-		var component = this;
-		this.refs.canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
-		
-		if (this.props.onMouseDown != null)		
-			this.refs.canvas.addEventListener('mousedown', function(e) {
-				var rect = component.refs.canvas.getBoundingClientRect();
-				component.props.onMouseDown(e.which, e.clientX - rect.left, e.clientY - rect.top);
-			});
-		
-		if (this.props.onMouseUp != null)		
-			this.refs.canvas.addEventListener('mouseup', function(e) {
-				var rect = component.refs.canvas.getBoundingClientRect();
-				component.props.onMouseUp(e.which, e.clientX - rect.left, e.clientY - rect.top);
-			});
-		
-		if (this.props.onClick != null)		
-			this.refs.canvas.addEventListener('click', function(e) {
-				var rect = component.refs.canvas.getBoundingClientRect();
-				component.props.onClick(e.which, e.clientX - rect.left, e.clientY - rect.top);
-			});
-		
-		if (this.props.onSwipe != null)
-			TouchFunctions.detectSwipe(this.refs.canvas, this.props.minSwipeDist, this.props.maxSwipeTime, function(dir,x,y) {
-				var rect = component.refs.canvas.getBoundingClientRect();
-				component.props.onSwipe(dir, x - rect.left, y - rect.top);
-			});
-		
-		if (this.props.onTap != null)
-			TouchFunctions.detectTap(this.refs.canvas, this.props.maxTapDist, this.props.maxTapTime, function(x,y) {
-				var rect = component.refs.canvas.getBoundingClientRect();
-				component.props.onTap(x - rect.left, y - rect.top);
-			});
-	},
-	render: function() {
-		return (
-			<canvas ref="canvas" width={this.props.width} height={this.props.height} style={this.props.style} />
-		);
-	},
-	getContext: function(type) {
-		return this.refs.canvas.getContext(type);
-	}
-});
-
 window.AxisInput = React.createClass({
 	getDefaultProps: function() {
 		return { visible: true, direction: 'both', caption: null, color: null, movementCallback: null, scale: 1 };
@@ -617,3 +566,63 @@ window.AxisInput = React.createClass({
 			movementCallback(dx * this.props.scale, dy * this.props.scale);
 	}
 });
+
+window.CanvasComponentMixin = {
+	getDefaultProps: function() {
+		return {
+			width: 300, height: 200, visible: true, minSwipeDist: undefined, maxTapDist: undefined, maxSwipeTime: undefined, maxTapTime: undefined
+		};
+	},
+	componentDidMount: function () {
+		var component = this;
+		this.refs.canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
+		
+		if (this.onMouseDown !== undefined)		
+			this.refs.canvas.addEventListener('mousedown', function(e) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.onMouseDown(e.which, e.clientX - rect.left, e.clientY - rect.top);
+			});
+		
+		if (this.onMouseUp !== undefined)		
+			this.refs.canvas.addEventListener('mouseup', function(e) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.onMouseUp(e.which, e.clientX - rect.left, e.clientY - rect.top);
+			});
+		
+		if (this.onClick !== undefined)		
+			this.refs.canvas.addEventListener('click', function(e) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.onClick(e.which, e.clientX - rect.left, e.clientY - rect.top);
+			});
+		
+		if (this.onSwipe !== undefined)
+			TouchFunctions.detectSwipe(this.refs.canvas, this.props.minSwipeDist, this.props.maxSwipeTime, function(dir,x,y) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.onSwipe(dir, x - rect.left, y - rect.top);
+			});
+		
+		if (this.onTap !== undefined)
+			TouchFunctions.detectTap(this.refs.canvas, this.props.maxTapDist, this.props.maxTapTime, function(x,y) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				component.onTap(x - rect.left, y - rect.top);
+			});
+			
+		if (this.props.visible)
+			this.redraw();
+	},
+	componentDidUpdate: function (prevProps, prevState) {
+		if ((!prevProps.visible && this.props.visible) || prevProps.width != this.props.width || prevProps.height != this.props.height)
+			this.redraw();
+	},
+	redraw: function() {
+		requestAnimationFrame(this.draw);
+	},
+	render: function() {
+		return (
+			<canvas ref="canvas" width={this.props.width} height={this.props.height} style={this.props.style} />
+		);
+	},
+	getContext: function(type) {
+		return this.refs.canvas.getContext(type);
+	}
+};

@@ -169,17 +169,3 @@ window.ShipSystemMixin = {
 			this.props.registerCallback(this.props.index, undefined);
 	}
 };
-
-window.CanvasComponentMixin = {
-	componentDidMount: function () {
-		if (this.props.visible)
-			this.redraw();
-	},
-	componentDidUpdate: function (prevProps, prevState) {
-		if ((!prevProps.visible && this.props.visible) || prevProps.width != this.props.width || prevProps.height != this.props.height)
-			this.redraw();
-	},
-	redraw: function() {
-		requestAnimationFrame(this.draw);
-	}
-};

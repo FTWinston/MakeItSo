@@ -21,15 +21,10 @@ window.Weapons = React.createClass({
 
 window.WeaponTargetSelect = React.createClass({
 	mixins: [CanvasComponentMixin],
-	render: function() {
-		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} onTap={this._tapped} onMouseDown={this._clicked} />
-		);
-	},
-	_tapped: function (x, y) {
+	onTap: function (x, y) {
 		;
 	},
-	_clicked: function(btn, x, y) {
+	onMouseDown: function(btn, x, y) {
 		if (btn != 1)
 			return;
 		;
@@ -73,15 +68,10 @@ window.WeaponTargetSelect = React.createClass({
 
 window.WeaponTargetInfo = React.createClass({
 	mixins: [CanvasComponentMixin],
-	render: function() {
-		return (
-			<Canvas ref="canvas" width={this.props.width} height={this.props.height} onTap={this._tapped} onMouseDown={this._clicked} />
-		);
-	},
-	_tapped: function (x, y) {
+	onTap: function (x, y) {
 		;
 	},
-	_clicked: function(btn, x, y) {
+	onMouseDown: function(btn, x, y) {
 		if (btn != 1)
 			return;
 		;
