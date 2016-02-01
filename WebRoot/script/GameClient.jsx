@@ -64,8 +64,8 @@ window.GameClient = React.createClass({
 				var system = this.state.systems[sysNum];
 				if (system === undefined)
 					console.error('Received command for system #' + sysNum + ', which was not selected by this client: ' + cmd);
-				else
-					system.receiveMessage(cmd, data);
+				else if (!system.receiveMessage(cmd, data))
+					console.error(system.name + ' failed to handle "' + cmd + '" command from server, with data ' + data);
 			}
 		}
 	},

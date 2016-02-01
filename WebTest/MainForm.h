@@ -44,8 +44,9 @@ namespace WebTest {
 	private: System::Windows::Forms::Button^  btnShieldBlock;
 	private: System::Windows::Forms::GroupBox^  groupBox2;
 	private: System::Windows::Forms::Button^  btnRemoveShips;
-	private: System::Windows::Forms::Button^  btnAddFriendly;
+
 	private: System::Windows::Forms::Button^  btnAddEnemy;
+	private: System::Windows::Forms::Button^  btnUpdateShip;
 	protected:
 
 	protected:
@@ -70,8 +71,8 @@ namespace WebTest {
 			this->btnBreakWire = (gcnew System::Windows::Forms::Button());
 			this->btnShieldBlock = (gcnew System::Windows::Forms::Button());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
+			this->btnUpdateShip = (gcnew System::Windows::Forms::Button());
 			this->btnRemoveShips = (gcnew System::Windows::Forms::Button());
-			this->btnAddFriendly = (gcnew System::Windows::Forms::Button());
 			this->btnAddEnemy = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
@@ -143,8 +144,8 @@ namespace WebTest {
 			// 
 			// groupBox2
 			// 
+			this->groupBox2->Controls->Add(this->btnUpdateShip);
 			this->groupBox2->Controls->Add(this->btnRemoveShips);
-			this->groupBox2->Controls->Add(this->btnAddFriendly);
 			this->groupBox2->Controls->Add(this->btnAddEnemy);
 			this->groupBox2->Location = System::Drawing::Point(12, 62);
 			this->groupBox2->Name = L"groupBox2";
@@ -153,25 +154,25 @@ namespace WebTest {
 			this->groupBox2->TabStop = false;
 			this->groupBox2->Text = L"Environment";
 			// 
+			// btnUpdateShip
+			// 
+			this->btnUpdateShip->Location = System::Drawing::Point(123, 19);
+			this->btnUpdateShip->Name = L"btnUpdateShip";
+			this->btnUpdateShip->Size = System::Drawing::Size(110, 23);
+			this->btnUpdateShip->TabIndex = 2;
+			this->btnUpdateShip->Text = L"Update a ship";
+			this->btnUpdateShip->UseVisualStyleBackColor = true;
+			this->btnUpdateShip->Click += gcnew System::EventHandler(this, &MainForm::btnUpdateShip_Click);
+			// 
 			// btnRemoveShips
 			// 
 			this->btnRemoveShips->Location = System::Drawing::Point(6, 48);
 			this->btnRemoveShips->Name = L"btnRemoveShips";
 			this->btnRemoveShips->Size = System::Drawing::Size(226, 23);
 			this->btnRemoveShips->TabIndex = 2;
-			this->btnRemoveShips->Text = L"Remove all other ships";
+			this->btnRemoveShips->Text = L"Remove all ships";
 			this->btnRemoveShips->UseVisualStyleBackColor = true;
 			this->btnRemoveShips->Click += gcnew System::EventHandler(this, &MainForm::btnRemoveShips_Click);
-			// 
-			// btnAddFriendly
-			// 
-			this->btnAddFriendly->Location = System::Drawing::Point(122, 19);
-			this->btnAddFriendly->Name = L"btnAddFriendly";
-			this->btnAddFriendly->Size = System::Drawing::Size(110, 23);
-			this->btnAddFriendly->TabIndex = 2;
-			this->btnAddFriendly->Text = L"Add friendly ship";
-			this->btnAddFriendly->UseVisualStyleBackColor = true;
-			this->btnAddFriendly->Click += gcnew System::EventHandler(this, &MainForm::btnAddFriendly_Click);
 			// 
 			// btnAddEnemy
 			// 
@@ -179,7 +180,7 @@ namespace WebTest {
 			this->btnAddEnemy->Name = L"btnAddEnemy";
 			this->btnAddEnemy->Size = System::Drawing::Size(110, 23);
 			this->btnAddEnemy->TabIndex = 2;
-			this->btnAddEnemy->Text = L"Add enemy ship";
+			this->btnAddEnemy->Text = L"Add a ship";
 			this->btnAddEnemy->UseVisualStyleBackColor = true;
 			this->btnAddEnemy->Click += gcnew System::EventHandler(this, &MainForm::btnAddEnemy_Click);
 			// 
@@ -192,7 +193,6 @@ namespace WebTest {
 			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->lblAddress);
 			this->MaximizeBox = false;
-			this->MinimizeBox = false;
 			this->Name = L"MainForm";
 			this->Text = L"Make It So - fake server";
 			this->groupBox1->ResumeLayout(false);
@@ -205,7 +205,7 @@ namespace WebTest {
 	
 	private:
 		System::Void btnAddEnemy_Click(System::Object^  sender, System::EventArgs^  e);
-		System::Void btnAddFriendly_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void btnUpdateShip_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnRemoveShips_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnShieldBlock_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnShieldDamage_Click(System::Object^  sender, System::EventArgs^  e);

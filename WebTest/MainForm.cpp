@@ -37,19 +37,49 @@ void Main(array<String^>^ args)
 	formOpen = false;
 }
 
+int numWeaponsContacts = 0;
 System::Void WebTest::MainForm::btnAddEnemy_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, "add enemy");
+	int id = ++numWeaponsContacts, size = rand() % 10 + 1, status = rand() % 3 + 1, angle = rand() % 360, dist = rand() % 100 + 1;
+	std::string msg = "add targ" + std::to_string(id) + " " + std::to_string(size) + " " + std::to_string(status) + " " + std::to_string(angle) + " " + std::to_string(dist);
+	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, msg.c_str());
 }
 
-System::Void WebTest::MainForm::btnAddFriendly_Click(System::Object^  sender, System::EventArgs^  e)
+System::Void WebTest::MainForm::btnUpdateShip_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, "add friendly");
+	if (numWeaponsContacts == 0)
+		return;
+
+	// pick a ship to update
+	int id = rand() % numWeaponsContacts + 1;
+	int status, angle, dist;
+
+	std::string msg;
+	switch (rand() % 6)
+	{
+	case 0:
+	case 1:
+		status = status = rand() % 3 + 1; // friendly, hostile, unknown
+		msg = "upd targ" + std::to_string(id) + " " + std::to_string(status);
+		break;
+	case 2:
+	case 3:
+	case 4:
+		angle = rand() % 360;
+		dist = rand() % 100 + 1;
+		msg = "mov targ" + std::to_string(id) + " " + std::to_string(angle) + " " + std::to_string(dist);
+		break;
+	case 5:
+		msg = "rem targ" + std::to_string(id);
+		break;
+	}
+	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, msg.c_str());
 }
 
 System::Void WebTest::MainForm::btnRemoveShips_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, "clear all");
+	numWeaponsContacts = 0;
+	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, "clr");
 }
 
 System::Void WebTest::MainForm::btnShieldBlock_Click(System::Object^  sender, System::EventArgs^  e)

@@ -10,19 +10,22 @@ window.Shields = React.createClass({
 			</system>
 		);
 	},
-	receiveMessage: function (msg, data) {
+	receiveMessage: function(msg, data) {
 		switch(msg) {
 			case 'set':
 				var values = data.split(' ');
 				if (values.length != 3) {
-					console.error('Shields expected 3 parameters to its "' + msg + '" message, got: ' + data);
-					return;
+					console.error('Expected 3 data parameters');
+					return false;
 				}
 				var index = parseInt(values[0]), type = parseInt(values[1]), color = parseInt(values[2]);
-				this.refs.shield.setBlock(index, type, color);
-				break;
+				if (isNaN(index) || isNaN(type) || isNaN(color)) {
+					console.error('Parameter was not numeric');
+					return false;
+				}
+				return this.refs.shield.setBlock(index, type, color);
 			default:
-				console.error('Shields received unexpected message: "' + msg + '" with data: ' + data);
+				return false;
 		}
 	}
 });

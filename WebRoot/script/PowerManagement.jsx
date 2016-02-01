@@ -17,26 +17,25 @@ window.PowerManagement = React.createClass({
 			</system>
 		);
 	},
-	receiveMessage: function (msg, data) {
+	receiveMessage: function(msg, data) {
 		switch(msg) {
 			case 'break':
 				var node = parseInt(data);
 				if (isNaN(node)) {
-					console.error('Power management a numeric parameter its "' + msg + '" message, got: ' + data);
-					return;
+					console.error('Parameter was not numeric');
+					return false;
 				}
-				this.refs.distribution.wireChanged(node, true);
-				break;
+				return this.refs.distribution.wireChanged(node, true);
 			case 'fix':
 				var node = parseInt(data);
 				if (isNaN(node)) {
-					console.error('Power management a numeric parameter its "' + msg + '" message, got: ' + data);
-					return;
+					console.error('Parameter was not numeric');
+					return false;
 				}
-				this.refs.distribution.wireChanged(node, false);
+				return this.refs.distribution.wireChanged(node, false);
 				break;
 			default:
-				console.error('Power management received unexpected message: "' + msg + '" with data: ' + data);
+				return false;
 		}
 	}
 });
@@ -194,8 +193,6 @@ window.PowerDistribution = React.createClass({
 		this._linkItems(48, 49); this._linkItems(49, 50); this._linkItems(50, 57); this._linkItems(51, 57);
 	},
 	_setItemSizes: function() {
-		// split this out, so items are only updated rather than recreated each time
-		
 		var cx = this.props.width / 2, cy = this.props.height / 2;
 		var size = Math.min(this.props.width, this.props.height);
 		
