@@ -70,7 +70,7 @@ window.WeaponTargetSelect = React.createClass({
 		
 		this._trySelectTarget(x, y, false);
 	},
-	draw: function() {
+	draw: function(time) {
 		if (!this.props.visible)
 			return;
 		var ctx = this.refs.canvas.getContext('2d');
@@ -79,7 +79,13 @@ window.WeaponTargetSelect = React.createClass({
 		var minSize = Math.min(this.props.width, this.props.height) * 0.025;
 		
 		for (var target in this.state.targets)
-			this.state.targets[target].draw(ctx, this.props.width, this.props.height, minSize);
+			this.state.targets[target].draw(ctx, time, this.props.width, this.props.height, minSize);
+		
+		if (this.animateEndTime !== undefined)
+			if (this.animateEndTime <= time)
+				this.animateEndTime = undefined;
+			else
+				this.redraw();
 	},
 	drawBackground: function(ctx) {
 		ctx.fillStyle = '#000000';
@@ -167,7 +173,8 @@ window.WeaponTargetSelect = React.createClass({
 			return false;
 		}
 		
-		target.setPosition(angle, dist);
+		target.updatePosition(angle, dist);
+		this.animateEndTime = performance.now() + WeaponTarget.lerpDuration;
 		
 		this.setState(function(previousState, currentProps) {
 			var targets = previousState.targets;
@@ -238,13 +245,31 @@ function WeaponTarget(id, size, status, angle, dist) {
 	this.id = id;
 	this.size = size;
 	this.status = status;
-	this.setPosition(angle, dist);
+	this.updatePosition(angle, dist);
 	this.selected = false;
 }
 
-WeaponTarget.prototype.setPosition = function(angle, dist) {
-	this.angle = angle * Math.PI / 180; // 0 - 2pi
-	this.distance = dist / 100; // 0 - 1
+WeaponTarget.lerpDuration = 1000;
+
+WeaponTarget.prototype.updatePosition = function(angle, dist) {
+	angle = angle * Math.PI / 180; // 0 - 2pi
+	dist = dist / 100; // 0 - 1
+	
+	if (this.angle === undefined) {
+		this.angle = angle;
+		this.distance = dist;
+		return;
+	}
+	
+	this.nextAngle = angle;
+	this.nextDistance = dist;
+	this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
+	
+	// always lerp via the shortest route
+	if (this.angle > this.nextAngle + Math.PI)
+		this.angle -= Math.PI * 2;
+	else if (this.angle < this.nextAngle - Math.PI)
+		this.angle += Math.PI * 2;
 };
 
 WeaponTarget.prototype.StatusType = {
@@ -253,7 +278,7 @@ WeaponTarget.prototype.StatusType = {
 	Unknown: 3
 };
 
-WeaponTarget.prototype.draw = function(ctx, panelWidth, panelHeight, minSize) {
+WeaponTarget.prototype.draw = function(ctx, time, panelWidth, panelHeight, minSize) {
 	if (this.status == this.StatusType.Friendly)
 		ctx.fillStyle = '#00cc00';
 	else if (this.status == this.StatusType.Hostile)
@@ -261,8 +286,30 @@ WeaponTarget.prototype.draw = function(ctx, panelWidth, panelHeight, minSize) {
 	else
 		ctx.fillStyle = '#cccc00';
 	
-	this.x = panelWidth / 2 + (panelWidth / 2) * this.distance * Math.cos(this.angle);
-	this.y = panelHeight / 2 + (panelHeight / 2) * this.distance * Math.sin(this.angle);
+	// lerp these variables if lerpEndTime is set
+	var angle, dist;
+	if (this.lerpEndTime !== undefined) {
+		if (this.lerpEndTime <= time) {
+			this.lerpEndTime = undefined;
+			
+			angle = this.angle = this.nextAngle;
+			dist = this.distance = this.nextDistance;
+			this.nextAngle = undefined;
+			this.nextDistance = undefined;
+		}
+		else {
+			var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.lerpDuration;
+			angle = this.angle + (this.nextAngle - this.angle) * fraction;
+			dist = this.distance + (this.nextDistance - this.distance) * fraction;
+		}
+	}
+	else {
+		angle = this.angle;
+		dist = this.distance;
+	}
+	
+	this.x = panelWidth / 2 + (panelWidth / 2) * dist * Math.cos(angle);
+	this.y = panelHeight / 2 + (panelHeight / 2) * dist * Math.sin(angle);
 	this.radius = minSize * (this.size * 0.1 + 1);
 	
 	ctx.beginPath();
