@@ -62,13 +62,13 @@ window.WeaponTargetSelect = React.createClass({
 	},
 	mixins: [CanvasComponentMixin],
 	onTap: function (x, y) {
-		;
+		this._trySelectTarget(x, y, true);
 	},
 	onMouseDown: function(btn, x, y) {
 		if (btn != 1)
 			return;
 		
-		this.props.targetSelected(targetObj); // TODO: construct proper object here
+		this._trySelectTarget(x, y, false);
 	},
 	draw: function() {
 		if (!this.props.visible)
@@ -204,6 +204,33 @@ window.WeaponTargetSelect = React.createClass({
 	clearAllTargets: function() {
 		this.setState({targets: {}});
 		this.redraw();
+	},
+	_trySelectTarget: function(x,y, padRadius) {
+		var selected = null;
+		
+		for (var id in this.state.targets) {
+			var target = this.state.targets[id];
+			target.selected = false;
+			
+			if (selected == null && target.intersects(x, y, false))
+				selected = target;
+		}
+			
+		if (selected == null && padRadius) {
+			for (var id in this.state.targets) {
+				var target = this.state.targets[id];
+				if (target.intersects(x, y, true)) {
+					selected = target;
+					break;
+				}			
+			}
+		}
+		
+		if (selected != null)
+			selected.selected = true;
+		
+		this.redraw();
+		this.props.targetSelected(selected);
 	}
 });
 
@@ -218,7 +245,7 @@ function WeaponTarget(id, size, status, angle, dist) {
 WeaponTarget.prototype.setPosition = function(angle, dist) {
 	this.angle = angle * Math.PI / 180; // 0 - 2pi
 	this.distance = dist / 100; // 0 - 1
-}
+};
 
 WeaponTarget.prototype.StatusType = {
 	Friendly: 1,
@@ -234,22 +261,28 @@ WeaponTarget.prototype.draw = function(ctx, panelWidth, panelHeight, minSize) {
 	else
 		ctx.fillStyle = '#cccc00';
 	
-	var x = panelWidth / 2 + (panelWidth / 2) * this.distance * Math.cos(this.angle);
-	var y = panelHeight / 2 + (panelHeight / 2) * this.distance * Math.sin(this.angle);
-	var size = minSize * (this.size * 0.1 + 1);
+	this.x = panelWidth / 2 + (panelWidth / 2) * this.distance * Math.cos(this.angle);
+	this.y = panelHeight / 2 + (panelHeight / 2) * this.distance * Math.sin(this.angle);
+	this.radius = minSize * (this.size * 0.1 + 1);
 	
 	ctx.beginPath();
-	ctx.arc(x, y, size, 0, Math.PI * 2);
+	ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 	ctx.fill();
 	
 	if (this.selected) {
 		ctx.strokeStyle = '#ff0000';
-		ctx.lineWidth = minSize * 0.1;
+		ctx.lineWidth = minSize * 0.25;
 		ctx.beginPath();
-		ctx.arc(x, y, size, 0, Math.PI * 2);
+		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
 		ctx.stroke();
 	}
-}
+};
+
+WeaponTarget.prototype.intersects = function(x, y, padRadius) {
+	var r = padRadius ? this.radius * 1.75 : this.radius;
+	return x >= this.x - r && x <= this.x + r
+		&& y >= this.y - r && y <= this.y + r;
+};
 
 window.WeaponTargetInfo = React.createClass({
 	mixins: [CanvasComponentMixin],
@@ -257,8 +290,8 @@ window.WeaponTargetInfo = React.createClass({
 		;
 	},
 	onMouseDown: function(btn, x, y) {
-		if (btn != 1)
 			return;
+		if (btn != 1)
 		;
 	},
 	draw: function() {
