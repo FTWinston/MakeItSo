@@ -255,21 +255,18 @@ WeaponTarget.prototype.updatePosition = function(angle, dist) {
 	angle = angle * Math.PI / 180; // 0 - 2pi
 	dist = dist / 100; // 0 - 1
 	
-	if (this.angle === undefined) {
-		this.angle = angle;
-		this.distance = dist;
+	var x = 0.5 + 0.5 * dist * Math.cos(angle);
+	var y = 0.5 + 0.5 * dist * Math.sin(angle);
+	
+	if (this.x === undefined) {
+		this.x = x;
+		this.y = y;
 		return;
 	}
 	
-	this.nextAngle = angle;
-	this.nextDistance = dist;
+	this.nextX = x;
+	this.nextY = y;
 	this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
-	
-	// always lerp via the shortest route
-	if (this.angle > this.nextAngle + Math.PI)
-		this.angle -= Math.PI * 2;
-	else if (this.angle < this.nextAngle - Math.PI)
-		this.angle += Math.PI * 2;
 };
 
 WeaponTarget.prototype.StatusType = {
@@ -287,48 +284,48 @@ WeaponTarget.prototype.draw = function(ctx, time, panelWidth, panelHeight, minSi
 		ctx.fillStyle = '#cccc00';
 	
 	// lerp these variables if lerpEndTime is set
-	var angle, dist;
+	var x, y;
 	if (this.lerpEndTime !== undefined) {
 		if (this.lerpEndTime <= time) {
 			this.lerpEndTime = undefined;
 			
-			angle = this.angle = this.nextAngle;
-			dist = this.distance = this.nextDistance;
-			this.nextAngle = undefined;
-			this.nextDistance = undefined;
+			x = this.x = this.nextX;
+			y = this.y = this.nextY;
+			this.nextX = undefined;
+			this.nextY = undefined;
 		}
 		else {
 			var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.lerpDuration;
-			angle = this.angle + (this.nextAngle - this.angle) * fraction;
-			dist = this.distance + (this.nextDistance - this.distance) * fraction;
+			x = this.x + (this.nextX - this.x) * fraction;
+			y = this.y + (this.nextY - this.y) * fraction;
 		}
 	}
 	else {
-		angle = this.angle;
-		dist = this.distance;
+		x = this.x;
+		y = this.y;
 	}
+	this.renderX = x * panelWidth;
+	this.renderY = y * panelHeight;
 	
-	this.x = panelWidth / 2 + (panelWidth / 2) * dist * Math.cos(angle);
-	this.y = panelHeight / 2 + (panelHeight / 2) * dist * Math.sin(angle);
 	this.radius = minSize * (this.size * 0.1 + 1);
 	
 	ctx.beginPath();
-	ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+	ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
 	ctx.fill();
 	
 	if (this.selected) {
 		ctx.strokeStyle = '#ff0000';
 		ctx.lineWidth = minSize * 0.25;
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+		ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
 		ctx.stroke();
 	}
 };
 
 WeaponTarget.prototype.intersects = function(x, y, padRadius) {
 	var r = padRadius ? this.radius * 1.75 : this.radius;
-	return x >= this.x - r && x <= this.x + r
-		&& y >= this.y - r && y <= this.y + r;
+	return x >= this.renderX - r && x <= this.renderX + r
+		&& y >= this.renderY - r && y <= this.renderY + r;
 };
 
 window.WeaponTargetInfo = React.createClass({
