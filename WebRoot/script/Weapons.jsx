@@ -255,82 +255,82 @@ function WeaponTarget(id, size, status, angle, dist) {
 	this.selected = false;
 }
 
-WeaponTarget.lerpDuration = 1000;
-
-WeaponTarget.prototype.updatePosition = function(angle, dist) {
-	angle = angle * Math.PI / 180; // 0 - 2pi
-	dist = dist / 100; // 0 - 1
-	
-	var x = 0.5 + 0.5 * dist * Math.cos(angle);
-	var y = 0.5 + 0.5 * dist * Math.sin(angle);
-	
-	if (this.x === undefined) {
-		this.x = x;
-		this.y = y;
-		return;
-	}
-	
-	this.fromX = this.x;
-	this.fromY = this.y;
-	
-	this.nextX = x;
-	this.nextY = y;
-	this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
-};
-
-WeaponTarget.prototype.StatusType = {
-	Friendly: 1,
-	Hostile: 2,
-	Unknown: 3
-};
-
-WeaponTarget.prototype.draw = function(ctx, time, panelWidth, panelHeight, minSize) {
-	if (this.status == this.StatusType.Friendly)
-		ctx.fillStyle = '#00cc00';
-	else if (this.status == this.StatusType.Hostile)
-		ctx.fillStyle = '#cc0000';
-	else
-		ctx.fillStyle = '#cccc00';
-	
-	// lerp these variables if lerpEndTime is set
-	if (this.lerpEndTime !== undefined) {
-		if (this.lerpEndTime <= time) {
-			this.lerpEndTime = undefined;
-			
-			this.x = this.nextX;
-			this.y = this.nextY;
-			this.nextX = undefined;
-			this.nextY = undefined;
+WeaponTarget.prototype = {
+    constructor: WeaponTarget,
+    updatePosition: function(angle, dist) {
+		angle = angle * Math.PI / 180; // 0 - 2pi
+		dist = dist / 100; // 0 - 1
+		
+		var x = 0.5 + 0.5 * dist * Math.cos(angle);
+		var y = 0.5 + 0.5 * dist * Math.sin(angle);
+		
+		if (this.x === undefined) {
+			this.x = x;
+			this.y = y;
+			return;
 		}
-		else {
-			var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.lerpDuration;
-			this.x = this.fromX + (this.nextX - this.fromX) * fraction;
-			this.y = this.fromY + (this.nextY - this.fromY) * fraction;
+		
+		this.fromX = this.x;
+		this.fromY = this.y;
+		
+		this.nextX = x;
+		this.nextY = y;
+		this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
+	},
+	StatusType: {
+		Friendly: 1,
+		Hostile: 2,
+		Unknown: 3
+	},
+	lerpDuration: 1000,
+	
+	draw: function(ctx, time, panelWidth, panelHeight, minSize) {
+		if (this.status == this.StatusType.Friendly)
+			ctx.fillStyle = '#00cc00';
+		else if (this.status == this.StatusType.Hostile)
+			ctx.fillStyle = '#cc0000';
+		else
+			ctx.fillStyle = '#cccc00';
+		
+		// lerp these variables if lerpEndTime is set
+		if (this.lerpEndTime !== undefined) {
+			if (this.lerpEndTime <= time) {
+				this.lerpEndTime = undefined;
+				
+				this.x = this.nextX;
+				this.y = this.nextY;
+				this.nextX = undefined;
+				this.nextY = undefined;
+			}
+			else {
+				var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.lerpDuration;
+				this.x = this.fromX + (this.nextX - this.fromX) * fraction;
+				this.y = this.fromY + (this.nextY - this.fromY) * fraction;
+			}
 		}
-	}
-	
-	this.renderX = this.x * panelWidth;
-	this.renderY = this.y * panelHeight;
-	
-	this.radius = minSize * (this.size * 0.1 + 1);
-	
-	ctx.beginPath();
-	ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
-	ctx.fill();
-	
-	if (this.selected) {
-		ctx.strokeStyle = '#ff0000';
-		ctx.lineWidth = minSize * 0.25;
+		
+		this.renderX = this.x * panelWidth;
+		this.renderY = this.y * panelHeight;
+		
+		this.radius = minSize * (this.size * 0.1 + 1);
+		
 		ctx.beginPath();
 		ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
-		ctx.stroke();
+		ctx.fill();
+		
+		if (this.selected) {
+			ctx.strokeStyle = '#ff0000';
+			ctx.lineWidth = minSize * 0.25;
+			ctx.beginPath();
+			ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
+			ctx.stroke();
+		}
+	},
+	intersects: function(x, y, padRadius) {
+		var r = padRadius ? this.radius * 1.75 : this.radius;
+		return x >= this.renderX - r && x <= this.renderX + r
+			&& y >= this.renderY - r && y <= this.renderY + r;
 	}
-};
-
-WeaponTarget.prototype.intersects = function(x, y, padRadius) {
-	var r = padRadius ? this.radius * 1.75 : this.radius;
-	return x >= this.renderX - r && x <= this.renderX + r
-		&& y >= this.renderY - r && y <= this.renderY + r;
 };
 
 window.WeaponTargetInfo = React.createClass({

@@ -192,151 +192,147 @@ function ShieldData(cols, rows) {
 	this.minMatchNum = 3;
 }
 
-ShieldData.prototype.index = function(x, y) {
-	return x * this.rows + y;
-}
-
-ShieldData.prototype.getBlock = function(x, y) {
-	return this.data[this.index(x,y)];
-};
-
-ShieldData.prototype.swapValues = function(x, y) {
-	var i1 = this.index(x, y), i2 = this.index(x + 1, y);
-	var tmp1 = this.data[i1], tmp2 = this.data[i2];
-	
-	if (tmp1 !== undefined && !tmp1.canMove())
-		return;
-	if (tmp2 !== undefined && !tmp2.canMove())
-		return;
-	
-	this.data[i1] = tmp2; this.data[i2] = tmp1;
-	
-	var combo = 0;
-	if (tmp2 !== undefined)
-		combo += this.checkMatchingGroup(x, y, 2);
-	if (tmp1 !== undefined)
-		combo += this.checkMatchingGroup(x + 1, y, 2);
-	
-	return combo;
-};
-
-ShieldData.prototype.isFull = function() {
-	// if anything in the last row, then the shield is full, and cannot add more data
-	var i1 = this.index(0, this.rows - 1);
-	for (var i = i1; i<this.data.length; i++)
-		if (this.data(i) !== undefined)
-			return true;
-	return false;
-}
-
-ShieldData.prototype.setBlock = function(block, x, y) {
-	block.falling = true;
-	var index = this.index(x,y);
-	this.data[index] = block;
-};
-
-ShieldData.prototype.checkMatchingGroup = function(x, y, comboLifetime) {
-	var block = this.getBlock(x,y);
-	if (block === undefined || block.type == ShieldBlock.prototype.BlockType.ActiveCombo)
-		return 0;
-	
-	var matches = [];
-	var minX = x, maxX = x, minY = y, maxY = y;
-	
-	while (minX > 0 && block.isMatch(this.getBlock(minX - 1,y)))
-		minX --;
-	
-	while (maxX < this.cols - 1 && block.isMatch(this.getBlock(maxX + 1, y)))
-		maxX ++;
-	
-	var comboBlocks = [];
-	
-	var numX = maxX - minX + 1;
-	if (numX >= this.minMatchNum) {
-		for (var tx=minX; tx<=maxX; tx++)
-			comboBlocks.push(this.getBlock(tx, y));
-	}
-	else
-		numX = 0;
-	
-	while (minY > 0 && block.isMatch(this.getBlock(x, minY - 1)))
-		minY --;
-	
-	while (maxY < this.rows - 1 && block.isMatch(this.getBlock(x, maxY + 1)))
-		maxY ++;
-	
-	var numY = maxY - minY + 1;
-	if (numY >= this.minMatchNum) {
-		for (var ty=minY; ty<=maxY; ty++)
-			comboBlocks.push(this.getBlock(x, ty));
+ShieldData.prototype = {
+	constructor: ShieldData,
+	index: function(x, y) {
+		return x * this.rows + y;
+	},
+	getBlock: function(x, y) {
+		return this.data[this.index(x,y)];
+	},
+	swapValues: function(x, y) {
+		var i1 = this.index(x, y), i2 = this.index(x + 1, y);
+		var tmp1 = this.data[i1], tmp2 = this.data[i2];
 		
-		if (numX > 0)
-			numY --;
-	}
-	else
-		numY = 0;
-	
-	for (var i=0; i<comboBlocks.length; i++) {
-		var block = comboBlocks[i];
-		block.type = ShieldBlock.prototype.BlockType.ActiveCombo;
-		block.color = comboLifetime;
-	}
-	
-	return numX + numY;
-}
-
-ShieldData.prototype.getFillPercentage = function(x1, x2) {
-	var i1 = this.index(x1, 0), i2 = this.index(x2, this.rows - 1);
-	
-	var numCells = i2 - i1 - 1, numBlocks = 0;
-	for (var i=i1; i<=i2; i++) {
-		var block = this.data[i];
-		if (block !== undefined && !block.isDamage())
-			numBlocks ++;
-	}
-	
-	return Math.round(100 * numBlocks / numCells);
-};
-
-ShieldData.prototype.applyGravity = function() {
-	var stoppedBlocks = [];
-	var lastRow = this.rows - 1;
-	for (var x = 0; x < this.cols; x++)
-		for (var y = lastRow; y >= 0; y--) {
-			var bAbove = this.getBlock(x, y);
-			if (bAbove === undefined)
-				continue;
-			// remove "active combo" blocks, or progress them towards removal
-			else if (bAbove.type == ShieldBlock.prototype.BlockType.ActiveCombo) {
-				bAbove.color --;
-				if (bAbove.color == 0)
-					this.data[this.index(x, y)] = undefined;
-				continue;
-			}
-			else if (y == lastRow) {
-				if (bAbove.falling) {
+		if (tmp1 !== undefined && !tmp1.canMove())
+			return;
+		if (tmp2 !== undefined && !tmp2.canMove())
+			return;
+		
+		this.data[i1] = tmp2; this.data[i2] = tmp1;
+		
+		var combo = 0;
+		if (tmp2 !== undefined)
+			combo += this.checkMatchingGroup(x, y, 2);
+		if (tmp1 !== undefined)
+			combo += this.checkMatchingGroup(x + 1, y, 2);
+		
+		return combo;
+	},
+	isFull: function() {
+		// if anything in the last row, then the shield is full, and cannot add more data
+		var i1 = this.index(0, this.rows - 1);
+		for (var i = i1; i<this.data.length; i++)
+			if (this.data(i) !== undefined)
+				return true;
+		return false;
+	},
+	setBlock: function(block, x, y) {
+		block.falling = true;
+		var index = this.index(x,y);
+		this.data[index] = block;
+	},
+	checkMatchingGroup: function(x, y, comboLifetime) {
+		var block = this.getBlock(x,y);
+		if (block === undefined || block.type == ShieldBlock.prototype.BlockType.ActiveCombo)
+			return 0;
+		
+		var matches = [];
+		var minX = x, maxX = x, minY = y, maxY = y;
+		
+		while (minX > 0 && block.isMatch(this.getBlock(minX - 1,y)))
+			minX --;
+		
+		while (maxX < this.cols - 1 && block.isMatch(this.getBlock(maxX + 1, y)))
+			maxX ++;
+		
+		var comboBlocks = [];
+		
+		var numX = maxX - minX + 1;
+		if (numX >= this.minMatchNum) {
+			for (var tx=minX; tx<=maxX; tx++)
+				comboBlocks.push(this.getBlock(tx, y));
+		}
+		else
+			numX = 0;
+		
+		while (minY > 0 && block.isMatch(this.getBlock(x, minY - 1)))
+			minY --;
+		
+		while (maxY < this.rows - 1 && block.isMatch(this.getBlock(x, maxY + 1)))
+			maxY ++;
+		
+		var numY = maxY - minY + 1;
+		if (numY >= this.minMatchNum) {
+			for (var ty=minY; ty<=maxY; ty++)
+				comboBlocks.push(this.getBlock(x, ty));
+			
+			if (numX > 0)
+				numY --;
+		}
+		else
+			numY = 0;
+		
+		for (var i=0; i<comboBlocks.length; i++) {
+			var block = comboBlocks[i];
+			block.type = ShieldBlock.prototype.BlockType.ActiveCombo;
+			block.color = comboLifetime;
+		}
+		
+		return numX + numY;
+	},
+	getFillPercentage: function(x1, x2) {
+		var i1 = this.index(x1, 0), i2 = this.index(x2, this.rows - 1);
+		
+		var numCells = i2 - i1 - 1, numBlocks = 0;
+		for (var i=i1; i<=i2; i++) {
+			var block = this.data[i];
+			if (block !== undefined && !block.isDamage())
+				numBlocks ++;
+		}
+		
+		return Math.round(100 * numBlocks / numCells);
+	},
+	applyGravity: function() {
+		var stoppedBlocks = [];
+		var lastRow = this.rows - 1;
+		for (var x = 0; x < this.cols; x++)
+			for (var y = lastRow; y >= 0; y--) {
+				var bAbove = this.getBlock(x, y);
+				if (bAbove === undefined)
+					continue;
+				// remove "active combo" blocks, or progress them towards removal
+				else if (bAbove.type == ShieldBlock.prototype.BlockType.ActiveCombo) {
+					bAbove.color --;
+					if (bAbove.color == 0)
+						this.data[this.index(x, y)] = undefined;
+					continue;
+				}
+				else if (y == lastRow) {
+					if (bAbove.falling) {
+						stoppedBlocks.push({x: x, y: y});
+						bAbove.falling = false;
+					}
+					continue;
+				}
+				
+				var bBelow = this.getBlock(x, y + 1)
+				if (bBelow === undefined) {
+					var i1 = this.index(x, y), i2 = this.index(x, y + 1);
+					this.data[i1] = undefined;
+					this.data[i2] = bAbove;
+					bAbove.falling = true;
+				}
+				else if (bAbove.falling) {
 					stoppedBlocks.push({x: x, y: y});
 					bAbove.falling = false;
 				}
-				continue;
 			}
-			
-			var bBelow = this.getBlock(x, y + 1)
-			if (bBelow === undefined) {
-				var i1 = this.index(x, y), i2 = this.index(x, y + 1);
-				this.data[i1] = undefined;
-				this.data[i2] = bAbove;
-				bAbove.falling = true;
-			}
-			else if (bAbove.falling) {
-				stoppedBlocks.push({x: x, y: y});
-				bAbove.falling = false;
-			}
+		
+		for (var i=0; i<stoppedBlocks.length; i++) {
+			var pos = stoppedBlocks[i];
+			this.checkMatchingGroup(pos.x, pos.y, 1);
 		}
-	
-	for (var i=0; i<stoppedBlocks.length; i++) {
-		var pos = stoppedBlocks[i];
-		this.checkMatchingGroup(pos.x, pos.y, 1);
 	}
 };
 
@@ -358,42 +354,41 @@ function ShieldBlock(color, type) {
 	this.falling = false;
 }
 
-ShieldBlock.prototype.BlockType = {
-	Normal: 1,
-	ActiveCombo: 2,
-	Damage: 3
-};
-
-ShieldBlock.prototype.isMatch = function(b) {
-	return b !== undefined && this.color == b.color && this.type == b.type;
-};
-
-ShieldBlock.prototype.isDamage = function() {
-	return this.type == this.BlockType.Damage;
-}
-
-ShieldBlock.prototype.canMove = function() {
-	return this.type != this.BlockType.Damage;
-};
-
-ShieldBlock.prototype.draw = function(ctx, x, y, width, height, colors) {		
-	if (this.type == this.BlockType.ActiveCombo)
-		ctx.fillStyle = '#ffffff';
-	else
-		ctx.fillStyle = colors[this.color];
-	ctx.beginPath();
-	ctx.rect(width * x + width * 0.05, height * y + height * 0.05, width * 0.9, height * 0.9);
-	ctx.fill();
-	
-	if (this.type == this.BlockType.Damage) {
-		ctx.strokeStyle = '#999999';
-		ctx.lineWidth = width * 0.15;
-		
+ShieldBlock.prototype = {
+	constructor: ShieldBlock,
+	BlockType: {
+		Normal: 1,
+		ActiveCombo: 2,
+		Damage: 3
+	},
+	isMatch: function(b) {
+		return b !== undefined && this.color == b.color && this.type == b.type;
+	},
+	isDamage: function() {
+		return this.type == this.BlockType.Damage;
+	},
+	canMove: function() {
+		return this.type != this.BlockType.Damage;
+	},
+	draw: function(ctx, x, y, width, height, colors) {		
+		if (this.type == this.BlockType.ActiveCombo)
+			ctx.fillStyle = '#ffffff';
+		else
+			ctx.fillStyle = colors[this.color];
 		ctx.beginPath();
-		ctx.moveTo(width * x, height * y);
-		ctx.lineTo(width * (x + 1), height * (y + 1));
-		ctx.moveTo(width * (x + 1), height * y);
-		ctx.lineTo(width * x, height * (y + 1));
-		ctx.stroke();
+		ctx.rect(width * x + width * 0.05, height * y + height * 0.05, width * 0.9, height * 0.9);
+		ctx.fill();
+		
+		if (this.type == this.BlockType.Damage) {
+			ctx.strokeStyle = '#999999';
+			ctx.lineWidth = width * 0.15;
+			
+			ctx.beginPath();
+			ctx.moveTo(width * x, height * y);
+			ctx.lineTo(width * (x + 1), height * (y + 1));
+			ctx.moveTo(width * (x + 1), height * y);
+			ctx.lineTo(width * x, height * (y + 1));
+			ctx.stroke();
+		}
 	}
 };
