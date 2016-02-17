@@ -152,12 +152,15 @@ window.GameClient = React.createClass({
 	showError: function(message, fatal) {
 		fatal = typeof fatal !== 'undefined' ? fatal : true;
 		
+		var state;
 		if (fatal) {
 			this.socket.close();
-			message +='\n\nRefresh the page to continue.';
+			state = {errorMessage: message + '\n\nRefresh the page to continue.', gameActive: false};
 		}
+		else
+			state = {errorMessage: message};
 		
-		this.setState({ errorMessage: message, gameActive: false });
+		this.setState(state);
 		this.setActiveScreen('error');
 	},
 	setPlayerID: function(val) {
