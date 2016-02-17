@@ -2,6 +2,9 @@ window.Weapons = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},
+	getInitialState: function() {
+		return { target: null };
+	},
 	mixins: [ShipSystemMixin],
 	render: function() {
 		var selectWidth = this.props.width * 0.6;
@@ -10,14 +13,15 @@ window.Weapons = React.createClass({
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
 				<WeaponTargetSelect ref="select" width={selectWidth} height={this.props.height} visible={this} targetSelected={this.targetSelected} />
-				<WeaponTargetInfo ref="target" width={infoWidth} height={this.props.height} visible={this} />
+				<WeaponTargetInfo ref="target" width={infoWidth} height={this.props.height} visible={this} target={this.state.target} />
 			</system>
 		);
 	},
 	receiveMessage: function(msg, data) {
 		if (msg == 'clr') {
 			this.refs.select.clearAllTargets();
-			this.refs.target.setTarget(null);
+			this.setState({target: null});
+			this.refs.target.redraw();
 			return true;
 		}
 		
@@ -52,7 +56,8 @@ window.Weapons = React.createClass({
 		}
 	},
 	targetSelected: function(target) {
-		this.refs.target.setTarget(target);
+		this.setState({target: target});
+		this.refs.target.redraw();
 	}
 });
 
@@ -330,24 +335,53 @@ WeaponTarget.prototype.intersects = function(x, y, padRadius) {
 
 window.WeaponTargetInfo = React.createClass({
 	mixins: [CanvasComponentMixin],
+	getDefaultProps: function() {
+		return {target: null};
+	},
 	onTap: function (x, y) {
 		;
 	},
 	onMouseDown: function(btn, x, y) {
-			return;
 		if (btn != 1)
-		;
+			return;
 	},
 	draw: function() {
 		if (!this.props.visible)
 			return;
 		var ctx = this.refs.canvas.getContext('2d');
 		ctx.clearRect(0, 0, this.props.width, this.props.height);
+		
+		if (this.props.target != null)
+			this.drawTarget(ctx);
 	},
-	setTarget: function(target) {
-		if (target == null)
-			console.log('Target is null');
-		else
-			console.log('Target is not null');
+	drawTarget: function(ctx) {
+		var numSegments = this.props.target.size, segmentSize = Math.PI * 2 / numSegments, startAngle = 0;
+		var cx = this.props.width / 2, cy = this.props.height / 2
+		var outerRadius = Math.min(cx, cy) * 0.99, innerRadius = outerRadius * 0.4;
+		var colors = ['#ff0000', '#00ccff', '#00cc00', '#cccc00', '#cc00ff', '#ccff00', '#ff00cc', '#ffcccc', '#ccffcc', '#ccccff'];
+		
+		for (var i=0; i<numSegments; i++) {
+			ctx.fillStyle = colors[i];
+			ctx.beginPath();
+			
+			var endAngle = startAngle + segmentSize;
+			ctx.arc(cx, cy, outerRadius, startAngle, endAngle);
+			
+			ctx.lineTo(
+				cx + Math.cos(endAngle) * innerRadius,
+				cy + Math.sin(endAngle) * innerRadius
+			)
+			
+			ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
+			
+			ctx.lineTo(
+				cx + Math.cos(startAngle) * outerRadius,
+				cy + Math.sin(startAngle) * outerRadius
+			)
+			
+			ctx.fill();
+			
+			startAngle = endAngle;
+		}
 	}
 });
