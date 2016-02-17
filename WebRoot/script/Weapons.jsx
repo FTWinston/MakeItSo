@@ -95,6 +95,7 @@ window.WeaponTargetSelect = React.createClass({
 		
 		// draw firing arc indicators
 		var shipX = this.props.width / 2, shipY = this.props.height * 0.67;
+		ctx.lineWidth = 1;
 		this.drawFiringArc(ctx, '#990000', shipX, shipY, 0, 0.57735026919); // tan 30, for 120 degree arc
 		this.drawFiringArc(ctx, '#996600', shipX, shipY, 0, 1); // tan 45, for 90 degree arc
 		this.drawFiringArc(ctx, '#009900', shipX, shipY, 0, 1.73205080757); // tan 60, for 60 degree arc
@@ -264,6 +265,9 @@ WeaponTarget.prototype.updatePosition = function(angle, dist) {
 		return;
 	}
 	
+	this.fromX = this.x;
+	this.fromY = this.y;
+	
 	this.nextX = x;
 	this.nextY = y;
 	this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
@@ -284,28 +288,24 @@ WeaponTarget.prototype.draw = function(ctx, time, panelWidth, panelHeight, minSi
 		ctx.fillStyle = '#cccc00';
 	
 	// lerp these variables if lerpEndTime is set
-	var x, y;
 	if (this.lerpEndTime !== undefined) {
 		if (this.lerpEndTime <= time) {
 			this.lerpEndTime = undefined;
 			
-			x = this.x = this.nextX;
-			y = this.y = this.nextY;
+			this.x = this.nextX;
+			this.y = this.nextY;
 			this.nextX = undefined;
 			this.nextY = undefined;
 		}
 		else {
 			var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.lerpDuration;
-			x = this.x + (this.nextX - this.x) * fraction;
-			y = this.y + (this.nextY - this.y) * fraction;
+			this.x = this.fromX + (this.nextX - this.fromX) * fraction;
+			this.y = this.fromY + (this.nextY - this.fromY) * fraction;
 		}
 	}
-	else {
-		x = this.x;
-		y = this.y;
-	}
-	this.renderX = x * panelWidth;
-	this.renderY = y * panelHeight;
+	
+	this.renderX = this.x * panelWidth;
+	this.renderY = this.y * panelHeight;
 	
 	this.radius = minSize * (this.size * 0.1 + 1);
 	
