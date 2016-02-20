@@ -606,7 +606,19 @@ window.CanvasComponentMixin = {
 				var rect = component.refs.canvas.getBoundingClientRect();
 				component.onTap(x - rect.left, y - rect.top);
 			});
-			
+		if (this.onTouchStart !== undefined)
+			this.refs.canvas.addEventListener('touchstart', function(e) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				var touch = e.changedTouches[0];
+				component.onTouchStart(touch.clientX - rect.left, touch.clientY - rect.top);
+			});
+		if (this.onTouchEnd !== undefined)
+			this.refs.canvas.addEventListener('touchend', function(e) {
+				var rect = component.refs.canvas.getBoundingClientRect();
+				var touch = e.changedTouches[0];
+				component.onTouchEnd(touch.clientX - rect.left, touch.clientY - rect.top);
+			});
+		
 		this.redraw();
 	},
 	componentDidUpdate: function (prevProps, prevState) {

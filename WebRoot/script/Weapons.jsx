@@ -337,12 +337,24 @@ window.WeaponTargetInfo = React.createClass({
 	getDefaultProps: function() {
 		return {target: null};
 	},
-	onTap: function (x, y) {
-		;
+	getInitialState: function() {
+		return {pressedSegment: null};
+	},
+	onTouchStart: function (x, y) {
+		this._checkClick(x, y);
+	},
+	onTouchEnd: function (x, y) {
+		this.setState({pressedSegment: null});
 	},
 	onMouseDown: function(btn, x, y) {
 		if (btn != 1)
 			return;
+		this._checkClick(x, y);
+	},
+	onMouseUp: function(btn, x, y) {
+		if (btn != 1)
+			return;
+		this.setState({pressedSegment: null});
 	},
 	draw: function() {
 		var ctx = this.getContext('2d');
@@ -352,33 +364,120 @@ window.WeaponTargetInfo = React.createClass({
 			this.drawTarget(ctx);
 	},
 	drawTarget: function(ctx) {
-		var numSegments = this.props.target.size, segmentSize = Math.PI * 2 / numSegments, startAngle = 0;
+		var numSegments = this.props.target.size + 1, segmentSize = Math.PI * 2 / numSegments, startAngle = 0;
 		var cx = this.props.width / 2, cy = this.props.height / 2
-		var outerRadius = Math.min(cx, cy) * 0.99, innerRadius = outerRadius * 0.4;
-		var colors = ['#ff0000', '#00ccff', '#00cc00', '#cccc00', '#cc00ff', '#ccff00', '#ff00cc', '#ffcccc', '#ccffcc', '#ccccff'];
+		var outerRadius = Math.min(cx, cy) * 0.99, innerRadius = outerRadius * 0.3, symbolRadius = (outerRadius + innerRadius) / 2;
+		var colors = ['#ff0000', '#00ccff', '#00cc00', '#cccc00', '#cc00ff', '#ccff00', '#ff00cc', '#ffcccc', '#ccffcc', '#ccccff', '#cccccc'];
+		var labels = ['α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'π', 'ψ', 'ω'];
+		
+		ctx.lineWidth = innerRadius * 0.05;
+		
+		var size = (this.props.height * 0.05);
+		ctx.font = size + 'px Arial';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
 		
 		for (var i=0; i<numSegments; i++) {
-			ctx.fillStyle = colors[i];
+			if (this.state.pressedSegment == i) {
+				var gradient = ctx.createRadialGradient(cx, cy, innerRadius, cx, cy, outerRadius);
+				gradient.addColorStop(0.2, 'white');
+				gradient.addColorStop(1, colors[i]);
+				ctx.fillStyle = gradient;
+			}
+			else
+				ctx.fillStyle = colors[i];
 			ctx.beginPath();
 			
-			var endAngle = startAngle + segmentSize;
-			ctx.arc(cx, cy, outerRadius, startAngle, endAngle);
+			ctx.moveTo(
+				cx + Math.cos(startAngle) * outerRadius,
+				cy + Math.sin(startAngle) * outerRadius
+			)
+			
+			var endAngle = startAngle + segmentSize, midAngle = (startAngle + endAngle) / 2;
+			
+			ctx.lineTo(
+				cx + Math.cos(midAngle) * outerRadius,
+				cy + Math.sin(midAngle) * outerRadius
+			);
+			
+			ctx.lineTo(
+				cx + Math.cos(endAngle) * outerRadius,
+				cy + Math.sin(endAngle) * outerRadius
+			);
 			
 			ctx.lineTo(
 				cx + Math.cos(endAngle) * innerRadius,
 				cy + Math.sin(endAngle) * innerRadius
-			)
-			
+			);
+
 			ctx.arc(cx, cy, innerRadius, endAngle, startAngle, true);
 			
 			ctx.lineTo(
 				cx + Math.cos(startAngle) * outerRadius,
 				cy + Math.sin(startAngle) * outerRadius
-			)
+			);
 			
 			ctx.fill();
 			
+			ctx.fillStyle = 'black';
+			ctx.fillText(labels[i],
+				cx + Math.cos(midAngle) * symbolRadius,
+				cy + Math.sin(midAngle) * symbolRadius
+			);
+			
 			startAngle = endAngle;
 		}
+
+		// draw target identifier
+		var size = (this.props.height * 0.05);
+		ctx.font = size + 'px Arial';
+		ctx.fillStyle = 'white';
+		ctx.textAlign = 'left';
+		ctx.textBaseline = 'top';
+		ctx.fillText(this.props.target.id, size * 0.15, 0);
+		
+		// draw "fire"
+		var size = (this.props.height * 0.1);
+		ctx.font = size + 'px Arial';
+		ctx.fillStyle = this.state.pressedSegment == -1 ? 'red' : 'white';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText('fire', cx, cy);
+	},
+	_checkClick: function(x, y) {
+		var cx = this.props.width / 2, cy = this.props.height / 2;
+		var outerRadius = Math.min(cx, cy) * 0.99, innerRadius = outerRadius * 0.3;
+		
+		var dist = Math.sqrt((cx - x)*(cx - x) + (cy - y)*(cy - y));
+		if (dist > outerRadius)
+			return;
+		if (dist < innerRadius) {
+			this._firePressed();
+			return;
+		}
+		
+		var numSegments = this.props.target.size + 1, segmentSize = Math.PI * 2 / numSegments;
+		var angle = Math.atan2(y - cy, x - cx);
+		if (angle < 0)
+			angle += Math.PI * 2;
+		
+		var segment = Math.floor(angle / segmentSize);
+		this._segmentPressed(segment);
+	},
+	_firePressed: function() {
+		this.setState({pressedSegment: -1});
+		this._queueClearHighlight();
+	},
+	_segmentPressed: function(segment) {
+		this.setState({pressedSegment: segment});
+		this._queueClearHighlight();
+	},
+	highlightTimer: null,
+	_queueClearHighlight: function() {
+		if (this.highlightTimer != null)
+			clearTimeout(this.highlightTimer);
+		
+		var self = this;
+		this.highlightTimer = setTimeout(function () { self.setState({pressedSegment: null}) }, 600);
 	}
 });
