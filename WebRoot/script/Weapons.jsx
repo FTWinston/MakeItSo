@@ -21,7 +21,6 @@ window.Weapons = React.createClass({
 		if (msg == 'clr') {
 			this.refs.select.clearAllTargets();
 			this.setState({target: null});
-			this.refs.target.redraw();
 			return true;
 		}
 		
@@ -57,7 +56,6 @@ window.Weapons = React.createClass({
 	},
 	targetSelected: function(target) {
 		this.setState({target: target});
-		this.refs.target.redraw();
 	}
 });
 
@@ -78,7 +76,7 @@ window.WeaponTargetSelect = React.createClass({
 	draw: function(time) {
 		if (!this.props.visible)
 			return;
-		var ctx = this.refs.canvas.getContext('2d');
+		var ctx = this.getContext('2d');
 		this.drawBackground(ctx);
 		
 		var minSize = Math.min(this.props.width, this.props.height) * 0.025;
@@ -149,8 +147,6 @@ window.WeaponTargetSelect = React.createClass({
 			targets[id] = target;
 			return {targets: targets};
 		});
-		
-		this.redraw();
 		return true;
 	},
 	removeTarget: function(id) {
@@ -159,8 +155,6 @@ window.WeaponTargetSelect = React.createClass({
 			delete targets[id];
 			return {targets: targets};
 		});
-		
-		this.redraw();
 		return true;
 	},
 	moveTarget: function(id, angle, dist) {
@@ -180,14 +174,13 @@ window.WeaponTargetSelect = React.createClass({
 		}
 		
 		target.updatePosition(angle, dist);
-		this.animateEndTime = performance.now() + WeaponTarget.lerpDuration;
+		this.animateEndTime = performance.now() + WeaponTarget.prototype.lerpDuration;
 		
 		this.setState(function(previousState, currentProps) {
 			var targets = previousState.targets;
 			targets[id] = target;
 			return {targets: targets};
 		});
-		
 		this.redraw();
 		return true;
 	},
@@ -210,19 +203,18 @@ window.WeaponTargetSelect = React.createClass({
 			targets[id] = target;
 			return {targets: targets};
 		});
-		
-		this.redraw();
 		return true;
 	},
 	clearAllTargets: function() {
 		this.setState({targets: {}});
-		this.redraw();
 	},
 	_trySelectTarget: function(x,y, padRadius) {
 		var selected = null;
 		
-		for (var id in this.state.targets) {
-			var target = this.state.targets[id];
+		var targets = this.state.targets;
+		
+		for (var id in targets) {
+			var target = targets[id];
 			target.selected = false;
 			
 			if (selected == null && target.intersects(x, y, false))
@@ -230,7 +222,7 @@ window.WeaponTargetSelect = React.createClass({
 		}
 			
 		if (selected == null && padRadius) {
-			for (var id in this.state.targets) {
+			for (var id in targets) {
 				var target = this.state.targets[id];
 				if (target.intersects(x, y, true)) {
 					selected = target;
@@ -242,7 +234,7 @@ window.WeaponTargetSelect = React.createClass({
 		if (selected != null)
 			selected.selected = true;
 		
-		this.redraw();
+		this.setState({targets: targets});
 		this.props.targetSelected(selected);
 	}
 });
@@ -275,7 +267,7 @@ WeaponTarget.prototype = {
 		
 		this.nextX = x;
 		this.nextY = y;
-		this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
+		this.lerpEndTime = performance.now() + WeaponTarget.prototype.lerpDuration;
 	},
 	StatusType: {
 		Friendly: 1,
@@ -290,7 +282,7 @@ WeaponTarget.prototype = {
 		else if (this.status == this.StatusType.Hostile)
 			ctx.fillStyle = '#cc0000';
 		else
-			ctx.fillStyle = '#cccc00';
+			ctx.fillStyle = '#aaaa00';
 		
 		// lerp these variables if lerpEndTime is set
 		if (this.lerpEndTime !== undefined) {
@@ -303,7 +295,7 @@ WeaponTarget.prototype = {
 				this.nextY = undefined;
 			}
 			else {
-				var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.lerpDuration;
+				var fraction = 1 - (this.lerpEndTime - time) / WeaponTarget.prototype.lerpDuration;
 				this.x = this.fromX + (this.nextX - this.fromX) * fraction;
 				this.y = this.fromY + (this.nextY - this.fromY) * fraction;
 			}
@@ -325,6 +317,13 @@ WeaponTarget.prototype = {
 			ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
 			ctx.stroke();
 		}
+		
+		var size = minSize * 1.2;
+		ctx.font = size + 'px Arial';
+		ctx.fillStyle = 'white';
+		ctx.textAlign = 'center';
+		ctx.textBaseline = 'middle';
+		ctx.fillText(this.id, this.renderX, this.renderY);
 	},
 	intersects: function(x, y, padRadius) {
 		var r = padRadius ? this.radius * 1.75 : this.radius;
@@ -346,9 +345,7 @@ window.WeaponTargetInfo = React.createClass({
 			return;
 	},
 	draw: function() {
-		if (!this.props.visible)
-			return;
-		var ctx = this.refs.canvas.getContext('2d');
+		var ctx = this.getContext('2d');
 		ctx.clearRect(0, 0, this.props.width, this.props.height);
 		
 		if (this.props.target != null)

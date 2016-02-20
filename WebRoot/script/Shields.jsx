@@ -95,9 +95,7 @@ window.ShieldDisplay = React.createClass({
 		this.redraw();
 	},
 	draw: function() {
-		if (!this.props.visible)
-			return;
-		var ctx = this.refs.canvas.getContext('2d');
+		var ctx = this.getContext('2d');
 
 		this._drawBackground(ctx);
 		

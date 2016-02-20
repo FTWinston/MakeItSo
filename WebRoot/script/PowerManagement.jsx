@@ -248,9 +248,7 @@ window.PowerDistribution = React.createClass({
 		itemB.links.push(itemA);
 	},
 	draw: function() {
-		if (!this.props.visible)
-			return;
-		var ctx = this.refs.canvas.getContext('2d');
+		var ctx = this.getContext('2d');
 		ctx.clearRect(0, 0, this.props.width, this.props.height);
 		
 		for (var i=0; i<this.items.length; i++)

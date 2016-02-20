@@ -607,15 +607,14 @@ window.CanvasComponentMixin = {
 				component.onTap(x - rect.left, y - rect.top);
 			});
 			
-		if (this.props.visible)
-			this.redraw();
+		this.redraw();
 	},
 	componentDidUpdate: function (prevProps, prevState) {
-		if ((!prevProps.visible && this.props.visible) || prevProps.width != this.props.width || prevProps.height != this.props.height)
-			this.redraw();
+		this.redraw();
 	},
 	redraw: function() {
-		requestAnimationFrame(this.draw);
+		if (this.props.visible)
+			requestAnimationFrame(this.draw);
 	},
 	render: function() {
 		return (
