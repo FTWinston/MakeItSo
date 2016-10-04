@@ -1,5 +1,5 @@
 /// <reference path="Screens.tsx" />
-window.Shields = React.createClass({
+const Shields = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},
@@ -31,7 +31,7 @@ window.Shields = React.createClass({
 	}
 });
 
-window.ShieldDisplay = React.createClass({
+const ShieldDisplay = React.createClass({
 	getDefaultProps: function() {
 		return { x: 0, y: 0, cellsTall: 24, cellsWide: 36, minSwipeDist: 20, maxTapDist: 10, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff'] };
 	},

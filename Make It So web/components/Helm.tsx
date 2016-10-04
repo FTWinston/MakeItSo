@@ -1,6 +1,7 @@
+/// <reference path="GameClient.tsx" />
 /// <reference path="UI.tsx" />
 /// <reference path="Screens.tsx" />
-window.Helm = React.createClass({
+const Helm = React.createClass({
 	getDefaultProps: function() {
 		return { touchMode: false, registerCallback: null };
 	},

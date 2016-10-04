@@ -1,5 +1,5 @@
 /// <reference path="Screens.tsx" />
-window.Sensors = React.createClass({
+const Sensors = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

@@ -25,9 +25,21 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="components\DamageControl.tsx" />
+    <TypeScriptCompile Include="components\Deflector.tsx" />
+    <TypeScriptCompile Include="components\GameClient.tsx" />
+    <TypeScriptCompile Include="components\Helm.tsx" />
+    <TypeScriptCompile Include="components\Intrinsics.ts" />
+    <TypeScriptCompile Include="components\PowerManagement.tsx" />
+    <TypeScriptCompile Include="components\Screens.tsx" />
+    <TypeScriptCompile Include="components\Sensors.tsx" />
+    <TypeScriptCompile Include="components\Shields.tsx" />
+    <TypeScriptCompile Include="components\ShipSystemMixin.ts" />
     <TypeScriptCompile Include="components\UI.tsx" />
+    <TypeScriptCompile Include="components\ViewScreen.tsx" />
+    <TypeScriptCompile Include="components\Weapons.tsx" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
-    <TypeScriptCompile Include="react-import.ts" />
+    <TypeScriptCompile Include="typings\react-global.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
   </ItemGroup>
   <ItemGroup />

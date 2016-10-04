@@ -1,5 +1,5 @@
-/// <reference path="Screens.tsx" />
-window.Deflector = React.createClass({
+/// <reference path="ShipSystemMixin.ts" />
+const Deflector = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

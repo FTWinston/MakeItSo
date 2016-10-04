@@ -1,5 +1,5 @@
 /// <reference path="Screens.tsx" />
-window.Viewscreen = React.createClass({
+const Viewscreen = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

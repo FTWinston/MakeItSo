@@ -1,13 +1,55 @@
 /// <reference path="UI.tsx" />
 /// <reference path="Screens.tsx" />
-window.GameClient = React.createClass({
-	socket: null,
-	createConnection: function() {
+
+interface ISystemInfo {
+    name: string;
+    index: number;
+    selected: boolean;
+    usedByOther: boolean;
+    receiveMessage?: any;
+}
+
+interface IGameClientState {
+    activeScreen?: string;
+    errorMessage?: string;
+    gameActive?: boolean;
+    setupInProgress?: boolean;
+    showHotkeys?: boolean;
+    playerID?: any;
+	systems?: ISystemInfo[];
+	vibration?: FeatureState;
+	touchInterface?: FeatureState;
+}
+
+class GameClient extends React.Component<{}, IGameClientState> {
+    constructor(props) {
+        super(props);
+        this.state = {
+		    activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
+		    systems: [
+			    {name: "Helm", index: 0, selected: false, usedByOther: false},
+			    {name: "Viewscreen", index: 1, selected: false, usedByOther: false},
+			    {name: "Sensors", index: 2, selected: false, usedByOther: false},
+			    {name: "Weapons", index: 3, selected: false, usedByOther: false},
+			    {name: "Shields", index: 4, selected: false, usedByOther: false},
+			    {name: "Damage Control", index: 5, selected: false, usedByOther: false},
+			    {name: "Power", index: 6, selected: false, usedByOther: false},
+			    {name: "Deflector", index: 7, selected: false, usedByOther: false}
+		    ],
+		    vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
+		    touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
+		};
+    }
+    refs: {
+        game: GameRoot;
+    }
+	socket: any;
+	createConnection() {
 		this.socket = new WebSocket('ws://' + location.host + '/ws');
 		this.socket.onerror = this.socket.onclose = function (e) { gameClient.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }
-		this.socket.onmessage = this.messageReceived;
-	},
-	messageReceived: function (ev) {
+		this.socket.onmessage = this.messageReceived.bind(this);
+	}
+	messageReceived(ev) {
 		var data = (ev.data || ''), pos = data.indexOf(' ');
 		var cmd = pos == -1 ? data : data.substr(0, pos);
 		data = pos == -1 ? null : data.substr(pos + 1);
@@ -70,57 +112,40 @@ window.GameClient = React.createClass({
 					console.error(system.name + ' failed to handle "' + cmd + '" command from server, with data ' + data);
 			}
 		}
-	},
-	getInitialState: function() {
-        return {
-		activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
-		systems: [
-			{name: "Helm", index: 0, selected: false, usedByOther: false},
-			{name: "Viewscreen", index: 1, selected: false, usedByOther: false},
-			{name: "Sensors", index: 2, selected: false, usedByOther: false},
-			{name: "Weapons", index: 3, selected: false, usedByOther: false},
-			{name: "Shields", index: 4, selected: false, usedByOther: false},
-			{name: "Damage Control", index: 5, selected: false, usedByOther: false},
-			{name: "Power", index: 6, selected: false, usedByOther: false},
-			{name: "Deflector", index: 7, selected: false, usedByOther: false}
-		],
-		vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
-		touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
-		};
-    },
-	render: function() {
+	}
+	render() {
 		return (
 			<div className={this.state.showHotkeys ? 'showKeys' : null}>
-				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged} touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged} />
+				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this)} touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged.bind(this)} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem} systems={this.state.systems} touchMode={this.state.touchInterface == FeatureState.Enabled} />
+				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this)} systems={this.state.systems} touchMode={this.state.touchInterface == FeatureState.Enabled} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
-	},
-	registerSystem: function(id, receiveMessage) {
+	}
+	registerSystem(id, receiveMessage) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].receiveMessage = receiveMessage;
 			return {systems: systems};
 		});
-	},
-	systemSelectionChanged: function (id, state) {
+	}
+	systemSelectionChanged (id, state) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].selected = state;
 			return {systems: systems};
 		});
-	},
-	markSystemInUse: function(id, state) {
+	}
+	markSystemInUse(id, state) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].usedByOther = state;
 			return {systems: systems};
 		});
-	},
-	setActiveScreen: function(screen) {
-		var newState = {activeScreen: screen};
+	}
+	setActiveScreen(screen) {
+		var newState: IGameClientState = {activeScreen: screen};
 		if (!this.state.gameActive && screen == 'game')
 			newState.gameActive = true;
 		
@@ -144,14 +169,14 @@ window.GameClient = React.createClass({
 		}
 		else
 			window.removeEventListener('beforeunload', this.unloadEvent);
-	},
-	unloadEvent: function (e) {	
+	}
+	unloadEvent (e) {	
 		var confirmationMessage = 'The game is still active.';
 
 		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 		return confirmationMessage; //Webkit, Safari, Chrome etc.
-	},
-	showError: function(message, fatal) {
+	}
+	showError(message, fatal) {
 		fatal = typeof fatal !== 'undefined' ? fatal : true;
 		
 		var state;
@@ -164,29 +189,29 @@ window.GameClient = React.createClass({
 		
 		this.setState(state);
 		this.setActiveScreen('error');
-	},
-	setPlayerID: function(val) {
+	}
+	setPlayerID(val) {
 		this.setState({ playerID: val });
-	},
-	setupScreenInUse: function(val) {
+	}
+	setupScreenInUse(val) {
 		this.setState({ setupInProgress: val });
-	},
-	gameAlreadyStarted: function() {
+	}
+	gameAlreadyStarted() {
 		this.setState({ gameActive: true });
-	},
-	touchModeChanged: function(val) {
-		this.setState({touchMode: val});
-	},
-	showHotkeys: function(val) {
+	}
+	touchModeChanged(val) {
+		this.setState({touchInterface: val});
+	}
+	showHotkeys(val) {
 		this.setState({showHotkeys: val});
-	},
-	componentDidMount: function () {
+	}
+	componentDidMount () {
 		this.createConnection();
 		Hotkeys.initialize();
 	}
-});
+};
 
-window.gameClient = ReactDOM.render(
+const gameClient : GameClient = ReactDOM.render(
 	<GameClient />,
 	document.getElementById('gameRoot')
-);
+) as GameClient;

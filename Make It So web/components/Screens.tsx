@@ -1,5 +1,13 @@
 /// <reference path="UI.tsx" />
-window.ErrorDisplay = React.createClass({
+/// <reference path="DamageControl.tsx" />
+/// <reference path="Deflector.tsx" />
+/// <reference path="Helm.tsx" />
+/// <reference path="PowerManagement.tsx" />
+/// <reference path="Sensors.tsx" />
+/// <reference path="Shields.tsx" />
+/// <reference path="ViewScreen.tsx" />
+/// <reference path="Weapons.tsx" />
+const ErrorDisplay = React.createClass({
 	render: function() {
 		return (
 			<screen id="error" style={{display: this.props.show ? null : 'none'}}>
@@ -9,7 +17,7 @@ window.ErrorDisplay = React.createClass({
 	}
 });
 
-window.SystemSelect = React.createClass({
+const SystemSelect = React.createClass({
 	getDefaultProps: function() {
 		return { systems: [], selectionChanged: null };
 	},
@@ -38,7 +46,7 @@ window.SystemSelect = React.createClass({
 	}
 });
 
-window.SystemPicker = React.createClass({
+const SystemPicker = React.createClass({
 	render: function() {
 		var classes = "option";
 		if (this.props.system.selected)
@@ -57,7 +65,7 @@ window.SystemPicker = React.createClass({
 	}
 });
 
-window.GameSetup = React.createClass({
+const GameSetup = React.createClass({
 	render: function() {
 		return (
 			<screen style={{display: this.props.show ? null : 'none', overflow: 'auto'}}>
@@ -101,24 +109,31 @@ window.GameSetup = React.createClass({
 	}
 });
 
-window.GameRoot = React.createClass({
-	getInitialState: function() {
-		return { currentSystem: -1, width: window.innerWidth, height: window.innerHeight };
-	},
-	componentDidMount: function() {
+interface IGameRootState {
+    currentSystem: number;
+    width: number;
+    height: number;
+}
+
+class GameRoot extends React.Component<{}, IGameRootState> {
+    constructor(props) {
+        super(props);
+        this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight };
+    }
+	componentDidMount() {
 		window.addEventListener('resize', this.handleResize.bind(this, false));
 		this.handleResize();
-	},
-	componentWillUnmount: function() {
+	}
+	componentWillUnmount() {
 		window.removeEventListener('resize', this.handleResize);
-	},
-	handleResize: function(value, e) {
+	}
+	handleResize(value?: any, e?: any) {
 		this.setState({
 			width: window.innerWidth,
 			height: window.innerHeight,
 		});
-	},
-	render: function() {
+	}
+	render() {
 		var self = this;
 		var index = -1;
 		var switchers = this.props.systems.map(function(system) {
@@ -158,15 +173,4 @@ window.GameRoot = React.createClass({
 			</screen>
 		);
 	}
-});
-
-window.ShipSystemMixin = {
-	componentDidMount: function () {
-		if (this.props.registerCallback != null)
-			this.props.registerCallback(this.props.index, this.receiveMessage);
-	},
-	componentWillUnmount: function() {
-		if (this.props.registerCallback != null)
-			this.props.registerCallback(this.props.index, undefined);
-	}
-};
+}

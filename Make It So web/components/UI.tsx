@@ -4,9 +4,9 @@ enum FeatureState {
 	Enabled
 };
 
-class Hotkeys {
-    bindings: {};
-    showHotkeys: boolean;
+const Hotkeys = {
+    bindings: {},
+    showHotkeys: false,
     register(hotkey, button) {
         var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
 
@@ -14,7 +14,7 @@ class Hotkeys {
             this.bindings[keyCode].push(button);
         else
             this.bindings[keyCode] = [button];
-    }
+    },
 	unregister(hotkey, button) {
 		var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
 		
@@ -22,11 +22,11 @@ class Hotkeys {
 		var pos = keys.indexOf(button);
 		if (pos != -1)
 			keys.splice(pos, 1);
-	}
+	},
 	initialize() {
 		document.onkeydown = this.onKeyDown;
 		document.onkeyup = this.onKeyUp;
-	}
+	},
 	onKeyDown(e) {
 		var presses = Hotkeys.bindings[e.which];
 		if (presses === undefined) {
@@ -49,7 +49,7 @@ class Hotkeys {
 				return;
 			}
 		}
-	}
+	},
 	onKeyUp(e){
 		var presses = Hotkeys.bindings[e.which];
 		if (presses === undefined)
@@ -68,7 +68,7 @@ class Hotkeys {
 			}
 		}
 	}
-}
+};
 
 enum SwipeDir {
     Up = 0,
@@ -77,7 +77,7 @@ enum SwipeDir {
     Right
 };
 
-class TouchFunctions {
+const TouchFunctions = {
 	detectSwipe(surface, minDist, maxTime, callback) {
 		if (minDist === undefined)
 			minDist = 100;
@@ -124,7 +124,7 @@ class TouchFunctions {
 				return;
 			callback(swipedir, startX, startY);
 		}, false);
-	}
+	},
 	detectTap(surface, maxDist, maxTime, callback) {
 		if (maxDist === undefined)
 			maxDist = 75;
@@ -163,7 +163,7 @@ class TouchFunctions {
 			
 			callback(startX, startY);
 		}, false);
-	}
+	},
 	detectMovement(surface, callback) {
 		var ongoingTouches = {};
 		var distX; var distY;
@@ -209,18 +209,27 @@ class TouchFunctions {
 	}
 };
 
-class ButtonMixin {
+interface IButtonProps {
+    visible?: boolean;
+    disabled?: boolean;
+    color?: any;
+    hotkey?: any;
+    first?: boolean;
+    last?: boolean;
+};
+
+var ButtonMixin = {
 	componentDidMount() {
 		if (this.props.hotkey != null)
 			Hotkeys.register(this.props.hotkey, this);
-	}
+	},
 	componentWillUnmount() {
 		if (this.props.hotkey != null)
 			Hotkeys.unregister(this.props.hotkey, this);
-	}
+	},
 	isVisible() {
 		return this.refs.btn.offsetParent !== null && this.props.visible;
-	}
+	},
 	prepClasses() {
 		var classes = '';
 		if (this.props.color != null)
@@ -232,36 +241,29 @@ class ButtonMixin {
 		if (this.props.last)
 			classes += ' last';
 		return classes;
-	}
-	keyDown(e) { if (this.mouseDown != undefined) this.mouseDown(); }
-	keyUp(e) { if (this.mouseUp != undefined) this.mouseUp(); }
+	},
+	keyDown(e) { if (this.mouseDown != undefined) this.mouseDown(); },
+	keyUp(e) { if (this.mouseUp != undefined) this.mouseUp(); },
 	keyPress(e) { if (this.click != undefined) this.click(); }
 };
 
-interface IButtonProps {
-    visible: boolean;
-    disabled: boolean;
-    color: any;
-    hotkey: any;
-}
-
 interface IPushButtonProps extends IButtonProps {
-    action: any;
-    onClicked: any;
+    action?: any;
+    onClicked?: any;
 }
 
 interface IPushButtonState {
-    pressed: boolean;
+    pressed?: boolean;
 }
 
-class PushButton extends React.Component<IPushButtonProps, IPushButtonState> {
+var PushButton = React.createClass<IPushButtonProps, IPushButtonState> ({
     getDefaultProps(): IPushButtonProps {
 		return { visible: true, disabled: false, action: null, onClicked: null, color: null, hotkey: null };
-    }
+    },
     getInitialState(): IPushButtonState {
 		return { pressed: false };
-	}
-	mixins: [ButtonMixin]
+	},
+	mixins: [ButtonMixin],
     render(): JSX.Element {
 		var classes = this.prepClasses();
 		if (this.state.pressed)
@@ -272,13 +274,13 @@ class PushButton extends React.Component<IPushButtonProps, IPushButtonState> {
 				{this.props.children}
 			</clicker>
 		);
-	}
+	},
 	mouseDown(e) {
 		this.setState({ pressed: true });
-	}
+	},
 	mouseUp(e) {
 		this.setState({ pressed: false });
-	}
+	},
 	click(e) {
 		if (this.props.disabled)
 			return;
@@ -289,25 +291,24 @@ class PushButton extends React.Component<IPushButtonProps, IPushButtonState> {
 		if (this.props.onClicked != null)
 			this.props.onClicked();
 	}
-}
+});
 
 interface IConfirmButtonProps extends IButtonProps {
-    action: any;
-
+    action?: any;
 }
 
 interface IConfirmButtonState {
-    primed: boolean;
+    primed?: boolean;
 }
 
-class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirmButtonState> {
+var ConfirmButton = React.createClass<IConfirmButtonProps, IConfirmButtonState>({
     getDefaultProps(): IConfirmButtonProps {
 		return { visible: true, disabled: false, action: null, color: null, hotkey: null };
-    }
+    },
     getInitialState(): IConfirmButtonState {
         return { primed: false };
-    }
-	mixins: [ButtonMixin]
+    },
+	mixins: [ButtonMixin],
     render() {
 		var classes = this.prepClasses();
 		if (this.state.primed)
@@ -318,7 +319,7 @@ class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirmButtonS
 				{this.props.children}
 			</clicker>
 		);
-	}
+	},
 	click(e) {
 		if (this.props.disabled)
 			return;
@@ -331,46 +332,44 @@ class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirmButtonS
 		if (this.props.action != null)
 			gameClient.socket.send(this.props.action);
 		this.setState({ primed: false });
-	}
+	},
 	mouseLeave(e) {
 		this.setState({ primed: false });
 	}
-}
+});
 
 interface IToggleButtonProps extends IButtonProps {
-    forceEnable: boolean;
-    inChoice: boolean;
-    startAction: any;
-    stopAction: any;
-    onMounted: any;
-    onSelected: any;
-    onSelectedChoice: any;
-    onDeselected: any;
-    first: boolean;
-    last: boolean;
+    forceEnable?: boolean;
+    inChoice?: boolean;
+    startAction?: any;
+    stopAction?: any;
+    onMounted?: any;
+    onSelected?: any;
+    onSelectedChoice?: any;
+    onDeselected?: any;
 }
 
 interface IToggleButtonState {
-    active: boolean;
-    pressed: boolean;
+    active?: boolean;
+    pressed?: boolean;
 }
 
-class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonState> {
+var ToggleButton = React.createClass<IToggleButtonProps, IToggleButtonState>({
     getDefaultProps(): IToggleButtonProps {
 		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, onDeselected: null, hotkey: null, first: false, last: false };
-    }
+    },
     getInitialState(): IToggleButtonState {
         return { active: this.props.forceEnable, pressed: false };
-    }
-	mixins: [ButtonMixin]
+    },
+	mixins: [ButtonMixin],
 	componentDidMount() {
 		if (this.props.onMounted != null)
 			this.props.onMounted(this);
-	}
+	},
 	componentWillReceiveProps(nextProps) {
 		if (nextProps.forceEnable && !this.state.active)
 			this.setActive(true);
-	}
+	},
 	render() {
 		var classes = this.prepClasses();
 		if (this.state.active)
@@ -381,7 +380,7 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
 				{this.props.children}
 			</clicker>
 		);
-	}
+	},
 	mouseDown(e) {
 		if (this.props.disabled || this.state.pressed)
 			return;
@@ -404,18 +403,18 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
 		else if (this.props.onDeselected != null)
 			this.props.onDeselected(this);
 		this.setState({ active: nowActive, pressed: true });
-	}
+	},
 	mouseUp(e) {
 		this.setState({ pressed: false });
-	}
+	},
 	touchStart(e) {
 		this.mouseDown(e);
 		e.preventDefault();
-	}
+	},
 	touchEnd(e) {
 		this.mouseUp(e);
 		e.preventDefault();
-	}
+	},
 	setActive(val) {
 		this.setState({ active: val });
 		
@@ -425,25 +424,25 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
 		if (val && this.props.onSelectedChoice != null)
 			this.props.onSelectedChoice(this);
 	}
-}
+});
 
 interface IHeldButtonProps extends IButtonProps {
-    startAction: any;
-    stopAction: any;
+    startAction?: any;
+    stopAction?: any;
 }
 
 interface IHeldButtonState {
-    held: boolean;
+    held?: boolean;
 }
 
-class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
+var HeldButton = React.createClass<IHeldButtonProps, IHeldButtonState>({
 	getDefaultProps() {
 		return { visible: true, disabled: false, startAction: null, stopAction: null, color: null, hotkey: null };
-	}
+	},
 	getInitialState() {
         return { held: false };
-    }
-	mixins: [ButtonMixin]
+    },
+	mixins: [ButtonMixin],
 	render() {
 		var classes = this.prepClasses();
 		if (this.state.held)
@@ -454,7 +453,7 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
 				{this.props.children}
 			</clicker>
 		);
-	}
+	},
 	mouseDown(e) {
 		if (this.props.disabled || this.state.held)
 			return;
@@ -463,7 +462,7 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
 			gameClient.socket.send(this.props.startAction);
 		
 		this.setState({ held: true });
-	}
+	},
 	mouseUp(e) {
 		if (this.props.disabled || !this.state.held)
 			
@@ -471,11 +470,11 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
 			gameClient.socket.send(this.props.stopAction);
 		
 		this.setState({ held: false });
-	}
+	},
 	touchStart(e) {
 		this.mouseDown(e);
 		e.preventDefault();
-	}
+	},
 	touchEnd(e) {
 		if (this.props.disabled)
 			return;
@@ -483,9 +482,9 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
 		this.mouseUp(e);
 		e.preventDefault();
 	}
-}
+});
 
-window.ButtonGroup = React.createClass({
+const ButtonGroup = React.createClass({
 	getDefaultProps() {
 		return { color: null, disabled: false, inline: false, visible: true, caption: null };
 	},
@@ -523,7 +522,7 @@ window.ButtonGroup = React.createClass({
 	}
 });
 
-window.Choice = React.createClass({
+const Choice = React.createClass({
 	getDefaultProps() {
 		return { prompt: null, color: null, disabled: false, inline: false, visible: true };
 	},
@@ -600,7 +599,7 @@ window.Choice = React.createClass({
 	}
 });
 
-window.AxisInput = React.createClass({
+const AxisInput = React.createClass({
 	getDefaultProps() {
 		return { visible: true, direction: 'both', caption: null, color: null, movementCallback: null, scale: 1 };
 	},
@@ -618,7 +617,7 @@ window.AxisInput = React.createClass({
 	}
 });
 
-window.CanvasComponentMixin = {
+const CanvasComponentMixin = {
 	getDefaultProps() {
 		return {
 			width: 300, height: 200, visible: true, minSwipeDist: undefined, maxTapDist: undefined, maxSwipeTime: undefined, maxTapTime: undefined

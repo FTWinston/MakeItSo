@@ -1,5 +1,5 @@
 /// <reference path="Screens.tsx" />
-window.Weapons = React.createClass({
+const Weapons = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},
@@ -60,7 +60,7 @@ window.Weapons = React.createClass({
 	}
 });
 
-window.WeaponTargetSelect = React.createClass({
+const WeaponTargetSelect = React.createClass({
 	getInitialState: function () {
 		return { targets: {} };
 	},
@@ -333,7 +333,7 @@ WeaponTarget.prototype = {
 	}
 };
 
-window.WeaponTargetInfo = React.createClass({
+const WeaponTargetInfo = React.createClass({
 	mixins: [CanvasComponentMixin],
 	getDefaultProps: function() {
 		return {target: null};

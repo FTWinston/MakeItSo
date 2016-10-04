@@ -1,5 +1,5 @@
-/// <reference path="Screens.tsx" />
-window.DamageControl = React.createClass({
+/// <reference path="ShipSystemMixin.ts" />
+const DamageControl = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

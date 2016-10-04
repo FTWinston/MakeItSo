@@ -1,5 +1,5 @@
 /// <reference path="Screens.tsx" />
-window.PowerManagement = React.createClass({
+const PowerManagement = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},
@@ -40,7 +40,7 @@ window.PowerManagement = React.createClass({
 	}
 });
 
-window.PowerDistribution = React.createClass({
+const PowerDistribution = React.createClass({
 	getDefaultProps: function() {
 		return { minSwipeDist: 20, maxTapDist: 10 };
 	},
@@ -328,7 +328,7 @@ window.PowerDistribution = React.createClass({
 	}
 });
 				
-window.PowerCards = React.createClass({
+const PowerCards = React.createClass({
 	render: function() {
 		return (
 			<div style={{position: 'absolute', right: '0', top: '0', bottom: '0', width: this.props.width}} />
