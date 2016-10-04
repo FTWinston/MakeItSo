@@ -163,8 +163,8 @@ const TouchFunctions = {
 			
 			callback(startX, startY);
 		}, false);
-	},
-	detectMovement(surface, callback) {
+    },
+    detectMovement(surface: HTMLElement, callback: (dx: number, dy: number) => void) {
 		var ongoingTouches = {};
 		var distX; var distY;
 		
@@ -347,6 +347,7 @@ interface IToggleButtonProps extends IButtonProps {
     onSelected?: any;
     onSelectedChoice?: any;
     onDeselected?: any;
+    description?: string;
 }
 
 interface IToggleButtonState {
@@ -484,10 +485,18 @@ var HeldButton = React.createClass<IHeldButtonProps, IHeldButtonState>({
 	}
 });
 
-const ButtonGroup = React.createClass({
-	getDefaultProps() {
-		return { color: null, disabled: false, inline: false, visible: true, caption: null };
-	},
+interface IButtonGroupProps {
+    color?: string;
+    disabled?: boolean;
+    inline?: boolean;
+    visible?: boolean;
+    caption?: string;
+}
+
+class ButtonGroup extends React.Component<IButtonGroupProps, {}> {
+    static defaultProps = {
+		color: null, disabled: false, inline: false, visible: true, caption: null
+	};
 	render() {
 		var props = {}, gcProps = {};
 		if (this.props.color != null)
@@ -520,19 +529,34 @@ const ButtonGroup = React.createClass({
 			</buttonGroup>
 		);
 	}
-});
+}
 
-const Choice = React.createClass({
-	getDefaultProps() {
-		return { prompt: null, color: null, disabled: false, inline: false, visible: true };
-	},
-	getInitialState() {
-        return { description: null, mountedChildren: [] };
-    },
+interface IChoiceProps {
+    prompt?: string;
+    color?: string;
+    disabled?: boolean;
+    inline?: boolean;
+    visible?: boolean;
+    children?: any;
+}
+
+interface IChoiceState {
+    description?: string;
+    mountedChildren?: any[];
+}
+
+class Choice extends React.Component<IChoiceProps, IChoiceState> {
+    constructor(props) {
+        super(props);
+        this.state = { description: null, mountedChildren: [] };
+    }
+    static defaultProps = {
+        prompt: null, color: null, disabled: false, inline: false, visible: true
+    };
 	render() {
 		var self = this;
-		var props = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted, first: false, last: false };
-		var gcProps = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted, first: false, last: false };
+		var props = { inChoice: true, onSelectedChoice: self.childSelected.bind(this), onMounted: self.childMounted.bind(this), first: false, last: false };
+        var gcProps = { inChoice: true, onSelectedChoice: self.childSelected.bind(this), onMounted: self.childMounted.bind(this), first: false, last: false };
 		
 		if (this.props.color != null)
 			gcProps.color = props.color = this.props.color;
@@ -584,12 +608,12 @@ const Choice = React.createClass({
 				<description style={{display: this.state.description == null ? 'none' : null, visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
 			</choice>
 		);
-	},
+	}
 	childMounted(child) {
 		if (this.state.mountedChildren.length == 0)
 			child.setActive(true);
 		this.state.mountedChildren.push(child);
-	},
+	}
 	childSelected(child) {
 		for (var i = 0; i < this.state.mountedChildren.length; i++) {
 			if (this.state.mountedChildren[i] != child)
@@ -597,25 +621,34 @@ const Choice = React.createClass({
 		}
 		this.setState({description: child.props.description});
 	}
-});
+}
 
-const AxisInput = React.createClass({
+class IAxisInputProps {
+    visible?: boolean;
+    direction?: string;
+    caption?: string;
+    color?: string;
+    movementCallback?: (dx: number, dy: number) => void;
+    scale?: number;
+}
+
+class AxisInput extends React.Component<IAxisInputProps, {}> {
 	getDefaultProps() {
 		return { visible: true, direction: 'both', caption: null, color: null, movementCallback: null, scale: 1 };
-	},
+	}
 	render() {
 		return (
 			<touchArea ref="area" className="inline" style={{display: this.props.visible ? null : 'none'}} data-caption={this.props.caption} data-direction={this.props.direction} data-mode="continuous"></touchArea>
 		);
-	},
-	componentDidMount () {
-		TouchFunctions.detectMovement(this.refs.area, this.onMovement);
-	},
-	onMovement (dx, dy) {
-		if (movementCallback != null)
-			movementCallback(dx * this.props.scale, dy * this.props.scale);
 	}
-});
+    componentDidMount() {
+        TouchFunctions.detectMovement(this.refs["area"] as HTMLElement, this.onMovement);
+	}
+	onMovement (dx, dy) {
+        if (this.props.movementCallback != null)
+			this.props.movementCallback(dx * this.props.scale, dy * this.props.scale);
+	}
+}
 
 const CanvasComponentMixin = {
 	getDefaultProps() {

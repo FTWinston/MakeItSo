@@ -1,12 +1,16 @@
 /// <reference path="UI.tsx" />
 /// <reference path="Screens.tsx" />
 
+interface MessageFunc {
+    (cmd: string, data: string): void;
+}
+
 interface ISystemInfo {
     name: string;
     index: number;
     selected: boolean;
     usedByOther: boolean;
-    receiveMessage?: any;
+    receiveMessage?: MessageFunc;
 }
 
 interface IGameClientState {
@@ -40,9 +44,6 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		    touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
 		};
     }
-    refs: {
-        game: GameRoot;
-    }
 	socket: any;
 	createConnection() {
 		this.socket = new WebSocket('ws://' + location.host + '/ws');
@@ -50,8 +51,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		this.socket.onmessage = this.messageReceived.bind(this);
 	}
 	messageReceived(ev) {
-		var data = (ev.data || ''), pos = data.indexOf(' ');
-		var cmd = pos == -1 ? data : data.substr(0, pos);
+        let data:string = (ev.data || ''), pos:number = data.indexOf(' ');
+		let cmd:string = pos == -1 ? data : data.substr(0, pos);
 		data = pos == -1 ? null : data.substr(pos + 1);
 		
 		if (cmd == 'id') {
@@ -59,10 +60,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
 			this.setActiveScreen('systems');
 		}
 		else if (cmd == 'sys+') {
-			this.markSystemInUse(data, false);
+            this.markSystemInUse(data, false);
 		}
 		else if (cmd == 'sys-') {
-			this.markSystemInUse(data, true);
+            this.markSystemInUse(data, true);
 		}
 		else if (cmd == 'setup+') {
 			this.setupScreenInUse(false);
@@ -118,33 +119,33 @@ class GameClient extends React.Component<{}, IGameClientState> {
 			<div className={this.state.showHotkeys ? 'showKeys' : null}>
 				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this)} touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged.bind(this)} />
 				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this)} systems={this.state.systems} touchMode={this.state.touchInterface == FeatureState.Enabled} />
+				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this)} systems={this.state.systems} touchMode={this.state.touchInterface} />
 				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
 	}
-	registerSystem(id, receiveMessage) {
+    registerSystem(id: number, receiveMessage: MessageFunc) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].receiveMessage = receiveMessage;
 			return {systems: systems};
 		});
-	}
-	systemSelectionChanged (id, state) {
+    }
+    systemSelectionChanged(id: number, state: boolean) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].selected = state;
 			return {systems: systems};
 		});
 	}
-	markSystemInUse(id, state) {
+	markSystemInUse(id: number, state: boolean) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].usedByOther = state;
 			return {systems: systems};
 		});
 	}
-	setActiveScreen(screen) {
+	setActiveScreen(screen: string) {
 		var newState: IGameClientState = {activeScreen: screen};
 		if (!this.state.gameActive && screen == 'game')
 			newState.gameActive = true;
@@ -155,12 +156,13 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		this.setState(newState);
 		
 		if (screen == 'game')
-		{
-			// when switching to the game, ensure a selected system is the "current" one
-			if (!this.state.systems[this.refs.game.state.currentSystem].selected) {
+        {
+            let game: GameRoot = this.refs["game"] as GameRoot;
+            // when switching to the game, ensure a selected system is the "current" one
+            if (!this.state.systems[game.state.currentSystem].selected) {
 				for (var i=0; i<this.state.systems.length; i++)
 					if (this.state.systems[i].selected) {
-						this.refs.game.setState({currentSystem: i});
+						game.setState({currentSystem: i});
 						break;
 					}
 			}
@@ -176,9 +178,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		(e || window.event).returnValue = confirmationMessage; //Gecko + IE
 		return confirmationMessage; //Webkit, Safari, Chrome etc.
 	}
-	showError(message, fatal) {
-		fatal = typeof fatal !== 'undefined' ? fatal : true;
-		
+	showError(message: string, fatal = true) {
 		var state;
 		if (fatal) {
 			this.socket.close();

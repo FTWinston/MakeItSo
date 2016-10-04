@@ -2,8 +2,8 @@
 /// <reference path="UI.tsx" />
 /// <reference path="Screens.tsx" />
 const Helm = React.createClass({
-	getDefaultProps: function() {
-		return { touchMode: false, registerCallback: null };
+    getDefaultProps: function () {
+        return { touchMode: FeatureState.Disabled, registerCallback: null };
 	},
 	getInitialState: function () {
 		return { forwardSpeed: 0, lateralSpeed: 0, verticalSpeed: 0, pitchAngle: 0, yawAngle: 0, rollAngle: 0, warpFactor: 0 };
@@ -11,8 +11,8 @@ const Helm = React.createClass({
 	mixins: [ShipSystemMixin],
 	render: function() {
 		return (
-			<system style={{display: this.props.visible ? null : 'none'}}>
-				<ButtonGroup inline={true} color="1" visible={!this.props.touchMode} caption="rotation">
+            <system style={{ display: this.props.visible ? null : 'none' }}>
+                <ButtonGroup inline={true} color="1" visible={this.props.touchMode != FeatureState.Enabled} caption="rotation">
 					<row>
 						<spacer></spacer>
 						<HeldButton hotkey="W" startAction="+down" stopAction="-down">down</HeldButton>
@@ -32,7 +32,7 @@ const Helm = React.createClass({
 				
 				<AxisInput visible={this.props.touchMode} direction="both" caption="rotation" color="1" scale={0.02} movementCallback={this.touchRotation} />
 				
-				<ButtonGroup inline={true} color="2" visible={!this.props.touchMode}>
+                <ButtonGroup inline={true} color="2" visible={this.props.touchMode != FeatureState.Enabled}>
 					<row>
 						<HeldButton hotkey="R" startAction="+forward" stopAction="-forward">forward</HeldButton>
 					</row>
@@ -46,7 +46,7 @@ const Helm = React.createClass({
 				
 				<AxisInput visible={this.props.touchMode} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
 				
-				<ButtonGroup inline={true} color="3" visible={!this.props.touchMode} caption="translation">
+                <ButtonGroup inline={true} color="3" visible={this.props.touchMode != FeatureState.Enabled} caption="translation">
 					<row>
 						<spacer></spacer>
 						<HeldButton hotkey="I" startAction="+moveup" stopAction="-moveup">up</HeldButton>

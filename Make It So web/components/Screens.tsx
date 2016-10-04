@@ -7,21 +7,38 @@
 /// <reference path="Shields.tsx" />
 /// <reference path="ViewScreen.tsx" />
 /// <reference path="Weapons.tsx" />
-const ErrorDisplay = React.createClass({
-	render: function() {
+
+interface IErrorDisplayProps {
+    show?: boolean;
+    message?: string;
+}
+
+class ErrorDisplay extends React.Component<IErrorDisplayProps, {}> {
+	render() {
 		return (
 			<screen id="error" style={{display: this.props.show ? null : 'none'}}>
 				{this.props.message}
 			</screen>
 		);
 	}
-});
+}
 
-const SystemSelect = React.createClass({
-	getDefaultProps: function() {
-		return { systems: [], selectionChanged: null };
-	},
-	render: function() {
+interface ISystemSelectProps {
+    show?: boolean;
+    playerID?: number;
+    setupInProgress?: boolean;
+    gameActive?: boolean;
+    systems?: any[];
+    selectionChanged?: any;
+    touchMode?: FeatureState;
+    touchModeChanged?: (state: FeatureState) => void;
+}
+
+class SystemSelect extends React.Component<ISystemSelectProps, {}> {
+    static defaultProps = {
+        systems: [], selectionChanged: null
+    };
+	render() {
 		var self = this;
 		var systems = this.props.systems.map(function(system) {
 			return <SystemPicker key={system.index} system={system} selectionChanged={self.props.selectionChanged} />
@@ -35,7 +52,7 @@ const SystemSelect = React.createClass({
 					{systems}
 				</ul>
 				
-				<ToggleButton color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceEnable={this.props.touchMode == FeatureState.Enabled} onSelected={function() {self.props.touchModeChanged(true)}} onDeselected={function() {self.props.touchModeChanged(false)}}>touch interface</ToggleButton>
+				<ToggleButton color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceEnable={this.props.touchMode == FeatureState.Enabled} onSelected={function() {self.props.touchModeChanged(FeatureState.Enabled)}} onDeselected={function() {self.props.touchModeChanged(FeatureState.Disabled)}}>touch interface</ToggleButton>
 				
 				<PushButton action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</PushButton>
 				<PushButton action="resume" color="4" visible={this.props.gameActive}>resume game</PushButton>
@@ -44,10 +61,15 @@ const SystemSelect = React.createClass({
 			</screen>
 		);
 	}
-});
+}
 
-const SystemPicker = React.createClass({
-	render: function() {
+interface ISystemPickerProps {
+    system?: ISystemInfo;
+    selectionChanged?: (systemIndex: number, nowSelected: boolean) => void;
+}
+
+class SystemPicker extends React.Component<ISystemPickerProps, {}> {
+	render() {
 		var classes = "option";
 		if (this.props.system.selected)
 			classes += " selected";
@@ -55,26 +77,30 @@ const SystemPicker = React.createClass({
 			classes += " taken";
 		
 		return (
-			<li className={classes} onClick={this.clicked}>{this.props.system.name}</li>
+            <li className={classes} onClick={this.clicked.bind(this)}>{this.props.system.name}</li>
 		);
-	},
-	clicked: function() {
+	}
+	clicked() {
 		var nowSelected = !this.props.system.selected;
 		gameClient.socket.send((nowSelected ? '+sys ' : '-sys ') + this.props.system.index);
 		this.props.selectionChanged(this.props.system.index, nowSelected);
 	}
-});
+}
 
-const GameSetup = React.createClass({
-	render: function() {
+interface IGameSetupProps {
+    show?: boolean;
+}
+
+class GameSetup extends React.Component<IGameSetupProps, {}> {
+	render() {
 		return (
 			<screen style={{display: this.props.show ? null : 'none', overflow: 'auto'}}>
 				<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 				
 				<Choice color="1" prompt="Do you wish to play with just your own crew, or with others?">
-					<ToggleButton onSelected={this.hideArena} showGameMode hideArena description="Play against the computer, with no other human crews.">Play a solo-crew game</ToggleButton>
-					<ToggleButton onSelected={this.hideGameMode} description="Join a game being hosted by another human crew.">Join a multi-crew game</ToggleButton>
-					<ToggleButton onSelected={this.showGameMode} description="Host a game which other human crews can connect to.">Host a multi-crew game</ToggleButton>
+					<ToggleButton onSelected={this.hideArena.bind(this)} showGameMode hideArena description="Play against the computer, with no other human crews.">Play a solo-crew game</ToggleButton>
+                    <ToggleButton onSelected={this.hideGameMode.bind(this)} description="Join a game being hosted by another human crew.">Join a multi-crew game</ToggleButton>
+                    <ToggleButton onSelected={this.showGameMode.bind(this)} description="Host a game which other human crews can connect to.">Host a multi-crew game</ToggleButton>
 				</Choice>
 				
 				<Choice color="2" disabled={this.disableGameMode} prompt="Select the game mode you wish to play:">
@@ -89,33 +115,40 @@ const GameSetup = React.createClass({
 				</ButtonGroup>
 			</screen>
 		);
-	},
-	disableGameMode: false,
-	disableArena: false,
-	showGameMode: function() {
+	}
+    disableGameMode: boolean;
+    disableArena: boolean;
+	showGameMode() {
 		this.disableGameMode = false;
 		this.disableArena = false;
 		this.forceUpdate();
-	},
-	hideGameMode: function() {
+	}
+	hideGameMode() {
 		this.disableGameMode = true;
 		this.disableArena = false;
 		this.forceUpdate();
-	},
-	hideArena: function() {
+	}
+	hideArena() {
 		this.disableGameMode = false;
 		this.disableArena = true;
 		this.forceUpdate();
 	}
-});
-
-interface IGameRootState {
-    currentSystem: number;
-    width: number;
-    height: number;
 }
 
-class GameRoot extends React.Component<{}, IGameRootState> {
+interface IGameRootProps {
+    show?: boolean;
+    systems?: ISystemInfo[];
+    registerSystem?: (state: FeatureState) => void;
+    touchMode?: FeatureState;
+}
+
+interface IGameRootState {
+    currentSystem?: number;
+    width?: number;
+    height?: number;
+}
+
+class GameRoot extends React.Component<IGameRootProps, IGameRootState> {
     constructor(props) {
         super(props);
         this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight };
@@ -140,8 +173,9 @@ class GameRoot extends React.Component<{}, IGameRootState> {
 			index++;
 			return <ToggleButton key={system.index} forceEnable={system.selected && system.index == self.state.currentSystem} visible={system.selected} onSelected={function() {self.setState({currentSystem: system.index})}}>{system.name}</ToggleButton>
 		});
-		
-		var systemWidth = this.state.width, systemHeight = this.state.height - (this.refs.switcher === undefined ? 0 : this.refs.switcher.offsetHeight);
+
+        var switcher = this.refs["switcher"] as HTMLElement;
+		var systemWidth = this.state.width, systemHeight = this.state.height - (switcher === undefined ? 0 : switcher.offsetHeight);
 		
 		var elements = [
 			<Helm registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 0} index={0} key={0} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />,
