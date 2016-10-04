@@ -1,3 +1,5 @@
+/// <reference path="UI.tsx" />
+/// <reference path="Screens.tsx" />
 window.GameClient = React.createClass({
 	socket: null,
 	createConnection: function() {

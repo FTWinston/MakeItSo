@@ -1,4 +1,5 @@
-window.DamageControl = React.createClass({
+/// <reference path="Screens.tsx" />
+window.Sensors = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

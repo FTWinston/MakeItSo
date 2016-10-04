@@ -1,4 +1,5 @@
-window.Sensors = React.createClass({
+/// <reference path="Screens.tsx" />
+window.Deflector = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

@@ -1,3 +1,5 @@
+/// <reference path="UI.tsx" />
+/// <reference path="Screens.tsx" />
 window.Helm = React.createClass({
 	getDefaultProps: function() {
 		return { touchMode: false, registerCallback: null };

@@ -1,4 +1,5 @@
-window.Deflector = React.createClass({
+/// <reference path="Screens.tsx" />
+window.DamageControl = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
 	},

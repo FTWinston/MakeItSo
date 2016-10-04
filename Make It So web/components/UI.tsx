@@ -1,35 +1,33 @@
-if (!window.console) { window.console = { log: function() {} } };
-
-window.FeatureState = {
-	Unavailable: 0,
-	Disabled: 1,
-	Enabled: 2
+enum FeatureState {
+	Unavailable = 0,
+	Disabled,
+	Enabled
 };
 
-window.Hotkeys = {
-	bindings: {},
-	showHotkeys: false,
-	register: function(hotkey, button) {
-		var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
-			
-		if (this.bindings.hasOwnProperty(keyCode))
-			this.bindings[keyCode].push(button);
-		else
-			this.bindings[keyCode] = [button];
-	},
-	unregister: function(hotkey, button) {
+class Hotkeys {
+    bindings: {};
+    showHotkeys: boolean;
+    register(hotkey, button) {
+        var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
+
+        if (this.bindings.hasOwnProperty(keyCode))
+            this.bindings[keyCode].push(button);
+        else
+            this.bindings[keyCode] = [button];
+    }
+	unregister(hotkey, button) {
 		var keyCode = typeof hotkey === 'string' ? hotkey.charCodeAt(0) : hotkey;
 		
 		var keys = this.bindings[keyCode];
 		var pos = keys.indexOf(button);
 		if (pos != -1)
 			keys.splice(pos, 1);
-	},
-	initialize: function() {
+	}
+	initialize() {
 		document.onkeydown = this.onKeyDown;
 		document.onkeyup = this.onKeyUp;
-	},
-	onKeyDown: function(e) {
+	}
+	onKeyDown(e) {
 		var presses = Hotkeys.bindings[e.which];
 		if (presses === undefined) {
 			if (e.which == 112) {
@@ -51,8 +49,8 @@ window.Hotkeys = {
 				return;
 			}
 		}
-	},
-	onKeyUp: function(e){
+	}
+	onKeyUp(e){
 		var presses = Hotkeys.bindings[e.which];
 		if (presses === undefined)
 			return;
@@ -72,14 +70,15 @@ window.Hotkeys = {
 	}
 }
 
-window.TouchFunctions = {
-	SwipeDir: {
-		Up: 0,
-		Down: 1,
-		Left: 2,
-		Right: 3
-	},
-	detectSwipe: function(surface, minDist, maxTime, callback) {
+enum SwipeDir {
+    Up = 0,
+    Down,
+    Left,
+    Right
+};
+
+class TouchFunctions {
+	detectSwipe(surface, minDist, maxTime, callback) {
 		if (minDist === undefined)
 			minDist = 100;
 		if (maxTime === undefined)
@@ -118,15 +117,15 @@ window.TouchFunctions = {
 
 			var absX = Math.abs(distX), absY = Math.abs(distY);
 			if (absX >= minDist && absY <= maxPerpScale * absX)
-				swipedir = (distX < 0) ? TouchFunctions.SwipeDir.Left : TouchFunctions.SwipeDir.Right;
+				swipedir = (distX < 0) ? SwipeDir.Left : SwipeDir.Right;
 			else if (absY >= minDist && absX <= maxPerpScale * absY)
-				swipedir = (distY < 0) ? TouchFunctions.SwipeDir.Up : TouchFunctions.SwipeDir.Down;
+				swipedir = (distY < 0) ? SwipeDir.Up : SwipeDir.Down;
 			else
 				return;
 			callback(swipedir, startX, startY);
 		}, false);
-	},
-	detectTap: function(surface, maxDist, maxTime, callback) {
+	}
+	detectTap(surface, maxDist, maxTime, callback) {
 		if (maxDist === undefined)
 			maxDist = 75;
 		if (maxTime === undefined)
@@ -164,8 +163,8 @@ window.TouchFunctions = {
 			
 			callback(startX, startY);
 		}, false);
-	},
-	detectMovement: function(surface, callback) {
+	}
+	detectMovement(surface, callback) {
 		var ongoingTouches = {};
 		var distX; var distY;
 		
@@ -210,19 +209,19 @@ window.TouchFunctions = {
 	}
 };
 
-var ButtonMixin = {
-	componentDidMount: function() {
+class ButtonMixin {
+	componentDidMount() {
 		if (this.props.hotkey != null)
 			Hotkeys.register(this.props.hotkey, this);
-	},
-	componentWillUnmount: function() {
+	}
+	componentWillUnmount() {
 		if (this.props.hotkey != null)
 			Hotkeys.unregister(this.props.hotkey, this);
-	},
-	isVisible: function() {
+	}
+	isVisible() {
 		return this.refs.btn.offsetParent !== null && this.props.visible;
-	},
-	prepClasses: function() {
+	}
+	prepClasses() {
 		var classes = '';
 		if (this.props.color != null)
 			classes += 'color' + this.props.color;
@@ -233,21 +232,37 @@ var ButtonMixin = {
 		if (this.props.last)
 			classes += ' last';
 		return classes;
-	},
-	keyDown: function(e) { if (this.mouseDown != undefined) this.mouseDown(); },
-	keyUp: function(e) { if (this.mouseUp != undefined) this.mouseUp(); },
-	keyPress: function(e) { if (this.click != undefined) this.click(); }
+	}
+	keyDown(e) { if (this.mouseDown != undefined) this.mouseDown(); }
+	keyUp(e) { if (this.mouseUp != undefined) this.mouseUp(); }
+	keyPress(e) { if (this.click != undefined) this.click(); }
 };
 
-window.PushButton = React.createClass({
-	getDefaultProps: function() {
+interface IButtonProps {
+    visible: boolean;
+    disabled: boolean;
+    color: any;
+    hotkey: any;
+}
+
+interface IPushButtonProps extends IButtonProps {
+    action: any;
+    onClicked: any;
+}
+
+interface IPushButtonState {
+    pressed: boolean;
+}
+
+class PushButton extends React.Component<IPushButtonProps, IPushButtonState> {
+    getDefaultProps(): IPushButtonProps {
 		return { visible: true, disabled: false, action: null, onClicked: null, color: null, hotkey: null };
-	},
-	getInitialState: function() {
+    }
+    getInitialState(): IPushButtonState {
 		return { pressed: false };
-	},
-	mixins: [ButtonMixin],
-	render: function() {
+	}
+	mixins: [ButtonMixin]
+    render(): JSX.Element {
 		var classes = this.prepClasses();
 		if (this.state.pressed)
 			classes += ' enabled';
@@ -257,14 +272,14 @@ window.PushButton = React.createClass({
 				{this.props.children}
 			</clicker>
 		);
-	},
-	mouseDown: function(e) {
+	}
+	mouseDown(e) {
 		this.setState({ pressed: true });
-	},
-	mouseUp: function(e) {
+	}
+	mouseUp(e) {
 		this.setState({ pressed: false });
-	},
-	click: function(e) {
+	}
+	click(e) {
 		if (this.props.disabled)
 			return;
 		
@@ -274,17 +289,26 @@ window.PushButton = React.createClass({
 		if (this.props.onClicked != null)
 			this.props.onClicked();
 	}
-});
+}
 
-window.ConfirmButton = React.createClass({
-	getDefaultProps: function() {
+interface IConfirmButtonProps extends IButtonProps {
+    action: any;
+
+}
+
+interface IConfirmButtonState {
+    primed: boolean;
+}
+
+class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirmButtonState> {
+    getDefaultProps(): IConfirmButtonProps {
 		return { visible: true, disabled: false, action: null, color: null, hotkey: null };
-	},
-	getInitialState: function() {
+    }
+    getInitialState(): IConfirmButtonState {
         return { primed: false };
-    },
-	mixins: [ButtonMixin],
-	render: function() {
+    }
+	mixins: [ButtonMixin]
+    render() {
 		var classes = this.prepClasses();
 		if (this.state.primed)
 			classes += ' primed';
@@ -294,8 +318,8 @@ window.ConfirmButton = React.createClass({
 				{this.props.children}
 			</clicker>
 		);
-	},
-	click: function(e) {
+	}
+	click(e) {
 		if (this.props.disabled)
 			return;
 
@@ -307,29 +331,47 @@ window.ConfirmButton = React.createClass({
 		if (this.props.action != null)
 			gameClient.socket.send(this.props.action);
 		this.setState({ primed: false });
-	},
-	mouseLeave: function(e) {
+	}
+	mouseLeave(e) {
 		this.setState({ primed: false });
 	}
-});
+}
 
-window.ToggleButton = React.createClass({
-	getDefaultProps: function() {
+interface IToggleButtonProps extends IButtonProps {
+    forceEnable: boolean;
+    inChoice: boolean;
+    startAction: any;
+    stopAction: any;
+    onMounted: any;
+    onSelected: any;
+    onSelectedChoice: any;
+    onDeselected: any;
+    first: boolean;
+    last: boolean;
+}
+
+interface IToggleButtonState {
+    active: boolean;
+    pressed: boolean;
+}
+
+class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonState> {
+    getDefaultProps(): IToggleButtonProps {
 		return { visible: true, forceEnable: false, disabled: false, inChoice: false, startAction: null, stopAction: null, color: null, onMounted: null, onSelected: null, onSelectedChoice: null, onDeselected: null, hotkey: null, first: false, last: false };
-	},
-	getInitialState: function() {
+    }
+    getInitialState(): IToggleButtonState {
         return { active: this.props.forceEnable, pressed: false };
-    },
-	mixins: [ButtonMixin],
-	componentDidMount: function() {
+    }
+	mixins: [ButtonMixin]
+	componentDidMount() {
 		if (this.props.onMounted != null)
 			this.props.onMounted(this);
-	},
-	componentWillReceiveProps: function(nextProps) {
+	}
+	componentWillReceiveProps(nextProps) {
 		if (nextProps.forceEnable && !this.state.active)
 			this.setActive(true);
-	},
-	render: function() {
+	}
+	render() {
 		var classes = this.prepClasses();
 		if (this.state.active)
 			classes += ' enabled';
@@ -339,8 +381,8 @@ window.ToggleButton = React.createClass({
 				{this.props.children}
 			</clicker>
 		);
-	},
-	mouseDown: function(e) {
+	}
+	mouseDown(e) {
 		if (this.props.disabled || this.state.pressed)
 			return;
 
@@ -362,19 +404,19 @@ window.ToggleButton = React.createClass({
 		else if (this.props.onDeselected != null)
 			this.props.onDeselected(this);
 		this.setState({ active: nowActive, pressed: true });
-	},
-	mouseUp: function(e) {
+	}
+	mouseUp(e) {
 		this.setState({ pressed: false });
-	},
-	touchStart: function(e) {
+	}
+	touchStart(e) {
 		this.mouseDown(e);
 		e.preventDefault();
-	},
-	touchEnd: function(e) {
+	}
+	touchEnd(e) {
 		this.mouseUp(e);
 		e.preventDefault();
-	},
-	setActive: function(val) {
+	}
+	setActive(val) {
 		this.setState({ active: val });
 		
 		if (val && this.props.onSelected != null)
@@ -383,17 +425,26 @@ window.ToggleButton = React.createClass({
 		if (val && this.props.onSelectedChoice != null)
 			this.props.onSelectedChoice(this);
 	}
-});
+}
 
-window.HeldButton = React.createClass({
-	getDefaultProps: function() {
+interface IHeldButtonProps extends IButtonProps {
+    startAction: any;
+    stopAction: any;
+}
+
+interface IHeldButtonState {
+    held: boolean;
+}
+
+class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
+	getDefaultProps() {
 		return { visible: true, disabled: false, startAction: null, stopAction: null, color: null, hotkey: null };
-	},
-	getInitialState: function() {
+	}
+	getInitialState() {
         return { held: false };
-    },
-	mixins: [ButtonMixin],
-	render: function() {
+    }
+	mixins: [ButtonMixin]
+	render() {
 		var classes = this.prepClasses();
 		if (this.state.held)
 			classes += ' held';
@@ -403,8 +454,8 @@ window.HeldButton = React.createClass({
 				{this.props.children}
 			</clicker>
 		);
-	},
-	mouseDown: function(e) {
+	}
+	mouseDown(e) {
 		if (this.props.disabled || this.state.held)
 			return;
 		
@@ -412,33 +463,33 @@ window.HeldButton = React.createClass({
 			gameClient.socket.send(this.props.startAction);
 		
 		this.setState({ held: true });
-	},
-	mouseUp: function(e) {
+	}
+	mouseUp(e) {
 		if (this.props.disabled || !this.state.held)
 			
 		if (this.props.stopAction != null)
 			gameClient.socket.send(this.props.stopAction);
 		
 		this.setState({ held: false });
-	},
-	touchStart: function(e) {
+	}
+	touchStart(e) {
 		this.mouseDown(e);
 		e.preventDefault();
-	},
-	touchEnd: function(e) {
+	}
+	touchEnd(e) {
 		if (this.props.disabled)
 			return;
 		
 		this.mouseUp(e);
 		e.preventDefault();
 	}
-});
+}
 
 window.ButtonGroup = React.createClass({
-	getDefaultProps: function() {
+	getDefaultProps() {
 		return { color: null, disabled: false, inline: false, visible: true, caption: null };
 	},
-	render: function() {
+	render() {
 		var props = {}, gcProps = {};
 		if (this.props.color != null)
 			gcProps.color = props.color = this.props.color;
@@ -473,13 +524,13 @@ window.ButtonGroup = React.createClass({
 });
 
 window.Choice = React.createClass({
-	getDefaultProps: function() {
+	getDefaultProps() {
 		return { prompt: null, color: null, disabled: false, inline: false, visible: true };
 	},
-	getInitialState: function() {
+	getInitialState() {
         return { description: null, mountedChildren: [] };
     },
-	render: function() {
+	render() {
 		var self = this;
 		var props = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted, first: false, last: false };
 		var gcProps = { inChoice: true, onSelectedChoice: self.childSelected, onMounted: self.childMounted, first: false, last: false };
@@ -531,16 +582,16 @@ window.Choice = React.createClass({
 			<choice className={classes} style={{display: this.props.visible ? null : 'none'}}>
 				<prompt style={{display: this.props.prompt == null ? 'none' : null}} className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
 				{children}
-				<description style={{display: this.state.description == null ? 'none' : null}} style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
+				<description style={{display: this.state.description == null ? 'none' : null, visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
 			</choice>
 		);
 	},
-	childMounted: function(child) {
+	childMounted(child) {
 		if (this.state.mountedChildren.length == 0)
 			child.setActive(true);
 		this.state.mountedChildren.push(child);
 	},
-	childSelected: function(child) {
+	childSelected(child) {
 		for (var i = 0; i < this.state.mountedChildren.length; i++) {
 			if (this.state.mountedChildren[i] != child)
 				this.state.mountedChildren[i].setActive(false);
@@ -550,30 +601,30 @@ window.Choice = React.createClass({
 });
 
 window.AxisInput = React.createClass({
-	getDefaultProps: function() {
+	getDefaultProps() {
 		return { visible: true, direction: 'both', caption: null, color: null, movementCallback: null, scale: 1 };
 	},
-	render: function() {
+	render() {
 		return (
 			<touchArea ref="area" className="inline" style={{display: this.props.visible ? null : 'none'}} data-caption={this.props.caption} data-direction={this.props.direction} data-mode="continuous"></touchArea>
 		);
 	},
-	componentDidMount: function () {
+	componentDidMount () {
 		TouchFunctions.detectMovement(this.refs.area, this.onMovement);
 	},
-	onMovement: function (dx, dy) {
+	onMovement (dx, dy) {
 		if (movementCallback != null)
 			movementCallback(dx * this.props.scale, dy * this.props.scale);
 	}
 });
 
 window.CanvasComponentMixin = {
-	getDefaultProps: function() {
+	getDefaultProps() {
 		return {
 			width: 300, height: 200, visible: true, minSwipeDist: undefined, maxTapDist: undefined, maxSwipeTime: undefined, maxTapTime: undefined
 		};
 	},
-	componentDidMount: function () {
+	componentDidMount () {
 		var component = this;
 		this.refs.canvas.addEventListener('contextmenu', function(e) { e.preventDefault(); }, false);
 		
@@ -621,19 +672,19 @@ window.CanvasComponentMixin = {
 		
 		this.redraw();
 	},
-	componentDidUpdate: function (prevProps, prevState) {
+	componentDidUpdate (prevProps, prevState) {
 		this.redraw();
 	},
-	redraw: function() {
+	redraw() {
 		if (this.props.visible)
 			requestAnimationFrame(this.draw);
 	},
-	render: function() {
+	render() {
 		return (
 			<canvas ref="canvas" width={this.props.width} height={this.props.height} style={this.props.style} />
 		);
 	},
-	getContext: function(type) {
+	getContext(type) {
 		return this.refs.canvas.getContext(type);
 	}
 };

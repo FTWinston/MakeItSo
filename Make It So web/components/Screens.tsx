@@ -1,3 +1,4 @@
+/// <reference path="UI.tsx" />
 window.ErrorDisplay = React.createClass({
 	render: function() {
 		return (

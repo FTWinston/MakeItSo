@@ -10,3 +10,9 @@ WebTest/Debug/*
 *.opensdf
 WebTest/FakeServer/Debug/*
 WebTest/Release/*
+Make It So web/obj/
+Make It So web/bin/
+*.csproj.user
+*.VC.db
+*.VC.opendb
+Debug/*

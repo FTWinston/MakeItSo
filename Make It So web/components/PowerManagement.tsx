@@ -1,3 +1,4 @@
+/// <reference path="Screens.tsx" />
 window.PowerManagement = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
@@ -33,7 +34,6 @@ window.PowerManagement = React.createClass({
 					return false;
 				}
 				return this.refs.distribution.wireChanged(node, false);
-				break;
 			default:
 				return false;
 		}

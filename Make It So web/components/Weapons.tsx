@@ -1,3 +1,4 @@
+/// <reference path="Screens.tsx" />
 window.Weapons = React.createClass({
 	getDefaultProps: function() {
 		return { registerCallback: null };
