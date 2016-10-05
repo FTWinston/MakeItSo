@@ -1,12 +1,11 @@
-/// <reference path="UI.tsx" />
-/// <reference path="DamageControl.tsx" />
-/// <reference path="Deflector.tsx" />
-/// <reference path="Helm.tsx" />
-/// <reference path="PowerManagement.tsx" />
-/// <reference path="Sensors.tsx" />
-/// <reference path="Shields.tsx" />
-/// <reference path="ViewScreen.tsx" />
-/// <reference path="Weapons.tsx" />
+/// <reference path="systems/DamageControl.tsx" />
+/// <reference path="systems/Deflector.tsx" />
+/// <reference path="systems/Helm.tsx" />
+/// <reference path="systems/PowerManagement/PowerManagement.tsx" />
+/// <reference path="systems/Sensors.tsx" />
+/// <reference path="systems/Shields/Shields.tsx" />
+/// <reference path="systems/ViewScreen.tsx" />
+/// <reference path="systems/Weapons/Weapons.tsx" />
 
 interface IErrorDisplayProps {
     show?: boolean;
@@ -174,7 +173,7 @@ class GameRoot extends React.Component<IGameRootProps, IGameRootState> {
 			return <ToggleButton key={system.index} forceEnable={system.selected && system.index == self.state.currentSystem} visible={system.selected} onSelected={function() {self.setState({currentSystem: system.index})}}>{system.name}</ToggleButton>
 		});
 
-        var switcher = this.refs["switcher"] as HTMLElement;
+        var switcher = this.refs['switcher'] as HTMLElement;
 		var systemWidth = this.state.width, systemHeight = this.state.height - (switcher === undefined ? 0 : switcher.offsetHeight);
 		
 		var elements = [

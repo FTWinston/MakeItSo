@@ -1,13 +1,24 @@
-/// <reference path="Screens.tsx" />
-const Viewscreen = React.createClass({
-	getDefaultProps: function() {
-		return { registerCallback: null };
-	},
-	getInitialState: function () {
-		return { zoomFactor: 1, pitchAngle: 0, yawAngle: 0 };
-	},
-	mixins: [ShipSystemMixin],
-	render: function() {
+/// <reference path="../Screens.tsx" />
+interface IViewscreenState {
+    zoomFactor: number;
+    pitchAngle: number;
+    yawAngle: number;
+}
+
+class Viewscreen extends React.Component<ISystemProps, IViewscreenState> implements ISystem {
+	constructor(props) {
+        super(props);
+        this.state = { zoomFactor: 1, pitchAngle: 0, yawAngle: 0 };
+    }
+	componentDidMount() {
+		if (this.props.registerCallback != null)
+			this.props.registerCallback(this.props.index, this.receiveMessage);
+	}
+	componentWillUnmount() {
+		if (this.props.registerCallback != null)
+			this.props.registerCallback(this.props.index, undefined);
+	}
+	render() {
 		return (
 			<system style={{display: this.props.visible ? null : 'none'}}>
 				<section>
@@ -67,4 +78,7 @@ const Viewscreen = React.createClass({
 			</system>
 		);
 	}
-});
+	receiveMessage(msg, data) {
+        return false;
+    }
+}

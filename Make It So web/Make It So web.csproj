@@ -25,22 +25,36 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="components\DamageControl.tsx" />
-    <TypeScriptCompile Include="components\Deflector.tsx" />
-    <TypeScriptCompile Include="components\GameClient.tsx" />
-    <TypeScriptCompile Include="components\Helm.tsx" />
-    <TypeScriptCompile Include="components\Intrinsics.ts" />
-    <TypeScriptCompile Include="components\PowerManagement.tsx" />
-    <TypeScriptCompile Include="components\Screens.tsx" />
-    <TypeScriptCompile Include="components\Sensors.tsx" />
-    <TypeScriptCompile Include="components\Shields.tsx" />
-    <TypeScriptCompile Include="components\ShipSystemMixin.ts" />
-    <TypeScriptCompile Include="components\UI.tsx" />
-    <TypeScriptCompile Include="components\ViewScreen.tsx" />
-    <TypeScriptCompile Include="components\Weapons.tsx" />
-    <TypeScriptCompile Include="typings\react-dom.d.ts" />
-    <TypeScriptCompile Include="typings\react-global.d.ts" />
-    <TypeScriptCompile Include="typings\react.d.ts" />
+    <TypeScriptCompile Include="script\ISystem.ts" />
+    <TypeScriptCompile Include="script\systems\DamageControl.tsx" />
+    <TypeScriptCompile Include="script\systems\Deflector.tsx" />
+    <TypeScriptCompile Include="script\GameClient.tsx" />
+    <TypeScriptCompile Include="script\systems\Helm.tsx" />
+    <TypeScriptCompile Include="script\Intrinsics.ts" />
+    <TypeScriptCompile Include="script\systems\PowerManagement\PowerManagement.tsx" />
+    <TypeScriptCompile Include="script\Screens.tsx" />
+    <TypeScriptCompile Include="script\systems\PowerManagement\PowerCards.tsx" />
+    <TypeScriptCompile Include="script\systems\PowerManagement\PowerDistribution.tsx" />
+    <TypeScriptCompile Include="script\systems\Sensors.tsx" />
+    <TypeScriptCompile Include="script\systems\Shields\Shields.tsx" />
+    <TypeScriptCompile Include="script\systems\Shields\ShieldBlock.ts" />
+    <TypeScriptCompile Include="script\systems\Shields\ShieldCursor.ts" />
+    <TypeScriptCompile Include="script\systems\Shields\ShieldData.ts" />
+    <TypeScriptCompile Include="script\systems\Shields\ShieldDisplay.tsx" />
+    <TypeScriptCompile Include="script\systems\Weapons\WeaponTarget.ts" />
+    <TypeScriptCompile Include="script\systems\Weapons\WeaponTargetInfo.tsx" />
+    <TypeScriptCompile Include="script\systems\Weapons\WeaponTargetSelect.tsx" />
+    <TypeScriptCompile Include="script\ui\Buttons.tsx" />
+    <TypeScriptCompile Include="script\ui\AxisInput.tsx" />
+    <TypeScriptCompile Include="script\ui\Canvas.tsx" />
+    <TypeScriptCompile Include="script\systems\ViewScreen.tsx" />
+    <TypeScriptCompile Include="script\systems\Weapons\Weapons.tsx" />
+    <TypeScriptCompile Include="script\typings\react-dom.d.ts" />
+    <TypeScriptCompile Include="script\typings\react-global.d.ts" />
+    <TypeScriptCompile Include="script\typings\react.d.ts" />
+    <TypeScriptCompile Include="script\ui\Choice.tsx" />
+    <TypeScriptCompile Include="script\ui\Hotkeys.ts" />
+    <TypeScriptCompile Include="script\ui\TouchFunctions.ts" />
   </ItemGroup>
   <ItemGroup />
   <PropertyGroup>

@@ -1,8 +1,7 @@
-/// <reference path="UI.tsx" />
 /// <reference path="Screens.tsx" />
 
 interface MessageFunc {
-    (cmd: string, data: string): void;
+    (cmd: string, data: string): boolean;
 }
 
 interface ISystemInfo {
@@ -157,7 +156,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		
 		if (screen == 'game')
         {
-            let game: GameRoot = this.refs["game"] as GameRoot;
+            let game: GameRoot = this.refs['game'] as GameRoot;
             // when switching to the game, ensure a selected system is the "current" one
             if (!this.state.systems[game.state.currentSystem].selected) {
 				for (var i=0; i<this.state.systems.length; i++)

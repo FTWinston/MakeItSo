@@ -9,6 +9,6 @@
         prompt: { id?: string, className?: string, style?: Object };
         description: { id?: string, className?: string, style?: Object };
         clicker: { id?: string, className?: string, style?: Object, type: string, onMouseDown?: any, onMouseUp?: any, onMouseLeave?: any, onClick?: any, onTouchStart?: any, onTouchEnd?: any, ref?: string };
-        touchArea: { id?: string, className?: string, style?: Object };
+        touchArea: { id?: string, className?: string, style?: Object, ref: string };
     }
 }

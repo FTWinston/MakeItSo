@@ -1,15 +1,32 @@
-/// <reference path="GameClient.tsx" />
-/// <reference path="UI.tsx" />
-/// <reference path="Screens.tsx" />
-const Helm = React.createClass({
-    getDefaultProps: function () {
-        return { touchMode: FeatureState.Disabled, registerCallback: null };
-	},
-	getInitialState: function () {
-		return { forwardSpeed: 0, lateralSpeed: 0, verticalSpeed: 0, pitchAngle: 0, yawAngle: 0, rollAngle: 0, warpFactor: 0 };
-	},
-	mixins: [ShipSystemMixin],
-	render: function() {
+/// <reference path="../GameClient.tsx" />
+/// <reference path="../Screens.tsx" />
+interface IHelmState {
+    forwardSpeed?: number;
+    lateralSpeed?: number;
+    verticalSpeed?: number;
+    pitchAngle?: number;
+    yawAngle?: number;
+    rollAngle?: number;
+    warpFactor?: number;
+}
+
+class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem {
+    static defaultProps = {
+        touchMode: FeatureState.Disabled, registerCallback: null
+	}
+    constructor(props) {
+        super(props);
+        this.state = { forwardSpeed: 0, lateralSpeed: 0, verticalSpeed: 0, pitchAngle: 0, yawAngle: 0, rollAngle: 0, warpFactor: 0 };
+    }
+	componentDidMount() {
+		if (this.props.registerCallback != null)
+			this.props.registerCallback(this.props.index, this.receiveMessage);
+	}
+	componentWillUnmount() {
+		if (this.props.registerCallback != null)
+			this.props.registerCallback(this.props.index, undefined);
+	}
+	render() {
 		return (
             <system style={{ display: this.props.visible ? null : 'none' }}>
                 <ButtonGroup inline={true} color="1" visible={this.props.touchMode != FeatureState.Enabled} caption="rotation">
@@ -30,7 +47,7 @@ const Helm = React.createClass({
 					</row>
 				</ButtonGroup>
 				
-				<AxisInput visible={this.props.touchMode} direction="both" caption="rotation" color="1" scale={0.02} movementCallback={this.touchRotation} />
+				<AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption="rotation" color="1" scale={0.02} movementCallback={this.touchRotation} />
 				
                 <ButtonGroup inline={true} color="2" visible={this.props.touchMode != FeatureState.Enabled}>
 					<row>
@@ -44,7 +61,7 @@ const Helm = React.createClass({
 					</row>
 				</ButtonGroup>
 				
-				<AxisInput visible={this.props.touchMode} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
+				<AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
 				
                 <ButtonGroup inline={true} color="3" visible={this.props.touchMode != FeatureState.Enabled} caption="translation">
 					<row>
@@ -64,7 +81,7 @@ const Helm = React.createClass({
 					</row>
 				</ButtonGroup>
 				
-				<AxisInput visible={this.props.touchMode} direction="both" caption="translation" scale={0.02} color="3" movementCallback={this.touchTranslation} />
+				<AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption="translation" scale={0.02} color="3" movementCallback={this.touchTranslation} />
 				
 				<ButtonGroup inline={true} color="4" caption="warp factor">
 					<row>
@@ -91,12 +108,15 @@ const Helm = React.createClass({
 				</div>
 			</system>
 		);
-	},
-	touchRotation: function (dx, dy) {
+	}
+	receiveMessage(msg, data) {
+        return false;
+    }
+	touchRotation(dx, dy) {
 		gameClient.socket.send('yaw ' + dx);
 		gameClient.socket.send('pitch ' + dx);
-	},
-	touchForwardBack: function (dx, dy) {
+	}
+	touchForwardBack(dx, dy) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		if (dy < 0)
 			gameClient.socket.send('+forward ' + (-dy));
@@ -106,8 +126,8 @@ const Helm = React.createClass({
 		}
 		else
 			gameClient.socket.send('+backward ' + dy);
-	},
-	touchTranslation: function (dx, dy) {
+	}
+	touchTranslation(dx, dy) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		if (dx < 0)
 			gameClient.socket.send('+moveleft ' + (-dx));
@@ -127,4 +147,4 @@ const Helm = React.createClass({
 		else
 			gameClient.socket.send('+movedown ' + dy);
 	}
-});
+}
