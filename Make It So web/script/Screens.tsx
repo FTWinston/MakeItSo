@@ -6,6 +6,8 @@
 /// <reference path="systems/Shields/Shields.tsx" />
 /// <reference path="systems/ViewScreen.tsx" />
 /// <reference path="systems/Weapons/Weapons.tsx" />
+/// <reference path="ui/Buttons.tsx" />
+
 
 interface IErrorDisplayProps {
     show?: boolean;
@@ -103,7 +105,7 @@ class GameSetup extends React.Component<IGameSetupProps, {}> {
 				</Choice>
 				
 				<Choice color="2" disabled={this.disableGameMode} prompt="Select the game mode you wish to play:">
-					<ToggleButton forceEnable={this.disableArena && this.refs.arena.state.active} description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</ToggleButton>
+					<ToggleButton forceEnable={this.disableArena && (this.refs['arena'] as ToggleButton).state.active} description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</ToggleButton>
 					<ToggleButton description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</ToggleButton>
 					<ToggleButton ref="arena" disabled={this.disableArena} description="Human-crewed ships compete to death in a single star system.">Arena</ToggleButton>
 				</Choice>
