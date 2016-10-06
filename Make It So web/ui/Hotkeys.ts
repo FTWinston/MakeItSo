@@ -63,3 +63,5 @@
 		}
 	}
 };
+
+Hotkeys.initialize();

@@ -1,5 +1,3 @@
-/// <reference path="../../Screens.tsx" />
-
 class PowerManagement extends React.Component<ISystemProps, {}> implements ISystem {
 	componentDidMount() {
 		if (this.props.registerCallback != null)

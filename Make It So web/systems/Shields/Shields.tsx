@@ -1,4 +1,3 @@
-/// <reference path="../../Screens.tsx" />
 class Shields extends React.Component<ISystemProps, {}> implements ISystem {
 	componentDidMount() {
 		if (this.props.registerCallback != null)

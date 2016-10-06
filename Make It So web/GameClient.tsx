@@ -1,15 +1,3 @@
-/// <reference path="Screens.tsx" />
-
-enum FeatureState {
-	Unavailable = 0,
-	Disabled,
-	Enabled
-};
-
-interface MessageFunc {
-    (cmd: string, data: string): boolean;
-}
-
 interface ISystemInfo {
     name: string;
     index: number;
@@ -122,10 +110,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
 	render() {
 		return (
 			<div className={this.state.showHotkeys ? 'showKeys' : null}>
-				<SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this)} touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged.bind(this)} />
-				<GameSetup show={this.state.activeScreen == 'setup'} />
-				<GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this)} systems={this.state.systems} touchMode={this.state.touchInterface} />
-				<ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
+                <SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this) } touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged.bind(this) } />
+                <GameSetup show={this.state.activeScreen == 'setup'} />
+                <GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this) } systems={this.state.systems} touchMode={this.state.touchInterface} />
+                <ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
 	}
@@ -212,11 +200,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
 	}
 	componentDidMount () {
 		this.createConnection();
-		Hotkeys.initialize();
 	}
 };
 
-const gameClient : GameClient = ReactDOM.render(
+gameClient = ReactDOM.render(
 	<GameClient />,
 	document.getElementById('gameRoot')
 ) as GameClient;

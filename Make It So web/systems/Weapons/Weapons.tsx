@@ -1,5 +1,3 @@
-/// <reference path="../../Screens.tsx" />
-
 interface IWeaponState {
     target?: WeaponTarget;
 }

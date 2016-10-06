@@ -1,4 +1,3 @@
-/// <reference path="../Screens.tsx" />
 interface IViewscreenState {
     zoomFactor: number;
     pitchAngle: number;

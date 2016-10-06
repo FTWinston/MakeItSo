@@ -1,5 +1,3 @@
-/// <reference path="../GameClient.tsx" />
-/// <reference path="../Screens.tsx" />
 interface IHelmState {
     forwardSpeed?: number;
     lateralSpeed?: number;
