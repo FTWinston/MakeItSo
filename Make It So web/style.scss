@@ -1,0 +1,370 @@
+body {
+	background-color: #333; margin: 0; padding: 0;
+	color: #ccc;
+	font: 14px Helvetica, Arial, sans-serif;
+	
+   -moz-user-select: none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   -ms-user-select: none;
+   user-select: none;
+}
+
+screen {
+	width: 100%;
+	height: 100%;
+}
+
+p {
+	margin: 0.65em;
+}
+
+clicker {
+	display: inline-block;
+	border: solid #ccc 2px;
+	border-radius: 1.5em;
+
+	text-align: center;
+	padding: 0.5em;
+	font-size: 1.25em;
+	
+	margin-left: 0.1em;
+	margin-right: 0.1em;
+	
+	cursor: pointer;
+}
+
+clicker:not(.disabled):active, clicker.held, clicker.enabled:not(.disabled) {
+	color: #333;
+	background-color: #ccc;
+}
+
+clicker[type="toggle"] {
+	border-style: dotted;
+}
+
+clicker[type="toggle"].enabled:not(.disabled) {
+	border-style: solid;
+}
+
+clicker[type="held"] {
+	border-width: 5px;
+	border-style: double;
+}
+
+clicker.held, clicker[type="confirm"]:not(.primed):active {
+	color: #333 !important;
+}
+
+clicker[type="confirm"] {
+	border-radius: 0.25em 1.25em 0.25em 1.25em;
+}
+
+clicker[type="confirm"].primed:hover {
+	background-color: #f66;
+	border-color: #f66;
+	color: #333;
+}
+
+clicker[type="confirm"].primed:active {
+	background-color: #333 !important;
+	color: #f66;
+}
+
+clicker[type="confirm"].primed::before {
+	content: "Confirm: ";
+}
+
+clicker[type="confirm"].primed::after {
+	content: "?";
+}
+
+.disabled {
+	cursor: not-allowed;
+	color: #666 !important;
+}
+
+.inline {
+	display: inline-block;
+}
+
+.inline.table {
+	display: inline-table;
+}
+
+row section, touchArea {
+	display: block;
+}
+
+choice, buttonGroup {
+	margin: 2em;
+	display: block;
+	position: relative;
+}
+
+buttonGroup[data-caption]::before, choice[data-caption]::before {
+	content: attr(data-caption);
+	color: #ccc;
+	position: absolute;
+    bottom: -1em;
+    left: 0.5em;
+}
+
+choice prompt, choice description {
+	display:block;
+	padding-top: 0.5em;
+	padding-bottom: 0.25em;
+}
+
+choice clicker, .table clicker {
+	border-radius: 0;
+}
+
+row > clicker {
+	margin: 0em;
+}
+
+choice clicker:first-of-type, choice clicker.first, .table clicker:first-of-type, .table clicker.first {
+	border-top-left-radius: 1.5em;
+	border-bottom-left-radius: 1.5em;
+}
+
+choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .table clicker.last {
+	border-top-right-radius: 1.5em;
+	border-bottom-right-radius: 1.5em;
+}
+
+.table row:not(.rounded):not(:last-of-type) * {
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.table row:not(.rounded):not(:first-of-type) * {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+
+.table {
+	display: table;
+	border-spacing: 0.25em;
+	border-collapse: separate;
+}
+
+.table row {
+	display: table-row;
+}
+
+.table row spacer {
+	text-align: center;
+	font-size: 1.25em;
+}
+
+.table row * {
+	display: table-cell;
+}
+
+.showKeys clicker[data-hotkey] {
+	position: relative;
+	color: transparent !important;
+}
+
+.showKeys clicker[data-hotkey]:before {
+	content: "[" attr(data-hotkey) "] ";
+	color: #ccc;
+	position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+	padding-top: 0.5em;
+	text-align: center;
+	vertical-align: middle;
+}
+
+clicker.color1 {
+	border-color: #f90;
+	color: #f90;
+}
+
+clicker.color1:not(.disabled):active, clicker.color1.held, clicker.color1.enabled:not(.disabled) {
+	background-color: #f90;
+}
+
+clicker.color2 {
+	border-color: #c9c;
+	color: #c9c;
+}
+
+clicker.color2:not(.disabled):active, clicker.color2.held, clicker.color2.enabled:not(.disabled) {
+	background-color: #c9c;
+}
+
+clicker.color3 {
+	border-color: #c66;
+	color: #c66;
+}
+
+clicker.color3:not(.disabled):active, clicker.color3.held, clicker.color3.enabled:not(.disabled) {
+	background-color: #c66;
+}
+
+clicker.color4 {
+	border-color: #99c;
+	color: #99c;
+}
+
+clicker.color4:not(.disabled):active, clicker.color4.held, clicker.color4.enabled:not(.disabled) {
+	background-color: #99c;
+}
+
+clicker.color5 {
+	border-color: #fc9;
+	color: #fc9;
+}
+
+clicker.color5:not(.disabled):active, clicker.color5.held, clicker.color5.enabled:not(.disabled) {
+	background-color: #fc9;
+}
+
+clicker.color6 {
+	border-color: #99f;
+	color: #99f;
+}
+
+clicker.color6:not(.disabled):active, clicker.color6.held, clicker.color6.enabled:not(.disabled) {
+	background-color: #99f;
+}
+
+clicker.color7 {
+	border-color: #f96;
+	color: #f96;
+}
+
+clicker.color7:not(.disabled):active, clicker.color7.held, clicker.color7.enabled:not(.disabled) {
+	background-color: #f96;
+}
+
+clicker.color8 {
+	border-color: #c69;
+	color: #c69;
+}
+
+clicker.color8:not(.disabled):active, clicker.color8.held, clicker.color8.enabled:not(.disabled) {
+	background-color: #c69;
+}
+
+touchArea {
+	border: solid #ccc 1px;
+	width: 10em;
+	height: 10em;
+	margin-left: 0.1em;
+	margin-right: 0.1em;
+	position: relative;
+}
+
+touchArea[data-caption]::before {
+	content: attr(data-caption);
+	color: #ccc;
+	position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+}
+
+touchArea[data-direction="horizontal"] {
+	height: 3em;
+}
+
+touchArea[data-direction="vertical"] {
+	width: 3em;
+}
+
+touchArea[data-mode="continuous"] {
+	background: radial-gradient(#999, #000);
+}
+
+touchArea[data-direction="horizontal"][data-mode="continuous"] {
+	background: linear-gradient(to right, #000, #999);
+}
+
+touchArea[data-direction="vertical"][data-mode="continuous"] {
+	background: linear-gradient(#999, #000);
+}
+
+#error {
+	white-space: pre-line;
+	position:relative;
+	top: 1em;
+	left: 1em;
+}
+
+.playerIdentifier {
+	font-size: 20em;
+	float: left;
+	width: 40%;
+	height: 100%;
+	text-align: center;
+}
+
+#systemList {
+	float:left;
+	width:60%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+#systemList li {
+	font-size: 2em;
+	padding: 0.5em;
+}
+
+#systemList .prompt {
+	padding-left: 0em;
+	padding-bottom: 1em;
+}
+
+#systemList li.option {
+	cursor: pointer;
+}
+
+#systemList li.option.selected {
+	text-decoration: underline;
+}
+
+#systemList li.option.taken {
+	color: #777;
+	border-color: #777;
+}
+
+#systemSwitcher {
+	height: 3em;
+	border-bottom: solid #ccc 1px;
+	padding: 0.5em;
+}
+
+#systemSwitcher choice {
+	margin: 0em;
+}
+
+system {
+	position: absolute;
+	left: 0; right: 0;
+	top: 4em; bottom: 0;
+	overflow: hidden;
+}
+
+.text {
+	white-space: pre-line;
+	padding: 0.75em;
+	background-color: #000;
+	border: solid 1px grey;
+}
+
+/*
+@media (max-width: 700px) {
+	body {
+		font-size: 1em;
+	}
+}
+*/

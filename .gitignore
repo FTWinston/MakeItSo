@@ -16,3 +16,4 @@ Make It So web/bin/
 *.VC.db
 *.VC.opendb
 Debug/*
+packages/*
