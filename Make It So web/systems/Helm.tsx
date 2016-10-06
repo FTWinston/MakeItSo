@@ -32,17 +32,17 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                 <ButtonGroup inline={true} color="1" visible={this.props.touchMode != FeatureState.Enabled} caption="rotation">
 					<row>
 						<spacer></spacer>
-						<HeldButton hotkey="W" startAction="+down" stopAction="-down">down</HeldButton>
+						<Button type={ButtonType.Held} hotkey="W" startAction="+down" stopAction="-down">down</Button>
 						<spacer></spacer>
 					</row>
 					<row className="rounded">
-						<HeldButton hotkey="A" startAction="+left" stopAction="-left">left</HeldButton>
-						<ToggleButton startAction="stoprotate">stop</ToggleButton>
-						<HeldButton hotkey="D" startAction="+right" stopAction="-right">right</HeldButton>
+						<Button type={ButtonType.Held} hotkey="A" startAction="+left" stopAction="-left">left</Button>
+						<Button type={ButtonType.Held} startAction="stoprotate">stop</Button>
+						<Button type={ButtonType.Held} hotkey="D" startAction="+right" stopAction="-right">right</Button>
 					</row>
 					<row>
 						<spacer></spacer>
-						<HeldButton hotkey="S" startAction="+up" stopAction="-up">up</HeldButton>
+						<Button type={ButtonType.Held} hotkey="S" startAction="+up" stopAction="-up">up</Button>
 						<spacer></spacer>
 					</row>
 				</ButtonGroup>
@@ -51,13 +51,13 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
 				
                 <ButtonGroup inline={true} color="2" visible={this.props.touchMode != FeatureState.Enabled}>
 					<row>
-						<HeldButton hotkey="R" startAction="+forward" stopAction="-forward">forward</HeldButton>
+						<Button type={ButtonType.Held} hotkey="R" startAction="+forward" stopAction="-forward">forward</Button>
 					</row>
 					<row>
-						<ToggleButton hotkey="F">stop</ToggleButton>
+						<Button type={ButtonType.Held} hotkey="F">stop</Button>
 					</row>
 					<row>
-						<HeldButton hotkey="V" startAction="+backward" stopAction="-backward">backward</HeldButton>
+						<Button type={ButtonType.Held} hotkey="V" startAction="+backward" stopAction="-backward">backward</Button>
 					</row>
 				</ButtonGroup>
 				
@@ -66,17 +66,17 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                 <ButtonGroup inline={true} color="3" visible={this.props.touchMode != FeatureState.Enabled} caption="translation">
 					<row>
 						<spacer></spacer>
-						<HeldButton hotkey="I" startAction="+moveup" stopAction="-moveup">up</HeldButton>
+						<Button type={ButtonType.Held} hotkey="I" startAction="+moveup" stopAction="-moveup">up</Button>
 						<spacer></spacer>
 					</row>
 					<row className="rounded">
-						<HeldButton hotkey="J" startAction="+moveleft" stopAction="-moveleft">left</HeldButton>
-						<ToggleButton startAction="stoptranslate">stop</ToggleButton>
-						<HeldButton hotkey="L" startAction="+moveright" stopAction="-moveright">right</HeldButton>
+						<Button type={ButtonType.Held} hotkey="J" startAction="+moveleft" stopAction="-moveleft">left</Button>
+						<Button type={ButtonType.Held} startAction="stoptranslate">stop</Button>
+						<Button type={ButtonType.Held} hotkey="L" startAction="+moveright" stopAction="-moveright">right</Button>
 					</row>
 					<row>
 						<spacer></spacer>
-						<HeldButton hotkey="K" startAction="+movedown" stopAction="-movedown">down</HeldButton>
+						<Button type={ButtonType.Held} hotkey="K" startAction="+movedown" stopAction="-movedown">down</Button>
 						<spacer></spacer>
 					</row>
 				</ButtonGroup>
@@ -85,13 +85,13 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
 				
 				<ButtonGroup inline={true} color="4" caption="warp factor">
 					<row>
-						<PushButton hotkey="T" action="warpup">increase</PushButton>
+						<Button type={ButtonType.Push} hotkey="T" action="warpup">increase</Button>
 					</row>
 					<row>
-						<PushButton hotkey="G" action="warpdown">decrease</PushButton>
+						<Button type={ButtonType.Push} hotkey="G" action="warpdown">decrease</Button>
 					</row>
 					<row>
-						<ToggleButton hotkey="B" startAction="warpstop">stop</ToggleButton>
+						<Button type={ButtonType.Held} hotkey="B" startAction="warpstop">stop</Button>
 					</row>
 				</ButtonGroup>
 				

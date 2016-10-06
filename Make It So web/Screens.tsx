@@ -53,12 +53,12 @@ class SystemSelect extends React.Component<ISystemSelectProps, {}> {
 					{systems}
 				</ul>
 				
-				<ToggleButton color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceEnable={this.props.touchMode == FeatureState.Enabled} onSelected={function() {self.props.touchModeChanged(FeatureState.Enabled)}} onDeselected={function() {self.props.touchModeChanged(FeatureState.Disabled)}}>touch interface</ToggleButton>
+				<Button type={ButtonType.Held} color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceActive={this.props.touchMode == FeatureState.Enabled} onActivated={function() {self.props.touchModeChanged(FeatureState.Enabled)}} onDeactivated={function() {self.props.touchModeChanged(FeatureState.Disabled)}}>touch interface</Button>
 				
-				<PushButton action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</PushButton>
-				<PushButton action="resume" color="4" visible={this.props.gameActive}>resume game</PushButton>
+				<Button type={ButtonType.Push} action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</Button>
+				<Button type={ButtonType.Push} action="resume" color="4" visible={this.props.gameActive}>resume game</Button>
 				
-				<ConfirmButton action="quit" color="3" visible={this.props.gameActive}>end game</ConfirmButton>
+				<Button type={ButtonType.Confirm} action="quit" color="3" visible={this.props.gameActive}>end game</Button>
 			</screen>
 		);
 	}
@@ -99,20 +99,20 @@ class GameSetup extends React.Component<IGameSetupProps, {}> {
 				<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 				
 				<Choice color="1" prompt="Do you wish to play with just your own crew, or with others?">
-					<ToggleButton onSelected={this.hideArena.bind(this)} showGameMode hideArena description="Play against the computer, with no other human crews.">Play a solo-crew game</ToggleButton>
-                    <ToggleButton onSelected={this.hideGameMode.bind(this)} description="Join a game being hosted by another human crew.">Join a multi-crew game</ToggleButton>
-                    <ToggleButton onSelected={this.showGameMode.bind(this)} description="Host a game which other human crews can connect to.">Host a multi-crew game</ToggleButton>
+					<Button type={ButtonType.Held} onActivated={this.hideArena.bind(this)} showGameMode hideArena description="Play against the computer, with no other human crews.">Play a solo-crew game</Button>
+                    <Button type={ButtonType.Held} onActivated={this.hideGameMode.bind(this)} description="Join a game being hosted by another human crew.">Join a multi-crew game</Button>
+                    <Button type={ButtonType.Held} onActivated={this.showGameMode.bind(this)} description="Host a game which other human crews can connect to.">Host a multi-crew game</Button>
 				</Choice>
 				
 				<Choice color="2" disabled={this.disableGameMode} prompt="Select the game mode you wish to play:">
-					<ToggleButton forceEnable={this.disableArena && (this.refs['arena'] as ToggleButton).state.active} description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</ToggleButton>
-					<ToggleButton description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</ToggleButton>
-					<ToggleButton ref="arena" disabled={this.disableArena} description="Human-crewed ships compete to death in a single star system.">Arena</ToggleButton>
+					<Button type={ButtonType.Held} forceActive={this.disableArena && (this.refs['arena'] as Button).state.active} description="Carry out missions, explore the galaxy, and boldly go where no one has gone before.">Exploration</Button>
+					<Button type={ButtonType.Held} description="Survive for as long as possible against endless waves of computer-controlled ships.">Endurance</Button>
+					<Button type={ButtonType.Held} ref="arena" disabled={this.disableArena} description="Human-crewed ships compete to death in a single star system.">Arena</Button>
 				</Choice>
 				
 				<ButtonGroup>
-					<PushButton action="-setup" onClicked={function () {gameClient.setActiveScreen('systems')}} color="3">go back</PushButton>
-					<ConfirmButton action="startGame" color="4">start game</ConfirmButton>
+					<Button type={ButtonType.Push} action="-setup" onClicked={function () {gameClient.setActiveScreen('systems')}} color="3">go back</Button>
+					<Button type={ButtonType.Confirm} action="startGame" color="4">start game</Button>
 				</ButtonGroup>
 			</screen>
 		);
@@ -172,7 +172,7 @@ class GameRoot extends React.Component<IGameRootProps, IGameRootState> {
 		var index = -1;
 		var switchers = this.props.systems.map(function(system) {
 			index++;
-			return <ToggleButton key={system.index} forceEnable={system.selected && system.index == self.state.currentSystem} visible={system.selected} onSelected={function() {self.setState({currentSystem: system.index})}}>{system.name}</ToggleButton>
+			return <Button type={ButtonType.Held} key={system.index} forceActive={system.selected && system.index == self.state.currentSystem} visible={system.selected} onActivated={function() {self.setState({currentSystem: system.index})}}>{system.name}</Button>
 		});
 
         var switcher = this.refs['switcher'] as HTMLElement;
@@ -202,7 +202,7 @@ class GameRoot extends React.Component<IGameRootProps, IGameRootState> {
 					<Choice inline={true} color="5">
 						{switchers}
 					</Choice>
-					<PushButton action="pause" color="8">pause</PushButton>
+					<Button type={ButtonType.Push} action="pause" color="8">pause</Button>
 				</div>
 				{screens}
 			</screen>
