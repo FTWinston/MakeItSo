@@ -53,19 +53,19 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
 				</section>
 				<section>
 					<Choice inline={true} color="2">
-						<row>
-							<Button type={ButtonType.Held} hotkey="F" startAction="view forward">forward</Button>
-							<Button type={ButtonType.Held} hotkey="G" startAction="view port">port</Button>
-							<Button type={ButtonType.Held} hotkey="H" startAction="view starboard">starboard</Button>
+                        <row>
+                            <Button type={ButtonType.Toggle} hotkey="F" startAction="view forward">forward</Button>
+                            <Button type={ButtonType.Toggle} hotkey="G" startAction="view port">port</Button>
+                            <Button type={ButtonType.Toggle} hotkey="H" startAction="view starboard">starboard</Button>
 						</row>
 						<row>
-							<Button type={ButtonType.Held} hotkey="C" startAction="view starboard">aft</Button>
-							<Button type={ButtonType.Held} hotkey="V" startAction="view starboard">dorsal</Button>
-							<Button type={ButtonType.Held} hotkey="B" startAction="view starboard">ventral</Button>
+                            <Button type={ButtonType.Toggle} hotkey="C" startAction="view starboard">aft</Button>
+                            <Button type={ButtonType.Toggle} hotkey="V" startAction="view starboard">dorsal</Button>
+                            <Button type={ButtonType.Toggle} hotkey="B" startAction="view starboard">ventral</Button>
 						</row>
 					</Choice>
-					<Button type={ButtonType.Held} color="4" hotkey="N" startAction="+chase" stopAction="-chase">chase mode</Button>
-					<Button type={ButtonType.Held} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">comms channel</Button>
+                    <Button type={ButtonType.Toggle} color="4" hotkey="N" startAction="+chase" stopAction="-chase">chase mode</Button>
+                    <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">comms channel</Button>
 				</section>
 				
 				

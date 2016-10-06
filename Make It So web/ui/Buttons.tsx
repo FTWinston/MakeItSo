@@ -28,7 +28,8 @@ interface IButtonProps {
     onReleased?: () => void;
 
     onMounted?: (Button) => void;
-    onSelectedChoice?: (Button) => void;
+    onActivatedChoice?: (Button) => void;
+    children?: React.ReactElement<any>[];
 };
 
 interface IButtonState {
@@ -41,7 +42,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
         type: ButtonType.Push, visible: true, disabled: false, first: false, last: false, color: null, hotkey: null,
         action: null, startAction: null, stopAction: null,
         onClicked: null, onActivated: null, onDeactivated: null, onPressed: null, onReleased: null,
-        forceActive: false, inChoice: false, onMounted: null, onSelectedChoice: null
+        forceActive: false, inChoice: false, onMounted: null, onActivatedChoice: null
     }
     constructor(props) {
         super(props);
@@ -64,7 +65,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 	}
     render():JSX.Element {
 		return (
-			<clicker ref="btn" type="this.getTypeAttribute()" style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown.bind(this)} onMouseUp={this.mouseUp.bind(this)} onMouseLeave={this.mouseLeave.bind(this)} onClick={this.click.bind(this)} onTouchStart={this.touchStart.bind(this)} onTouchEnd={this.touchEnd.bind(this)} className={this.prepClasses()} data-hotkey={this.props.hotkey}>
+            <clicker ref="btn" type={this.getTypeAttribute()} style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown.bind(this)} onMouseUp={this.mouseUp.bind(this)} onMouseLeave={this.mouseLeave.bind(this)} onClick={this.click.bind(this)} onTouchStart={this.touchStart.bind(this)} onTouchEnd={this.touchEnd.bind(this)} className={this.prepClasses()} data-hotkey={this.props.hotkey}>
 				{this.props.children}
 			</clicker>
 		);
@@ -138,8 +139,8 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 		    if (nowActive) {
 			    if (this.props.onActivated != null)
 				    this.props.onActivated();
-			    if (this.props.onSelectedChoice != null)
-				    this.props.onSelectedChoice(this);
+			    if (this.props.onActivatedChoice != null)
+				    this.props.onActivatedChoice(this);
 		    }
 		    else if (this.props.onDeactivated != null)
 			    this.props.onDeactivated();
@@ -154,7 +155,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
         if (this.props.onPressed != null)
             this.props.onPressed();
 	}
-	mouseUp(e) {
+    mouseUp(e) {
         if (!this.state.pressed || this.props.disabled)
             return;
 
@@ -164,8 +165,8 @@ class Button extends React.Component<IButtonProps, IButtonState> {
             this.setState({ active: false });
         }
 
-		if (this.props.startAction != null)
-			gameClient.socket.send(this.props.startAction);
+		if (this.props.stopAction != null)
+            gameClient.socket.send(this.props.stopAction);
 
 		this.setState({ pressed: false });
         if (this.props.onReleased != null)
@@ -210,17 +211,6 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 
 		if (this.props.onClicked != null)
 			this.props.onClicked();
-
-        if (this.props.type == ButtonType.Toggle) {
-            this.setState({ active: !this.state.active });
-            
-            if (this.state.active) {
-                if (this.props.onActivated != null)
-                    this.props.onActivated();
-            }
-            else if (this.props.onDeactivated != null)
-                 this.props.onDeactivated();
-        }
 	}
 	setActive(val) {
 		this.setState({ active: val });
@@ -228,8 +218,8 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 		if (val && this.props.onActivated != null)
 			this.props.onActivated();
 		
-		if (val && this.props.onSelectedChoice != null)
-			this.props.onSelectedChoice(this);
+		if (val && this.props.onActivatedChoice != null)
+			this.props.onActivatedChoice(this);
 	}
 }
 

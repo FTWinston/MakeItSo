@@ -34,8 +34,8 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
 						<spacer></spacer>
 					</row>
 					<row className="rounded">
-						<Button type={ButtonType.Held} hotkey="A" startAction="+left" stopAction="-left">left</Button>
-						<Button type={ButtonType.Held} startAction="stoprotate">stop</Button>
+                        <Button type={ButtonType.Held} hotkey="A" startAction="+left" stopAction="-left">left</Button>
+                        <Button type={ButtonType.Toggle} startAction="stoprotate">stop</Button>
 						<Button type={ButtonType.Held} hotkey="D" startAction="+right" stopAction="-right">right</Button>
 					</row>
 					<row>
@@ -52,7 +52,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
 						<Button type={ButtonType.Held} hotkey="R" startAction="+forward" stopAction="-forward">forward</Button>
 					</row>
 					<row>
-						<Button type={ButtonType.Held} hotkey="F">stop</Button>
+						<Button type={ButtonType.Toggle} hotkey="F">stop</Button>
 					</row>
 					<row>
 						<Button type={ButtonType.Held} hotkey="V" startAction="+backward" stopAction="-backward">backward</Button>
@@ -69,7 +69,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
 					</row>
 					<row className="rounded">
 						<Button type={ButtonType.Held} hotkey="J" startAction="+moveleft" stopAction="-moveleft">left</Button>
-						<Button type={ButtonType.Held} startAction="stoptranslate">stop</Button>
+						<Button type={ButtonType.Toggle} startAction="stoptranslate">stop</Button>
 						<Button type={ButtonType.Held} hotkey="L" startAction="+moveright" stopAction="-moveright">right</Button>
 					</row>
 					<row>
@@ -89,7 +89,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
 						<Button type={ButtonType.Push} hotkey="G" action="warpdown">decrease</Button>
 					</row>
 					<row>
-						<Button type={ButtonType.Held} hotkey="B" startAction="warpstop">stop</Button>
+                        <Button type={ButtonType.Toggle} hotkey="B" startAction="warpstop">stop</Button>
 					</row>
 				</ButtonGroup>
 				

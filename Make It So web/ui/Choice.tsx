@@ -21,9 +21,8 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         prompt: null, color: null, disabled: false, inline: false, visible: true
     };
 	render() {
-		var self = this;
-		var props:any = { inChoice: true, onSelectedChoice: self.childSelected.bind(this), onMounted: self.childMounted.bind(this), first: false, last: false };
-        var gcProps:any = { inChoice: true, onSelectedChoice: self.childSelected.bind(this), onMounted: self.childMounted.bind(this), first: false, last: false };
+		var props:IButtonProps = { inChoice: true, onActivatedChoice: this.childSelected.bind(this), onMounted: this.childMounted.bind(this), first: false, last: false };
+        var gcProps:IButtonProps = { inChoice: true, onActivatedChoice: this.childSelected.bind(this), onMounted: this.childMounted.bind(this), first: false, last: false };
 		
 		if (this.props.color != null)
 			gcProps.color = props.color = this.props.color;
@@ -81,10 +80,10 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
 			child.setActive(true);
 		this.state.mountedChildren.push(child);
 	}
-	childSelected(child) {
-		for (var i = 0; i < this.state.mountedChildren.length; i++) {
-			if (this.state.mountedChildren[i] != child)
-				this.state.mountedChildren[i].setActive(false);
+    childSelected(child) {
+        for (var i = 0; i < this.state.mountedChildren.length; i++) {
+            if (this.state.mountedChildren[i] != child)
+                this.state.mountedChildren[i].setActive(this.state.mountedChildren[i] == child);
 		}
 		this.setState({description: child.props.description});
 	}
