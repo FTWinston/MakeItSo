@@ -17,3 +17,4 @@ Make It So web/bin/
 *.VC.opendb
 Debug/*
 packages/*
+WebRoot/*

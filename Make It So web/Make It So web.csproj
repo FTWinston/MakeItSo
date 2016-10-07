@@ -138,4 +138,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\BuildWebCompiler.1.11.323\build\BuildWebCompiler.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\BuildWebCompiler.1.11.323\build\BuildWebCompiler.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /Q /Y "$(TargetDir)\..\output\index.html" "$(TargetDir)\..\..\WebRoot"
+xcopy /Q /Y "$(TargetDir)\..\output\react.js" "$(TargetDir)\..\..\WebRoot\react.js*"
+xcopy /Q /Y "$(TargetDir)\..\output\react-dom.js" "$(TargetDir)\..\..\WebRoot\react-dom.js*"</PostBuildEvent>
+  </PropertyGroup>
 </Project>
