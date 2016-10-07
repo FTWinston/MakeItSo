@@ -62,13 +62,6 @@
     <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\WebRoot\style.css">
-      <Link>style.css</Link>
-    </Content>
-    <Content Include="..\WebRoot\style.min.css">
-      <Link>style.min.css</Link>
-      <DependentUpon>style.css</DependentUpon>
-    </Content>
     <Content Include="style.scss" />
   </ItemGroup>
   <ItemGroup>
@@ -119,16 +112,27 @@
     <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
     <TypeScriptModuleKind>
     </TypeScriptModuleKind>
-    <TypeScriptOutFile>..\WebRoot\js\makeitso.js</TypeScriptOutFile>
-    <TypeScriptOutDir>..\WebRoot\js</TypeScriptOutDir>
+    <TypeScriptOutFile>..\WebRoot\makeitso.js</TypeScriptOutFile>
+    <TypeScriptOutDir>..\WebRoot\</TypeScriptOutDir>
     <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
     <TypeScriptNoEmitOnError>False</TypeScriptNoEmitOnError>
     <TypeScriptMapRoot />
-    <TypeScriptSourceRoot />
+    <TypeScriptSourceRoot>../Make It So web/</TypeScriptSourceRoot>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <TypeScriptRemoveComments>true</TypeScriptRemoveComments>
     <TypeScriptSourceMap>false</TypeScriptSourceMap>
+    <TypeScriptTarget>ES5</TypeScriptTarget>
+    <TypeScriptJSXEmit>React</TypeScriptJSXEmit>
+    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
+    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
+    <TypeScriptModuleKind />
+    <TypeScriptOutFile>..\WebRoot\makeitso.js</TypeScriptOutFile>
+    <TypeScriptOutDir>..\WebRoot\</TypeScriptOutDir>
+    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
+    <TypeScriptNoEmitOnError>False</TypeScriptNoEmitOnError>
+    <TypeScriptMapRoot />
+    <TypeScriptSourceRoot />
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets" Condition="Exists('$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\TypeScript\Microsoft.TypeScript.targets')" />
   <Import Project="..\packages\BuildWebCompiler.1.11.323\build\BuildWebCompiler.targets" Condition="Exists('..\packages\BuildWebCompiler.1.11.323\build\BuildWebCompiler.targets')" />
@@ -140,7 +144,16 @@
   </Target>
   <PropertyGroup>
     <PostBuildEvent>xcopy /Q /Y "$(TargetDir)\..\output\index.html" "$(TargetDir)\..\..\WebRoot"
+if "$(ConfigurationName)"=="Debug" (
 xcopy /Q /Y "$(TargetDir)\..\output\react.js" "$(TargetDir)\..\..\WebRoot\react.js*"
-xcopy /Q /Y "$(TargetDir)\..\output\react-dom.js" "$(TargetDir)\..\..\WebRoot\react-dom.js*"</PostBuildEvent>
+xcopy /Q /Y "$(TargetDir)\..\output\react-dom.js" "$(TargetDir)\..\..\WebRoot\react-dom.js*"
+) else (
+xcopy /Q /Y "$(TargetDir)\..\output\react.min.js" "$(TargetDir)\..\..\WebRoot\react.js*"
+xcopy /Q /Y "$(TargetDir)\..\output\react-dom.min.js" "$(TargetDir)\..\..\WebRoot\react-dom.js*"
+del "$(TargetDir)\..\..\WebRoot\style.css"
+copy "$(TargetDir)\..\..\WebRoot\style.min.css" "$(TargetDir)\..\..\WebRoot\style.css"
+del "$(TargetDir)\..\..\WebRoot\*.js.map"
+)
+del "$(TargetDir)\..\..\WebRoot\style.min.css"</PostBuildEvent>
   </PropertyGroup>
 </Project>
