@@ -12,3 +12,7 @@
 interface ISystem {
     receiveMessage: MessageFunc
 }
+
+interface MessageFunc {
+    (cmd: string, data: string): boolean;
+}

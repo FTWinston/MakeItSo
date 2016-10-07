@@ -1,6 +1,6 @@
 ﻿/// <reference path="Intrinsics.ts" />
-/// <reference path="Common.ts" />
 
+/// <reference path="ui/Features.ts" />
 /// <reference path="ui/Hotkeys.ts" />
 /// <reference path="ui/TouchFunctions.ts" />
 
@@ -9,24 +9,29 @@
 /// <reference path="ui/Choice.tsx" />
 /// <reference path="ui/Canvas.tsx" />
 
-/// <reference path="ISystem.ts" />
-/// <reference path="systems/DamageControl.tsx" />
-/// <reference path="systems/Deflector.tsx" />
-/// <reference path="systems/Helm.tsx" />
-/// <reference path="systems/PowerManagement/PowerCards.tsx" />
-/// <reference path="systems/PowerManagement/PowerDistribution.tsx" />
-/// <reference path="systems/PowerManagement/PowerManagement.tsx" />
-/// <reference path="systems/Sensors.tsx" />
-/// <reference path="systems/Shields/ShieldBlock.ts" />
-/// <reference path="systems/Shields/ShieldCursor.ts" />
-/// <reference path="systems/Shields/ShieldData.ts" />
-/// <reference path="systems/Shields/ShieldDisplay.tsx" />
-/// <reference path="systems/Shields/Shields.tsx" />
-/// <reference path="systems/ViewScreen.tsx" />
-/// <reference path="systems/Weapons/WeaponTarget.ts" />
-/// <reference path="systems/Weapons/WeaponTargetInfo.tsx" />
-/// <reference path="systems/Weapons/WeaponTargetSelect.tsx" />
-/// <reference path="systems/Weapons/Weapons.tsx" />
+/// <reference path="game/ISystem.ts" />
+/// <reference path="game/DamageControl/DamageControl.tsx" />
+/// <reference path="game/Deflector/Deflector.tsx" />
+/// <reference path="game/Helm/Helm.tsx" />
+/// <reference path="game/PowerManagement/PowerCards.tsx" />
+/// <reference path="game/PowerManagement/PowerDistribution.tsx" />
+/// <reference path="game/PowerManagement/PowerManagement.tsx" />
+/// <reference path="game/Sensors/Sensors.tsx" />
+/// <reference path="game/Shields/ShieldBlock.ts" />
+/// <reference path="game/Shields/ShieldCursor.ts" />
+/// <reference path="game/Shields/ShieldData.ts" />
+/// <reference path="game/Shields/ShieldDisplay.tsx" />
+/// <reference path="game/Shields/Shields.tsx" />
+/// <reference path="game/ViewScreen/ViewScreen.tsx" />
+/// <reference path="game/Weapons/WeaponTarget.ts" />
+/// <reference path="game/Weapons/WeaponTargetInfo.tsx" />
+/// <reference path="game/Weapons/WeaponTargetSelect.tsx" />
+/// <reference path="game/Weapons/Weapons.tsx" />
+/// <reference path="game/GameRoot.tsx" />
 
-/// <reference path="Screens.tsx" />
+/// <reference path="setup/SystemPicker.tsx" />
+/// <reference path="setup/SystemSelect.tsx" />
+/// <reference path="setup/GameSetup.tsx" />
+
+/// <reference path="ErrorDisplay.tsx" />
 /// <reference path="GameClient.tsx" />

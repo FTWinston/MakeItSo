@@ -203,7 +203,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
 	}
 };
 
-gameClient = ReactDOM.render(
+let gameClient = ReactDOM.render(
 	<GameClient />,
 	document.getElementById('gameRoot')
 ) as GameClient;
