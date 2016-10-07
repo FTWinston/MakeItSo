@@ -1,0 +1,62 @@
+﻿@import 'colors';
+@import 'borders';
+
+clicker {
+	display: inline-block;
+	border: solid #ccc 2px;
+	@include border-radius(1.5em);
+
+	text-align: center;
+	padding: 0.5em;
+	font-size: 1.25em;
+	
+	margin-left: 0.1em;
+	margin-right: 0.1em;
+	
+	cursor: pointer;
+}
+
+clicker:not(.disabled):active, clicker.held, clicker.enabled:not(.disabled) {
+	color: $backgroundColor;
+	background-color: #ccc;
+}
+
+clicker[type="toggle"] {
+	border-style: dotted;
+}
+
+clicker[type="toggle"].enabled:not(.disabled) {
+	border-style: solid;
+}
+
+clicker[type="held"] {
+	border-width: 5px;
+	border-style: double;
+}
+
+clicker.held, clicker[type="confirm"]:not(.primed):active {
+	color: $backgroundColor !important;
+}
+
+clicker[type="confirm"] {
+    @include border-radius(0.25em 1.25em 0.25em 1.25em);
+}
+
+clicker[type="confirm"].primed:hover {
+	background-color: #f66;
+	border-color: #f66;
+	color: $backgroundColor;
+}
+
+clicker[type="confirm"].primed:active {
+	background-color: $backgroundColor !important;
+	color: #f66;
+}
+
+clicker[type="confirm"].primed::before {
+	content: "Confirm: ";
+}
+
+clicker[type="confirm"].primed::after {
+	content: "?";
+}

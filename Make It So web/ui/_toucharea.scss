@@ -1,0 +1,38 @@
+﻿@import 'colors';
+
+touchArea {
+	border: solid #ccc 1px;
+	width: 10em;
+	height: 10em;
+	margin-left: 0.1em;
+	margin-right: 0.1em;
+	position: relative;
+}
+
+touchArea[data-caption]::before {
+	content: attr(data-caption);
+	color: #ccc;
+	position: absolute;
+    bottom: 0.5em;
+    left: 0.5em;
+}
+
+touchArea[data-direction="horizontal"] {
+	height: 3em;
+}
+
+touchArea[data-direction="vertical"] {
+	width: 3em;
+}
+
+touchArea[data-mode="continuous"] {
+	background: radial-gradient($lightBackground, $darkBackground);
+}
+
+touchArea[data-direction="horizontal"][data-mode="continuous"] {
+	background: linear-gradient(to right, $darkBackground, $lightBackground);
+}
+
+touchArea[data-direction="vertical"][data-mode="continuous"] {
+	background: linear-gradient($lightBackground, $darkBackground);
+}

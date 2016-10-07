@@ -1,10 +1,12 @@
+@import 'ui/colors';
+@import 'ui/borders';
+
 body {
-	background-color: #333; margin: 0; padding: 0;
-	color: #ccc;
+	background-color: $backgroundColor; margin: 0; padding: 0;
+	color: $textColor;
 	font: 14px Helvetica, Arial, sans-serif;
 	
    -moz-user-select: none;
-   -khtml-user-select: none;
    -webkit-user-select: none;
    -ms-user-select: none;
    user-select: none;
@@ -19,69 +21,11 @@ p {
 	margin: 0.65em;
 }
 
-clicker {
-	display: inline-block;
-	border: solid #ccc 2px;
-	border-radius: 1.5em;
-
-	text-align: center;
-	padding: 0.5em;
-	font-size: 1.25em;
-	
-	margin-left: 0.1em;
-	margin-right: 0.1em;
-	
-	cursor: pointer;
-}
-
-clicker:not(.disabled):active, clicker.held, clicker.enabled:not(.disabled) {
-	color: #333;
-	background-color: #ccc;
-}
-
-clicker[type="toggle"] {
-	border-style: dotted;
-}
-
-clicker[type="toggle"].enabled:not(.disabled) {
-	border-style: solid;
-}
-
-clicker[type="held"] {
-	border-width: 5px;
-	border-style: double;
-}
-
-clicker.held, clicker[type="confirm"]:not(.primed):active {
-	color: #333 !important;
-}
-
-clicker[type="confirm"] {
-	border-radius: 0.25em 1.25em 0.25em 1.25em;
-}
-
-clicker[type="confirm"].primed:hover {
-	background-color: #f66;
-	border-color: #f66;
-	color: #333;
-}
-
-clicker[type="confirm"].primed:active {
-	background-color: #333 !important;
-	color: #f66;
-}
-
-clicker[type="confirm"].primed::before {
-	content: "Confirm: ";
-}
-
-clicker[type="confirm"].primed::after {
-	content: "?";
-}
+@import 'ui/buttons';
 
 .disabled {
 	cursor: not-allowed;
-	color: #666 !important;
+	color: $disabledColor !important;
 }
 
 .inline {
@@ -96,52 +40,14 @@ row section, touchArea {
 	display: block;
 }
 
-choice, buttonGroup {
-	margin: 2em;
-	display: block;
-	position: relative;
-}
-
-buttonGroup[data-caption]::before, choice[data-caption]::before {
-	content: attr(data-caption);
-	color: #ccc;
-	position: absolute;
-    bottom: -1em;
-    left: 0.5em;
-}
-
-choice prompt, choice description {
-	display:block;
-	padding-top: 0.5em;
-	padding-bottom: 0.25em;
-}
-
-choice clicker, .table clicker {
-	border-radius: 0;
-}
-
-row > clicker {
-	margin: 0em;
-}
-
-choice clicker:first-of-type, choice clicker.first, .table clicker:first-of-type, .table clicker.first {
-	border-top-left-radius: 1.5em;
-	border-bottom-left-radius: 1.5em;
-}
-
-choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .table clicker.last {
-	border-top-right-radius: 1.5em;
-	border-bottom-right-radius: 1.5em;
-}
+@import 'ui/choice';
 
 .table row:not(.rounded):not(:last-of-type) * {
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+	@include border-radius-bottom(0);
 }
 
 .table row:not(.rounded):not(:first-of-type) * {
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
+	@include border-radius-top(0);
 }
 
 .table {
@@ -170,7 +76,7 @@ choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .
 
 .showKeys clicker[data-hotkey]:before {
 	content: "[" attr(data-hotkey) "] ";
-	color: #ccc;
+	color: $textColor;
 	position: absolute;
     top: 0;
     left: 0;
@@ -181,114 +87,8 @@ choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .
 	vertical-align: middle;
 }
 
-clicker.color1 {
-	border-color: #f90;
-	color: #f90;
-}
-
-clicker.color1:not(.disabled):active, clicker.color1.held, clicker.color1.enabled:not(.disabled) {
-	background-color: #f90;
-}
-
-clicker.color2 {
-	border-color: #c9c;
-	color: #c9c;
-}
-
-clicker.color2:not(.disabled):active, clicker.color2.held, clicker.color2.enabled:not(.disabled) {
-	background-color: #c9c;
-}
-
-clicker.color3 {
-	border-color: #c66;
-	color: #c66;
-}
-
-clicker.color3:not(.disabled):active, clicker.color3.held, clicker.color3.enabled:not(.disabled) {
-	background-color: #c66;
-}
-
-clicker.color4 {
-	border-color: #99c;
-	color: #99c;
-}
-
-clicker.color4:not(.disabled):active, clicker.color4.held, clicker.color4.enabled:not(.disabled) {
-	background-color: #99c;
-}
-
-clicker.color5 {
-	border-color: #fc9;
-	color: #fc9;
-}
-
-clicker.color5:not(.disabled):active, clicker.color5.held, clicker.color5.enabled:not(.disabled) {
-	background-color: #fc9;
-}
-
-clicker.color6 {
-	border-color: #99f;
-	color: #99f;
-}
-
-clicker.color6:not(.disabled):active, clicker.color6.held, clicker.color6.enabled:not(.disabled) {
-	background-color: #99f;
-}
-
-clicker.color7 {
-	border-color: #f96;
-	color: #f96;
-}
-
-clicker.color7:not(.disabled):active, clicker.color7.held, clicker.color7.enabled:not(.disabled) {
-	background-color: #f96;
-}
-
-clicker.color8 {
-	border-color: #c69;
-	color: #c69;
-}
-
-clicker.color8:not(.disabled):active, clicker.color8.held, clicker.color8.enabled:not(.disabled) {
-	background-color: #c69;
-}
-
-touchArea {
-	border: solid #ccc 1px;
-	width: 10em;
-	height: 10em;
-	margin-left: 0.1em;
-	margin-right: 0.1em;
-	position: relative;
-}
-
-touchArea[data-caption]::before {
-	content: attr(data-caption);
-	color: #ccc;
-	position: absolute;
-    bottom: 0.5em;
-    left: 0.5em;
-}
-
-touchArea[data-direction="horizontal"] {
-	height: 3em;
-}
-
-touchArea[data-direction="vertical"] {
-	width: 3em;
-}
-
-touchArea[data-mode="continuous"] {
-	background: radial-gradient(#999, #000);
-}
-
-touchArea[data-direction="horizontal"][data-mode="continuous"] {
-	background: linear-gradient(to right, #000, #999);
-}
-
-touchArea[data-direction="vertical"][data-mode="continuous"] {
-	background: linear-gradient(#999, #000);
-}
+@import 'ui/buttoncolors';
+@import 'ui/toucharea.scss';
 
 #error {
 	white-space: pre-line;
@@ -333,13 +133,13 @@ touchArea[data-direction="vertical"][data-mode="continuous"] {
 }
 
 #systemList li.option.taken {
-	color: #777;
-	border-color: #777;
+	color: $fadedColor;
+	border-color: $fadedColor;
 }
 
 #systemSwitcher {
 	height: 3em;
-	border-bottom: solid #ccc 1px;
+	border-bottom: solid $textColor 1px;
 	padding: 0.5em;
 }
 
@@ -357,7 +157,7 @@ system {
 .text {
 	white-space: pre-line;
 	padding: 0.75em;
-	background-color: #000;
+	background-color: $darkBackground;
 	border: solid 1px grey;
 }
 

@@ -1,0 +1,38 @@
+﻿@import 'colors';
+@import 'borders';
+
+choice, buttonGroup {
+	margin: 2em;
+	display: block;
+	position: relative;
+}
+
+buttonGroup[data-caption]::before, choice[data-caption]::before {
+	content: attr(data-caption);
+	color: $textColor;
+	position: absolute;
+    bottom: -1em;
+    left: 0.5em;
+}
+
+choice prompt, choice description {
+	display:block;
+	padding-top: 0.5em;
+	padding-bottom: 0.25em;
+}
+
+choice clicker, .table clicker {
+	@include border-radius(0);
+}
+
+row > clicker {
+	margin: 0em;
+}
+
+choice clicker:first-of-type, choice clicker.first, .table clicker:first-of-type, .table clicker.first {
+    @include border-radius-left(1.5em);
+}
+
+choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .table clicker.last {
+	@include border-radius-right(1.5em);
+}

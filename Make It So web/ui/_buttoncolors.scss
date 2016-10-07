@@ -1,0 +1,19 @@
+﻿@import 'colors';
+
+@mixin button-color($color) {
+    border-color: $color;
+	color: $color;
+
+    &:not(.disabled):active, &.held, &.enabled:not(.disabled) {
+    	background-color: $color;
+    }
+}
+
+clicker.color1 { @include button-color($btnColor1) }
+clicker.color2 { @include button-color($btnColor2) }
+clicker.color3 { @include button-color($btnColor3) }
+clicker.color4 { @include button-color($btnColor4) }
+clicker.color5 { @include button-color($btnColor5) }
+clicker.color6 { @include button-color($btnColor6) }
+clicker.color7 { @include button-color($btnColor7) }
+clicker.color8 { @include button-color($btnColor8) }
