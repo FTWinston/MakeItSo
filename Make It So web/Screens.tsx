@@ -15,7 +15,7 @@ class ErrorDisplay extends React.Component<IErrorDisplayProps, {}> {
 
 interface ISystemSelectProps {
     show?: boolean;
-    playerID?: number;
+    playerID?: string;
     setupInProgress?: boolean;
     gameActive?: boolean;
     systems?: any[];
@@ -88,7 +88,7 @@ class GameSetup extends React.Component<IGameSetupProps, {}> {
 				<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 				
 				<Choice color="1" prompt="Do you wish to play with just your own crew, or with others?">
-					<Button type={ButtonType.Toggle} onActivated={this.hideArena.bind(this)} showGameMode hideArena description="Play against the computer, with no other human crews.">Play a solo-crew game</Button>
+					<Button type={ButtonType.Toggle} onActivated={this.hideArena.bind(this)} description="Play against the computer, with no other human crews.">Play a solo-crew game</Button>
                     <Button type={ButtonType.Toggle} onActivated={this.hideGameMode.bind(this)} description="Join a game being hosted by another human crew.">Join a multi-crew game</Button>
                     <Button type={ButtonType.Toggle} onActivated={this.showGameMode.bind(this)} description="Host a game which other human crews can connect to.">Host a multi-crew game</Button>
 				</Choice>

@@ -124,14 +124,14 @@ class GameClient extends React.Component<{}, IGameClientState> {
 			return {systems: systems};
 		});
     }
-    systemSelectionChanged(id: number, state: boolean) {
+    systemSelectionChanged(id: string, state: boolean) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].selected = state;
 			return {systems: systems};
 		});
 	}
-	markSystemInUse(id: number, state: boolean) {
+	markSystemInUse(id: string, state: boolean) {
 		this.setState(function(previousState, currentProps) {
 			var systems = previousState.systems;
 			systems[id].usedByOther = state;
