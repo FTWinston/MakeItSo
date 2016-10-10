@@ -1,9 +1,9 @@
-﻿interface ISystemPickerProps {
+﻿interface ISystemListItemProps {
     system?: ISystemInfo;
     selectionChanged?: (systemIndex: number, nowSelected: boolean) => void;
 }
 
-class SystemPicker extends React.Component<ISystemPickerProps, {}> {
+class SystemListItem extends React.Component<ISystemListItemProps, {}> {
 	render() {
 		var classes = "option";
 		if (this.props.system.selected)
@@ -17,7 +17,7 @@ class SystemPicker extends React.Component<ISystemPickerProps, {}> {
 	}
 	clicked() {
 		var nowSelected = !this.props.system.selected;
-		gameClient.socket.send((nowSelected ? '+sys ' : '-sys ') + this.props.system.index);
+		gameClient.server.send((nowSelected ? '+sys ' : '-sys ') + this.props.system.index);
 		this.props.selectionChanged(this.props.system.index, nowSelected);
 	}
 }

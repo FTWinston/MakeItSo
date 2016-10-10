@@ -16,7 +16,7 @@ class SystemSelect extends React.Component<ISystemSelectProps, {}> {
 	render() {
 		var self = this;
 		var systems = this.props.systems.map(function(system) {
-			return <SystemPicker key={system.index} system={system} selectionChanged={self.props.selectionChanged} />
+			return <SystemListItem key={system.index} system={system} selectionChanged={self.props.selectionChanged} />
 		});
 		
 		return (

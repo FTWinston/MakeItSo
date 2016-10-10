@@ -1,17 +1,17 @@
-interface IGameRootProps {
+interface ISystemContainerProps {
     show?: boolean;
     systems?: ISystemInfo[];
     registerSystem?: (state: FeatureState) => void;
     touchMode?: FeatureState;
 }
 
-interface IGameRootState {
+interface ISystemContainerState {
     currentSystem?: number;
     width?: number;
     height?: number;
 }
 
-class GameRoot extends React.Component<IGameRootProps, IGameRootState> {
+class SystemContainer extends React.Component<ISystemContainerProps, ISystemContainerState> {
     constructor(props) {
         super(props);
         this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight };

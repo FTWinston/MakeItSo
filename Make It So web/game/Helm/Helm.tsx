@@ -111,38 +111,38 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
         return false;
     }
 	touchRotation(dx, dy) {
-		gameClient.socket.send('yaw ' + dx);
-		gameClient.socket.send('pitch ' + dx);
+		gameClient.server.send('yaw ' + dx);
+		gameClient.server.send('pitch ' + dx);
 	}
 	touchForwardBack(dx, dy) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		if (dy < 0)
-			gameClient.socket.send('+forward ' + (-dy));
+			gameClient.server.send('+forward ' + (-dy));
 		else if (dy == 0) {
-			gameClient.socket.send('-forward');
-			gameClient.socket.send('-backward');
+			gameClient.server.send('-forward');
+			gameClient.server.send('-backward');
 		}
 		else
-			gameClient.socket.send('+backward ' + dy);
+			gameClient.server.send('+backward ' + dy);
 	}
 	touchTranslation(dx, dy) {
 		// ideally, this should control "joystick" input directly, instead of messing with the "key" input
 		if (dx < 0)
-			gameClient.socket.send('+moveleft ' + (-dx));
+			gameClient.server.send('+moveleft ' + (-dx));
 		else if (dx == 0) {
-			gameClient.socket.send('-moveleft');
-			gameClient.socket.send('-moveright');
+			gameClient.server.send('-moveleft');
+			gameClient.server.send('-moveright');
 		}
 		else
-			gameClient.socket.send('+moveright ' + dx);
+			gameClient.server.send('+moveright ' + dx);
 		
 		if (dy < 0)
-			gameClient.socket.send('+moveup ' + (-dy));
+			gameClient.server.send('+moveup ' + (-dy));
 		else if (dy == 0) {
-			gameClient.socket.send('-moveup');
-			gameClient.socket.send('-movedown');
+			gameClient.server.send('-moveup');
+			gameClient.server.send('-movedown');
 		}
 		else
-			gameClient.socket.send('+movedown ' + dy);
+			gameClient.server.send('+movedown ' + dy);
 	}
 }

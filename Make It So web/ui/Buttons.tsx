@@ -134,7 +134,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 		
 		    var action = nowActive ? this.props.startAction : this.props.stopAction;
 		    if (action != null)
-			    gameClient.socket.send(action);
+			    gameClient.server.send(action);
 		
 		    if (nowActive) {
 			    if (this.props.onActivated != null)
@@ -148,7 +148,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
         }
         else {
 		    if (this.props.startAction != null)
-			    gameClient.socket.send(this.props.startAction);
+			    gameClient.server.send(this.props.startAction);
 		    this.setState({ pressed: true });
         }
 
@@ -166,7 +166,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
         }
 
 		if (this.props.stopAction != null)
-            gameClient.socket.send(this.props.stopAction);
+            gameClient.server.send(this.props.stopAction);
 
 		this.setState({ pressed: false });
         if (this.props.onReleased != null)
@@ -207,7 +207,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 		}
 		
 		if (this.props.action != null)
-			gameClient.socket.send(this.props.action);
+			gameClient.server.send(this.props.action);
 
 		if (this.props.onClicked != null)
 			this.props.onClicked();

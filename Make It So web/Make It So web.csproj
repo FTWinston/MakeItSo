@@ -24,10 +24,11 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="Connection.ts" />
     <TypeScriptCompile Include="ErrorDisplay.tsx" />
     <TypeScriptCompile Include="setup\GameSetup.tsx" />
     <TypeScriptCompile Include="game\ISystem.ts" />
-    <TypeScriptCompile Include="setup\SystemPicker.tsx" />
+    <TypeScriptCompile Include="setup\SystemListItem.tsx" />
     <TypeScriptCompile Include="setup\SystemSelect.tsx" />
     <TypeScriptCompile Include="game\DamageControl\DamageControl.tsx" />
     <TypeScriptCompile Include="game\Deflector\Deflector.tsx" />
@@ -35,7 +36,7 @@
     <TypeScriptCompile Include="game\Helm\Helm.tsx" />
     <TypeScriptCompile Include="Intrinsics.ts" />
     <TypeScriptCompile Include="game\PowerManagement\PowerManagement.tsx" />
-    <TypeScriptCompile Include="game\GameRoot.tsx" />
+    <TypeScriptCompile Include="game\SystemContainer.tsx" />
     <TypeScriptCompile Include="game\PowerManagement\PowerCards.tsx" />
     <TypeScriptCompile Include="game\PowerManagement\PowerDistribution.tsx" />
     <TypeScriptCompile Include="game\Sensors\Sensors.tsx" />

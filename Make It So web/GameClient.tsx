@@ -33,86 +33,21 @@ class GameClient extends React.Component<{}, IGameClientState> {
 			    {name: "Power", index: 6, selected: false, usedByOther: false},
 			    {name: "Deflector", index: 7, selected: false, usedByOther: false}
 		    ],
-		    vibration: ('vibrate' in navigator) ? FeatureState.Enabled : FeatureState.Unavailable,
-		    touchInterface: ('ontouchstart' in window || navigator.msMaxTouchPoints) ? FeatureState.Disabled : FeatureState.Unavailable
+		    vibration: FeatureDetection.Vibration ? FeatureState.Enabled : FeatureState.Unavailable,
+		    touchInterface: FeatureDetection.Touch ? FeatureState.Disabled : FeatureState.Unavailable
 		};
     }
-	socket: any;
-	createConnection() {
-		this.socket = new WebSocket('ws://' + location.host + '/ws');
-		this.socket.onerror = this.socket.onclose = function (e) { gameClient.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }
-		this.socket.onmessage = this.messageReceived.bind(this);
+	componentDidMount () {
+        if (FeatureDetection.CheckRequirements(this))
+		    this.server = new Connection(this, 'ws://' + location.host + '/ws');
 	}
-	messageReceived(ev) {
-        let data:string = (ev.data || ''), pos:number = data.indexOf(' ');
-		let cmd:string = pos == -1 ? data : data.substr(0, pos);
-		data = pos == -1 ? null : data.substr(pos + 1);
-		
-		if (cmd == 'id') {
-			this.setPlayerID(data);
-			this.setActiveScreen('systems');
-		}
-		else if (cmd == 'sys+') {
-            this.markSystemInUse(data, false);
-		}
-		else if (cmd == 'sys-') {
-            this.markSystemInUse(data, true);
-		}
-		else if (cmd == 'setup+') {
-			this.setupScreenInUse(false);
-		}
-		else if (cmd == 'setup-') {
-			this.setupScreenInUse(true);
-		}
-		else if (cmd == 'setup') {
-			this.setActiveScreen('setup');
-		}
-		else if (cmd == 'full') {
-			this.showError('This ship is full: there is no room for you to join.', true);
-		}
-		else if (cmd == 'started') {
-			this.gameAlreadyStarted();
-			this.showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
-		}
-		else if (cmd == 'paused') {
-			this.gameAlreadyStarted();
-			this.setActiveScreen('systems');
-		}
-		else if (cmd == 'game+') {
-			this.setActiveScreen('game');
-		}
-		else if (cmd == 'game-') {
-			var blame = data != null ? 'User \'' + data + '\' ended the game.' : 'The game has ended.';
-			this.showError(blame + ' Please wait...', false);
-
-			setTimeout(function() { gameClient.setActiveScreen('systems'); }, 3000);
-		}
-		else if (cmd == 'pause+') {
-			this.setActiveScreen('systems');
-		}
-		else if (cmd == 'pause-') {
-			this.setActiveScreen('game');
-		}
-		else {
-			var sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
-			if (isNaN(sysNum) || sysNum < 0 || sysNum > this.state.systems.length)
-				console.error('Unrecognised command from server: ' + cmd);
-			else {
-				cmd = cmd.substr(1);
-				var system = this.state.systems[sysNum];
-				if (system === undefined)
-					console.error('Received command for system #' + sysNum + ', which was not selected by this client: ' + cmd);
-				else if (!system.receiveMessage(cmd, data))
-					console.error(system.name + ' failed to handle "' + cmd + '" command from server, with data ' + data);
-			}
-		}
-	}
+	server: Connection;
 	render() {
 		return (
 			<div className={this.state.showHotkeys ? 'showKeys' : null}>
                 <SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this) } touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged.bind(this) } />
                 <GameSetup show={this.state.activeScreen == 'setup'} />
-                <GameRoot ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this) } systems={this.state.systems} touchMode={this.state.touchInterface} />
+                <SystemContainer ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this) } systems={this.state.systems} touchMode={this.state.touchInterface} />
                 <ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
 			</div>
 		);
@@ -150,7 +85,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		
 		if (screen == 'game')
         {
-            let game: GameRoot = this.refs['game'] as GameRoot;
+            let game: SystemContainer = this.refs['game'] as SystemContainer;
             // when switching to the game, ensure a selected system is the "current" one
             if (!this.state.systems[game.state.currentSystem].selected) {
 				for (var i=0; i<this.state.systems.length; i++)
@@ -174,7 +109,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
 	showError(message: string, fatal = true) {
 		var state;
 		if (fatal) {
-			this.socket.close();
+			this.server.close();
 			state = {errorMessage: message + '\n\nRefresh the page to continue.', gameActive: false};
 		}
 		else
@@ -197,9 +132,6 @@ class GameClient extends React.Component<{}, IGameClientState> {
 	}
 	showHotkeys(val) {
 		this.setState({showHotkeys: val});
-	}
-	componentDidMount () {
-		this.createConnection();
 	}
 };
 

@@ -27,11 +27,12 @@
 /// <reference path="game/Weapons/WeaponTargetInfo.tsx" />
 /// <reference path="game/Weapons/WeaponTargetSelect.tsx" />
 /// <reference path="game/Weapons/Weapons.tsx" />
-/// <reference path="game/GameRoot.tsx" />
+/// <reference path="game/SystemContainer.tsx" />
 
-/// <reference path="setup/SystemPicker.tsx" />
+/// <reference path="setup/SystemListItem.tsx" />
 /// <reference path="setup/SystemSelect.tsx" />
 /// <reference path="setup/GameSetup.tsx" />
 
 /// <reference path="ErrorDisplay.tsx" />
+/// <reference path="Connection.ts" />
 /// <reference path="GameClient.tsx" />
