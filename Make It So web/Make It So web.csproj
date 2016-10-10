@@ -77,6 +77,8 @@
     <Content Include="ui\_toucharea.scss" />
     <Content Include="ui\_colors.scss" />
     <Content Include="ui\_borders.scss" />
+    <Content Include="setup\_setup.scss" />
+    <Content Include="ui\_breakpoints.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

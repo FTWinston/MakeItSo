@@ -1,0 +1,49 @@
+﻿@import '../ui/breakpoints';
+
+.playerIdentifier {
+	font-size: 10em;
+	text-align: center;
+    @include media-size-up(md) {
+	    font-size: 20em;
+        float: left;
+    	width: 40%;
+	    height: 100%;
+    }
+}
+
+#systemList {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+    @include media-size-down(sm) {
+        margin-left: 1em;
+    }
+    @include media-size-up(md) {
+	    float:left;
+	    width:60%;
+	    height: 100%;
+    }
+}
+
+#systemList li {
+	font-size: 2em;
+	padding: 0.5em;
+}
+
+#systemList .prompt {
+	padding-left: 0em;
+	padding-bottom: 1em;
+}
+
+#systemList li.option {
+	cursor: pointer;
+}
+
+#systemList li.option.selected {
+	text-decoration: underline;
+}
+
+#systemList li.option.taken {
+	color: $fadedColor;
+	border-color: $fadedColor;
+}

@@ -1,0 +1,73 @@
+﻿$sm-cutoff-min: 544px;
+$md-cutoff-min: 768px;
+$lg-cutoff-min: 992px;
+$xl-cutoff-min: 1200px;
+
+@mixin media-size($width) {
+    @if $width == xs { 
+        @media (max-width: $sm-cutoff-min - 1) { @content; }
+    }
+    @else if $width == sm {
+        @media (min-width: $sm-cutoff-min) and (max-width: $md-cutoff-min - 1) { @content; }
+    }
+    @else if $width == md {
+        @media (min-width: $md-cutoff-min) and (max-width: $lg-cutoff-min - 1) { @content; }
+    }
+    @else if $width == lg {
+        @media (min-width: $lg-cutoff-min) and (max-width: $xl-cutoff-min - 1) { @content; }
+    }
+    @else if $width == xl {
+        @media (min-width: $lg-cutoff-min) { @content; }
+    }
+    @else {
+        @warn "The media-size mixins support the following attributes: xs, sm, md, lg, xl";
+    }
+}
+
+@mixin media-size-up($width) {
+    @if type-of($width) == number {
+        @media (min-width: $width) { @content; }
+    }
+    @else if $width == xs { 
+        @content;
+    }
+    @else if $width == sm {
+        @media (min-width: $sm-cutoff-min) { @content; }
+    }
+    @else if $width == md {
+        @media (min-width: $md-cutoff-min) { @content; }
+    }
+    @else if $width == lg {
+        @media (min-width: $lg-cutoff-min) { @content; }
+    }
+    @else if $width == xl {
+        @media (min-width: $lg-cutoff-min) { @content; }
+    }
+    @else {
+        @warn "The media-size mixins support the following attributes: xs, sm, md, lg, xl";
+    }
+}
+
+@mixin media-size-down($width) {
+    @if type-of($width) == number {
+        @media (max-width: $width) { @content; }
+    }
+    @else if $width == xs {
+        @media (max-width: $sm-cutoff-min - 1) { @content; }
+    }
+    @else if $width == sm {
+        @media (max-width: $md-cutoff-min - 1) { @content; }
+    }
+    @else if $width == md {
+        @media (max-width: $lg-cutoff-min - 1) { @content; }
+    }
+    @else if $width == lg {
+        @media (max-width: $xl-cutoff-min - 1) { @content; }
+    }
+    @else if $width == xl {
+        @content;
+    }
+    @else {
+        @warn "The media-size mixins support the following attributes: xs, sm, md, lg, xl";
+    }
+}
