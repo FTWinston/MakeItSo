@@ -5,9 +5,9 @@
 
 class SystemListItem extends React.Component<ISystemListItemProps, {}> {
 	render() {
-		var classes = "option";
+		var classes = "";
 		if (this.props.system.selected)
-			classes += " selected";
+			classes = " selected";
 		if (this.props.system.usedByOther)
 			classes += " taken";
 		

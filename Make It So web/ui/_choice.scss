@@ -1,5 +1,6 @@
 ﻿@import 'colors';
 @import 'borders';
+@import 'breakpoints';
 
 choice, buttonGroup {
 	margin: 2em;
@@ -21,8 +22,22 @@ choice prompt, choice description {
 	padding-bottom: 0.25em;
 }
 
+choice description {
+    padding-left: 1em;
+
+    &::before {
+        content: "\2022  ";
+    }
+}
+
 choice clicker, .table clicker {
 	@include border-radius(0);
+}
+
+choice.smVertical > * {
+    @include media-size-down(sm) {
+        display: block;
+    }
 }
 
 row > clicker {
@@ -35,4 +50,17 @@ choice clicker:first-of-type, choice clicker.first, .table clicker:first-of-type
 
 choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .table clicker.last {
 	@include border-radius-right(1.5em);
+}
+
+@include media-size-down(sm) {
+    choice.smVertical > *, table.smVertical > * {
+        &:first-of-type {
+            @include border-radius-top(1.5em);
+            @include border-radius-bottom-left(0);
+        }
+        &:last-of-type {
+            @include border-radius-bottom(1.5em);
+            @include border-radius-top-right(0);
+        }
+    }
 }

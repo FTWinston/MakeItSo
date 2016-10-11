@@ -16,6 +16,7 @@ interface IButtonProps {
     forceActive?: boolean;
     inChoice?: boolean;
     description?: string;
+    class?: string;
 
     action?: string; // DO AWAY WITH THESE
     startAction?: string;
@@ -39,7 +40,7 @@ interface IButtonState {
 
 class Button extends React.Component<IButtonProps, IButtonState> {
     static defaultProps = {
-        type: ButtonType.Push, visible: true, disabled: false, first: false, last: false, color: null, hotkey: null,
+        type: ButtonType.Push, visible: true, disabled: false, first: false, last: false, color: null, hotkey: null, class: '',
         action: null, startAction: null, stopAction: null,
         onClicked: null, onActivated: null, onDeactivated: null, onPressed: null, onReleased: null,
         forceActive: false, inChoice: false, onMounted: null, onActivatedChoice: null
@@ -73,10 +74,10 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 	isVisible() {
 		return this.props.visible && (this.refs['btn'] as HTMLElement).offsetParent !== null;
 	}
-	prepClasses() {
-		var classes = '';
+    prepClasses() {
+        var classes = this.props.class;
 		if (this.props.color != null)
-			classes += 'color' + this.props.color;
+			classes += ' color' + this.props.color;
 		if (this.props.disabled)
 			classes += ' disabled';
 		if (this.props.first)

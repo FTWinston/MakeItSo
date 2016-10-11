@@ -26,13 +26,15 @@ class SystemSelect extends React.Component<ISystemSelectProps, {}> {
 					<li className="prompt">Select systems to control:</li>
 					{systems}
 				</ul>
+
+                <ButtonGroup>
+				    <Button type={ButtonType.Toggle} color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceActive={this.props.touchMode == FeatureState.Enabled} onActivated={function() {self.props.touchModeChanged(FeatureState.Enabled)}} onDeactivated={function() {self.props.touchModeChanged(FeatureState.Disabled)}}>touch interface</Button>
 				
-				<Button type={ButtonType.Toggle} color="7" visible={this.props.touchMode != FeatureState.Unavailable} forceActive={this.props.touchMode == FeatureState.Enabled} onActivated={function() {self.props.touchModeChanged(FeatureState.Enabled)}} onDeactivated={function() {self.props.touchModeChanged(FeatureState.Disabled)}}>touch interface</Button>
+				    <Button type={ButtonType.Push} action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</Button>
+				    <Button type={ButtonType.Push} action="resume" color="4" visible={this.props.gameActive}>resume game</Button>
 				
-				<Button type={ButtonType.Push} action="+setup" color="4" visible={!this.props.gameActive} disabled={this.props.setupInProgress}>setup game</Button>
-				<Button type={ButtonType.Push} action="resume" color="4" visible={this.props.gameActive}>resume game</Button>
-				
-				<Button type={ButtonType.Confirm} action="quit" color="3" visible={this.props.gameActive}>end game</Button>
+                    <Button type={ButtonType.Confirm} action="quit" color="3" visible={this.props.gameActive}>end game</Button>
+                </ButtonGroup>
 			</screen>
 		);
 	}

@@ -5,6 +5,7 @@
     inline?: boolean;
     visible?: boolean;
     children?: any;
+    class?: string;
 }
 
 interface IChoiceState {
@@ -18,7 +19,7 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         this.state = { description: null, mountedChildren: [] };
     }
     static defaultProps = {
-        prompt: null, color: null, disabled: false, inline: false, visible: true
+        prompt: null, color: null, disabled: false, inline: false, visible: true, CssClass: ''
     };
 	render() {
 		var props:IButtonProps = { inChoice: true, onActivatedChoice: this.childSelected.bind(this), onMounted: this.childMounted.bind(this), first: false, last: false };
@@ -63,7 +64,9 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
 			return child;
 		});
 		
-		var classes = this.props.inline ? 'inline' : '';
+        var classes = this.props.class;
+        if (this.props.inline)
+            classes += ' inline';
 		if (isTable)
 			classes += ' table';
 		

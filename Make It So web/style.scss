@@ -10,12 +10,29 @@ body {
    -moz-user-select: none;
    -webkit-user-select: none;
    -ms-user-select: none;
-   user-select: none;
+    user-select: none;
+    text-align: center;
 }
 
 screen {
-	width: 100%;
-	height: 100%;
+	min-height: 100%;
+    margin: 0 auto;
+    display: block;
+    text-align: initial;
+
+    @include media-size-down(md) {
+        width: 100%;
+    }
+    @include media-size(lg) {
+        width: 950px;
+    }
+    @include media-size(xl) {
+        width: 1100px;
+    }
+
+    &#gameActive {
+        width: 100%;
+    }
 }
 
 p {
@@ -124,10 +141,5 @@ system {
 	border: solid 1px grey;
 }
 
-/*
-@media (max-width: 700px) {
-	body {
-		font-size: 1em;
-	}
-}
-*/
+
+@import 'game/systemswitcher';

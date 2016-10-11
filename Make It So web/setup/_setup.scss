@@ -1,13 +1,15 @@
 ﻿@import '../ui/breakpoints';
+@import '../ui/colors';
 
 .playerIdentifier {
 	font-size: 10em;
 	text-align: center;
     @include media-size-up(md) {
 	    font-size: 20em;
-        float: left;
+        display: inline-block;
     	width: 40%;
 	    height: 100%;
+        vertical-align: top;
     }
 }
 
@@ -16,10 +18,10 @@
 	padding: 0;
 	list-style: none;
     @include media-size-down(sm) {
-        margin-left: 1em;
+        padding-left: 1em;
     }
     @include media-size-up(md) {
-	    float:left;
+	    display: inline-block;
 	    width:60%;
 	    height: 100%;
     }
@@ -27,23 +29,23 @@
 
 #systemList li {
 	font-size: 2em;
-	padding: 0.5em;
+	padding: 0.5em 0 0.5em 1em;
+	cursor: pointer;
+    
+    @include media-size-down(xs) {
+        font-size: 1.5em;
+    }
+
+    &.selected {
+	    text-decoration: underline;
+    }
+
+    &.taken {
+	    color: $fadedColor;
+	    border-color: $fadedColor;
+    }
 }
 
 #systemList .prompt {
 	padding-left: 0em;
-	padding-bottom: 1em;
-}
-
-#systemList li.option {
-	cursor: pointer;
-}
-
-#systemList li.option.selected {
-	text-decoration: underline;
-}
-
-#systemList li.option.taken {
-	color: $fadedColor;
-	border-color: $fadedColor;
 }

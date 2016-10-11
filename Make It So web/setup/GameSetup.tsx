@@ -8,9 +8,9 @@ class GameSetup extends React.Component<IGameSetupProps, {}> {
 			<screen style={{display: this.props.show ? null : 'none', overflow: 'auto'}}>
 				<p>This screen should let you set up your ship and start a new game, browse servers, etc</p>
 				
-				<Choice color="1" prompt="Do you wish to play with just your own crew, or with others?">
+                <Choice color="1" class="smVertical" prompt="Do you wish to play with just your own crew, or with others?">
 					<Button type={ButtonType.Toggle} onActivated={this.hideArena.bind(this)} description="Play against the computer, with no other human crews.">Play a solo-crew game</Button>
-                    <Button type={ButtonType.Toggle} onActivated={this.hideGameMode.bind(this)} description="Join a game being hosted by another human crew.">Join a multi-crew game</Button>
+                    <Button type={ButtonType.Toggle} onActivated={this.hideGameMode.bind(this)} description="Join a game being hosted remotely.">Join a multi-crew game</Button>
                     <Button type={ButtonType.Toggle} onActivated={this.showGameMode.bind(this)} description="Host a game which other human crews can connect to.">Host a multi-crew game</Button>
 				</Choice>
 				

@@ -79,6 +79,7 @@
     <Content Include="ui\_borders.scss" />
     <Content Include="setup\_setup.scss" />
     <Content Include="ui\_breakpoints.scss" />
+    <Content Include="game\_systemswitcher.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
