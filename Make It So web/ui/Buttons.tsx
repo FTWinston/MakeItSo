@@ -5,6 +5,12 @@ enum ButtonType {
     Held,
 }
 
+enum Float {
+    None,
+    Left,
+    Right,
+}
+
 interface IButtonProps {
     type?: ButtonType;
     visible?: boolean;
@@ -16,6 +22,7 @@ interface IButtonProps {
     forceActive?: boolean;
     inChoice?: boolean;
     description?: string;
+    pull?: Float;
     class?: string;
 
     action?: string; // DO AWAY WITH THESE
@@ -40,7 +47,7 @@ interface IButtonState {
 
 class Button extends React.Component<IButtonProps, IButtonState> {
     static defaultProps = {
-        type: ButtonType.Push, visible: true, disabled: false, first: false, last: false, color: null, hotkey: null, class: '',
+        type: ButtonType.Push, visible: true, disabled: false, first: false, last: false, color: null, hotkey: null, pull: Float.None, class: '',
         action: null, startAction: null, stopAction: null,
         onClicked: null, onActivated: null, onDeactivated: null, onPressed: null, onReleased: null,
         forceActive: false, inChoice: false, onMounted: null, onActivatedChoice: null
@@ -84,7 +91,12 @@ class Button extends React.Component<IButtonProps, IButtonState> {
 			classes += ' first';
 		if (this.props.last)
 			classes += ' last';
-        
+
+        if (this.props.pull == Float.Left)
+            classes += ' left';
+        else if (this.props.pull == Float.Right)
+            classes += ' right';
+
         // these 3 classes look ripe for combining into one
         if (this.props.type == ButtonType.Push && this.state.pressed)
 			classes += ' enabled';

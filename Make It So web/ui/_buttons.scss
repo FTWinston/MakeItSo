@@ -13,49 +13,58 @@ clicker {
 	margin: 0.1em;
 	
 	cursor: pointer;
-}
 
-clicker:not(.disabled):active, clicker.held, clicker.enabled:not(.disabled) {
-	color: $backgroundColor;
-	background-color: #ccc;
-}
+    &.left {
+        float:left;
+    }
+    &.right {
+        float:right;
+    }
 
-clicker[type="toggle"] {
-	border-style: dotted;
-}
+    &:not(.disabled):active, &.held, &.enabled:not(.disabled) {
+	    color: $backgroundColor;
+	    background-color: #ccc;
+    }
 
-clicker[type="toggle"].enabled:not(.disabled) {
-	border-style: solid;
-}
+    &[type="toggle"] {
+	    border-style: dotted;
 
-clicker[type="held"] {
-	border-width: 5px;
-	border-style: double;
-}
+        &.enabled:not(.disabled) {
+	        border-style: solid;
+        }
+    }
 
-clicker.held, clicker[type="confirm"]:not(.primed):active {
-	color: $backgroundColor !important;
-}
+    &[type="held"] {
+	    border-width: 5px;
+	    border-style: double;
+    }
 
-clicker[type="confirm"] {
-    @include border-radius(0.25em 1.25em 0.25em 1.25em);
-}
+    &.held, &[type="confirm"]:not(.primed):active {
+	    color: $backgroundColor !important;
+    }
 
-clicker[type="confirm"].primed:hover {
-	background-color: #f66;
-	border-color: #f66;
-	color: $backgroundColor;
-}
+    &[type="confirm"] {
+        @include border-radius(0.25em 1.25em 0.25em 1.25em);
 
-clicker[type="confirm"].primed:active {
-	background-color: $backgroundColor !important;
-	color: #f66;
-}
+        &.primed {
+            &:hover {
+	            background-color: #f66;
+	            border-color: #f66;
+	            color: $backgroundColor;
+            }
 
-clicker[type="confirm"].primed::before {
-	content: "Confirm: ";
-}
+            &:active {
+	            background-color: $backgroundColor !important;
+	            color: #f66;
+            }
 
-clicker[type="confirm"].primed::after {
-	content: "?";
+            &::before {
+	            content: "Confirm: ";
+            }
+
+            &::after {
+	            content: "?";
+            }
+        }
+    }
 }

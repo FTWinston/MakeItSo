@@ -34,12 +34,6 @@ choice clicker, .table clicker {
 	@include border-radius(0);
 }
 
-choice.smVertical > * {
-    @include media-size-down(sm) {
-        display: block;
-    }
-}
-
 row > clicker {
 	margin: 0em;
 }
@@ -52,15 +46,29 @@ choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .
 	@include border-radius-right(1.5em);
 }
 
+@mixin choice-vertical() {
+    display: block;
+        
+    &:first-of-type, &.first {
+        @include border-radius-top(1.5em);
+        @include border-radius-bottom-left(0);
+    }
+    &:last-of-type, &.last {
+        @include border-radius-bottom(1.5em);
+        @include border-radius-top-right(0);
+    }
+}
+
 @include media-size-down(sm) {
     choice.smVertical > *, table.smVertical > * {
-        &:first-of-type {
-            @include border-radius-top(1.5em);
-            @include border-radius-bottom-left(0);
-        }
-        &:last-of-type {
-            @include border-radius-bottom(1.5em);
-            @include border-radius-top-right(0);
-        }
+        @include choice-vertical();
+    }
+}
+
+choice.forceVertical, table.forceVertical {
+
+
+    & > * {
+        @include choice-vertical();
     }
 }

@@ -85,7 +85,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
 		
 		if (screen == 'game')
         {
-            let game: SystemContainer = this.refs['game'] as SystemContainer;
+            let game = this.refs['game'] as SystemContainer;
+
             // when switching to the game, ensure a selected system is the "current" one
             if (!this.state.systems[game.state.currentSystem].selected) {
 				for (var i=0; i<this.state.systems.length; i++)

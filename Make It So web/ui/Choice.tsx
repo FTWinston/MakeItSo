@@ -5,6 +5,7 @@
     inline?: boolean;
     visible?: boolean;
     children?: any;
+    vertical?: boolean;
     class?: string;
 }
 
@@ -19,7 +20,7 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         this.state = { description: null, mountedChildren: [] };
     }
     static defaultProps = {
-        prompt: null, color: null, disabled: false, inline: false, visible: true, CssClass: ''
+        prompt: null, color: null, disabled: false, inline: false, visible: true, vertical: false, class: ''
     };
 	render() {
 		var props:IButtonProps = { inChoice: true, onActivatedChoice: this.childSelected.bind(this), onMounted: this.childMounted.bind(this), first: false, last: false };
@@ -33,13 +34,12 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
 		
 		// find the first and last visible children, to mark them as such
 		var firstIndex = 0, lastIndex = this.props.children.length - 1;
-		while (firstIndex < this.props.children.length && !this.props.children[firstIndex].props.visible) {
+		while (firstIndex < this.props.children.length && (!this.props.children[firstIndex].props.visible || this.props.children[firstIndex].props.type != ButtonType.Toggle)) {
 			firstIndex++;
 		}
-		while (lastIndex > 0 && !this.props.children[lastIndex].props.visible) {
+		while (lastIndex >= firstIndex && !this.props.children[lastIndex].props.visible) {
 			lastIndex--;
-		}
-		
+        }
 		var isTable = false;
 		var children = React.Children.map(this.props.children, function (c, index:number) {
 			if (index == firstIndex)
@@ -65,6 +65,8 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
 		});
 		
         var classes = this.props.class;
+        if (this.props.vertical)
+            classes += ' forceVertical';
         if (this.props.inline)
             classes += ' inline';
 		if (isTable)
@@ -79,15 +81,20 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
 		);
 	}
 	childMounted(child) {
+        if (child.props.type != ButtonType.Toggle)
+            return;
+
 		if (this.state.mountedChildren.length == 0)
 			child.setActive(true);
 		this.state.mountedChildren.push(child);
 	}
     childSelected(child) {
         for (var i = 0; i < this.state.mountedChildren.length; i++) {
-            if (this.state.mountedChildren[i] != child)
-                this.state.mountedChildren[i].setActive(this.state.mountedChildren[i] == child);
-		}
+            var checkChild = this.state.mountedChildren[i];
+            if (checkChild != child && checkChild.state.active)
+                checkChild.setActive(false);
+        }
+		
 		this.setState({description: child.props.description});
 	}
 }

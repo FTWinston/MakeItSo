@@ -9,12 +9,13 @@ interface ISystemContainerState {
     currentSystem?: number;
     width?: number;
     height?: number;
+    menuExpanded?: boolean;
 }
 
 class SystemContainer extends React.Component<ISystemContainerProps, ISystemContainerState> {
     constructor(props) {
         super(props);
-        this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight };
+        this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight, menuExpanded: false };
     }
 	componentDidMount() {
 		window.addEventListener('resize', this.handleResize.bind(this, false));
@@ -31,11 +32,12 @@ class SystemContainer extends React.Component<ISystemContainerProps, ISystemCont
 	}
 	render() {
 		var self = this;
-		var index = -1;
 		var switchers = this.props.systems.map(function(system) {
-			index++;
-			return <Button type={ButtonType.Toggle} key={system.index} forceActive={system.selected && system.index == self.state.currentSystem} visible={system.selected} onActivated={function() {self.setState({currentSystem: system.index})}}>{system.name}</Button>
+			return <Button type={ButtonType.Toggle} key={system.index} forceActive={system.selected && system.index == self.state.currentSystem} visible={system.selected} onActivated={function() {self.setState({currentSystem: system.index, menuExpanded: false})}}>{system.name}</Button>
 		});
+        switchers.unshift(
+            <Button type={ButtonType.Push} key="sw" class="expand" onPressed={function() { self.setState({menuExpanded: !self.state.menuExpanded})}}>...</Button>
+        );
 
         var switcher = this.refs['switcher'] as HTMLElement;
 		var systemWidth = this.state.width, systemHeight = this.state.height - (switcher === undefined ? 0 : switcher.offsetHeight);
@@ -51,22 +53,22 @@ class SystemContainer extends React.Component<ISystemContainerProps, ISystemCont
 			<Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} index={7} key={7} touchMode={this.props.touchMode} width={systemWidth} height={systemHeight} />
 		];
 		
-		var screens = [];
+		var systems = [];
 		for (var i=0; i<this.props.systems.length; i++) {
 			var system = this.props.systems[i];
 			if (system.selected)
-				screens.push(elements[i]);
+				systems.push(elements[i]);
 		}
 		
 		return (
 			<screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
-				<div id="systemSwitcher" ref="switcher">
-					<Choice inline={true} color="5">
+				<div id="systemSwitcher" ref="switcher" data-numsystems={systems.length}>
+					<Choice inline={true} color="5" vertical={this.state.menuExpanded}>
 						{switchers}
 					</Choice>
-					<Button type={ButtonType.Push} action="pause" color="8">pause</Button>
+                    <Button type={ButtonType.Push} action="pause" color="8" pull={Float.Right}>pause</Button>
 				</div>
-				{screens}
+				{systems}
 			</screen>
 		);
 	}
