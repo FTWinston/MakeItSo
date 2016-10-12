@@ -10,8 +10,8 @@ WebTest/Debug/*
 *.opensdf
 WebTest/FakeServer/Debug/*
 WebTest/Release/*
-Make It So web/obj/
-Make It So web/bin/
+Crew UI/obj/
+Crew UI/bin/
 *.csproj.user
 *.VC.db
 *.VC.opendb
