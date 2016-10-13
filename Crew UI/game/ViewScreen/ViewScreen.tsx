@@ -20,36 +20,42 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     render() {
         return (
             <system style={{display: this.props.visible ? null : 'none'}}>
-                <section>
+                <section id="viewscreenAiming">
                     <ButtonGroup inline={true} color="3">
                         <row>
                             <spacer></spacer>
-                            <Button type={ButtonType.Held} hotkey="W" startAction="+viewup" stopAction="-viewup">&#8679;</Button>
+                            <Button type={ButtonType.Held} hotkey="W" startAction="+viewup" stopAction="-viewup">{String.fromCharCode(8679)}</Button>
                             <spacer></spacer>
                         </row>
                         <row className="rounded">
-                            <Button type={ButtonType.Held} hotkey="A" startAction="+viewleft" stopAction="-viewleft">&#8678;</Button>
+                            <Button type={ButtonType.Held} hotkey="A" startAction="+viewleft" stopAction="-viewleft">{String.fromCharCode(8678)}</Button>
                             <spacer>Pan</spacer>
-                            <Button type={ButtonType.Held} hotkey="D" startAction="+viewright" stopAction="-viewright">&#8680;</Button>
+                            <Button type={ButtonType.Held} hotkey="D" startAction="+viewright" stopAction="-viewright">{String.fromCharCode(8680)}</Button>
                         </row>
                         <row>
                             <spacer></spacer>
-                            <Button type={ButtonType.Held} hotkey="S" startAction="+viewdown" stopAction="-viewdown">&#8681;</Button>
+                            <Button type={ButtonType.Held} hotkey="S" startAction="+viewdown" stopAction="-viewdown">{String.fromCharCode(8681)}</Button>
                             <spacer></spacer>
                         </row>
                     </ButtonGroup>
                     
                     <ButtonGroup inline={true} color="5">
                         <row>
-                            <Button type={ButtonType.Held} hotkey="R" startAction="+zoomin" stopAction="-zoomin">&#8679;</Button>
+                            <Button type={ButtonType.Held} hotkey="R" startAction="+zoomin" stopAction="-zoomin">{String.fromCharCode(8679)}</Button>
                         </row>
                         <row>
                             <spacer>Zoom</spacer>
                         </row>
                         <row>
-                            <Button type={ButtonType.Held} hotkey="T" startAction="+zoomout" stopAction="-zoomout">&#8681;</Button>
+                            <Button type={ButtonType.Held} hotkey="T" startAction="+zoomout" stopAction="-zoomout">{String.fromCharCode(8681)}</Button>
                         </row>
                     </ButtonGroup>
+
+                    <div className="text settings">
+                        Magnification: {this.state.zoomFactor}x{'\n'}
+                        Pitch: {this.state.pitchAngle}°{'\n'}
+                        Yaw: {this.state.yawAngle}°
+                    </div>
                 </section>
                 <section>
                     <Choice inline={true} color="2">
@@ -67,13 +73,6 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     <Button type={ButtonType.Toggle} color="4" hotkey="N" startAction="+chase" stopAction="-chase">chase mode</Button>
                     <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">comms channel</Button>
                 </section>
-                
-                
-                <div className="text">
-                    Magnification: {this.state.zoomFactor}x{'\n'}
-                    Pitch: {this.state.pitchAngle}°{'\n'}
-                    Yaw: {this.state.yawAngle}°
-                </div>
             </system>
         );
     }

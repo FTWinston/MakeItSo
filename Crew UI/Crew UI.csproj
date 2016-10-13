@@ -63,6 +63,13 @@
     <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="..\WebRoot\style.css">
+      <Link>style.css</Link>
+    </Content>
+    <Content Include="..\WebRoot\style.min.css">
+      <Link>style.min.css</Link>
+      <DependentUpon>style.css</DependentUpon>
+    </Content>
     <Content Include="style.scss" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +87,7 @@
     <Content Include="setup\_setup.scss" />
     <Content Include="ui\_breakpoints.scss" />
     <Content Include="game\_systemswitcher.scss" />
+    <Content Include="game\ViewScreen\_viewscreen.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

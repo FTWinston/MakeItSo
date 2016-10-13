@@ -1,0 +1,54 @@
+﻿@import '../../ui/borders';
+@import '../../ui/breakpoints';
+
+#viewscreenAiming {
+    text-align: center;
+
+    @include media-size-up(md) {
+        margin: 0 auto;
+        width: $md-cutoff-min;
+    }
+    
+    @include media-size-up(lg) {
+        width: $lg-cutoff-min;
+    }
+
+    clicker {
+        min-width: 1.25em;
+    }
+
+    // at small sizes, zoom buttons show underneath pan ones, so make them horizontal rather than vertical
+    @include media-size-down(xs) {
+        & > buttongroup {
+            margin-left: 0.5em;
+            margin-right: 0.5em;
+        }
+    }
+
+    & > buttongroup:nth-child(2) {
+        @include media-size(sm) {
+            margin-left: 4em;
+        }
+
+        @include media-size(xl) {
+            margin-left: 4em;
+            margin-right: 4em;
+        }
+    }
+
+    .settings {
+        min-width: 10em;
+        margin: 2em;
+
+        @include media-size-up(md) {
+            display: inline-block;
+            position: relative;
+            top: 3.5em;
+        }
+
+        @include media-size-down(sm) {
+            margin: 2em auto;
+            max-width: 15em;
+        }
+    }
+}
