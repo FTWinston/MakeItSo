@@ -5,10 +5,12 @@
 };
 
 const FeatureDetection = {
-    Vibration: ('vibrate' in navigator),
-    Touch: ('ontouchstart' in window || navigator.msMaxTouchPoints),
-    WebSockets: ('WebSocket' in window || 'MozWebSocket' in window),
+    Accelerometer: ('deviceorientation' in window),
     Canvas: ('CanvasRenderingContext2D' in window),
+    Gamepad: navigator.getGamepads !== undefined || navigator.webkitGetGamepads !== undefined,
+    Touch: ('ontouchstart' in window || navigator.msMaxTouchPoints),
+    Vibration: ('vibrate' in navigator),
+    WebSockets: ('WebSocket' in window || 'MozWebSocket' in window),
 
     CheckRequirements: function(game: GameClient) {
         if (!this.WebSockets) {
