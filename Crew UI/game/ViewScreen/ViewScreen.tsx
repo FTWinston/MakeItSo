@@ -57,6 +57,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                         Yaw: {this.state.yawAngle}°
                     </div>
                 </section>
+                <List options={["Something", "Something else", "And another thing"]} onSelectionChanged={this.targetSelected.bind(this)} />
                 <section>
                     <Choice inline={true} color="2">
                         <row>
@@ -78,5 +79,8 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     }
     receiveMessage(msg, data) {
         return false;
+    }
+    targetSelected(targetID) {
+        console.log('You selected ' + targetID);
     }
 }

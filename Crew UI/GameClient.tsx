@@ -21,18 +21,13 @@ interface IGameClientState {
 class GameClient extends React.Component<{}, IGameClientState> {
     constructor(props) {
         super(props);
+        let systemNames = ['Helm', 'Viewscreen', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Power', 'Deflector'];
+
         this.state = {
             activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
-            systems: [
-                {name: "Helm", index: 0, selected: false, usedByOther: false},
-                {name: "Viewscreen", index: 1, selected: false, usedByOther: false},
-                {name: "Sensors", index: 2, selected: false, usedByOther: false},
-                {name: "Weapons", index: 3, selected: false, usedByOther: false},
-                {name: "Shields", index: 4, selected: false, usedByOther: false},
-                {name: "Damage Control", index: 5, selected: false, usedByOther: false},
-                {name: "Power", index: 6, selected: false, usedByOther: false},
-                {name: "Deflector", index: 7, selected: false, usedByOther: false}
-            ],
+            systems: systemNames.map(function(name, index) {
+                return {name: name, index: index, selected: sessionStorage.getItem('selectedSystem' + index) == '1', usedByOther: false};
+            }),
             vibration: FeatureDetection.Vibration ? FeatureState.Enabled : FeatureState.Unavailable,
             touchInterface: FeatureDetection.Touch ? FeatureState.Disabled : FeatureState.Unavailable
         };
@@ -65,6 +60,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
             systems[id].selected = state;
             return {systems: systems};
         });
+        sessionStorage.setItem('selectedSystem' + id, state ? '1' : '0');
     }
     markSystemInUse(id: string, state: boolean) {
         this.setState(function(previousState, currentProps) {

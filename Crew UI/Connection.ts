@@ -9,18 +9,32 @@ interface IConnectionCloseFunc {
 class Connection {
     game: GameClient;
     socket: WebSocket;
-    send: IConnectionSendFunc;
     close: IConnectionCloseFunc;
+    queue: string[];
     
     constructor(game: GameClient, url: string) {
         this.game = game;
         this.socket = new WebSocket(url);
         this.socket.onerror = this.socket.onclose = function (e) { this.game.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }.bind(this);
         this.socket.onmessage = this.messageReceived.bind(this);
-        this.send = this.socket.send.bind(this.socket);
+        this.socket.onopen = this.connected.bind(this);
         this.close = this.socket.close.bind(this.socket);
+        this.queue = [];
     }
-
+    send(cmd) {
+        if (this.socket.readyState == 1)
+            this.socket.send(cmd);
+        else
+            this.queue.push(cmd);
+    }
+    connected(ev) {
+        // once connection is established, send any queued messages
+        let cmd = this.queue.pop();
+        while (cmd !== undefined) {
+            this.socket.send(cmd);
+            cmd = this.queue.pop();
+        }
+    }
     messageReceived(ev) {
         let data:string = (ev.data || ''), pos:number = data.indexOf(' ');
         let cmd:string = pos == -1 ? data : data.substr(0, pos);
