@@ -67,10 +67,6 @@ class Button extends React.Component<IButtonProps, IButtonState> {
         if (this.props.hotkey != null)
             Hotkeys.unregister(this.props.hotkey, this);
     }
-    componentWillReceiveProps(nextProps) {
-        if (nextProps.forceActive && !this.state.active)
-            this.setActive(true);
-    }
     render():JSX.Element {
         return (
             <clicker ref="btn" type={this.getTypeAttribute()} style={{display: this.props.visible ? null : 'none'}} onMouseDown={this.mouseDown.bind(this)} onMouseUp={this.mouseUp.bind(this)} onMouseLeave={this.mouseLeave.bind(this)} onClick={this.click.bind(this)} onTouchStart={this.touchStart.bind(this)} onTouchEnd={this.touchEnd.bind(this)} className={this.prepClasses()} data-hotkey={this.props.hotkey}>
