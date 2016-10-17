@@ -23,7 +23,7 @@ class PowerManagement extends React.Component<ISystemProps, {}> implements ISyst
             case 'break':
                 var node = parseInt(data);
                 if (isNaN(node)) {
-                    console.error('Parameter was not numeric');
+                    console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 (this.refs['distribution'] as PowerDistribution).wireChanged(node, true);
@@ -31,7 +31,7 @@ class PowerManagement extends React.Component<ISystemProps, {}> implements ISyst
             case 'fix':
                 var node = parseInt(data);
                 if (isNaN(node)) {
-                    console.error('Parameter was not numeric');
+                    console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 (this.refs['distribution'] as PowerDistribution).wireChanged(node, false);

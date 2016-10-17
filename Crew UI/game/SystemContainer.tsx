@@ -66,7 +66,7 @@ class SystemContainer extends React.Component<ISystemContainerProps, ISystemCont
                     <Choice inline={true} color="5" vertical={this.state.menuExpanded}>
                         {switchers}
                     </Choice>
-                    <Button type={ButtonType.Push} action="pause" color="8" pull={Float.Right}>pause</Button>
+                    <Button type={ButtonType.Push} action="pause" color="8" pull={Float.Right}>{language.systemContainerPause}</Button>
                 </div>
                 {systems}
             </screen>

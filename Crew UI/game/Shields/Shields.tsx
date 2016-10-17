@@ -19,12 +19,12 @@ class Shields extends React.Component<ISystemProps, {}> implements ISystem {
             case 'set':
                 var values = data.split(' ');
                 if (values.length != 3) {
-                    console.error('Expected 3 data parameters');
+                    console.error(language.errorParameterNumber.replace('@num@', '3'));
                     return false;
                 }
                 var index = parseInt(values[0]), type = parseInt(values[1]), color = parseInt(values[2]);
                 if (isNaN(index) || isNaN(type) || isNaN(color)) {
-                    console.error('Parameter was not numeric');
+                    console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 (this.refs['shield'] as ShieldDisplay).setBlock(index, type, color);

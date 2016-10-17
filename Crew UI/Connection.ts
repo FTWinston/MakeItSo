@@ -15,7 +15,7 @@ class Connection {
     constructor(game: GameClient, url: string) {
         this.game = game;
         this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = function (e) { this.game.showError("The connection to your ship has been lost.\nIf the game is still running, check your network connection.", true); }.bind(this);
+        this.socket.onerror = this.socket.onclose = function (e) { this.game.showError(language.errorConnectionLost, true); }.bind(this);
         this.socket.onmessage = this.messageReceived.bind(this);
         this.socket.onopen = this.connected.bind(this);
         this.close = this.socket.close.bind(this.socket);
@@ -60,11 +60,11 @@ class Connection {
             this.game.setActiveScreen('setup');
         }
         else if (cmd == 'full') {
-            this.game.showError('This ship is full: there is no room for you to join.', true);
+            this.game.showError(language.errorShipFull, true);
         }
         else if (cmd == 'started') {
             this.game.gameAlreadyStarted();
-            this.game.showError('This game has already started: wait for the crew to pause or end the game, then try again.', false);
+            this.game.showError(language.errorGameStarted, false);
         }
         else if (cmd == 'paused') {
             this.game.gameAlreadyStarted();
@@ -74,8 +74,8 @@ class Connection {
             this.game.setActiveScreen('game');
         }
         else if (cmd == 'game-') {
-            var blame = data != null ? 'User \'' + data + '\' ended the game.' : 'The game has ended.';
-            this.game.showError(blame + ' Please wait...', false);
+            var blame = data != null ? language.messageGameEndedUser.replace('@name@', data) : language.messageGameEnded;
+            this.game.showError(blame + ' ' + language.messageWait, false);
 
             setTimeout(function() { this.game.setActiveScreen('systems'); }.bind(this), 3000);
         }
@@ -88,14 +88,14 @@ class Connection {
         else {
             var sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
             if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)
-                console.error('Unrecognised command from server: ' + cmd);
+                console.error(language.errorUnrecognisedCommand + cmd);
             else {
                 cmd = cmd.substr(1);
                 var system = this.game.state.systems[sysNum];
                 if (system === undefined)
-                    console.error('Received command for system #' + sysNum + ', which was not selected by this client: ' + cmd);
+                    console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
                 else if (!system.receiveMessage(cmd, data))
-                    console.error(system.name + ' failed to handle "' + cmd + '" command from server, with data ' + data);
+                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', system.name).replace('@cmd@', cmd).replace('@data@', data));
             }
         }
     }

@@ -61,18 +61,18 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                 <section>
                     <Choice inline={true} color="2">
                         <row>
-                            <Button type={ButtonType.Toggle} hotkey="F" startAction="view forward">forward</Button>
-                            <Button type={ButtonType.Toggle} hotkey="G" startAction="view port">port</Button>
-                            <Button type={ButtonType.Toggle} hotkey="H" startAction="view starboard">starboard</Button>
+                            <Button type={ButtonType.Toggle} hotkey="F" startAction="view forward">{language.viewscreenDirectionForward}</Button>
+                            <Button type={ButtonType.Toggle} hotkey="G" startAction="view port">{language.viewscreenDirectionLeft}</Button>
+                            <Button type={ButtonType.Toggle} hotkey="H" startAction="view starboard">{language.viewscreenDirectionRight}</Button>
                         </row>
                         <row>
-                            <Button type={ButtonType.Toggle} hotkey="C" startAction="view starboard">aft</Button>
-                            <Button type={ButtonType.Toggle} hotkey="V" startAction="view starboard">dorsal</Button>
-                            <Button type={ButtonType.Toggle} hotkey="B" startAction="view starboard">ventral</Button>
+                            <Button type={ButtonType.Toggle} hotkey="C" startAction="view starboard">{language.viewscreenDirectionBackward}</Button>
+                            <Button type={ButtonType.Toggle} hotkey="V" startAction="view starboard">{language.viewscreenDirectionUp}</Button>
+                            <Button type={ButtonType.Toggle} hotkey="B" startAction="view starboard">{language.viewscreenDirectionDown}</Button>
                         </row>
                     </Choice>
-                    <Button type={ButtonType.Toggle} color="4" hotkey="N" startAction="+chase" stopAction="-chase">chase mode</Button>
-                    <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">comms channel</Button>
+                    <Button type={ButtonType.Toggle} color="4" hotkey="N" startAction="+chase" stopAction="-chase">{language.viewscreenChaseMode}</Button>
+                    <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">{language.viewscreenCommsChannel}</Button>
                 </section>
             </system>
         );

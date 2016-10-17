@@ -21,11 +21,10 @@ interface IGameClientState {
 class GameClient extends React.Component<{}, IGameClientState> {
     constructor(props) {
         super(props);
-        let systemNames = ['Helm', 'Viewscreen', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Power', 'Deflector'];
-
+        
         this.state = {
-            activeScreen: 'error', errorMessage: 'Connecting...', gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
-            systems: systemNames.map(function(name, index) {
+            activeScreen: 'error', errorMessage: language.messageConnecting, gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
+            systems: language.systemNames.map(function(name, index) {
                 return {name: name, index: index, selected: sessionStorage.getItem('selectedSystem' + index) == '1', usedByOther: false};
             }),
             vibration: FeatureDetection.Vibration ? FeatureState.Enabled : FeatureState.Unavailable,
@@ -98,7 +97,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
             window.removeEventListener('beforeunload', this.unloadEvent);
     }
     unloadEvent (e) {    
-        var confirmationMessage = 'The game is still active.';
+        var confirmationMessage = language.messageConfirmLeave;
 
         (e || window.event).returnValue = confirmationMessage; //Gecko + IE
         return confirmationMessage; //Webkit, Safari, Chrome etc.
@@ -107,7 +106,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         var state;
         if (fatal) {
             this.server.close();
-            state = {errorMessage: message + '\n\nRefresh the page to continue.', gameActive: false};
+            state = {errorMessage: message + '\n\n' + language.messageRefreshPage, gameActive: false};
         }
         else
             state = {errorMessage: message};

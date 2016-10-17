@@ -39,7 +39,7 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                 var size = parseInt(params[1]), status = parseInt(params[2]);
                 var angle = parseInt(params[3]), dist = parseInt(params[4]);
                 if (isNaN(size) || isNaN(status) || isNaN(angle) || isNaN(dist)) {
-                    console.error('Parameter was not numeric');
+                    console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 return (this.refs['select'] as WeaponTargetSelect).addTarget(params[0], size, status, angle, dist);
@@ -48,14 +48,14 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
             case 'mov':
                 var angle = parseInt(params[1]), dist = parseInt(params[2]);
                 if (isNaN(angle) || isNaN(dist)) {
-                    console.error('Parameter was not numeric');
+                    console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 return (this.refs['select'] as WeaponTargetSelect).moveTarget(params[0], angle, dist);
             case 'upd':
                 var status = parseInt(params[1]);
                 if (isNaN(status)) {
-                    console.error('Parameter was not numeric');
+                    console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 return (this.refs['select'] as WeaponTargetSelect).changeTarget(params[0], status);

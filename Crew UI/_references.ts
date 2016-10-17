@@ -1,4 +1,5 @@
-﻿/// <reference path="Intrinsics.ts" />
+﻿/// <reference path="language/english.ts" />
+/// <reference path="Intrinsics.ts" />
 
 /// <reference path="ui/Features.ts" />
 /// <reference path="ui/Hotkeys.ts" />

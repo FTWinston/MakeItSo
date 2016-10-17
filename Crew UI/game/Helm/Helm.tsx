@@ -27,82 +27,82 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
     render() {
         return (
             <system style={{ display: this.props.visible ? null : 'none' }}>
-                <ButtonGroup inline={true} color="1" visible={this.props.touchMode != FeatureState.Enabled} caption="rotation">
+                <ButtonGroup inline={true} color="1" visible={this.props.touchMode != FeatureState.Enabled} caption={language.helmRotation}>
                     <row>
                         <spacer></spacer>
-                        <Button type={ButtonType.Held} hotkey="W" startAction="+down" stopAction="-down">down</Button>
+                        <Button type={ButtonType.Held} hotkey="W" startAction="+down" stopAction="-down">{language.helmRotateDown}</Button>
                         <spacer></spacer>
                     </row>
                     <row className="rounded">
-                        <Button type={ButtonType.Held} hotkey="A" startAction="+left" stopAction="-left">left</Button>
-                        <Button type={ButtonType.Toggle} startAction="stoprotate">stop</Button>
-                        <Button type={ButtonType.Held} hotkey="D" startAction="+right" stopAction="-right">right</Button>
+                        <Button type={ButtonType.Held} hotkey="A" startAction="+left" stopAction="-left">{language.helmRotateLeft}</Button>
+                        <Button type={ButtonType.Toggle} startAction="stoprotate">{language.helmRotateStop}</Button>
+                        <Button type={ButtonType.Held} hotkey="D" startAction="+right" stopAction="-right">{language.helmRotateRight}</Button>
                     </row>
                     <row>
                         <spacer></spacer>
-                        <Button type={ButtonType.Held} hotkey="S" startAction="+up" stopAction="-up">up</Button>
+                        <Button type={ButtonType.Held} hotkey="S" startAction="+up" stopAction="-up">{language.helmRotateUp}</Button>
                         <spacer></spacer>
                     </row>
                 </ButtonGroup>
                 
-                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption="rotation" color="1" scale={0.02} movementCallback={this.touchRotation} />
+                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption={language.helmRotation} color="1" scale={0.02} movementCallback={this.touchRotation} />
                 
                 <ButtonGroup inline={true} color="2" visible={this.props.touchMode != FeatureState.Enabled}>
                     <row>
-                        <Button type={ButtonType.Held} hotkey="R" startAction="+forward" stopAction="-forward">forward</Button>
+                        <Button type={ButtonType.Held} hotkey="R" startAction="+forward" stopAction="-forward">{language.helmSpeedForward}</Button>
                     </row>
                     <row>
-                        <Button type={ButtonType.Toggle} hotkey="F">stop</Button>
+                        <Button type={ButtonType.Toggle} hotkey="F">{language.helmSpeedStop}</Button>
                     </row>
                     <row>
-                        <Button type={ButtonType.Held} hotkey="V" startAction="+backward" stopAction="-backward">backward</Button>
+                        <Button type={ButtonType.Held} hotkey="V" startAction="+backward" stopAction="-backward">{language.helmSpeedBackward}</Button>
                     </row>
                 </ButtonGroup>
                 
                 <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
                 
-                <ButtonGroup inline={true} color="3" visible={this.props.touchMode != FeatureState.Enabled} caption="translation">
+                <ButtonGroup inline={true} color="3" visible={this.props.touchMode != FeatureState.Enabled} caption={language.helmTranslation}>
                     <row>
                         <spacer></spacer>
-                        <Button type={ButtonType.Held} hotkey="I" startAction="+moveup" stopAction="-moveup">up</Button>
+                        <Button type={ButtonType.Held} hotkey="I" startAction="+moveup" stopAction="-moveup">{language.helmTranslateUp}</Button>
                         <spacer></spacer>
                     </row>
                     <row className="rounded">
-                        <Button type={ButtonType.Held} hotkey="J" startAction="+moveleft" stopAction="-moveleft">left</Button>
-                        <Button type={ButtonType.Toggle} startAction="stoptranslate">stop</Button>
-                        <Button type={ButtonType.Held} hotkey="L" startAction="+moveright" stopAction="-moveright">right</Button>
+                        <Button type={ButtonType.Held} hotkey="J" startAction="+moveleft" stopAction="-moveleft">{language.helmTranslateLeft}</Button>
+                        <Button type={ButtonType.Toggle} startAction="stoptranslate">{language.helmSpeedStop}</Button>
+                        <Button type={ButtonType.Held} hotkey="L" startAction="+moveright" stopAction="-moveright">{language.helmTranslateRight}</Button>
                     </row>
                     <row>
                         <spacer></spacer>
-                        <Button type={ButtonType.Held} hotkey="K" startAction="+movedown" stopAction="-movedown">down</Button>
+                        <Button type={ButtonType.Held} hotkey="K" startAction="+movedown" stopAction="-movedown">{language.helmTranslateDown}</Button>
                         <spacer></spacer>
                     </row>
                 </ButtonGroup>
                 
-                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption="translation" scale={0.02} color="3" movementCallback={this.touchTranslation} />
+                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption={language.helmTranslation} scale={0.02} color="3" movementCallback={this.touchTranslation} />
                 
-                <ButtonGroup inline={true} color="4" caption="warp factor">
+                <ButtonGroup inline={true} color="4" caption={language.helmWarpFactor}>
                     <row>
-                        <Button type={ButtonType.Push} hotkey="T" action="warpup">increase</Button>
+                        <Button type={ButtonType.Push} hotkey="T" action="warpup">{language.helmWarpIncrease}</Button>
                     </row>
                     <row>
-                        <Button type={ButtonType.Push} hotkey="G" action="warpdown">decrease</Button>
+                        <Button type={ButtonType.Push} hotkey="G" action="warpdown">{language.helmWarpDecrease}</Button>
                     </row>
                     <row>
-                        <Button type={ButtonType.Toggle} hotkey="B" startAction="warpstop">stop</Button>
+                        <Button type={ButtonType.Toggle} hotkey="B" startAction="warpstop">{language.helmWarpStop}</Button>
                     </row>
                 </ButtonGroup>
                 
                 <div className="text">
-                    Forward speed: {this.state.forwardSpeed} m/s{'\n'}
-                    Lateral speed: {this.state.lateralSpeed} m/s{'\n'}
-                    Vertical speed: {this.state.verticalSpeed} m/s{'\n\n'}
+                    {language.helmForwardSpeedOutput} {this.state.forwardSpeed} m/s{'\n'}
+                    {language.helmSidewaysSpeedOutput} {this.state.lateralSpeed} m/s{'\n'}
+                    {language.helmVerticalSpeedOutput} {this.state.verticalSpeed} m/s{'\n\n'}
                     
-                    Warp factor: {this.state.warpFactor}{'\n\n'}
+                    {language.helmWarpFactorOutput} {this.state.warpFactor}{'\n\n'}
                     
-                    Pitch: {this.state.pitchAngle}°{'\n'}
-                    Yaw: {this.state.yawAngle}°{'\n'}
-                    Roll: {this.state.rollAngle}°
+                    {language.helmPitchOutput} {this.state.pitchAngle}°{'\n'}
+                    {language.helmYawOutput} {this.state.yawAngle}°{'\n'}
+                    {language.helmRollOutput} {this.state.rollAngle}°
                 </div>
             </system>
         );

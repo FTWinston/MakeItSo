@@ -25,7 +25,7 @@ interface IButtonProps {
     pull?: Float;
     class?: string;
 
-    action?: string; // DO AWAY WITH THESE
+    action?: string;
     startAction?: string;
     stopAction?: string;
 
