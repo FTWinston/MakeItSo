@@ -6,6 +6,13 @@ interface ISystemInfo {
     receiveMessage?: MessageFunc;
 }
 
+const enum InputMode {
+    ButtonsWithKeyboardShortcuts,
+    TouchscreenOnly,
+    TouchscreenAndAccelerometer,
+    GamePad,
+}
+
 interface IGameClientState {
     activeScreen?: string;
     errorMessage?: string;
@@ -15,20 +22,20 @@ interface IGameClientState {
     playerID?: any;
     systems?: ISystemInfo[];
     vibration?: FeatureState;
-    touchInterface?: FeatureState;
+    inputMode?: InputMode;
 }
 
 class GameClient extends React.Component<{}, IGameClientState> {
     constructor(props) {
         super(props);
-        
+
         this.state = {
             activeScreen: 'error', errorMessage: language.messageConnecting, gameActive: false, setupInProgress: false, showHotkeys: false, playerID: null,
             systems: language.systemNames.map(function(name, index) {
                 return {name: name, index: index, selected: sessionStorage.getItem('selectedSystem' + index) == '1', usedByOther: false};
             }),
             vibration: FeatureDetection.Vibration ? FeatureState.Enabled : FeatureState.Unavailable,
-            touchInterface: FeatureDetection.Touch ? FeatureState.Disabled : FeatureState.Unavailable
+            inputMode: this.determineDefaultInputMode(),
         };
     }
     componentDidMount () {
@@ -39,12 +46,21 @@ class GameClient extends React.Component<{}, IGameClientState> {
     render() {
         return (
             <div className={this.state.showHotkeys ? 'showKeys' : null}>
-                <SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this) } touchMode={this.state.touchInterface} touchModeChanged={this.touchModeChanged.bind(this) } />
+                <SystemSelect show={this.state.activeScreen == 'systems'} gameActive={this.state.gameActive} setupInProgress={this.state.setupInProgress} playerID={this.state.playerID} systems={this.state.systems} selectionChanged={this.systemSelectionChanged.bind(this)} inputMode={this.state.inputMode} inputModeChanged={this.inputModeChanged.bind(this)} />
                 <GameSetup show={this.state.activeScreen == 'setup'} />
-                <SystemContainer ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this) } systems={this.state.systems} touchMode={this.state.touchInterface} />
+                <SystemContainer ref="game" show={this.state.activeScreen == 'game'} registerSystem={this.registerSystem.bind(this)} systems={this.state.systems} inputMode={this.state.inputMode} />
                 <ErrorDisplay show={this.state.activeScreen == 'error'} message={this.state.errorMessage} />
             </div>
         );
+    }
+    determineDefaultInputMode() {
+        let strMode = localStorage.getItem('inputMode');
+        if (strMode != null)
+            return parseInt(strMode);
+
+        if (FeatureDetection.Touch)
+            return InputMode.TouchscreenOnly;
+        return InputMode.ButtonsWithKeyboardShortcuts;
     }
     registerSystem(id: number, receiveMessage: MessageFunc) {
         this.setState(function(previousState, currentProps) {
@@ -123,8 +139,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
     gameAlreadyStarted() {
         this.setState({ gameActive: true });
     }
-    touchModeChanged(val) {
-        this.setState({touchInterface: val});
+    inputModeChanged(val) {
+        this.setState({inputMode: val});
+        localStorage.setItem('inputMode', val.toString())
+        console.log('input mode changed to ' + val);
     }
     showHotkeys(val) {
         this.setState({showHotkeys: val});

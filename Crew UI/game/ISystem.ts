@@ -5,7 +5,7 @@
 
     index: number;
     key: number;
-    touchMode: FeatureState;
+    inputMode: InputMode;
     registerCallback: (index: number, receiveMessage: MessageFunc) => void;
 }
 

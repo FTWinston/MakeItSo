@@ -1,4 +1,4 @@
-﻿enum SwipeDir {
+﻿const enum SwipeDir {
     Up = 0,
     Down,
     Left,

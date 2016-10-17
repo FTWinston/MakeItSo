@@ -27,7 +27,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
     render() {
         return (
             <system style={{ display: this.props.visible ? null : 'none' }}>
-                <ButtonGroup inline={true} color="1" visible={this.props.touchMode != FeatureState.Enabled} caption={language.helmRotation}>
+                <ButtonGroup inline={true} color="1" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} caption={language.helmRotation}>
                     <row>
                         <spacer></spacer>
                         <Button type={ButtonType.Held} hotkey="W" startAction="+down" stopAction="-down">{language.helmRotateDown}</Button>
@@ -45,9 +45,9 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                     </row>
                 </ButtonGroup>
                 
-                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption={language.helmRotation} color="1" scale={0.02} movementCallback={this.touchRotation} />
+                <AxisInput visible={this.props.inputMode == InputMode.TouchscreenOnly} direction="both" caption={language.helmRotation} color="1" scale={0.02} movementCallback={this.touchRotation} />
                 
-                <ButtonGroup inline={true} color="2" visible={this.props.touchMode != FeatureState.Enabled}>
+                <ButtonGroup inline={true} color="2" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts}>
                     <row>
                         <Button type={ButtonType.Held} hotkey="R" startAction="+forward" stopAction="-forward">{language.helmSpeedForward}</Button>
                     </row>
@@ -59,9 +59,9 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                     </row>
                 </ButtonGroup>
                 
-                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
+                <AxisInput visible={this.props.inputMode == InputMode.TouchscreenOnly} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
                 
-                <ButtonGroup inline={true} color="3" visible={this.props.touchMode != FeatureState.Enabled} caption={language.helmTranslation}>
+                <ButtonGroup inline={true} color="3" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} caption={language.helmTranslation}>
                     <row>
                         <spacer></spacer>
                         <Button type={ButtonType.Held} hotkey="I" startAction="+moveup" stopAction="-moveup">{language.helmTranslateUp}</Button>
@@ -79,7 +79,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                     </row>
                 </ButtonGroup>
                 
-                <AxisInput visible={this.props.touchMode == FeatureState.Enabled} direction="both" caption={language.helmTranslation} scale={0.02} color="3" movementCallback={this.touchTranslation} />
+                <AxisInput visible={this.props.inputMode == InputMode.TouchscreenOnly} direction="both" caption={language.helmTranslation} scale={0.02} color="3" movementCallback={this.touchTranslation} />
                 
                 <ButtonGroup inline={true} color="4" caption={language.helmWarpFactor}>
                     <row>

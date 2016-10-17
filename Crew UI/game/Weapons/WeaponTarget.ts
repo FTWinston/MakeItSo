@@ -1,4 +1,4 @@
-﻿enum TargetStatus {
+﻿const enum TargetStatus {
     Friendly = 1,
     Hostile = 2,
     Unknown = 3

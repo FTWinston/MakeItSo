@@ -21,7 +21,7 @@ class GameSetup extends React.Component<IGameSetupProps, {}> {
                 </Choice>
                 
                 <ButtonGroup>
-                    <Button type={ButtonType.Push} action="-setup" onClicked={function () {gameClient.setActiveScreen('systems')}} color="3">{language.gameSetupGoBack}</Button>
+                    <Button type={ButtonType.Push} action="-setup" onClicked={function () {gameClient.setActiveScreen('systems')}} color="3">{language.menuGoBack}</Button>
                     <Button type={ButtonType.Confirm} action="startGame" color="4">{language.gameSetupStartGame}</Button>
                 </ButtonGroup>
             </screen>

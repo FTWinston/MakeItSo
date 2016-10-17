@@ -11,7 +11,7 @@
 
 interface IChoiceState {
     description?: string;
-    mountedChildren?: any[];
+    mountedChildren?: Button[];
 }
 
 class Choice extends React.Component<IChoiceProps, IChoiceState> {
@@ -80,12 +80,22 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
             </choice>
         );
     }
+    componentDidMount() {
+        let children = this.state.mountedChildren;
+        if (children.length == 0)
+            return;
+
+        // if no mounted children are active, make the first one active
+        for (let i=0; i<children.length; i++)
+            if (children[i].state.active)
+                return;
+
+        children[0].setActive(true);
+    }
     childMounted(child) {
         if (child.props.type != ButtonType.Toggle)
             return;
 
-        if (this.state.mountedChildren.length == 0)
-            child.setActive(true);
         this.state.mountedChildren.push(child);
     }
     childSelected(child) {

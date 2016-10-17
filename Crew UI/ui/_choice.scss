@@ -65,6 +65,12 @@ choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .
     }
 }
 
+@include media-size-down(xs) {
+    choice.xsVertical > *, table.xsVertical > * {
+        @include choice-vertical();
+    }
+}
+
 choice.forceVertical, table.forceVertical {
 
 

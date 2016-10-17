@@ -1,4 +1,4 @@
-﻿enum FeatureState {
+﻿const enum FeatureState {
     Unavailable = 0,
     Disabled,
     Enabled

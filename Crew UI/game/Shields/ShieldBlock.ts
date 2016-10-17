@@ -1,4 +1,4 @@
-﻿enum ShieldBlockType {
+﻿const enum ShieldBlockType {
     Normal = 1,
     ActiveCombo = 2,
     Damage = 3

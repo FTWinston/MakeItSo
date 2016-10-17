@@ -18,11 +18,21 @@
     messageGameEndedUser:  'User @name@ ended the game.',
     messageRefreshPage: 'Refresh the page to continue.',
 
+    menuGoBack: 'go back',
+
     systemListPrompt: 'Select systems to control:',
     systemListSetupGame: 'setup game',
     systemListResumeGame: 'resume game',
     systemListEndGame: 'end game',
-    systemListTouchInterface: 'touch interface',
+    systemListInputMode: 'helm input mode:',
+    inputModes: ['Keyboard', 'Touchscreen', 'Accelerometer', 'Gamepad'],
+    inputModeDescriptions: [
+        'On-screen buttons with keyboard shortcuts',
+        'Touchscreen controls',
+        'Accelerometer steering, with touchscreen controls',
+        'Operate the helm using an attached game controller'
+    ],
+    inputModePrompt: 'Select the control scheme you wish to use to control the helm. Other systems can be controlled by any combination of on-screen buttons, touch controls, keyboard shortcuts and gamepad input, but the helm will display different controls depending on the control scheme you select.',
 
     gameSetupIntro: 'This screen should let you set up your ship and start a new game, browse servers, etc',
     gameSetupServerType: 'Do you wish to play with just your own crew, or with others?',
@@ -40,7 +50,6 @@
     gameSetupGameModeArena: 'Arena',
     gameSetupGameModeArenaDescription: 'Human-crewed ships battle for supremacy in a single star system.',
     gameSetupStartGame: 'start game',
-    gameSetupGoBack: 'go back',
 
     systemContainerPause: 'pause',
 

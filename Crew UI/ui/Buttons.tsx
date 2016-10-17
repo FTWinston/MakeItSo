@@ -1,11 +1,11 @@
-enum ButtonType {
+const enum ButtonType {
     Push,
     Confirm,
     Toggle,
     Held,
 }
 
-enum Float {
+const enum Float {
     None,
     Left,
     Right,
@@ -226,6 +226,9 @@ class Button extends React.Component<IButtonProps, IButtonState> {
             this.props.onClicked();
     }
     setActive(val) {
+        if (this.state.active == val)
+            return;
+
         this.setState({ active: val });
         
         if (val && this.props.onActivated != null)
