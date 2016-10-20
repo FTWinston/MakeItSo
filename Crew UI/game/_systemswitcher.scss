@@ -1,84 +1,50 @@
 ﻿@import '../ui/borders';
 @import "../ui/breakpoints";
+@import '../ui/choice';
 @import '../ui/colors';
 
 #systemSwitcher {
     padding-top: 0.25em;
 }
 
-#systemSwitcher clicker.expand {
-    display: none;
-}
-
-@mixin system-switcher-dropdown() {
-    choice:not(.forceVertical) clicker {
-        &:not(.enabled) {
-            display: none;
-        }
-        &.expand {
-            display: inline-block;
-            width: 2.5em;
-        }
-        &.enabled {
-            @include border-radius-left(0);
-            @include border-radius-right(1.5em);
-        }
-    }
-}
-
 @include media-size-down(860px) {
-    #systemSwitcher[data-numsystems="8"] {
-        @include system-switcher-dropdown();
+    #systemSwitcher[data-numsystems="8"] choice {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(796px) {
-    #systemSwitcher[data-numsystems="7"] {
-        @include system-switcher-dropdown();
+    #systemSwitcher[data-numsystems="7"] choice {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(720px) {
-    #systemSwitcher[data-numsystems="6"] {
-        @include system-switcher-dropdown();
+    #systemSwitcher[data-numsystems="6"] choice {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(638px) {
-    #systemSwitcher[data-numsystems="5"] {
-        @include system-switcher-dropdown();
+    #systemSwitcher[data-numsystems="5"] choice {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(548px) {
-    #systemSwitcher[data-numsystems="4"] {
-        @include system-switcher-dropdown();
+    #systemSwitcher[data-numsystems="4"] choice {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(454px) {
-    #systemSwitcher[data-numsystems="3"] {
-        @include system-switcher-dropdown();
+    #systemSwitcher[data-numsystems="3"] choice {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(356px) {
-    #systemSwitcher {
-        @include system-switcher-dropdown();
-    }
-}
-
-#systemSwitcher choice.forceVertical {
-    overflow: visible;
-    width: 15em;
-    z-index: 100;
-
-    clicker.first {
-        @include border-radius-top(0);
-    }
-
-    clicker:not(.enabled) {
-        display: block;
-        background-color: $backgroundColor;
+    #systemSwitcher choice {
+        @include choice-dropdown();
     }
 }

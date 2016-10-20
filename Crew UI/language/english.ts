@@ -61,6 +61,7 @@
     viewscreenDirectionDown: 'ventral',
     viewscreenChaseMode: 'chase mode',
     viewscreenCommsChannel: 'comms channel',
+    viewscreenTarget: 'target',
 
     helmRotation: 'rotation',
     helmRotateUp: 'up',

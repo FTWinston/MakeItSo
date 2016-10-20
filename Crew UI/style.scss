@@ -134,13 +134,22 @@ system {
 	overflow: hidden;
 }
 
-.text {
+output {
+    display: block;
 	white-space: pre-line;
 	padding: 0.75em;
 	background-color: $darkBackground;
 	border: solid 1px grey;
-}
 
+    row {
+        display: block;
+
+        @include media-size-down(md) {
+            display: inline-block;
+            padding: 1em;
+        }
+    }
+}
 
 @import 'game/systemswitcher';
 

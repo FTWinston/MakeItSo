@@ -51,15 +51,19 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                         </row>
                     </ButtonGroup>
 
-                    <div className="text settings">
-                        Magnification: {this.state.zoomFactor}x{'\n'}
-                        Pitch: {this.state.pitchAngle}°{'\n'}
-                        Yaw: {this.state.yawAngle}°
-                    </div>
+                    <output className="settings">
+                        <row>Pitch: {this.state.pitchAngle}°</row>
+                        <row>Yaw: {this.state.yawAngle}°</row>
+                        <row>Magnification: {this.state.zoomFactor}x</row>
+                    </output>
                 </section>
-                <List options={["Something", "Something else", "And another thing"]} onSelectionChanged={this.targetSelected.bind(this)} />
+                
                 <section>
-                    <Choice inline={true} color="2">
+                    <Button type={ButtonType.Push} color="3" hotkey="N" >{language.viewscreenTarget}</Button>
+                    <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">{language.viewscreenCommsChannel}</Button>
+
+                    <Choice inline={true} color="2" class="smDropdown">
+                        <Button type={ButtonType.Push} class="expand" onPressed={function() { }}>Direction</Button>
                         <row>
                             <Button type={ButtonType.Toggle} hotkey="F" startAction="view forward">{language.viewscreenDirectionForward}</Button>
                             <Button type={ButtonType.Toggle} hotkey="G" startAction="view port">{language.viewscreenDirectionLeft}</Button>
@@ -72,10 +76,10 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                         </row>
                     </Choice>
                     <Button type={ButtonType.Toggle} color="4" hotkey="N" startAction="+chase" stopAction="-chase">{language.viewscreenChaseMode}</Button>
-                    <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">{language.viewscreenCommsChannel}</Button>
                 </section>
             </system>
         );
+        // <List options={["Something", "Something else", "And another thing"]} onSelectionChanged={this.targetSelected.bind(this)} />
     }
     receiveMessage(msg, data) {
         return false;

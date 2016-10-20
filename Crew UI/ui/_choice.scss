@@ -34,6 +34,10 @@ choice clicker, .table clicker {
 	@include border-radius(0);
 }
 
+choice clicker.expand {
+    display: none;
+}
+
 row > clicker {
 	margin: 0em;
 }
@@ -47,34 +51,77 @@ choice clicker:last-of-type, choice clicker.last, .table clicker:last-of-type, .
 }
 
 @mixin choice-vertical() {
-    display: block;
+    clicker {
+        display: block;
         
-    &:first-of-type, &.first {
-        @include border-radius-top(1.5em);
-        @include border-radius-bottom-left(0);
+        &:first-of-type, &.first {
+            @include border-radius-top(1.5em);
+            @include border-radius-bottom-left(0);
+        }
+        &:last-of-type, &.last {
+            @include border-radius-bottom(1.5em);
+            @include border-radius-top-right(0);
+        }
     }
-    &:last-of-type, &.last {
-        @include border-radius-bottom(1.5em);
-        @include border-radius-top-right(0);
+
+    row {
+        display: inline;
+    }
+}
+
+@mixin choice-dropdown() {
+    &:not(.forceVertical) clicker {
+        &:not(.enabled) {
+            display: none;
+        }
+        &.expand {
+            display: inline-block;
+            min-width: 2.5em;
+        }
+        &.enabled:not(.expand) {
+            @include border-radius-left(0);
+            @include border-radius-right(1.5em);
+        }
+    }
+
+    &.forceVertical {
+        overflow: visible;
+        width: 15em;
+        z-index: 100;
+
+        clicker.first {
+            @include border-radius-top(0);
+        }
+
+        clicker:not(.enabled) {
+            display: block;
+            background-color: $backgroundColor;
+        }
     }
 }
 
 @include media-size-down(sm) {
-    choice.smVertical > *, table.smVertical > * {
+    choice.smVertical, table.smVertical {
         @include choice-vertical();
+    }
+    choice.smDropdown {
+        @include choice-dropdown();
     }
 }
 
 @include media-size-down(xs) {
-    choice.xsVertical > *, table.xsVertical > * {
+    choice.xsVertical, table.xsVertical {
         @include choice-vertical();
+    }
+    choice.xsDropdown {
+        @include choice-dropdown();
     }
 }
 
 choice.forceVertical, table.forceVertical {
+    @include choice-vertical();
+}
 
-
-    & > * {
-        @include choice-vertical();
-    }
+choice.forceDropdown {
+    @include choice-dropdown();
 }

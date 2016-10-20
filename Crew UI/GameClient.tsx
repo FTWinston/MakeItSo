@@ -39,8 +39,13 @@ class GameClient extends React.Component<{}, IGameClientState> {
         };
     }
     componentDidMount () {
-        if (FeatureDetection.CheckRequirements(this))
+        if (FeatureDetection.CheckRequirements(this)) {
             this.server = new Connection(this, 'ws://' + location.host + '/ws');
+            
+            for(var i=0; i<this.state.systems.length; i++)
+                if (this.state.systems[i].selected)
+                    this.server.send('+sys ' + i);
+        }
     }
     server: Connection;
     render() {

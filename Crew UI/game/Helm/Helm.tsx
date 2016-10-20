@@ -93,7 +93,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                     </row>
                 </ButtonGroup>
                 
-                <div className="text">
+                <output>
                     {language.helmForwardSpeedOutput} {this.state.forwardSpeed} m/s{'\n'}
                     {language.helmSidewaysSpeedOutput} {this.state.lateralSpeed} m/s{'\n'}
                     {language.helmVerticalSpeedOutput} {this.state.verticalSpeed} m/s{'\n\n'}
@@ -103,7 +103,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                     {language.helmPitchOutput} {this.state.pitchAngle}°{'\n'}
                     {language.helmYawOutput} {this.state.yawAngle}°{'\n'}
                     {language.helmRollOutput} {this.state.rollAngle}°
-                </div>
+                </output>
             </system>
         );
     }

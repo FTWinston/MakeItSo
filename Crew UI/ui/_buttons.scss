@@ -48,20 +48,18 @@ clicker {
 
         &.primed {
             &:hover {
-	            background-color: #f66;
-	            border-color: #f66;
+	            background-color: $btnColorConfirm;
+	            border-color: $btnColorConfirm;
 	            color: $backgroundColor;
             }
 
             &:active {
 	            background-color: $backgroundColor !important;
-	            color: #f66;
+	            color: $btnColorConfirm;
             }
-
             &::before {
 	            content: "Confirm: ";
             }
-
             &::after {
 	            content: "?";
             }
