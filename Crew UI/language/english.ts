@@ -53,6 +53,9 @@
 
     systemContainerPause: 'pause',
 
+    viewscreenPan: 'Pan',
+    viewscreenZoom: 'Zoom',    
+    viewscreenDirection: 'direction',
     viewscreenDirectionForward: 'forward',
     viewscreenDirectionLeft: 'port',
     viewscreenDirectionRight: 'starboard',
@@ -62,6 +65,7 @@
     viewscreenChaseMode: 'chase mode',
     viewscreenCommsChannel: 'comms channel',
     viewscreenTarget: 'target',
+    viewscreenNoTarget: 'none',
 
     helmRotation: 'rotation',
     helmRotateUp: 'up',

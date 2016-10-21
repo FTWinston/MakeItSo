@@ -63,13 +63,13 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
             
             return child;
         });
-        
+
         var classes = this.props.class;
         if (this.props.vertical)
             classes += ' forceVertical';
         if (this.props.inline)
             classes += ' inline';
-        if (isTable)
+        else if (isTable)
             classes += ' table';
         
         return (

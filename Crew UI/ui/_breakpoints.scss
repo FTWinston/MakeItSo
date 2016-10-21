@@ -71,3 +71,15 @@ $xl-cutoff-min: 1200px;
         @warn "The media-size mixins support the following attributes: xs, sm, md, lg, xl";
     }
 }
+
+@mixin portrait() {
+    @media screen and (orientation:portrait) {
+        @content;
+    }
+}
+
+@mixin landscape() {
+    @media screen and (orientation:landscape) {
+        @content;
+    }
+}

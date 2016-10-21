@@ -567,6 +567,79 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		InputKey(EKeys::K, false);
 	}
+	else if (STARTS_WITH(info, "viewdir "))
+	{
+		// set view pitch & yaw
+		// clear view target if set
+	}
+	else if (STARTS_WITH(info, "viewtarget "))
+	{
+		// set view target
+	}
+	else if (MATCHES(info, "+viewup"))
+	{
+		InputKey(EKeys::Z, true); // increase view pitch
+	}
+	else if (MATCHES(info, "-viewup"))
+	{
+		InputKey(EKeys::Z, false);
+	}
+	else if (MATCHES(info, "+viewdown"))
+	{
+		InputKey(EKeys::X, true); // decrease view pitch
+	}
+	else if (MATCHES(info, "-viewdown"))
+	{
+		InputKey(EKeys::X, false);
+	}
+	else if (MATCHES(info, "+viewleft"))
+	{
+		InputKey(EKeys::C, true); // decrease view yaw
+	}
+	else if (MATCHES(info, "-viewleft"))
+	{
+		InputKey(EKeys::C, false);
+	}
+	else if (MATCHES(info, "+viewright"))
+	{
+		InputKey(EKeys::V, true); // increase view yaw
+	}
+	else if (MATCHES(info, "-viewright"))
+	{
+		InputKey(EKeys::V, false);
+	}
+	else if (MATCHES(info, "+viewin"))
+	{
+		InputKey(EKeys::B, true); // increase view zoom
+	}
+	else if (MATCHES(info, "-viewin"))
+	{
+		InputKey(EKeys::B, true);
+	}
+	else if (MATCHES(info, "+viewout"))
+	{
+		InputKey(EKeys::N, true); // decrease view zoom
+	}
+	else if (MATCHES(info, "-viewout"))
+	{
+		InputKey(EKeys::N, true);
+	}
+	else if (MATCHES(info, "+viewchase"))
+	{
+		// toggle chase mode on
+	}
+	else if (MATCHES(info, "-viewchase"))
+	{
+		// toggle chase mode off
+	}
+	else if (MATCHES(info, "+viewcomms"))
+	{
+		// toggle comms mode on
+	}
+	else if (MATCHES(info, "-viewcomms"))
+	{
+		// toggle comms mode off
+	}
 	else
 	{
 		// write all unrecognised commands to the console

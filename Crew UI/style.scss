@@ -144,7 +144,7 @@ output {
     row {
         display: block;
 
-        @include media-size-down(md) {
+        @include media-size-down(sm) {
             display: inline-block;
             padding: 1em;
         }
