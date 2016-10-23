@@ -90,6 +90,7 @@
     <Content Include="ui\_breakpoints.scss" />
     <Content Include="game\_systemswitcher.scss" />
     <Content Include="game\ViewScreen\_viewscreen.scss" />
+    <Content Include="ui\_layout.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

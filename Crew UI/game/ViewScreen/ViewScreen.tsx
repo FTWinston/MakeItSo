@@ -23,8 +23,8 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     render() {
         let self = this;
         return (
-            <system style={{display: this.props.visible ? null : 'none'}}>
-                <section id="viewscreenAiming">
+            <system id="viewscreen" style={{display: this.props.visible ? null : 'none'}}>
+                <section id="viewscreenAiming" className="large">
                     <ButtonGroup inline={true} color="3">
                         <row>
                             <spacer></spacer>
@@ -62,7 +62,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     </output>
                 </section>
                 
-                <section id="viewscreenOptions" style={{display: this.state.selectingTarget ? 'none' : null}}>
+                <section id="viewscreenOptions" className="small" style={{display: this.state.selectingTarget ? 'none' : null}}>
                     <Choice inline={true} color="2" class="smDropdown" vertical={self.state.showViewList}>
                         <Button type={ButtonType.Push} class="expand" onPressed={function() { self.setState({showViewList: !self.state.showViewList}); }}>{language.viewscreenDirection}</Button>
                         <row>
@@ -85,7 +85,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                         <Button type={ButtonType.Toggle} forceActive={self.state.targetID != null} disabled={self.state.targetID == null} onDeactivated={function () { self.targetSelected(null); }}>{self.state.targetID == null ? language.viewscreenNoTarget : self.state.targetID}</Button>
                     </ButtonGroup>
                 </section>
-                <section id="viewscreenTargets" style={{display: this.state.selectingTarget ? null : 'none'}}>
+                <section id="viewscreenTargets" className="small" style={{display: this.state.selectingTarget ? null : 'none'}}>
                     <List options={["Something", "Something else", "And another thing"]} onSelectionChanged={this.targetSelected.bind(this)} />
                 </section>
             </system>

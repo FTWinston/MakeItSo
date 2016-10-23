@@ -1,6 +1,7 @@
 @import 'ui/colors';
 @import 'ui/borders';
 @import 'ui/breakpoints';
+@import 'ui/layout';
 
 body {
 	background-color: $backgroundColor; margin: 0; padding: 0;
@@ -128,9 +129,6 @@ row section, touchArea {
 }
 
 system {
-	position: absolute;
-	left: 0; right: 0;
-	top: 4em; bottom: 0;
 	overflow: hidden;
 }
 
@@ -149,6 +147,10 @@ output {
             padding: 1em;
         }
     }
+}
+
+html, body, #gameRoot, #gameRoot > div, screen {
+    height: 100%;
 }
 
 @import 'game/systemswitcher';

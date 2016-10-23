@@ -1,0 +1,53 @@
+﻿@import 'breakpoints';
+
+@mixin table-md-down {
+    @include media-size-down(md) {
+        display: table;
+
+        & > section {
+            padding-top: 0.5em;
+        }
+    
+        @include landscape {
+            & > section {
+                display: table-cell;
+
+                &.large {
+                    width: 67%;
+                }
+
+                &.medium {
+                    width: 50%;
+                }
+
+                &.small {
+                    width: 33%;
+                }
+            }
+        }
+
+        @include portrait {
+            & > section {
+                display: table-row;
+
+                &.large {
+                    height: 75%;
+                }
+
+                &.medium {
+                    height: 50%;
+                }
+
+                &.small {
+                    height: 25%;
+                }
+            }
+        }
+    }
+
+    @include media-size-up(lg) {
+        & > section.small, & > section.large {
+            padding: 1em;
+        }
+    }
+}

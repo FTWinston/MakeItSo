@@ -3,18 +3,23 @@ $md-cutoff-min: 768px;
 $lg-cutoff-min: 992px;
 $xl-cutoff-min: 1200px;
 
+$xs-cutoff-max: $sm-cutoff-min - 1;
+$sm-cutoff-max: $md-cutoff-min - 1;
+$md-cutoff-max: $lg-cutoff-min - 1;
+$lg-cutoff-max: $xl-cutoff-min - 1;
+
 @mixin media-size($width) {
     @if $width == xs { 
-        @media (max-width: $sm-cutoff-min - 1) { @content; }
+        @media (max-width: $xs-cutoff-max) { @content; }
     }
     @else if $width == sm {
-        @media (min-width: $sm-cutoff-min) and (max-width: $md-cutoff-min - 1) { @content; }
+        @media (min-width: $sm-cutoff-min) and (max-width: $sm-cutoff-max) { @content; }
     }
     @else if $width == md {
-        @media (min-width: $md-cutoff-min) and (max-width: $lg-cutoff-min - 1) { @content; }
+        @media (min-width: $md-cutoff-min) and (max-width: $md-cutoff-max) { @content; }
     }
     @else if $width == lg {
-        @media (min-width: $lg-cutoff-min) and (max-width: $xl-cutoff-min - 1) { @content; }
+        @media (min-width: $lg-cutoff-min) and (max-width: $lg-cutoff-max) { @content; }
     }
     @else if $width == xl {
         @media (min-width: $lg-cutoff-min) { @content; }
@@ -53,16 +58,16 @@ $xl-cutoff-min: 1200px;
         @media (max-width: $width) { @content; }
     }
     @else if $width == xs {
-        @media (max-width: $sm-cutoff-min - 1) { @content; }
+        @media (max-width: $xs-cutoff-max) { @content; }
     }
     @else if $width == sm {
-        @media (max-width: $md-cutoff-min - 1) { @content; }
+        @media (max-width: $sm-cutoff-max) { @content; }
     }
     @else if $width == md {
-        @media (max-width: $lg-cutoff-min - 1) { @content; }
+        @media (max-width: $md-cutoff-max) { @content; }
     }
     @else if $width == lg {
-        @media (max-width: $xl-cutoff-min - 1) { @content; }
+        @media (max-width: $lg-cutoff-max) { @content; }
     }
     @else if $width == xl {
         @content;
@@ -73,13 +78,13 @@ $xl-cutoff-min: 1200px;
 }
 
 @mixin portrait() {
-    @media screen and (orientation:portrait) {
+    @media (orientation:portrait) {
         @content;
     }
 }
 
 @mixin landscape() {
-    @media screen and (orientation:landscape) {
+    @media (orientation:landscape) {
         @content;
     }
 }
