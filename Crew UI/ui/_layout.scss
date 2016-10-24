@@ -60,4 +60,14 @@ $systemSwitcherHeight: 3em;
             }
         }
     }
+
+    & > section.small {
+        background-color: red;
+    }
+    & > section.medium {
+        background-color: orange;
+    }
+    & > section.large {
+        background-color: green;
+    }
 }

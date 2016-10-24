@@ -88,3 +88,46 @@ $lg-cutoff-max: $xl-cutoff-min - 1;
         @content;
     }
 }
+
+
+
+
+
+
+#systemSwitcher::after {
+    @include landscape() {
+        @include media-size(xl) {
+            content: 'L-XL';
+        }
+        @include media-size(lg) {
+            content: 'L-LG';
+        }
+        @include media-size(md) {
+            content: 'L-MD';
+        }
+        @include media-size(sm) {
+            content: 'L-SM';
+        }
+        @include media-size(xs) {
+            content: 'L-XS';
+        }
+    }
+
+    @include portrait() {
+        @include media-size(xl) {
+            content: 'P-XL';
+        }
+        @include media-size(lg) {
+            content: 'P-LG';
+        }
+        @include media-size(md) {
+            content: 'P-MD';
+        }
+        @include media-size(sm) {
+            content: 'P-SM';
+        }
+        @include media-size(xs) {
+            content: 'P-XS';
+        }
+    }
+}
