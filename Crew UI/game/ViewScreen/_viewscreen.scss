@@ -3,7 +3,7 @@
 @import '../../ui/layout';
 
 #viewscreen {
-    @include table-md-down();
+    @include adaptive-layout(md);
 
     #viewscreenAiming {
         text-align: center;

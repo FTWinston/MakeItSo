@@ -1,53 +1,51 @@
 ﻿@import 'breakpoints';
 
-@mixin table-md-down {
-    @include media-size-down(md) {
+$systemSwitcherHeight: 3em;
+
+@mixin clearSystemSwitcher() {
+    &:before {
+        display: block;
+        content: '';
+        height: $systemSwitcherHeight + .75em;
+    }
+}
+
+@mixin adaptive-layout($tableCutoffSize) {
+    width: 100vw;
+    height: 100vh;
+
+    & > section {
+        &:first-of-type { @include clearSystemSwitcher(); }
+        padding: 1em;
+    }
+
+    @include media-size-down($tableCutoffSize) {
         display: table;
 
         & > section {
+            padding: 0;
             padding-top: 0.5em;
         }
     
         @include landscape {
             & > section {
+                @include clearSystemSwitcher();
                 display: table-cell;
 
-                &.large {
-                    width: 67%;
-                }
-
-                &.medium {
-                    width: 50%;
-                }
-
-                &.small {
-                    width: 33%;
-                }
+                &.large  { width: 67vw; }
+                &.medium { width: 50vw; }
+                &.small  { width: 33vw; }
             }
         }
 
         @include portrait {
             & > section {
-                display: table-row;
+                display: block;
 
-                &.large {
-                    height: 75%;
-                }
-
-                &.medium {
-                    height: 50%;
-                }
-
-                &.small {
-                    height: 25%;
-                }
+                &.large  { height: 75vh; }
+                &.medium { height: 50vh; }
+                &.small  { height: 25vh; }
             }
-        }
-    }
-
-    @include media-size-up(lg) {
-        & > section.small, & > section.large {
-            padding: 1em;
         }
     }
 }

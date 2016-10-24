@@ -118,16 +118,6 @@ row section, touchArea {
 
 @import 'setup/setup';
 
-#systemSwitcher {
-	height: 3em;
-	border-bottom: solid $textColor 1px;
-	padding: 0.5em;
-}
-
-#systemSwitcher choice {
-	margin: 0em;
-}
-
 system {
 	overflow: hidden;
 }

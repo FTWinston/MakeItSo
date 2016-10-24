@@ -2,9 +2,22 @@
 @import "../ui/breakpoints";
 @import '../ui/choice';
 @import '../ui/colors';
+@import '../ui/layout';
 
 #systemSwitcher {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
     padding-top: 0.25em;
+    
+    height: $systemSwitcherHeight;
+    border-bottom: solid $textColor 1px;
+    padding: 0.25em 0.5em 0.5em 0.5em;
+
+    choice {
+	    margin: 0em;
+    }
 }
 
 @include media-size-down(860px) {
