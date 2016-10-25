@@ -20,19 +20,22 @@ screen {
     margin: 0 auto;
     display: block;
     text-align: initial;
+    width: 100vw;
 
-    @include media-size-down(md) {
-        width: 100%;
-    }
     @include media-size(lg) {
-        width: 950px;
+        width: $lg-cutoff-min - 50px;
     }
     @include media-size(xl) {
-        width: 1100px;
+        width: $xl-cutoff-min - 100px;
     }
 
     &#gameActive {
-        width: 100%;
+        width: 100vw;
+        overflow: hidden;
+    }
+
+    section > * {
+        vertical-align: top;
     }
 }
 
