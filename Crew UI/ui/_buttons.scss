@@ -5,6 +5,7 @@ clicker {
 	display: inline-block;
 	border: solid #ccc 2px;
 	@include border-radius(1.5em);
+	background-color: $backgroundColor;
 
 	text-align: center;
 	padding: 0.5em;

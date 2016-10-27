@@ -14,6 +14,14 @@ $systemSwitcherHeight: 3em;
     width: 100vw;
     height: 100vh;
 
+    spacer.adaptiveVerticalMinWidth {
+        @for $i from 5 through 15 {
+            &[data-width="#{$i}em"] {
+                min-width: #{$i}em;
+            }
+        }
+    }
+
     & > section {
         &:first-of-type { @include clearSystemSwitcher(); }
         padding: 1em;
@@ -35,6 +43,10 @@ $systemSwitcherHeight: 3em;
                 &.large  { width: 67vw; }
                 &.medium { width: 50vw; }
                 &.small  { width: 33vw; }
+            }
+
+            spacer.adaptiveVerticalMinWidth {
+                min-width: initial !important;
             }
         }
 

@@ -62,13 +62,17 @@ row section, touchArea {
 	display: block;
 }
 
+spacer {
+    display: inline-block;
+}
+
 @import 'ui/choice';
 
-.table row:not(.rounded):not(:last-of-type) * {
+.table row:not(.rounded):not(:last-of-type) clicker {
 	@include border-radius-bottom(0);
 }
 
-.table row:not(.rounded):not(:first-of-type) * {
+.table row:not(.rounded):not(:first-of-type) clicker {
 	@include border-radius-top(0);
 }
 

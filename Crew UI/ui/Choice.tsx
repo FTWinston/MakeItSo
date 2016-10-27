@@ -1,36 +1,42 @@
-﻿interface IChoiceProps {
+﻿class DropdownSettings {
+    label: string;
+    popUpwards: boolean = false;
+}
+
+interface IChoiceProps {
     prompt?: string;
     color?: string;
     disabled?: boolean;
     inline?: boolean;
     visible?: boolean;
     children?: any;
-    vertical?: boolean;
     class?: string;
+    dropdown?: DropdownSettings;
 }
 
 interface IChoiceState {
     description?: string;
     mountedChildren?: Button[];
+    expanded?: boolean;
 }
 
 class Choice extends React.Component<IChoiceProps, IChoiceState> {
     constructor(props) {
         super(props);
-        this.state = { description: null, mountedChildren: [] };
+        this.state = { description: null, mountedChildren: [], expanded: false };
     }
     static defaultProps = {
-        prompt: null, color: null, disabled: false, inline: false, visible: true, vertical: false, class: ''
+        prompt: null, color: null, disabled: false, inline: false, visible: true, class: '', dropdown: null
     };
     render() {
+        var self = this;
         var props:IButtonProps = { inChoice: true, onActivatedChoice: this.childSelected.bind(this), onMounted: this.childMounted.bind(this), first: false, last: false };
-        var gcProps:IButtonProps = { inChoice: true, onActivatedChoice: this.childSelected.bind(this), onMounted: this.childMounted.bind(this), first: false, last: false };
         
         if (this.props.color != null)
-            gcProps.color = props.color = this.props.color;
+            props.color = this.props.color;
         
         if (this.props.disabled)
-            gcProps.disabled = props.disabled = true;
+            props.disabled = true;
         
         // find the first and last visible children, to mark them as such
         var firstIndex = 0, lastIndex = this.props.children.length - 1;
@@ -46,12 +52,24 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
                 props.first = true;
             if (index == lastIndex)
                 props.last = true;
-            
-            if (c.type == "row") {
+
+            if (c.type == 'row') {
                 isTable = true;
                 
-                props.children = React.Children.map(c.props.children, function (gc: React.ReactElement<any>, i) {
-                    return React.cloneElement(gc, gcProps);
+                var lastSubChild = c.props.children.length - 1;
+                props.children = React.Children.map(c.props.children, function (sc: React.ReactElement<any>, childIndex) {
+                    let cacheFirst = props.first;
+                    props.first = index == childIndex && index == 0;
+
+                    let cacheLast = props.last;
+                    if (childIndex != lastSubChild)
+                        props.last = false;
+
+                    var subChild = React.cloneElement(sc, props);
+
+                    props.first = cacheFirst;
+                    props.last = cacheLast;
+                    return subChild;
                 });
             }
             
@@ -65,18 +83,25 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         });
 
         var classes = this.props.class;
-        if (this.props.vertical)
+        if (this.state.expanded)
             classes += ' forceVertical';
         if (this.props.inline)
             classes += ' inline';
-        else if (isTable)
+        else if (isTable && !this.state.expanded)
             classes += ' table';
         
+        var expander = this.props.dropdown == null ? null : (
+            <Button type={ButtonType.Push} color={this.props.color} disabled={this.props.disabled} class="expand" onPressed={function () {self.setState({expanded: !self.state.expanded})}}>{this.props.dropdown.label}</Button>
+        );
+
         return (
             <choice className={classes} style={{display: this.props.visible ? null : 'none'}}>
-                <prompt style={{display: this.props.prompt == null ? 'none' : null}} className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt>
-                {children}
-                <description style={{display: this.state.description == null ? 'none' : null, visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description>
+                { this.props.prompt == null ? '' : <prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt> }
+                { expander }
+                <options className={expander == null ? null : (this.props.dropdown.popUpwards ? 'popUpward' : 'popDownward')}>
+                    {children}
+                </options>
+                { this.state.description == null ? '' : <description style={{visibility: this.props.disabled ? 'hidden' : null}}>{this.state.description}</description> }
             </choice>
         );
     }
@@ -105,6 +130,6 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
                 checkChild.setActive(false);
         }
         
-        this.setState({description: child.props.description});
+        this.setState({expanded: false, description: child.props.description});
     }
 }

@@ -63,19 +63,20 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                 </section>
                 
                 <section id="viewscreenOptions" className="small" style={{display: this.state.selectingTarget ? 'none' : null}}>
-                    <Choice inline={true} color="2" class="smDropdown" vertical={self.state.showViewList}>
-                        <Button type={ButtonType.Push} class="expand" onPressed={function() { self.setState({showViewList: !self.state.showViewList}); }}>{language.viewscreenDirection}</Button>
-                        <row>
-                            <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir 0 0">{language.viewscreenDirectionForward}</Button>
-                            <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir 270 0">{language.viewscreenDirectionLeft}</Button>
-                            <Button type={ButtonType.Toggle} hotkey="H" startAction="viewdir 90 0">{language.viewscreenDirectionRight}</Button>
-                        </row>
-                        <row>
-                            <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir 180 0">{language.viewscreenDirectionBackward}</Button>
-                            <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir 0 90">{language.viewscreenDirectionUp}</Button>
-                            <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir 0 270">{language.viewscreenDirectionDown}</Button>
-                        </row>
-                    </Choice>
+                    <spacer className="adaptiveVerticalMinWidth" data-width="14em">
+                        <Choice inline={true} color="2" class="smDropdown" dropdown={{label: language.viewscreenDirection, popUpwards: true}}>
+                            <row>
+                                <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir 0 0">{language.viewscreenDirectionForward}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir 270 0">{language.viewscreenDirectionLeft}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="H" startAction="viewdir 90 0">{language.viewscreenDirectionRight}</Button>
+                            </row>
+                            <row>
+                                <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir 180 0">{language.viewscreenDirectionBackward}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir 0 90">{language.viewscreenDirectionUp}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir 0 270">{language.viewscreenDirectionDown}</Button>
+                            </row>
+                        </Choice>
+                    </spacer>
 
                     <Button type={ButtonType.Toggle} color="4" hotkey="N" startAction="+viewchase" stopAction="-viewchase" disabled={this.state.targetID != null}>{language.viewscreenChaseMode}</Button>
                     <Button type={ButtonType.Toggle} color="8" hotkey="M" startAction="+viewcomms" stopAction="-viewcomms">{language.viewscreenCommsChannel}</Button>

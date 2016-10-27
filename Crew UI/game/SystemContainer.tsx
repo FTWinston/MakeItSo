@@ -9,13 +9,12 @@ interface ISystemContainerState {
     currentSystem?: number;
     width?: number;
     height?: number;
-    menuExpanded?: boolean;
 }
 
 class SystemContainer extends React.Component<ISystemContainerProps, ISystemContainerState> {
     constructor(props) {
         super(props);
-        this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight, menuExpanded: false };
+        this.state = { currentSystem: -1, width: window.innerWidth, height: window.innerHeight };
     }
     componentDidMount() {
         window.addEventListener('resize', this.handleResize.bind(this, false));
@@ -33,11 +32,8 @@ class SystemContainer extends React.Component<ISystemContainerProps, ISystemCont
     render() {
         var self = this;
         var switchers = this.props.systems.map(function(system) {
-            return <Button type={ButtonType.Toggle} key={system.index} forceActive={system.selected && system.index == self.state.currentSystem} visible={system.selected} onActivated={function() {self.setState({currentSystem: system.index, menuExpanded: false})}}>{system.name}</Button>
+            return <Button type={ButtonType.Toggle} key={system.index} forceActive={system.selected && system.index == self.state.currentSystem} visible={system.selected} onActivated={function() {self.setState({currentSystem: system.index})}}>{system.name}</Button>
         });
-        switchers.unshift(
-            <Button type={ButtonType.Push} key="sw" class="expand" onPressed={function() { self.setState({menuExpanded: !self.state.menuExpanded})}}>...</Button>
-        );
 
         var switcher = this.refs['switcher'] as HTMLElement;
         var systemWidth = this.state.width, systemHeight = this.state.height - (switcher === undefined ? 0 : switcher.offsetHeight);
@@ -63,7 +59,7 @@ class SystemContainer extends React.Component<ISystemContainerProps, ISystemCont
         return (
             <screen id="gameActive" style={{display: this.props.show ? null : 'none'}}>
                 <div id="systemSwitcher" ref="switcher" data-numsystems={systems.length}>
-                    <Choice inline={true} color="5" vertical={this.state.menuExpanded}>
+                    <Choice inline={true} color="5" dropdown={{label: '...', popUpwards: false}}>
                         {switchers}
                     </Choice>
                     <Button type={ButtonType.Push} action="pause" color="8" pull={Float.Right}>{language.systemContainerPause}</Button>
