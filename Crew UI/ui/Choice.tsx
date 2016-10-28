@@ -87,11 +87,11 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
             classes += ' forceVertical';
         if (this.props.inline)
             classes += ' inline';
-        else if (isTable && !this.state.expanded)
+        if (isTable && !this.state.expanded)
             classes += ' table';
         
         var expander = this.props.dropdown == null ? null : (
-            <Button type={ButtonType.Push} color={this.props.color} disabled={this.props.disabled} class="expand" onPressed={function () {self.setState({expanded: !self.state.expanded})}}>{this.props.dropdown.label}</Button>
+            <Button type={ButtonType.Push} color={this.props.color} disabled={this.props.disabled} class="expand" onClicked={function () {self.setState({expanded: !self.state.expanded})}}>{this.props.dropdown.label}</Button>
         );
 
         return (
