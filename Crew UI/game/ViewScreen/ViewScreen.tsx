@@ -1,5 +1,5 @@
 interface IViewscreenState {
-    zoomFactor?: number;
+    zoomOrDistance?: number;
     pitchAngle?: number;
     yawAngle?: number;
     showViewList?: boolean;
@@ -10,7 +10,7 @@ interface IViewscreenState {
 class Viewscreen extends React.Component<ISystemProps, IViewscreenState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { zoomFactor: 1, pitchAngle: 0, yawAngle: 0, showViewList: false, targetID: null, selectingTarget: false };
+        this.state = { zoomOrDistance: 1, pitchAngle: 0, yawAngle: 0, showViewList: false, targetID: null, selectingTarget: false };
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
@@ -22,6 +22,8 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     }
     render() {
         let self = this;
+        let zoomOrDistance = this.state.zoomOrDistance > 0 ? 'Magnification: ' + this.state.zoomOrDistance + 'x' : 'Distance: ' + this.state.zoomOrDistance + 'm';
+
         return (
             <system id="viewscreen" style={{display: this.props.visible ? null : 'none'}}>
                 <section id="viewscreenAiming" className="large">
@@ -58,7 +60,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     <output className="settings">
                         <row>Pitch: {this.state.pitchAngle}°</row>
                         <row>Yaw: {this.state.yawAngle}°</row>
-                        <row>Magnification: {this.state.zoomFactor}x</row>
+                        <row>{zoomOrDistance}</row>
                     </output>
                 </section>
                 
@@ -105,7 +107,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     console.error(language.errorParameterNotNumeric);
                     return false;
                 }
-                this.setState({yawAngle: yaw, pitchAngle: pitch, zoomFactor: zoom});
+                this.setState({ yawAngle: yaw, pitchAngle: pitch, zoomOrDistance: zoom});
                 return true;
             default:
                 return false;
@@ -116,7 +118,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
         if (targetID == null) {
             state.pitchAngle = 0;
             state.yawAngle = 0;
-            state.zoomFactor = 1;
+            state.zoomOrDistance = 1;
         }
         this.setState(state);
         gameClient.server.send(targetID == null ? 'viewdir 0 0' : 'viewtarget ' + targetID);

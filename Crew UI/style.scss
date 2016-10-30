@@ -6,13 +6,23 @@
 body {
 	background-color: $backgroundColor; margin: 0; padding: 0;
 	color: $textColor;
-	font: 14px Helvetica, Arial, sans-serif;
+	font-family: Helvetica, Arial, sans-serif;
 	
    -moz-user-select: none;
    -webkit-user-select: none;
    -ms-user-select: none;
     user-select: none;
     text-align: center;
+
+    font-size: 16px;
+    @include font-size(1500px, 15px);
+    @include font-size(1400px, 14px);
+    @include font-size(540px, 13px);
+    @include font-size(500px, 12px);
+    @include font-size(460px, 11px);
+    @include font-size(420px, 10px);
+    @include font-size(380px, 9px);
+    @include font-size(340px, 8px);
 }
 
 screen {

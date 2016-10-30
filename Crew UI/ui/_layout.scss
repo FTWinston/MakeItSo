@@ -24,6 +24,7 @@ $systemSwitcherHeight: 3em;
 
     & > section {
         &:first-of-type { @include clearSystemSwitcher(); }
+        min-height: 20em;
         padding: 1em;
     }
 
@@ -33,6 +34,7 @@ $systemSwitcherHeight: 3em;
         & > section {
             padding: 0;
             padding-top: 0.5em;
+            min-height: initial;
         }
     
         @include landscape {

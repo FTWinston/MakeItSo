@@ -46,7 +46,7 @@ $lg-cutoff-max: $xl-cutoff-min - 1;
         @media (min-width: $lg-cutoff-min) { @content; }
     }
     @else if $width == xl {
-        @media (min-width: $lg-cutoff-min) { @content; }
+        @media (min-width: $xl-cutoff-min) { @content; }
     }
     @else {
         @warn "The media-size mixins support the following attributes: xs, sm, md, lg, xl";
@@ -87,4 +87,8 @@ $lg-cutoff-max: $xl-cutoff-min - 1;
     @media (orientation:landscape) {
         @content;
     }
+}
+
+@mixin font-size($maxScreenWidth, $fontSize) {
+    @media (max-width: $maxScreenWidth) { font-size: $fontSize; }
 }
