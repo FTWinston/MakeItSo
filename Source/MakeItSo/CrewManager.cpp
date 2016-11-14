@@ -567,79 +567,107 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		InputKey(EKeys::K, false);
 	}
+#endif
 	else if (STARTS_WITH(info, "viewdir "))
 	{
-		// set view pitch & yaw
-		// clear view target if set
+		// TODO: parse pitch and yaw parameters from input
+		viewPitch = 0;
+		viewYaw = 0;
+		viewTarget = nullptr;
+		SendViewAngles();
 	}
 	else if (STARTS_WITH(info, "viewtarget "))
 	{
-		// set view target
+		char buffer[20];
+		EXTRACT(info, buffer, "viewtarget ");
+		DetermineViewTarget(buffer);
+		DetermineTargetAngles();
+		SendViewAngles();
+		SendViewZoomDist();
 	}
-	else if (MATCHES(info, "+viewup"))
+	else if (MATCHES(info, "viewup"))
 	{
-		InputKey(EKeys::Z, true); // increase view pitch
+		viewPitch += viewAngleStep;
+		if (viewPitch > 90)
+			viewPitch = 90;
+		SendViewAngles();
 	}
-	else if (MATCHES(info, "-viewup"))
+	else if (MATCHES(info, "viewdown"))
 	{
-		InputKey(EKeys::Z, false);
+		viewPitch -= viewAngleStep;
+		if (viewPitch < -90)
+			viewPitch = -90;
+		SendViewAngles();
 	}
-	else if (MATCHES(info, "+viewdown"))
+	else if (MATCHES(info, "viewleft"))
 	{
-		InputKey(EKeys::X, true); // decrease view pitch
+		viewYaw -= viewAngleStep;
+		if (viewYaw < 0)
+			viewYaw += 360;
+		SendViewAngles();
 	}
-	else if (MATCHES(info, "-viewdown"))
+	else if (MATCHES(info, "viewright"))
 	{
-		InputKey(EKeys::X, false);
+		viewYaw += viewAngleStep;
+		if (viewYaw >= 360)
+			viewYaw -= 360;
+		SendViewAngles();
 	}
-	else if (MATCHES(info, "+viewleft"))
+	else if (MATCHES(info, "viewin"))
 	{
-		InputKey(EKeys::C, true); // decrease view yaw
+		if (viewChase)
+		{
+			viewChaseDist *= viewZoomStep;
+			if (viewChaseDist > maxChaseDist)
+				viewChaseDist = maxChaseDist;
+		}
+		else
+		{
+			viewZoom *= viewZoomStep;
+			if (viewZoom > maxZoomFactor)
+				viewZoom = maxZoomFactor;
+		}
+
+		SendViewZoomDist();
 	}
-	else if (MATCHES(info, "-viewleft"))
+	else if (MATCHES(info, "viewout"))
 	{
-		InputKey(EKeys::C, false);
-	}
-	else if (MATCHES(info, "+viewright"))
-	{
-		InputKey(EKeys::V, true); // increase view yaw
-	}
-	else if (MATCHES(info, "-viewright"))
-	{
-		InputKey(EKeys::V, false);
-	}
-	else if (MATCHES(info, "+viewin"))
-	{
-		InputKey(EKeys::B, true); // increase view zoom
-	}
-	else if (MATCHES(info, "-viewin"))
-	{
-		InputKey(EKeys::B, true);
-	}
-	else if (MATCHES(info, "+viewout"))
-	{
-		InputKey(EKeys::N, true); // decrease view zoom
-	}
-	else if (MATCHES(info, "-viewout"))
-	{
-		InputKey(EKeys::N, true);
+		if (viewChase)
+		{
+			viewChaseDist /= viewZoomStep;
+			if (viewChaseDist < minChaseDist)
+				viewChaseDist = minChaseDist;
+		}
+		else
+		{
+			viewZoom /= viewZoomStep;
+			if (viewZoom < minZoomFactor)
+				viewZoom = minZoomFactor;
+		}
+		
+		SendViewZoomDist();
 	}
 	else if (MATCHES(info, "+viewchase"))
 	{
-		// toggle chase mode on
+		viewChase = true;
+		SendCrewMessage(ESystem::ViewScreen, "chase on");
 	}
 	else if (MATCHES(info, "-viewchase"))
 	{
-		// toggle chase mode off
+		viewChase = false;
+		SendCrewMessage(ESystem::ViewScreen, "chase off");
 	}
 	else if (MATCHES(info, "+viewcomms"))
 	{
-		// toggle comms mode on
+		viewComms = true;
+		SendCrewMessage(ESystem::ViewScreen, "comms on");
 	}
 	else if (MATCHES(info, "-viewcomms"))
 	{
-		// toggle comms mode off
+		viewComms = false;
+		SendCrewMessage(ESystem::ViewScreen, "comms off");
 	}
+#ifndef WEB_SERVER_TEST
 	else
 	{
 		// write all unrecognised commands to the console
@@ -723,7 +751,7 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 	}
 }
 
-void UCrewManager::SendCrewMessage(ESystem system, const char *message)
+void UCrewManager::SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude)
 {
 	bool includeNoSystems = false;
 	int systemFlags;
@@ -754,7 +782,62 @@ void UCrewManager::SendCrewMessage(ESystem system, const char *message)
 
 	for (auto& other : *currentConnections)
 	{
+		if (other == exclude)
+			continue;
+
 		if ((includeNoSystems && other->shipSystemFlags == 0) || (other->shipSystemFlags & systemFlags) != 0)
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message);
+	}
+}
+
+void UCrewManager::DetermineViewTarget(const char* targetIdentifier)
+{
+	// TODO: lookup target
+	viewTarget = nullptr;
+}
+
+void UCrewManager::DetermineTargetAngles()
+{
+	// TODO: calculate angle to viewTarget
+	viewPitch = 22;
+	viewYaw = 137;
+	viewZoom = 22.5;
+}
+
+void UCrewManager::SendViewAngles()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("view %i %i"), (int)viewYaw, (int)viewPitch);
+	SendCrewMessage(ESystem::ViewScreen, message.c_str());
+#else
+	char buffer[16];
+	std::snprintf(buffer, sizeof(buffer), "view %i %i", (int)viewYaw, (int)viewPitch);
+	SendCrewMessage(ESystem::ViewScreen, buffer);
+#endif
+}
+
+void UCrewManager::SendViewZoomDist()
+{
+	if (viewChase)
+	{
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("dist %i"), (int)viewChaseDist);
+		SendCrewMessage(ESystem::ViewScreen, message.c_str());
+#else
+		char buffer[16];
+		std::snprintf(buffer, sizeof(buffer), "dist %i", (int)viewChaseDist);
+		SendCrewMessage(ESystem::ViewScreen, buffer);
+#endif
+	}
+	else
+	{
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("zoom %.2f"), viewZoom);
+		SendCrewMessage(ESystem::ViewScreen, message.c_str());
+#else
+		char buffer[24];
+		std::snprintf(buffer, sizeof(buffer), "zoom %.2f", viewZoom);
+		SendCrewMessage(ESystem::ViewScreen, buffer);
+#endif
 	}
 }

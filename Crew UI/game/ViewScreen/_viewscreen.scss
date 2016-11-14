@@ -50,23 +50,4 @@
             }
         }
     }
-
-    @include landscape() {
-        & > section {
-            @include media-size(md) {
-                padding-top: 4em;
-            }
-            @include media-size(sm) {
-                padding-top: 2em;
-            }
-            &:first-child {
-                @include media-size-up(lg) {
-                    padding-top: 2em;
-                }
-                @include media-size-up(xl) {
-                    padding-top: 4em;
-                }
-            }
-        }
-    }
 }

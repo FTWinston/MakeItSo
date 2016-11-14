@@ -5,7 +5,7 @@
     errorGameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
     errorUnrecognisedCommand: 'Unrecognised command from server: ',
     errorWrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
-    errorSystemDidntHandleMessage: '@system@ failed to handle "@cmd" command from server, with data @data@',
+    errorSystemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
     errorNoWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
     errorNoCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
     errorParameterNotNumeric: 'Parameter was not numeric',

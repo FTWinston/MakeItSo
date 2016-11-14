@@ -31,6 +31,7 @@ public:
 	enum ESystem
 	{
 		Helm = 0,
+		ViewScreen,
 		Communications,
 		Sensors,
 		Weapons,
@@ -52,7 +53,7 @@ public:
 	void LinkController(AShipPlayerController *controller);
 	void Poll() { mg_poll_server(server, 1); }
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
-	void SendCrewMessage(ESystem system, const char *message);
+	void SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude = nullptr);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static FString GetLocalURL();
@@ -86,6 +87,16 @@ private:
 
 	TSet<ConnectionInfo*> *currentConnections;
 	ConnectionInfo *connectionInSetup;
+
+	// viewscreen
+	void DetermineViewTarget(const char* targetIdentifier);
+	void DetermineTargetAngles();
+	void SendViewAngles();
+	void SendViewZoomDist();
+	float viewPitch, viewYaw, viewZoom, viewChaseDist;
+	bool viewComms, viewChase;
+	UObject *viewTarget;
+	const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
 };
 
 class ConnectionInfo

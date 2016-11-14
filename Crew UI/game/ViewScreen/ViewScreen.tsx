@@ -1,20 +1,23 @@
 interface IViewscreenState {
-    zoomOrDistance?: number;
     pitchAngle?: number;
     yawAngle?: number;
+    zoomFactor?: number;
+    chaseDistance?: number;
     showViewList?: boolean;
     targetID?: string;
+    chaseMode?: boolean;
+    commsMode?: boolean;
     selectingTarget?: boolean;
 }
 
 class Viewscreen extends React.Component<ISystemProps, IViewscreenState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { zoomOrDistance: 1, pitchAngle: 0, yawAngle: 0, showViewList: false, targetID: null, selectingTarget: false };
+        this.state = { pitchAngle: 0, yawAngle: 0, zoomFactor: 1, chaseDistance: 100, showViewList: false, targetID: null, selectingTarget: false };
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
-            this.props.registerCallback(this.props.index, this.receiveMessage);
+            this.props.registerCallback(this.props.index, this.receiveMessage.bind(this));
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
@@ -22,38 +25,39 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     }
     render() {
         let self = this;
-        let zoomOrDistance = this.state.zoomOrDistance > 0 ? 'Magnification: ' + this.state.zoomOrDistance + 'x' : 'Distance: ' + this.state.zoomOrDistance + 'm';
+        let zoomOrDistance = this.state.chaseMode ? 'Distance: ' + this.state.chaseDistance + 'm' : 'Magnification: ' + this.state.zoomFactor + 'x';
+        const angleIncrement = 15, zoomFactor = 1.5;
 
         return (
             <system id="viewscreen" style={{display: this.props.visible ? null : 'none'}}>
-                <section id="viewscreenAiming" className="large">
+                <section id="viewscreenAiming" className="large" style={{ display: this.state.selectingTarget ? 'none' : null }}>
                     <ButtonGroup inline={true} color="3">
                         <row>
                             <spacer></spacer>
-                            <Button type={ButtonType.Held} hotkey="W" startAction="+viewup" stopAction="-viewup">{String.fromCharCode(8679)}</Button>
+                            <Button type={ButtonType.Held} hotkey="W" startAction="viewup" onPressed={function () { self.adjustAngles(angleIncrement, 0, 0) }}> { String.fromCharCode(8679) }</Button>
                             <spacer></spacer>
                         </row>
                         <row className="rounded">
-                            <Button type={ButtonType.Held} hotkey="A" startAction="+viewleft" stopAction="-viewleft">{String.fromCharCode(8678)}</Button>
+                            <Button type={ButtonType.Held} hotkey="A" startAction="viewleft" onPressed={function () { self.adjustAngles(0, -angleIncrement, 0) }}>{String.fromCharCode(8678)}</Button>
                             <spacer>{language.viewscreenPan}</spacer>
-                            <Button type={ButtonType.Held} hotkey="D" startAction="+viewright" stopAction="-viewright">{String.fromCharCode(8680)}</Button>
+                            <Button type={ButtonType.Held} hotkey="D" startAction="viewright" onPressed={function () { self.adjustAngles(0, angleIncrement, 0) }}>{String.fromCharCode(8680)}</Button>
                         </row>
                         <row>
                             <spacer></spacer>
-                            <Button type={ButtonType.Held} hotkey="S" startAction="+viewdown" stopAction="-viewdown">{String.fromCharCode(8681)}</Button>
+                            <Button type={ButtonType.Held} hotkey="S" startAction="viewdown" onPressed={function () { self.adjustAngles(-angleIncrement, 0, 0) }}>{String.fromCharCode(8681)}</Button>
                             <spacer></spacer>
                         </row>
                     </ButtonGroup>
                     
                     <ButtonGroup inline={true} color="5">
                         <row>
-                            <Button type={ButtonType.Held} hotkey="R" startAction="+viewin" stopAction="-viewin">{String.fromCharCode(8679)}</Button>
+                            <Button type={ButtonType.Held} hotkey="R" startAction="viewin" onPressed={function () { self.adjustAngles(0, 0, zoomFactor) }}>{String.fromCharCode(8679)}</Button>
                         </row>
                         <row>
                             <spacer>{language.viewscreenZoom}</spacer>
                         </row>
                         <row>
-                            <Button type={ButtonType.Held} hotkey="T" startAction="+viewout" stopAction="-viewout">{String.fromCharCode(8681)}</Button>
+                            <Button type={ButtonType.Held} hotkey="T" startAction="viewout" onPressed={function () { self.adjustAngles(0, 0, 1/zoomFactor) } }>{String.fromCharCode(8681)}</Button>
                         </row>
                     </ButtonGroup>
 
@@ -64,9 +68,9 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     </output>
                 </section>
                 
-                <section id="viewscreenOptions" className="small" style={{display: this.state.selectingTarget ? 'none' : null}}>
+                <section id="viewscreenOptions" className="small" style={{ display: this.state.selectingTarget ? 'none' : null }}>
                     <spacer className="adaptiveVerticalMinWidth" data-width="14em">
-                        <Choice inline={true} color="2" class="smDropdown" dropdown={{label: language.viewscreenDirection, popUpwards: true}}>
+                        <Choice inline={true} color="2" class="smDropdown" dropdown={{label: language.viewscreenDirection, popUpwards: true}} disabled={this.state.targetID != null}>
                             <row>
                                 <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir 0 0">{language.viewscreenDirectionForward}</Button>
                                 <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir 270 0">{language.viewscreenDirectionLeft}</Button>
@@ -88,7 +92,8 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                         <Button type={ButtonType.Toggle} forceActive={self.state.targetID != null} disabled={self.state.targetID == null} onDeactivated={function () { self.targetSelected(null); }}>{self.state.targetID == null ? language.viewscreenNoTarget : self.state.targetID}</Button>
                     </ButtonGroup>
                 </section>
-                <section id="viewscreenTargets" className="small" style={{display: this.state.selectingTarget ? null : 'none'}}>
+
+                <section id="viewscreenTargets" className="full" style={{display: this.state.selectingTarget ? null : 'none'}}>
                     <List options={["Something", "Something else", "And another thing"]} onSelectionChanged={this.targetSelected.bind(this)} />
                 </section>
             </system>
@@ -98,27 +103,52 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
         switch(msg) {
             case 'view':
                 var values = data.split(' ');
-                if (values.length != 3) {
-                    console.error(language.errorParameterNumber.replace('@num@', '3'));
+                if (values.length != 2) {
+                    console.error(language.errorParameterNumber.replace('@num@', '2'));
                     return false;
                 }
-                var yaw = parseFloat(values[0]), pitch = parseFloat(values[1]), zoom = parseFloat(values[2]);
-                if (isNaN(yaw) || isNaN(pitch) || isNaN(zoom)) {
+                var yaw = parseFloat(values[0]), pitch = parseFloat(values[1]);
+                if (isNaN(yaw) || isNaN(pitch)) {
                     console.error(language.errorParameterNotNumeric);
                     return false;
                 }
-                this.setState({ yawAngle: yaw, pitchAngle: pitch, zoomOrDistance: zoom});
+                this.setState({ yawAngle: yaw, pitchAngle: pitch });
+                return true;
+            case 'zoom':
+                var zoom = parseFloat(data);
+                if (isNaN(zoom)) {
+                    console.error(language.errorParameterNotNumeric);
+                    return false;
+                }
+                this.setState({ zoomFactor: zoom });
+                return true;
+            case 'dist':
+                var dist = parseFloat(data);
+                if (isNaN(dist)) {
+                    console.error(language.errorParameterNotNumeric);
+                    return false;
+                }
+                this.setState({ chaseDistance: dist });
+                return true;
+            case 'chase':
+                this.setState({ chaseMode: data == "on" });
+                return true;
+            case 'comms':
+                this.setState({ commsMode: data == "on" });
                 return true;
             default:
                 return false;
         }
+    }
+    adjustAngles(pitchDelta: number, yawDelta: number, zoomScale: number) {
+        //this.setState({ yawAngle: this.state.yawAngle + yawDelta, pitchAngle: this.state.pitchAngle + pitchDelta, zoomOrDistance: this.state.zoomOrDistance * zoomScale });
     }
     targetSelected(targetID) {
         let state:IViewscreenState = {targetID: targetID, selectingTarget: false};
         if (targetID == null) {
             state.pitchAngle = 0;
             state.yawAngle = 0;
-            state.zoomOrDistance = 1;
+            state.zoomFactor = 1;
         }
         this.setState(state);
         gameClient.server.send(targetID == null ? 'viewdir 0 0' : 'viewtarget ' + targetID);

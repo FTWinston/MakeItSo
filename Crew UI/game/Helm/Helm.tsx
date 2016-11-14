@@ -18,7 +18,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
-            this.props.registerCallback(this.props.index, this.receiveMessage);
+            this.props.registerCallback(this.props.index, this.receiveMessage.bind(this));
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
