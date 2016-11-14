@@ -178,7 +178,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
             this.setState({ active: false });
         }
 
-        if (this.props.stopAction != null)
+        if (this.props.type != ButtonType.Toggle && this.props.stopAction != null)
             gameClient.server.send(this.props.stopAction);
 
         this.setState({ pressed: false });
