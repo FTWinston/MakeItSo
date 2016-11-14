@@ -9,7 +9,6 @@
 /// <reference path="ui/Buttons.tsx" />
 /// <reference path="ui/Choice.tsx" />
 /// <reference path="ui/Canvas.tsx" />
-/// <reference path="ui/List.tsx" />
 
 /// <reference path="game/ISystem.ts" />
 /// <reference path="game/DamageControl/DamageControl.tsx" />

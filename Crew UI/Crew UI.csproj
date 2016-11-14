@@ -49,7 +49,6 @@
     <TypeScriptCompile Include="game\Weapons\WeaponTarget.ts" />
     <TypeScriptCompile Include="game\Weapons\WeaponTargetInfo.tsx" />
     <TypeScriptCompile Include="game\Weapons\WeaponTargetSelect.tsx" />
-    <TypeScriptCompile Include="ui\List.tsx" />
     <TypeScriptCompile Include="ui\Buttons.tsx" />
     <TypeScriptCompile Include="ui\AxisInput.tsx" />
     <TypeScriptCompile Include="ui\Canvas.tsx" />

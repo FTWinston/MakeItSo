@@ -12,6 +12,7 @@ interface IChoiceProps {
     children?: any;
     class?: string;
     dropdown?: DropdownSettings;
+    allowUnselected?: boolean;
 }
 
 interface IChoiceState {
@@ -26,7 +27,7 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         this.state = { description: null, mountedChildren: [], expanded: false };
     }
     static defaultProps = {
-        prompt: null, color: null, disabled: false, inline: false, visible: true, class: '', dropdown: null
+        prompt: null, color: null, disabled: false, inline: false, visible: true, class: '', dropdown: null, allowUnselected: false
     };
     render() {
         var self = this;
@@ -107,7 +108,7 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
     }
     componentDidMount() {
         let children = this.state.mountedChildren;
-        if (children.length == 0)
+        if (children.length == 0 || this.props.allowUnselected)
             return;
 
         // if no mounted children are active, make the first one active

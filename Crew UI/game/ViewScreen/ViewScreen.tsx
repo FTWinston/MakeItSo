@@ -26,7 +26,14 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     render() {
         let self = this;
         let zoomOrDistance = this.state.chaseMode ? 'Distance: ' + this.state.chaseDistance + 'm' : 'Magnification: ' + this.state.zoomFactor + 'x';
-        const angleIncrement = 15, zoomFactor = 1.5;
+    
+        let targetOptions: JSX.Element[] = [
+            "Something",
+            "Something else",
+            "And another thing"
+        ].map(function(name, index) {
+            return <Button type={ButtonType.Toggle} key={index} onActivated={function() { self.targetSelected(name) }} description={"Localized description of target location"}>{name}</Button>
+        });
 
         return (
             <system id="viewscreen" style={{display: this.props.visible ? null : 'none'}}>
@@ -34,30 +41,30 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     <ButtonGroup inline={true} color="3">
                         <row>
                             <spacer></spacer>
-                            <Button type={ButtonType.Held} hotkey="W" startAction="viewup" onPressed={function () { self.adjustAngles(angleIncrement, 0, 0) }}> { String.fromCharCode(8679) }</Button>
+                            <Button type={ButtonType.Held} hotkey="W" startAction="viewup"> { String.fromCharCode(8679) }</Button>
                             <spacer></spacer>
                         </row>
                         <row className="rounded">
-                            <Button type={ButtonType.Held} hotkey="A" startAction="viewleft" onPressed={function () { self.adjustAngles(0, -angleIncrement, 0) }}>{String.fromCharCode(8678)}</Button>
+                            <Button type={ButtonType.Held} hotkey="A" startAction="viewleft">{String.fromCharCode(8678)}</Button>
                             <spacer>{language.viewscreenPan}</spacer>
-                            <Button type={ButtonType.Held} hotkey="D" startAction="viewright" onPressed={function () { self.adjustAngles(0, angleIncrement, 0) }}>{String.fromCharCode(8680)}</Button>
+                            <Button type={ButtonType.Held} hotkey="D" startAction="viewright">{String.fromCharCode(8680)}</Button>
                         </row>
                         <row>
                             <spacer></spacer>
-                            <Button type={ButtonType.Held} hotkey="S" startAction="viewdown" onPressed={function () { self.adjustAngles(-angleIncrement, 0, 0) }}>{String.fromCharCode(8681)}</Button>
+                            <Button type={ButtonType.Held} hotkey="S" startAction="viewdown">{String.fromCharCode(8681)}</Button>
                             <spacer></spacer>
                         </row>
                     </ButtonGroup>
                     
                     <ButtonGroup inline={true} color="5">
                         <row>
-                            <Button type={ButtonType.Held} hotkey="R" startAction="viewin" onPressed={function () { self.adjustAngles(0, 0, zoomFactor) }}>{String.fromCharCode(8679)}</Button>
+                            <Button type={ButtonType.Held} hotkey="R" startAction="viewin">{String.fromCharCode(8679)}</Button>
                         </row>
                         <row>
                             <spacer>{language.viewscreenZoom}</spacer>
                         </row>
                         <row>
-                            <Button type={ButtonType.Held} hotkey="T" startAction="viewout" onPressed={function () { self.adjustAngles(0, 0, 1/zoomFactor) } }>{String.fromCharCode(8681)}</Button>
+                            <Button type={ButtonType.Held} hotkey="T" startAction="viewout">{String.fromCharCode(8681)}</Button>
                         </row>
                     </ButtonGroup>
 
@@ -79,7 +86,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                             <row>
                                 <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir 180 0">{language.viewscreenDirectionBackward}</Button>
                                 <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir 0 90">{language.viewscreenDirectionUp}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir 0 270">{language.viewscreenDirectionDown}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir 0 -90">{language.viewscreenDirectionDown}</Button>
                             </row>
                         </Choice>
                     </spacer>
@@ -94,7 +101,9 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                 </section>
 
                 <section id="viewscreenTargets" className="full" style={{display: this.state.selectingTarget ? null : 'none'}}>
-                    <List options={["Something", "Something else", "And another thing"]} onSelectionChanged={this.targetSelected.bind(this)} />
+                    <Choice class="forceVertical" color="5" allowUnselected={true}>
+                        {targetOptions}
+                    </Choice>
                 </section>
             </system>
         );
@@ -140,10 +149,8 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                 return false;
         }
     }
-    adjustAngles(pitchDelta: number, yawDelta: number, zoomScale: number) {
-        //this.setState({ yawAngle: this.state.yawAngle + yawDelta, pitchAngle: this.state.pitchAngle + pitchDelta, zoomOrDistance: this.state.zoomOrDistance * zoomScale });
-    }
     targetSelected(targetID) {
+        console.log('targetSelected', targetID);
         let state:IViewscreenState = {targetID: targetID, selectingTarget: false};
         if (targetID == null) {
             state.pitchAngle = 0;
@@ -151,6 +158,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
             state.zoomFactor = 1;
         }
         this.setState(state);
-        gameClient.server.send(targetID == null ? 'viewdir 0 0' : 'viewtarget ' + targetID);
+        if (gameClient !== undefined)
+            gameClient.server.send(targetID == null ? 'viewdir 0 0' : 'viewtarget ' + targetID);
     }
 }
