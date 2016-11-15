@@ -43,6 +43,8 @@ System::Void WebTest::MainForm::btnAddEnemy_Click(System::Object^  sender, Syste
 	int id = ++numWeaponsContacts, size = rand() % 10 + 1, status = rand() % 3 + 1, angle = rand() % 360, dist = rand() % 100 + 1;
 	std::string msg = "add targ" + std::to_string(id) + " " + std::to_string(size) + " " + std::to_string(status) + " " + std::to_string(angle) + " " + std::to_string(dist);
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, msg.c_str());
+
+	crewManager->SendCrewMessage(UCrewManager::ESystem::ViewScreen, ("add targ" + std::to_string(id)).c_str());
 }
 
 System::Void WebTest::MainForm::btnUpdateShip_Click(System::Object^  sender, System::EventArgs^  e)
@@ -71,6 +73,7 @@ System::Void WebTest::MainForm::btnUpdateShip_Click(System::Object^  sender, Sys
 		break;
 	case 5:
 		msg = "rem targ" + std::to_string(id);
+		crewManager->SendCrewMessage(UCrewManager::ESystem::ViewScreen, ("rem targ" + std::to_string(id)).c_str());
 		break;
 	}
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, msg.c_str());
@@ -80,6 +83,7 @@ System::Void WebTest::MainForm::btnRemoveShips_Click(System::Object^  sender, Sy
 {
 	numWeaponsContacts = 0;
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, "clr");
+	crewManager->SendCrewMessage(UCrewManager::ESystem::ViewScreen, "clr");
 }
 
 System::Void WebTest::MainForm::btnShieldBlock_Click(System::Object^  sender, System::EventArgs^  e)

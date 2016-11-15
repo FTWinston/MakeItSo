@@ -1,5 +1,5 @@
 ﻿const language = {
-    systemNames: ['Helm', 'Viewscreen', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Power', 'Deflector'],
+    systemNames: ['Helm', 'Viewscreen', 'Comms', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Power', 'Deflector'],
     errorConnectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
     errorShipFull: 'This ship is full: there is no room for you to join.',
     errorGameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',

@@ -8,12 +8,13 @@ interface IViewscreenState {
     chaseMode?: boolean;
     commsMode?: boolean;
     selectingTarget?: boolean;
+    possibleTargets?: string[];
 }
 
 class Viewscreen extends React.Component<ISystemProps, IViewscreenState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { pitchAngle: 0, yawAngle: 0, zoomFactor: 1, chaseDistance: 100, showViewList: false, targetID: null, selectingTarget: false };
+        this.state = { pitchAngle: 0, yawAngle: 0, zoomFactor: 1, chaseDistance: 100, showViewList: false, targetID: null, selectingTarget: false, possibleTargets: [] };
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
@@ -26,13 +27,9 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     render() {
         let self = this;
         let zoomOrDistance = this.state.chaseMode ? 'Distance: ' + this.state.chaseDistance + 'm' : 'Magnification: ' + this.state.zoomFactor + 'x';
-    
-        let targetOptions: JSX.Element[] = [
-            "Something",
-            "Something else",
-            "And another thing"
-        ].map(function(name, index) {
-            return <Button type={ButtonType.Toggle} key={index} onActivated={function() { self.targetSelected(name) }} description={"Localized description of target location"}>{name}</Button>
+
+        let targetOptions: JSX.Element[] = this.state.possibleTargets.map(function (name, index) {
+            return <Button type={ButtonType.Push} key={index} onPressed={function () { self.targetSelected(name) } }>{name}</Button>
         });
 
         return (
@@ -100,10 +97,10 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     </ButtonGroup>
                 </section>
 
-                <section id="viewscreenTargets" className="full" style={{display: this.state.selectingTarget ? null : 'none'}}>
-                    <Choice class="forceVertical" color="5" allowUnselected={true}>
+                <section id="viewscreenTargets" className="full" style={{ display: this.state.selectingTarget ? null : 'none' }}>
+                    <ButtonGroup color="5">
                         {targetOptions}
-                    </Choice>
+                    </ButtonGroup>
                 </section>
             </system>
         );
@@ -140,17 +137,35 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                 this.setState({ chaseDistance: dist });
                 return true;
             case 'chase':
-                this.setState({ chaseMode: data == "on" });
+                this.setState({ chaseMode: data == 'on' });
                 return true;
             case 'comms':
-                this.setState({ commsMode: data == "on" });
+                this.setState({ commsMode: data == 'on' });
+                return true;
+            case 'add':
+                this.setState({ possibleTargets: this.state.possibleTargets.concat(data) });
+                return true;
+            case 'rem':
+                let possibleTargets = this.state.possibleTargets.slice();
+                let index = possibleTargets.indexOf(data);
+                if (index > -1) {
+                    possibleTargets.splice(index, 1);
+                    let newState: IViewscreenState = { possibleTargets: possibleTargets };
+                    if (this.state.targetID == data)
+                        newState.targetID = null;
+                    if (possibleTargets.length == 0)
+                        newState.selectingTarget = false;
+                    this.setState(newState);
+                }
+                return true;
+            case 'clr':
+                this.setState({ possibleTargets: [], targetID: null, selectingTarget: false });
                 return true;
             default:
                 return false;
         }
     }
     targetSelected(targetID) {
-        console.log('targetSelected', targetID);
         let state:IViewscreenState = {targetID: targetID, selectingTarget: false};
         if (targetID == null) {
             state.pitchAngle = 0;

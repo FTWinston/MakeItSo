@@ -26,6 +26,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="Connection.ts" />
     <TypeScriptCompile Include="ErrorDisplay.tsx" />
+    <TypeScriptCompile Include="game\Communications\Communications.tsx" />
     <TypeScriptCompile Include="language\english.ts" />
     <TypeScriptCompile Include="setup\GameSetup.tsx" />
     <TypeScriptCompile Include="game\ISystem.ts" />

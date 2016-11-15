@@ -11,6 +11,7 @@
 /// <reference path="ui/Canvas.tsx" />
 
 /// <reference path="game/ISystem.ts" />
+/// <reference path="game/Communications/Communications.tsx" />
 /// <reference path="game/DamageControl/DamageControl.tsx" />
 /// <reference path="game/Deflector/Deflector.tsx" />
 /// <reference path="game/Helm/Helm.tsx" />
