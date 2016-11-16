@@ -81,6 +81,7 @@ class Connection {
         }
         else if (cmd == 'pause+') {
             this.game.setActiveScreen('systems');
+            this.game.clearAllData();
         }
         else if (cmd == 'pause-') {
             this.game.setActiveScreen('game');

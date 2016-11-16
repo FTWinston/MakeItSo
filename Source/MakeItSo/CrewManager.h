@@ -54,6 +54,7 @@ public:
 	void Poll() { mg_poll_server(server, 1); }
 	int HandleEvent(mg_connection *conn, enum mg_event ev);
 	void SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude = nullptr);
+	void SendAllCrewData();
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static FString GetLocalURL();

@@ -107,6 +107,7 @@ void UCrewManager::PauseGame(bool state)
 
 		SendCrewMessage(ESystem::AllStations, "pause-");
 		SendCrewMessage(ESystem::NoStations, "started"); // game resumed, keep out
+		SendAllCrewData();
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -788,6 +789,16 @@ void UCrewManager::SendCrewMessage(ESystem system, const char *message, Connecti
 		if ((includeNoSystems && other->shipSystemFlags == 0) || (other->shipSystemFlags & systemFlags) != 0)
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message);
 	}
+}
+
+void UCrewManager::SendAllCrewData()
+{
+	SendViewAngles();
+	// TODO: send all viewscreen targets
+
+	// TODO: send all weapon targets
+
+	// TODO: send shield data
 }
 
 void UCrewManager::DetermineViewTarget(const char* targetIdentifier)
