@@ -49,5 +49,17 @@
                 margin: 2em auto;
             }
         }
+
+        @include landscape() {
+            @include media-size(md) {
+                margin-top: 4em;
+            }
+            @include media-size-up(lg) {
+                margin-top: 2em;
+            }
+            @include media-size-up(xl) {
+                margin-top: 4em;
+            }
+        }
     }
 }

@@ -8,9 +8,19 @@ class Shields extends React.Component<ISystemProps, {}> implements ISystem {
             this.props.registerCallback(this.props.index, undefined);
     }
     render() {
+        let portrait = this.props.width >= this.props.height;
+        let shieldWidth = portrait ? Math.round(this.props.width * 0.8) : this.props.width;
+        let shieldHeight = portrait ? this.props.height : Math.round(this.props.height * 0.85);
+
         return (
-            <system style={{display: this.props.visible ? null : 'none'}}>
-                <ShieldDisplay ref="shield" width={this.props.width*0.85} height={this.props.height} visible={this.props.visible} />
+            <system id="shields" style={{ display: this.props.visible ? null : 'none' }}>
+                <section className="xlarge">
+                    <ShieldDisplay ref="shield" width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
+                </section>
+                <section className="xsmall">
+                    Toggle shields on/off.
+                    Hints and tips?
+                </section>
             </system>
         );
     }

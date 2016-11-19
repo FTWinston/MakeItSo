@@ -43,9 +43,11 @@ $systemSwitcherHeight: 3em;
                 display: table-cell;
 
                 &.full { width: 100vw; }
+                &.xlarge  { width: 80vw; }
                 &.large  { width: 67vw; }
                 &.medium { width: 50vw; }
                 &.small  { width: 33vw; }
+                &.xsmall  { width: 20vw; }
             }
 
             spacer.adaptiveVerticalMinWidth {
@@ -58,29 +60,26 @@ $systemSwitcherHeight: 3em;
                 display: block;
 
                 &.full { height: 100vh; }
+                &.xlarge  { height: 85vh; }
                 &.large  { height: 75vh; }
                 &.medium { height: 50vh; }
                 &.small  { height: 25vh; }
+                &.xsmall  { height: 15vh; }
             }
         }
     }
     
     @include landscape() {
         & > section {
-            @include media-size(md) {
-                padding-top: 4em;
-            }
-            @include media-size(sm) {
-                padding-top: 2em;
-            }
-            &:first-child, &.full {
-                @include media-size-up(lg) {
-                    padding-top: 2em;
-                }
-                @include media-size-up(xl) {
-                    padding-top: 4em;
-                }
+            margin-top: 2em;
+            @include media-size(xs) {
+                margin-top: 1em;
             }
         }
     }
+}
+
+@mixin nopad() {
+    margin: 0 !important;
+    padding: 0 !important;
 }
