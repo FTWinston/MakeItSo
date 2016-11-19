@@ -571,9 +571,46 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 #endif
 	else if (STARTS_WITH(info, "viewdir "))
 	{
-		// TODO: parse pitch and yaw parameters from input
-		viewPitch = 0;
-		viewYaw = 0;
+		char buffer[2];
+		EXTRACT(info, buffer, "viewdir ");
+
+		char dir = buffer[0];
+		if (dir == 'f')
+		{
+			viewPitch = 0;
+			viewYaw = 0;
+		}
+		else if (dir == 'b')
+		{
+			viewPitch = 0;
+			viewYaw = 180;
+		}
+		else if (dir == 'l')
+		{
+			viewPitch = 0;
+			viewYaw = 270;
+		}
+		else if (dir == 'r')
+		{
+			viewPitch = 0;
+			viewYaw = 90;
+		}
+		else if (dir == 'u')
+		{
+			viewPitch = 90;
+			viewYaw = 0;
+		}
+		else if (dir == 'd')
+		{
+			viewPitch = -90;
+			viewYaw = 0;
+		}
+		else
+		{
+			viewPitch = 42;
+			viewYaw = 42;
+		}
+
 		viewTarget = nullptr;
 		SendViewAngles();
 	}
@@ -794,6 +831,7 @@ void UCrewManager::SendCrewMessage(ESystem system, const char *message, Connecti
 void UCrewManager::SendAllCrewData()
 {
 	SendViewAngles();
+	SendViewZoomDist();
 	// TODO: send all viewscreen targets
 
 	// TODO: send all weapon targets

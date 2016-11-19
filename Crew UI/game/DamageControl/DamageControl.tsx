@@ -1,7 +1,7 @@
 class DamageControl extends React.Component<ISystemProps, {}> implements ISystem {
     componentDidMount() {
         if (this.props.registerCallback != null)
-            this.props.registerCallback(this.props.index, this.receiveMessage.bind(this));
+            this.props.registerCallback(this.props.index, this);
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
@@ -16,5 +16,8 @@ class DamageControl extends React.Component<ISystemProps, {}> implements ISystem
     }
     receiveMessage(msg, data) {
         return false;
+    }
+    clearAllData() {
+
     }
 }

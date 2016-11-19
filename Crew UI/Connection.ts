@@ -92,11 +92,11 @@ class Connection {
                 console.error(language.errorUnrecognisedCommand + cmd);
             else {
                 cmd = cmd.substr(1);
-                var system = this.game.state.systems[sysNum];
-                if (system === undefined)
+                let sysInfo = this.game.state.systems[sysNum];
+                if (sysInfo === undefined)
                     console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
-                else if (!system.receiveMessage(cmd, data))
-                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', system.name).replace('@cmd@', cmd).replace('@data@', data));
+                else if (!sysInfo.system.receiveMessage(cmd, data))
+                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', sysInfo.name).replace('@cmd@', cmd).replace('@data@', data));
             }
         }
     }

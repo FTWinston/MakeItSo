@@ -1,7 +1,7 @@
 interface ISystemContainerProps {
     show?: boolean;
     systems?: ISystemInfo[];
-    registerSystem?: (state: FeatureState) => void;
+    registerSystem?: (id: number, system: ISystem) => void;
     inputMode?: InputMode;
 }
 

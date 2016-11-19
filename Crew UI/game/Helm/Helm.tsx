@@ -18,7 +18,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
-            this.props.registerCallback(this.props.index, this.receiveMessage.bind(this));
+            this.props.registerCallback(this.props.index, this);
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
@@ -109,6 +109,9 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
     }
     receiveMessage(msg, data) {
         return false;
+    }
+    clearAllData() {
+
     }
     touchRotation(dx, dy) {
         gameClient.server.send('yaw ' + dx);

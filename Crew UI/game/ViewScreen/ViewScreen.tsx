@@ -18,11 +18,37 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
-            this.props.registerCallback(this.props.index, this.receiveMessage.bind(this));
+            this.props.registerCallback(this.props.index, this);
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, undefined);
+    }
+    componentDidUpdate(prevProps, prevState) {
+        let selectedDir = 0;
+        if (this.state.yawAngle == 0) {
+            if (this.state.pitchAngle == 0)
+                selectedDir = 1; // forward
+            else if (this.state.pitchAngle == 90)
+                selectedDir = 5; // up
+            else if (this.state.pitchAngle == -90)
+                selectedDir = 6; // down
+        }
+        else if (this.state.pitchAngle == 0) {
+            if (this.state.yawAngle == 90)
+                selectedDir = 3; // right
+            else if (this.state.yawAngle == 270)
+                selectedDir = 2; // left
+            else if (this.state.yawAngle == 180)
+                selectedDir = 4; // back
+        }
+
+        (this.refs['dirF'] as Button).setState({ active: selectedDir == 1 });
+        (this.refs['dirL'] as Button).setState({ active: selectedDir == 2 });
+        (this.refs['dirR'] as Button).setState({ active: selectedDir == 3 });
+        (this.refs['dirB'] as Button).setState({ active: selectedDir == 4 });
+        (this.refs['dirU'] as Button).setState({ active: selectedDir == 5 });
+        (this.refs['dirD'] as Button).setState({ active: selectedDir == 6 });
     }
     render() {
         let self = this;
@@ -31,7 +57,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
         let targetOptions: JSX.Element[] = this.state.possibleTargets.map(function (name, index) {
             return <Button type={ButtonType.Push} key={index} onPressed={function () { self.targetSelected(name) } }>{name}</Button>
         });
-
+        
         return (
             <system id="viewscreen" style={{display: this.props.visible ? null : 'none'}}>
                 <section id="viewscreenAiming" className="large" style={{ display: this.state.selectingTarget ? 'none' : null }}>
@@ -74,16 +100,16 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                 
                 <section id="viewscreenOptions" className="small" style={{ display: this.state.selectingTarget ? 'none' : null }}>
                     <spacer className="adaptiveVerticalMinWidth" data-width="14em">
-                        <Choice inline={true} color="2" class="smDropdown" dropdown={{label: language.viewscreenDirection, popUpwards: true}} disabled={this.state.targetID != null}>
+                        <Choice inline={true} color="2" class="smDropdown" dropdown={{ label: language.viewscreenDirection, popUpwards: true }} disabled={this.state.targetID != null} allowUnselected={true}>
                             <row>
-                                <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir 0 0">{language.viewscreenDirectionForward}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir 270 0">{language.viewscreenDirectionLeft}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="H" startAction="viewdir 90 0">{language.viewscreenDirectionRight}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir f" ref="dirF">{language.viewscreenDirectionForward}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir l" ref="dirL">{language.viewscreenDirectionLeft}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="H" startAction="viewdir r" ref="dirR">{language.viewscreenDirectionRight}</Button>
                             </row>
                             <row>
-                                <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir 180 0">{language.viewscreenDirectionBackward}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir 0 90">{language.viewscreenDirectionUp}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir 0 -90">{language.viewscreenDirectionDown}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir b" ref="dirB">{language.viewscreenDirectionBackward}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir u" ref="dirU">{language.viewscreenDirectionUp}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir d" ref="dirD">{language.viewscreenDirectionDown}</Button>
                             </row>
                         </Choice>
                     </spacer>
@@ -164,6 +190,20 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
             default:
                 return false;
         }
+    }
+    clearAllData() {
+        this.setState({
+            pitchAngle: 0,
+            yawAngle: 0,
+            zoomFactor: 1,
+            chaseDistance: 100,
+            showViewList: false,
+            targetID: null,
+            chaseMode: false,
+            commsMode: false,
+            selectingTarget: false,
+            possibleTargets: [],
+        });
     }
     targetSelected(targetID) {
         let state:IViewscreenState = {targetID: targetID, selectingTarget: false};

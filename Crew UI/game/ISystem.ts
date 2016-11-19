@@ -6,11 +6,12 @@
     index: number;
     key: number;
     inputMode: InputMode;
-    registerCallback: (index: number, receiveMessage: MessageFunc) => void;
+    registerCallback: (index: number, system: ISystem) => void;
 }
 
 interface ISystem {
     receiveMessage: MessageFunc
+    clearAllData: () => void
 }
 
 interface MessageFunc {

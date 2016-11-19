@@ -3,7 +3,7 @@ interface ISystemInfo {
     index: number;
     selected: boolean;
     usedByOther: boolean;
-    receiveMessage?: MessageFunc;
+    system?: ISystem;
 }
 
 const enum InputMode {
@@ -67,10 +67,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
             return InputMode.TouchscreenOnly;
         return InputMode.ButtonsWithKeyboardShortcuts;
     }
-    registerSystem(id: number, receiveMessage: MessageFunc) {
+    registerSystem(id: number, system: ISystem) {
         this.setState(function(previousState, currentProps) {
             var systems = previousState.systems;
-            systems[id].receiveMessage = receiveMessage;
+            systems[id].system = system;
             return {systems: systems};
         });
     }
@@ -151,6 +151,11 @@ class GameClient extends React.Component<{}, IGameClientState> {
     }
     showHotkeys(val) {
         this.setState({showHotkeys: val});
+    }
+    clearAllData() {
+        for (let sysInfo of this.state.systems)
+            if (sysInfo.system !== undefined)
+                sysInfo.system.clearAllData();
     }
 };
 

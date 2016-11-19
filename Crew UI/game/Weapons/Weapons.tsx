@@ -9,7 +9,7 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
     }
     componentDidMount () {
         if (this.props.registerCallback != null)
-            this.props.registerCallback(this.props.index, this.receiveMessage.bind(this));
+            this.props.registerCallback(this.props.index, this);
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
@@ -62,6 +62,9 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
             default:
                 return false;
         }
+    }
+    clearAllData() {
+
     }
     targetSelected(target) {
         this.setState({target: target});
