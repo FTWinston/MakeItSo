@@ -1,0 +1,17 @@
+﻿@import '../../ui/borders';
+@import '../../ui/breakpoints';
+@import '../../ui/layout';
+
+#power {
+    @include adaptive-layout(xl);
+
+    > section:first-child {
+        @include nopad();
+    }
+
+    @include landscape() {
+        > section {
+            @include nopad();
+        }
+    }
+}

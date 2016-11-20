@@ -162,5 +162,8 @@ html, body, #gameRoot, #gameRoot > div, screen {
 
 @import 'game/systemswitcher';
 
-@import 'game/ViewScreen/viewscreen';
+@import 'game/Helm/helm';
+@import 'game/PowerManagement/power';
 @import 'game/Shields/shields';
+@import 'game/ViewScreen/viewscreen';
+@import 'game/Weapons/weapons';

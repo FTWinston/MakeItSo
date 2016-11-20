@@ -12,9 +12,13 @@ class PowerManagement extends React.Component<ISystemProps, {}> implements ISyst
         var cardWidth = this.props.width - distribSize;
         
         return (
-            <system style={{display: this.props.visible ? null : 'none'}}>
-                <PowerDistribution ref="distribution" width={distribSize} height={distribSize} visible={this.props.visible} />
-                <PowerCards ref="cards" width={cardWidth} height={this.props.height} />
+            <system id="power" style={{ display: this.props.visible ? null : 'none' }}>
+                <section className="xlarge">
+                    <PowerDistribution ref="distribution" width={distribSize} height={distribSize} visible={this.props.visible} />
+                </section>
+                <section className="xsmall">
+                    <PowerCards ref="cards" width={cardWidth} height={this.props.height} />
+                </section>
             </system>
         );
     }

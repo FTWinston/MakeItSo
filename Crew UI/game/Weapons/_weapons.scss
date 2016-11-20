@@ -1,0 +1,11 @@
+﻿@import '../../ui/borders';
+@import '../../ui/breakpoints';
+@import '../../ui/layout';
+
+#weapons {
+    @include adaptive-layout(xl);
+
+    > section {
+        @include nopad();
+    }
+}

@@ -45,7 +45,9 @@ $systemSwitcherHeight: 3em;
                 &.full { width: 100vw; }
                 &.xlarge  { width: 80vw; }
                 &.large  { width: 67vw; }
+                &.med-large { width: 60vw; }
                 &.medium { width: 50vw; }
+                &.med-small { width: 40vw; }
                 &.small  { width: 33vw; }
                 &.xsmall  { width: 20vw; }
             }
@@ -62,7 +64,9 @@ $systemSwitcherHeight: 3em;
                 &.full { height: 100vh; }
                 &.xlarge  { height: 85vh; }
                 &.large  { height: 75vh; }
+                &.med-large { height: 60vh; }
                 &.medium { height: 50vh; }
+                &.med-small  { height: 40vh; }
                 &.small  { height: 25vh; }
                 &.xsmall  { height: 15vh; }
             }
