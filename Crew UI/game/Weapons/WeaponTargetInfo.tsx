@@ -40,22 +40,22 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
             return;
         this.setState({pressedSegment: null});
     }
-    draw(ctx) {
-        ctx.clearRect(0, 0, this.props.width, this.props.height);
+    draw(ctx, width, height) {
+        ctx.clearRect(0, 0, width, height);
         
         if (this.props.target != null)
-            this.drawTarget(ctx);
+            this.drawTarget(ctx, width, height);
     }
-    drawTarget(ctx) {
+    drawTarget(ctx, width, height) {
         var numSegments = this.props.target.size + 1, segmentSize = Math.PI * 2 / numSegments, startAngle = 0;
-        var cx = this.props.width / 2, cy = this.props.height / 2
+        var cx = width / 2, cy = height / 2
         var outerRadius = Math.min(cx, cy) * 0.99, innerRadius = outerRadius * 0.3, symbolRadius = (outerRadius + innerRadius) / 2;
         var colors = ['#ff0000', '#00ccff', '#00cc00', '#cccc00', '#cc00ff', '#ccff00', '#ff00cc', '#ffcccc', '#ccffcc', '#ccccff', '#cccccc'];
         var labels = ['α', 'β', 'γ', 'δ', 'ε', 'θ', 'λ', 'μ', 'π', 'ψ', 'ω'];
         
         ctx.lineWidth = innerRadius * 0.05;
         
-        var size = (this.props.height * 0.05);
+        var size = (height * 0.05);
         ctx.font = size + 'px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -112,7 +112,7 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
         }
 
         // draw target identifier
-        var size = (this.props.height * 0.05);
+        var size = (height * 0.05);
         ctx.font = size + 'px Arial';
         ctx.fillStyle = 'white';
         ctx.textAlign = 'left';
@@ -120,7 +120,7 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
         ctx.fillText(this.props.target.id, size * 0.15, 0);
         
         // draw "fire"
-        var size = (this.props.height * 0.1);
+        var size = (height * 0.1);
         ctx.font = size + 'px Arial';
         ctx.fillStyle = this.state.pressedSegment == -1 ? 'red' : 'white';
         ctx.textAlign = 'center';

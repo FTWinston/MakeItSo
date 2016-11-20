@@ -33,15 +33,15 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
         
         this.trySelectTarget(x, y, false);
     }
-    draw(ctx, time) {
+    draw(ctx, width, height, time) {
         if (!this.props.visible)
             return;
-        this.drawBackground(ctx);
+        this.drawBackground(ctx, width, height);
         
-        var minSize = Math.min(this.props.width, this.props.height) * 0.025;
+        var minSize = Math.min(width, height) * 0.025;
         
         for (var target in this.state.targets)
-            this.state.targets[target].draw(ctx, time, this.props.width, this.props.height, minSize);
+            this.state.targets[target].draw(ctx, time, width, height, minSize);
         
         if (this.animateEndTime !== undefined)
             if (this.animateEndTime <= time)
@@ -49,23 +49,23 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             else
                 this.redraw();
     }
-    drawBackground(ctx) {
+    drawBackground(ctx, width, height) {
         ctx.fillStyle = '#000000';
         ctx.beginPath();
-        ctx.rect(0, 0, this.props.width, this.props.height);
+        ctx.rect(0, 0, width, height);
         ctx.fill();
         
         // draw firing arc indicators
-        var shipX = this.props.width / 2, shipY = this.props.height * 0.67;
+        var shipX = width / 2, shipY = height * 0.67;
         ctx.lineWidth = 1;
         this.drawFiringArc(ctx, '#990000', shipX, shipY, 0, 0.57735026919); // tan 30, for 120 degree arc
         this.drawFiringArc(ctx, '#996600', shipX, shipY, 0, 1); // tan 45, for 90 degree arc
         this.drawFiringArc(ctx, '#009900', shipX, shipY, 0, 1.73205080757); // tan 60, for 60 degree arc
         
-        this.drawFiringArc(ctx, '#990000', shipX, shipY, this.props.height, 1.73205080757); // tan 60, for 60 degree arc
+        this.drawFiringArc(ctx, '#990000', shipX, shipY, height, 1.73205080757); // tan 60, for 60 degree arc
         
         // draw ship indicator
-        var shipRadius = Math.min(this.props.width * 0.025, this.props.height * 0.025);
+        var shipRadius = Math.min(width * 0.025, height * 0.025);
         ctx.fillStyle = '#cccccc';
         ctx.beginPath();
         ctx.arc(shipX, shipY, shipRadius, 0, Math.PI * 2);

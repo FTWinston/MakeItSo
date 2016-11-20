@@ -3,7 +3,7 @@
 @import '../../ui/layout';
 
 #shields {
-    @include adaptive-layout(md);
+    @include adaptive-layout(xl);
 
     > section:first-child {
         @include nopad();

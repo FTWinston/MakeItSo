@@ -102,14 +102,14 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     <spacer className="adaptiveVerticalMinWidth" data-width="14em">
                         <Choice inline={true} color="2" class="smDropdown" dropdown={{ label: language.viewscreenDirection, popUpwards: true }} disabled={this.state.targetID != null} allowUnselected={true}>
                             <row>
-                                <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir f" ref="dirF">{language.viewscreenDirectionForward}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir l" ref="dirL">{language.viewscreenDirectionLeft}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="H" startAction="viewdir r" ref="dirR">{language.viewscreenDirectionRight}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="F" startAction="viewdir f" ref="dirF">{language.directionForward}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="G" startAction="viewdir l" ref="dirL">{language.directionLeft}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="H" startAction="viewdir r" ref="dirR">{language.directionRight}</Button>
                             </row>
                             <row>
-                                <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir b" ref="dirB">{language.viewscreenDirectionBackward}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir u" ref="dirU">{language.viewscreenDirectionUp}</Button>
-                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir d" ref="dirD">{language.viewscreenDirectionDown}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="C" startAction="viewdir b" ref="dirB">{language.directionBackward}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="V" startAction="viewdir u" ref="dirU">{language.directionUp}</Button>
+                                <Button type={ButtonType.Toggle} hotkey="B" startAction="viewdir d" ref="dirD">{language.directionDown}</Button>
                             </row>
                         </Choice>
                     </spacer>

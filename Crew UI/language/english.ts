@@ -53,15 +53,16 @@
 
     systemContainerPause: 'pause',
 
+    directionForward: 'forward',
+    directionLeft: 'port',
+    directionRight: 'starboard',
+    directionBackward: 'aft',
+    directionUp: 'dorsal',
+    directionDown: 'ventral',
+
     viewscreenPan: 'Pan',
     viewscreenZoom: 'Zoom',    
     viewscreenDirection: 'direction',
-    viewscreenDirectionForward: 'forward',
-    viewscreenDirectionLeft: 'port',
-    viewscreenDirectionRight: 'starboard',
-    viewscreenDirectionBackward: 'aft',
-    viewscreenDirectionUp: 'dorsal',
-    viewscreenDirectionDown: 'ventral',
     viewscreenChaseMode: 'chase mode',
     viewscreenCommsChannel: 'comms channel',
     viewscreenTarget: 'target',

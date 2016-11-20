@@ -8,8 +8,9 @@
     maxSwipeTime?: number;
     maxTapDist?: number;
     maxTapTime?: number;
+    rotate?: boolean;
 
-    draw?: (ctx: CanvasRenderingContext2D, time?: number) => void;
+    draw?: (ctx: CanvasRenderingContext2D, width: number, height: number, time?: number) => void;
     onMouseDown?: (button: number, x: number, y: number) => void;
     onMouseUp?: (button: number, x: number, y: number) => void;
     onClick?: (button: number, x: number, y: number) => void;
@@ -21,7 +22,7 @@
 
 class Canvas extends React.Component<ICanvasProps, {}> {
     static defaultProps = {
-        width: 300, height: 200, visible: true
+        width: 300, height: 200, rotate: false, visible: true
     }
     componentDidMount () {
         let component = this;
@@ -80,7 +81,23 @@ class Canvas extends React.Component<ICanvasProps, {}> {
             requestAnimationFrame(this.callDraw.bind(this));
     }
     private callDraw(time) {
-        this.props.draw(this.getContext(), time);
+        let ctx = this.getContext();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        let width, height;
+        if (this.props.rotate) {
+            width = this.props.height;
+            height = this.props.width;
+
+            ctx.translate(this.props.width, 0);
+            ctx.rotate(Math.PI / 2);
+        }
+        else {
+            width = this.props.width;
+            height = this.props.height;
+        }
+
+        this.props.draw(ctx, width, height, time);
     }
     render() {
         return (

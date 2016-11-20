@@ -365,8 +365,8 @@ class PowerDistribution extends React.Component<IPowerDistributionProps, {}> {
         itemA.links.push(itemB);
         itemB.links.push(itemA);
     }
-    draw(ctx) {
-        ctx.clearRect(0, 0, this.props.width, this.props.height);
+    draw(ctx, width, height) {
+        ctx.clearRect(0, 0, width, height);
         
         for (var i=0; i<this.items.length; i++)
             this.items[i].draw(ctx);
@@ -441,6 +441,6 @@ class PowerDistribution extends React.Component<IPowerDistributionProps, {}> {
     wireChanged(wireNum, broken) {
         this.items[wireNum].broken = broken;
         this.allocatePower();
-        requestAnimationFrame(this.draw);
+        this.redraw();
     }
 }
