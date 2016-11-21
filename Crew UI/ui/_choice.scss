@@ -121,6 +121,12 @@ buttongroup.inline clicker:last-of-type, buttongroup.inline clicker.last {
     }
 }
 
+@include landscape() {
+    choice.landscapeVertical {
+        @include choice-vertical();
+    }
+}
+
 @include media-size-down(sm) {
     choice.smVertical, table.smVertical {
         @include choice-vertical();

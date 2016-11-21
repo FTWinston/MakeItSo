@@ -119,7 +119,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
 
                     <ButtonGroup inline={true} color="1">
                         <Button type={ButtonType.Push} hotkey="X" onClicked={function () { self.setState({selectingTarget: true})} }>{language.viewscreenTarget}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={self.state.targetID != null} disabled={self.state.targetID == null} onDeactivated={function () { self.targetSelected(null); }}>{self.state.targetID == null ? language.viewscreenNoTarget : self.state.targetID}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={self.state.targetID != null} disabled={self.state.targetID == null} onDeactivated={function () { self.targetSelected(null); }}>{self.state.targetID == null ? language.none : self.state.targetID}</Button>
                     </ButtonGroup>
                 </section>
 

@@ -150,4 +150,8 @@
             this.checkMatchingGroup(pos.x, pos.y, 1);
         }
     }
+    clear() {
+        for (let i=this.data.length; i>=0; i--)
+            this.data[i] = undefined;
+    }
 }

@@ -19,6 +19,7 @@
     messageRefreshPage: 'Refresh the page to continue.',
 
     menuGoBack: 'go back',
+    none: 'none',
 
     systemListPrompt: 'Select systems to control:',
     systemListSetupGame: 'setup game',
@@ -66,7 +67,6 @@
     viewscreenChaseMode: 'chase mode',
     viewscreenCommsChannel: 'comms channel',
     viewscreenTarget: 'target',
-    viewscreenNoTarget: 'none',
 
     helmRotation: 'rotation',
     helmRotateUp: 'up',
@@ -93,4 +93,10 @@
     helmPitchOutput: 'Pitch:',
     helmYawOutput: 'Yaw:',
     helmRollOutput: 'Roll:',
+
+    shieldsToggleOn: 'Enable shields',
+    shieldsToggleOff: 'Disable shields',
+    shieldsEnabled: 'Shields are enabled',
+    shieldsDisabled: 'Shields are disabled',
+    shieldsRegenFocus: 'Regeneration focus:',
 }

@@ -1,4 +1,24 @@
-class Shields extends React.Component<ISystemProps, {}> implements ISystem {
+const enum ShieldFocus {
+    None = 0,
+    Front,
+    Rear,
+    Left,
+    Right,
+    Top,
+    Bottom,
+}
+
+interface IShieldState {
+    enabled?: boolean;
+    power?: number;
+    focus?: ShieldFocus;
+}
+
+class Shields extends React.Component<ISystemProps, IShieldState> implements ISystem {
+    constructor(props) {
+        super(props);
+        this.state = { enabled: false, power: 0, focus: ShieldFocus.None };
+    }    
     componentDidMount() {
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, this);
@@ -18,8 +38,20 @@ class Shields extends React.Component<ISystemProps, {}> implements ISystem {
                     <ShieldDisplay ref="shield" width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
                 </section>
                 <section className="xsmall">
-                    Toggle shields on/off.
-                    Hints and tips?
+                    <div class="powerLevel">{this.state.power}</div>
+                    <p>{this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}</p>
+                    <Button type={ButtonType.Push} action="shields 1" color="4" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
+                    <Button type={ButtonType.Confirm} action="shields 0" color="4" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
+
+                    <Choice class="landscapeVertical" color="2" disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.None}>{language.none}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Front}>{language.directionForward}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Rear}>{language.directionBackward}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Left}>{language.directionLeft}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Right}>{language.directionRight}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Top}>{language.directionUp}</Button>
+                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Bottom}>{language.directionDown}</Button>
+                    </Choice>
                 </section>
             </system>
         );
@@ -39,11 +71,19 @@ class Shields extends React.Component<ISystemProps, {}> implements ISystem {
                 }
                 (this.refs['shield'] as ShieldDisplay).setBlock(index, type, color);
                 return true;
+            case 'on':
+                return true;            
+            case 'off':
+                return true;
+            case 'power':
+                return true;
+            case 'focus':
+                return true;
             default:
                 return false;
         }
     }
     clearAllData() {
-
+        (this.refs['shield'] as ShieldDisplay).clearBlocks();
     }
 }

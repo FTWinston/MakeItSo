@@ -198,4 +198,7 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         block.falling = true;
         this.data.data[index] = block;
     }
+    clearBlocks() {
+        this.data.clear();
+    }
 }
