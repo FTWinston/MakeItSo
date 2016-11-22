@@ -705,6 +705,16 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		viewComms = false;
 		SendCrewMessage(ESystem::ViewScreen, "comms off");
 	}
+	else if (MATCHES(info, "+shields"))
+	{
+		shieldsUp = true;
+		SendCrewMessage(ESystem::Shields, "on");
+	}
+	else if (MATCHES(info, "-shields"))
+	{
+		shieldsUp = false;
+		SendCrewMessage(ESystem::Shields, "off");
+	}
 #ifndef WEB_SERVER_TEST
 	else
 	{
@@ -837,6 +847,7 @@ void UCrewManager::SendAllCrewData()
 	// TODO: send all weapon targets
 
 	// TODO: send shield data
+	SendCrewMessage(ESystem::Shields, shieldsUp ? "on" : "off");
 }
 
 void UCrewManager::DetermineViewTarget(const char* targetIdentifier)

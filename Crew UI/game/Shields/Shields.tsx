@@ -17,7 +17,7 @@ interface IShieldState {
 class Shields extends React.Component<ISystemProps, IShieldState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { enabled: false, power: 0, focus: ShieldFocus.None };
+        this.state = { enabled: false, power: 1, focus: ShieldFocus.None };
     }    
     componentDidMount() {
         if (this.props.registerCallback != null)
@@ -28,9 +28,9 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
             this.props.registerCallback(this.props.index, undefined);
     }
     render() {
-        let portrait = this.props.width >= this.props.height;
-        let shieldWidth = portrait ? Math.round(this.props.width * 0.8) : this.props.width;
-        let shieldHeight = portrait ? this.props.height : Math.round(this.props.height * 0.85);
+        let portrait = this.props.width < this.props.height;
+        let shieldWidth = portrait ? this.props.width : Math.round(this.props.width * 0.8);
+        let shieldHeight = portrait ? Math.round(this.props.height * 0.85) : this.props.height;
 
         return (
             <system id="shields" style={{ display: this.props.visible ? null : 'none' }}>
@@ -38,12 +38,13 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
                     <ShieldDisplay ref="shield" width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
                 </section>
                 <section className="xsmall">
-                    <div class="powerLevel">{this.state.power}</div>
+                    <div className="powerLevel">{this.state.power}</div>
                     <p>{this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}</p>
-                    <Button type={ButtonType.Push} action="shields 1" color="4" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
-                    <Button type={ButtonType.Confirm} action="shields 0" color="4" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
-
-                    <Choice class="landscapeVertical" color="2" disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
+                    <ButtonGroup color="4">
+                        <Button type={ButtonType.Push} action="+shields" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
+                        <Button type={ButtonType.Confirm} action="-shields" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
+                    </ButtonGroup>
+                    <Choice class="landscapeVertical" color="2" inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
                         <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.None}>{language.none}</Button>
                         <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Front}>{language.directionForward}</Button>
                         <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Rear}>{language.directionBackward}</Button>
@@ -72,12 +73,16 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
                 (this.refs['shield'] as ShieldDisplay).setBlock(index, type, color);
                 return true;
             case 'on':
+                this.setState({enabled: true});
                 return true;            
             case 'off':
+                this.setState({enabled: false});
                 return true;
             case 'power':
+                this.setState({power: parseInt(data)});
                 return true;
             case 'focus':
+                this.setState({focus: parseInt(data)});
                 return true;
             default:
                 return false;

@@ -98,6 +98,9 @@ private:
 	bool viewComms, viewChase;
 	UObject *viewTarget;
 	const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
+
+	// shields
+	bool shieldsUp;
 };
 
 class ConnectionInfo
