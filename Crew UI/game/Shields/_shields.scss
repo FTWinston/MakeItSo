@@ -4,6 +4,9 @@
 
 #shields {
     @include adaptive-layout(xl);
+    .powerLevel {
+        float: right;
+    }
 
     > section:first-child {
         @include nopad();

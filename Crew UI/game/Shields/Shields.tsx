@@ -27,6 +27,16 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, undefined);
     }
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.focus != this.state.focus) {
+            (this.refs['focF'] as Button).setActive(this.state.focus == ShieldFocus.Front);
+            (this.refs['focB'] as Button).setActive(this.state.focus == ShieldFocus.Rear);
+            (this.refs['focL'] as Button).setActive(this.state.focus == ShieldFocus.Left);
+            (this.refs['focR'] as Button).setActive(this.state.focus == ShieldFocus.Right);
+            (this.refs['focU'] as Button).setActive(this.state.focus == ShieldFocus.Top);
+            (this.refs['focD'] as Button).setActive(this.state.focus == ShieldFocus.Bottom);
+        }
+    }
     render() {
         let portrait = this.props.width < this.props.height;
         let shieldWidth = portrait ? this.props.width : Math.round(this.props.width * 0.8);
@@ -38,20 +48,20 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
                     <ShieldDisplay ref="shield" width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
                 </section>
                 <section className="xsmall">
-                    <div className="powerLevel">{this.state.power}</div>
-                    <p>{this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}</p>
+                    <div className="powerLevel" title="power allocated to this system">{this.state.power}</div>
+                    <span className="info">{this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}</span>
                     <ButtonGroup color="4">
                         <Button type={ButtonType.Push} action="+shields" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
                         <Button type={ButtonType.Confirm} action="-shields" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
                     </ButtonGroup>
                     <Choice class="landscapeVertical" color="2" inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.None}>{language.none}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Front}>{language.directionForward}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Rear}>{language.directionBackward}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Left}>{language.directionLeft}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Right}>{language.directionRight}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Top}>{language.directionUp}</Button>
-                        <Button type={ButtonType.Toggle} forceActive={this.state.focus == ShieldFocus.Bottom}>{language.directionDown}</Button>
+                        <Button type={ButtonType.Toggle} ref="focN">{language.none}</Button>
+                        <Button type={ButtonType.Toggle} ref="focF">{language.directionForward}</Button>
+                        <Button type={ButtonType.Toggle} ref="focB">{language.directionBackward}</Button>
+                        <Button type={ButtonType.Toggle} ref="focL">{language.directionLeft}</Button>
+                        <Button type={ButtonType.Toggle} ref="focR">{language.directionRight}</Button>
+                        <Button type={ButtonType.Toggle} ref="focU">{language.directionUp}</Button>
+                        <Button type={ButtonType.Toggle} ref="focD">{language.directionDown}</Button>
                     </Choice>
                 </section>
             </system>

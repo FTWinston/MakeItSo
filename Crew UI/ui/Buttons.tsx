@@ -225,7 +225,7 @@ class Button extends React.Component<IButtonProps, IButtonState> {
         if (this.props.onClicked != null)
             this.props.onClicked();
     }
-    setActive(val) {
+    setActive(val: boolean) {
         if (this.state.active == val)
             return;
 

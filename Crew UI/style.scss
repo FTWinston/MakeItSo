@@ -156,6 +156,25 @@ output {
     }
 }
 
+.info {
+    padding: 0.5em;
+    display: inline-block;
+}
+
+.powerLevel {
+    font-size: 3em;
+    border-radius: 1em;
+    background-color: #0099ff;
+    border: solid #CCCCFF 0.1em;
+    margin: 0.1em;
+    padding: 0.025em;
+    display: inline-block;
+    width: 1em; height: 1em;
+    text-align: center;
+    vertical-align: middle;
+    color: #000000;
+}
+
 html, body, #gameRoot, #gameRoot > div, screen {
     height: 100%;
 }
