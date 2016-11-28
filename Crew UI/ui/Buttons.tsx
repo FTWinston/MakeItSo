@@ -245,12 +245,13 @@ interface IButtonGroupProps {
     inline?: boolean;
     visible?: boolean;
     caption?: string;
+    class?: string;
     children?: React.ReactElement<any>[];
 }
 
 class ButtonGroup extends React.Component<IButtonGroupProps, {}> {
     static defaultProps = {
-        color: null, disabled: false, inline: false, visible: true, caption: null
+        color: null, disabled: false, inline: false, visible: true, caption: null, class: ''
     };
     render() {
         let props:IButtonGroupProps = {}, gcProps:IButtonGroupProps = {};
@@ -274,7 +275,9 @@ class ButtonGroup extends React.Component<IButtonGroupProps, {}> {
             return child;
         });
         
-        var classes = this.props.inline ? 'inline' : '';
+        var classes = this.props.class;
+        if (this.props.inline)
+            classes += ' inline'
         if (isTable)
             classes += ' table';
         

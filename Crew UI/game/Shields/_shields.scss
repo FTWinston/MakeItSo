@@ -5,7 +5,13 @@
 #shields {
     @include adaptive-layout(xl);
     .powerLevel {
-        float: right;
+        position: absolute;
+        top: 0em;
+        right: 0;
+    }
+
+    section.tools {
+        position: relative;
     }
 
     > section:first-child {
@@ -15,6 +21,43 @@
     @include landscape() {
         > section {
             @include nopad();
+        }
+
+        .powerLevel {
+            top: 1em;
+        }
+
+        .toggler {
+            @include media-height-down(600px) {
+                margin-bottom: 1em;
+            }
+            @include media-height-down(550px) {
+                font-size: 0.9em;
+            }
+            @include media-height-down(500px) {
+                margin-top: 1em;
+                margin-bottom: 0.5em;
+            }
+            @include media-height-down(450px) {
+                font-size: 0.8em;
+            }
+        }
+        .focus {
+            @include media-height-down(600px) {
+                font-size: 0.9em;
+            }
+            @include media-height-down(550px) {
+                font-size: 0.8em;
+            }
+            @include media-height-down(500px) {
+                font-size: 0.7em;
+            }
+            @include media-height-down(450px) {
+                font-size: 0.65em;
+            }
+            @include media-height-down(400px) {
+                font-size: 0.5em;
+            }
         }
     }
 

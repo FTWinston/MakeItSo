@@ -43,18 +43,18 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         let shieldHeight = portrait ? Math.round(this.props.height * 0.85) : this.props.height;
 
         return (
-            <system id="shields" style={{ display: this.props.visible ? null : 'none' }}>
+            <system id="shields" className={portrait ? 'portrait' : 'landscape'} style={{ display: this.props.visible ? null : 'none' }}>
                 <section className="xlarge">
-                    <ShieldDisplay ref="shield" width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
+                    <ShieldDisplay ref="shield" rotate={portrait} width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
                 </section>
-                <section className="xsmall">
+                <section className="xsmall tools">
                     <div className="powerLevel" title="power allocated to this system">{this.state.power}</div>
                     <span className="info">{this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}</span>
-                    <ButtonGroup color="4">
+                    <ButtonGroup class="toggler" color="4">
                         <Button type={ButtonType.Push} action="+shields" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
                         <Button type={ButtonType.Confirm} action="-shields" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
                     </ButtonGroup>
-                    <Choice class="landscapeVertical" color="2" inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
+                    <Choice class="focus landscapeVertical" color="2" inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
                         <Button type={ButtonType.Toggle} ref="focN">{language.none}</Button>
                         <Button type={ButtonType.Toggle} ref="focF">{language.directionForward}</Button>
                         <Button type={ButtonType.Toggle} ref="focB">{language.directionBackward}</Button>

@@ -77,14 +77,33 @@ $lg-cutoff-max: $xl-cutoff-min - 1;
     }
 }
 
+@mixin media-height-down($height) {
+    @if type-of($height) == number {
+        @media (max-height: $height) { @content; }
+    }
+    @else {
+        @warn "The media-height mixins support only numeric sizes";
+    }
+}
+
 @mixin portrait() {
     @media (orientation:portrait) {
+        &:not(.landscape) {
+            @content;
+        }
+    }
+    &.portrait {
         @content;
     }
 }
 
 @mixin landscape() {
     @media (orientation:landscape) {
+        &:not(.portrait) {
+            @content;
+        }
+    }
+    &.landscape {
         @content;
     }
 }
