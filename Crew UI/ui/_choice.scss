@@ -15,8 +15,9 @@ buttonGroup[data-caption]::before, choice[data-caption]::before {
 	content: attr(data-caption);
 	color: $textColor;
 	position: absolute;
-    bottom: -1em;
+    top: -1em;
     left: 0.5em;
+    white-space: nowrap;
 }
 
 choice prompt, choice description {
@@ -118,12 +119,6 @@ buttongroup.inline clicker:last-of-type, buttongroup.inline clicker.last {
         options.popDownward {
             position: absolute;
         }
-    }
-}
-
-@include landscape() {
-    choice.landscapeVertical {
-        @include choice-vertical();
     }
 }
 

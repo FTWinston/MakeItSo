@@ -19,6 +19,7 @@
     messageRefreshPage: 'Refresh the page to continue.',
 
     menuGoBack: 'go back',
+    all: 'all',
     none: 'none',
 
     systemListPrompt: 'Select systems to control:',
@@ -99,4 +100,5 @@
     shieldsEnabled: 'Shields are enabled',
     shieldsDisabled: 'Shields are disabled',
     shieldsRegenFocus: 'Regeneration focus:',
+    shieldsCharge: 'Charge',
 }

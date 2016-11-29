@@ -38,10 +38,20 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         }
     }
     render() {
-        let portrait = this.props.width < this.props.height;
-        let shieldWidth = portrait ? this.props.width : Math.round(this.props.width * 0.8);
-        let shieldHeight = portrait ? Math.round(this.props.height * 0.85) : this.props.height;
-
+        let portrait = this.props.width < this.props.height, shieldWidth: number, shieldHeight: number, focusClasses: string, focusDropdown: DropdownSettings;
+        if (portrait) {
+            shieldWidth = this.props.width;
+            shieldHeight = Math.round(this.props.height * 0.85);
+            focusClasses = 'focus forceDropdown';
+            focusDropdown = { label: language.shieldsCharge, popUpwards: true };
+        }
+        else {
+            shieldWidth = Math.round(this.props.width * 0.8);
+            shieldHeight = this.props.height;
+            focusClasses = 'focus forceVertical';
+            focusDropdown = null;
+        }
+        
         return (
             <system id="shields" className={portrait ? 'portrait' : 'landscape'} style={{ display: this.props.visible ? null : 'none' }}>
                 <section className="xlarge">
@@ -49,13 +59,12 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
                 </section>
                 <section className="xsmall tools">
                     <div className="powerLevel" title="power allocated to this system">{this.state.power}</div>
-                    <span className="info">{this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}</span>
-                    <ButtonGroup class="toggler" color="4">
+                    <ButtonGroup class="toggler" color={this.state.enabled ? "3" : "4"} caption={this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}>
                         <Button type={ButtonType.Push} action="+shields" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
                         <Button type={ButtonType.Confirm} action="-shields" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
                     </ButtonGroup>
-                    <Choice class="focus landscapeVertical" color="2" inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
-                        <Button type={ButtonType.Toggle} ref="focN">{language.none}</Button>
+                    <Choice class={focusClasses} color="2" dropdown={focusDropdown} inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
+                        <Button type={ButtonType.Toggle} ref="focN">{language.all}</Button>
                         <Button type={ButtonType.Toggle} ref="focF">{language.directionForward}</Button>
                         <Button type={ButtonType.Toggle} ref="focB">{language.directionBackward}</Button>
                         <Button type={ButtonType.Toggle} ref="focL">{language.directionLeft}</Button>
