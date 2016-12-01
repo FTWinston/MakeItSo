@@ -8,16 +8,27 @@ class PowerManagement extends React.Component<ISystemProps, {}> implements ISyst
             this.props.registerCallback(this.props.index, undefined);
     }
     render() {
-        var distribSize = Math.min(this.props.width * 0.8, this.props.height);
-        var cardWidth = this.props.width - distribSize;
-        
+        let portrait = this.props.width < this.props.height, distribSize: number, cardWidth: number, cardHeight: number;
+        if (portrait) {
+            distribSize = Math.min(this.props.width, this.props.height * 0.85);
+            
+            cardWidth = this.props.width;
+            cardHeight = this.props.height - distribSize;
+        }
+        else {
+            distribSize = Math.min(this.props.width * 0.8, this.props.height);
+
+            cardWidth = this.props.width - distribSize;
+            cardHeight = this.props.height;
+        }
+
         return (
             <system id="power" style={{ display: this.props.visible ? null : 'none' }}>
                 <section className="xlarge">
                     <PowerDistribution ref="distribution" width={distribSize} height={distribSize} visible={this.props.visible} />
                 </section>
                 <section className="xsmall">
-                    <PowerCards ref="cards" width={cardWidth} height={this.props.height} />
+                    <PowerCards ref="cards" width={cardWidth} height={cardHeight} />
                 </section>
             </system>
         );
