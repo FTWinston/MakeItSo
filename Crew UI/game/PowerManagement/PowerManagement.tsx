@@ -24,11 +24,11 @@ class PowerManagement extends React.Component<ISystemProps, {}> implements ISyst
 
         return (
             <system id="power" style={{ display: this.props.visible ? null : 'none' }}>
-                <section className="xlarge">
+                <section className="large">
                     <PowerDistribution ref="distribution" width={distribSize} height={distribSize} visible={this.props.visible} />
                 </section>
-                <section className="xsmall">
-                    <PowerCards ref="cards" width={cardWidth} height={cardHeight} />
+                <section className="small">
+                    <PowerCards ref="cards" width={cardWidth} height={cardHeight} visible={this.props.visible} />
                 </section>
             </system>
         );

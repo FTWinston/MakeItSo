@@ -1,12 +1,21 @@
 ﻿interface IPowerCardProps {
-    width: number;
-    height: number;
+    width?: number;
+    height?: number;
+    visible?: boolean;
 }
     
 class PowerCards extends React.Component<IPowerCardProps, {}> {
     render() {
         return (
-            <div style={{position: 'absolute', right: '0', top: '0', bottom: '0', width: this.props.width}} />
+            <Canvas ref="canvas" width={this.props.width} height={this.props.height} draw={this.draw.bind(this)} visible={this.props.visible} />
         );
+    }
+    draw(ctx, width, height) {
+        ctx.clearRect(0, 0, width, height);
+
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.rect(0, 0, width, height);
+        ctx.fill();
     }
 }

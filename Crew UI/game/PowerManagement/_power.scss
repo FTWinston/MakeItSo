@@ -14,4 +14,14 @@
             @include nopad();
         }
     }
+
+    section.small {
+        position: relative;
+
+        canvas {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+        }
+    }
 }
