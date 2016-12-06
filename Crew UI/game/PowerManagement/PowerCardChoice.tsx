@@ -1,10 +1,10 @@
-﻿interface IPowerCardProps {
+﻿interface IPowerCardChoiceProps {
     width?: number;
     height?: number;
     visible?: boolean;
 }
     
-class PowerCards extends React.Component<IPowerCardProps, {}> {
+class PowerCardChoice extends React.Component<IPowerCardChoiceProps, {}> {
     render() {
         return (
             <Canvas ref="canvas" width={this.props.width} height={this.props.height} draw={this.draw.bind(this)} visible={this.props.visible} />
