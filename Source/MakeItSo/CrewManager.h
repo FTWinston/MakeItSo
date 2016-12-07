@@ -100,7 +100,13 @@ private:
 	const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
 
 	// shields
+	void SendShieldFocus();
 	bool shieldsUp;
+	int shieldFocus;
+
+	// power management
+	void SendAuxPower();
+	ESystem auxBoostSystem;
 };
 
 class ConnectionInfo

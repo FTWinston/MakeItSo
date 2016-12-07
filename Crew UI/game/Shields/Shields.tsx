@@ -64,13 +64,13 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
                         <Button type={ButtonType.Confirm} action="-shields" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
                     </ButtonGroup>
                     <Choice class={focusClasses} color="2" dropdown={focusDropdown} inline={portrait} disabled={!this.state.enabled || this.state.power == 0} prompt={language.shieldsRegenFocus}>
-                        <Button type={ButtonType.Toggle} ref="focN">{language.all}</Button>
-                        <Button type={ButtonType.Toggle} ref="focF">{language.directionForward}</Button>
-                        <Button type={ButtonType.Toggle} ref="focB">{language.directionBackward}</Button>
-                        <Button type={ButtonType.Toggle} ref="focL">{language.directionLeft}</Button>
-                        <Button type={ButtonType.Toggle} ref="focR">{language.directionRight}</Button>
-                        <Button type={ButtonType.Toggle} ref="focU">{language.directionUp}</Button>
-                        <Button type={ButtonType.Toggle} ref="focD">{language.directionDown}</Button>
+                        <Button type={ButtonType.Toggle} ref="focN" startAction="shieldFoc 0">{language.all}</Button>
+                        <Button type={ButtonType.Toggle} ref="focF" startAction="shieldFoc 1">{language.directionForward}</Button>
+                        <Button type={ButtonType.Toggle} ref="focB" startAction="shieldFoc 2">{language.directionBackward}</Button>
+                        <Button type={ButtonType.Toggle} ref="focL" startAction="shieldFoc 3">{language.directionLeft}</Button>
+                        <Button type={ButtonType.Toggle} ref="focR" startAction="shieldFoc 4">{language.directionRight}</Button>
+                        <Button type={ButtonType.Toggle} ref="focU" startAction="shieldFoc 5">{language.directionUp}</Button>
+                        <Button type={ButtonType.Toggle} ref="focD" startAction="shieldFoc 6">{language.directionDown}</Button>
                     </Choice>
                 </section>
             </system>

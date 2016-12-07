@@ -535,7 +535,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		EXTRACT(info, buffer, "pitch "); // this crashes (sometimes) unless buffer length is ~30
 		InputAxis(EKeys::Gamepad_LeftY, atof(buffer));
 	}
-	
+
 	else if (MATCHES(info, "+moveleft"))
 	{
 		InputKey(EKeys::J, true);
@@ -682,7 +682,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 			if (viewZoom < minZoomFactor)
 				viewZoom = minZoomFactor;
 		}
-		
+
 		SendViewZoomDist();
 	}
 	else if (MATCHES(info, "+viewchase"))
@@ -714,6 +714,24 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		shieldsUp = false;
 		SendCrewMessage(ESystem::Shields, "off");
+	}
+	else if (STARTS_WITH(info, "shieldFoc "))
+	{
+		char buffer[2];
+		EXTRACT(info, buffer, "shieldFoc ");
+
+		char focus = buffer[0];
+		shieldFocus = focus - '0';
+		SendShieldFocus();
+	}
+	else if (STARTS_WITH(info, "aux "))
+	{
+		char buffer[2];
+		EXTRACT(info, buffer, "aux ");
+
+		char aux = buffer[0];
+		auxBoostSystem = (ESystem)(aux - '0');
+		SendAuxPower();
 	}
 #ifndef WEB_SERVER_TEST
 	else
@@ -848,6 +866,9 @@ void UCrewManager::SendAllCrewData()
 
 	// TODO: send shield data
 	SendCrewMessage(ESystem::Shields, shieldsUp ? "on" : "off");
+	SendShieldFocus();
+
+	SendAuxPower();
 }
 
 void UCrewManager::DetermineViewTarget(const char* targetIdentifier)
@@ -900,4 +921,28 @@ void UCrewManager::SendViewZoomDist()
 		SendCrewMessage(ESystem::ViewScreen, buffer);
 #endif
 	}
+}
+
+void UCrewManager::SendShieldFocus()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("focus %i"), shieldFocus);
+	SendCrewMessage(ESystem::Shields, message.c_str());
+#else
+	char buffer[10];
+	std::snprintf(buffer, sizeof(buffer), "focus %i", shieldFocus);
+	SendCrewMessage(ESystem::Shields, buffer);
+#endif
+}
+
+void UCrewManager::SendAuxPower()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("aux %i"), (int)auxBoostSystem);
+	SendCrewMessage(ESystem::PowerManagement, message.c_str());
+#else
+	char buffer[8];
+	std::snprintf(buffer, sizeof(buffer), "aux %i", (int)auxBoostSystem);
+	SendCrewMessage(ESystem::PowerManagement, buffer);
+#endif
 }

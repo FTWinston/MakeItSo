@@ -101,4 +101,12 @@
     shieldsDisabled: 'Shields are disabled',
     shieldsRegenFocus: 'Regeneration focus:',
     shieldsCharge: 'Charge',
+
+    powerAux: 'AUX power',
+    powerAuxTarget: 'Route AUX power to:',
+    powerCards: [
+        { name: 'Card 1', desc: 'Does some stuff' },
+        { name: 'Card 2', desc: 'Does more stuff' },
+        { name: 'Card 3', desc: 'Does even more stuff' },
+    ]
 }
