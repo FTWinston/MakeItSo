@@ -41,7 +41,6 @@
     <TypeScriptCompile Include="game\PowerManagement\PowerManagement.tsx" />
     <TypeScriptCompile Include="game\SystemContainer.tsx" />
     <TypeScriptCompile Include="game\PowerManagement\PowerCardChoice.tsx" />
-    <TypeScriptCompile Include="game\PowerManagement\PowerDistribution.tsx" />
     <TypeScriptCompile Include="game\Sensors\Sensors.tsx" />
     <TypeScriptCompile Include="game\Shields\Shields.tsx" />
     <TypeScriptCompile Include="game\Shields\ShieldBlock.ts" />

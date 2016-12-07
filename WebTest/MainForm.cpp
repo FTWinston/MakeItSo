@@ -114,18 +114,22 @@ System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, S
 
 System::Void WebTest::MainForm::btnBreakWire_Click(System::Object^  sender, System::EventArgs^  e)
 {
+	/*
 	int wire = rand() % 52;
 	std::string command = "break ";
 	command += std::to_string(wire);
 
 	crewManager->SendCrewMessage(UCrewManager::ESystem::PowerManagement, command.c_str());
+	*/
 }
 
 System::Void WebTest::MainForm::btnBreakNode_Click(System::Object^  sender, System::EventArgs^  e)
 {
+	/*
 	int node = 52 + rand() % 8;
 	std::string command = "break ";
 	command += std::to_string(node);
 
 	crewManager->SendCrewMessage(UCrewManager::ESystem::PowerManagement, command.c_str());
+	*/
 }

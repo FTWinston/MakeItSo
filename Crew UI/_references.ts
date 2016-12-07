@@ -17,7 +17,6 @@
 /// <reference path="game/Helm/Helm.tsx" />
 /// <reference path="game/PowerManagement/PowerCard.tsx" />
 /// <reference path="game/PowerManagement/PowerCardChoice.tsx" />
-/// <reference path="game/PowerManagement/PowerDistribution.tsx" />
 /// <reference path="game/PowerManagement/PowerManagement.tsx" />
 /// <reference path="game/Sensors/Sensors.tsx" />
 /// <reference path="game/Shields/ShieldBlock.ts" />
