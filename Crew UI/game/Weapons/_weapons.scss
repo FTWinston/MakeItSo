@@ -3,9 +3,10 @@
 @import '../../ui/layout';
 
 #weapons {
-    @include adaptive-layout(xl);
-
-    > section {
-        @include nopad();
+    & > section.select {
+        flex-grow: 2;
+    }
+    & > section.target {
+        flex-grow: 1;
     }
 }

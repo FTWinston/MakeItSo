@@ -60,7 +60,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
         
         return (
             <system id="viewscreen" style={{display: this.props.visible ? null : 'none'}}>
-                <section id="viewscreenAiming" className="large" style={{ display: this.state.selectingTarget ? 'none' : null }}>
+                <section className="aiming" style={{ display: this.state.selectingTarget ? 'none' : null }}>
                     <ButtonGroup inline={true} color="3">
                         <row>
                             <spacer></spacer>
@@ -98,7 +98,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     </output>
                 </section>
                 
-                <section id="viewscreenOptions" className="small" style={{ display: this.state.selectingTarget ? 'none' : null }}>
+                <section className="options" style={{ display: this.state.selectingTarget ? 'none' : null }}>
                     <spacer className="adaptiveVerticalMinWidth" data-width="14em">
                         <Choice inline={true} color="2" class="smDropdown" dropdown={{ label: language.viewscreenDirection, popUpwards: true }} disabled={this.state.targetID != null} allowUnselected={true}>
                             <row>
@@ -123,7 +123,7 @@ class Viewscreen extends React.Component<ISystemProps, IViewscreenState> impleme
                     </ButtonGroup>
                 </section>
 
-                <section id="viewscreenTargets" className="full" style={{ display: this.state.selectingTarget ? null : 'none' }}>
+                <section style={{ display: this.state.selectingTarget ? null : 'none' }}>
                     <ButtonGroup color="5">
                         {targetOptions}
                     </ButtonGroup>

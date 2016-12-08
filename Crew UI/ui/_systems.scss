@@ -1,0 +1,45 @@
+﻿@import 'breakpoints';
+
+screen#gameActive {
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vw;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    align-items: stretch;
+       
+    & > #systemSwitcher {
+        flex-grow: 0;
+        flex-shrink: 0;
+    }
+
+    & > system {
+        display: flex;
+        flex-grow: 1;
+        flex-shrink: 1;
+	    overflow: hidden;
+
+        @include landscape() {
+            flex-direction: row;
+        }
+
+        @include portrait() {
+            flex-direction: column;
+        }
+
+        & > section {    
+            flex-grow: 1;
+            flex-shrink: 1;
+
+            & .noGrow {
+                flex-grow: 0;
+                flex-shrink: 0;
+            }
+
+            & > * {
+                vertical-align: top;
+            }
+        }
+    }
+}

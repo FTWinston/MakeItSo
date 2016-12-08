@@ -21,10 +21,10 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
         
         return (
             <system id="weapons" style={{ display: this.props.visible ? null : 'none' }}>
-                <section className="large">
+                <section className="select">
                     <WeaponTargetSelect ref="select" width={selectWidth} height={this.props.height} visible={this.props.visible} targetSelected={this.targetSelected.bind(this) } />
                 </section>
-                <section className="small">
+                <section className="target">
                     <WeaponTargetInfo ref="target" width={infoWidth} height={this.props.height} visible={this.props.visible} target={this.state.target} />
                 </section>
             </system>

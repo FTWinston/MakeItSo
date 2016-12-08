@@ -54,10 +54,10 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         
         return (
             <system id="shields" className={portrait ? 'portrait' : 'landscape'} style={{ display: this.props.visible ? null : 'none' }}>
-                <section className="xlarge">
+                <section>
                     <ShieldDisplay ref="shield" rotate={portrait} width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
                 </section>
-                <section className="xsmall tools">
+                <section className="tools noGrow">
                     <div className="powerLevel" title="power allocated to this system">{this.state.power}</div>
                     <ButtonGroup class="toggler" color={this.state.enabled ? "3" : "4"} caption={this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}>
                         <Button type={ButtonType.Push} action="+shields" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>

@@ -1,0 +1,14 @@
+﻿@import '../../ui/borders';
+@import '../../ui/breakpoints';
+@import '../../ui/layout';
+
+#power {
+    & > section.aux {
+        @include landscape() {
+            height: 3em;
+        }
+        @include portrait() {
+            width: 6em;
+        }
+    }
+}

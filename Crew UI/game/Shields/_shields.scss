@@ -3,19 +3,19 @@
 @import '../../ui/layout';
 
 #shields {
-    @include adaptive-layout(xl);
+    & > section.tools {
+        @include landscape() {
+            height: 3em;
+        }
+        @include portrait() {
+            width: 6em;
+        }
+    }
+
     .powerLevel {
         position: absolute;
         top: 0;
         right: 0;
-    }
-
-    section.tools {
-        position: relative;
-    }
-
-    > section:first-child {
-        @include nopad();
     }
 
     .toggler {

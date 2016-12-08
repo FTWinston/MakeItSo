@@ -27,7 +27,7 @@
     <TypeScriptCompile Include="Connection.ts" />
     <TypeScriptCompile Include="ErrorDisplay.tsx" />
     <TypeScriptCompile Include="game\Communications\Communications.tsx" />
-    <TypeScriptCompile Include="game\PowerManagement\PowerCard.tsx" />
+    <TypeScriptCompile Include="game\Power\PowerCard.tsx" />
     <TypeScriptCompile Include="language\english.ts" />
     <TypeScriptCompile Include="setup\GameSetup.tsx" />
     <TypeScriptCompile Include="game\ISystem.ts" />
@@ -38,9 +38,9 @@
     <TypeScriptCompile Include="GameClient.tsx" />
     <TypeScriptCompile Include="game\Helm\Helm.tsx" />
     <TypeScriptCompile Include="Intrinsics.ts" />
-    <TypeScriptCompile Include="game\PowerManagement\PowerManagement.tsx" />
+    <TypeScriptCompile Include="game\Power\Power.tsx" />
     <TypeScriptCompile Include="game\SystemContainer.tsx" />
-    <TypeScriptCompile Include="game\PowerManagement\PowerCardChoice.tsx" />
+    <TypeScriptCompile Include="game\Power\PowerCardChoice.tsx" />
     <TypeScriptCompile Include="game\Sensors\Sensors.tsx" />
     <TypeScriptCompile Include="game\Shields\Shields.tsx" />
     <TypeScriptCompile Include="game\Shields\ShieldBlock.ts" />
@@ -93,8 +93,9 @@
     <Content Include="ui\_layout.scss" />
     <Content Include="game\Shields\_shields.scss" />
     <Content Include="game\Weapons\_weapons.scss" />
-    <Content Include="game\PowerManagement\_power.scss" />
+    <Content Include="game\Power\_power.scss" />
     <Content Include="game\Helm\_helm.scss" />
+    <Content Include="ui\_systems.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

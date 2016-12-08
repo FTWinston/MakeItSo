@@ -46,7 +46,7 @@ class SystemContainer extends React.Component<ISystemContainerProps, ISystemCont
             <Weapons registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 4} index={4} key={4} inputMode={this.props.inputMode} width={systemWidth} height={systemHeight} />,
             <Shields registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 5} index={5} key={5} inputMode={this.props.inputMode} width={systemWidth} height={systemHeight} />,
             <DamageControl registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 6} index={6} key={6} inputMode={this.props.inputMode} width={systemWidth} height={systemHeight} />,
-            <PowerManagement registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} index={7} key={7} inputMode={this.props.inputMode} width={systemWidth} height={systemHeight} />,
+            <Power registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 7} index={7} key={7} inputMode={this.props.inputMode} width={systemWidth} height={systemHeight} />,
             <Deflector registerCallback={this.props.registerSystem} visible={this.state.currentSystem == 8} index={8} key={8} inputMode={this.props.inputMode} width={systemWidth} height={systemHeight} />
         ];
         

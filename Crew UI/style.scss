@@ -26,11 +26,11 @@ body {
 }
 
 screen {
-	min-height: 100%;
     margin: 0 auto;
     display: block;
     text-align: initial;
     width: 100vw;
+    min-height: 100vh;
 
     @include media-size(lg) {
         width: $lg-cutoff-min - 50px;
@@ -38,16 +38,9 @@ screen {
     @include media-size(xl) {
         width: $xl-cutoff-min - 100px;
     }
-
-    &#gameActive {
-        width: 100vw;
-        overflow: hidden;
-    }
-
-    section > * {
-        vertical-align: top;
-    }
 }
+
+@import 'ui/systems';
 
 p {
 	margin: 0.65em;
@@ -135,10 +128,6 @@ spacer {
 
 @import 'setup/setup';
 
-system {
-	overflow: hidden;
-}
-
 output {
     display: block;
 	white-space: pre-line;
@@ -177,7 +166,7 @@ html, body, #gameRoot, #gameRoot > div, screen {
 @import 'game/systemswitcher';
 
 @import 'game/Helm/helm';
-@import 'game/PowerManagement/power';
+@import 'game/Power/power';
 @import 'game/Shields/shields';
 @import 'game/ViewScreen/viewscreen';
 @import 'game/Weapons/weapons';

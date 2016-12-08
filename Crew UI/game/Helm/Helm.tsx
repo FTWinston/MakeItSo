@@ -27,7 +27,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
     render() {
         return (
             <system id="helm" style={{ display: this.props.visible ? null : 'none' }}>
-                <section className="full">
+                <section>
                     <ButtonGroup inline={true} color="1" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} caption={language.helmRotation}>
                         <row>
                             <spacer></spacer>
