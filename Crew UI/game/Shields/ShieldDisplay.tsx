@@ -18,6 +18,7 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
     private interval: number;
     private cellWidth: number;
     private cellHeight: number;
+    private rotated: boolean;
 
     componentDidMount() {
         var startX = Math.floor(this.props.cellsWide / 2), startY = Math.floor(this.props.cellsTall / 2);
@@ -40,7 +41,6 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         Hotkeys.register(' ', this);
 
         this.rotated = false;
-        this.updateSizes();
     }
     componentWillUnmount() {
         this.cursor = null;
@@ -54,28 +54,9 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         Hotkeys.unregister(40, this);
         Hotkeys.unregister(' ', this);
     }
-    componentDidUpdate(prevProps, prevState) {
-        this.updateSizes();
-    }
-    private updateSizes() {
-        let canvas = (this.refs['canvas'] as Canvas);
-
-        if (this.rotated) {
-            this.cellWidth = canvas.state.height / this.props.cellsWide;
-            this.cellHeight = canvas.state.width * 0.95 / this.props.cellsTall;
-            this.cursor.xscale = canvas.state.height / this.props.cellsWide;
-            this.cursor.yscale = canvas.state.width * 0.95 / this.props.cellsTall;
-        }
-        else {
-            this.cellWidth = canvas.state.width / this.props.cellsWide;
-            this.cellHeight = canvas.state.height * 0.95 / this.props.cellsTall;
-            this.cursor.xscale = canvas.state.width / this.props.cellsWide;
-            this.cursor.yscale = canvas.state.height * 0.95 / this.props.cellsTall;
-        }
-    }
     render() {
         return (
-            <Canvas ref="canvas" visible={this.props.visible} style={{width: '100%', height: '100%'}}
+            <Canvas ref="canvas" visible={this.props.visible}
                 onTap={this.onTap.bind(this)} onSwipe={this.onSwipe.bind(this)} draw={this.draw.bind(this)} />
         );
     }
@@ -98,14 +79,9 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         
         this.redraw();
     }
-    rotated: boolean;
     draw(ctx, width, height) {
-        // if portrait, rotate everything
-        this.rotated = width < height;
+        this.updateSizeAndRotation(ctx, width, height);
         if (this.rotated) {
-            ctx.translate(width, 0);
-            ctx.rotate(Math.PI / 2);
-
             let tmp = height;
             height = width;
             width = tmp;
@@ -122,6 +98,28 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
             }
         
         this.cursor.draw(ctx);
+    }
+    private updateSizeAndRotation(ctx, width, height) {
+        this.rotated = width < height;
+
+        if (this.rotated) {
+            this.cellWidth = height / this.props.cellsWide;
+            this.cellHeight = width * 0.95 / this.props.cellsTall;
+            this.cursor.xscale = height / this.props.cellsWide;
+            this.cursor.yscale = width * 0.95 / this.props.cellsTall;
+        }
+        else {
+            this.cellWidth = width / this.props.cellsWide;
+            this.cellHeight = height * 0.95 / this.props.cellsTall;
+            this.cursor.xscale = width / this.props.cellsWide;
+            this.cursor.yscale = height * 0.95 / this.props.cellsTall;
+        }
+
+        // if portrait, rotate everything
+        if (this.rotated) {
+            ctx.translate(width, 0);
+            ctx.rotate(Math.PI / 2);
+        }
     }
     private drawBackground(ctx, width, height) {
         ctx.fillStyle = '#000000';

@@ -24,10 +24,11 @@ interface ICanvasState {
 class Canvas extends React.Component<ICanvasProps, ICanvasState> {
     constructor(props) {
         super(props);
-        this.state = { width: 100, height: 100 };
+        this.state = { width: 0, height: 0 };
     }
     static defaultProps = {
-        visible: true
+        visible: true,
+        style: null
     }
     private resizeEvent: any;
     componentDidMount () {
@@ -87,18 +88,21 @@ class Canvas extends React.Component<ICanvasProps, ICanvasState> {
     componentWillUnmount() {
         window.removeEventListener('resize', this.resizeEvent);
     }
+    componentDidUpdate(prevProps, prevState) {
+        if (this.props.visible && !prevProps.visible)
+            this.updateSize();
+    }
     updateSize() {
         let canvas = this.refs['canvas'] as HTMLCanvasElement;
         let state: ICanvasState = {
             width: canvas.offsetWidth,
             height: canvas.offsetHeight
         };
+
         if (state.width == this.state.width && state.height == this.state.height)
             return; // no change
 
         this.setState(state);
-        canvas.width = state.width;
-        canvas.height = state.height;
         this.redraw();
     }
     redraw() {
@@ -112,7 +116,9 @@ class Canvas extends React.Component<ICanvasProps, ICanvasState> {
     }
     render() {
         return (
-            <canvas ref="canvas" width={this.state.width} height={this.state.height} style={this.props.style} />
+            <div style={this.props.style}>
+                <canvas ref="canvas" width={this.state.width} height={this.state.height} />
+            </div>
         );
     }
     private getContext(): CanvasRenderingContext2D {

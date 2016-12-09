@@ -33,9 +33,24 @@ screen#gameActive {
             flex-shrink: 1;
             margin: 0.5em;
 
+            &.toEdge {
+                margin: 0;
+            }
+
             &.noGrow {
                 flex-grow: 0;
                 flex-shrink: 0;
+            }
+
+            &.fillMe {
+                display: flex;
+                align-items: stretch;
+                align-content: stretch;
+                & > * {
+                    flex-grow: 1;
+                    flex-shrink: 1;
+                    align-self: stretch;
+                }
             }
 
             & > * {

@@ -56,8 +56,8 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         let portrait = false, focusClasses = 'focus forceVertical', focusDropdown = null;
 
         return (
-            <system id="shields" className={portrait ? 'portrait' : 'landscape'} style={{ display: this.props.visible ? null : 'none' }}>
-                <section>
+            <system id="shields" style={{ display: this.props.visible ? null : 'none' }}>
+                <section className="toEdge fillMe">
                     <ShieldDisplay ref="shield" visible={this.props.visible} />
                 </section>
                 <section className="tools noGrow">
