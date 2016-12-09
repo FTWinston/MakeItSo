@@ -18,7 +18,7 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
     constructor(props) {
         super(props);
         this.state = { enabled: false, power: 1, focus: ShieldFocus.None };
-    }    
+    }
     componentDidMount() {
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, this);

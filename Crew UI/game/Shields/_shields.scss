@@ -5,10 +5,10 @@
 #shields {
     & > section.tools {
         @include landscape() {
-            height: 3em;
+            width: 12em;
         }
         @include portrait() {
-            width: 6em;
+            height: 6em;
         }
     }
 

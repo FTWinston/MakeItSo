@@ -147,3 +147,9 @@ choice.forceVertical, table.forceVertical {
 choice.forceDropdown {
     @include choice-dropdown();
 }
+
+@include landscape() {
+    choice.landscapeVertical, table.landscapeVertical {
+        @include choice-vertical();
+    }
+}

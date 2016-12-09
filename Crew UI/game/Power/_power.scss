@@ -5,10 +5,18 @@
 #power {
     & > section.aux {
         @include landscape() {
-            height: 3em;
+            width: 12em;
         }
         @include portrait() {
-            width: 6em;
+            height: 6em;
         }
+    }
+
+    & > section.cardSelect {
+        flex-grow: 2;
+    }
+
+    & > section.cardLibrary {
+        flex-grow: 3;
     }
 }

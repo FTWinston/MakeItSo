@@ -26,7 +26,6 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
     }
     componentDidUpdate(prevProps, prevState) {
         if (prevState.focus != this.state.auxBoost) {
-            console.log(this.state.auxBoost);
             (this.refs['auxEngines'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Engines);
             (this.refs['auxSensors'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Sensors);
             (this.refs['auxWeapons'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Weapons);
@@ -36,13 +35,10 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
         }
     }
     render() {
-        let portrait = this.props.width < this.props.height;
-        let auxClasses = portrait ? 'aux' : 'aux forceVertical';
-
         return (
             <system id="power" style={{ display: this.props.visible ? null : 'none' }}>
                 <section className="aux noGrow">
-                    <Choice class={auxClasses} color="1" inline={portrait} prompt={language.powerAuxTarget}>
+                    <Choice class="landscapeVertical" color="1" inline={true} prompt={language.powerAuxTarget}>
                         <Button type={ButtonType.Toggle} ref="auxEngines" startAction={"aux " + AuxPowerSystem.Engines}>{language.systemNames[AuxPowerSystem.Engines]}</Button>
                         <Button type={ButtonType.Toggle} ref="auxSensors" startAction={"aux " + AuxPowerSystem.Sensors}>{language.systemNames[AuxPowerSystem.Sensors]}</Button>
                         <Button type={ButtonType.Toggle} ref="auxWeapons" startAction={"aux " + AuxPowerSystem.Weapons}>{language.systemNames[AuxPowerSystem.Weapons]}</Button>
@@ -51,10 +47,10 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                         <Button type={ButtonType.Toggle} ref="auxDeflector" startAction={"aux " + AuxPowerSystem.Deflector}>{language.systemNames[AuxPowerSystem.Deflector]}</Button>
                     </Choice>
                 </section>
-                <section>
+                <section className="cardSelect">
                     <PowerCardChoice ref="cards" visible={this.props.visible} />
                 </section>
-                <section>
+                <section className="cardLibrary">
                     Card library
                 </section>
             </system>
