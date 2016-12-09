@@ -17,8 +17,11 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
     animateEndTime: number;
     render() {
         return (
+            /*
             <Canvas ref="canvas" width={this.props.width} height={this.props.height} visible={this.props.visible}
                 onTap={this.onTap.bind(this)} onMouseDown={this.onMouseDown.bind(this)} draw={this.draw.bind(this)} />
+            */
+            <div />
         );
     }
     redraw() {

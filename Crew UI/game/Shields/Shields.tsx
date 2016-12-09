@@ -55,7 +55,7 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         return (
             <system id="shields" className={portrait ? 'portrait' : 'landscape'} style={{ display: this.props.visible ? null : 'none' }}>
                 <section>
-                    <ShieldDisplay ref="shield" rotate={portrait} width={shieldWidth} height={shieldHeight} visible={this.props.visible} />
+                    <ShieldDisplay ref="shield" visible={this.props.visible} />
                 </section>
                 <section className="tools noGrow">
                     <div className="powerLevel" title="power allocated to this system">{this.state.power}</div>

@@ -16,9 +16,12 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
     }
     render() {
         return (
+            /*
             <Canvas ref="canvas" width={this.props.width} height={this.props.height} visible={this.props.visible}
                 onTouchStart={this.onTouchStart.bind(this)} onTouchEnd={this.onTouchEnd.bind(this)}
                 onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} draw={this.draw.bind(this)} />
+            */
+            <div />
         );
     }
     redraw() {

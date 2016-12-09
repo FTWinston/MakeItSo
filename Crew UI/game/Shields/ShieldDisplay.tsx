@@ -1,9 +1,6 @@
 ﻿interface IShieldDisplayProps {
     x?: number;
     y?: number;
-    width?: number;
-    height?: number;
-    rotate?: boolean;
     visible?: boolean;
     cellsTall?: number;
     cellsWide?: number;
@@ -14,7 +11,7 @@
 
 class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
     static defaultProps = {
-        x: 0, y: 0, rotate: false, cellsTall: 24, cellsWide: 36, minSwipeDist: 20, maxTapDist: 10, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff']
+        x: 0, y: 0, cellsTall: 24, cellsWide: 36, minSwipeDist: 20, maxTapDist: 10, colors: ['#cc0000', '#ff9900', '#cccc00', '#00cc00', '#0099ff', '#9900ff']
     }
     private cursor: ShieldCursor;
     private data: ShieldData;
@@ -26,8 +23,6 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         var startX = Math.floor(this.props.cellsWide / 2), startY = Math.floor(this.props.cellsTall / 2);
         this.cursor = new ShieldCursor(startX, startY);
         this.data = new ShieldData(this.props.cellsWide, this.props.cellsTall);
-        
-        this.readProps(this.props);
 
         for (var x=0; x<this.props.cellsWide; x++)
             for (var y=2; y<this.props.cellsTall; y++) {
@@ -43,6 +38,8 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         Hotkeys.register(39, this);
         Hotkeys.register(40, this);
         Hotkeys.register(' ', this);
+
+        this.updateSizes();
     }
     componentWillUnmount() {
         this.cursor = null;
@@ -56,27 +53,29 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         Hotkeys.unregister(40, this);
         Hotkeys.unregister(' ', this);
     }
-    componentWillReceiveProps(nextProps) {
-        this.readProps(nextProps);
+    componentDidUpdate(prevProps, prevState) {
+        this.updateSizes();
     }
-    private readProps(props) {
-        if (props.rotate) {
-            this.cellWidth = props.height / props.cellsWide;
-            this.cellHeight = props.width * 0.95 / props.cellsTall;
-            this.cursor.xscale = props.height / props.cellsWide;
-            this.cursor.yscale = props.width * 0.95 / props.cellsTall;
+    private updateSizes() {
+        let canvas = (this.refs['canvas'] as Canvas);
+
+        if (canvas.state.rotated) {
+            this.cellWidth = canvas.state.height / this.props.cellsWide;
+            this.cellHeight = canvas.state.width * 0.95 / this.props.cellsTall;
+            this.cursor.xscale = canvas.state.height / this.props.cellsWide;
+            this.cursor.yscale = canvas.state.width * 0.95 / this.props.cellsTall;
         }
         else {
-            this.cellWidth = props.width / props.cellsWide;
-            this.cellHeight = props.height * 0.95 / props.cellsTall;
-            this.cursor.xscale = props.width / props.cellsWide;
-            this.cursor.yscale = props.height * 0.95 / props.cellsTall;
+            this.cellWidth = canvas.state.width / this.props.cellsWide;
+            this.cellHeight = canvas.state.height * 0.95 / this.props.cellsTall;
+            this.cursor.xscale = canvas.state.width / this.props.cellsWide;
+            this.cursor.yscale = canvas.state.height * 0.95 / this.props.cellsTall;
         }
     }
     render() {
         return (
-            <Canvas ref="canvas" width={this.props.width} height={this.props.height} visible={this.props.visible}
-                onTap={this.onTap.bind(this)} onSwipe={this.onSwipe.bind(this)} draw={this.draw.bind(this)} rotate={this.props.rotate} />
+            <Canvas ref="canvas" visible={this.props.visible}
+                onTap={this.onTap.bind(this)} onSwipe={this.onSwipe.bind(this)} draw={this.draw.bind(this)} autoRotate={true} />
         );
     }
     redraw() {
@@ -163,26 +162,30 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
     }
     isVisible() { return this.props.visible; }
     private moveUp() {
-        if (this.props.rotate)
+        let canvas = (this.refs['canvas'] as Canvas);
+        if (canvas.state.rotated)
             this.cursor.x = Math.max(this.cursor.x - 1, 0);
         else
             this.cursor.y = Math.max(this.cursor.y - 1, 0);
         this.redraw();
     }
     private moveDown() {
-        if (this.props.rotate)
+        let canvas = (this.refs['canvas'] as Canvas);
+        if (canvas.state.rotated)
             this.cursor.x = Math.min(this.cursor.x + 1, this.props.cellsWide - 2);
         else
             this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
     }
     private moveLeft() {
-        if (this.props.rotate)
+        let canvas = (this.refs['canvas'] as Canvas);
+        if (canvas.state.rotated)
             this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
         else
             this.cursor.x = Math.max(this.cursor.x - 1, 0);
     }
     private moveRight() {
-        if (this.props.rotate)
+        let canvas = (this.refs['canvas'] as Canvas);
+        if (canvas.state.rotated)
             this.cursor.y = Math.max(this.cursor.y - 1, 0);
         else
             this.cursor.x = Math.min(this.cursor.x + 1, this.props.cellsWide - 2);

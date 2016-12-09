@@ -1,14 +1,10 @@
 ﻿interface ICanvasProps {
-    width?: number;
-    height?: number;
     visible?: boolean;
-    style?: string;
-
     minSwipeDist?: number;
     maxSwipeTime?: number;
     maxTapDist?: number;
     maxTapTime?: number;
-    rotate?: boolean;
+    autoRotate?: boolean;
 
     draw?: (ctx: CanvasRenderingContext2D, width: number, height: number, time?: number) => void;
     onMouseDown?: (button: number, x: number, y: number) => void;
@@ -20,9 +16,19 @@
     onTouchEnd?: (x: number, y: number) => void;
 }
 
-class Canvas extends React.Component<ICanvasProps, {}> {
+interface ICanvasState {
+    rotated?: boolean;
+    width?: number;
+    height?: number;
+}
+
+class Canvas extends React.Component<ICanvasProps, ICanvasState> {
+    constructor(props) {
+        super(props);
+        this.state = { rotated: false, width: 100, height: 100 };
+    }
     static defaultProps = {
-        width: 300, height: 200, rotate: false, visible: true
+        autoRotate: false, visible: true
     }
     componentDidMount () {
         let component = this;
@@ -74,6 +80,18 @@ class Canvas extends React.Component<ICanvasProps, {}> {
         this.redraw();
     }
     componentDidUpdate (prevProps, prevState) {
+        let canvas = this.refs['canvas'] as HTMLCanvasElement;
+        let state: ICanvasState = {
+            width: canvas.offsetWidth,
+            height: canvas.offsetHeight
+        };
+        this.setState(state);
+        canvas.width = state.width;
+        canvas.height = state.height;
+
+        if (this.props.autoRotate)
+            this.setState({ rotated: state.width < state.height });
+        
         this.redraw();
     }
     redraw() {
@@ -85,23 +103,23 @@ class Canvas extends React.Component<ICanvasProps, {}> {
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         
         let width, height;
-        if (this.props.rotate) {
-            width = this.props.height;
-            height = this.props.width;
+        if (this.state.rotated) {
+            width = this.state.height;
+            height = this.state.width;
 
-            ctx.translate(this.props.width, 0);
+            ctx.translate(this.state.width, 0);
             ctx.rotate(Math.PI / 2);
         }
         else {
-            width = this.props.width;
-            height = this.props.height;
+            width = this.state.width;
+            height = this.state.height;
         }
 
         this.props.draw(ctx, width, height, time);
     }
     render() {
         return (
-            <canvas ref="canvas" width={this.props.width} height={this.props.height} style={this.props.style} />
+            <canvas ref="canvas" width={this.state.width} height={this.state.height} style={{ width: '100%', height: '100%' }} />
         );
     }
     getContext(): CanvasRenderingContext2D {
