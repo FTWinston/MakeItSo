@@ -1,6 +1,4 @@
 ﻿interface ISystemProps {
-    width: number;
-    height: number;
     visible: boolean;
 
     index: number;

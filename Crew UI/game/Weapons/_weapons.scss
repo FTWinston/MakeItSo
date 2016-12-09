@@ -4,9 +4,9 @@
 
 #weapons {
     & > section.select {
-        flex-grow: 2;
+        flex-grow: 3;
     }
     & > section.target {
-        flex-grow: 1;
+        flex-grow: 2;
     }
 }

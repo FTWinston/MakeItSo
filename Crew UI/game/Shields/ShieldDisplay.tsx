@@ -39,6 +39,7 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         Hotkeys.register(40, this);
         Hotkeys.register(' ', this);
 
+        this.rotated = false;
         this.updateSizes();
     }
     componentWillUnmount() {
@@ -59,7 +60,7 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
     private updateSizes() {
         let canvas = (this.refs['canvas'] as Canvas);
 
-        if (canvas.state.rotated) {
+        if (this.rotated) {
             this.cellWidth = canvas.state.height / this.props.cellsWide;
             this.cellHeight = canvas.state.width * 0.95 / this.props.cellsTall;
             this.cursor.xscale = canvas.state.height / this.props.cellsWide;
@@ -74,8 +75,8 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
     }
     render() {
         return (
-            <Canvas ref="canvas" visible={this.props.visible}
-                onTap={this.onTap.bind(this)} onSwipe={this.onSwipe.bind(this)} draw={this.draw.bind(this)} autoRotate={true} />
+            <Canvas ref="canvas" visible={this.props.visible} style={{width: '100%', height: '100%'}}
+                onTap={this.onTap.bind(this)} onSwipe={this.onSwipe.bind(this)} draw={this.draw.bind(this)} />
         );
     }
     redraw() {
@@ -97,7 +98,19 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
         
         this.redraw();
     }
+    rotated: boolean;
     draw(ctx, width, height) {
+        // if portrait, rotate everything
+        this.rotated = width < height;
+        if (this.rotated) {
+            ctx.translate(width, 0);
+            ctx.rotate(Math.PI / 2);
+
+            let tmp = height;
+            height = width;
+            width = tmp;
+        }
+
         this.drawBackground(ctx, width, height);
         
         var xBorder = this.cellWidth * 0.05, yBorder = this.cellHeight * 0.05;
@@ -162,30 +175,26 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
     }
     isVisible() { return this.props.visible; }
     private moveUp() {
-        let canvas = (this.refs['canvas'] as Canvas);
-        if (canvas.state.rotated)
+        if (this.rotated)
             this.cursor.x = Math.max(this.cursor.x - 1, 0);
         else
             this.cursor.y = Math.max(this.cursor.y - 1, 0);
         this.redraw();
     }
     private moveDown() {
-        let canvas = (this.refs['canvas'] as Canvas);
-        if (canvas.state.rotated)
+        if (this.rotated)
             this.cursor.x = Math.min(this.cursor.x + 1, this.props.cellsWide - 2);
         else
             this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
     }
     private moveLeft() {
-        let canvas = (this.refs['canvas'] as Canvas);
-        if (canvas.state.rotated)
+        if (this.rotated)
             this.cursor.y = Math.min(this.cursor.y + 1, this.props.cellsTall - 1);
         else
             this.cursor.x = Math.max(this.cursor.x - 1, 0);
     }
     private moveRight() {
-        let canvas = (this.refs['canvas'] as Canvas);
-        if (canvas.state.rotated)
+        if (this.rotated)
             this.cursor.y = Math.max(this.cursor.y - 1, 0);
         else
             this.cursor.x = Math.min(this.cursor.x + 1, this.props.cellsWide - 2);

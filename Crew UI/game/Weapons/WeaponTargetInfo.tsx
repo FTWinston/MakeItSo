@@ -1,6 +1,4 @@
 ﻿interface IWeaponTargetInfoProps {
-    width: number;
-    height: number;
     visible: boolean;
     target?: WeaponTarget;
 }
@@ -17,7 +15,7 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
     render() {
         return (
             /*
-            <Canvas ref="canvas" width={this.props.width} height={this.props.height} visible={this.props.visible}
+            <Canvas ref="canvas" visible={this.props.visible} style={{width: '100%', height: '100%'}}
                 onTouchStart={this.onTouchStart.bind(this)} onTouchEnd={this.onTouchEnd.bind(this)}
                 onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} draw={this.draw.bind(this)} />
             */
@@ -43,7 +41,11 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
             return;
         this.setState({pressedSegment: null});
     }
+    width: number;
+    height: number;
     draw(ctx, width, height) {
+        this.width = width;
+        this.height = height;
         ctx.clearRect(0, 0, width, height);
         
         if (this.props.target != null)
@@ -131,7 +133,7 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
         ctx.fillText('fire', cx, cy);
     }
     private checkClick(x, y) {
-        var cx = this.props.width / 2, cy = this.props.height / 2;
+        var cx = this.width / 2, cy = this.height / 2;
         var outerRadius = Math.min(cx, cy) * 0.99, innerRadius = outerRadius * 0.3;
         
         var dist = Math.sqrt((cx - x)*(cx - x) + (cy - y)*(cy - y));

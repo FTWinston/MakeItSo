@@ -16,16 +16,13 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
             this.props.registerCallback(this.props.index, undefined);
     }
     render() {
-        var selectWidth = this.props.width * 0.6;
-        var infoWidth = this.props.width - selectWidth;
-        
         return (
             <system id="weapons" style={{ display: this.props.visible ? null : 'none' }}>
                 <section className="select">
-                    <WeaponTargetSelect ref="select" width={selectWidth} height={this.props.height} visible={this.props.visible} targetSelected={this.targetSelected.bind(this) } />
+                    <WeaponTargetSelect ref="select" visible={this.props.visible} targetSelected={this.targetSelected.bind(this) } />
                 </section>
                 <section className="target">
-                    <WeaponTargetInfo ref="target" width={infoWidth} height={this.props.height} visible={this.props.visible} target={this.state.target} />
+                    <WeaponTargetInfo ref="target" visible={this.props.visible} target={this.state.target} />
                 </section>
             </system>
         );

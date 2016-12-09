@@ -38,6 +38,7 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         }
     }
     render() {
+        /*
         let portrait = this.props.width < this.props.height, shieldWidth: number, shieldHeight: number, focusClasses: string, focusDropdown: DropdownSettings;
         if (portrait) {
             shieldWidth = this.props.width;
@@ -51,7 +52,9 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
             focusClasses = 'focus forceVertical';
             focusDropdown = null;
         }
-        
+        */
+        let portrait = false, focusClasses = 'focus forceVertical', focusDropdown = null;
+
         return (
             <system id="shields" className={portrait ? 'portrait' : 'landscape'} style={{ display: this.props.visible ? null : 'none' }}>
                 <section>
