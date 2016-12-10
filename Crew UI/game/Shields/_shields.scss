@@ -4,11 +4,19 @@
 
 #shields {
     & > section.tools {
+        display: flex;
         @include landscape() {
             width: 12em;
+            flex-direction: column;
         }
         @include portrait() {
             height: 6em;
+            flex-direction: row;
+            justify-content: space-around;
+            & > * {
+                flex-basis: 0px;
+                flex-grow: 1;
+            }
         }
     }
 
@@ -62,6 +70,13 @@
             @include media-height-down(400px) {
                 font-size: 0.5em;
             }
+        }
+    }
+
+    @include portrait() {
+        choice.focus, buttongroup.toggler {
+            display: inline-block;
+            margin-top: 0em;
         }
     }
 }

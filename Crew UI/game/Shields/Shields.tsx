@@ -38,22 +38,7 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
         }
     }
     render() {
-        /*
-        let portrait = this.props.width < this.props.height, shieldWidth: number, shieldHeight: number, focusClasses: string, focusDropdown: DropdownSettings;
-        if (portrait) {
-            shieldWidth = this.props.width;
-            shieldHeight = Math.round(this.props.height * 0.85);
-            focusClasses = 'focus forceDropdown';
-            focusDropdown = { label: language.shieldsCharge, popUpwards: true };
-        }
-        else {
-            shieldWidth = Math.round(this.props.width * 0.8);
-            shieldHeight = this.props.height;
-            focusClasses = 'focus forceVertical';
-            focusDropdown = null;
-        }
-        */
-        let portrait = false, focusClasses = 'focus forceVertical', focusDropdown = null;
+        let portrait = false, focusClasses = 'focus landscapeVertical portraitDropdown', focusDropdown = { label: language.shieldsCharge, popUpwards: true };
 
         return (
             <system id="shields" style={{ display: this.props.visible ? null : 'none' }}>
@@ -62,7 +47,7 @@ class Shields extends React.Component<ISystemProps, IShieldState> implements ISy
                 </section>
                 <section className="tools noGrow">
                     <div className="powerLevel" title="power allocated to this system">{this.state.power}</div>
-                    <ButtonGroup class="toggler" color={this.state.enabled ? "3" : "4"} caption={this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}>
+                    <ButtonGroup class="toggler" color={this.state.enabled ? "3" : "4"} prompt={this.state.enabled ? language.shieldsEnabled : language.shieldsDisabled}>
                         <Button type={ButtonType.Push} action="+shields" visible={!this.state.enabled} disabled={this.state.power == 0}>{language.shieldsToggleOn}</Button>
                         <Button type={ButtonType.Confirm} action="-shields" visible={this.state.enabled}>{language.shieldsToggleOff}</Button>
                     </ButtonGroup>

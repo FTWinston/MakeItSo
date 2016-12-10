@@ -20,26 +20,31 @@ buttonGroup[data-caption]::before, choice[data-caption]::before {
     white-space: nowrap;
 }
 
-choice prompt, choice description {
-	display:block;
+buttonGroup prompt, choice prompt {
+    display:block;
 	padding-top: 0.5em;
 	padding-bottom: 0.25em;
 }
 
-choice description {
-    padding-left: 1em;
+choice {
+    description {
+	    display:block;
+	    padding-top: 0.5em;
+	    padding-bottom: 0.25em;
+        padding-left: 1em;
 
-    &::before {
-        content: "\2022  ";
+        &::before {
+            content: "\2022  ";
+        }
+    }
+
+    clicker.expand {
+        display: none;
     }
 }
 
 choice clicker, .table clicker, buttongroup.inline clicker {
 	@include border-radius(0);
-}
-
-choice clicker.expand {
-    display: none;
 }
 
 row > clicker {
@@ -60,8 +65,10 @@ buttongroup.inline clicker:last-of-type, buttongroup.inline clicker.last {
 
 @mixin choice-vertical() {
     clicker {
-        display: block;
-        
+        &:not(.expand) {
+            display: block;
+        }
+
         &.first {
             @include border-radius-top(1.5em);
             @include border-radius-bottom-left(0);
@@ -85,6 +92,7 @@ buttongroup.inline clicker:last-of-type, buttongroup.inline clicker.last {
         }
     }
     clicker.expand {
+        display: initial;
         min-width: 2.5em;
     }
     &:not(.forceVertical) clicker {
@@ -135,21 +143,20 @@ buttongroup.inline clicker:last-of-type, buttongroup.inline clicker.last {
     choice.xsVertical, table.xsVertical {
         @include choice-vertical();
     }
-    choice.xsDropdown {
-        @include choice-dropdown();
-    }
 }
 
 choice.forceVertical, table.forceVertical {
     @include choice-vertical();
 }
 
-choice.forceDropdown {
-    @include choice-dropdown();
-}
-
 @include landscape() {
     choice.landscapeVertical, table.landscapeVertical {
         @include choice-vertical();
+    }
+}
+
+@include portrait() {
+    choice.portraitDropdown {
+        @include choice-dropdown();
     }
 }

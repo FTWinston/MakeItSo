@@ -28,7 +28,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
         return (
             <system id="helm" style={{ display: this.props.visible ? null : 'none' }}>
                 <section>
-                    <ButtonGroup inline={true} color="1" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} caption={language.helmRotation}>
+                    <ButtonGroup inline={true} color="1" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} prompt={language.helmRotation}>
                         <row>
                             <spacer></spacer>
                             <Button type={ButtonType.Held} hotkey="W" startAction="+down" stopAction="-down">{language.helmRotateDown}</Button>
@@ -62,7 +62,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                 
                     <AxisInput visible={this.props.inputMode == InputMode.TouchscreenOnly} direction="vertical" color="2" scale={0.02} movementCallback={this.touchForwardBack} />
                 
-                    <ButtonGroup inline={true} color="3" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} caption={language.helmTranslation}>
+                    <ButtonGroup inline={true} color="3" visible={this.props.inputMode == InputMode.ButtonsWithKeyboardShortcuts} prompt={language.helmTranslation}>
                         <row>
                             <spacer></spacer>
                             <Button type={ButtonType.Held} hotkey="I" startAction="+moveup" stopAction="-moveup">{language.helmTranslateUp}</Button>
@@ -82,7 +82,7 @@ class Helm extends React.Component<ISystemProps, IHelmState> implements ISystem 
                 
                     <AxisInput visible={this.props.inputMode == InputMode.TouchscreenOnly} direction="both" caption={language.helmTranslation} scale={0.02} color="3" movementCallback={this.touchTranslation} />
                 
-                    <ButtonGroup inline={true} color="4" caption={language.helmWarpFactor}>
+                    <ButtonGroup inline={true} color="4" prompt={language.helmWarpFactor}>
                         <row>
                             <Button type={ButtonType.Push} hotkey="T" action="warpup">{language.helmWarpIncrease}</Button>
                         </row>

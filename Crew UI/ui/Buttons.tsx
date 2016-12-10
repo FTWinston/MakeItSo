@@ -244,7 +244,7 @@ interface IButtonGroupProps {
     disabled?: boolean;
     inline?: boolean;
     visible?: boolean;
-    caption?: string;
+    prompt?: string;
     class?: string;
     children?: React.ReactElement<any>[];
 }
@@ -282,7 +282,8 @@ class ButtonGroup extends React.Component<IButtonGroupProps, {}> {
             classes += ' table';
         
         return (
-            <buttonGroup className={classes} data-caption={this.props.caption} style={{display: this.props.visible ? null : 'none'}}>
+            <buttonGroup className={classes} style={{display: this.props.visible ? null : 'none'}}>
+                { this.props.prompt == null ? '' : <prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt> }
                 {children}
             </buttonGroup>
         );
