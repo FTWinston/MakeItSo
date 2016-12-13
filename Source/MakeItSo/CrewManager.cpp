@@ -869,6 +869,8 @@ void UCrewManager::SendAllCrewData()
 	SendShieldFocus();
 
 	SendAuxPower();
+	SendCardChoice();
+	// TODO: send card library
 }
 
 void UCrewManager::DetermineViewTarget(const char* targetIdentifier)
@@ -943,6 +945,26 @@ void UCrewManager::SendAuxPower()
 #else
 	char buffer[8];
 	std::snprintf(buffer, sizeof(buffer), "aux %i", (int)auxBoostSystem);
+	SendCrewMessage(ESystem::PowerManagement, buffer);
+#endif
+}
+
+void UCrewManager::SetCardChoice(int card1, int card2, int card3)
+{
+	cardChoice[0] = card1;
+	cardChoice[1] = card2;
+	cardChoice[2] = card3;
+	SendCardChoice();
+}
+
+void UCrewManager::SendCardChoice()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("choice %i %i %i"), cardChoice[0], cardChoice[1], cardChoice[2]);
+	SendCrewMessage(ESystem::PowerManagement, message.c_str());
+#else
+	char buffer[24];
+	std::snprintf(buffer, sizeof(buffer), "choice %i %i %i", cardChoice[0], cardChoice[1], cardChoice[2]);
 	SendCrewMessage(ESystem::PowerManagement, buffer);
 #endif
 }

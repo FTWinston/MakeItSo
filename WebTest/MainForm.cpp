@@ -123,13 +123,18 @@ System::Void WebTest::MainForm::btnBreakWire_Click(System::Object^  sender, Syst
 	*/
 }
 
-System::Void WebTest::MainForm::btnBreakNode_Click(System::Object^  sender, System::EventArgs^  e)
+System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	/*
-	int node = 52 + rand() % 8;
-	std::string command = "break ";
-	command += std::to_string(node);
+	int card1 = rand() % 7;
+	int card2, card3;
 
-	crewManager->SendCrewMessage(UCrewManager::ESystem::PowerManagement, command.c_str());
-	*/
+	do {
+		card2 = rand() % 7;
+	} while (card2 == card1);
+
+	do {
+		card3 = rand() % 7;
+	} while (card3 == card2 || card3 == card1);
+
+	crewManager->SetCardChoice(card1, card2, card3);
 }

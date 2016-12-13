@@ -105,8 +105,12 @@
     powerAux: 'AUX power',
     powerAuxTarget: 'Route AUX power to:',
     powerCards: [
-        { name: 'Card 1', desc: 'Does some stuff' },
-        { name: 'Card 2', desc: 'Does more stuff' },
-        { name: 'Card 3', desc: 'Does even more stuff' },
+        { name: 'Card 1', desc: 'Does some stuff', rarity: 1 },
+        { name: 'Card 2', desc: 'Does more stuff', rarity: 1 },
+        { name: 'Card 3', desc: 'Does even more stuff', rarity: 2 },
+        { name: 'Card 4', desc: 'Does some things', rarity: 1 },
+        { name: 'Card 5', desc: 'Does more things', rarity: 2 },
+        { name: 'Card 6', desc: 'Does even more things', rarity: 3 },
+        { name: 'Card 7', desc: 'Doesn\'t do very much', rarity: 1 },
     ]
 }

@@ -62,6 +62,7 @@ public:
 	
 	static UCrewManager *Instance;
 
+	void SetCardChoice(int card1, int card2, int card3);
 private:
 	void PauseGame(bool state);
 	void AllocateListenPort();
@@ -107,6 +108,8 @@ private:
 	// power management
 	void SendAuxPower();
 	ESystem auxBoostSystem;
+	void SendCardChoice();
+	int cardChoice[3];
 };
 
 class ConnectionInfo

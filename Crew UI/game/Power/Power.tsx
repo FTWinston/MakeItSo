@@ -8,13 +8,14 @@ const enum AuxPowerSystem {
 }
 
 interface IPowerState {
-    auxBoost?: AuxPowerSystem
+    auxBoost?: AuxPowerSystem;
+    cardChoice?: number[];
 }
 
 class Power extends React.Component<ISystemProps, IPowerState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { auxBoost: AuxPowerSystem.Engines };
+        this.state = { auxBoost: AuxPowerSystem.Engines, cardChoice: [] };
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
@@ -47,9 +48,7 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                         <Button type={ButtonType.Toggle} ref="auxDeflector" startAction={"aux " + AuxPowerSystem.Deflector}>{language.systemNames[AuxPowerSystem.Deflector]}</Button>
                     </Choice>
                 </section>
-                <section className="cardSelect">
-                    <PowerCardChoice ref="cards" visible={this.props.visible} />
-                </section>
+                <PowerCardChoice ref="cards" visible={this.props.visible} cards={this.state.cardChoice} />
                 <section className="cardLibrary">
                     Card library
                 </section>
@@ -60,6 +59,11 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
         switch (msg) {
             case 'aux':
                 this.setState({ auxBoost: (parseInt(data) as AuxPowerSystem) });
+                return true;
+            case 'choice':
+                console.log('choice data', data);
+                let cards = data.split(' ').map(function(val) { return parseInt(val) });
+                this.setState({ cardChoice: cards });
                 return true;
             default:
                 return false;

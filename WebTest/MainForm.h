@@ -39,7 +39,7 @@ namespace WebTest {
 
 	private: System::Windows::Forms::GroupBox^  groupBox1;
 	private: System::Windows::Forms::Button^  btnShieldDamage;
-	private: System::Windows::Forms::Button^  btnBreakNode;
+	private: System::Windows::Forms::Button^  btnChooseCards;
 	private: System::Windows::Forms::Button^  btnBreakWire;
 	private: System::Windows::Forms::Button^  btnShieldBlock;
 	private: System::Windows::Forms::GroupBox^  groupBox2;
@@ -67,7 +67,7 @@ namespace WebTest {
 			this->lblAddress = (gcnew System::Windows::Forms::Label());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->btnShieldDamage = (gcnew System::Windows::Forms::Button());
-			this->btnBreakNode = (gcnew System::Windows::Forms::Button());
+			this->btnChooseCards = (gcnew System::Windows::Forms::Button());
 			this->btnBreakWire = (gcnew System::Windows::Forms::Button());
 			this->btnShieldBlock = (gcnew System::Windows::Forms::Button());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
@@ -92,7 +92,7 @@ namespace WebTest {
 			// groupBox1
 			// 
 			this->groupBox1->Controls->Add(this->btnShieldDamage);
-			this->groupBox1->Controls->Add(this->btnBreakNode);
+			this->groupBox1->Controls->Add(this->btnChooseCards);
 			this->groupBox1->Controls->Add(this->btnBreakWire);
 			this->groupBox1->Controls->Add(this->btnShieldBlock);
 			this->groupBox1->Location = System::Drawing::Point(12, 168);
@@ -114,13 +114,13 @@ namespace WebTest {
 			// 
 			// btnBreakNode
 			// 
-			this->btnBreakNode->Location = System::Drawing::Point(122, 48);
-			this->btnBreakNode->Name = L"btnBreakNode";
-			this->btnBreakNode->Size = System::Drawing::Size(110, 23);
-			this->btnBreakNode->TabIndex = 2;
-			this->btnBreakNode->Text = L"Break power node";
-			this->btnBreakNode->UseVisualStyleBackColor = true;
-			this->btnBreakNode->Click += gcnew System::EventHandler(this, &MainForm::btnBreakNode_Click);
+			this->btnChooseCards->Location = System::Drawing::Point(122, 48);
+			this->btnChooseCards->Name = L"btnBreakNode";
+			this->btnChooseCards->Size = System::Drawing::Size(110, 23);
+			this->btnChooseCards->TabIndex = 2;
+			this->btnChooseCards->Text = L"Send card choice";
+			this->btnChooseCards->UseVisualStyleBackColor = true;
+			this->btnChooseCards->Click += gcnew System::EventHandler(this, &MainForm::btnChooseCards_Click);
 			// 
 			// btnBreakWire
 			// 
@@ -210,6 +210,6 @@ namespace WebTest {
 		System::Void btnShieldBlock_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnShieldDamage_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnBreakWire_Click(System::Object^  sender, System::EventArgs^  e);
-		System::Void btnBreakNode_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e);
 };
 }
