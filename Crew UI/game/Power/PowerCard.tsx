@@ -12,7 +12,7 @@ class PowerCard extends React.Component<IPowerCardProps, {}> {
 
         return (
             <card data-id={this.props.cardID} data-rarity={data.rarity}>
-                <title>{data.name}</title>
+                <name>{data.name}</name>
                 <description>{data.desc}</description>
             </card>
         );

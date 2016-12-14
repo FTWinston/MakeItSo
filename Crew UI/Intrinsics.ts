@@ -12,5 +12,6 @@
         touchArea: { id?: string, className?: string, style?: Object, ref: string };
         options: { className?: string };
         card: { className?: string };
+        name: {  };
     }
 }

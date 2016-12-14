@@ -48,7 +48,10 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                         <Button type={ButtonType.Toggle} ref="auxDeflector" startAction={"aux " + AuxPowerSystem.Deflector}>{language.systemNames[AuxPowerSystem.Deflector]}</Button>
                     </Choice>
                 </section>
-                <PowerCardChoice ref="cards" visible={this.props.visible} cards={this.state.cardChoice} />
+                <section className="cardSelect">
+                    <p>Select a card to add to your library</p>
+                    <PowerCardChoice ref="cards" visible={this.props.visible} cards={this.state.cardChoice} />
+                </section>
                 <section className="cardLibrary">
                     Card library
                 </section>
@@ -61,7 +64,6 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 this.setState({ auxBoost: (parseInt(data) as AuxPowerSystem) });
                 return true;
             case 'choice':
-                console.log('choice data', data);
                 let cards = data.split(' ').map(function(val) { return parseInt(val) });
                 this.setState({ cardChoice: cards });
                 return true;

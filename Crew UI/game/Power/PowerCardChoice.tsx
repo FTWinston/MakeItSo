@@ -5,14 +5,14 @@
     
 class PowerCardChoice extends React.Component<IPowerCardChoiceProps, {}> {
     render() {
-        var cards = this.props.cards.map(function(id, index) {
+        let cards = this.props.cards.map(function(id, index) {
             return <PowerCard cardID={id} key={index} />;
         });
 
         return (
-            <section className="cardSelect">
+            <div>
                 {cards}
-            </section>
+            </div>
         );
     }
 }
