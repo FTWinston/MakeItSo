@@ -1,8 +1,14 @@
 ﻿interface IPowerCardProps {
     cardID?: number;
+    fade?: boolean;
+    highlight?: boolean;
+    onSelected?: (card: PowerCard) => void;
 }
 
 class PowerCard extends React.Component<IPowerCardProps, {}> {
+    static defaultProps = {
+        fade: false, highlight: false
+    };
     render() {
         let data;
         if (this.props.cardID < 0 || this.props.cardID >= language.powerCards.length)
@@ -10,11 +16,17 @@ class PowerCard extends React.Component<IPowerCardProps, {}> {
         else
             data = language.powerCards[this.props.cardID];
 
+        let classes = this.props.fade ? 'fade' : this.props.highlight ? 'highlight' : null;
         return (
-            <card data-id={this.props.cardID} data-rarity={data.rarity}>
+            <card data-id={this.props.cardID} data-rarity={data.rarity} className={classes} onClick={this.clicked.bind(this) }>
                 <name>{data.name}</name>
                 <description>{data.desc}</description>
             </card>
         );
+    }
+    clicked() {
+        if (this.props.onSelected == null)
+            return;
+        this.props.onSelected(this);
     }
 }

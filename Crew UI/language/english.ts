@@ -104,6 +104,7 @@
 
     powerAux: 'AUX power',
     powerAuxTarget: 'Route AUX power to:',
+    powerCardSelect: 'Select a card to add to your library:',
     powerCards: [
         { name: 'Card 1', desc: 'Does some stuff', rarity: 1 },
         { name: 'Card 2', desc: 'Does more stuff', rarity: 1 },

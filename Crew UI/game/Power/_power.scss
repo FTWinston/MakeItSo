@@ -64,8 +64,16 @@
             white-space: pre-wrap;
         }
 
-        &:hover > name {
-            text-decoration: underline;
+        &.fade {
+            opacity: 0.7;
+        }
+
+        &.highlight {
+            box-shadow: 0 0 15px 5px #0cf;
+        }
+
+        &:hover:not(.highlight) {
+            box-shadow: 0 0 15px 0px #ccf;
         }
 
         &:active {

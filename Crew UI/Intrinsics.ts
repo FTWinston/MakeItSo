@@ -11,7 +11,7 @@
         clicker: { id?: string, className?: string, style?: Object, type: string, onMouseDown?: any, onMouseUp?: any, onMouseLeave?: any, onClick?: any, onTouchStart?: any, onTouchEnd?: any, ref?: string };
         touchArea: { id?: string, className?: string, style?: Object, ref: string };
         options: { className?: string };
-        card: { className?: string };
+        card: { className?: string, onClick?: any };
         name: {  };
     }
 }

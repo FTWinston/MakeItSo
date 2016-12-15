@@ -49,7 +49,7 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                     </Choice>
                 </section>
                 <section className="cardSelect">
-                    <p>Select a card to add to your library</p>
+                    <p>{language.powerCardSelect}</p>
                     <PowerCardChoice ref="cards" visible={this.props.visible} cards={this.state.cardChoice} />
                 </section>
                 <section className="cardLibrary">
@@ -64,8 +64,11 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 this.setState({ auxBoost: (parseInt(data) as AuxPowerSystem) });
                 return true;
             case 'choice':
+                // TODO: send current selection if any selected. New choice available now. Coordinate timing of this message and change of choice cards, so it can be validated.
                 let cards = data.split(' ').map(function(val) { return parseInt(val) });
                 this.setState({ cardChoice: cards });
+                return true;
+            case 'pick':
                 return true;
             default:
                 return false;
