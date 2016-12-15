@@ -724,15 +724,6 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		shieldFocus = focus - '0';
 		SendShieldFocus();
 	}
-	else if (STARTS_WITH(info, "aux "))
-	{
-		char buffer[2];
-		EXTRACT(info, buffer, "aux ");
-
-		char aux = buffer[0];
-		auxBoostSystem = (ESystem)(aux - '0');
-		SendAuxPower();
-	}
 #ifndef WEB_SERVER_TEST
 	else
 	{
@@ -869,6 +860,7 @@ void UCrewManager::SendAllCrewData()
 	SendShieldFocus();
 
 	SendAuxPower();
+	SendPowerLevels();
 	SendCardChoice();
 	// TODO: send card library
 }
@@ -937,14 +929,35 @@ void UCrewManager::SendShieldFocus()
 #endif
 }
 
+void UCrewManager::IncrementAuxPower()
+{
+	if (auxPower >= MAX_AUX_POWER)
+		return;
+
+	auxPower++;
+	SendAuxPower();
+}
+
 void UCrewManager::SendAuxPower()
 {
 #ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("aux %i"), (int)auxBoostSystem);
+	auto message = FString::Printf(TEXT("aux %i"), auxPower);
 	SendCrewMessage(ESystem::PowerManagement, message.c_str());
 #else
 	char buffer[8];
-	std::snprintf(buffer, sizeof(buffer), "aux %i", (int)auxBoostSystem);
+	std::snprintf(buffer, sizeof(buffer), "aux %i", auxPower);
+	SendCrewMessage(ESystem::PowerManagement, buffer);
+#endif
+}
+
+void UCrewManager::SendPowerLevels()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("levels %.0f %.0f %.0f %.0f %.0f %.0f"), powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
+	SendCrewMessage(ESystem::PowerManagement, message.c_str());
+#else
+	char buffer[32];
+	std::snprintf(buffer, sizeof(buffer), "levels %.0f %.0f %.0f %.0f %.0f %.0f", powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
 	SendCrewMessage(ESystem::PowerManagement, buffer);
 #endif
 }

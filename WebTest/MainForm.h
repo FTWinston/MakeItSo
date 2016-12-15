@@ -40,7 +40,7 @@ namespace WebTest {
 	private: System::Windows::Forms::GroupBox^  groupBox1;
 	private: System::Windows::Forms::Button^  btnShieldDamage;
 	private: System::Windows::Forms::Button^  btnChooseCards;
-	private: System::Windows::Forms::Button^  btnBreakWire;
+	private: System::Windows::Forms::Button^  btnAuxPower;
 	private: System::Windows::Forms::Button^  btnShieldBlock;
 	private: System::Windows::Forms::GroupBox^  groupBox2;
 	private: System::Windows::Forms::Button^  btnRemoveShips;
@@ -68,7 +68,7 @@ namespace WebTest {
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
 			this->btnShieldDamage = (gcnew System::Windows::Forms::Button());
 			this->btnChooseCards = (gcnew System::Windows::Forms::Button());
-			this->btnBreakWire = (gcnew System::Windows::Forms::Button());
+			this->btnAuxPower = (gcnew System::Windows::Forms::Button());
 			this->btnShieldBlock = (gcnew System::Windows::Forms::Button());
 			this->groupBox2 = (gcnew System::Windows::Forms::GroupBox());
 			this->btnUpdateShip = (gcnew System::Windows::Forms::Button());
@@ -93,7 +93,7 @@ namespace WebTest {
 			// 
 			this->groupBox1->Controls->Add(this->btnShieldDamage);
 			this->groupBox1->Controls->Add(this->btnChooseCards);
-			this->groupBox1->Controls->Add(this->btnBreakWire);
+			this->groupBox1->Controls->Add(this->btnAuxPower);
 			this->groupBox1->Controls->Add(this->btnShieldBlock);
 			this->groupBox1->Location = System::Drawing::Point(12, 168);
 			this->groupBox1->Name = L"groupBox1";
@@ -122,15 +122,15 @@ namespace WebTest {
 			this->btnChooseCards->UseVisualStyleBackColor = true;
 			this->btnChooseCards->Click += gcnew System::EventHandler(this, &MainForm::btnChooseCards_Click);
 			// 
-			// btnBreakWire
+			// btnAuxPower
 			// 
-			this->btnBreakWire->Location = System::Drawing::Point(6, 48);
-			this->btnBreakWire->Name = L"btnBreakWire";
-			this->btnBreakWire->Size = System::Drawing::Size(110, 23);
-			this->btnBreakWire->TabIndex = 2;
-			this->btnBreakWire->Text = L"Break power wire";
-			this->btnBreakWire->UseVisualStyleBackColor = true;
-			this->btnBreakWire->Click += gcnew System::EventHandler(this, &MainForm::btnBreakWire_Click);
+			this->btnAuxPower->Location = System::Drawing::Point(6, 48);
+			this->btnAuxPower->Name = L"btnAuxPower";
+			this->btnAuxPower->Size = System::Drawing::Size(110, 23);
+			this->btnAuxPower->TabIndex = 2;
+			this->btnAuxPower->Text = L"Boost Aux Power";
+			this->btnAuxPower->UseVisualStyleBackColor = true;
+			this->btnAuxPower->Click += gcnew System::EventHandler(this, &MainForm::btnAuxPower_Click);
 			// 
 			// btnShieldBlock
 			// 
@@ -209,7 +209,7 @@ namespace WebTest {
 		System::Void btnRemoveShips_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnShieldBlock_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnShieldDamage_Click(System::Object^  sender, System::EventArgs^  e);
-		System::Void btnBreakWire_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e);
 };
 }

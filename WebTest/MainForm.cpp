@@ -112,15 +112,9 @@ System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, S
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Shields, command.c_str());
 }
 
-System::Void WebTest::MainForm::btnBreakWire_Click(System::Object^  sender, System::EventArgs^  e)
+System::Void WebTest::MainForm::btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	/*
-	int wire = rand() % 52;
-	std::string command = "break ";
-	command += std::to_string(wire);
-
-	crewManager->SendCrewMessage(UCrewManager::ESystem::PowerManagement, command.c_str());
-	*/
+	crewManager->IncrementAuxPower();
 }
 
 System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e)

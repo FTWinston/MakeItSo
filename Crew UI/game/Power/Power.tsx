@@ -1,21 +1,22 @@
-const enum AuxPowerSystem {
+const enum PowerSystem {
     Engines = 0,
-    Sensors = 3,
-    Weapons = 4,
-    Shields = 5,
-    DamageControl = 6,
-    Deflector = 8,
+    Sensors,
+    Weapons,
+    Shields,
+    DamageControl,
+    Deflector,
 }
 
 interface IPowerState {
-    auxBoost?: AuxPowerSystem;
+    auxPower?: number;  
+    powerLevels?: number[];
     cardChoice?: number[];
 }
 
 class Power extends React.Component<ISystemProps, IPowerState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { auxBoost: AuxPowerSystem.Engines, cardChoice: [] };
+        this.state = { auxPower: 0, powerLevels: [100, 100, 100, 100, 100, 100], cardChoice: [] };
     }
     componentDidMount() {
         if (this.props.registerCallback != null)
@@ -25,32 +26,23 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, undefined);
     }
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.focus != this.state.auxBoost) {
-            (this.refs['auxEngines'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Engines);
-            (this.refs['auxSensors'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Sensors);
-            (this.refs['auxWeapons'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Weapons);
-            (this.refs['auxShields'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Shields);
-            (this.refs['auxDamage'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.DamageControl);
-            (this.refs['auxDeflector'] as Button).setActive(this.state.auxBoost == AuxPowerSystem.Deflector);
-        }
-    }
     render() {
         return (
             <system id="power" style={{ display: this.props.visible ? null : 'none' }}>
-                <section className="aux noGrow">
-                    <Choice class="landscapeVertical" color="1" inline={true} prompt={language.powerAuxTarget}>
-                        <Button type={ButtonType.Toggle} ref="auxEngines" startAction={"aux " + AuxPowerSystem.Engines}>{language.systemNames[AuxPowerSystem.Engines]}</Button>
-                        <Button type={ButtonType.Toggle} ref="auxSensors" startAction={"aux " + AuxPowerSystem.Sensors}>{language.systemNames[AuxPowerSystem.Sensors]}</Button>
-                        <Button type={ButtonType.Toggle} ref="auxWeapons" startAction={"aux " + AuxPowerSystem.Weapons}>{language.systemNames[AuxPowerSystem.Weapons]}</Button>
-                        <Button type={ButtonType.Toggle} ref="auxShields" startAction={"aux " + AuxPowerSystem.Shields}>{language.systemNames[AuxPowerSystem.Shields]}</Button>
-                        <Button type={ButtonType.Toggle} ref="auxDamage" startAction={"aux " + AuxPowerSystem.DamageControl}>{language.systemNames[AuxPowerSystem.DamageControl]}</Button>
-                        <Button type={ButtonType.Toggle} ref="auxDeflector" startAction={"aux " + AuxPowerSystem.Deflector}>{language.systemNames[AuxPowerSystem.Deflector]}</Button>
+                <section className="levels noGrow">
+                    <p className="bigValue">{language.powerAux}: <span className="auxPowerLevel">{this.state.auxPower}</span></p>
+                    <Choice class="landscapeVertical" color="1" inline={true} prompt={language.powerLevels} disabled={true}>
+                        <Button type={ButtonType.Toggle}>{language.powerSystems[PowerSystem.Engines] + ': ' + this.state.powerLevels[0] + '%'}</Button>
+                        <Button type={ButtonType.Toggle}>{language.powerSystems[PowerSystem.Sensors] + ': ' + this.state.powerLevels[1] + '%'}</Button>
+                        <Button type={ButtonType.Toggle}>{language.powerSystems[PowerSystem.Weapons] + ': ' + this.state.powerLevels[2] + '%'}</Button>
+                        <Button type={ButtonType.Toggle}>{language.powerSystems[PowerSystem.Shields] + ': ' + this.state.powerLevels[3] + '%'}</Button>
+                        <Button type={ButtonType.Toggle}>{language.powerSystems[PowerSystem.DamageControl] + ': ' + this.state.powerLevels[4] + '%'}</Button>
+                        <Button type={ButtonType.Toggle}>{language.powerSystems[PowerSystem.Deflector] + ': ' + this.state.powerLevels[5] + '%'}</Button>
                     </Choice>
                 </section>
                 <section className="cardSelect">
                     <p>{language.powerCardSelect}</p>
-                    <PowerCardChoice ref="cards" visible={this.props.visible} cards={this.state.cardChoice} />
+                    <PowerCardChoice ref="cards" cards={this.state.cardChoice} />
                 </section>
                 <section className="cardLibrary">
                     Card library
@@ -61,7 +53,11 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
     receiveMessage(msg, data) {
         switch (msg) {
             case 'aux':
-                this.setState({ auxBoost: (parseInt(data) as AuxPowerSystem) });
+                this.setState({ auxPower: parseInt(data) });
+                return true;
+            case 'levels':
+                let levels = data.split(' ').map(function(val) { return parseInt(val) });
+                this.setState({ powerLevels: levels });
                 return true;
             case 'choice':
                 // TODO: send current selection if any selected. New choice available now. Coordinate timing of this message and change of choice cards, so it can be validated.

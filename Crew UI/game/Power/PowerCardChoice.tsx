@@ -1,5 +1,4 @@
 ﻿interface IPowerCardChoiceProps {
-    visible?: boolean;
     cards?: number[];
 }
 

@@ -47,6 +47,16 @@ public:
 		Everyone
 	};
 
+	enum EPowerSystem {
+		Power_Engines = 0,
+		Power_Sensors,
+		Power_Weapons,
+		Power_Shields,
+		Power_DamageControl,
+		Power_Deflector,
+		MAX_POWER_SYSTEMS
+	};
+
 	FString Init(AShipPlayerController *controller);
 	virtual void BeginDestroy();
 
@@ -62,6 +72,7 @@ public:
 	
 	static UCrewManager *Instance;
 
+	void IncrementAuxPower();
 	void SetCardChoice(int card1, int card2, int card3);
 private:
 	void PauseGame(bool state);
@@ -106,8 +117,11 @@ private:
 	int shieldFocus;
 
 	// power management
+	int auxPower;
+	const int MAX_AUX_POWER = 5;
+	float powerLevels[MAX_POWER_SYSTEMS];
 	void SendAuxPower();
-	ESystem auxBoostSystem;
+	void SendPowerLevels();
 	void SendCardChoice();
 	int cardChoice[3];
 };

@@ -13,5 +13,6 @@
         options: { className?: string };
         card: { className?: string, onClick?: any };
         name: {  };
+        cost: {  };
     }
 }
