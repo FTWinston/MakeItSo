@@ -1,12 +1,13 @@
-﻿interface IPowerCardChoiceProps {
+﻿interface IPowerCardGroupProps {
     cards?: number[];
+    cardSelected?: (number) => void;
 }
 
-interface IPowerCardChoiceState {
+interface IPowerCardGroupState {
     selectedID?: number;
 }
 
-class PowerCardChoice extends React.Component<IPowerCardChoiceProps, IPowerCardChoiceState> {
+class PowerCardGroup extends React.Component<IPowerCardGroupProps, IPowerCardGroupState> {
     constructor(props) {
         super(props);
         this.state = { selectedID: null };
@@ -31,6 +32,9 @@ class PowerCardChoice extends React.Component<IPowerCardChoiceProps, IPowerCardC
         );
     }
     cardSelected(card: PowerCard) {
-        this.setState({ selectedID: card.props.highlight ? null : card.props.cardID });
+        let selectedID = card.props.highlight ? null : card.props.cardID;
+        if (this.props.cardSelected != null)
+            this.props.cardSelected(selectedID);
+        this.setState({ selectedID: selectedID });
     }
 }

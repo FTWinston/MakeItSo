@@ -1,6 +1,7 @@
 ﻿@import '../../ui/borders';
 @import '../../ui/breakpoints';
 @import '../../ui/layout';
+@import '../../ui/colors';
 
 #power {
     & > section.levels {
@@ -10,10 +11,18 @@
         @include portrait() {
             height: 6em;
         }
+
+        clicker {
+            cursor: initial;
+            color: $btnColor1 !important;
+
+            .amount {
+                font-weight: bold;
+            }
+        }
     }
 
-    & > section.cardSelect {
-        flex-grow: 2;
+    & > section.cardSelect, section.cardLibrary {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -25,14 +34,21 @@
         }
 
         & > div {
-            flex-grow: 1;
             display: flex;
-            flex-wrap: nowrap;
-            justify-content: space-around;
-            align-items: stretch;
             & > card {
                 flex-grow: 1;
             }
+        }
+    }
+
+    & > section.cardSelect {
+        flex-grow: 2;
+
+        & > div {
+            flex-grow: 1;
+            flex-wrap: nowrap;
+            justify-content: space-around;
+            align-items: stretch;
 
             @include landscape() {
                 flex-direction: column;
@@ -45,6 +61,15 @@
 
     & > section.cardLibrary {
         flex-grow: 3;
+        
+        & > div {
+            flex-grow: 1;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start;
+            align-content: flex-start;
+        }
     }
 
     card {

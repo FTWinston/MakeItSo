@@ -105,6 +105,8 @@
     powerLevels: 'System power levels:',
     powerAux: 'AUX power',
     powerCardSelect: 'Select a card to add to your library:',
+    powerConfirmChoose: 'Add to library',
+    powerConfirmUse: 'Activate card',
     powerCards: [
         { name: 'Card 1', desc: 'Does some stuff', rarity: 1, cost: 1 },
         { name: 'Card 2', desc: 'Does more stuff', rarity: 1, cost: 1 },
@@ -114,5 +116,5 @@
         { name: 'Card 6', desc: 'Does even more things', rarity: 3, cost: 3 },
         { name: 'Card 7', desc: 'Doesn\'t do very much', rarity: 1, cost: 4 },
     ],
-    powerSystems: [ 'Engines', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Deflector' ],
+    powerSystems: [ 'Engines', 'Sensors', 'Weapons', 'Shields', 'Repairs', 'Deflector' ],
 }

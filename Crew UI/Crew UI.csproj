@@ -40,7 +40,7 @@
     <TypeScriptCompile Include="Intrinsics.ts" />
     <TypeScriptCompile Include="game\Power\Power.tsx" />
     <TypeScriptCompile Include="game\SystemContainer.tsx" />
-    <TypeScriptCompile Include="game\Power\PowerCardChoice.tsx" />
+    <TypeScriptCompile Include="game\Power\PowerCardGroup.tsx" />
     <TypeScriptCompile Include="game\Sensors\Sensors.tsx" />
     <TypeScriptCompile Include="game\Shields\Shields.tsx" />
     <TypeScriptCompile Include="game\Shields\ShieldBlock.ts" />
