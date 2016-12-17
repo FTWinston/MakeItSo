@@ -9,7 +9,8 @@
 
 #include <stdio.h>
 #include <tchar.h>
-#include <set>
+#include <vector>
+#include <queue>
 #include <string>
 
 #define MAKEITSO_API 
@@ -18,7 +19,8 @@
 #define GENERATED_BODY() 
 #define UFUNCTION(a, b) 
 
-#define TSet std::set
+#define TSet std::vector
+#define TQueue std::queue
 #define FString std::wstring
 
 class UObject {};

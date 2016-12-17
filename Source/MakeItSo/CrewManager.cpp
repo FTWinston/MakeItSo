@@ -8,6 +8,9 @@
 #include "KeyBindings.h"
 #else
 #include "stdafx.h"
+#include <iostream>
+#include <sstream>
+#include <iterator>
 #endif
 
 #include "CrewManager.h"
@@ -224,7 +227,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 #ifndef WEB_SERVER_TEST
 	currentConnections->Add(info);
 #else
-	currentConnections->insert(info);
+	currentConnections->insert(currentConnections->end(), info);
 #endif
 
 	// Send connection ID back to the client.
@@ -267,7 +270,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		controller->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
 	currentConnections->Remove(info);
 #else
-	currentConnections->erase(info);
+	currentConnections->erase(std::remove(currentConnections->begin(), currentConnections->end(), info), currentConnections->end());
 #endif
 
 	// decrement the counts of each system this user was using
@@ -724,6 +727,38 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		shieldFocus = focus - '0';
 		SendShieldFocus();
 	}
+	else if (STARTS_WITH(info, "pickCard "))
+	{
+		char buffer[8];
+		EXTRACT(info, buffer, "pickCard ");
+		int cardID = atoi(buffer);
+
+		TSet<int> cardChoice;
+#ifndef WEB_SERVER_TEST
+		if (!cardChoices.Peek(cardChoice))
+			return; // no cards to choose from
+#else
+		if (cardChoices.empty())
+			return; // no cards to choose from
+		cardChoice = cardChoices.front();
+#endif
+
+		if (cardChoice[0] != cardID && cardChoice[1] != cardID && cardChoice[2] != cardID)
+			return; // chosen card isn't part of the current choice
+
+#ifndef WEB_SERVER_TEST
+		cardChoices.Dequeue();
+#else
+		cardChoices.pop();
+#endif
+		cardLibrary.push_back(cardID);
+		SendCardChoice();
+		SendCardLibrary();
+	}
+	else if (STARTS_WITH(info, "useCard "))
+	{
+
+	}
 #ifndef WEB_SERVER_TEST
 	else
 	{
@@ -962,22 +997,60 @@ void UCrewManager::SendPowerLevels()
 #endif
 }
 
-void UCrewManager::SetCardChoice(int card1, int card2, int card3)
+void UCrewManager::AddCardChoice(int card1, int card2, int card3)
 {
-	cardChoice[0] = card1;
-	cardChoice[1] = card2;
-	cardChoice[2] = card3;
-	SendCardChoice();
+	TSet<int> choice;
+	choice.push_back(card1);
+	choice.push_back(card2);
+	choice.push_back(card3);
+
+	bool wasEmpty;
+#ifndef WEB_SERVER_TEST
+	wasEmpty = cardChoices.IsEmpty();
+	cardChoices.Enqueue(cardChoice);
+#else
+	wasEmpty = cardChoices.empty();
+	cardChoices.push(choice);
+#endif
+
+	if (wasEmpty)
+		SendCardChoice();
 }
 
 void UCrewManager::SendCardChoice()
 {
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("choice %i %i %i"), cardChoice[0], cardChoice[1], cardChoice[2]);
-	SendCrewMessage(ESystem::PowerManagement, message.c_str());
-#else
-	char buffer[24];
-	std::snprintf(buffer, sizeof(buffer), "choice %i %i %i", cardChoice[0], cardChoice[1], cardChoice[2]);
-	SendCrewMessage(ESystem::PowerManagement, buffer);
-#endif
+	if (cardChoices.empty())
+		SendCrewMessage(ESystem::PowerManagement, "choice ");
+	else
+	{
+		auto command = CombineIDs("choice ", cardChoices.front());
+		SendCrewMessage(ESystem::PowerManagement, command.c_str());
+	}
+}
+
+void UCrewManager::SendCardLibrary()
+{
+	auto command = CombineIDs("lib ", cardLibrary);
+	SendCrewMessage(ESystem::PowerManagement, command.c_str());
+}
+
+std::string UCrewManager::CombineIDs(const char *prefix, TSet<int> IDs)
+{
+	std::ostringstream os;
+	os << prefix;
+	
+	if (!IDs.empty())
+	{
+		bool first = true;
+		for (int id : IDs)
+		{
+			if (first)
+				first = false;
+			else
+				os << " ";
+
+			os << id;
+		}
+	}
+	return os.str();
 }

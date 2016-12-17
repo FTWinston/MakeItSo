@@ -130,5 +130,5 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 		card3 = rand() % 7;
 	} while (card3 == card2 || card3 == card1);
 
-	crewManager->SetCardChoice(card1, card2, card3);
+	crewManager->AddCardChoice(card1, card2, card3);
 }

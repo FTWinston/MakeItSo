@@ -44,7 +44,7 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                     </Choice>
                 </section>
                 <section className="cardSelect">
-                    <p>{language.powerCardSelect}</p>
+                    <p>{this.state.cardChoice.length == 0 ? language.powerCardWait : language.powerCardSelect}</p>
                     <PowerCardGroup cards={this.state.cardChoice} cardSelected={function (id) {this.setState({choiceCardID: id})}.bind(this)} />
                     <p><Button type={ButtonType.Push} color="4" disabled={this.state.choiceCardID == null} onClicked={this.chooseCard.bind(this)}>{language.powerConfirmChoose}</Button></p>
                 </section>
@@ -61,16 +61,24 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 this.setState({ auxPower: parseInt(data) });
                 return true;
             case 'levels':
-                let levels = data.split(' ').map(function(val) { return parseInt(val) });
+                let levels = data.split(' ').map(function (val) { return parseInt(val) });
                 this.setState({ powerLevels: levels });
                 return true;
             case 'choice':
-                let choice = data.split(' ').map(function(val) { return parseInt(val) });
-                this.setState({ cardChoice: choice });
+                if (data.length == 0)
+                    this.setState({ cardChoice: [] });
+                else {
+                    let choice = data.split(' ').map(function (val) { return parseInt(val) });
+                    this.setState({ cardChoice: choice });
+                }
                 return true;
             case 'lib':
-                let lib = data.split(' ').map(function(val) { return parseInt(val) });
-                this.setState({ cardLib: lib });
+                if (data.length == 0)
+                    this.setState({ cardLib: [] });
+                else {
+                    let lib = data.split(' ').map(function (val) { return parseInt(val) });
+                    this.setState({ cardLib: lib });
+                }
                 return true;
             default:
                 return false;
@@ -83,10 +91,10 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
     }
     private chooseCard() {
         let id = this.state.choiceCardID;
-        gameClient.server.send('pickcard ' + id);
+        gameClient.server.send('pickCard ' + id);
     }
     private useCard() {
         let id = this.state.libraryCardID;
-        gameClient.server.send('usecard ' + id);
+        gameClient.server.send('useCard ' + id);
     }
 }

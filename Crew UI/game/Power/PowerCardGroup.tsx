@@ -20,7 +20,7 @@ class PowerCardGroup extends React.Component<IPowerCardGroupProps, IPowerCardGro
         let choice = this;
         let selectedID = this.state.selectedID;
         let anySelected = selectedID != null;
-        
+
         let cards = this.props.cards.map(function (id, index) {
             return <PowerCard cardID={id} key={index} fade={anySelected && id != selectedID} highlight={id == selectedID} onSelected={choice.cardSelected.bind(choice) }/>;
         });

@@ -118,7 +118,7 @@ namespace WebTest {
 			this->btnChooseCards->Name = L"btnBreakNode";
 			this->btnChooseCards->Size = System::Drawing::Size(110, 23);
 			this->btnChooseCards->TabIndex = 2;
-			this->btnChooseCards->Text = L"Send card choice";
+			this->btnChooseCards->Text = L"Add card choice";
 			this->btnChooseCards->UseVisualStyleBackColor = true;
 			this->btnChooseCards->Click += gcnew System::EventHandler(this, &MainForm::btnChooseCards_Click);
 			// 

@@ -73,7 +73,7 @@ public:
 	static UCrewManager *Instance;
 
 	void IncrementAuxPower();
-	void SetCardChoice(int card1, int card2, int card3);
+	void AddCardChoice(int card1, int card2, int card3);
 private:
 	void PauseGame(bool state);
 	void AllocateListenPort();
@@ -123,7 +123,10 @@ private:
 	void SendAuxPower();
 	void SendPowerLevels();
 	void SendCardChoice();
-	int cardChoice[3];
+	void SendCardLibrary();
+	std::string CombineIDs(const char *prefix, TSet<int> cardIDs);
+	TQueue<TSet<int>> cardChoices;
+	TSet<int> cardLibrary;
 };
 
 class ConnectionInfo

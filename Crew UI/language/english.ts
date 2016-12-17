@@ -105,6 +105,7 @@
     powerLevels: 'System power levels:',
     powerAux: 'AUX power',
     powerCardSelect: 'Select a card to add to your library:',
+    powerCardWait: 'Please wait for new cards to become available.',
     powerConfirmChoose: 'Add to library',
     powerConfirmUse: 'Activate card',
     powerCards: [
