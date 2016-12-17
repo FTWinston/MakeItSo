@@ -124,6 +124,7 @@ private:
 	void SendPowerLevels();
 	void SendCardChoice();
 	void SendCardLibrary();
+	void ActivatePowerCard(int cardID);
 	std::string CombineIDs(const char *prefix, TSet<int> cardIDs);
 	TQueue<TSet<int>> cardChoices;
 	TSet<int> cardLibrary;

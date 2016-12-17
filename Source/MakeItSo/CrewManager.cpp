@@ -757,7 +757,20 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 	else if (STARTS_WITH(info, "useCard "))
 	{
+		char buffer[8];
+		EXTRACT(info, buffer, "useCard ");
+		int cardID = atoi(buffer);
 
+#ifndef WEB_SERVER_TEST
+		if (!cardLibrary.Contains(cardID))
+			return; // card not in library
+		cardLibrary.Remove(cardID);
+#else
+		if (std::find(cardLibrary.begin(), cardLibrary.end(), cardID) == cardLibrary.end())
+			return; // card not in library
+		cardLibrary.erase(std::remove(cardLibrary.begin(), cardLibrary.end(), cardID), cardLibrary.end());
+#endif
+		ActivatePowerCard(cardID);
 	}
 #ifndef WEB_SERVER_TEST
 	else
@@ -1053,4 +1066,9 @@ std::string UCrewManager::CombineIDs(const char *prefix, TSet<int> IDs)
 		}
 	}
 	return os.str();
+}
+
+void UCrewManager::ActivatePowerCard(int cardID)
+{
+	// ???
 }
