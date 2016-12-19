@@ -2,6 +2,7 @@
     cardID?: number;
     fade?: boolean;
     highlight?: boolean;
+    index?: number;
     onSelected?: (card: PowerCard) => void;
 }
 

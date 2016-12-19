@@ -1,10 +1,11 @@
 ﻿interface IPowerCardGroupProps {
     cards?: number[];
-    cardSelected?: (number) => void;
+    cardSelected?: (id: number, index: number) => void;
 }
 
 interface IPowerCardGroupState {
     selectedID?: number;
+    selectedIndex?: number;
 }
 
 class PowerCardGroup extends React.Component<IPowerCardGroupProps, IPowerCardGroupState> {
@@ -12,18 +13,8 @@ class PowerCardGroup extends React.Component<IPowerCardGroupProps, IPowerCardGro
         super(props);
         this.state = { selectedID: null };
     }
-    componentWillReceiveProps(nextProps) {
-        if (this.state.selectedID != null)
-            this.setState({ selectedID: null });
-    }
     render() {
-        let choice = this;
-        let selectedID = this.state.selectedID;
-        let anySelected = selectedID != null;
-
-        let cards = this.props.cards.map(function (id, index) {
-            return <PowerCard cardID={id} key={index} fade={anySelected && id != selectedID} highlight={id == selectedID} onSelected={choice.cardSelected.bind(choice) }/>;
-        });
+        let cards = this.props.cards.map(this.mapCard.bind(this));
 
         return (
             <div>
@@ -31,10 +22,20 @@ class PowerCardGroup extends React.Component<IPowerCardGroupProps, IPowerCardGro
             </div>
         );
     }
+    private mapCard(id, index) {
+        let selectedID = this.state.selectedID;
+        return <PowerCard cardID={id} index={index} key={index} fade={id != selectedID && selectedID != null} highlight={id == selectedID} onSelected={this.cardSelected.bind(this)} />;
+    }
     cardSelected(card: PowerCard) {
-        let selectedID = card.props.highlight ? null : card.props.cardID;
+        let alreadySelected = card.props.index == this.state.selectedIndex;
+        let selectedID = alreadySelected ? null : card.props.cardID;
+        let selectedIndex = alreadySelected ? null : card.props.index;
+
         if (this.props.cardSelected != null)
-            this.props.cardSelected(selectedID);
-        this.setState({ selectedID: selectedID });
+            this.props.cardSelected(selectedID, selectedIndex);
+        this.setState({ selectedID: selectedID, selectedIndex: selectedIndex });
+    }
+    clearSelection() {
+        this.setState({ selectedID: null, selectedIndex: null });
     }
 }

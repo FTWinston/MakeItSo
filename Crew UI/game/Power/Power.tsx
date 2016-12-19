@@ -45,11 +45,11 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 </section>
                 <section className="cardSelect">
                     <p>{this.state.cardChoice.length == 0 ? language.powerCardWait : language.powerCardSelect}</p>
-                    <PowerCardGroup cards={this.state.cardChoice} cardSelected={function (id) {this.setState({choiceCardID: id})}.bind(this)} />
+                    <PowerCardGroup ref="choice" cards={this.state.cardChoice} cardSelected={this.choiceCardHighlighted.bind(this)} />
                     <p><Button type={ButtonType.Push} color="4" disabled={this.state.choiceCardID == null} onClicked={this.chooseCard.bind(this)}>{language.powerConfirmChoose}</Button></p>
                 </section>
                 <section className="cardLibrary">
-                    <PowerCardGroup cards={this.state.cardLib} cardSelected={function (id) {this.setState({libraryCardID: id})}.bind(this)} />
+                    <PowerCardGroup ref="lib" cards={this.state.cardLib} cardSelected={this.libraryCardHighlighted.bind(this)} />
                     <p><Button type={ButtonType.Push} color="5" disabled={this.state.libraryCardID == null} onClicked={this.useCard.bind(this)}>{language.powerConfirmUse}</Button></p>
                 </section>
             </system>
@@ -65,6 +65,7 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 this.setState({ powerLevels: levels });
                 return true;
             case 'choice':
+                (this.refs['choice'] as PowerCardGroup).clearSelection();
                 if (data.length == 0)
                     this.setState({ cardChoice: [] });
                 else {
@@ -73,6 +74,7 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 }
                 return true;
             case 'lib':
+                (this.refs['lib'] as PowerCardGroup).clearSelection();
                 if (data.length == 0)
                     this.setState({ cardLib: [] });
                 else {
@@ -85,9 +87,18 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
         }
     }
     clearAllData() {
+        (this.refs['choice'] as PowerCardGroup).clearSelection();
+        (this.refs['lib'] as PowerCardGroup).clearSelection();
+
         this.setState({
             auxPower: 0, powerLevels: [100, 100, 100, 100, 100, 100], cardChoice: [], cardLib: [], choiceCardID: null, libraryCardID: null
         });
+    }
+    private choiceCardHighlighted(id: number, index: number) {
+        this.setState({choiceCardID: id});
+    }
+    private libraryCardHighlighted(id: number, index: number) {
+        this.setState({libraryCardID: id});
     }
     private chooseCard() {
         let id = this.state.choiceCardID;
