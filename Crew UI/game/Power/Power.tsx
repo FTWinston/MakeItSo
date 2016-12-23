@@ -30,6 +30,9 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
             this.props.registerCallback(this.props.index, undefined);
     }
     render() {
+        let disableChooseButton = this.state.choiceCardID == null;
+        let disableUseButton = this.state.libraryCardID == null; // TODO: detect "active" cards that have been used. Disable button if they are selected. Leave them in the library til they're used up, I guess?
+
         return (
             <system id="power" style={{ display: this.props.visible ? null : 'none' }}>
                 <section className="levels noGrow">
@@ -46,11 +49,11 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
                 <section className="cardSelect">
                     <p>{this.state.cardChoice.length == 0 ? language.powerCardWait : language.powerCardSelect}</p>
                     <PowerCardGroup ref="choice" cards={this.state.cardChoice} cardSelected={this.choiceCardHighlighted.bind(this)} />
-                    <p><Button type={ButtonType.Push} color="4" disabled={this.state.choiceCardID == null} onClicked={this.chooseCard.bind(this)}>{language.powerConfirmChoose}</Button></p>
+                    <p><Button type={ButtonType.Push} color="4" disabled={disableChooseButton} onClicked={this.chooseCard.bind(this)}>{language.powerConfirmChoose}</Button></p>
                 </section>
                 <section className="cardLibrary">
                     <PowerCardGroup ref="lib" cards={this.state.cardLib} cardSelected={this.libraryCardHighlighted.bind(this)} />
-                    <p><Button type={ButtonType.Push} color="5" disabled={this.state.libraryCardID == null} onClicked={this.useCard.bind(this)}>{language.powerConfirmUse}</Button></p>
+                    <p><Button type={ButtonType.Push} color="5" disabled={disableUseButton} onClicked={this.useCard.bind(this)}>{language.powerConfirmUse}</Button></p>
                 </section>
             </system>
         );
@@ -106,6 +109,10 @@ class Power extends React.Component<ISystemProps, IPowerState> implements ISyste
     }
     private useCard() {
         let id = this.state.libraryCardID;
+        
+        if (language.powerCards[id].cost > this.state.auxPower)
+            return; // cannot afford
+
         gameClient.server.send('useCard ' + id);
     }
 }

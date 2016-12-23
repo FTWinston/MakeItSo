@@ -96,6 +96,7 @@
     <Content Include="game\Power\_power.scss" />
     <Content Include="game\Helm\_helm.scss" />
     <Content Include="ui\_systems.scss" />
+    <Content Include="game\DamageControl\_damagecontrol.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

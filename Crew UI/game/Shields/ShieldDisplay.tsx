@@ -89,7 +89,6 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
 
         this.drawBackground(ctx, width, height);
         
-        var xBorder = this.cellWidth * 0.05, yBorder = this.cellHeight * 0.05;
         for (var y = 0; y < this.props.cellsTall; y++)
             for (var x = 0; x < this.props.cellsWide; x++) {
                 var block = this.data.getBlock(x, y);
@@ -177,7 +176,6 @@ class ShieldDisplay extends React.Component<IShieldDisplayProps, {}> {
             this.cursor.x = Math.max(this.cursor.x - 1, 0);
         else
             this.cursor.y = Math.max(this.cursor.y - 1, 0);
-        this.redraw();
     }
     private moveDown() {
         if (this.rotated)
