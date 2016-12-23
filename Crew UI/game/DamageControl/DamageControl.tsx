@@ -43,6 +43,17 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
     redraw() {
         (this.refs['canvas'] as Canvas).redraw();
     }
+    filledBlocks = [
+        {x: 10, y: 8},
+        {x: 11, y: 8},
+        {x: 12, y: 8},
+        {x: 13, y: 8},
+        {x: 14, y: 8},
+        {x: 12, y: 7},
+        {x: 12, y: 6},
+        {x: 12, y: 9},
+        {x: 12, y: 10}
+    ]
     draw(ctx, width, height) {
         this.updateSizeAndRotation(ctx, width, height);
         if (this.rotated) {
@@ -55,16 +66,9 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         let innerX = (width - innerWidth) / 2, innerY = (height - innerHeight) / 2;
         this.drawBackground(ctx, width, height, innerWidth, innerHeight, innerX, innerY);
 
-        /*
-        for (var y = 0; y < this.props.cellsTall; y++)
-            for (var x = 0; x < this.props.cellsWide; x++) {
-                var block = this.data.getBlock(x, y);
-                if (block !== undefined)
-                    block.draw(ctx, x, y, this.cellSize, this.cellSize, this.props.colors);
-            }
-        
-        this.cursor.draw(ctx);
-        */
+        ctx.fillStyle = '#cccccc';
+        for (let block of this.filledBlocks)
+            ctx.fillRect(innerX + this.cellSize * block.x, innerY + this.cellSize * block.y, this.cellSize, this.cellSize);
     }
     private drawBackground(ctx, width, height, innerWidth, innerHeight, innerX, innerY) {
         ctx.clearRect(0, 0, width, height);        
