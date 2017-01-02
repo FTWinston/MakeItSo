@@ -19,6 +19,8 @@
 #define GENERATED_BODY() 
 #define UFUNCTION(a, b) 
 
+#define int32 int
+
 #define TSet std::vector
 #define TQueue std::queue
 #define FString std::wstring

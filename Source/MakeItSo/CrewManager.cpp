@@ -40,7 +40,7 @@
 UCrewManager *UCrewManager::Instance = nullptr;
 mg_server *UCrewManager::server = nullptr;
 
-int UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
+int32 UCrewManager::EventReceived(mg_connection *conn, enum mg_event ev)
 {
 	return Instance->HandleEvent(conn, ev);
 }
@@ -55,7 +55,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
 
-	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
+	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 	
 	if (!server)
@@ -214,7 +214,7 @@ FString UCrewManager::GetLocalURL()
 
 void UCrewManager::SetupConnection(mg_connection *conn)
 {
-	int identifier = GetNewUniqueIdentifier();
+	int32 identifier = GetNewUniqueIdentifier();
 	if (identifier == -1)
 	{
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "full");
@@ -250,7 +250,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 #endif
 
 	// update this client as to whether or not each system is currently claimed
-	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
+	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
 	{
 		if (shipSystemCounts[i] > 0)
 			mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "sys- %i", i);
@@ -274,9 +274,9 @@ void UCrewManager::EndConnection(mg_connection *conn)
 #endif
 
 	// decrement the counts of each system this user was using
-	for (int i = 0; i < MAX_SHIP_SYSTEMS; i++)
+	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
 	{
-		int shipSystemFlag = 1 << i;
+		int32 shipSystemFlag = 1 << i;
 		if ((info->shipSystemFlags & shipSystemFlag) == 0)
 			continue;
 
@@ -314,10 +314,10 @@ void UCrewManager::EndConnection(mg_connection *conn)
 	delete info;
 }
 
-int UCrewManager::GetNewUniqueIdentifier()
+int32 UCrewManager::GetNewUniqueIdentifier()
 {
-	int identifier;
-	int numChecked = 0;
+	int32 identifier;
+	int32 numChecked = 0;
 	do
 	{
 		identifier = nextConnectionIdentifer++;
@@ -343,7 +343,7 @@ int UCrewManager::GetNewUniqueIdentifier()
 	} while (true);
 }
 
-int UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
+int32 UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
 {
 	switch (ev)
 	{
@@ -385,7 +385,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		char buffer[10];
 		EXTRACT(info, buffer, "+sys ");
-		int systemIndex = atoi(buffer);
+		int32 systemIndex = atoi(buffer);
 		ShipSystemChanged(info, systemIndex, info->connection->content[0] == '+');
 	}
 	else if (MATCHES(info, "+setup"))
@@ -439,9 +439,9 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		connectionInSetup = nullptr; // game started, no one is setting it up anymore
 		crewState = ECrewState::Active;
 
+		SendAllCrewData();
 		SendCrewMessage(ESystem::AllStations, "game+"); // game started
 		SendCrewMessage(ESystem::NoStations, "started"); // game started, keep out
-
 
 #ifndef WEB_SERVER_TEST
 		//todo: this should consider the game mode/type selected
@@ -731,7 +731,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		char buffer[8];
 		EXTRACT(info, buffer, "pickCard ");
-		int cardID = atoi(buffer);
+		int32 cardID = atoi(buffer);
 
 		TSet<int> cardChoice;
 #ifndef WEB_SERVER_TEST
@@ -759,7 +759,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		char buffer[8];
 		EXTRACT(info, buffer, "useCard ");
-		int cardID = atoi(buffer);
+		int32 cardID = atoi(buffer);
 
 #ifndef WEB_SERVER_TEST
 		if (!cardLibrary.Contains(cardID))
@@ -800,12 +800,12 @@ void UCrewManager::InputAxis(FKey key, float value)
 }
 #endif
 
-void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, bool adding)
+void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
 {
 	if (crewState == ECrewState::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
 		return;
 
-	int shipSystemFlag = 1 << shipSystemIndex;
+	int32 shipSystemFlag = 1 << shipSystemIndex;
 
 	// check if this client already has / doesn't have this shipSystem, and do nothing if so
 	bool alreadyHas = (info->shipSystemFlags & shipSystemFlag) != 0;
@@ -821,15 +821,15 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int shipSystemIndex, 
 	SendSystemSelectionMessage(info, shipSystemIndex, adding);
 }
 
-void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSystemIndex, bool adding)
+void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
 {
-	int count = shipSystemCounts[shipSystemIndex];
+	int32 count = shipSystemCounts[shipSystemIndex];
 	if (!adding)
 		if (count > 1)
 			return; // do nothing, cos multiple people still use this
 		else if (count == 1)
 		{
-			int shipSystemFlag = 1 << shipSystemIndex;
+			int32 shipSystemFlag = 1 << shipSystemIndex;
 
 			// find the one user using this system, and tell them its not in use by anyone else
 			for (auto& other : *currentConnections)
@@ -859,7 +859,7 @@ void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int shipSyst
 void UCrewManager::SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude)
 {
 	bool includeNoSystems = false;
-	int systemFlags;
+	int32 systemFlags;
 
 #ifndef WEB_SERVER_TEST
 	FString withSystem = FString::Printf(TEXT("%i%s\n"), system, message);
@@ -910,7 +910,9 @@ void UCrewManager::SendAllCrewData()
 	SendAuxPower();
 	SendPowerLevels();
 	SendCardChoice();
-	// TODO: send card library
+	SendCardLibrary();
+
+	SendDamageGrid();
 }
 
 void UCrewManager::DetermineViewTarget(const char* targetIdentifier)
@@ -1010,7 +1012,7 @@ void UCrewManager::SendPowerLevels()
 #endif
 }
 
-void UCrewManager::AddCardChoice(int card1, int card2, int card3)
+void UCrewManager::AddCardChoice(int32 card1, int32 card2, int32 card3)
 {
 	TSet<int> choice;
 	choice.push_back(card1);
@@ -1055,7 +1057,7 @@ std::string UCrewManager::CombineIDs(const char *prefix, TSet<int> IDs)
 	if (!IDs.empty())
 	{
 		bool first = true;
-		for (int id : IDs)
+		for (int32 id : IDs)
 		{
 			if (first)
 				first = false;
@@ -1068,7 +1070,33 @@ std::string UCrewManager::CombineIDs(const char *prefix, TSet<int> IDs)
 	return os.str();
 }
 
-void UCrewManager::ActivatePowerCard(int cardID)
+void UCrewManager::ActivatePowerCard(int32 cardID)
 {
 	// ???
+}
+
+void UCrewManager::SendDamageGrid()
+{
+	std::ostringstream os;
+	os << "dmggrid ";
+
+	for (int32 id : damageGrid)
+		os << id;
+
+	SendCrewMessage(ESystem::DamageControl, os.str().c_str());
+}
+
+void UCrewManager::SendDamageCell(int32 x, int32 y)
+{
+	int32 val = GetDamageCell(x, y);
+#ifndef WEB_SERVER_TEST
+	SendCrewMessage(ESystem::DamageControl, FString::Printf(TEXT("dmgcell %i %i\n"), y * DAMAGE_GRID_WIDTH + x, val);
+#else
+	std::string output = "dmgcell ";
+	output += (y * DAMAGE_GRID_WIDTH + x);
+	output += " ";
+	output += val;
+
+	SendCrewMessage(ESystem::DamageControl, output.c_str());
+#endif
 }

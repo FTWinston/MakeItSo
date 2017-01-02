@@ -8,12 +8,24 @@ interface IDamageControlProps extends ISystemProps {
 interface IDamageControlState {
     moveDir?: SwipeDir;
     stopped?: boolean;
+    cells?: number[];
+}
+
+const enum DamageCellType {
+    Empty = 0,
+    Wall,
+    SnakeBody,
+    SnakeHead,
+    Apple,
+    Damage1,
+    Damage2,
+    Damage3,
 }
 
 class DamageControl extends React.Component<IDamageControlProps, IDamageControlState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { moveDir: SwipeDir.Right, stopped: true };
+        this.state = { moveDir: SwipeDir.Right, stopped: true, cells: new Array<number>(props.cellsTall * props.cellsWide) };
     }
     static defaultProps = {
         cellsTall: 36, cellsWide: 48, minSwipeDist: 20, maxTapDist: 10
@@ -43,17 +55,6 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
     redraw() {
         (this.refs['canvas'] as Canvas).redraw();
     }
-    filledBlocks = [
-        {x: 10, y: 8},
-        {x: 11, y: 8},
-        {x: 12, y: 8},
-        {x: 13, y: 8},
-        {x: 14, y: 8},
-        {x: 12, y: 7},
-        {x: 12, y: 6},
-        {x: 12, y: 9},
-        {x: 12, y: 10}
-    ]
     draw(ctx, width, height) {
         this.updateSizeAndRotation(ctx, width, height);
         if (this.rotated) {
@@ -65,10 +66,31 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         let innerWidth = this.props.cellsWide * this.cellSize, innerHeight = this.props.cellsTall * this.cellSize;
         let innerX = (width - innerWidth) / 2, innerY = (height - innerHeight) / 2;
         this.drawBackground(ctx, width, height, innerWidth, innerHeight, innerX, innerY);
+        
+        for (let x = 0; x < this.props.cellsWide; x++)
+            for (let y = 0; y < this.props.cellsTall; y++) {
+                let value = this.state.cells[y * this.props.cellsWide + x];
+                switch (value) {
+                    case DamageCellType.Wall:
+                        ctx.fillStyle = '#a0a0a0'; break;
+                    case DamageCellType.SnakeBody:
+                        ctx.fillStyle = '#009900'; break;
+                    case DamageCellType.SnakeHead:
+                        ctx.fillStyle = '#00cc00'; break;
+                    case DamageCellType.Apple:
+                        ctx.fillStyle = '#00cccc'; break;
+                    case DamageCellType.Damage1:
+                        ctx.fillStyle = '#cc0000'; break;
+                    case DamageCellType.Damage2:
+                        ctx.fillStyle = '#ff3300'; break;
+                    case DamageCellType.Damage3:
+                        ctx.fillStyle = '#ff9933'; break;
+                    default:
+                        continue;
+                }
 
-        ctx.fillStyle = '#cccccc';
-        for (let block of this.filledBlocks)
-            ctx.fillRect(innerX + this.cellSize * block.x, innerY + this.cellSize * block.y, this.cellSize, this.cellSize);
+                ctx.fillRect(innerX + this.cellSize * x, innerY + this.cellSize * y, this.cellSize, this.cellSize);
+            }
     }
     private drawBackground(ctx, width, height, innerWidth, innerHeight, innerX, innerY) {
         ctx.clearRect(0, 0, width, height);        
@@ -115,7 +137,35 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         }
     }
     receiveMessage(msg, data) {
-        return false;
+        switch (msg) {
+            case "dmggrid":
+                let cells: number[] = [];
+                for (let i = 0; i < data.length; i++) {
+                    let val = parseInt(data.charAt(i));
+                    cells.push(val);
+                }
+                this.setState({ cells: cells });
+                this.redraw();
+                return true;
+            case "dmgcell":
+                let values = data.split(' ');
+                if (values.length != 2) {
+                    console.error(language.errorParameterNumber.replace('@num@', '2'));
+                    return false;
+                }
+                let cell = parseInt(values[0]), value = parseInt(values[1]);
+                if (isNaN(cell) || isNaN(cell)) {
+                    console.error(language.errorParameterNotNumeric);
+                    return false;
+                }
+                let newCells = this.state.cells.slice();
+                newCells[cell] = value;
+                this.setState({ cells: newCells });
+                this.redraw();
+                return true;
+            default:
+                return false;
+        }
     }
     clearAllData() {
         this.setState({ moveDir: SwipeDir.Right, stopped: true });
