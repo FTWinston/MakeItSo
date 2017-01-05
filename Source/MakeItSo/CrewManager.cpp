@@ -49,6 +49,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 {
 	Instance = this;
 	LinkController(controller);
+
 	crewState = ECrewState::Setup;
 
 	nextConnectionIdentifer = 0;
@@ -57,6 +58,8 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
+
+	ResetData();
 	
 	if (!server)
 		server = mg_create_server(this, EventReceived);
@@ -78,6 +81,45 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 #endif
 
 	return url;
+}
+
+void UCrewManager::ResetData()
+{
+	// clear all damage control, set up the snake & an apple
+	for (int32 i = 0; i < DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH; i++)
+	{
+		int32 val = damageGrid[i];
+		if (val == 0 || val == 1)
+			continue;
+
+		damageGrid[i] = 0;
+	}
+
+	CreateDamageSnake();
+	CreateDamageApple();
+}
+
+void UCrewManager::CreateDamageSnake()
+{
+	damageSnakeDir = prevDamageSnakeDir = Right;
+
+	damageSnakeCells.clear();
+	damageSnakeCells.push_back(600);
+	damageSnakeCells.push_back(599);
+	damageSnakeCells.push_back(598);
+	damageSnakeCells.push_back(597);
+
+	bool first = true;
+	for (int32 cell : damageSnakeCells)
+	{
+		if (first)
+		{
+			damageGrid[cell] = 2;
+			first = false;
+		}
+		else
+			damageGrid[cell] = 2;
+	}
 }
 
 void UCrewManager::BeginDestroy()
@@ -733,7 +775,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		EXTRACT(info, buffer, "pickCard ");
 		int32 cardID = atoi(buffer);
 
-		TSet<int> cardChoice;
+		TSet<int32> cardChoice;
 #ifndef WEB_SERVER_TEST
 		if (!cardChoices.Peek(cardChoice))
 			return; // no cards to choose from
@@ -771,6 +813,19 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		cardLibrary.erase(std::remove(cardLibrary.begin(), cardLibrary.end(), cardID), cardLibrary.end());
 #endif
 		ActivatePowerCard(cardID);
+	}
+	else if (STARTS_WITH(info, "dcdir "))
+	{
+		char buffer[8];
+		EXTRACT(info, buffer, "dcdir ");
+		EOrdinalDirection dir = (EOrdinalDirection)atoi(buffer);
+		
+		// check they didn't switch to the opposite direction ... that isn't allowed
+		int32 combinedDirs = dir + prevDamageSnakeDir;
+		if (combinedDirs == 3 || combinedDirs == 7) // up + down or left + right
+			return;
+		
+		damageSnakeDir = dir;
 	}
 #ifndef WEB_SERVER_TEST
 	else
@@ -1014,7 +1069,7 @@ void UCrewManager::SendPowerLevels()
 
 void UCrewManager::AddCardChoice(int32 card1, int32 card2, int32 card3)
 {
-	TSet<int> choice;
+	TSet<int32> choice;
 	choice.push_back(card1);
 	choice.push_back(card2);
 	choice.push_back(card3);
@@ -1049,7 +1104,7 @@ void UCrewManager::SendCardLibrary()
 	SendCrewMessage(ESystem::PowerManagement, command.c_str());
 }
 
-std::string UCrewManager::CombineIDs(const char *prefix, TSet<int> IDs)
+std::string UCrewManager::CombineIDs(const char *prefix, TSet<int32> IDs)
 {
 	std::ostringstream os;
 	os << prefix;
@@ -1086,17 +1141,283 @@ void UCrewManager::SendDamageGrid()
 	SendCrewMessage(ESystem::DamageControl, os.str().c_str());
 }
 
-void UCrewManager::SendDamageCell(int32 x, int32 y)
+void UCrewManager::AdvanceSnake()
 {
-	int32 val = GetDamageCell(x, y);
-#ifndef WEB_SERVER_TEST
-	SendCrewMessage(ESystem::DamageControl, FString::Printf(TEXT("dmgcell %i %i\n"), y * DAMAGE_GRID_WIDTH + x, val);
-#else
-	std::string output = "dmgcell ";
-	output += (y * DAMAGE_GRID_WIDTH + x);
-	output += " ";
-	output += val;
+	prevDamageSnakeDir = damageSnakeDir;
+	int32 oldHead = damageSnakeCells.front();
 
-	SendCrewMessage(ESystem::DamageControl, output.c_str());
-#endif
+	int32 newHead;
+	switch (damageSnakeDir)
+	{
+	case Up:
+		newHead = oldHead - DAMAGE_GRID_WIDTH;
+		if (newHead < 0)
+			newHead += DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT;
+		break;
+	case Down:
+		newHead = oldHead + DAMAGE_GRID_WIDTH;
+		if (newHead >= DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT)
+			newHead -= DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT;
+		break;
+	case Left:
+		newHead = oldHead - 1;
+		if (newHead % DAMAGE_GRID_WIDTH == 0)
+			newHead += DAMAGE_GRID_WIDTH;
+		break;
+	case Right:
+		newHead = oldHead + 1;
+		if (newHead % DAMAGE_GRID_WIDTH == 0)
+			newHead -= DAMAGE_GRID_WIDTH;
+		break;
+	default:
+		return; // snake isn't moving; do nothing
+	}
+
+	std::string crewMessage = "dmgcell";
+	int32 tailCellsToLose = 1;
+	bool advanceHead = true;
+
+	// if new head wasn't empty, do something!
+	switch (damageGrid[newHead])
+	{
+	case Wall:
+	{
+		damageSnakeDir = None;
+		advanceHead = false;
+
+		int32 snakeSize = damageSnakeCells.size();
+
+		// convert all snake cells into damage
+		while (!damageSnakeCells.empty())
+		{
+			int32 cell = damageSnakeCells.back();
+			damageSnakeCells.pop_back();
+			damageGrid[cell] = Damage1;
+
+			crewMessage += " ";
+			crewMessage += cell;
+			crewMessage += ":";
+			crewMessage += Damage1;
+
+			UpdateDamage(cell, SnakeBody, Damage1);
+		}
+
+		// create additional damage around crash area
+		CreateDamage(GetDamageCellSection(newHead), snakeSize);
+		break;
+	}
+	case SnakeBody:
+		while (true)
+		{
+			int32 cell = damageSnakeCells.back();
+			damageSnakeCells.pop_back();
+
+			if (cell == newHead)
+				break; // all snake cells up to the collision point have been converted into damage
+
+			damageGrid[cell] = Damage1;
+
+			crewMessage += " ";
+			crewMessage += cell;
+			crewMessage += ":";
+			crewMessage += Damage1;
+
+			UpdateDamage(cell, SnakeBody, Damage1);
+		}
+		tailCellsToLose = 0;
+		break;
+	case Apple:
+		tailCellsToLose = 0;
+
+		crewMessage += " ";
+		crewMessage += CreateDamageApple();
+		crewMessage += ":";
+		crewMessage += Apple;
+		break;
+	case Damage1:
+		UpdateDamage(newHead, Damage1, SnakeHead);
+		break;
+	case Damage2:
+		UpdateDamage(newHead, Damage2, SnakeHead);
+		tailCellsToLose = 2;
+		break;
+	case Damage3:
+		UpdateDamage(newHead, Damage3, SnakeHead);
+		tailCellsToLose = 3;
+		break;
+	}
+
+	while (tailCellsToLose > 0)
+	{
+		// current tail cell becomes empty
+		int32 tail = damageSnakeCells.back();
+		damageGrid[tail] = Empty;
+		damageSnakeCells.pop_back();
+
+		crewMessage += " ";
+		crewMessage += tail;
+		crewMessage += ":";
+		crewMessage += Empty;
+	}
+
+	if (advanceHead)
+	{
+		// current head cell becomes body
+		damageGrid[oldHead] = SnakeBody;
+
+		crewMessage += " ";
+		crewMessage += oldHead;
+		crewMessage += ":";
+		crewMessage += SnakeBody;
+
+		// new head cell becomes head
+		damageGrid[newHead] = SnakeHead;
+		damageSnakeCells.insert(damageSnakeCells.begin(), newHead);
+
+		crewMessage += " ";
+		crewMessage += newHead;
+		crewMessage += ":";
+		crewMessage += SnakeHead;
+	}
+
+	// send crew message listing changed cells
+	SendCrewMessage(ESystem::DamageControl, crewMessage.c_str());
+}
+
+void UCrewManager::UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after)
+{
+	int beforeDamage, afterDamage;
+	switch (before)
+	{
+	case Damage1:
+		beforeDamage = 1; break;
+	case Damage2:
+		beforeDamage = 1; break;
+	case Damage3:
+		beforeDamage = 1; break;
+	default:
+		beforeDamage = 0; break;
+	}
+	switch (after)
+	{
+	case Damage1:
+		afterDamage = 1; break;
+	case Damage2:
+		afterDamage = 1; break;
+	case Damage3:
+		afterDamage = 1; break;
+	default:
+		afterDamage = 0; break;
+	}
+
+	int difference = afterDamage - beforeDamage;
+
+	EDamageSection section = GetDamageCellSection(updatedCell);
+
+	// TODO: apply damage difference to section total damage
+}
+
+int32 UCrewManager::CreateDamageApple()
+{
+	while (true)
+	{
+		int32 cell = FMath::RandRange(0, DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT);
+
+		if (damageGrid[cell] != Empty)
+			continue;
+
+		damageGrid[cell] = Apple;
+		return cell;
+	}
+}
+
+void UCrewManager::CreateDamage(EDamageSection section, int32 amount)
+{
+	std::string crewMessage = "dmgcell";
+
+	int32 numUpdated = 0;
+	while (numUpdated < amount)
+	{
+		int32 cell;
+
+		switch (section) {
+		case Section_Manoevering:
+			cell = GetDamageCellIndex(FMath::RandRange(0, 15), FMath::RandRange(0, 11)); break;
+		case Section_Shields:
+			cell = GetDamageCellIndex(FMath::RandRange(16, 31), FMath::RandRange(0, 11)); break;
+		case Section_BeamWeapons:
+			cell = GetDamageCellIndex(FMath::RandRange(32, 47), FMath::RandRange(0, 11)); break;
+		case Section_Deflector:
+			cell = GetDamageCellIndex(FMath::RandRange(0, 15), FMath::RandRange(12, 23)); break;
+		case Section_Power:
+			cell = GetDamageCellIndex(FMath::RandRange(16, 31), FMath::RandRange(12, 23)); break;
+		case Section_Torpedoes:
+			cell = GetDamageCellIndex(FMath::RandRange(32, 47), FMath::RandRange(12, 23)); break;
+		case Section_Warp:
+			cell = GetDamageCellIndex(FMath::RandRange(0, 15), FMath::RandRange(24, 35)); break;
+		case Section_Sensors:
+			cell = GetDamageCellIndex(FMath::RandRange(16, 31), FMath::RandRange(24, 35)); break;
+		case Section_Communications:
+			cell = GetDamageCellIndex(FMath::RandRange(32, 47), FMath::RandRange(24, 35)); break;
+		default:
+			cell = FMath::RandRange(0, DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT); break;
+		}
+
+		EDamageCell content = (EDamageCell)damageGrid[cell], newContent;
+		switch (content)
+		{
+		case Empty:
+			newContent = Damage1; break;
+		case Damage1:
+			newContent = Damage2; break;
+		case Damage2:
+			newContent = Damage3; break;
+		default:
+			continue;
+		}
+		
+		damageGrid[cell] = newContent;
+
+		crewMessage += " ";
+		crewMessage += cell;
+		crewMessage += ":";
+		crewMessage += newContent;
+
+		UpdateDamage(cell, content, newContent);
+
+		numUpdated++;
+	}
+
+	SendCrewMessage(ESystem::DamageControl, crewMessage.c_str());
+}
+
+UCrewManager::EDamageSection UCrewManager::GetDamageCellSection(int32 cellIndex)
+{
+	int32 x = cellIndex % DAMAGE_GRID_WIDTH;
+	int32 y = cellIndex / DAMAGE_GRID_WIDTH;
+
+	if (x < 16) {
+		if (y < 12)
+			return Section_Manoevering;
+		else if (y < 24)
+			return Section_Deflector;
+		else
+			return Section_Warp;
+	}
+	else if (x < 32) {
+		if (y < 12)
+			return Section_Shields;
+		else if (y < 24)
+			return Section_Power;
+		else
+			return Section_Sensors;
+	}
+	else {
+		if (y < 12)
+			return Section_BeamWeapons;
+		else if (y < 24)
+			return Section_Torpedoes;
+		else
+			return Section_Communications;
+	}
 }

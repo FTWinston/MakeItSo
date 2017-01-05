@@ -6,7 +6,6 @@ interface IDamageControlProps extends ISystemProps {
 }
 
 interface IDamageControlState {
-    moveDir?: SwipeDir;
     stopped?: boolean;
     cells?: number[];
 }
@@ -25,7 +24,7 @@ const enum DamageCellType {
 class DamageControl extends React.Component<IDamageControlProps, IDamageControlState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { moveDir: SwipeDir.Right, stopped: true, cells: new Array<number>(props.cellsTall * props.cellsWide) };
+        this.state = { stopped: true, cells: new Array<number>(props.cellsTall * props.cellsWide) };
     }
     static defaultProps = {
         cellsTall: 36, cellsWide: 48, minSwipeDist: 20, maxTapDist: 10
@@ -148,18 +147,24 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
                 this.redraw();
                 return true;
             case "dmgcell":
-                let values = data.split(' ');
-                if (values.length != 2) {
-                    console.error(language.errorParameterNumber.replace('@num@', '2'));
-                    return false;
-                }
-                let cell = parseInt(values[0]), value = parseInt(values[1]);
-                if (isNaN(cell) || isNaN(cell)) {
-                    console.error(language.errorParameterNotNumeric);
-                    return false;
-                }
+                let changes = data.split(' ');
                 let newCells = this.state.cells.slice();
-                newCells[cell] = value;
+                
+                for (let i=0; i<changes.length; i++) {
+                    let values = changes[i].split(':');
+                    if (values.length != 2) {
+                        console.error(language.errorParameterNumber.replace('@num@', '2'));
+                        return false;
+                    }
+                    let cell = parseInt(values[0]), value = parseInt(values[1]);
+                    if (isNaN(cell) || isNaN(cell)) {
+                        console.error(language.errorParameterNotNumeric);
+                        return false;
+                    }
+
+                    newCells[cell] = value;
+                }
+
                 this.setState({ cells: newCells });
                 this.redraw();
                 return true;
@@ -168,7 +173,7 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         }
     }
     clearAllData() {
-        this.setState({ moveDir: SwipeDir.Right, stopped: true });
+        this.setState({ stopped: true });
     }
     keyDown(e) {
         if (e.which == 38)
@@ -213,17 +218,15 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         gameClient.server.send(stop ? 'dctoggle 0' : 'dctoggle 1');
     }
     private setMoveDir(dir: SwipeDir) {
-        this.setState({ moveDir: dir});
-        
         switch (dir) {
             case SwipeDir.Up:
-                gameClient.server.send('dcdir 0'); break;
-            case SwipeDir.Down:
                 gameClient.server.send('dcdir 1'); break;
-            case SwipeDir.Left:
+            case SwipeDir.Down:
                 gameClient.server.send('dcdir 2'); break;
-            case SwipeDir.Right:
+            case SwipeDir.Left:
                 gameClient.server.send('dcdir 3'); break;
+            case SwipeDir.Right:
+                gameClient.server.send('dcdir 4'); break;
         }
     }
 }

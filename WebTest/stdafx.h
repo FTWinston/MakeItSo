@@ -33,3 +33,10 @@ class Super
 public:
 	static void BeginDestroy() {}
 };
+
+class FMath {
+public:
+	static int32 RandRange(int32 min, int32 max) {
+		return rand() % (max - min + 1) + min;
+	}
+};
