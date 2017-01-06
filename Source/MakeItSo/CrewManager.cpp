@@ -59,6 +59,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
 		shipSystemCounts[i] = 0;
 
+	CreateSystems();
 	ResetData();
 	
 	if (!server)
@@ -83,43 +84,29 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	return url;
 }
 
-void UCrewManager::ResetData()
+void UCrewManager::CreateSystems()
 {
-	// clear all damage control, set up the snake & an apple
-	for (int32 i = 0; i < DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH; i++)
+	systems.push_back(new UHelmSystem());
+	systems.push_back(new UViewscreenSystem());
+	systems.push_back(new UShieldSystem());
+	systems.push_back(new UPowerSystem());
+	systems.push_back(new UDamageControlSystem());
+	systems.push_back(new UWeaponSystem());
+	systems.push_back(new USensorSystem());
+	systems.push_back(new UCommunicationSystem());
+	systems.push_back(new UDeflectorSystem());
+
+	for (auto system : systems)
 	{
-		int32 val = damageGrid[i];
-		if (val == 0 || val == 1)
-			continue;
-
-		damageGrid[i] = 0;
+		system->Init(this);
+		system->ResetData();
 	}
-
-	CreateDamageSnake();
-	CreateDamageApple();
 }
 
-void UCrewManager::CreateDamageSnake()
+void UCrewManager::ResetData()
 {
-	damageSnakeDir = prevDamageSnakeDir = Right;
-
-	damageSnakeCells.clear();
-	damageSnakeCells.push_back(600);
-	damageSnakeCells.push_back(599);
-	damageSnakeCells.push_back(598);
-	damageSnakeCells.push_back(597);
-
-	bool first = true;
-	for (int32 cell : damageSnakeCells)
-	{
-		if (first)
-		{
-			damageGrid[cell] = 2;
-			first = false;
-		}
-		else
-			damageGrid[cell] = 2;
-	}
+	for (auto system : systems)
+		system->ResetData();
 }
 
 void UCrewManager::BeginDestroy()
@@ -519,102 +506,246 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Main"));
 #endif
 	}
+
+	for (auto system : systems)
+		if (system->ReceiveCrewMessage(info))
+			return;
+
 #ifndef WEB_SERVER_TEST
-	else if (MATCHES(info, "+forward"))
+	// write all unrecognised commands to the console
+	char buffer[128];
+	EXTRACT(info, buffer, "");
+	if (controller)
+		controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
+#endif
+}
+
+#ifndef WEB_SERVER_TEST
+void UCrewManager::InputKey(FKey key, bool pressed)
+{
+	controller->InputKey(key, pressed ? EInputEvent::IE_Pressed : EInputEvent::IE_Released, pressed ? 1 : 0, false);
+}
+
+void UCrewManager::InputAxis(FKey key, float value)
+{
+	if (value > 1)
+		value = 1;
+	if (value < -1)
+		value = -1;
+	controller->InputAxis(key, value, 1, 1, true);
+}
+#endif
+
+void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
+{
+	if (crewState == ECrewState::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
+		return;
+
+	int32 shipSystemFlag = 1 << shipSystemIndex;
+
+	// check if this client already has / doesn't have this shipSystem, and do nothing if so
+	bool alreadyHas = (info->shipSystemFlags & shipSystemFlag) != 0;
+	if (alreadyHas == adding)
+		return;
+
+	if (adding)
+		info->shipSystemFlags |= shipSystemFlag;
+	else
+		info->shipSystemFlags &= ~shipSystemFlag;
+	shipSystemCounts[shipSystemIndex] += adding ? 1 : -1;
+
+	SendSystemSelectionMessage(info, shipSystemIndex, adding);
+}
+
+void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
+{
+	int32 count = shipSystemCounts[shipSystemIndex];
+	if (!adding)
+		if (count > 1)
+			return; // do nothing, cos multiple people still use this
+		else if (count == 1)
+		{
+			int32 shipSystemFlag = 1 << shipSystemIndex;
+
+			// find the one user using this system, and tell them its not in use by anyone else
+			for (auto& other : *currentConnections)
+			{
+				if (info == other)
+					continue;
+
+				if ((other->shipSystemFlags & shipSystemFlag) != 0)
+				{
+					mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys+ %i", shipSystemIndex);
+					break;
+				}
+			}
+			return;
+		}
+
+	for (auto& other : *currentConnections)
 	{
-		InputKey(EKeys::LeftShift, true);
+		// don't tell the player selecting a system whether it is now in use... they know
+		if (info == other)
+			continue;
+
+		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys%c %i", adding ? '-' : '+', shipSystemIndex);
+	}
+}
+
+void UCrewManager::SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude)
+{
+	bool includeNoSystems = false;
+	int32 systemFlags;
+
+#ifndef WEB_SERVER_TEST
+	FString withSystem = FString::Printf(TEXT("%i%s\n"), system, message);
+#else
+	std::string withSystem = std::to_string(system);
+	withSystem += message;
+#endif
+
+	switch (system)
+	{
+	case ESystem::Everyone:
+		includeNoSystems = true;
+	case ESystem::AllStations:
+		systemFlags = ~0; // every system flag should be set
+		break;
+	case ESystem::NoStations:
+		systemFlags = 0; // no system flag should be set
+		includeNoSystems = true;
+		break;
+	default:
+		message = withSystem.c_str();
+		systemFlags = 1 << system; // only the flag for the given system should be set
+		break;
+	}
+
+	for (auto& other : *currentConnections)
+	{
+		if (other == exclude)
+			continue;
+
+		if ((includeNoSystems && other->shipSystemFlags == 0) || (other->shipSystemFlags & systemFlags) != 0)
+			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message);
+	}
+}
+
+void UCrewManager::SendAllCrewData()
+{
+	for (auto system : systems)
+		system->SendAllData();
+}
+
+
+
+
+
+
+bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+#ifndef WEB_SERVER_TEST
+	if (MATCHES(info, "+forward"))
+	{
+		crewManager->InputKey(EKeys::LeftShift, true);
 	}
 	else if (MATCHES(info, "-forward"))
 	{
-		InputKey(EKeys::LeftShift, false);
+		crewManager->InputKey(EKeys::LeftShift, false);
 	}
 	else if (MATCHES(info, "+backward"))
 	{
-		InputKey(EKeys::LeftControl, true);
+		crewManager->InputKey(EKeys::LeftControl, true);
 	}
 	else if (MATCHES(info, "-backward"))
 	{
-		InputKey(EKeys::LeftControl, false);
+		crewManager->InputKey(EKeys::LeftControl, false);
 	}
 	else if (MATCHES(info, "+left"))
 	{
-		InputKey(EKeys::A, true);
+		crewManager->InputKey(EKeys::A, true);
 	}
 	else if (MATCHES(info, "-left"))
 	{
-		InputKey(EKeys::A, false);
+		crewManager->InputKey(EKeys::A, false);
 	}
 	else if (MATCHES(info, "+right"))
 	{
-		InputKey(EKeys::D, true);
+		crewManager->InputKey(EKeys::D, true);
 	}
 	else if (MATCHES(info, "-right"))
 	{
-		InputKey(EKeys::D, false);
+		crewManager->InputKey(EKeys::D, false);
 	}
 	else if (MATCHES(info, "+up"))
 	{
-		InputKey(EKeys::S, true);
+		crewManager->InputKey(EKeys::S, true);
 	}
 	else if (MATCHES(info, "-up"))
 	{
-		InputKey(EKeys::S, false);
+		crewManager->InputKey(EKeys::S, false);
 	}
 	else if (MATCHES(info, "+down"))
 	{
-		InputKey(EKeys::W, true);
+		crewManager->InputKey(EKeys::W, true);
 	}
 	else if (MATCHES(info, "-down"))
 	{
-		InputKey(EKeys::W, false);
+		crewManager->InputKey(EKeys::W, false);
 	}
 	else if (STARTS_WITH(info, "yaw "))
 	{
 		char buffer[10];
 		EXTRACT(info, buffer, "yaw "); // this crashes (sometimes) unless buffer length is ~30
-		InputAxis(EKeys::Gamepad_LeftX, atof(buffer));
+		crewManager->InputAxis(EKeys::Gamepad_LeftX, atof(buffer));
 	}
 	else if (STARTS_WITH(info, "pitch "))
 	{
 		char buffer[10];
 		EXTRACT(info, buffer, "pitch "); // this crashes (sometimes) unless buffer length is ~30
-		InputAxis(EKeys::Gamepad_LeftY, atof(buffer));
+		crewManager->InputAxis(EKeys::Gamepad_LeftY, atof(buffer));
 	}
 
 	else if (MATCHES(info, "+moveleft"))
 	{
-		InputKey(EKeys::J, true);
+		crewManager->InputKey(EKeys::J, true);
 	}
 	else if (MATCHES(info, "-moveleft"))
 	{
-		InputKey(EKeys::J, false);
+		crewManager->InputKey(EKeys::J, false);
 	}
 	else if (MATCHES(info, "+moveright"))
 	{
-		InputKey(EKeys::L, true);
+		crewManager->InputKey(EKeys::L, true);
 	}
 	else if (MATCHES(info, "-moveright"))
 	{
-		InputKey(EKeys::L, false);
+		crewManager->InputKey(EKeys::L, false);
 	}
 	else if (MATCHES(info, "+moveup"))
 	{
-		InputKey(EKeys::I, true);
+		crewManager->InputKey(EKeys::I, true);
 	}
 	else if (MATCHES(info, "-moveup"))
 	{
-		InputKey(EKeys::I, false);
+		crewManager->InputKey(EKeys::I, false);
 	}
 	else if (MATCHES(info, "+movedown"))
 	{
-		InputKey(EKeys::K, true);
+		crewManager->InputKey(EKeys::K, true);
 	}
 	else if (MATCHES(info, "-movedown"))
 	{
-		InputKey(EKeys::K, false);
+		crewManager->InputKey(EKeys::K, false);
 	}
+	else
 #endif
-	else if (STARTS_WITH(info, "viewdir "))
+		return false;
+}
+
+bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	if (STARTS_WITH(info, "viewdir "))
 	{
 		char buffer[2];
 		EXTRACT(info, buffer, "viewdir ");
@@ -733,32 +864,100 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	else if (MATCHES(info, "+viewchase"))
 	{
 		viewChase = true;
-		SendCrewMessage(ESystem::ViewScreen, "chase on");
+		SendCrewMessage("chase on");
 	}
 	else if (MATCHES(info, "-viewchase"))
 	{
 		viewChase = false;
-		SendCrewMessage(ESystem::ViewScreen, "chase off");
+		SendCrewMessage("chase off");
 	}
 	else if (MATCHES(info, "+viewcomms"))
 	{
 		viewComms = true;
-		SendCrewMessage(ESystem::ViewScreen, "comms on");
+		SendCrewMessage("comms on");
 	}
 	else if (MATCHES(info, "-viewcomms"))
 	{
 		viewComms = false;
-		SendCrewMessage(ESystem::ViewScreen, "comms off");
+		SendCrewMessage("comms off");
 	}
-	else if (MATCHES(info, "+shields"))
+	else
+		return false;
+
+	return true;
+}
+
+void UViewscreenSystem::SendAllData()
+{
+	SendViewAngles();
+	SendViewZoomDist();
+	// TODO: send all viewscreen targets
+}
+
+void UViewscreenSystem::DetermineViewTarget(const char* targetIdentifier)
+{
+	// TODO: lookup target
+	viewTarget = nullptr;
+}
+
+void UViewscreenSystem::DetermineTargetAngles()
+{
+	// TODO: calculate angle to viewTarget
+	viewPitch = 22;
+	viewYaw = 137;
+	viewZoom = 22.5;
+}
+
+void UViewscreenSystem::SendViewAngles()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("view %i %i"), (int)viewYaw, (int)viewPitch);
+	SendCrewMessage(ESystem::ViewScreen, message.c_str());
+#else
+	char buffer[16];
+	std::snprintf(buffer, sizeof(buffer), "view %i %i", (int)viewYaw, (int)viewPitch);
+	SendCrewMessage(buffer);
+#endif
+}
+
+void UViewscreenSystem::SendViewZoomDist()
+{
+	if (viewChase)
+	{
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("dist %i"), (int)viewChaseDist);
+		SendCrewMessage(ESystem::ViewScreen, message.c_str());
+#else
+		char buffer[16];
+		std::snprintf(buffer, sizeof(buffer), "dist %i", (int)viewChaseDist);
+		SendCrewMessage(buffer);
+#endif
+	}
+	else
+	{
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("zoom %.2f"), viewZoom);
+		SendCrewMessage(ESystem::ViewScreen, message.c_str());
+#else
+		char buffer[24];
+		std::snprintf(buffer, sizeof(buffer), "zoom %.2f", viewZoom);
+		SendCrewMessage(buffer);
+#endif
+	}
+}
+
+
+bool UShieldSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	if (MATCHES(info, "+shields"))
 	{
 		shieldsUp = true;
-		SendCrewMessage(ESystem::Shields, "on");
+		SendCrewMessage("on");
 	}
 	else if (MATCHES(info, "-shields"))
 	{
 		shieldsUp = false;
-		SendCrewMessage(ESystem::Shields, "off");
+		SendCrewMessage("off");
 	}
 	else if (STARTS_WITH(info, "shieldFoc "))
 	{
@@ -769,7 +968,34 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		shieldFocus = focus - '0';
 		SendShieldFocus();
 	}
-	else if (STARTS_WITH(info, "pickCard "))
+	else
+		return false;
+
+	return true;
+}
+
+void UShieldSystem::SendAllData()
+{
+	// TODO: send shield data
+	SendCrewMessage(shieldsUp ? "on" : "off");
+	SendShieldFocus();
+}
+
+void UShieldSystem::SendShieldFocus()
+{
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("focus %i"), shieldFocus);
+	SendCrewMessage(message.c_str());
+#else
+	char buffer[10];
+	std::snprintf(buffer, sizeof(buffer), "focus %i", shieldFocus);
+	SendCrewMessage(buffer);
+#endif
+}
+
+bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	if (STARTS_WITH(info, "pickCard "))
 	{
 		char buffer[8];
 		EXTRACT(info, buffer, "pickCard ");
@@ -781,12 +1007,12 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 			return; // no cards to choose from
 #else
 		if (cardChoices.empty())
-			return; // no cards to choose from
+			return true; // no cards to choose from
 		cardChoice = cardChoices.front();
 #endif
 
 		if (cardChoice[0] != cardID && cardChoice[1] != cardID && cardChoice[2] != cardID)
-			return; // chosen card isn't part of the current choice
+			return true; // chosen card isn't part of the current choice
 
 #ifndef WEB_SERVER_TEST
 		cardChoices.Dequeue();
@@ -805,236 +1031,30 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 #ifndef WEB_SERVER_TEST
 		if (!cardLibrary.Contains(cardID))
-			return; // card not in library
+			return true; // card not in library
 		cardLibrary.Remove(cardID);
 #else
 		if (std::find(cardLibrary.begin(), cardLibrary.end(), cardID) == cardLibrary.end())
-			return; // card not in library
+			return true; // card not in library
 		cardLibrary.erase(std::remove(cardLibrary.begin(), cardLibrary.end(), cardID), cardLibrary.end());
 #endif
 		ActivatePowerCard(cardID);
 	}
-	else if (STARTS_WITH(info, "dcdir "))
-	{
-		char buffer[8];
-		EXTRACT(info, buffer, "dcdir ");
-		EOrdinalDirection dir = (EOrdinalDirection)atoi(buffer);
-		
-		// check they didn't switch to the opposite direction ... that isn't allowed
-		int32 combinedDirs = dir + prevDamageSnakeDir;
-		if (combinedDirs == 3 || combinedDirs == 7) // up + down or left + right
-			return;
-		
-		damageSnakeDir = dir;
-	}
-#ifndef WEB_SERVER_TEST
 	else
-	{
-		// write all unrecognised commands to the console
-		char buffer[128];
-		EXTRACT(info, buffer, "");
-		if (controller)
-			controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
-	}
-#endif
+		return false;
+
+	return true;
 }
 
-#ifndef WEB_SERVER_TEST
-void UCrewManager::InputKey(FKey key, bool pressed)
+void UPowerSystem::SendAllData()
 {
-	controller->InputKey(key, pressed ? EInputEvent::IE_Pressed : EInputEvent::IE_Released, pressed ? 1 : 0, false);
-}
-
-void UCrewManager::InputAxis(FKey key, float value)
-{
-	if (value > 1)
-		value = 1;
-	if (value < -1)
-		value = -1;
-	controller->InputAxis(key, value, 1, 1, true);
-}
-#endif
-
-void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
-{
-	if (crewState == ECrewState::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
-		return;
-
-	int32 shipSystemFlag = 1 << shipSystemIndex;
-
-	// check if this client already has / doesn't have this shipSystem, and do nothing if so
-	bool alreadyHas = (info->shipSystemFlags & shipSystemFlag) != 0;
-	if (alreadyHas == adding)
-		return;
-
-	if (adding)
-		info->shipSystemFlags |= shipSystemFlag;
-	else
-		info->shipSystemFlags &= ~shipSystemFlag;
-	shipSystemCounts[shipSystemIndex] += adding ? 1 : -1;
-
-	SendSystemSelectionMessage(info, shipSystemIndex, adding);
-}
-
-void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
-{
-	int32 count = shipSystemCounts[shipSystemIndex];
-	if (!adding)
-		if (count > 1)
-			return; // do nothing, cos multiple people still use this
-		else if (count == 1)
-		{
-			int32 shipSystemFlag = 1 << shipSystemIndex;
-
-			// find the one user using this system, and tell them its not in use by anyone else
-			for (auto& other : *currentConnections)
-			{
-				if (info == other)
-					continue;
-
-				if ((other->shipSystemFlags & shipSystemFlag) != 0)
-				{
-					mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys+ %i", shipSystemIndex);
-					break;
-				}
-			}
-			return;
-		}
-
-	for (auto& other : *currentConnections)
-	{
-		// don't tell the player selecting a system whether it is now in use... they know
-		if (info == other)
-			continue;
-
-		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys%c %i", adding ? '-' : '+', shipSystemIndex);
-	}
-}
-
-void UCrewManager::SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude)
-{
-	bool includeNoSystems = false;
-	int32 systemFlags;
-
-#ifndef WEB_SERVER_TEST
-	FString withSystem = FString::Printf(TEXT("%i%s\n"), system, message);
-#else
-	std::string withSystem = std::to_string(system);
-	withSystem += message;
-#endif
-
-	switch (system)
-	{
-	case ESystem::Everyone:
-		includeNoSystems = true;
-	case ESystem::AllStations:
-		systemFlags = ~0; // every system flag should be set
-		break;
-	case ESystem::NoStations:
-		systemFlags = 0; // no system flag should be set
-		includeNoSystems = true;
-		break;
-	default:
-		message = withSystem.c_str();
-		systemFlags = 1 << system; // only the flag for the given system should be set
-		break;
-	}
-
-	for (auto& other : *currentConnections)
-	{
-		if (other == exclude)
-			continue;
-
-		if ((includeNoSystems && other->shipSystemFlags == 0) || (other->shipSystemFlags & systemFlags) != 0)
-			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, message);
-	}
-}
-
-void UCrewManager::SendAllCrewData()
-{
-	SendViewAngles();
-	SendViewZoomDist();
-	// TODO: send all viewscreen targets
-
-	// TODO: send all weapon targets
-
-	// TODO: send shield data
-	SendCrewMessage(ESystem::Shields, shieldsUp ? "on" : "off");
-	SendShieldFocus();
-
 	SendAuxPower();
 	SendPowerLevels();
 	SendCardChoice();
 	SendCardLibrary();
-
-	SendDamageGrid();
 }
 
-void UCrewManager::DetermineViewTarget(const char* targetIdentifier)
-{
-	// TODO: lookup target
-	viewTarget = nullptr;
-}
-
-void UCrewManager::DetermineTargetAngles()
-{
-	// TODO: calculate angle to viewTarget
-	viewPitch = 22;
-	viewYaw = 137;
-	viewZoom = 22.5;
-}
-
-void UCrewManager::SendViewAngles()
-{
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("view %i %i"), (int)viewYaw, (int)viewPitch);
-	SendCrewMessage(ESystem::ViewScreen, message.c_str());
-#else
-	char buffer[16];
-	std::snprintf(buffer, sizeof(buffer), "view %i %i", (int)viewYaw, (int)viewPitch);
-	SendCrewMessage(ESystem::ViewScreen, buffer);
-#endif
-}
-
-void UCrewManager::SendViewZoomDist()
-{
-	if (viewChase)
-	{
-#ifndef WEB_SERVER_TEST
-		auto message = FString::Printf(TEXT("dist %i"), (int)viewChaseDist);
-		SendCrewMessage(ESystem::ViewScreen, message.c_str());
-#else
-		char buffer[16];
-		std::snprintf(buffer, sizeof(buffer), "dist %i", (int)viewChaseDist);
-		SendCrewMessage(ESystem::ViewScreen, buffer);
-#endif
-	}
-	else
-	{
-#ifndef WEB_SERVER_TEST
-		auto message = FString::Printf(TEXT("zoom %.2f"), viewZoom);
-		SendCrewMessage(ESystem::ViewScreen, message.c_str());
-#else
-		char buffer[24];
-		std::snprintf(buffer, sizeof(buffer), "zoom %.2f", viewZoom);
-		SendCrewMessage(ESystem::ViewScreen, buffer);
-#endif
-	}
-}
-
-void UCrewManager::SendShieldFocus()
-{
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("focus %i"), shieldFocus);
-	SendCrewMessage(ESystem::Shields, message.c_str());
-#else
-	char buffer[10];
-	std::snprintf(buffer, sizeof(buffer), "focus %i", shieldFocus);
-	SendCrewMessage(ESystem::Shields, buffer);
-#endif
-}
-
-void UCrewManager::IncrementAuxPower()
+void UPowerSystem::IncrementAuxPower()
 {
 	if (auxPower >= MAX_AUX_POWER)
 		return;
@@ -1043,7 +1063,7 @@ void UCrewManager::IncrementAuxPower()
 	SendAuxPower();
 }
 
-void UCrewManager::SendAuxPower()
+void UPowerSystem::SendAuxPower()
 {
 #ifndef WEB_SERVER_TEST
 	auto message = FString::Printf(TEXT("aux %i"), auxPower);
@@ -1051,11 +1071,11 @@ void UCrewManager::SendAuxPower()
 #else
 	char buffer[8];
 	std::snprintf(buffer, sizeof(buffer), "aux %i", auxPower);
-	SendCrewMessage(ESystem::PowerManagement, buffer);
+	SendCrewMessage(buffer);
 #endif
 }
 
-void UCrewManager::SendPowerLevels()
+void UPowerSystem::SendPowerLevels()
 {
 #ifndef WEB_SERVER_TEST
 	auto message = FString::Printf(TEXT("levels %.0f %.0f %.0f %.0f %.0f %.0f"), powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
@@ -1063,11 +1083,11 @@ void UCrewManager::SendPowerLevels()
 #else
 	char buffer[32];
 	std::snprintf(buffer, sizeof(buffer), "levels %.0f %.0f %.0f %.0f %.0f %.0f", powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
-	SendCrewMessage(ESystem::PowerManagement, buffer);
+	SendCrewMessage(buffer);
 #endif
 }
 
-void UCrewManager::AddCardChoice(int32 card1, int32 card2, int32 card3)
+void UPowerSystem::AddCardChoice(int32 card1, int32 card2, int32 card3)
 {
 	TSet<int32> choice;
 	choice.push_back(card1);
@@ -1087,28 +1107,28 @@ void UCrewManager::AddCardChoice(int32 card1, int32 card2, int32 card3)
 		SendCardChoice();
 }
 
-void UCrewManager::SendCardChoice()
+void UPowerSystem::SendCardChoice()
 {
 	if (cardChoices.empty())
-		SendCrewMessage(ESystem::PowerManagement, "choice ");
+		SendCrewMessage("choice ");
 	else
 	{
 		auto command = CombineIDs("choice ", cardChoices.front());
-		SendCrewMessage(ESystem::PowerManagement, command.c_str());
+		SendCrewMessage(command.c_str());
 	}
 }
 
-void UCrewManager::SendCardLibrary()
+void UPowerSystem::SendCardLibrary()
 {
 	auto command = CombineIDs("lib ", cardLibrary);
-	SendCrewMessage(ESystem::PowerManagement, command.c_str());
+	SendCrewMessage(command.c_str());
 }
 
-std::string UCrewManager::CombineIDs(const char *prefix, TSet<int32> IDs)
+std::string UPowerSystem::CombineIDs(const char *prefix, TSet<int32> IDs)
 {
 	std::ostringstream os;
 	os << prefix;
-	
+
 	if (!IDs.empty())
 	{
 		bool first = true;
@@ -1125,12 +1145,77 @@ std::string UCrewManager::CombineIDs(const char *prefix, TSet<int32> IDs)
 	return os.str();
 }
 
-void UCrewManager::ActivatePowerCard(int32 cardID)
+void UPowerSystem::ActivatePowerCard(int32 cardID)
 {
 	// ???
 }
 
-void UCrewManager::SendDamageGrid()
+bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	if (STARTS_WITH(info, "dcdir "))
+	{
+		char buffer[8];
+		EXTRACT(info, buffer, "dcdir ");
+		EOrdinalDirection dir = (EOrdinalDirection)atoi(buffer);
+
+		// check they didn't switch to the opposite direction ... that isn't allowed
+		int32 combinedDirs = dir + prevDamageSnakeDir;
+		if (combinedDirs == 3 || combinedDirs == 7) // up + down or left + right
+			return true;
+
+		damageSnakeDir = dir;
+	}
+	else
+		return false;
+
+	return true;
+}
+
+void UDamageControlSystem::SendAllData()
+{
+	SendDamageGrid();
+}
+
+void UDamageControlSystem::ResetData()
+{
+	// clear all damage control, set up the snake & an apple
+	for (int32 i = 0; i < DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH; i++)
+	{
+		int32 val = damageGrid[i];
+		if (val == 0 || val == 1)
+			continue;
+
+		damageGrid[i] = 0;
+	}
+
+	CreateDamageSnake();
+	CreateDamageApple();
+}
+
+void UDamageControlSystem::CreateDamageSnake()
+{
+	damageSnakeDir = prevDamageSnakeDir = Right;
+
+	damageSnakeCells.clear();
+	damageSnakeCells.push_back(600);
+	damageSnakeCells.push_back(599);
+	damageSnakeCells.push_back(598);
+	damageSnakeCells.push_back(597);
+
+	bool first = true;
+	for (int32 cell : damageSnakeCells)
+	{
+		if (first)
+		{
+			damageGrid[cell] = 2;
+			first = false;
+		}
+		else
+			damageGrid[cell] = 2;
+	}
+}
+
+void UDamageControlSystem::SendDamageGrid()
 {
 	std::ostringstream os;
 	os << "dmggrid ";
@@ -1138,10 +1223,10 @@ void UCrewManager::SendDamageGrid()
 	for (int32 id : damageGrid)
 		os << id;
 
-	SendCrewMessage(ESystem::DamageControl, os.str().c_str());
+	SendCrewMessage(os.str().c_str());
 }
 
-void UCrewManager::AdvanceSnake()
+void UDamageControlSystem::AdvanceSnake()
 {
 	prevDamageSnakeDir = damageSnakeDir;
 	int32 oldHead = damageSnakeCells.front();
@@ -1281,10 +1366,10 @@ void UCrewManager::AdvanceSnake()
 	}
 
 	// send crew message listing changed cells
-	SendCrewMessage(ESystem::DamageControl, crewMessage.c_str());
+	SendCrewMessage(crewMessage.c_str());
 }
 
-void UCrewManager::UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after)
+void UDamageControlSystem::UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after)
 {
 	int beforeDamage, afterDamage;
 	switch (before)
@@ -1317,7 +1402,7 @@ void UCrewManager::UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCe
 	// TODO: apply damage difference to section total damage
 }
 
-int32 UCrewManager::CreateDamageApple()
+int32 UDamageControlSystem::CreateDamageApple()
 {
 	while (true)
 	{
@@ -1331,7 +1416,7 @@ int32 UCrewManager::CreateDamageApple()
 	}
 }
 
-void UCrewManager::CreateDamage(EDamageSection section, int32 amount)
+void UDamageControlSystem::CreateDamage(EDamageSection section, int32 amount)
 {
 	std::string crewMessage = "dmgcell";
 
@@ -1375,7 +1460,7 @@ void UCrewManager::CreateDamage(EDamageSection section, int32 amount)
 		default:
 			continue;
 		}
-		
+
 		damageGrid[cell] = newContent;
 
 		crewMessage += " ";
@@ -1388,10 +1473,10 @@ void UCrewManager::CreateDamage(EDamageSection section, int32 amount)
 		numUpdated++;
 	}
 
-	SendCrewMessage(ESystem::DamageControl, crewMessage.c_str());
+	SendCrewMessage(crewMessage.c_str());
 }
 
-UCrewManager::EDamageSection UCrewManager::GetDamageCellSection(int32 cellIndex)
+UDamageControlSystem::EDamageSection UDamageControlSystem::GetDamageCellSection(int32 cellIndex)
 {
 	int32 x = cellIndex % DAMAGE_GRID_WIDTH;
 	int32 y = cellIndex / DAMAGE_GRID_WIDTH;
@@ -1420,4 +1505,29 @@ UCrewManager::EDamageSection UCrewManager::GetDamageCellSection(int32 cellIndex)
 		else
 			return Section_Communications;
 	}
+}
+
+bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	return false;
+}
+
+void UWeaponSystem::SendAllData()
+{
+	// TODO: send all weapon targets
+}
+
+bool UCommunicationSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	return false;
+}
+
+bool USensorSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	return false;
+}
+
+bool UDeflectorSystem::ReceiveCrewMessage(ConnectionInfo *info)
+{
+	return false;
 }
