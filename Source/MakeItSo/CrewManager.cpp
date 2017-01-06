@@ -86,27 +86,49 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 void UCrewManager::CreateSystems()
 {
-	systems.push_back(new UHelmSystem());
-	systems.push_back(new UViewscreenSystem());
-	systems.push_back(new UShieldSystem());
-	systems.push_back(new UPowerSystem());
-	systems.push_back(new UDamageControlSystem());
-	systems.push_back(new UWeaponSystem());
-	systems.push_back(new USensorSystem());
-	systems.push_back(new UCommunicationSystem());
-	systems.push_back(new UDeflectorSystem());
+#ifndef WEB_SERVER_TEST
+	systems.Add(ESystem::Helm, NewObject<UHelmSystem>());
+	systems.Add(ESystem::ViewScreen, NewObject<UViewscreenSystem>());
+	systems.Add(ESystem::Shields, NewObject<UShieldSystem>());
+	systems.Add(ESystem::PowerManagement, NewObject<UPowerSystem>());
+	systems.Add(ESystem::DamageControl, NewObject<UDamageControlSystem>());
+	systems.Add(ESystem::Weapons, NewObject<UWeaponSystem>());
+	systems.Add(ESystem::Sensors, NewObject<USensorSystem>());
+	systems.Add(ESystem::Communications, NewObject<UCommunicationSystem>());
+	systems.Add(ESystem::Deflector, NewObject<UDeflectorSystem>());
 
 	for (auto system : systems)
 	{
-		system->Init(this);
-		system->ResetData();
+		system.Value->Init(this);
+		system.Value->ResetData();
 	}
+#else
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::Helm, new UHelmSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::ViewScreen, new UViewscreenSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::Shields, new UShieldSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::PowerManagement, new UPowerSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::DamageControl, new UDamageControlSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::Weapons, new UWeaponSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::Sensors, new USensorSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::Communications, new UCommunicationSystem()));
+	systems.insert(std::pair<ESystem, UCrewSystem*>(ESystem::Deflector, new UDeflectorSystem()));
+
+	for (auto system : systems)
+	{
+		system.second->Init(this);
+		system.second->ResetData();
+	}
+#endif
 }
 
 void UCrewManager::ResetData()
 {
 	for (auto system : systems)
-		system->ResetData();
+#ifndef WEB_SERVER_TEST
+		system.Value->ResetData();
+#else
+		system.second->ResetData();
+#endif
 }
 
 void UCrewManager::BeginDestroy()
@@ -508,7 +530,11 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	}
 
 	for (auto system : systems)
-		if (system->ReceiveCrewMessage(info))
+#ifndef WEB_SERVER_TEST
+		if (system.Value->ReceiveCrewMessage(info))
+#else
+		if (system.second->ReceiveCrewMessage(info))
+#endif
 			return;
 
 #ifndef WEB_SERVER_TEST
@@ -634,13 +660,41 @@ void UCrewManager::SendCrewMessage(ESystem system, const char *message, Connecti
 void UCrewManager::SendAllCrewData()
 {
 	for (auto system : systems)
-		system->SendAllData();
+#ifndef WEB_SERVER_TEST
+		system.Value->SendAllData();
+#else
+		system.second->SendAllData();
+#endif
+}
+
+void UCrewManager::ProcessSystemMessage(ESystem system, FString message)
+{
+#ifndef WEB_SERVER_TEST
+	if (!systems.Contains(system))
+#else
+	if (systems.find(system) == systems.end())
+#endif
+	{
+
+#ifndef WEB_SERVER_TEST
+		if (controller)
+			controller->ClientMessage(FString::Printf(TEXT("Received a message for non-existant crew system %i: %s\n"), (int)system, message));
+#endif
+		return;
+	}
+
+#ifndef WEB_SERVER_TEST
+	if (!systems[system]->ProcessSystemMessage(message))
+		controller->ClientMessage(FString::Printf(TEXT("Crew system %i is unable to process system message: %s\n"), (int)system, message));
+#else
+	systems[system]->ProcessSystemMessage(message);
+#endif
 }
 
 
 
 
-
+// --------- helm
 
 bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
@@ -742,6 +796,11 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info)
 #endif
 		return false;
 }
+
+
+
+
+// --------- viewscreen
 
 bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
@@ -947,6 +1006,10 @@ void UViewscreenSystem::SendViewZoomDist()
 }
 
 
+
+
+// --------- shields
+
 bool UShieldSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
 	if (MATCHES(info, "+shields"))
@@ -992,6 +1055,11 @@ void UShieldSystem::SendShieldFocus()
 	SendCrewMessage(buffer);
 #endif
 }
+
+
+
+
+// --------- power
 
 bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
@@ -1052,6 +1120,17 @@ void UPowerSystem::SendAllData()
 	SendPowerLevels();
 	SendCardChoice();
 	SendCardLibrary();
+}
+
+bool UPowerSystem::ProcessSystemMessage(FString message)
+{
+	if (message.compare(TEXT("inc_aux")) == 0)
+	{
+		IncrementAuxPower();
+		return true;
+	}
+
+	return false;
 }
 
 void UPowerSystem::IncrementAuxPower()
@@ -1149,6 +1228,11 @@ void UPowerSystem::ActivatePowerCard(int32 cardID)
 {
 	// ???
 }
+
+
+
+
+// --------- damage control
 
 bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
@@ -1507,6 +1591,11 @@ UDamageControlSystem::EDamageSection UDamageControlSystem::GetDamageCellSection(
 	}
 }
 
+
+
+
+// --------- weapons
+
 bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
 	return false;
@@ -1517,15 +1606,30 @@ void UWeaponSystem::SendAllData()
 	// TODO: send all weapon targets
 }
 
+
+
+
+// --------- communications
+
 bool UCommunicationSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
 	return false;
 }
 
+
+
+
+// --------- sensors
+
 bool USensorSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
 	return false;
 }
+
+
+
+
+// --------- deflector
 
 bool UDeflectorSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {

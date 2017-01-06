@@ -114,7 +114,7 @@ System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, S
 
 System::Void WebTest::MainForm::btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->IncrementAuxPower();
+	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, TEXT("inc_aux"));
 }
 
 System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e)

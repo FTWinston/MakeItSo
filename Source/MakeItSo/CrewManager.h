@@ -56,6 +56,7 @@ public:
 	int32 HandleEvent(mg_connection *conn, enum mg_event ev);
 	void SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude = nullptr);
 	void SendAllCrewData();
+	void ProcessSystemMessage(ESystem system, FString message);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static FString GetLocalURL();
@@ -84,7 +85,7 @@ private:
 
 	static mg_server *server;
 	AShipPlayerController *controller;
-	TSet<UCrewSystem*> systems;
+	TMap<ESystem, UCrewSystem*> systems;
 
 	ECrewState crewState;
 	int32 nextConnectionIdentifer;
@@ -120,6 +121,7 @@ class MAKEITSO_API UCrewSystem : public UObject
 public:
 	void Init(UCrewManager *manager) { crewManager = manager; }
 	virtual bool ReceiveCrewMessage(ConnectionInfo *info) = 0;
+	virtual bool ProcessSystemMessage(FString message) { return false; };
 	virtual void SendAllData() { }
 	virtual void ResetData() { }
 protected:
@@ -198,6 +200,7 @@ public:
 
 	bool ReceiveCrewMessage(ConnectionInfo *info);
 	virtual void SendAllData();
+	virtual bool ProcessSystemMessage(FString message);
 
 	void IncrementAuxPower();
 	void AddCardChoice(int32 card1, int32 card2, int32 card3);
