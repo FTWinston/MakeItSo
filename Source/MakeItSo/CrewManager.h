@@ -8,15 +8,25 @@
 #include "Mongoose.h"
 #include "CrewManager.Generated.h"
 
+#if defined(_MSC_VER) && _MSC_VER < 1900
+#define snprintf _snprintf_s
+#endif
+
 #define MAX_CREW_CONNECTIONS 26
+
+#define STARTS_WITH(info, prefix) info->connection->content_len > sizeof(prefix) - 1 && !memcmp(info->connection->content, prefix, sizeof(prefix) - 1)
+#define MATCHES(info, prefix)     info->connection->content_len >= sizeof(prefix) - 1 && !memcmp(info->connection->content, prefix, sizeof(prefix) - 1)
 
 #ifndef WEB_SERVER_TEST
 #define CHARARR(str) *str
 #define NOTEMPTY(set) set.Num() != 0
+#define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)FMath::Min(sizeof(buffer) - 1, info->connection->content_len - sizeof(offset) + 1), info->connection->content + sizeof(offset) - 1)
 #else
 #define CHARARR(str) str.c_str()
 #define NOTEMPTY(set) !set.empty()
+#define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)       min(sizeof(buffer) - 1, info->connection->content_len - sizeof(offset) + 1), info->connection->content + sizeof(offset) - 1)
 #endif
+
 
 class ConnectionInfo;
 class AShipPlayerController;
@@ -136,204 +146,4 @@ protected:
 	void SendCrewMessage(const TCHAR *message, ConnectionInfo *exclude = nullptr) { crewManager->SendCrewMessage(GetSystem(), message, exclude); }
 	UCrewManager* crewManager;
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::NoStations; }
-};
-
-
-UCLASS()
-class MAKEITSO_API UHelmSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Helm; }
-};
-
-
-UCLASS()
-class MAKEITSO_API UViewscreenSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-	virtual void SendAllData();
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::ViewScreen; }
-private:
-	void DetermineViewTarget(const char* targetIdentifier);
-	void DetermineTargetAngles();
-	void SendViewAngles();
-	void SendViewZoomDist();
-	float viewPitch, viewYaw, viewZoom, viewChaseDist;
-	bool viewComms, viewChase;
-	UObject *viewTarget;
-	const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
-};
-
-
-UCLASS()
-class MAKEITSO_API UShieldSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-	virtual void SendAllData();
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Shields; }
-private:
-	void SendShieldFocus();
-	bool shieldsUp;
-	int32 shieldFocus;
-};
-
-
-UCLASS()
-class MAKEITSO_API UPowerSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	enum EPowerSystem {
-		Power_Engines = 0,
-		Power_Sensors,
-		Power_Weapons,
-		Power_Shields,
-		Power_DamageControl,
-		Power_Deflector,
-		MAX_POWER_SYSTEMS
-	};
-
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-	virtual void SendAllData();
-	virtual bool ProcessSystemMessage(FString message);
-
-	void IncrementAuxPower();
-	void AddCardChoice(int32 card1, int32 card2, int32 card3);
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::PowerManagement; }
-private:
-	int32 auxPower;
-	#define MAX_AUX_POWER 5
-	float powerLevels[MAX_POWER_SYSTEMS];
-	void SendAuxPower();
-	void SendPowerLevels();
-	void SendCardChoice();
-	void SendCardLibrary();
-	void ActivatePowerCard(int32 cardID);
-	FString CombineIDs(const TCHAR *prefix, TSet<int32> cardIDs);
-	TQueue<TSet<int32>> cardChoices;
-	TSet<int32> cardLibrary;
-};
-
-
-UCLASS()
-class MAKEITSO_API UDamageControlSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-
-	enum EDamageCell {
-		Empty = 0,
-		Wall,
-		SnakeBody,
-		SnakeHead,
-		Apple,
-		Damage1,
-		Damage2,
-		Damage3,
-	};
-
-	enum EOrdinalDirection {
-		None = 0,
-		Up,
-		Down,
-		Left,
-		Right,
-	};
-
-	enum EDamageSection {
-		Section_Any = 0,
-		Section_Manoevering = 1,
-		Section_Shields = 2,
-		Section_BeamWeapons = 3,
-		Section_Deflector = 4,
-		Section_Power = 5,
-		Section_Torpedoes = 6,
-		Section_Warp = 7,
-		Section_Sensors = 8,
-		Section_Communications = 9,
-	};
-
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-	virtual void SendAllData();
-	virtual void ResetData();
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::DamageControl; }
-private:
-	#define DAMAGE_GRID_WIDTH 48
-	#define DAMAGE_GRID_HEIGHT 36
-	int32 damageGrid[DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH]{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	void SendDamageGrid();
-	inline int32 GetDamageCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
-	EDamageSection GetDamageCellSection(int32 cellIndex);
-	void AdvanceSnake();
-	TSparseArray<int32> damageSnakeCells;
-	EOrdinalDirection damageSnakeDir, prevDamageSnakeDir;
-	void CreateDamageSnake();
-	void CreateDamage(EDamageSection section, int32 amount);
-	int32 CreateDamageApple();
-	void UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after);
-};
-
-
-UCLASS()
-class MAKEITSO_API UWeaponSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-	virtual void SendAllData();
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Weapons; }
-};
-
-
-UCLASS()
-class MAKEITSO_API USensorSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Sensors; }
-};
-
-
-UCLASS()
-class MAKEITSO_API UCommunicationSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Communications; }
-};
-
-
-UCLASS()
-class MAKEITSO_API UDeflectorSystem : public UCrewSystem
-{
-	GENERATED_BODY()
-
-public:
-	bool ReceiveCrewMessage(ConnectionInfo *info);
-protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Deflector; }
 };
