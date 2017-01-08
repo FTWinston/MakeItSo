@@ -23,6 +23,7 @@
 #define int32 int
 
 #define TSet std::vector
+#define TSparseArray std::vector
 #define TQueue std::queue
 #define TMap std::map
 #define FString std::wstring

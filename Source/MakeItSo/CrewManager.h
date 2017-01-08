@@ -10,6 +10,14 @@
 
 #define MAX_CREW_CONNECTIONS 26
 
+#ifndef WEB_SERVER_TEST
+#define CHARARR(str) *str
+#define NOTEMPTY(set) set.Num() != 0
+#else
+#define CHARARR(str) str.c_str()
+#define NOTEMPTY(set) !set.empty()
+#endif
+
 class ConnectionInfo;
 class AShipPlayerController;
 class UCrewSystem;
@@ -54,9 +62,9 @@ public:
 	void LinkController(AShipPlayerController *controller);
 	void Poll() { mg_poll_server(server, 1); }
 	int32 HandleEvent(mg_connection *conn, enum mg_event ev);
-	void SendCrewMessage(ESystem system, const char *message, ConnectionInfo *exclude = nullptr);
+	void SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude = nullptr);
 	void SendAllCrewData();
-	void ProcessSystemMessage(ESystem system, FString message);
+	void ProcessSystemMessage(ESystem system, const TCHAR *message);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static FString GetLocalURL();
@@ -113,21 +121,21 @@ public:
 
 
 
-UCLASS()
+UCLASS(abstract)
 class MAKEITSO_API UCrewSystem : public UObject
 {
 	GENERATED_BODY()
 
 public:
 	void Init(UCrewManager *manager) { crewManager = manager; }
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info) = 0;
-	virtual bool ProcessSystemMessage(FString message) { return false; };
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info) { return false; }
+	virtual bool ProcessSystemMessage(FString message) { return false; }
 	virtual void SendAllData() { }
 	virtual void ResetData() { }
 protected:
-	void SendCrewMessage(const char *message, ConnectionInfo *exclude = nullptr) { crewManager->SendCrewMessage(GetSystem(), message, exclude); }
+	void SendCrewMessage(const TCHAR *message, ConnectionInfo *exclude = nullptr) { crewManager->SendCrewMessage(GetSystem(), message, exclude); }
 	UCrewManager* crewManager;
-	virtual UCrewManager::ESystem GetSystem() = 0;
+	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::NoStations; }
 };
 
 
@@ -215,7 +223,7 @@ private:
 	void SendCardChoice();
 	void SendCardLibrary();
 	void ActivatePowerCard(int32 cardID);
-	std::string CombineIDs(const char *prefix, TSet<int32> cardIDs);
+	FString CombineIDs(const TCHAR *prefix, TSet<int32> cardIDs);
 	TQueue<TSet<int32>> cardChoices;
 	TSet<int32> cardLibrary;
 };
@@ -273,7 +281,7 @@ private:
 	inline int32 GetDamageCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
 	EDamageSection GetDamageCellSection(int32 cellIndex);
 	void AdvanceSnake();
-	TSet<int32> damageSnakeCells;
+	TSparseArray<int32> damageSnakeCells;
 	EOrdinalDirection damageSnakeDir, prevDamageSnakeDir;
 	void CreateDamageSnake();
 	void CreateDamage(EDamageSection section, int32 amount);

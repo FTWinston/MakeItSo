@@ -2,7 +2,6 @@
 
 #include "MakeItSo.h"
 #include "MakeItSoPawn.h"
-#include "KeyBindings.h"
 
 AMakeItSoPawn::AMakeItSoPawn()
 {
