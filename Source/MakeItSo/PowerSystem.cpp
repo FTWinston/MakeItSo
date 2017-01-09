@@ -2,6 +2,7 @@
 #include "MakeItSo.h"
 #else
 #include "stdafx.h"
+#include <sstream>
 #endif
 #include "PowerSystem.h"
 
@@ -77,15 +78,32 @@ void UPowerSystem::SendAllData()
 
 bool UPowerSystem::ProcessSystemMessage(FString message)
 {
-	if (message == TEXT("inc_aux"))
+	if (message == TEXT("incaux"))
 	{
 		IncrementAuxPower();
-		return true;
 	}
+	else if (message.find(TEXT("addchoice ") == 0))
+	{
+		message = message.substr(10);
 
-	// TODO: check for addchoice message
+#ifndef WEB_SERVER_TEST
+		TArray<int32> values;
+		message.ParseIntoArray(&values, TEXT(" "), true);
+		while (values.Num() < 3)
+			values.Add(0); // ensure 3 values
+#else
+		int32 values[3] = { 0, 0, 0 };
+		std::wstringstream ss(message);
+		int temp, index = 0;
+		while (index < 3 && ss >> temp)
+			values[index++] = temp;
+#endif
+		AddCardChoice(values[0], values[1], values[2]);
+	}
+	else
+		return false;
 
-	return false;
+	return true;
 }
 
 void UPowerSystem::IncrementAuxPower()
@@ -121,18 +139,18 @@ void UPowerSystem::SendPowerLevels()
 #endif
 }
 
+#ifndef WEB_SERVER_TEST
+#define ADD(set, val) set.Add(val)
+#else
+#define ADD(set, val) set.push_back(val)
+#endif
+
 void UPowerSystem::AddCardChoice(int32 card1, int32 card2, int32 card3)
 {
 	TSet<int32> choice;
-#ifndef WEB_SERVER_TEST
-	choice.Add(card1);
-	choice.Add(card2);
-	choice.Add(card3);
-#else
-	choice.push_back(card1);
-	choice.push_back(card2);
-	choice.push_back(card3);
-#endif
+	ADD(choice, card1);
+	ADD(choice, card2);
+	ADD(choice, card3);
 
 	bool wasEmpty;
 #ifndef WEB_SERVER_TEST
@@ -189,7 +207,7 @@ FString UPowerSystem::CombineIDs(const TCHAR *prefix, TSet<int32> IDs)
 			else
 				output += TEXT(" ");
 
-			output += id;
+			APPENDINT(output, id);
 		}
 	}
 	return output;

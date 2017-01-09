@@ -617,7 +617,7 @@ void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, Connect
 #else
 	std::wstring withSystem = std::to_wstring(system);
 	withSystem += message;
-	char c_szText[1024];
+	char c_szText[2048];
 #endif
 
 	switch (system)
@@ -646,7 +646,8 @@ void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, Connect
 #ifndef WEB_SERVER_TEST
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, TCHAR_TO_ANSI(message));
 #else
-			wcstombs(c_szText, message, wcslen(message) + 1);
+			wcstombs(c_szText, message, wcslen(message));
+			c_szText[wcslen(message)] = '\0';
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, c_szText);
 #endif
 	}

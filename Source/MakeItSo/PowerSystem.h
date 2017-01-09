@@ -25,12 +25,12 @@ public:
 	bool ReceiveCrewMessage(ConnectionInfo *info);
 	virtual void SendAllData();
 	virtual bool ProcessSystemMessage(FString message);
-
-	void IncrementAuxPower();
-	void AddCardChoice(int32 card1, int32 card2, int32 card3);
 protected:
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::PowerManagement; }
 private:
+	void IncrementAuxPower();
+	void AddCardChoice(int32 card1, int32 card2, int32 card3);
+
 	int32 auxPower;
 #define MAX_AUX_POWER 5
 	float powerLevels[MAX_POWER_SYSTEMS];

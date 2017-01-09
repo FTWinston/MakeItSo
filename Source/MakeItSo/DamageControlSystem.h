@@ -54,7 +54,12 @@ protected:
 private:
 #define DAMAGE_GRID_WIDTH 48
 #define DAMAGE_GRID_HEIGHT 36
+
+#ifndef WEB_SERVER_TEST
+	TArray<int32> damageGrid;
+#else
 	int32 damageGrid[DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH];
+#endif
 	void SendDamageGrid();
 	inline int32 GetDamageCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
 	EDamageSection GetDamageCellSection(int32 cellIndex);

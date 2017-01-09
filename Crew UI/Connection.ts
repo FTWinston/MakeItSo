@@ -36,7 +36,8 @@ class Connection {
         }
     }
     messageReceived(ev) {
-        let data:string = (ev.data || ''), pos:number = data.indexOf(' ');
+        let data:string = (ev.data || '');
+        let pos:number = data.indexOf(' ');
         let cmd:string = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? null : data.substr(pos + 1);
         

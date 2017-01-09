@@ -114,7 +114,7 @@ System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, S
 
 System::Void WebTest::MainForm::btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, L"inc_aux");
+	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, L"incaux");
 }
 
 System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e)
@@ -131,11 +131,11 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 	} while (card3 == card2 || card3 == card1);
 
 	FString message = L"addchoice ";
-	message += card1;
+	message += std::to_wstring(card1);
 	message += L" ";
-	message += card2;
+	message += std::to_wstring(card2);
 	message += L" ";
-	message += card3;
+	message += std::to_wstring(card3);
 
 	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, CHARARR(message));
 }
