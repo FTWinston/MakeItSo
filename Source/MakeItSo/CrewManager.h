@@ -7,6 +7,9 @@
 #endif
 #include "Mongoose.h"
 #include "CrewManager.Generated.h"
+#ifdef WEB_SERVER_TEST
+#include <windows.h>
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER < 1900
 #define snprintf _snprintf_s

@@ -1,4 +1,8 @@
+#ifndef WEB_SERVER_TEST
 #include "MakeItSo.h"
+#else
+#include "stdafx.h"
+#endif
 #include "PowerSystem.h"
 
 
@@ -78,6 +82,8 @@ bool UPowerSystem::ProcessSystemMessage(FString message)
 		IncrementAuxPower();
 		return true;
 	}
+
+	// TODO: check for addchoice message
 
 	return false;
 }

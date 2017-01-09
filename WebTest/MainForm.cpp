@@ -130,5 +130,12 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 		card3 = rand() % 7;
 	} while (card3 == card2 || card3 == card1);
 
-	crewManager->AddCardChoice(card1, card2, card3);
+	FString message = L"addchoice ";
+	message += card1;
+	message += L" ";
+	message += card2;
+	message += L" ";
+	message += card3;
+
+	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, CHARARR(message));
 }
