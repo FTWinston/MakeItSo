@@ -16,7 +16,12 @@ public:
 	enum EDamageCell {
 		Empty = 0,
 		Wall,
-		SnakeBody,
+		SnakeBodyLR,
+		SnakeBodyUD,
+		SnakeBodyUR,
+		SnakeBodyDR,
+		SnakeBodyDL,
+		SnakeBodyUL,
 		SnakeHead,
 		Apple,
 		Damage1,
@@ -26,10 +31,10 @@ public:
 
 	enum EOrdinalDirection {
 		None = 0,
-		Up,
-		Down,
-		Left,
-		Right,
+		Up = 1,
+		Down = 2,
+		Left = 4,
+		Right = 8,
 	};
 
 	enum EDamageSection {
@@ -68,8 +73,11 @@ private:
 	void AdvanceSnake();
 	TSparseArray<int32> snakeCells;
 	EOrdinalDirection snakeDir, prevSnakeDir;
-	void CreateDamageSnake();
+	void CreateSnake();
 	void CreateDamage(EDamageSection section, int32 amount);
-	int32 CreateDamageApple();
+	int32 CreateApple();
 	void UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after);
+	EDamageCell GetBodyCellType(EOrdinalDirection prevDir, EOrdinalDirection currentDir);
+	void AppendCell(FString &output, int32 cell, int32 cellType);
+	void AppendCellType(FString &output, int32 cellType);
 };

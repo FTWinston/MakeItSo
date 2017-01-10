@@ -16,7 +16,7 @@ bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 		// check they didn't switch to the opposite direction ... that isn't allowed
 		int32 combinedDirs = dir + prevSnakeDir;
-		if (combinedDirs == 3 || combinedDirs == 7) // up + down or left + right
+		if (combinedDirs == (Up + Down) || combinedDirs == (Left + Right)) // up + down or left + right
 			return true;
 
 		snakeDir = dir;
@@ -64,8 +64,8 @@ void UDamageControlSystem::Init(UCrewManager *manager)
 	memcpy(damageGrid, initialGrid, DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH * sizeof(int32));
 #endif
 
-	CreateDamageSnake();
-	CreateDamageApple();
+	CreateSnake();
+	CreateApple();
 }
 
 void UDamageControlSystem::ResetData()
@@ -80,8 +80,8 @@ void UDamageControlSystem::ResetData()
 		damageGrid[i] = 0;
 	}
 
-	CreateDamageSnake();
-	CreateDamageApple();
+	CreateSnake();
+	CreateApple();
 }
 
 #ifndef WEB_SERVER_TEST
@@ -92,7 +92,7 @@ void UDamageControlSystem::ResetData()
 #define ADDCELL(cells, val) cells.push_back(val)
 #endif
 
-void UDamageControlSystem::CreateDamageSnake()
+void UDamageControlSystem::CreateSnake()
 {
 	snakeDir = prevSnakeDir = Right;
 
@@ -107,12 +107,29 @@ void UDamageControlSystem::CreateDamageSnake()
 	{
 		if (first)
 		{
-			damageGrid[cell] = 2;
+			damageGrid[cell] = SnakeHead;
 			first = false;
 		}
 		else
-			damageGrid[cell] = 2;
+			damageGrid[cell] = SnakeBodyLR;
 	}
+}
+
+void UDamageControlSystem::AppendCell(FString &message, int32 cell, int32 cellType)
+{
+	message += TEXT(" ");
+	APPENDINT(message, cell);
+	message += TEXT(":");
+	AppendCellType(message, cellType);
+}
+
+void UDamageControlSystem::AppendCellType(FString &message, int32 cellType)
+{
+#ifndef WEB_SERVER_TEST
+	message.AppendChar('a' + cellType);
+#else
+	message += 'a' + cellType;
+#endif
 }
 
 void UDamageControlSystem::SendDamageGrid()
@@ -120,7 +137,7 @@ void UDamageControlSystem::SendDamageGrid()
 	FString output = TEXT("dmggrid ");
 
 	for (int32 id : damageGrid)
-		APPENDINT(output, id);
+		AppendCellType(output, id);
 
 	SendCrewMessage(CHARARR(output));
 }
@@ -130,7 +147,6 @@ void UDamageControlSystem::AdvanceSnake()
 	if (EMPTY(snakeCells))
 		return;
 
-	prevSnakeDir = snakeDir;
 #ifndef WEB_SERVER_TEST
 	int32 oldHead = damageSnakeCells[0];
 #else
@@ -194,21 +210,23 @@ void UDamageControlSystem::AdvanceSnake()
 			int32 cell = snakeCells.back();
 			snakeCells.pop_back();
 #endif
+			EDamageCell oldVal = (EDamageCell)damageGrid[cell];
 			damageGrid[cell] = Damage1;
 
-			crewMessage += TEXT(" ");
-			APPENDINT(crewMessage, cell);
-			crewMessage += TEXT(":");
-			APPENDINT(crewMessage, Damage1);
-
-			UpdateDamage(cell, SnakeBody, Damage1);
+			AppendCell(crewMessage, cell, Damage1);
+			UpdateDamage(cell, oldVal, Damage1);
 		}
 
 		// create additional damage around crash area
 		CreateDamage(GetDamageCellSection(newHead), snakeSize);
 		break;
 	}
-	case SnakeBody:
+	case SnakeBodyLR:
+	case SnakeBodyUD:
+	case SnakeBodyUR:
+	case SnakeBodyDR:
+	case SnakeBodyDL:
+	case SnakeBodyUL:
 		while (true)
 		{
 #ifndef WEB_SERVER_TEST
@@ -223,24 +241,17 @@ void UDamageControlSystem::AdvanceSnake()
 			if (cell == newHead)
 				break; // all snake cells up to the collision point have been converted into damage
 
+			EDamageCell oldVal = (EDamageCell)damageGrid[cell];
 			damageGrid[cell] = Damage1;
 
-			crewMessage += TEXT(" ");
-			APPENDINT(crewMessage, cell);
-			crewMessage += TEXT(":");
-			APPENDINT(crewMessage, Damage1);
-
-			UpdateDamage(cell, SnakeBody, Damage1);
+			AppendCell(crewMessage, cell, Damage1);
+			UpdateDamage(cell, oldVal, Damage1);
 		}
 		tailCellsToLose = 0;
 		break;
 	case Apple:
 		tailCellsToLose = 0;
-
-		crewMessage += TEXT(" ");
-		APPENDINT(crewMessage, CreateDamageApple());
-		crewMessage += TEXT(":");
-		APPENDINT(crewMessage, Apple);
+		AppendCell(crewMessage, CreateApple(), Apple);
 		break;
 	case Damage1:
 		UpdateDamage(newHead, Damage1, SnakeHead);
@@ -268,21 +279,16 @@ void UDamageControlSystem::AdvanceSnake()
 #endif
 		damageGrid[cell] = Empty;
 
-		crewMessage += TEXT(" ");
-		APPENDINT(crewMessage, cell);
-		crewMessage += TEXT(":");
-		APPENDINT(crewMessage, Empty);
+		AppendCell(crewMessage, cell, Empty);
 	}
 
 	if (advanceHead)
 	{
 		// current head cell becomes body
-		damageGrid[oldHead] = SnakeBody;
+		EDamageCell newBody = GetBodyCellType(prevSnakeDir, snakeDir);
+		damageGrid[oldHead] = newBody;
 
-		crewMessage += TEXT(" ");
-		APPENDINT(crewMessage, oldHead);
-		crewMessage += TEXT(":");
-		APPENDINT(crewMessage, SnakeBody);
+		AppendCell(crewMessage, oldHead, newBody);
 
 		// new head cell becomes head
 		damageGrid[newHead] = SnakeHead;
@@ -292,14 +298,47 @@ void UDamageControlSystem::AdvanceSnake()
 		snakeCells.insert(snakeCells.begin(), newHead);
 #endif
 
-		crewMessage += TEXT(" ");
-		APPENDINT(crewMessage, newHead);
-		crewMessage += TEXT(":");
-		APPENDINT(crewMessage, SnakeHead);
+		AppendCell(crewMessage, newHead, SnakeHead);
 	}
+
+	prevSnakeDir = snakeDir;
 
 	// send crew message listing changed cells
 	SendCrewMessage(CHARARR(crewMessage));
+}
+
+UDamageControlSystem::EDamageCell UDamageControlSystem::GetBodyCellType(EOrdinalDirection prevDir, EOrdinalDirection currentDir)
+{
+	EOrdinalDirection oppositePrevDir = prevDir;
+	switch (prevDir)
+	{
+	case Up:
+		oppositePrevDir = Down; break;
+	case Down:
+		oppositePrevDir = Up; break;
+	case Left:
+		oppositePrevDir = Right; break;
+	case Right:
+		oppositePrevDir = Left; break;
+	}
+
+	switch (oppositePrevDir + currentDir)
+	{
+	case Up + Down:
+		return SnakeBodyUD;
+	case Left + Right:
+		return SnakeBodyLR;
+	case Up + Left:
+		return SnakeBodyUL;
+	case Up + Right:
+		return SnakeBodyUR;
+	case Down + Left:
+		return SnakeBodyDL;
+	case Down + Right:
+		return SnakeBodyDR;
+	default:
+		return SnakeBodyLR;
+	}
 }
 
 void UDamageControlSystem::UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after)
@@ -335,7 +374,7 @@ void UDamageControlSystem::UpdateDamage(int32 updatedCell, EDamageCell before, E
 	// TODO: apply damage difference to section total damage
 }
 
-int32 UDamageControlSystem::CreateDamageApple()
+int32 UDamageControlSystem::CreateApple()
 {
 	while (true)
 	{
@@ -396,11 +435,7 @@ void UDamageControlSystem::CreateDamage(EDamageSection section, int32 amount)
 
 		damageGrid[cell] = newContent;
 
-		crewMessage += TEXT(" ");
-		APPENDINT(crewMessage, cell);
-		crewMessage += TEXT(":");
-		APPENDINT(crewMessage, newContent);
-
+		AppendCell(crewMessage, cell, newContent);
 		UpdateDamage(cell, content, newContent);
 
 		numUpdated++;

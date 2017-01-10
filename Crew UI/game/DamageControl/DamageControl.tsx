@@ -13,7 +13,12 @@ interface IDamageControlState {
 const enum DamageCellType {
     Empty = 0,
     Wall,
-    SnakeBody,
+    SnakeBodyLR,
+    SnakeBodyUD,
+    SnakeBodyUR,
+    SnakeBodyDR,
+    SnakeBodyDL,
+    SnakeBodyUL,
     SnakeHead,
     Apple,
     Damage1,
@@ -46,6 +51,7 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
     isVisible() { return this.props.visible; }
 
     private cellSize: number;
+    private inset: number;
     private rotated: boolean;
 
     render() {
@@ -76,11 +82,42 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         for (let x = 0; x < this.props.cellsWide; x++)
             for (let y = 0; y < this.props.cellsTall; y++) {
                 let value = this.state.cells[y * this.props.cellsWide + x];
+                if (value == DamageCellType.Empty)
+                    continue;
+            
+                let drawX = innerX + this.cellSize * x, drawY = innerY + this.cellSize * y;
+
                 switch (value) {
                     case DamageCellType.Wall:
                         ctx.fillStyle = '#a0a0a0'; break;
-                    case DamageCellType.SnakeBody:
-                        ctx.fillStyle = '#009900'; break;
+                    case DamageCellType.SnakeBodyLR:
+                        ctx.fillStyle = '#009900';
+                        ctx.fillRect(drawX, drawY + this.inset, this.cellSize, this.cellSize - 2 * this.inset);
+                        continue;
+                    case DamageCellType.SnakeBodyUD:
+                        ctx.fillStyle = '#009900';
+                        ctx.fillRect(drawX + this.inset, drawY, this.cellSize - 2 * this.inset, this.cellSize);
+                        continue;
+                    case DamageCellType.SnakeBodyUL:
+                        ctx.fillStyle = '#009900';
+                        ctx.fillRect(drawX, drawY + this.inset, this.cellSize - this.inset, this.cellSize - 2 * this.inset);
+                        ctx.fillRect(drawX + this.inset, drawY, this.cellSize - 2 * this.inset, this.inset);
+                        continue;
+                    case DamageCellType.SnakeBodyUR:
+                        ctx.fillStyle = '#009900';
+                        ctx.fillRect(drawX + this.inset, drawY + this.inset, this.cellSize - this.inset, this.cellSize - 2 * this.inset);
+                        ctx.fillRect(drawX + this.inset, drawY, this.cellSize - 2 * this.inset, this.inset);
+                        continue;
+                    case DamageCellType.SnakeBodyDL:
+                        ctx.fillStyle = '#009900';
+                        ctx.fillRect(drawX, drawY + this.inset, this.cellSize - this.inset, this.cellSize - 2 * this.inset);
+                        ctx.fillRect(drawX + this.inset, drawY + this.cellSize - this.inset, this.cellSize - 2 * this.inset, this.inset);
+                        continue;
+                    case DamageCellType.SnakeBodyDR:
+                        ctx.fillStyle = '#009900';
+                        ctx.fillRect(drawX + this.inset, drawY + this.inset, this.cellSize - this.inset, this.cellSize - 2 * this.inset);
+                        ctx.fillRect(drawX + this.inset, drawY + this.cellSize - this.inset, this.cellSize - 2 * this.inset, this.inset);
+                        continue;
                     case DamageCellType.SnakeHead:
                         ctx.fillStyle = '#00cc00'; break;
                     case DamageCellType.Apple:
@@ -95,7 +132,7 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
                         continue;
                 }
 
-                ctx.fillRect(innerX + this.cellSize * x, innerY + this.cellSize * y, this.cellSize, this.cellSize);
+                ctx.fillRect(drawX, drawY, this.cellSize, this.cellSize);
             }
     }
     private drawBackground(ctx, width, height, innerWidth, innerHeight, innerX, innerY) {
@@ -135,6 +172,7 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
             this.cellSize = Math.min(height * 0.98 / this.props.cellsWide, width / this.props.cellsTall);
         else
             this.cellSize = Math.min(width / this.props.cellsWide, height * 0.98 / this.props.cellsTall);
+        this.inset = this.cellSize * 0.2;
 
         // if portrait, rotate everything
         if (this.rotated) {
@@ -143,11 +181,12 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         }
     }
     receiveMessage(msg, data) {
+        let a = 'a'.charCodeAt(0);
         switch (msg) {
             case "dmggrid":
                 let cells: number[] = [];
                 for (let i = 0; i < data.length; i++) {
-                    let val = parseInt(data.charAt(i));
+                    let val = data.charCodeAt(i) - a;
                     cells.push(val);
                 }
                 this.setState({ cells: cells });
@@ -163,7 +202,7 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
                         console.error(language.errorParameterNumber.replace('@num@', '2'));
                         return false;
                     }
-                    let cell = parseInt(values[0]), value = parseInt(values[1]);
+                    let cell = parseInt(values[0]), value = values[1].charCodeAt(0) - a;
                     if (isNaN(cell) || isNaN(cell)) {
                         console.error(language.errorParameterNotNumeric);
                         return false;
