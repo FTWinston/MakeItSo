@@ -264,15 +264,6 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
         gameClient.server.send(stop ? 'dctoggle 0' : 'dctoggle 1');
     }
     private setMoveDir(dir: SwipeDir) {
-        switch (dir) {
-            case SwipeDir.Up:
-                gameClient.server.send('dcdir 1'); break;
-            case SwipeDir.Down:
-                gameClient.server.send('dcdir 2'); break;
-            case SwipeDir.Left:
-                gameClient.server.send('dcdir 3'); break;
-            case SwipeDir.Right:
-                gameClient.server.send('dcdir 4'); break;
-        }
+        gameClient.server.send('dcdir ' + dir);
     }
 }

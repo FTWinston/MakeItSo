@@ -1,8 +1,8 @@
 ﻿const enum SwipeDir {
-    Up = 0,
-    Down,
-    Left,
-    Right
+    Up = 1,
+    Down = 2,
+    Left = 4,
+    Right = 8,
 };
 
 const TouchFunctions = {
