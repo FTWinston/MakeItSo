@@ -32,11 +32,18 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
     componentDidMount() {
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, this);
+
+        Hotkeys.register(37, this);
+        Hotkeys.register(38, this);
+        Hotkeys.register(39, this);
+        Hotkeys.register(40, this);
+        Hotkeys.register(' ', this);
     }
     componentWillUnmount() {
         if (this.props.registerCallback != null)
             this.props.registerCallback(this.props.index, undefined);
     }
+    isVisible() { return this.props.visible; }
 
     private cellSize: number;
     private rotated: boolean;
@@ -81,9 +88,9 @@ class DamageControl extends React.Component<IDamageControlProps, IDamageControlS
                     case DamageCellType.Damage1:
                         ctx.fillStyle = '#cc0000'; break;
                     case DamageCellType.Damage2:
-                        ctx.fillStyle = '#ff3300'; break;
+                        ctx.fillStyle = '#ff9900'; break;
                     case DamageCellType.Damage3:
-                        ctx.fillStyle = '#ff9933'; break;
+                        ctx.fillStyle = '#ffff66'; break;
                     default:
                         continue;
                 }

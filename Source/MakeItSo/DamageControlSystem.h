@@ -45,12 +45,14 @@ public:
 		Section_Communications = 9,
 	};
 
+	void Init(UCrewManager* manager);
+	void ResetData();
+
 	bool ReceiveCrewMessage(ConnectionInfo *info);
-	virtual void SendAllData();
-	virtual void InitData();
-	virtual void ResetData();
+	bool ProcessSystemMessage(FString message);
+	void SendAllData();
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::DamageControl; }
+	UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::DamageControl; }
 private:
 #define DAMAGE_GRID_WIDTH 48
 #define DAMAGE_GRID_HEIGHT 36
@@ -61,11 +63,11 @@ private:
 	int32 damageGrid[DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH];
 #endif
 	void SendDamageGrid();
-	inline int32 GetDamageCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
+	inline int32 GetCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
 	EDamageSection GetDamageCellSection(int32 cellIndex);
 	void AdvanceSnake();
-	TSparseArray<int32> damageSnakeCells;
-	EOrdinalDirection damageSnakeDir, prevDamageSnakeDir;
+	TSparseArray<int32> snakeCells;
+	EOrdinalDirection snakeDir, prevSnakeDir;
 	void CreateDamageSnake();
 	void CreateDamage(EDamageSection section, int32 amount);
 	int32 CreateDamageApple();

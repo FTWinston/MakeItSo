@@ -65,7 +65,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 		shipSystemCounts[i] = 0;
 
 	CreateSystems();
-	ResetData();
 	
 	if (!server)
 		server = mg_create_server(this, EventReceived);
@@ -115,7 +114,6 @@ void UCrewManager::CreateSystems()
 		auto s = system.second;
 #endif
 		s->Init(this);
-		s->ResetData();
 	}
 }
 
@@ -617,7 +615,7 @@ void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, Connect
 #else
 	std::wstring withSystem = std::to_wstring(system);
 	withSystem += message;
-	char c_szText[2048];
+	char szText[2048];
 #endif
 
 	switch (system)
@@ -642,13 +640,15 @@ void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, Connect
 		if (other == exclude)
 			continue;
 
-		if ((includeNoSystems && other->shipSystemFlags == 0) || (other->shipSystemFlags & systemFlags) != 0)
+		if (!(includeNoSystems && other->shipSystemFlags == 0) && !(other->shipSystemFlags & systemFlags) != 0)
+			continue;
+		
 #ifndef WEB_SERVER_TEST
-			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, TCHAR_TO_ANSI(message));
+		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, TCHAR_TO_ANSI(message));
 #else
-			wcstombs(c_szText, message, wcslen(message));
-			c_szText[wcslen(message)] = '\0';
-			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, c_szText);
+		wcstombs(szText, message, wcslen(message));
+		szText[wcslen(message)] = '\0';
+		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, szText);
 #endif
 	}
 }

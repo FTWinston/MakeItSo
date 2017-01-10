@@ -139,3 +139,17 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 
 	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, CHARARR(message));
 }
+
+System::Void WebTest::MainForm::btnTickDamage_Click(System::Object^  sender, System::EventArgs^  e)
+{
+	crewManager->ProcessSystemMessage(UCrewManager::ESystem::DamageControl, L"tick");
+}
+
+System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e)
+{
+	FString message = L"damage ";
+	message += std::to_wstring(rand() % 10); // section
+	message += L" ";
+	message += std::to_wstring(rand() % 5 + 1); // amount
+	crewManager->ProcessSystemMessage(UCrewManager::ESystem::DamageControl, CHARARR(message));
+}

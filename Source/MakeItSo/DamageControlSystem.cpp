@@ -15,11 +15,30 @@ bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
 		EOrdinalDirection dir = (EOrdinalDirection)atoi(buffer);
 
 		// check they didn't switch to the opposite direction ... that isn't allowed
-		int32 combinedDirs = dir + prevDamageSnakeDir;
+		int32 combinedDirs = dir + prevSnakeDir;
 		if (combinedDirs == 3 || combinedDirs == 7) // up + down or left + right
 			return true;
 
-		damageSnakeDir = dir;
+		snakeDir = dir;
+	}
+	else
+		return false;
+
+	return true;
+}
+
+bool UDamageControlSystem::ProcessSystemMessage(FString message)
+{
+	if (message == TEXT("tick"))
+	{
+		AdvanceSnake();
+	}
+	else if (message.find(TEXT("damage ") == 0))
+	{
+		message = message.substr(7);
+
+		// TODO: parse section and amount
+		CreateDamage(EDamageSection::Section_Any, 5);
 	}
 	else
 		return false;
@@ -32,8 +51,10 @@ void UDamageControlSystem::SendAllData()
 	SendDamageGrid();
 }
 
-void UDamageControlSystem::InitData()
+void UDamageControlSystem::Init(UCrewManager *manager)
 {
+	UCrewSystem::Init(manager);
+
 	int32 initialGrid[DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH]{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 #ifndef WEB_SERVER_TEST
@@ -42,6 +63,9 @@ void UDamageControlSystem::InitData()
 #else
 	memcpy(damageGrid, initialGrid, DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH * sizeof(int32));
 #endif
+
+	CreateDamageSnake();
+	CreateDamageApple();
 }
 
 void UDamageControlSystem::ResetData()
@@ -70,16 +94,16 @@ void UDamageControlSystem::ResetData()
 
 void UDamageControlSystem::CreateDamageSnake()
 {
-	damageSnakeDir = prevDamageSnakeDir = Right;
+	snakeDir = prevSnakeDir = Right;
 
-	CLEARCELLS(damageSnakeCells);
-	ADDCELL(damageSnakeCells, 600);
-	ADDCELL(damageSnakeCells, 599);
-	ADDCELL(damageSnakeCells, 598);
-	ADDCELL(damageSnakeCells, 597);
+	CLEARCELLS(snakeCells);
+	ADDCELL(snakeCells, 588);
+	ADDCELL(snakeCells, 587);
+	ADDCELL(snakeCells, 586);
+	ADDCELL(snakeCells, 585);
 
 	bool first = true;
-	for (int32 cell : damageSnakeCells)
+	for (int32 cell : snakeCells)
 	{
 		if (first)
 		{
@@ -103,15 +127,18 @@ void UDamageControlSystem::SendDamageGrid()
 
 void UDamageControlSystem::AdvanceSnake()
 {
-	prevDamageSnakeDir = damageSnakeDir;
+	if (EMPTY(snakeCells))
+		return;
+
+	prevSnakeDir = snakeDir;
 #ifndef WEB_SERVER_TEST
 	int32 oldHead = damageSnakeCells[0];
 #else
-	int32 oldHead = damageSnakeCells.front();
+	int32 oldHead = snakeCells.front();
 #endif
 
 	int32 newHead;
-	switch (damageSnakeDir)
+	switch (snakeDir)
 	{
 	case Up:
 		newHead = oldHead - DAMAGE_GRID_WIDTH;
@@ -146,32 +173,33 @@ void UDamageControlSystem::AdvanceSnake()
 	{
 	case Wall:
 	{
-		damageSnakeDir = None;
+		snakeDir = None;
 		advanceHead = false;
+		tailCellsToLose = 0;
 
 #ifndef WEB_SERVER_TEST
-		int32 snakeSize = damageSnakeCells.Num();
+		int32 snakeSize = snakeCells.Num();
 #else
-		int32 snakeSize = damageSnakeCells.size();
+		int32 snakeSize = snakeCells.size();
 #endif
 
 		// convert all snake cells into damage
-		while (NOTEMPTY(damageSnakeCells))
+		while (NOTEMPTY(snakeCells))
 		{
 #ifndef WEB_SERVER_TEST
-			int32 lastIndex = damageSnakeCells.Num() - 1;
-			int32 cell = damageSnakeCells[lastIndex];
-			damageSnakeCells.RemoveAt(lastIndex, 1);
+			int32 lastIndex = snakeCells.Num() - 1;
+			int32 cell = snakeCells[lastIndex];
+			snakeCells.RemoveAt(lastIndex, 1);
 #else
-			int32 cell = damageSnakeCells.back();
-			damageSnakeCells.pop_back();
+			int32 cell = snakeCells.back();
+			snakeCells.pop_back();
 #endif
 			damageGrid[cell] = Damage1;
 
 			crewMessage += TEXT(" ");
-			crewMessage += cell;
+			APPENDINT(crewMessage, cell);
 			crewMessage += TEXT(":");
-			crewMessage += Damage1;
+			APPENDINT(crewMessage, Damage1);
 
 			UpdateDamage(cell, SnakeBody, Damage1);
 		}
@@ -184,12 +212,12 @@ void UDamageControlSystem::AdvanceSnake()
 		while (true)
 		{
 #ifndef WEB_SERVER_TEST
-			int32 lastIndex = damageSnakeCells.Num() - 1;
-			int32 cell = damageSnakeCells[lastIndex];
-			damageSnakeCells.RemoveAt(lastIndex, 1);
+			int32 lastIndex = snakeCells.Num() - 1;
+			int32 cell = snakeCells[lastIndex];
+			snakeCells.RemoveAt(lastIndex, 1);
 #else
-			int32 cell = damageSnakeCells.back();
-			damageSnakeCells.pop_back();
+			int32 cell = snakeCells.back();
+			snakeCells.pop_back();
 #endif
 
 			if (cell == newHead)
@@ -198,9 +226,9 @@ void UDamageControlSystem::AdvanceSnake()
 			damageGrid[cell] = Damage1;
 
 			crewMessage += TEXT(" ");
-			crewMessage += cell;
+			APPENDINT(crewMessage, cell);
 			crewMessage += TEXT(":");
-			crewMessage += Damage1;
+			APPENDINT(crewMessage, Damage1);
 
 			UpdateDamage(cell, SnakeBody, Damage1);
 		}
@@ -210,9 +238,9 @@ void UDamageControlSystem::AdvanceSnake()
 		tailCellsToLose = 0;
 
 		crewMessage += TEXT(" ");
-		crewMessage += CreateDamageApple();
+		APPENDINT(crewMessage, CreateDamageApple());
 		crewMessage += TEXT(":");
-		crewMessage += Apple;
+		APPENDINT(crewMessage, Apple);
 		break;
 	case Damage1:
 		UpdateDamage(newHead, Damage1, SnakeHead);
@@ -227,25 +255,23 @@ void UDamageControlSystem::AdvanceSnake()
 		break;
 	}
 
-	while (tailCellsToLose > 0)
+	while (tailCellsToLose-- > 0)
 	{
 		// current tail cell becomes empty
 #ifndef WEB_SERVER_TEST
-		int32 lastIndex = damageSnakeCells.Num() - 1;
-		int32 cell = damageSnakeCells[lastIndex];
-		damageSnakeCells.RemoveAt(lastIndex, 1);
+		int32 lastIndex = snakeCells.Num() - 1;
+		int32 cell = snakeCells[lastIndex];
+		snakeCells.RemoveAt(lastIndex, 1);
 #else
-		int32 cell = damageSnakeCells.back();
-		damageSnakeCells.pop_back();
+		int32 cell = snakeCells.back();
+		snakeCells.pop_back();
 #endif
 		damageGrid[cell] = Empty;
 
-
-
 		crewMessage += TEXT(" ");
-		crewMessage += cell;
+		APPENDINT(crewMessage, cell);
 		crewMessage += TEXT(":");
-		crewMessage += Empty;
+		APPENDINT(crewMessage, Empty);
 	}
 
 	if (advanceHead)
@@ -254,22 +280,22 @@ void UDamageControlSystem::AdvanceSnake()
 		damageGrid[oldHead] = SnakeBody;
 
 		crewMessage += TEXT(" ");
-		crewMessage += oldHead;
+		APPENDINT(crewMessage, oldHead);
 		crewMessage += TEXT(":");
-		crewMessage += SnakeBody;
+		APPENDINT(crewMessage, SnakeBody);
 
 		// new head cell becomes head
 		damageGrid[newHead] = SnakeHead;
 #ifndef WEB_SERVER_TEST
-		damageSnakeCells.Insert(0, newHead);
+		snakeCells.Insert(0, newHead);
 #else
-		damageSnakeCells.insert(damageSnakeCells.begin(), newHead);
+		snakeCells.insert(snakeCells.begin(), newHead);
 #endif
 
 		crewMessage += TEXT(" ");
-		crewMessage += newHead;
+		APPENDINT(crewMessage, newHead);
 		crewMessage += TEXT(":");
-		crewMessage += SnakeHead;
+		APPENDINT(crewMessage, SnakeHead);
 	}
 
 	// send crew message listing changed cells
@@ -334,23 +360,23 @@ void UDamageControlSystem::CreateDamage(EDamageSection section, int32 amount)
 
 		switch (section) {
 		case Section_Manoevering:
-			cell = GetDamageCellIndex(FMath::RandRange(0, 15), FMath::RandRange(0, 11)); break;
+			cell = GetCellIndex(FMath::RandRange(0, 15), FMath::RandRange(0, 11)); break;
 		case Section_Shields:
-			cell = GetDamageCellIndex(FMath::RandRange(16, 31), FMath::RandRange(0, 11)); break;
+			cell = GetCellIndex(FMath::RandRange(16, 31), FMath::RandRange(0, 11)); break;
 		case Section_BeamWeapons:
-			cell = GetDamageCellIndex(FMath::RandRange(32, 47), FMath::RandRange(0, 11)); break;
+			cell = GetCellIndex(FMath::RandRange(32, 47), FMath::RandRange(0, 11)); break;
 		case Section_Deflector:
-			cell = GetDamageCellIndex(FMath::RandRange(0, 15), FMath::RandRange(12, 23)); break;
+			cell = GetCellIndex(FMath::RandRange(0, 15), FMath::RandRange(12, 23)); break;
 		case Section_Power:
-			cell = GetDamageCellIndex(FMath::RandRange(16, 31), FMath::RandRange(12, 23)); break;
+			cell = GetCellIndex(FMath::RandRange(16, 31), FMath::RandRange(12, 23)); break;
 		case Section_Torpedoes:
-			cell = GetDamageCellIndex(FMath::RandRange(32, 47), FMath::RandRange(12, 23)); break;
+			cell = GetCellIndex(FMath::RandRange(32, 47), FMath::RandRange(12, 23)); break;
 		case Section_Warp:
-			cell = GetDamageCellIndex(FMath::RandRange(0, 15), FMath::RandRange(24, 35)); break;
+			cell = GetCellIndex(FMath::RandRange(0, 15), FMath::RandRange(24, 35)); break;
 		case Section_Sensors:
-			cell = GetDamageCellIndex(FMath::RandRange(16, 31), FMath::RandRange(24, 35)); break;
+			cell = GetCellIndex(FMath::RandRange(16, 31), FMath::RandRange(24, 35)); break;
 		case Section_Communications:
-			cell = GetDamageCellIndex(FMath::RandRange(32, 47), FMath::RandRange(24, 35)); break;
+			cell = GetCellIndex(FMath::RandRange(32, 47), FMath::RandRange(24, 35)); break;
 		default:
 			cell = FMath::RandRange(0, DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT); break;
 		}
@@ -371,9 +397,9 @@ void UDamageControlSystem::CreateDamage(EDamageSection section, int32 amount)
 		damageGrid[cell] = newContent;
 
 		crewMessage += TEXT(" ");
-		crewMessage += cell;
+		APPENDINT(crewMessage, cell);
 		crewMessage += TEXT(":");
-		crewMessage += newContent;
+		APPENDINT(crewMessage, newContent);
 
 		UpdateDamage(cell, content, newContent);
 

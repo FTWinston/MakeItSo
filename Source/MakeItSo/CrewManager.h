@@ -22,11 +22,13 @@
 
 #ifndef WEB_SERVER_TEST
 #define CHARARR(str) *str
+#define EMPTY(set) set.Num() == 0
 #define NOTEMPTY(set) set.Num() != 0
 #define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)FMath::Min(sizeof(buffer) - 1, info->connection->content_len - sizeof(offset) + 1), info->connection->content + sizeof(offset) - 1)
 #define APPENDINT(str, i) str.AppendInt(i);
 #else
 #define CHARARR(str) str.c_str()
+#define EMPTY(set) set.empty()
 #define NOTEMPTY(set) !set.empty()
 #define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)       min(sizeof(buffer) - 1, info->connection->content_len - sizeof(offset) + 1), info->connection->content + sizeof(offset) - 1)
 #define APPENDINT(str, i) str += std::to_wstring(i);
@@ -142,7 +144,7 @@ class MAKEITSO_API UCrewSystem : public UObject
 	GENERATED_BODY()
 
 public:
-	void Init(UCrewManager *manager) { crewManager = manager; }
+	virtual void Init(UCrewManager *manager) { crewManager = manager; }
 	virtual bool ReceiveCrewMessage(ConnectionInfo *info) { return false; }
 	virtual bool ProcessSystemMessage(FString message) { return false; }
 	virtual void SendAllData() { }
