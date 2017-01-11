@@ -70,14 +70,23 @@ private:
 	void SendDamageGrid();
 	inline int32 GetCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
 	EDamageSection GetDamageCellSection(int32 cellIndex);
-	void AdvanceSnake();
-	TSparseArray<int32> snakeCells;
-	EOrdinalDirection snakeDir, prevSnakeDir;
+	
 	void CreateSnake();
-	void CreateDamage(EDamageSection section, int32 amount);
 	int32 CreateApple();
+
+	void AdvanceSnake();
+	int32 LookAhead(int32 oldHead);
+	void CollideWithWall(int32 oldHead, FString &message);
+	void CollideWithSelf(int32 newHead, FString &message);
+	void AdvanceHead(int32 oldHead, int32 newHead, FString &message);
+	void AdvanceTail(int32 cellsToLose, FString &message);
+
+	void CreateDamage(EDamageSection section, int32 amount);
 	void UpdateDamage(int32 updatedCell, EDamageCell before, EDamageCell after);
 	EDamageCell GetBodyCellType(EOrdinalDirection prevDir, EOrdinalDirection currentDir);
 	void AppendCell(FString &output, int32 cell, int32 cellType);
 	void AppendCellType(FString &output, int32 cellType);
+
+	TSparseArray<int32> snakeCells;
+	EOrdinalDirection snakeDir, prevSnakeDir;
 };

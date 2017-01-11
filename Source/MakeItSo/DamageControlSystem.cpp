@@ -5,6 +5,11 @@
 #endif
 #include "DamageControlSystem.h"
 
+#ifndef WEB_SERVER_TEST
+#define SIZENUM(set) set.Num()
+#else
+#define SIZENUM(set) set.size()
+#endif
 
 bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
 {
@@ -16,7 +21,7 @@ bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 		// check they didn't switch to the opposite direction ... that isn't allowed
 		int32 combinedDirs = dir + prevSnakeDir;
-		if (combinedDirs == (Up + Down) || combinedDirs == (Left + Right)) // up + down or left + right
+		if (combinedDirs == (Up + Down) || combinedDirs == (Left + Right))
 			return true;
 
 		snakeDir = dir;
@@ -33,7 +38,11 @@ bool UDamageControlSystem::ProcessSystemMessage(FString message)
 	{
 		AdvanceSnake();
 	}
-	else if (message.find(TEXT("damage ") == 0))
+	else if (message == TEXT("respawn"))
+	{
+		CreateSnake();
+	}
+	else if (message.find(TEXT("damage ") == 0)) // FIXME: this seems to be true for any message
 	{
 		message = message.substr(7);
 
@@ -152,33 +161,9 @@ void UDamageControlSystem::AdvanceSnake()
 #else
 	int32 oldHead = snakeCells.front();
 #endif
-
-	int32 newHead;
-	switch (snakeDir)
-	{
-	case Up:
-		newHead = oldHead - DAMAGE_GRID_WIDTH;
-		if (newHead < 0)
-			newHead += DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT;
-		break;
-	case Down:
-		newHead = oldHead + DAMAGE_GRID_WIDTH;
-		if (newHead >= DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT)
-			newHead -= DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT;
-		break;
-	case Left:
-		newHead = oldHead - 1;
-		if (newHead % DAMAGE_GRID_WIDTH == 0)
-			newHead += DAMAGE_GRID_WIDTH;
-		break;
-	case Right:
-		newHead = oldHead + 1;
-		if (newHead % DAMAGE_GRID_WIDTH == 0)
-			newHead -= DAMAGE_GRID_WIDTH;
-		break;
-	default:
-		return; // snake isn't moving; do nothing
-	}
+	int32 newHead = LookAhead(oldHead);
+	if (newHead == oldHead)
+		return;
 
 	FString crewMessage = TEXT("dmgcell");
 	int32 tailCellsToLose = 1;
@@ -189,36 +174,9 @@ void UDamageControlSystem::AdvanceSnake()
 	{
 	case Wall:
 	{
-		snakeDir = None;
 		advanceHead = false;
 		tailCellsToLose = 0;
-
-#ifndef WEB_SERVER_TEST
-		int32 snakeSize = snakeCells.Num();
-#else
-		int32 snakeSize = snakeCells.size();
-#endif
-
-		// convert all snake cells into damage
-		while (NOTEMPTY(snakeCells))
-		{
-#ifndef WEB_SERVER_TEST
-			int32 lastIndex = snakeCells.Num() - 1;
-			int32 cell = snakeCells[lastIndex];
-			snakeCells.RemoveAt(lastIndex, 1);
-#else
-			int32 cell = snakeCells.back();
-			snakeCells.pop_back();
-#endif
-			EDamageCell oldVal = (EDamageCell)damageGrid[cell];
-			damageGrid[cell] = Damage1;
-
-			AppendCell(crewMessage, cell, Damage1);
-			UpdateDamage(cell, oldVal, Damage1);
-		}
-
-		// create additional damage around crash area
-		CreateDamage(GetDamageCellSection(newHead), snakeSize);
+		CollideWithWall(oldHead, crewMessage);
 		break;
 	}
 	case SnakeBodyLR:
@@ -227,27 +185,8 @@ void UDamageControlSystem::AdvanceSnake()
 	case SnakeBodyDR:
 	case SnakeBodyDL:
 	case SnakeBodyUL:
-		while (true)
-		{
-#ifndef WEB_SERVER_TEST
-			int32 lastIndex = snakeCells.Num() - 1;
-			int32 cell = snakeCells[lastIndex];
-			snakeCells.RemoveAt(lastIndex, 1);
-#else
-			int32 cell = snakeCells.back();
-			snakeCells.pop_back();
-#endif
-
-			if (cell == newHead)
-				break; // all snake cells up to the collision point have been converted into damage
-
-			EDamageCell oldVal = (EDamageCell)damageGrid[cell];
-			damageGrid[cell] = Damage1;
-
-			AppendCell(crewMessage, cell, Damage1);
-			UpdateDamage(cell, oldVal, Damage1);
-		}
 		tailCellsToLose = 0;
+		CollideWithSelf(newHead, crewMessage);
 		break;
 	case Apple:
 		tailCellsToLose = 0;
@@ -266,7 +205,111 @@ void UDamageControlSystem::AdvanceSnake()
 		break;
 	}
 
-	while (tailCellsToLose-- > 0)
+	if (advanceHead)
+		AdvanceHead(oldHead, newHead, crewMessage);
+	
+	AdvanceTail(tailCellsToLose, crewMessage);
+
+	prevSnakeDir = snakeDir;
+
+	// send crew message listing changed cells
+	SendCrewMessage(CHARARR(crewMessage));
+}
+
+int32 UDamageControlSystem::LookAhead(int32 oldHead)
+{
+	int32 newHead;
+	switch (snakeDir)
+	{
+	case Up:
+		newHead = oldHead - DAMAGE_GRID_WIDTH;
+		if (newHead < 0)
+			newHead += DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT;
+		break;
+	case Down:
+		newHead = oldHead + DAMAGE_GRID_WIDTH;
+		if (newHead >= DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT)
+			newHead -= DAMAGE_GRID_WIDTH * DAMAGE_GRID_HEIGHT;
+		break;
+	case Left:
+		newHead = oldHead - 1;
+		if (oldHead % DAMAGE_GRID_WIDTH == 0)
+			newHead += DAMAGE_GRID_WIDTH;
+		break;
+	case Right:
+		newHead = oldHead + 1;
+		if (newHead % DAMAGE_GRID_WIDTH == 0)
+			newHead -= DAMAGE_GRID_WIDTH;
+		break;
+	default:
+		newHead = oldHead;
+	}
+
+	return newHead;
+}
+
+void UDamageControlSystem::CollideWithWall(int32 oldHead, FString &message)
+{
+	int32 snakeSize = SIZENUM(snakeCells);
+	snakeDir = None;
+
+	// convert all snake cells into damage
+	while (NOTEMPTY(snakeCells))
+	{
+#ifndef WEB_SERVER_TEST
+		int32 lastIndex = snakeCells.Num() - 1;
+		int32 cell = snakeCells[lastIndex];
+		snakeCells.RemoveAt(lastIndex, 1);
+#else
+		int32 cell = snakeCells.back();
+		snakeCells.pop_back();
+#endif
+		EDamageCell oldVal = (EDamageCell)damageGrid[cell];
+		EDamageCell newVal = cell == oldHead ? Damage2 : Damage1;
+		damageGrid[cell] = newVal;
+
+		AppendCell(message, cell, newVal);
+		UpdateDamage(cell, oldVal, newVal);
+	}
+
+	// create additional damage around crash area
+	CreateDamage(GetDamageCellSection(oldHead), snakeSize * 2);
+}
+
+void UDamageControlSystem::CollideWithSelf(int32 newHead, FString &message)
+{
+	while (true)
+	{
+#ifndef WEB_SERVER_TEST
+		int32 lastIndex = snakeCells.Num() - 1;
+		int32 cell = snakeCells[lastIndex];
+		snakeCells.RemoveAt(lastIndex, 1);
+#else
+		int32 cell = snakeCells.back();
+		snakeCells.pop_back();
+#endif
+
+		if (cell == newHead)
+			break; // all snake cells up to the collision point have been converted into damage
+
+		EDamageCell oldVal = (EDamageCell)damageGrid[cell];
+		damageGrid[cell] = Damage1;
+
+		AppendCell(message, cell, Damage1);
+		UpdateDamage(cell, oldVal, Damage1);
+	}
+}
+
+void UDamageControlSystem::AdvanceTail(int32 cellsToLose, FString &message)
+{
+	int32 snakeSize = SIZENUM(snakeCells);
+	if (cellsToLose > snakeSize)
+	{
+		cellsToLose = snakeSize;
+		snakeDir = None;
+	}
+
+	while (cellsToLose-- > 0)
 	{
 		// current tail cell becomes empty
 #ifndef WEB_SERVER_TEST
@@ -279,32 +322,27 @@ void UDamageControlSystem::AdvanceSnake()
 #endif
 		damageGrid[cell] = Empty;
 
-		AppendCell(crewMessage, cell, Empty);
+		AppendCell(message, cell, Empty);
 	}
+}
 
-	if (advanceHead)
-	{
-		// current head cell becomes body
-		EDamageCell newBody = GetBodyCellType(prevSnakeDir, snakeDir);
-		damageGrid[oldHead] = newBody;
+void UDamageControlSystem::AdvanceHead(int32 oldHead, int32 newHead, FString &message)
+{
+	// current head cell becomes body
+	EDamageCell newBody = GetBodyCellType(prevSnakeDir, snakeDir);
+	damageGrid[oldHead] = newBody;
 
-		AppendCell(crewMessage, oldHead, newBody);
+	AppendCell(message, oldHead, newBody);
 
-		// new head cell becomes head
-		damageGrid[newHead] = SnakeHead;
+	// new head cell becomes head
+	damageGrid[newHead] = SnakeHead;
 #ifndef WEB_SERVER_TEST
-		snakeCells.Insert(0, newHead);
+	snakeCells.Insert(0, newHead);
 #else
-		snakeCells.insert(snakeCells.begin(), newHead);
+	snakeCells.insert(snakeCells.begin(), newHead);
 #endif
 
-		AppendCell(crewMessage, newHead, SnakeHead);
-	}
-
-	prevSnakeDir = snakeDir;
-
-	// send crew message listing changed cells
-	SendCrewMessage(CHARARR(crewMessage));
+	AppendCell(message, newHead, SnakeHead);
 }
 
 UDamageControlSystem::EDamageCell UDamageControlSystem::GetBodyCellType(EOrdinalDirection prevDir, EOrdinalDirection currentDir)

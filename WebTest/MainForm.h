@@ -48,7 +48,7 @@ namespace WebTest {
 	private: System::Windows::Forms::Button^  btnAddEnemy;
 	private: System::Windows::Forms::Button^  btnUpdateShip;
 	private: System::Windows::Forms::Button^  btnAddDamage;
-	private: System::Windows::Forms::Button^  btnTickDamage;
+	private: System::Windows::Forms::Button^  btnRespawnDamage;
 	protected:
 
 	protected:
@@ -76,7 +76,7 @@ namespace WebTest {
 			this->btnUpdateShip = (gcnew System::Windows::Forms::Button());
 			this->btnRemoveShips = (gcnew System::Windows::Forms::Button());
 			this->btnAddEnemy = (gcnew System::Windows::Forms::Button());
-			this->btnTickDamage = (gcnew System::Windows::Forms::Button());
+			this->btnRespawnDamage = (gcnew System::Windows::Forms::Button());
 			this->btnAddDamage = (gcnew System::Windows::Forms::Button());
 			this->groupBox1->SuspendLayout();
 			this->groupBox2->SuspendLayout();
@@ -96,7 +96,7 @@ namespace WebTest {
 			// groupBox1
 			// 
 			this->groupBox1->Controls->Add(this->btnAddDamage);
-			this->groupBox1->Controls->Add(this->btnTickDamage);
+			this->groupBox1->Controls->Add(this->btnRespawnDamage);
 			this->groupBox1->Controls->Add(this->btnShieldDamage);
 			this->groupBox1->Controls->Add(this->btnChooseCards);
 			this->groupBox1->Controls->Add(this->btnAuxPower);
@@ -190,15 +190,15 @@ namespace WebTest {
 			this->btnAddEnemy->UseVisualStyleBackColor = true;
 			this->btnAddEnemy->Click += gcnew System::EventHandler(this, &MainForm::btnAddEnemy_Click);
 			// 
-			// btnTickDamage
+			// btnRespawnDamage
 			// 
-			this->btnTickDamage->Location = System::Drawing::Point(6, 77);
-			this->btnTickDamage->Name = L"btnTickDamage";
-			this->btnTickDamage->Size = System::Drawing::Size(110, 23);
-			this->btnTickDamage->TabIndex = 3;
-			this->btnTickDamage->Text = L"Tick damage";
-			this->btnTickDamage->UseVisualStyleBackColor = true;
-			this->btnTickDamage->Click += gcnew System::EventHandler(this, &MainForm::btnTickDamage_Click);
+			this->btnRespawnDamage->Location = System::Drawing::Point(6, 77);
+			this->btnRespawnDamage->Name = L"btnRespawnDamage";
+			this->btnRespawnDamage->Size = System::Drawing::Size(110, 23);
+			this->btnRespawnDamage->TabIndex = 3;
+			this->btnRespawnDamage->Text = L"Respawn damage";
+			this->btnRespawnDamage->UseVisualStyleBackColor = true;
+			this->btnRespawnDamage->Click += gcnew System::EventHandler(this, &MainForm::btnRespawnDamage_Click);
 			// 
 			// btnAddDamage
 			// 
@@ -237,7 +237,7 @@ namespace WebTest {
 		System::Void btnShieldDamage_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e);
-		System::Void btnTickDamage_Click(System::Object^  sender, System::EventArgs^  e);
+		System::Void btnRespawnDamage_Click(System::Object^  sender, System::EventArgs^  e);
 		System::Void btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e);
 };
 }

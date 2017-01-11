@@ -114,7 +114,6 @@
     <ClCompile Include="..\Source\MakeItSo\WeaponSystem.cpp" />
     <ClCompile Include="MainForm.cpp" />
     <ClCompile Include="stdafx.cpp" />
-    <ClCompile Include="WebTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

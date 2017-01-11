@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MainForm.h"
 #include "CrewManager.h"
+#include <ctime>
 
 using namespace System;
 using namespace System::Threading;
@@ -11,9 +12,18 @@ UCrewManager *crewManager;
 
 void PollClient()
 {
+	auto interval = CLOCKS_PER_SEC / 4;
+	std::clock_t nextTick = std::clock() + interval;
+
 	while (formOpen)
 	{
 		crewManager->Poll();
+
+		if (std::clock() >= nextTick)
+		{
+			crewManager->ProcessSystemMessage(UCrewManager::ESystem::DamageControl, L"tick");
+			nextTick += interval;
+		}
 	}
 	delete crewManager;
 }
@@ -140,9 +150,9 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 	crewManager->ProcessSystemMessage(UCrewManager::ESystem::PowerManagement, CHARARR(message));
 }
 
-System::Void WebTest::MainForm::btnTickDamage_Click(System::Object^  sender, System::EventArgs^  e)
+System::Void WebTest::MainForm::btnRespawnDamage_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->ProcessSystemMessage(UCrewManager::ESystem::DamageControl, L"tick");
+	crewManager->ProcessSystemMessage(UCrewManager::ESystem::DamageControl, L"respawn");
 }
 
 System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e)
