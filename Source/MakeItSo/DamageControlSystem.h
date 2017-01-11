@@ -48,6 +48,7 @@ public:
 		Section_Warp = 7,
 		Section_Sensors = 8,
 		Section_Communications = 9,
+		MAX_DAMAGE_SECTION
 	};
 
 	void Init(UCrewManager* manager);
@@ -64,16 +65,20 @@ private:
 
 #ifndef WEB_SERVER_TEST
 	TArray<int32> damageGrid;
+	TArray<int32> sectionDamage;
 #else
 	int32 damageGrid[DAMAGE_GRID_HEIGHT * DAMAGE_GRID_WIDTH];
+	int32 sectionDamage[MAX_DAMAGE_SECTION];
 #endif
 	void SendDamageGrid();
 	inline int32 GetCellIndex(int32 x, int32 y) { return y * DAMAGE_GRID_WIDTH + x; }
 	EDamageSection GetDamageCellSection(int32 cellIndex);
-	
+
+	TSparseArray<int32> snakeCells;
+	EOrdinalDirection snakeDir, prevSnakeDir;
+
 	void CreateSnake();
 	int32 CreateApple();
-
 	void AdvanceSnake();
 	int32 LookAhead(int32 oldHead);
 	void CollideWithWall(int32 oldHead, FString &message);
@@ -86,7 +91,4 @@ private:
 	EDamageCell GetBodyCellType(EOrdinalDirection prevDir, EOrdinalDirection currentDir);
 	void AppendCell(FString &output, int32 cell, int32 cellType);
 	void AppendCellType(FString &output, int32 cellType);
-
-	TSparseArray<int32> snakeCells;
-	EOrdinalDirection snakeDir, prevSnakeDir;
 };
