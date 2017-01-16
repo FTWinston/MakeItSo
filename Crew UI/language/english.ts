@@ -121,5 +121,6 @@
 
     weaponRoll: 'Roll',
     weaponReroll: 'Re-roll',
+    weaponDiscardRoll: 'Discard',
     weaponFire: 'Fire',
 }

@@ -47,16 +47,15 @@ bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 		SendDice();
 	}
+	else if (MATCHES(info, "wpnunroll")) {
+		ClearDice();
+		SendDice();
+	}
 	else if (MATCHES(info, "wpnfire"))
 	{
 		// TODO: actually fire or something
 
-		timesRolled = 0;
-		for (int i = 0; i < NUM_DICE; i++)
-		{
-			dice[i] = 0;
-			lockedDice[i] = false;
-		}
+		ClearDice();
 		SendDice();
 	}
 	else
@@ -70,6 +69,15 @@ void UWeaponSystem::SendAllData()
 	// TODO: send all weapon targets
 
 	SendDice();
+}
+
+void UWeaponSystem::ClearDice()
+{
+	timesRolled = 0;
+	for (int i = 0; i < NUM_DICE; i++) {
+		dice[i] = 0;
+		lockedDice[i] = false;
+	}
 }
 
 void UWeaponSystem::SendDice()

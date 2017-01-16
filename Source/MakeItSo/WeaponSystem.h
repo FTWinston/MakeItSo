@@ -20,6 +20,7 @@ protected:
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Weapons; }
 private:
 	void ResetDice();
+	void ClearDice();
 	void SendDice();
 	uint8 Roll();
 

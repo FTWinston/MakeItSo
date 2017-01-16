@@ -30,16 +30,16 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                 </section>
                 <section className="target noGrow">
                     <section className="dice noGrow">
-                        <WeaponDice ref="d1" value={this.state.dice[0]} locked={this.state.lockedDice[0]} toggle={function() {this.toggleDiceLock(0); }.bind(this)} />
-                        <WeaponDice ref="d2" value={this.state.dice[1]} locked={this.state.lockedDice[1]} toggle={function() {this.toggleDiceLock(1); }.bind(this)} />
-                        <WeaponDice ref="d3" value={this.state.dice[2]} locked={this.state.lockedDice[2]} toggle={function() {this.toggleDiceLock(2); }.bind(this)} />
-                        <WeaponDice ref="d4" value={this.state.dice[3]} locked={this.state.lockedDice[3]} toggle={function() {this.toggleDiceLock(3); }.bind(this)} />
-                        <WeaponDice ref="d5" value={this.state.dice[4]} locked={this.state.lockedDice[4]} toggle={function() {this.toggleDiceLock(4); }.bind(this)} />
+                        <WeaponDice value={this.state.dice[0]} locked={this.state.lockedDice[0]} toggle={function() {this.toggleDiceLock(0); }.bind(this)} />
+                        <WeaponDice value={this.state.dice[1]} locked={this.state.lockedDice[1]} toggle={function() {this.toggleDiceLock(1); }.bind(this)} />
+                        <WeaponDice value={this.state.dice[2]} locked={this.state.lockedDice[2]} toggle={function() {this.toggleDiceLock(2); }.bind(this)} />
+                        <WeaponDice value={this.state.dice[3]} locked={this.state.lockedDice[3]} toggle={function() {this.toggleDiceLock(3); }.bind(this)} />
+                        <WeaponDice value={this.state.dice[4]} locked={this.state.lockedDice[4]} toggle={function() {this.toggleDiceLock(4); }.bind(this)} />
                     </section>
                     <section className="btns noGrow">
                         <ButtonGroup class="spread" inline={true}>
-                            <Button color="2" type={ButtonType.Push} disabled={this.state.rollNumber >= 3} onClicked={this.rollDice.bind(this)}>{this.state.rollNumber == 0 ? language.weaponRoll : language.weaponReroll}</Button>
-                            <Button color="1" type={ButtonType.Push} disabled={this.state.rollNumber == 0} action="wpnfire">{language.weaponFire}</Button>
+                            <Button color={this.state.rollNumber < 3 ? '2' : '1'} type={ButtonType.Push} onClicked={this.rollDice.bind(this) }>{this.state.rollNumber == 0 ? language.weaponRoll : this.state.rollNumber >= 3 ? language.weaponDiscardRoll : language.weaponReroll}</Button>
+                            <Button color="3" type={ButtonType.Push} disabled={this.state.rollNumber == 0} action="wpnfire">{language.weaponFire}</Button>
                         </ButtonGroup>
                     </section>
                     <WeaponTargetInfo ref="target" visible={this.props.visible} target={this.state.target} />
@@ -119,6 +119,11 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
         this.setState({ lockedDice: locked });
     }
     private rollDice() {
+        if (this.state.rollNumber >= 3) {
+            gameClient.server.send('wpnunroll');
+            return;
+        }
+
         let msg = 'wpnroll ';
         for (let i=0; i<5; i++)
             msg += this.state.lockedDice[i] ? '1' : '0';
