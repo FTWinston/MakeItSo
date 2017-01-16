@@ -117,5 +117,9 @@
         { name: 'Card 6', desc: 'Does even more things', rarity: 3, cost: 3 },
         { name: 'Card 7', desc: 'Doesn\'t do very much', rarity: 1, cost: 4 },
     ],
-    powerSystems: [ 'Engines', 'Sensors', 'Weapons', 'Shields', 'Repairs', 'Deflector' ],
+    powerSystems: ['Engines', 'Sensors', 'Weapons', 'Shields', 'Repairs', 'Deflector'],
+
+    weaponRoll: 'Roll',
+    weaponReroll: 'Re-roll',
+    weaponFire: 'Fire',
 }

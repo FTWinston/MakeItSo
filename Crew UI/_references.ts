@@ -28,6 +28,7 @@
 /// <reference path="game/Weapons/WeaponTarget.ts" />
 /// <reference path="game/Weapons/WeaponTargetInfo.tsx" />
 /// <reference path="game/Weapons/WeaponTargetSelect.tsx" />
+/// <reference path="game/Weapons/Dice.tsx" />
 /// <reference path="game/Weapons/Weapons.tsx" />
 /// <reference path="game/SystemContainer.tsx" />
 

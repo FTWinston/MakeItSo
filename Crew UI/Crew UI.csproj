@@ -28,6 +28,7 @@
     <TypeScriptCompile Include="ErrorDisplay.tsx" />
     <TypeScriptCompile Include="game\Communications\Communications.tsx" />
     <TypeScriptCompile Include="game\Power\PowerCard.tsx" />
+    <TypeScriptCompile Include="game\Weapons\Dice.tsx" />
     <TypeScriptCompile Include="language\english.ts" />
     <TypeScriptCompile Include="setup\GameSetup.tsx" />
     <TypeScriptCompile Include="game\ISystem.ts" />

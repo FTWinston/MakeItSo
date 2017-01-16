@@ -1,11 +1,12 @@
 interface IWeaponState {
     target?: WeaponTarget;
+    rollNumber?: number;
 }
 
 class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { target: null };
+        this.state = { target: null, rollNumber: 1 };
     }
     componentDidMount () {
         if (this.props.registerCallback != null)
@@ -21,7 +22,20 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                 <section className="select">
                     <WeaponTargetSelect ref="select" visible={this.props.visible} targetSelected={this.targetSelected.bind(this) } />
                 </section>
-                <section className="target">
+                <section className="target noGrow">
+                    <section className="dice noGrow">
+                        <WeaponDice ref="d1" value={1} />
+                        <WeaponDice ref="d2" value={5} />
+                        <WeaponDice ref="d3" value={3} />
+                        <WeaponDice ref="d4" value={6} />
+                        <WeaponDice ref="d5" value={2} />
+                    </section>
+                    <section className="btns noGrow">
+                        <ButtonGroup inline={true}>
+                            <Button color="2" type={ButtonType.Push} action="wpnroll">{this.state.rollNumber == 1 ? language.weaponRoll : language.weaponReroll}</Button>
+                            <Button color="1" type={ButtonType.Push} action="wpnfire">{language.weaponFire}</Button>
+                        </ButtonGroup>
+                    </section>
                     <WeaponTargetInfo ref="target" visible={this.props.visible} target={this.state.target} />
                 </section>
             </system>
