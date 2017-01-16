@@ -1,12 +1,18 @@
 interface IWeaponState {
     target?: WeaponTarget;
+    dice?: number[];
+    lockedDice?: boolean[];
     rollNumber?: number;
 }
 
 class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISystem {
     constructor(props) {
         super(props);
-        this.state = { target: null, rollNumber: 1 };
+        this.state = {
+            target: null, rollNumber: 0,
+            dice: [0, 0, 0, 0, 0],
+            lockedDice: [false, false, false, false, false],
+        };
     }
     componentDidMount () {
         if (this.props.registerCallback != null)
@@ -24,15 +30,15 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                 </section>
                 <section className="target noGrow">
                     <section className="dice noGrow">
-                        <WeaponDice ref="d1" value={1} />
-                        <WeaponDice ref="d2" value={5} />
-                        <WeaponDice ref="d3" value={3} />
-                        <WeaponDice ref="d4" value={6} />
-                        <WeaponDice ref="d5" value={2} />
+                        <WeaponDice ref="d1" value={this.state.dice[0]} locked={this.state.lockedDice[0]} toggle={function() {this.toggleDiceLock(0); }.bind(this)} />
+                        <WeaponDice ref="d2" value={this.state.dice[1]} locked={this.state.lockedDice[1]} toggle={function() {this.toggleDiceLock(1); }.bind(this)} />
+                        <WeaponDice ref="d3" value={this.state.dice[2]} locked={this.state.lockedDice[2]} toggle={function() {this.toggleDiceLock(2); }.bind(this)} />
+                        <WeaponDice ref="d4" value={this.state.dice[3]} locked={this.state.lockedDice[3]} toggle={function() {this.toggleDiceLock(3); }.bind(this)} />
+                        <WeaponDice ref="d5" value={this.state.dice[4]} locked={this.state.lockedDice[4]} toggle={function() {this.toggleDiceLock(4); }.bind(this)} />
                     </section>
                     <section className="btns noGrow">
-                        <ButtonGroup inline={true}>
-                            <Button color="2" type={ButtonType.Push} action="wpnroll">{this.state.rollNumber == 1 ? language.weaponRoll : language.weaponReroll}</Button>
+                        <ButtonGroup class="spread" inline={true}>
+                            <Button color="2" type={ButtonType.Push} onPressed={this.rollDice.bind(this)}>{this.state.rollNumber == 0 ? language.weaponRoll : language.weaponReroll}</Button>
                             <Button color="1" type={ButtonType.Push} action="wpnfire">{language.weaponFire}</Button>
                         </ButtonGroup>
                     </section>
@@ -45,6 +51,24 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
         if (msg == 'clr') {
             (this.refs['select'] as WeaponTargetSelect).clearAllTargets();
             this.setState({target: null});
+            return true;
+        }
+        else if (msg == 'dice') {
+            let rolls = parseInt(data.charAt(0));
+            let dice = [0, 0, 0, 0, 0];
+            let locked = [false, false, false, false, false];
+
+            for (let i=0; i<5; i++) {
+                dice[i] = parseInt(data.charAt(i + 1));
+                locked[i] = data.charAt(i + 6) == '1';
+            }
+            console.log('updating dice: ', data);
+            console.log('updated dice: ', dice);
+            this.setState({
+                rollNumber: rolls,
+                dice: dice,
+                lockedDice: locked,
+            });
             return true;
         }
         
@@ -83,5 +107,21 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
     }
     targetSelected(target) {
         this.setState({target: target});
+    }
+    private toggleDiceLock(diceNum) {
+        let locked = this.state.lockedDice.slice();
+        let locking = !locked[diceNum];
+
+        if (locking && this.state.dice[diceNum] == 0)
+            return; // don't lock a "blank" dice
+
+        locked[diceNum] = locking;
+        this.setState({ lockedDice: locked });
+    }
+    private rollDice() {
+        let msg = 'wpnroll ';
+        for (let i=0; i<5; i++)
+            msg += this.state.lockedDice[i] ? '1' : '0';
+        gameClient.server.send(msg);
     }
 }

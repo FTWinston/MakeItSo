@@ -283,7 +283,7 @@ class ButtonGroup extends React.Component<IButtonGroupProps, {}> {
         
         return (
             <buttonGroup className={classes} style={{display: this.props.visible ? null : 'none'}}>
-                { this.props.prompt == null ? '' : <prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt> }
+                { this.props.prompt == null ? null : <prompt className={this.props.disabled ? 'disabled' : null}>{this.props.prompt}</prompt> }
                 {children}
             </buttonGroup>
         );

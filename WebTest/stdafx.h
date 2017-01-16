@@ -21,6 +21,7 @@
 #define UFUNCTION(a, b) 
 
 #define int32 int
+#define uint8 int
 
 #define TSet std::vector
 #define TSparseArray std::vector

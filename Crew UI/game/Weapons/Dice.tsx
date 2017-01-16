@@ -1,15 +1,12 @@
 ﻿interface IWeaponDiceProps {
     value: number;
-}
-
-interface IWeaponDiceState {
     locked: boolean;
+    toggle: () => void;
 }
 
-class WeaponDice extends React.Component<IWeaponDiceProps, IWeaponDiceState> {
+class WeaponDice extends React.Component<IWeaponDiceProps, {}> {
     constructor(props) {
         super(props);
-        this.state = { locked: false };
     }
     render() {
         return (
@@ -20,10 +17,13 @@ class WeaponDice extends React.Component<IWeaponDiceProps, IWeaponDiceState> {
     redraw() {
         (this.refs['canvas'] as Canvas).redraw();
     }
+    componentDidUpdate() {
+        this.redraw();
+    }
     draw(ctx, width, height) {
         ctx.fillStyle = '#ccc';
         ctx.fillRect(0, 0, width, height);
-        ctx.fillStyle = this.state.locked ? '#d00' : '#000';
+        ctx.fillStyle = this.props.locked ? '#d00' : '#000';
         let dotSize = Math.min(width, height) * 0.1;
 
         switch (this.props.value) {
@@ -68,14 +68,12 @@ class WeaponDice extends React.Component<IWeaponDiceProps, IWeaponDiceState> {
         ctx.fill();
     }
     private onTap(x, y) {
-        this.setState({ locked: !this.state.locked });
-        this.redraw();
+        this.props.toggle();
     }
     private onMouseDown(btn, x, y) {
         if (btn != 1)
             return;
 
-        this.setState({ locked: !this.state.locked });
-        this.redraw();
+        this.props.toggle();
     }
 }
