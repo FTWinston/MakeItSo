@@ -38,8 +38,8 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                     </section>
                     <section className="btns noGrow">
                         <ButtonGroup class="spread" inline={true}>
-                            <Button color="2" type={ButtonType.Push} onPressed={this.rollDice.bind(this)}>{this.state.rollNumber == 0 ? language.weaponRoll : language.weaponReroll}</Button>
-                            <Button color="1" type={ButtonType.Push} action="wpnfire">{language.weaponFire}</Button>
+                            <Button color="2" type={ButtonType.Push} disabled={this.state.rollNumber >= 3} onClicked={this.rollDice.bind(this)}>{this.state.rollNumber == 0 ? language.weaponRoll : language.weaponReroll}</Button>
+                            <Button color="1" type={ButtonType.Push} disabled={this.state.rollNumber == 0} action="wpnfire">{language.weaponFire}</Button>
                         </ButtonGroup>
                     </section>
                     <WeaponTargetInfo ref="target" visible={this.props.visible} target={this.state.target} />

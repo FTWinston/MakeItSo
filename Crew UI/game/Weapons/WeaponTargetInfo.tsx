@@ -19,7 +19,7 @@ class WeaponTargetInfo extends React.Component<IWeaponTargetInfoProps, IWeaponTa
                 onTouchStart={this.onTouchStart.bind(this)} onTouchEnd={this.onTouchEnd.bind(this)}
                 onMouseDown={this.onMouseDown.bind(this)} onMouseUp={this.onMouseUp.bind(this)} draw={this.draw.bind(this)} />
             */
-            <section className="actions">action selection</section>
+            <section className="actions"><br/><br/>action selection goes here</section>
         );
     }
     redraw() {
