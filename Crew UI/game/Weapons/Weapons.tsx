@@ -25,7 +25,7 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
     render() {
         return (
             <system id="weapons" style={{ display: this.props.visible ? null : 'none' }}>
-                <section className="select">
+                <section className="select fillMe">
                     <WeaponTargetSelect ref="select" visible={this.props.visible} targetSelected={this.targetSelected.bind(this) } />
                 </section>
                 <section className="target noGrow">
@@ -37,7 +37,7 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                         <WeaponDice value={this.state.dice[4]} locked={this.state.lockedDice[4]} toggle={function() {this.toggleDiceLock(4); }.bind(this)} />
                     </section>
                     <section className="btns noGrow">
-                        <ButtonGroup class="spread" inline={true}>
+                        <ButtonGroup class="spread" inline={true} disabled={this.state.target == null}>
                             <Button color={this.state.rollNumber < 3 ? '2' : '1'} type={ButtonType.Push} onClicked={this.rollDice.bind(this) }>{this.state.rollNumber == 0 ? language.weaponRoll : this.state.rollNumber >= 3 ? language.weaponDiscardRoll : language.weaponReroll}</Button>
                             <Button color="3" type={ButtonType.Push} disabled={this.state.rollNumber == 0} action="wpnfire">{language.weaponFire}</Button>
                         </ButtonGroup>
@@ -106,7 +106,8 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
 
     }
     targetSelected(target) {
-        this.setState({target: target});
+        this.setState({ target: target });
+        this.resetDice();
     }
     private toggleDiceLock(diceNum) {
         let locked = this.state.lockedDice.slice();
@@ -120,7 +121,7 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
     }
     private rollDice() {
         if (this.state.rollNumber >= 3) {
-            gameClient.server.send('wpnunroll');
+            this.resetDice();
             return;
         }
 
@@ -128,5 +129,8 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
         for (let i=0; i<5; i++)
             msg += this.state.lockedDice[i] ? '1' : '0';
         gameClient.server.send(msg);
+    }
+    private resetDice() {
+        gameClient.server.send('wpnunroll');
     }
 }

@@ -15,7 +15,9 @@ class WeaponDice extends React.Component<IWeaponDiceProps, {}> {
         );
     }
     redraw() {
-        (this.refs['canvas'] as Canvas).redraw();
+        let canvas = this.refs['canvas'] as Canvas;
+        canvas.updateSize();
+        canvas.redraw();
     }
     componentDidUpdate() {
         this.redraw();

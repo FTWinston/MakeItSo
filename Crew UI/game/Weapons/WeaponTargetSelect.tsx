@@ -106,6 +106,8 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             targets[id] = target;
             return {targets: targets};
         });
+
+        this.redraw();
         return true;
     }
     removeTarget(id) {
@@ -114,6 +116,7 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             delete targets[id];
             return {targets: targets};
         });
+        this.redraw();
         return true;
     }
     moveTarget(id, angle, dist) {
@@ -162,10 +165,12 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             targets[id] = target;
             return {targets: targets};
         });
+        this.redraw();
         return true;
     }
     clearAllTargets() {
-        this.setState({targets: {}});
+        this.setState({ targets: {} });
+        this.redraw();
     }
     private trySelectTarget(x,y, padRadius) {
         var selected = null;
@@ -195,5 +200,6 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
         
         this.setState({targets: targets});
         this.props.targetSelected(selected);
+        this.redraw();
     }
 }
