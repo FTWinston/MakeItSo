@@ -81,7 +81,7 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
         ctx.lineTo(shipX + dx, endY);
         ctx.stroke();
     }
-    addTarget(id, size, status, angle, dist) {
+    addTarget(id, size, status, angle, dist, pitch, yaw, roll) {
         if (size < 1 || size > 10) {
             console.error('invalid size');
             return false;
@@ -98,8 +98,20 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             console.error('invalid dist');
             return false;
         }
+        else if (pitch < -180 || pitch > 180) {
+            console.error('invalid pitch');
+            return false;
+        }
+        else if (yaw < 0 || pitch >= 360) {
+            console.error('invalid yaw');
+            return false;
+        }
+        else if (roll < -180 || roll > 180) {
+            console.error('invalid roll');
+            return false;
+        }
         
-        var target = new WeaponTarget(id, size, status, angle, dist)
+        var target = new WeaponTarget(id, size, status, angle, dist, pitch, yaw, roll)
 
         this.setState(function(previousState, currentProps) {
             var targets = previousState.targets;
@@ -138,6 +150,35 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
         target.updatePosition(angle, dist);
         this.animateEndTime = performance.now() + WeaponTarget.lerpDuration;
         
+        this.setState(function(previousState, currentProps) {
+            var targets = previousState.targets;
+            targets[id] = target;
+            return {targets: targets};
+        });
+        this.redraw();
+        return true;
+    }
+    orientTarget(id, pitch, yaw, roll) {
+        if (pitch < -180 || pitch > 180) {
+            console.error('invalid pitch');
+            return false;
+        }
+        else if (yaw < 0 || pitch >= 360) {
+            console.error('invalid yaw');
+            return false;
+        }
+        else if (roll < -180 || roll > 180) {
+            console.error('invalid roll');
+            return false;
+        }
+
+        var target = this.state.targets[id];
+        if (target === undefined) {
+            console.error('invalid target');
+            return false;
+        }
+
+        target.updateOrientation(pitch, yaw, roll);
         this.setState(function(previousState, currentProps) {
             var targets = previousState.targets;
             targets[id] = target;

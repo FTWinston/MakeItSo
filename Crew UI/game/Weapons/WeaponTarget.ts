@@ -5,11 +5,12 @@
 }
 
 class WeaponTarget {
-    constructor(id, size, status, angle, dist) {
+    constructor(id, size, status, angle, dist, pitch, yaw, roll) {
         this.id = id;
         this.size = size;
         this.status = status;
         this.updatePosition(angle, dist);
+        this.updateOrientation(pitch, yaw, roll);
         this.selected = false;
     }
 
@@ -24,6 +25,10 @@ class WeaponTarget {
 
     x: number;
     y: number;
+    z: number;
+    pitch: number;
+    yaw: number;
+    roll: number;
     private renderX: number;
     private renderY: number;
     private fromX: number;
@@ -50,7 +55,21 @@ class WeaponTarget {
         this.nextX = x;
         this.nextY = y;
         this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
-    }    
+    }
+    updateOrientation(pitch, yaw, roll) {
+        pitch = pitch * Math.PI / 180; // 0 - 2pi
+        yaw = yaw * Math.PI / 180; // 0 - 2pi
+        roll = roll * Math.PI / 180; // 0 - 2pi
+        
+        //if (this.pitch === undefined) {
+            this.pitch = pitch;
+            this.yaw = yaw;
+            this.roll = roll;
+            //return;
+        //}
+        
+        // TODO: lerp orientation?
+    } 
     draw(ctx, time, panelWidth, panelHeight, minSize) {
         if (this.status == TargetStatus.Friendly)
             ctx.fillStyle = '#00cc00';
@@ -81,6 +100,8 @@ class WeaponTarget {
         
         this.radius = minSize * (this.size * 0.1 + 1);
         
+        // TODO: new rendering, displaying pitch/yaw/roll, as well as Z position somehow
+
         ctx.beginPath();
         ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
         ctx.fill();

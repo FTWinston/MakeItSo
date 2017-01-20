@@ -6,6 +6,8 @@
  * 
  */
 
+class UWeaponTarget;
+
 //UCLASS()
 class MAKEITSO_API UWeaponSystem : public UCrewSystem
 {
@@ -29,4 +31,16 @@ private:
 	uint8 dice[NUM_DICE];
 	bool lockedDice[NUM_DICE];
 	uint8 timesRolled;
+	TSet<UWeaponTarget> targets;
+};
+
+
+class MAKEITSO_API UWeaponTarget
+{
+	// id
+	// position x, y, z(?)
+	// orientation pitch/yaw/roll
+	// size/radius
+	// status (friendly/hostile/unknown)
+	// selected?
 };

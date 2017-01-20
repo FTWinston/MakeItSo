@@ -74,23 +74,30 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
         
         var params = data.split(' ');
         switch (msg) {
-            case 'add':
-                var size = parseInt(params[1]), status = parseInt(params[2]);
-                var angle = parseInt(params[3]), dist = parseInt(params[4]);
+            case 'add': {
+                let size = parseInt(params[1]), status = parseInt(params[2]);
+                let angle = parseInt(params[3]), dist = parseInt(params[4]);
+                let pitch = parseInt(params[5]), yaw = parseInt(params[6]), roll = parseInt(params[7]);
                 if (isNaN(size) || isNaN(status) || isNaN(angle) || isNaN(dist)) {
                     console.error(language.errorParameterNotNumeric);
                     return false;
                 }
-                return (this.refs['select'] as WeaponTargetSelect).addTarget(params[0], size, status, angle, dist);
+                return (this.refs['select'] as WeaponTargetSelect).addTarget(params[0], size, status, angle, dist, pitch, yaw, roll);
+            }
             case 'rem':
                 return (this.refs['select'] as WeaponTargetSelect).removeTarget(params[0]);
-            case 'mov':
-                var angle = parseInt(params[1]), dist = parseInt(params[2]);
+            case 'mov': {
+                let angle = parseInt(params[1]), dist = parseInt(params[2]);
                 if (isNaN(angle) || isNaN(dist)) {
                     console.error(language.errorParameterNotNumeric);
                     return false;
                 }
                 return (this.refs['select'] as WeaponTargetSelect).moveTarget(params[0], angle, dist);
+            }
+            case 'aim': {
+                let pitch = parseInt(params[1]), yaw = parseInt(params[2]), roll = parseInt(params[3]);
+                return (this.refs['select'] as WeaponTargetSelect).orientTarget(params[0], pitch, yaw, roll);
+            }
             case 'upd':
                 var status = parseInt(params[1]);
                 if (isNaN(status)) {
