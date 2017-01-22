@@ -97,29 +97,114 @@ class WeaponTarget {
         
         this.renderX = this.x * panelWidth;
         this.renderY = this.y * panelHeight;
-        
         this.radius = minSize * (this.size * 0.1 + 1);
-        
-        // TODO: new rendering, displaying pitch/yaw/roll, as well as Z position somehow
 
+        let lengthScale = Math.cos(this.pitch);
+        let noseY = -this.radius * lengthScale, rearY = -noseY;
+
+        // offest to this.renderX / this.renderY, then rotate to this.yaw
+        // and scale to this.radius? hmm, no that would affect line width
+        ctx.translate(this.renderX + this.radius, this.renderY + this.radius);
+        ctx.rotate(this.yaw);
+
+        if (this.pitch > 0) {
+            // angle up, draw rear oval
+            
+            ctx.translate(0, rearY);
+            ctx.scale(1, 1 - lengthScale);
+
+            ctx.beginPath();
+            ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+
+            ctx.scale(1, 1 / (1 - lengthScale));
+            ctx.translate(0, -rearY);
+
+            ctx.fill();
+        }
+
+        // draw side
         ctx.beginPath();
-        ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
+        ctx.moveTo(-this.radius, rearY);
+        ctx.lineTo(0, noseY);
+        ctx.lineTo(this.radius, rearY);
+        //ctx.closePath();
         ctx.fill();
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        // draw tip
+        ctx.beginPath();
+        let oldFillStyle = ctx.fillStyle;
+        ctx.fillStyle = '#000000';
+        ctx.arc(0, noseY, 2, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = oldFillStyle;
+
+        if (this.pitch > 0) {
+            // draw middle side line
+            ctx.beginPath();
+            ctx.moveTo(0, noseY);
+            ctx.lineTo(0, rearY + this.radius * (1 - lengthScale));
+            ctx.stroke();
+        }
         
+        if (this.pitch < 0) {
+            // draw middle side line
+            ctx.beginPath();
+            ctx.moveTo(0, noseY);
+            ctx.lineTo(0, rearY - this.radius * (1 - lengthScale));
+            ctx.stroke();
+
+
+            // angle down, draw rear
+            ctx.translate(0, rearY);
+            ctx.scale(1, 1 - lengthScale);
+
+            ctx.beginPath();
+            ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+            ctx.fill();
+
+            // draw rear lines
+            ctx.moveTo(-this.radius, 0);
+            ctx.lineTo(this.radius, 0);
+            ctx.moveTo(0, -this.radius);
+            ctx.lineTo(0, this.radius);
+
+            ctx.scale(1, 1 / (1 - lengthScale));
+            ctx.translate(0, -rearY);
+
+            ctx.strokeStyle = '#000000';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
+        
+
+        
+
+        // TODO: roll markings
+
         if (this.selected) {
             ctx.strokeStyle = '#ff0000';
             ctx.lineWidth = minSize * 0.25;
             ctx.beginPath();
-            ctx.arc(this.renderX, this.renderY, this.radius, 0, Math.PI * 2);
+            ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
             ctx.stroke();
         }
-        
+
+        ctx.rotate(-this.yaw);
+
+        /*
         var size = minSize * 1.2;
         ctx.font = size + 'px Arial';
         ctx.fillStyle = 'white';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(this.id, this.renderX, this.renderY);
+        ctx.fillText(this.id, 0, 0);
+        */
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
     intersects(x, y, padRadius) {
         var r = padRadius ? this.radius * 1.75 : this.radius;
