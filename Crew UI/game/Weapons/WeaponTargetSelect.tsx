@@ -163,7 +163,7 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             console.error('invalid pitch');
             return false;
         }
-        else if (yaw < 0 || pitch >= 360) {
+        else if (yaw < 0 || yaw >= 360) {
             console.error('invalid yaw');
             return false;
         }
