@@ -4,6 +4,38 @@
     Unknown = 3
 }
 
+class Point3D {
+    constructor(public x: number, public y: number, public z: number) { }
+
+    rotateX(angle: number) {
+        let cosa = Math.cos(angle);
+        let sina = Math.sin(angle);
+        let y = this.y * cosa - this.z * sina;
+        let z = this.y * sina + this.z * cosa;
+        return new Point3D(this.x, y, z);
+    }
+
+    rotateY(angle: number) {
+        let cosa = Math.cos(angle);
+        let sina = Math.sin(angle);
+        let z = this.z * cosa - this.x * sina;
+        let x = this.z * sina + this.x * cosa;
+        return new Point3D(x, this.y, z)
+    }
+
+    rotateZ(angle: number) {
+        let cosa = Math.cos(angle);
+        let sina = Math.sin(angle);
+        let x = this.x * cosa - this.y * sina;
+        let y = this.x * sina + this.y * cosa;
+        return new Point3D(x, y, this.z)
+    }
+
+    project(viewWidth: number, viewHeight: number, fov: number, viewDistance: number) {
+        return new Point3D(this.x * viewWidth, this.y * viewWidth, this.z);
+    }
+}
+
 class WeaponTarget {
     constructor(id: string, size: number, status: TargetStatus, angle: number, dist: number, pitch: number, yaw: number, roll: number) {
         this.id = id;
@@ -15,6 +47,18 @@ class WeaponTarget {
     }
 
     static lerpDuration: number = 1000;
+    private static vertices = [
+        new Point3D(-1, 1, -1),
+        new Point3D(1, 1, -1),
+        new Point3D(1, -1, -1),
+        new Point3D(-1, -1, -1),
+        new Point3D(-1, 1, 1),
+        new Point3D(1, 1, 1),
+        new Point3D(1, -1, 1),
+        new Point3D(-1, -1, 1)
+    ];
+    // Define the vertices that compose each of the 6 faces. Numbers are indices in vertices array
+    private static faces = [[0, 1, 2, 3], [1, 5, 6, 2], [5, 4, 7, 6], [4, 0, 3, 7], [0, 4, 5, 1], [3, 2, 6, 7]];
 
     id: string;
     size: number;
@@ -75,31 +119,17 @@ class WeaponTarget {
 
         ctx.save();
         if (this.status == TargetStatus.Friendly)
-            ctx.fillStyle = '#00cc00';
+            ctx.strokeStyle = ctx.fillStyle = '#00cc00';
         else if (this.status == TargetStatus.Hostile)
-            ctx.fillStyle = '#cc0000';
+            ctx.strokeStyle = ctx.fillStyle = '#cc0000';
         else
-            ctx.fillStyle = '#aaaa00';
+            ctx.strokeStyle = ctx.fillStyle = '#aaaa00';
 
-        let lengthScale = Math.cos(this.pitch);
-        let noseY = -this.radius * lengthScale, rearY = -noseY;
-        
-        ctx.translate(this.renderX + this.radius, this.renderY + this.radius);
-        ctx.rotate(this.yaw);
+        let pitchScale = Math.cos(this.pitch);
+        let rollScale = Math.cos(this.roll);
 
-        if (this.pitch > 0) {
-            this.drawRear(ctx, rearY, lengthScale, false);
-            this.drawRearDots(ctx, rearY, lengthScale);
-        }
-
-        this.drawSide(ctx, rearY, noseY);
-        this.drawSideLines(ctx, rearY, noseY, lengthScale, this.pitch >= 0);
-
-        if (this.pitch < 0) {
-            this.drawRear(ctx, rearY, lengthScale, true);
-            this.drawRearLines(ctx, rearY, lengthScale);
-            this.drawRearDots(ctx, rearY, lengthScale);
-        }
+        ctx.translate(this.renderX, this.renderY);
+        this.drawCube(ctx);
         
         if (this.selected) {
             ctx.strokeStyle = '#ff0000';
@@ -144,135 +174,33 @@ class WeaponTarget {
         this.renderY = this.y * panelHeight;
         this.radius = minSize * (this.size * 0.1 + 1);
     }
-    private applyRearTransform(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, roll: boolean) {
-        ctx.translate(0, rearY);
-        ctx.scale(1, 1 - lengthScale);
-        if (roll)
-            ctx.rotate(this.roll);
-    }
-    private drawRear(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, drawOutline: boolean) {
-        ctx.save();
+    private drawCube(ctx: CanvasRenderingContext2D) {
+        let rotatedVertices: Point3D[] = [];
 
-        this.applyRearTransform(ctx, rearY, lengthScale, false);
+        for (let vertex of WeaponTarget.vertices) {
+            let point = vertex
+                .rotateX(this.yaw)
+                .rotateY(this.pitch)
+                .rotateZ(this.roll);
 
-        ctx.beginPath();
-
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.restore();
-
-        if (drawOutline) {
-            ctx.strokeStyle = '#333333';
-            ctx.stroke(); // called after restore(), so that the outline is always stroked at full width
-        }
-    }
-    private drawRearLines(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number) {
-        ctx.save();
-        this.applyRearTransform(ctx, rearY, lengthScale, true);
-
-        ctx.beginPath();
-
-        ctx.moveTo(-this.radius, 0);
-        ctx.lineTo(this.radius, 0);
-        ctx.moveTo(0, -this.radius);
-        ctx.lineTo(0, 0);
-
-        ctx.strokeStyle = '#333333';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-
-        ctx.restore();
-    }
-    private drawRearDots(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number) {
-        // draw red / green dots ... these need to be round, but still positioned by transform...
-        // can't calculate right pos (sans scaling) myself, so using drawLine with round lineCaps to "set up" drawing before restore()
-        this.drawRearDot(ctx, rearY, lengthScale, -this.radius, '#ff0000');
-        this.drawRearDot(ctx, rearY, lengthScale,  this.radius, '#00cc66');
-    }
-    private drawRearDot(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, xOffset: number, color: string) {
-        ctx.save();
-
-        this.applyRearTransform(ctx, rearY, lengthScale, true);
-
-        ctx.beginPath();
-        ctx.moveTo(xOffset, 0);
-        ctx.lineTo(xOffset, 0);
-
-        ctx.restore();
-
-        ctx.save();
-
-        ctx.lineCap = 'round';
-        ctx.lineWidth = 5;
-        ctx.strokeStyle = '#000000';
-        ctx.stroke();
-
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = color;
-        ctx.stroke();
-
-        ctx.restore();
-    }
-    private drawSide(ctx: CanvasRenderingContext2D, rearY: number, noseY: number) {
-        ctx.beginPath();
-        ctx.moveTo(-this.radius, rearY);
-        ctx.lineTo(0, noseY);
-        ctx.lineTo(this.radius, rearY);
-        ctx.fill();
-
-        // draw the tip
-        this.drawTip(ctx, noseY);
-    }
-    private drawSideLines(ctx: CanvasRenderingContext2D, rearY: number, noseY: number, lengthScale: number, pitchUp: boolean) {
-        // each of these should always be drawn if the nose is angled up enough
-        let angledUpward = this.pitch > Math.atan(2);
-
-        // draw line along the back, if the roll angle is such that it can be seen
-        if (angledUpward || (this.roll < Math.PI / 2 && this.roll > -Math.PI / 2)) {
-            this.drawLengthLine(ctx, noseY, rearY, lengthScale, 0, -this.radius, []); // draw line along top, with no dash
+            rotatedVertices.push(point);
         }
 
-        // draw lines along the sides, if the roll angle is such that they can be seen
-        if (angledUpward || this.roll > 0) {
-            this.drawLengthLine(ctx, noseY, rearY, lengthScale, -this.radius, 0, [3, 3]);
+        for (let face of WeaponTarget.faces) {
+            ctx.beginPath();
+
+            let faceVertex = 0;
+            let point = rotatedVertices[face[faceVertex]];
+            ctx.moveTo(point.x * this.radius, point.y * this.radius);
+
+            for (; faceVertex < 4; faceVertex++) {
+                let point = rotatedVertices[face[faceVertex]];
+                ctx.lineTo(point.x * this.radius, point.y * this.radius);
+            }
+            
+            ctx.closePath();
+            ctx.stroke();
         }
-
-        // draw lines along the sides, if the roll angle is such that they can be seen
-        if (angledUpward || this.roll < 0) {
-            this.drawLengthLine(ctx, noseY, rearY, lengthScale, this.radius, 0, [3, 3]);
-        }
-    }
-    private drawLengthLine(ctx: CanvasRenderingContext2D, noseY: number, rearY: number, lengthScale: number, rearOffsetX: number, rearOffsetY: number, dash: number[]) {
-        ctx.save();
-
-        ctx.beginPath();
-        ctx.save();
-  
-        this.applyRearTransform(ctx, rearY, lengthScale, true);
-        ctx.moveTo(0, -this.radius);
-        
-        ctx.restore();
-
-        ctx.lineTo(0, noseY);
-        ctx.strokeStyle = '#000000';
-        ctx.lineWidth = 1;
-        ctx.setLineDash(dash);
-        ctx.stroke();
-
-        ctx.restore();
-    }
-    private drawTip(ctx: CanvasRenderingContext2D, noseY: number) {
-        ctx.save();
-        
-        ctx.beginPath();
-        ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#000000';
-        ctx.arc(0, noseY, 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.stroke();
-
-        ctx.restore();
     }
     intersects(x: number, y: number, padRadius: boolean) {
         var r = padRadius ? this.radius * 1.75 : this.radius;
