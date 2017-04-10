@@ -5,7 +5,7 @@
 }
 
 class WeaponTarget {
-    constructor(id, size, status, angle, dist, pitch, yaw, roll) {
+    constructor(id: string, size: number, status: TargetStatus, angle: number, dist: number, pitch: number, yaw: number, roll: number) {
         this.id = id;
         this.size = size;
         this.status = status;
@@ -36,7 +36,7 @@ class WeaponTarget {
     private nextX: number;
     private nextY: number;
 
-    updatePosition(angle, dist) {
+    updatePosition(angle: number, dist: number) {
         angle = angle * Math.PI / 180; // 0 - 2pi
         dist = dist / 100; // 0 - 1
 
@@ -56,10 +56,10 @@ class WeaponTarget {
         this.nextY = y;
         this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
     }
-    updateOrientation(pitch, yaw, roll) {
+    updateOrientation(pitch: number, yaw: number, roll: number) {
         pitch = pitch * Math.PI / 180; // 0 - 2pi
         yaw = yaw * Math.PI / 180; // 0 - 2pi
-        roll = roll * Math.PI / 180; // 0 - 2pi
+        roll = roll * Math.PI / 180; // -pi - +pi
 
         //if (this.pitch === undefined) {
         this.pitch = pitch;
@@ -70,7 +70,7 @@ class WeaponTarget {
 
         // TODO: lerp orientation?
     }
-    draw(ctx, time, panelWidth, panelHeight, minSize) {
+    draw(ctx: CanvasRenderingContext2D, time: number, panelWidth: number, panelHeight: number, minSize: number) {
         this.determineRenderPosition(time, panelWidth, panelHeight, minSize);
 
         ctx.save();
@@ -93,7 +93,7 @@ class WeaponTarget {
         }
 
         this.drawSide(ctx, rearY, noseY);
-        //this.drawSideLines(ctx, rearY, noseY, lengthScale, this.pitch >= 0);
+        this.drawSideLines(ctx, rearY, noseY, lengthScale, this.pitch >= 0);
 
         if (this.pitch < 0) {
             this.drawRear(ctx, rearY, lengthScale, true);
@@ -122,7 +122,7 @@ class WeaponTarget {
 
         ctx.restore();
     }
-    private determineRenderPosition(time, panelWidth, panelHeight, minSize) {
+    private determineRenderPosition(time: number, panelWidth: number, panelHeight: number, minSize: number) {
         // lerp these variables if lerpEndTime is set
         if (this.lerpEndTime !== undefined) {
             if (this.lerpEndTime <= time) {
@@ -144,10 +144,16 @@ class WeaponTarget {
         this.renderY = this.y * panelHeight;
         this.radius = minSize * (this.size * 0.1 + 1);
     }
-    private drawRear(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, drawOutline: boolean) {
-        ctx.save();
+    private applyRearTransform(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, roll: boolean) {
         ctx.translate(0, rearY);
         ctx.scale(1, 1 - lengthScale);
+        if (roll)
+            ctx.rotate(this.roll);
+    }
+    private drawRear(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, drawOutline: boolean) {
+        ctx.save();
+
+        this.applyRearTransform(ctx, rearY, lengthScale, false);
 
         ctx.beginPath();
 
@@ -163,9 +169,7 @@ class WeaponTarget {
     }
     private drawRearLines(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number) {
         ctx.save();
-        ctx.translate(0, rearY);
-        ctx.scale(1, 1 - lengthScale);
-        ctx.rotate(this.roll);
+        this.applyRearTransform(ctx, rearY, lengthScale, true);
 
         ctx.beginPath();
 
@@ -189,9 +193,7 @@ class WeaponTarget {
     private drawRearDot(ctx: CanvasRenderingContext2D, rearY: number, lengthScale: number, xOffset: number, color: string) {
         ctx.save();
 
-        ctx.translate(0, rearY);
-        ctx.scale(1, 1 - lengthScale);
-        ctx.rotate(this.roll);
+        this.applyRearTransform(ctx, rearY, lengthScale, true);
 
         ctx.beginPath();
         ctx.moveTo(xOffset, 0);
@@ -217,26 +219,48 @@ class WeaponTarget {
         ctx.moveTo(-this.radius, rearY);
         ctx.lineTo(0, noseY);
         ctx.lineTo(this.radius, rearY);
-        //ctx.closePath();
         ctx.fill();
-        /*
-        ctx.strokeStyle = '#cccccc';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-        */
 
         // draw the tip
         this.drawTip(ctx, noseY);
     }
     private drawSideLines(ctx: CanvasRenderingContext2D, rearY: number, noseY: number, lengthScale: number, pitchUp: boolean) {
+        // each of these should always be drawn if the nose is angled up enough
+        let angledUpward = this.pitch > Math.atan(2);
+
+        // draw line along the back, if the roll angle is such that it can be seen
+        if (angledUpward || (this.roll < Math.PI / 2 && this.roll > -Math.PI / 2)) {
+            this.drawLengthLine(ctx, noseY, rearY, lengthScale, 0, -this.radius, []); // draw line along top, with no dash
+        }
+
+        // draw lines along the sides, if the roll angle is such that they can be seen
+        if (angledUpward || this.roll > 0) {
+            this.drawLengthLine(ctx, noseY, rearY, lengthScale, -this.radius, 0, [3, 3]);
+        }
+
+        // draw lines along the sides, if the roll angle is such that they can be seen
+        if (angledUpward || this.roll < 0) {
+            this.drawLengthLine(ctx, noseY, rearY, lengthScale, this.radius, 0, [3, 3]);
+        }
+    }
+    private drawLengthLine(ctx: CanvasRenderingContext2D, noseY: number, rearY: number, lengthScale: number, rearOffsetX: number, rearOffsetY: number, dash: number[]) {
+        ctx.save();
+
         ctx.beginPath();
+        ctx.save();
+  
+        this.applyRearTransform(ctx, rearY, lengthScale, true);
+        ctx.moveTo(0, -this.radius);
+        
+        ctx.restore();
 
-        // TODO: draw these accounting for roll?
-
-        ctx.moveTo(0, noseY);
-        let offset = this.radius * (1 - lengthScale);
-        ctx.lineTo(0, pitchUp ? rearY + offset : rearY - offset);
+        ctx.lineTo(0, noseY);
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 1;
+        ctx.setLineDash(dash);
         ctx.stroke();
+
+        ctx.restore();
     }
     private drawTip(ctx: CanvasRenderingContext2D, noseY: number) {
         ctx.save();
@@ -250,7 +274,7 @@ class WeaponTarget {
 
         ctx.restore();
     }
-    intersects(x, y, padRadius) {
+    intersects(x: number, y: number, padRadius: boolean) {
         var r = padRadius ? this.radius * 1.75 : this.radius;
         return x >= this.renderX - r && x <= this.renderX + r
             && y >= this.renderY - r && y <= this.renderY + r;
