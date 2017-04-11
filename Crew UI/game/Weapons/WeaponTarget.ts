@@ -7,40 +7,88 @@
 class Vector3 {
     constructor(public x: number, public y: number, public z: number) { }
 
+    clone() {
+        return new Vector3(this.x, this.y, this.z);
+    }
+    scale(factor: number) {
+        this.x *= factor;
+        this.y *= factor;
+        this.z *= factor;
+        return this;
+    }
     rotateX(angle: number) {
         let cosa = Math.cos(angle);
         let sina = Math.sin(angle);
-        let y = this.y * cosa - this.z * sina;
-        let z = this.y * sina + this.z * cosa;
-        return new Vector3(this.x, y, z);
+        let prevY = this.y;
+        this.y = this.y * cosa - this.z * sina;
+        this.z = prevY * sina + this.z * cosa;
+        return this;
     }
-
     rotateY(angle: number) {
         let cosa = Math.cos(angle);
         let sina = Math.sin(angle);
-        let z = this.z * cosa - this.x * sina;
-        let x = this.z * sina + this.x * cosa;
-        return new Vector3(x, this.y, z)
+        let prevZ = this.z;
+        this.z = this.z * cosa - this.x * sina;
+        this.x = prevZ * sina + this.x * cosa;
+        return this;
     }
-
     rotateZ(angle: number) {
         let cosa = Math.cos(angle);
         let sina = Math.sin(angle);
-        let x = this.x * cosa - this.y * sina;
-        let y = this.x * sina + this.y * cosa;
-        return new Vector3(x, y, this.z)
-    }
-
-    project(viewWidth: number, viewHeight: number, fov: number, viewDistance: number) {
-        return new Vector3(this.x * viewWidth, this.y * viewWidth, this.z);
+        let prevX = this.x;
+        this.x = this.x * cosa - this.y * sina;
+        this.y = prevX * sina + this.y * cosa;
+        return this;
     }
     dot(other: Vector3) {
         return this.x * other.x + this.y * other.y + this.z * other.z;
     }
 }
 
-class Face {
-    constructor(public normal: Vector3, public vertices: [Vector3, Vector3, Vector3, Vector3]) { }
+class CubeFace {
+    public normal: Vector3;
+    public vertices: [Vector3, Vector3, Vector3, Vector3];
+    constructor(private origNormal: Vector3, private origVertices: [Vector3, Vector3, Vector3, Vector3], public drawSymbol: (ctx: CanvasRenderingContext2D) => void) { }
+
+    public reset() {
+        this.normal = this.origNormal.clone();
+        let vertices = this.origVertices;
+        this.vertices = [vertices[0].clone(), vertices[1].clone(), vertices[2].clone(), vertices[3].clone()];
+    }
+
+    public applyTransform(ctx: CanvasRenderingContext2D, size: number) {
+        let tl = this.vertices[0], tr = this.vertices[1], br = this.vertices[2];
+        //let oldMatrix = [[-1, 1, 1], [1, 1, -1], [1, 1, 1]];
+        //let inverseOld = CubeFace.getMatrixInverse(oldMatrix);
+        let inverseOld = [[-.5, 0, .5], [.5, .5, 0], [0,-.5, .5]];
+
+        let newMatrix = [[tl.x, tr.x, br.x], [tl.y, tr.y, br.y]];
+        let transformMatrix = CubeFace.matrixMultiply(newMatrix, inverseOld);
+
+        let m00 = transformMatrix[0][0];
+        let m01 = transformMatrix[0][1];
+        let m02 = transformMatrix[0][2];
+        let m10 = transformMatrix[1][0];
+        let m11 = transformMatrix[1][1];
+        let m12 = transformMatrix[1][2];
+
+        ctx.transform(m00, m10, m01, m11, m02, m12);
+    }
+    private static matrixMultiply(matrixA, matrixB) {
+        let n = 2, m = 3, p = 3;
+        let matrixC = [new Array(3), new Array(3)];
+
+        for (let i = 0; i < n; i++) {
+            for (let j = 0; j < p; j++) {
+                let sum = 0;
+                for (let k = 0; k < m; k++) {
+                    sum += matrixA[3 * i + k] * matrixB[3 * k + j];
+                }
+                matrixC[i][j] = sum;
+            }
+        }
+        return matrixC;
+    }
 }
 
 class WeaponTarget {
@@ -54,7 +102,7 @@ class WeaponTarget {
     }
 
     static lerpDuration: number = 1000;
-    private static faces: Face[];
+    private static faces: CubeFace[];
 
     static init() {
         let vertices = [
@@ -68,12 +116,12 @@ class WeaponTarget {
             new Vector3(-1, -1, 1)
         ];
         WeaponTarget.faces = [
-            new Face(new Vector3(0, 0, -1), [vertices[0], vertices[1], vertices[2], vertices[3]]),
-            new Face(new Vector3(1, 0, 0),  [vertices[1], vertices[5], vertices[6], vertices[2]]),
-            new Face(new Vector3(0, 0, 1),  [vertices[5], vertices[4], vertices[7], vertices[6]]),
-            new Face(new Vector3(-1, 0, 0), [vertices[4], vertices[0], vertices[3], vertices[7]]),
-            new Face(new Vector3(0, 1, 0),  [vertices[0], vertices[4], vertices[5], vertices[1]]),
-            new Face(new Vector3(0, -1, 0), [vertices[3], vertices[2], vertices[6], vertices[7]])
+            new CubeFace(new Vector3(0, 0, -1), [vertices[0], vertices[1], vertices[2], vertices[3]], WeaponTarget.drawBottomFace),
+            new CubeFace(new Vector3(1, 0, 0),  [vertices[1], vertices[5], vertices[6], vertices[2]], WeaponTarget.drawFrontFace),
+            new CubeFace(new Vector3(0, 0, 1),  [vertices[5], vertices[4], vertices[7], vertices[6]], WeaponTarget.drawTopFace),
+            new CubeFace(new Vector3(-1, 0, 0), [vertices[4], vertices[0], vertices[3], vertices[7]], WeaponTarget.drawRearFace),
+            new CubeFace(new Vector3(0, 1, 0),  [vertices[0], vertices[4], vertices[5], vertices[1]], WeaponTarget.drawRightFace),
+            new CubeFace(new Vector3(0, -1, 0), [vertices[3], vertices[2], vertices[6], vertices[7]], WeaponTarget.drawLeftFace)
         ];
     }
 
@@ -193,15 +241,17 @@ class WeaponTarget {
         this.renderY = this.y * panelHeight;
         this.radius = minSize * (this.size * 0.1 + 1);
     }
-    private drawCube(ctx: CanvasRenderingContext2D) {
-        let camera = new Vector3(0, 0, -1);
 
+    private static camera = new Vector3(0, 0, -1);
+    private drawCube(ctx: CanvasRenderingContext2D) {
         for (let face of WeaponTarget.faces) {
+            face.reset();
+
             let dot = face.normal
                 .rotateX(this.yaw)
                 .rotateY(this.pitch)
                 .rotateZ(this.roll)
-                .dot(camera);
+                .dot(WeaponTarget.camera);
 
             if (dot <= 0)
                 continue; // only draw faces visible from "above"
@@ -210,14 +260,16 @@ class WeaponTarget {
 
             let faceVertex = 0;
             let point = face.vertices[faceVertex]
+                .scale(this.radius)
                 .rotateX(this.yaw)
                 .rotateY(this.pitch)
                 .rotateZ(this.roll);
 
             ctx.moveTo(point.x * this.radius, point.y * this.radius);
 
-            for (; faceVertex < 4; faceVertex++) {
+            for (faceVertex++; faceVertex < 4; faceVertex++) {
                 let point = face.vertices[faceVertex]
+                    .scale(this.radius)
                     .rotateX(this.yaw)
                     .rotateY(this.pitch)
                     .rotateZ(this.roll);
@@ -228,12 +280,55 @@ class WeaponTarget {
             ctx.closePath();
             ctx.fill();
             ctx.stroke();
+
+            ctx.save();
+
+            face.applyTransform(ctx, this.radius);
+            face.drawSymbol(ctx);
+
+            ctx.restore();
         }
     }
     intersects(x: number, y: number, padRadius: boolean) {
         var r = padRadius ? this.radius * 1.75 : this.radius;
         return x >= this.renderX - r && x <= this.renderX + r
             && y >= this.renderY - r && y <= this.renderY + r;
+    }
+    private static drawFrontFace(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ccc';
+        ctx.fill();
+    }
+    private static drawRearFace(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#666';
+        ctx.fill();
+    }
+    private static drawLeftFace(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#f00';
+        ctx.fill();
+    }
+    private static drawRightFace(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#0c6';
+        ctx.fill();
+    }
+    private static drawTopFace(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#c0c';
+        ctx.fill();
+    }
+    private static drawBottomFace(ctx: CanvasRenderingContext2D) {
+        ctx.beginPath();
+        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#fc0';
+        ctx.fill();
     }
 };
 WeaponTarget.init();
