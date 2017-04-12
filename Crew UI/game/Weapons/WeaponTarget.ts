@@ -63,16 +63,9 @@ class CubeFace {
         let inverseOld = [[-.5, 0, .5], [.5, .5, 0], [0,-.5, .5]];
 
         let newMatrix = [[tl.x, tr.x, br.x], [tl.y, tr.y, br.y]];
-        let transformMatrix = CubeFace.matrixMultiply(newMatrix, inverseOld);
+        let transform = CubeFace.matrixMultiply(newMatrix, inverseOld);
 
-        let m00 = transformMatrix[0][0];
-        let m01 = transformMatrix[0][1];
-        let m02 = transformMatrix[0][2];
-        let m10 = transformMatrix[1][0];
-        let m11 = transformMatrix[1][1];
-        let m12 = transformMatrix[1][2];
-
-        ctx.transform(m00, m10, m01, m11, m02, m12);
+        ctx.transform(transform[0][0], transform[1][0], transform[0][1], transform[1][1], transform[0][2], transform[1][2]);
     }
     private static matrixMultiply(matrixA, matrixB) {
         let n = 2, m = 3, p = 3;
@@ -82,7 +75,7 @@ class CubeFace {
             for (let j = 0; j < p; j++) {
                 let sum = 0;
                 for (let k = 0; k < m; k++) {
-                    sum += matrixA[3 * i + k] * matrixB[3 * k + j];
+                    sum += matrixA[i][k] * matrixB[k][j];
                 }
                 matrixC[i][j] = sum;
             }
@@ -296,37 +289,37 @@ class WeaponTarget {
     }
     private static drawFrontFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
         ctx.fillStyle = '#ccc';
         ctx.fill();
     }
     private static drawRearFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
         ctx.fillStyle = '#666';
         ctx.fill();
     }
     private static drawLeftFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
         ctx.fillStyle = '#f00';
         ctx.fill();
     }
     private static drawRightFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
         ctx.fillStyle = '#0c6';
         ctx.fill();
     }
     private static drawTopFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
         ctx.fillStyle = '#c0c';
         ctx.fill();
     }
     private static drawBottomFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0.5, 0.5, 0.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 1, 0, Math.PI * 2);
         ctx.fillStyle = '#fc0';
         ctx.fill();
     }
