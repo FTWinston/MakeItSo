@@ -277,6 +277,12 @@ class WeaponTarget {
             ctx.save();
 
             face.applyTransform(ctx, this.radius);
+            ctx.strokeStyle = ctx.fillStyle = '#000000';
+            ctx.lineWidth = 0.1;
+            ctx.font = '1px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+
             face.drawSymbol(ctx);
 
             ctx.restore();
@@ -289,39 +295,64 @@ class WeaponTarget {
     }
     private static drawFrontFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#ccc';
-        ctx.fill();
+        ctx.moveTo(-0.75, -0.75);
+        ctx.lineTo(0.75, 0.75);
+        ctx.moveTo(0.75, -0.75);
+        ctx.lineTo(-0.75, 0.75);
+        ctx.stroke();
     }
     private static drawRearFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#666';
-        ctx.fill();
+
+        ctx.moveTo(-0.4, -0.6);
+        ctx.lineTo(0, -1);
+        ctx.lineTo(0.4, -0.6);
+
+        ctx.moveTo(-0.4, 0.6);
+        ctx.lineTo(0, 1);
+        ctx.lineTo(0.4, 0.6);
+
+        ctx.moveTo(-0.6, -0.4);
+        ctx.lineTo(-1, 0);
+        ctx.lineTo(-0.6, 0.4);
+
+        ctx.moveTo(0.6, -0.4);
+        ctx.lineTo(1, 0);
+        ctx.lineTo(0.6, 0.4);
+
+        ctx.stroke();
     }
     private static drawLeftFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#f00';
-        ctx.fill();
+        ctx.moveTo(-0.5, -0.75);
+        ctx.lineTo(-1, 0);
+        ctx.lineTo(-0.5, 0.75);
+        ctx.stroke();
+        ctx.fillText('L', 0, 0);
     }
     private static drawRightFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#0c6';
-        ctx.fill();
+        ctx.moveTo(0.5, -0.75);
+        ctx.lineTo(1, 0);
+        ctx.lineTo(0.5, 0.75);
+        ctx.stroke();
+        ctx.fillText('R', 0, 0);
     }
     private static drawTopFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#c0c';
-        ctx.fill();
+        ctx.moveTo(-0.75, -0.5);
+        ctx.lineTo(0, -1);
+        ctx.lineTo(0.75, -0.5);
+        ctx.stroke();
+        ctx.fillText('T', 0, 0);
     }
     private static drawBottomFace(ctx: CanvasRenderingContext2D) {
         ctx.beginPath();
-        ctx.arc(0, 0, 1, 0, Math.PI * 2);
-        ctx.fillStyle = '#fc0';
-        ctx.fill();
+        ctx.moveTo(-0.75, 0.5);
+        ctx.lineTo(0, 1);
+        ctx.lineTo(0.75, 0.5);
+        ctx.stroke();
+        ctx.fillText('B', 0, 0);
     }
 };
 WeaponTarget.init();
