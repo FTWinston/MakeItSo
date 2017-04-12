@@ -265,7 +265,7 @@ class WeaponTarget {
                 .rotateY(this.pitch)
                 .rotateZ(this.roll);
 
-            ctx.moveTo(point.x * this.radius, point.y * this.radius);
+            ctx.moveTo(point.x, point.y);
 
             for (faceVertex++; faceVertex < 4; faceVertex++) {
                 let point = face.vertices[faceVertex]
@@ -274,7 +274,7 @@ class WeaponTarget {
                     .rotateY(this.pitch)
                     .rotateZ(this.roll);
 
-                ctx.lineTo(point.x * this.radius, point.y * this.radius);
+                ctx.lineTo(point.x, point.y);
             }
             
             ctx.closePath();
