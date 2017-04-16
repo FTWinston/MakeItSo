@@ -236,11 +236,10 @@ class WeaponTarget {
     }
 
     private static towardsCamera = new Vector3(0, 0, 1);
-    private static darkColor = '#333333';
-    private static lightColor = '#cccccc';
     private static thinLine = 0.1;
     private static thickLine = 0.2;
-    private static dash = [0.2, 0.2];
+    private static thinDash = [WeaponTarget.thinLine, WeaponTarget.thinLine];
+    private static thickDash = [0.15, 0.15];
     private static noDash: number[] = [];
     private drawCube(ctx: CanvasRenderingContext2D) {
         for (let face of WeaponTarget.faces) {
@@ -284,6 +283,7 @@ class WeaponTarget {
             ctx.globalAlpha = 1;
             ctx.stroke();
 
+            ctx.strokeStyle = '#000000';
             face.applyTransform(ctx, this.radius);
             face.drawSymbol(ctx);
 
@@ -297,87 +297,78 @@ class WeaponTarget {
     }
     private static drawFrontFace(ctx: CanvasRenderingContext2D) {
         ctx.lineWidth = WeaponTarget.thickLine;
-        ctx.strokeStyle = WeaponTarget.lightColor;
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.beginPath();
-        ctx.moveTo(-0.5, -0.5);
+        ctx.moveTo(-0.6, -0.6);
         ctx.lineTo(0, 0);
-        ctx.lineTo(0.5, -0.5);
+        ctx.lineTo(0.6, -0.6);
         ctx.stroke();
 
-        ctx.strokeStyle = WeaponTarget.darkColor;
+        ctx.setLineDash(WeaponTarget.thickDash);
         ctx.beginPath();
-        ctx.moveTo(-0.5, 0.5);
+        ctx.moveTo(-0.6, 0.6);
         ctx.lineTo(0, 0);
-        ctx.lineTo(0.5, 0.5);
+        ctx.lineTo(0.6, 0.6);
         ctx.stroke();
 
         ctx.lineWidth = WeaponTarget.thinLine;
-        ctx.beginPath();
-        ctx.moveTo(-1, 0);
-        ctx.lineTo(1, 0);
-        ctx.stroke();
-
-        ctx.setLineDash(WeaponTarget.dash);
-
-        ctx.strokeStyle = WeaponTarget.lightColor;
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.beginPath();
         ctx.moveTo(0, -1);
         ctx.lineTo(0, 0);
         ctx.stroke();
 
-        ctx.strokeStyle = WeaponTarget.darkColor;
+        ctx.setLineDash(WeaponTarget.thinDash);
+        
         ctx.beginPath();
         ctx.moveTo(0, 0);
         ctx.lineTo(0, 1);
         ctx.stroke();
-
-        ctx.setLineDash(WeaponTarget.noDash);
     }
     private static drawRearFace(ctx: CanvasRenderingContext2D) {
         ctx.lineWidth = WeaponTarget.thickLine;
-        ctx.strokeStyle = WeaponTarget.lightColor;
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.beginPath();
-        ctx.moveTo(-0.4, -0.6);
-        ctx.lineTo(-1, 0);
-        ctx.moveTo(0.4, -0.6);
-        ctx.lineTo(1, 0);
+        ctx.moveTo(-0.6, -0.4);
+        ctx.lineTo(0, -1);
+        ctx.lineTo(0.6, -0.4);
         ctx.stroke();
 
+        ctx.setLineDash(WeaponTarget.thickDash);
+        ctx.beginPath();
+        ctx.moveTo(-0.6, 0.4);
+        ctx.lineTo(0, 1);
+        ctx.lineTo(0.6, 0.4);
+        ctx.stroke();
+
+
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.lineWidth = WeaponTarget.thinLine;
-        ctx.strokeStyle = WeaponTarget.darkColor;
         ctx.beginPath();
-        ctx.moveTo(-1, 0);
-        ctx.lineTo(1, 0);
-        ctx.stroke();
-
-        ctx.setLineDash(WeaponTarget.dash);
-        ctx.beginPath();
-        ctx.moveTo(0, 1);
+        ctx.moveTo(0, -1);
         ctx.lineTo(0, 0);
         ctx.stroke();
-        ctx.strokeStyle = WeaponTarget.lightColor;
+
+        ctx.setLineDash(WeaponTarget.thinDash);
         ctx.beginPath();
         ctx.moveTo(0, 0);
-        ctx.lineTo(0, -1);
+        ctx.lineTo(0, 1);
         ctx.stroke();
-        ctx.setLineDash(WeaponTarget.noDash);
     }
     private static drawLeftFace(ctx: CanvasRenderingContext2D) {
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.lineWidth = WeaponTarget.thickLine;
-        ctx.strokeStyle = WeaponTarget.lightColor;
         ctx.beginPath();
-        ctx.moveTo(-0.4, -0.6);
-        ctx.lineTo(-1, 0);
-        ctx.moveTo(0.4, -0.6);
-        ctx.lineTo(-0.2, 0);
+        ctx.moveTo(-0.3, -0.6);
+        ctx.lineTo(-0.9, 0);
         ctx.stroke();
 
-        ctx.strokeStyle = WeaponTarget.darkColor;
-        ctx.beginPath();
-        ctx.moveTo(-1, 0);
-        ctx.lineTo(-0.4, 0.6);
+        ctx.setLineDash(WeaponTarget.thickDash);
+        ctx.moveTo(-0.9, 0);
+        ctx.lineTo(-0.3, 0.6);
         ctx.stroke();
 
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.lineWidth = WeaponTarget.thinLine;
         ctx.beginPath();
         ctx.moveTo(-1, 0);
@@ -385,21 +376,19 @@ class WeaponTarget {
         ctx.stroke();
     }
     private static drawRightFace(ctx: CanvasRenderingContext2D) {
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.lineWidth = WeaponTarget.thickLine;
-        ctx.strokeStyle = WeaponTarget.lightColor;
         ctx.beginPath();
-        ctx.moveTo(0.4, -0.6);
-        ctx.lineTo(1, 0);
-        ctx.moveTo(-0.4, -0.6);
-        ctx.lineTo(0.2, 0);
+        ctx.moveTo(0.3, -0.6);
+        ctx.lineTo(0.9, 0);
         ctx.stroke();
 
-        ctx.strokeStyle = WeaponTarget.darkColor;
-        ctx.beginPath();
-        ctx.moveTo(1, 0);
-        ctx.lineTo(0.4, 0.6);
+        ctx.setLineDash(WeaponTarget.thickDash);
+        ctx.moveTo(0.9, 0);
+        ctx.lineTo(0.3, 0.6);
         ctx.stroke();
 
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.lineWidth = WeaponTarget.thinLine;
         ctx.beginPath();
         ctx.moveTo(-1, 0);
@@ -407,42 +396,35 @@ class WeaponTarget {
         ctx.stroke();
     }
     private static drawTopFace(ctx: CanvasRenderingContext2D) {
+        ctx.setLineDash(WeaponTarget.noDash);
         ctx.lineWidth = WeaponTarget.thickLine;
-        ctx.strokeStyle = WeaponTarget.lightColor;
         ctx.beginPath();
-        ctx.moveTo(-0.6, -0.4);
-        ctx.lineTo(0, -1);
-        ctx.lineTo(0.6, -0.4);
-
-        ctx.moveTo(-0.6, 0.4);
-        ctx.lineTo(0, -0.2);
-        ctx.lineTo(0.6, 0.4);
+        ctx.moveTo(-0.6, -0.3);
+        ctx.lineTo(0, -0.9);
+        ctx.lineTo(0.6, -0.3);
         ctx.stroke();
         
-        ctx.setLineDash(WeaponTarget.dash);
         ctx.lineWidth = WeaponTarget.thinLine;
         ctx.beginPath();
         ctx.moveTo(0, -1);
         ctx.lineTo(0, 1);
         ctx.stroke();
-        ctx.setLineDash(WeaponTarget.noDash);
     }
     private static drawBottomFace(ctx: CanvasRenderingContext2D) {
+        ctx.setLineDash(WeaponTarget.thickDash);
         ctx.lineWidth = WeaponTarget.thickLine;
-        ctx.strokeStyle = WeaponTarget.darkColor;
         ctx.beginPath();
-        ctx.moveTo(-0.6, -0.4);
-        ctx.lineTo(0, -1);
-        ctx.lineTo(0.6, -0.4);
+        ctx.moveTo(-0.6, -0.3);
+        ctx.lineTo(0, -0.9);
+        ctx.lineTo(0.6, -0.3);
         ctx.stroke();
-        
-        ctx.setLineDash(WeaponTarget.dash);
+
+        ctx.setLineDash(WeaponTarget.thinDash);
         ctx.lineWidth = WeaponTarget.thinLine;
         ctx.beginPath();
         ctx.moveTo(0, -1);
         ctx.lineTo(0, 1);
         ctx.stroke();
-        ctx.setLineDash(WeaponTarget.noDash);
     }
 };
 WeaponTarget.init();
