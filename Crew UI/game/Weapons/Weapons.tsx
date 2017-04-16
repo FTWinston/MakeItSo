@@ -62,8 +62,7 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
                 dice[i] = parseInt(data.charAt(i + 1));
                 locked[i] = data.charAt(i + 6) == '1';
             }
-            console.log('updating dice: ', data);
-            console.log('updated dice: ', dice);
+
             this.setState({
                 rollNumber: rolls,
                 dice: dice,

@@ -20,24 +20,24 @@ class Vector3 {
         let cosa = Math.cos(angle);
         let sina = Math.sin(angle);
         let prevY = this.y;
-        this.y = this.y * cosa - this.z * sina;
-        this.z = prevY * sina + this.z * cosa;
+        this.y = this.y * cosa + this.z * sina;
+        this.z = this.z * cosa - prevY * sina;
         return this;
     }
     rotateY(angle: number) {
         let cosa = Math.cos(angle);
         let sina = Math.sin(angle);
         let prevZ = this.z;
-        this.z = this.z * cosa - this.x * sina;
-        this.x = prevZ * sina + this.x * cosa;
+        this.z = this.z * cosa + this.x * sina;
+        this.x = this.x * cosa - prevZ * sina;
         return this;
     }
     rotateZ(angle: number) {
         let cosa = Math.cos(angle);
         let sina = Math.sin(angle);
         let prevX = this.x;
-        this.x = this.x * cosa - this.y * sina;
-        this.y = prevX * sina + this.y * cosa;
+        this.x = this.x * cosa + this.y * sina;
+        this.y = this.y * cosa - prevX * sina;
         return this;
     }
     dot(other: Vector3) {
@@ -99,22 +99,22 @@ class WeaponTarget {
 
     static init() {
         let vertices = [
-            new Vector3(-1, 1, -1),
-            new Vector3(1, 1, -1),
-            new Vector3(1, -1, -1),
-            new Vector3(-1, -1, -1),
+            new Vector3(-1, 1,-1),
+            new Vector3( 1, 1,-1),
+            new Vector3( 1,-1,-1),
+            new Vector3(-1,-1,-1),
             new Vector3(-1, 1, 1),
-            new Vector3(1, 1, 1),
-            new Vector3(1, -1, 1),
-            new Vector3(-1, -1, 1)
+            new Vector3( 1, 1, 1),
+            new Vector3( 1,-1, 1),
+            new Vector3(-1,-1, 1)
         ];
         WeaponTarget.faces = [
             new CubeFace(new Vector3(0, 0, -1), [vertices[0], vertices[1], vertices[2], vertices[3]], WeaponTarget.drawBottomFace),
-            new CubeFace(new Vector3(1, 0, 0),  [vertices[1], vertices[5], vertices[6], vertices[2]], WeaponTarget.drawFrontFace),
-            new CubeFace(new Vector3(0, 0, 1),  [vertices[5], vertices[4], vertices[7], vertices[6]], WeaponTarget.drawTopFace),
-            new CubeFace(new Vector3(-1, 0, 0), [vertices[4], vertices[0], vertices[3], vertices[7]], WeaponTarget.drawRearFace),
-            new CubeFace(new Vector3(0, 1, 0),  [vertices[0], vertices[4], vertices[5], vertices[1]], WeaponTarget.drawRightFace),
-            new CubeFace(new Vector3(0, -1, 0), [vertices[3], vertices[2], vertices[6], vertices[7]], WeaponTarget.drawLeftFace)
+            new CubeFace(new Vector3(1, 0, 0), [vertices[2], vertices[1], vertices[5], vertices[6]], WeaponTarget.drawLeftFace),
+            new CubeFace(new Vector3( 0, 0, 1), [vertices[5], vertices[4], vertices[7], vertices[6]], WeaponTarget.drawTopFace),
+            new CubeFace(new Vector3(-1, 0, 0), [vertices[0], vertices[3], vertices[7], vertices[4]], WeaponTarget.drawRightFace),
+            new CubeFace(new Vector3(0, 1, 0), [vertices[1], vertices[0], vertices[4], vertices[5]], WeaponTarget.drawRearFace),
+            new CubeFace(new Vector3(0, -1, 0), [vertices[3], vertices[2], vertices[6], vertices[7]], WeaponTarget.drawFrontFace)
         ];
     }
 
@@ -159,6 +159,9 @@ class WeaponTarget {
         this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
     }
     updateOrientation(pitch: number, yaw: number, roll: number) {
+        //console.log('pitch', pitch);
+        //console.log('yaw', yaw);
+        //console.log('roll', roll);
         pitch = pitch * Math.PI / 180; // 0 - 2pi
         yaw = yaw * Math.PI / 180; // 0 - 2pi
         roll = roll * Math.PI / 180; // -pi - +pi
@@ -184,10 +187,7 @@ class WeaponTarget {
             ctx.fillStyle = '#aaaa00';
 
         ctx.strokeStyle = '#666666';
-
-        let pitchScale = Math.cos(this.pitch);
-        let rollScale = Math.cos(this.roll);
-
+        
         ctx.translate(this.renderX, this.renderY);
         this.drawCube(ctx);
         
@@ -235,53 +235,51 @@ class WeaponTarget {
         this.radius = minSize * (this.size * 0.1 + 1);
     }
 
-    private static camera = new Vector3(0, 0, -1);
+    private static towardsCamera = new Vector3(0, 0, 1);
     private drawCube(ctx: CanvasRenderingContext2D) {
         for (let face of WeaponTarget.faces) {
             face.reset();
 
             let dot = face.normal
-                .rotateX(this.yaw)
-                .rotateY(this.pitch)
-                .rotateZ(this.roll)
-                .dot(WeaponTarget.camera);
+                .rotateZ(this.yaw)
+                .rotateX(this.pitch)
+                .rotateY(this.roll)
+                .dot(WeaponTarget.towardsCamera);
 
             if (dot <= 0)
-                continue; // only draw faces visible from "above"
-
+                continue; // only draw faces visible from the camera
             ctx.beginPath();
 
             let faceVertex = 0;
             let point = face.vertices[faceVertex]
                 .scale(this.radius)
-                .rotateX(this.yaw)
-                .rotateY(this.pitch)
-                .rotateZ(this.roll);
+                .rotateZ(this.yaw)
+                .rotateX(this.pitch)
+                .rotateY(this.roll);
 
             ctx.moveTo(point.x, point.y);
 
             for (faceVertex++; faceVertex < 4; faceVertex++) {
                 let point = face.vertices[faceVertex]
                     .scale(this.radius)
-                    .rotateX(this.yaw)
-                    .rotateY(this.pitch)
-                    .rotateZ(this.roll);
+                    .rotateZ(this.yaw)
+                    .rotateX(this.pitch)
+                    .rotateY(this.roll);
 
                 ctx.lineTo(point.x, point.y);
             }
             
             ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
 
             ctx.save();
+            ctx.globalAlpha = dot * 0.3 + 0.7;
+
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.stroke();
 
             face.applyTransform(ctx, this.radius);
             ctx.strokeStyle = ctx.fillStyle = '#000000';
-            ctx.lineWidth = 0.1;
-            ctx.font = '1px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
 
             face.drawSymbol(ctx);
 
@@ -294,65 +292,118 @@ class WeaponTarget {
             && y >= this.renderY - r && y <= this.renderY + r;
     }
     private static drawFrontFace(ctx: CanvasRenderingContext2D) {
+        ctx.lineWidth = 0.2;
         ctx.beginPath();
-        ctx.moveTo(-0.75, -0.75);
-        ctx.lineTo(0.75, 0.75);
-        ctx.moveTo(0.75, -0.75);
-        ctx.lineTo(-0.75, 0.75);
+        ctx.moveTo(-0.5, -0.5);
+        ctx.lineTo(0.5, 0.5);
+        ctx.moveTo(0.5, -0.5);
+        ctx.lineTo(-0.5, 0.5);
         ctx.stroke();
+
+        ctx.lineWidth = 0.1;
+        ctx.beginPath();
+        ctx.moveTo(-1, 0);
+        ctx.lineTo(1, 0);
+        ctx.stroke();
+
+        ctx.setLineDash([0.3, 0.3]);
+        ctx.beginPath();
+        ctx.moveTo(0, -1);
+        ctx.lineTo(0, 1);
+        ctx.stroke();
+        ctx.setLineDash([]);
     }
     private static drawRearFace(ctx: CanvasRenderingContext2D) {
+        ctx.lineWidth = 0.2;
         ctx.beginPath();
-
         ctx.moveTo(-0.4, -0.6);
-        ctx.lineTo(0, -1);
-        ctx.lineTo(0.4, -0.6);
-
-        ctx.moveTo(-0.4, 0.6);
-        ctx.lineTo(0, 1);
-        ctx.lineTo(0.4, 0.6);
-
-        ctx.moveTo(-0.6, -0.4);
         ctx.lineTo(-1, 0);
-        ctx.lineTo(-0.6, 0.4);
-
-        ctx.moveTo(0.6, -0.4);
+        ctx.moveTo(0.4, -0.6);
         ctx.lineTo(1, 0);
-        ctx.lineTo(0.6, 0.4);
-
         ctx.stroke();
+
+        ctx.lineWidth = 0.1;
+        ctx.beginPath();
+        ctx.moveTo(-1, 0);
+        ctx.lineTo(1, 0);
+        ctx.stroke();
+
+        ctx.setLineDash([0.3, 0.3]);
+        ctx.beginPath();
+        ctx.moveTo(0, -1);
+        ctx.lineTo(0, 1);
+        ctx.stroke();
+        ctx.setLineDash([]);
     }
     private static drawLeftFace(ctx: CanvasRenderingContext2D) {
+        ctx.lineWidth = 0.2;
         ctx.beginPath();
-        ctx.moveTo(-0.5, -0.75);
+        ctx.moveTo(-0.4, -0.6);
         ctx.lineTo(-1, 0);
-        ctx.lineTo(-0.5, 0.75);
+        ctx.lineTo(-0.4, 0.6);
+
+        ctx.moveTo(0.4, -0.6);
+        ctx.lineTo(-0.2, 0);
         ctx.stroke();
-        ctx.fillText('L', 0, 0);
+
+        ctx.lineWidth = 0.1;
+        ctx.beginPath();
+        ctx.moveTo(-1, 0);
+        ctx.lineTo(1, 0);
+        ctx.stroke();
     }
     private static drawRightFace(ctx: CanvasRenderingContext2D) {
+        ctx.lineWidth = 0.2;
         ctx.beginPath();
-        ctx.moveTo(0.5, -0.75);
+        ctx.moveTo(0.4, -0.6);
         ctx.lineTo(1, 0);
-        ctx.lineTo(0.5, 0.75);
+        ctx.lineTo(0.4, 0.6);
+
+        ctx.moveTo(-0.4, -0.6);
+        ctx.lineTo(0.2, 0);
         ctx.stroke();
-        ctx.fillText('R', 0, 0);
+
+        ctx.lineWidth = 0.1;
+        ctx.beginPath();
+        ctx.moveTo(-1, 0);
+        ctx.lineTo(1, 0);
+        ctx.stroke();
     }
     private static drawTopFace(ctx: CanvasRenderingContext2D) {
+        ctx.lineWidth = 0.2;
         ctx.beginPath();
-        ctx.moveTo(-0.75, -0.5);
+        ctx.moveTo(-0.6, -0.4);
         ctx.lineTo(0, -1);
-        ctx.lineTo(0.75, -0.5);
+        ctx.lineTo(0.6, -0.4);
+
+        ctx.moveTo(-0.6, 0.4);
+        ctx.lineTo(0, -0.2);
+        ctx.lineTo(0.6, 0.4);
         ctx.stroke();
-        ctx.fillText('T', 0, 0);
+        
+        ctx.setLineDash([0.3, 0.3]);
+        ctx.lineWidth = 0.1;
+        ctx.beginPath();
+        ctx.moveTo(0, -1);
+        ctx.lineTo(0, 1);
+        ctx.stroke();
+        ctx.setLineDash([]);
     }
     private static drawBottomFace(ctx: CanvasRenderingContext2D) {
+        ctx.lineWidth = 0.2;
         ctx.beginPath();
-        ctx.moveTo(-0.75, 0.5);
-        ctx.lineTo(0, 1);
-        ctx.lineTo(0.75, 0.5);
+        ctx.moveTo(-0.6, -0.4);
+        ctx.lineTo(0, -1);
+        ctx.lineTo(0.6, -0.4);
         ctx.stroke();
-        ctx.fillText('B', 0, 0);
+        
+        ctx.setLineDash([0.3, 0.3]);
+        ctx.lineWidth = 0.1;
+        ctx.beginPath();
+        ctx.moveTo(0, -1);
+        ctx.lineTo(0, 1);
+        ctx.stroke();
+        ctx.setLineDash([]);
     }
 };
 WeaponTarget.init();
