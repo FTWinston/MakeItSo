@@ -75,13 +75,13 @@ class Weapons extends React.Component<ISystemProps, IWeaponState> implements ISy
         switch (msg) {
             case 'add': {
                 let size = parseInt(params[1]), status = parseInt(params[2]);
-                let angle = parseInt(params[3]), dist = parseInt(params[4]);
-                let pitch = parseInt(params[5]), yaw = parseInt(params[6]), roll = parseInt(params[7]);
-                if (isNaN(size) || isNaN(status) || isNaN(angle) || isNaN(dist)) {
+                let relPitch = parseInt(params[3]), relYaw = parseInt(params[4]), dist = parseInt(params[5]);
+                let pitch = parseInt(params[6]), yaw = parseInt(params[7]), roll = parseInt(params[8]);
+                if (isNaN(size) || isNaN(status) || isNaN(relPitch) || isNaN(dist)) {
                     console.error(language.errorParameterNotNumeric);
                     return false;
                 }
-                return (this.refs['select'] as WeaponTargetSelect).addTarget(params[0], size, status, angle, dist, pitch, yaw, roll);
+                return (this.refs['select'] as WeaponTargetSelect).addTarget(params[0], size, status, relPitch, relYaw, dist, pitch, yaw, roll);
             }
             case 'rem':
                 return (this.refs['select'] as WeaponTargetSelect).removeTarget(params[0]);

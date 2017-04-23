@@ -4,92 +4,12 @@
     Unknown = 3
 }
 
-class Vector3 {
-    constructor(public x: number, public y: number, public z: number) { }
-
-    clone() {
-        return new Vector3(this.x, this.y, this.z);
-    }
-    scale(factor: number) {
-        this.x *= factor;
-        this.y *= factor;
-        this.z *= factor;
-        return this;
-    }
-    rotateX(angle: number) {
-        let cosa = Math.cos(angle);
-        let sina = Math.sin(angle);
-        let prevY = this.y;
-        this.y = this.y * cosa + this.z * sina;
-        this.z = this.z * cosa - prevY * sina;
-        return this;
-    }
-    rotateY(angle: number) {
-        let cosa = Math.cos(angle);
-        let sina = Math.sin(angle);
-        let prevZ = this.z;
-        this.z = this.z * cosa + this.x * sina;
-        this.x = this.x * cosa - prevZ * sina;
-        return this;
-    }
-    rotateZ(angle: number) {
-        let cosa = Math.cos(angle);
-        let sina = Math.sin(angle);
-        let prevX = this.x;
-        this.x = this.x * cosa + this.y * sina;
-        this.y = this.y * cosa - prevX * sina;
-        return this;
-    }
-    dot(other: Vector3) {
-        return this.x * other.x + this.y * other.y + this.z * other.z;
-    }
-}
-
-class CubeFace {
-    public normal: Vector3;
-    public vertices: [Vector3, Vector3, Vector3, Vector3];
-    constructor(private origNormal: Vector3, private origVertices: [Vector3, Vector3, Vector3, Vector3], public drawSymbol: (ctx: CanvasRenderingContext2D) => void) { }
-
-    public reset() {
-        this.normal = this.origNormal.clone();
-        let vertices = this.origVertices;
-        this.vertices = [vertices[0].clone(), vertices[1].clone(), vertices[2].clone(), vertices[3].clone()];
-    }
-
-    public applyTransform(ctx: CanvasRenderingContext2D, size: number) {
-        let tl = this.vertices[0], tr = this.vertices[1], br = this.vertices[2];
-        //let oldMatrix = [[-1, 1, 1], [1, 1, -1], [1, 1, 1]];
-        //let inverseOld = CubeFace.getMatrixInverse(oldMatrix);
-        let inverseOld = [[-.5, 0, .5], [.5, .5, 0], [0,-.5, .5]];
-
-        let newMatrix = [[tl.x, tr.x, br.x], [tl.y, tr.y, br.y]];
-        let transform = CubeFace.matrixMultiply(newMatrix, inverseOld);
-
-        ctx.transform(transform[0][0], transform[1][0], transform[0][1], transform[1][1], transform[0][2], transform[1][2]);
-    }
-    private static matrixMultiply(matrixA, matrixB) {
-        let n = 2, m = 3, p = 3;
-        let matrixC = [new Array(3), new Array(3)];
-
-        for (let i = 0; i < n; i++) {
-            for (let j = 0; j < p; j++) {
-                let sum = 0;
-                for (let k = 0; k < m; k++) {
-                    sum += matrixA[i][k] * matrixB[k][j];
-                }
-                matrixC[i][j] = sum;
-            }
-        }
-        return matrixC;
-    }
-}
-
 class WeaponTarget {
-    constructor(id: string, size: number, status: TargetStatus, angle: number, dist: number, pitch: number, yaw: number, roll: number) {
+    constructor(id: string, size: number, status: TargetStatus, relPitch: number, relYaw: number, dist: number, pitch: number, yaw: number, roll: number) {
         this.id = id;
         this.size = size;
         this.status = status;
-        this.updatePosition(angle, dist);
+        this.updatePosition(relPitch, relYaw, dist);
         this.updateOrientation(pitch, yaw, roll);
         this.selected = false;
     }
@@ -138,13 +58,27 @@ class WeaponTarget {
     private nextX: number;
     private nextY: number;
 
-    updatePosition(angle: number, dist: number) {
-        angle = angle * Math.PI / 180; // 0 - 2pi
+    updatePosition(relPitch: number, relYaw: number, dist: number) {
+        let inFront = Math.abs(relYaw) <= 90;
+
+        relPitch = relPitch * Math.PI / 180; // -pi/2 - pi/2
+        relYaw = (relYaw - 180) * Math.PI / 180; // -pi - pi
         dist = dist / 100; // 0 - 1
 
-        var x = 0.5 + 0.5 * dist * Math.cos(angle);
-        var y = 0.5 + 0.5 * dist * Math.sin(angle);
+        let rFrontCircle = 0.75, rRearCircle = 1;
+        // TODO: calculate position on a circle, not a square
 
+        let x: number, y: number;
+        if (inFront) {
+            x = rFrontCircle * Math.sin(relYaw);
+            y = rFrontCircle * Math.sin(relPitch);
+        }
+        else {
+            // TODO: this just isn't right
+            x = rFrontCircle * Math.sin(relYaw);
+            y = rFrontCircle * Math.sin(relPitch);
+        }
+        
         if (this.x === undefined) {
             this.x = x;
             this.y = y;
@@ -159,9 +93,6 @@ class WeaponTarget {
         this.lerpEndTime = performance.now() + WeaponTarget.lerpDuration;
     }
     updateOrientation(pitch: number, yaw: number, roll: number) {
-        //console.log('pitch', pitch);
-        //console.log('yaw', yaw);
-        //console.log('roll', roll);
         pitch = pitch * Math.PI / 180; // 0 - 2pi
         yaw = yaw * Math.PI / 180; // 0 - 2pi
         roll = roll * Math.PI / 180; // -pi - +pi
@@ -230,8 +161,9 @@ class WeaponTarget {
             }
         }
 
-        this.renderX = this.x * panelWidth;
-        this.renderY = this.y * panelHeight;
+        let halfWidth = panelWidth * 0.5, halfHeight = panelHeight * 0.5;
+        this.renderX = this.x * halfWidth + halfWidth;
+        this.renderY = this.y * halfHeight + halfHeight;
         this.radius = minSize * (this.size * 0.1 + 1);
     }
 
@@ -246,8 +178,8 @@ class WeaponTarget {
             face.reset();
 
             let dot = face.normal
-                .rotateZ(this.yaw)
                 .rotateX(this.pitch)
+                .rotateZ(this.yaw)
                 .rotateY(this.roll)
                 .dot(WeaponTarget.towardsCamera);
 
@@ -258,8 +190,8 @@ class WeaponTarget {
             let faceVertex = 0;
             let point = face.vertices[faceVertex]
                 .scale(this.radius)
-                .rotateZ(this.yaw)
                 .rotateX(this.pitch)
+                .rotateZ(this.yaw)
                 .rotateY(this.roll);
 
             ctx.moveTo(point.x, point.y);
@@ -267,8 +199,8 @@ class WeaponTarget {
             for (faceVertex++; faceVertex < 4; faceVertex++) {
                 let point = face.vertices[faceVertex]
                     .scale(this.radius)
-                    .rotateZ(this.yaw)
                     .rotateX(this.pitch)
+                    .rotateZ(this.yaw)
                     .rotateY(this.roll);
 
                 ctx.lineTo(point.x, point.y);

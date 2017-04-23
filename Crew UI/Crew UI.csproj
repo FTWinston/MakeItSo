@@ -29,6 +29,8 @@
     <TypeScriptCompile Include="game\Communications\Communications.tsx" />
     <TypeScriptCompile Include="game\Power\PowerCard.tsx" />
     <TypeScriptCompile Include="game\Weapons\Dice.tsx" />
+    <TypeScriptCompile Include="game\Weapons\CubeFace.ts" />
+    <TypeScriptCompile Include="game\Weapons\Vector3.ts" />
     <TypeScriptCompile Include="language\english.ts" />
     <TypeScriptCompile Include="setup\GameSetup.tsx" />
     <TypeScriptCompile Include="game\ISystem.ts" />

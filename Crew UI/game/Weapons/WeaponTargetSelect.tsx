@@ -49,39 +49,33 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             else
                 this.redraw();
     }
-    drawBackground(ctx, width, height) {
+    drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        let cx = width / 2, cy = height / 2;
+        let minDimension = Math.min(width, height);
+
         ctx.fillStyle = '#000000';
         ctx.beginPath();
-        ctx.rect(0, 0, width, height);
+        ctx.arc(cx, cy, minDimension / 2, 0, Math.PI * 2);
         ctx.fill();
-        
-        // draw firing arc indicators
-        var shipX = width / 2, shipY = height * 0.67;
-        ctx.lineWidth = 1;
-        this.drawFiringArc(ctx, '#990000', shipX, shipY, 0, 0.57735026919); // tan 30, for 120 degree arc
-        this.drawFiringArc(ctx, '#996600', shipX, shipY, 0, 1); // tan 45, for 90 degree arc
-        this.drawFiringArc(ctx, '#009900', shipX, shipY, 0, 1.73205080757); // tan 60, for 60 degree arc
-        
-        this.drawFiringArc(ctx, '#990000', shipX, shipY, height, 1.73205080757); // tan 60, for 60 degree arc
+
+        this.drawRing(ctx, '#990000', cx, cy, minDimension / 8);
+        this.drawRing(ctx, '#996600', cx, cy, minDimension / 4);
+        this.drawRing(ctx, '#009900', cx, cy, 3 * minDimension / 8);
         
         // draw ship indicator
-        var shipRadius = Math.min(width * 0.025, height * 0.025);
+        var shipRadius = minDimension * 0.015;
         ctx.fillStyle = '#cccccc';
         ctx.beginPath();
-        ctx.arc(shipX, shipY, shipRadius, 0, Math.PI * 2);
+        ctx.arc(cx, cy, shipRadius, 0, Math.PI * 2);
         ctx.fill();
     }
-    drawFiringArc(ctx, color, shipX, shipY, endY, tanAngle) {
+    drawRing(ctx: CanvasRenderingContext2D, color: string, shipX: number, shipY: number, radius: number) {
         ctx.strokeStyle = color;
-        var dx = Math.abs(shipY - endY) / tanAngle;
-        
         ctx.beginPath();
-        ctx.moveTo(shipX - dx, endY);
-        ctx.lineTo(shipX, shipY);
-        ctx.lineTo(shipX + dx, endY);
+        ctx.arc(shipX, shipY, radius, 0, Math.PI * 2);
         ctx.stroke();
     }
-    addTarget(id, size, status, angle, dist, pitch, yaw, roll) {
+    addTarget(id: string, size: number, status: number, relPitch: number, relYaw: number, dist: number, pitch: number, yaw: number, roll: number) {
         if (size < 1 || size > 10) {
             console.error('invalid size');
             return false;
@@ -90,19 +84,23 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             console.error('invalid status');
             return false;
         }
-        else if (angle < 0 || angle >= 360) {
-            console.error('invalid angle');
+        else if (relPitch < -90 || relPitch >= 90) {
+            console.error('invalid relative pitch');
+            return false;
+        }
+        else if (relYaw < 0 || relYaw >= 360) {
+            console.error('invalid relative yaw');
             return false;
         }
         else if (dist < 1 || dist > 100) {
             console.error('invalid dist');
             return false;
         }
-        else if (pitch < -180 || pitch > 180) {
+        else if (pitch < -90 || pitch > 90) {
             console.error('invalid pitch');
             return false;
         }
-        else if (yaw < 0 || pitch >= 360) {
+        else if (yaw < 0 || yaw >= 360) {
             console.error('invalid yaw');
             return false;
         }
@@ -111,7 +109,7 @@ class WeaponTargetSelect extends React.Component<IWeaponTargetSelectProps, IWeap
             return false;
         }
         
-        var target = new WeaponTarget(id, size, status, angle, dist, pitch, yaw, roll)
+        var target = new WeaponTarget(id, size, status, relPitch, relYaw, dist, pitch, yaw, roll)
 
         this.setState(function(previousState, currentProps) {
             var targets = previousState.targets;

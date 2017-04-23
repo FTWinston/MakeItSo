@@ -50,9 +50,9 @@ void Main(array<String^>^ args)
 int numWeaponsContacts = 0;
 System::Void WebTest::MainForm::btnAddEnemy_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	int id = ++numWeaponsContacts, size = rand() % 10 + 1, status = rand() % 3 + 1, angle = rand() % 360, dist = rand() % 100 + 1;
+	int id = ++numWeaponsContacts, size = rand() % 10 + 1, status = rand() % 3 + 1, relPitch = rand() % 180 - 90, relYaw = rand() % 360, dist = rand() % 100 + 1;
 	int pitch = rand() % 180 - 90, yaw = rand() % 360, roll = rand() % 360 - 180;
-	std::wstring msg = L"add targ" + std::to_wstring(id) + L" " + std::to_wstring(size) + L" " + std::to_wstring(status) + L" " + std::to_wstring(angle) + L" " + std::to_wstring(dist) + L" " + std::to_wstring(pitch) + L" " + std::to_wstring(yaw) + L" " + std::to_wstring(roll);
+	std::wstring msg = L"add targ" + std::to_wstring(id) + L" " + std::to_wstring(size) + L" " + std::to_wstring(status) + L" " + std::to_wstring(relPitch) + L" " + std::to_wstring(relYaw) + L" " + std::to_wstring(dist) + L" " + std::to_wstring(pitch) + L" " + std::to_wstring(yaw) + L" " + std::to_wstring(roll);
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Weapons, msg.c_str());
 
 	crewManager->SendCrewMessage(UCrewManager::ESystem::ViewScreen, (L"add targ" + std::to_wstring(id)).c_str());
