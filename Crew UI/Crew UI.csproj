@@ -24,47 +24,15 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="Connection.ts" />
-    <TypeScriptCompile Include="ErrorDisplay.tsx" />
-    <TypeScriptCompile Include="game\Communications\Communications.tsx" />
-    <TypeScriptCompile Include="game\Power\PowerCard.tsx" />
-    <TypeScriptCompile Include="game\Weapons\Dice.tsx" />
-    <TypeScriptCompile Include="game\Weapons\CubeFace.ts" />
-    <TypeScriptCompile Include="game\Weapons\Vector3.ts" />
+    <TypeScriptCompile Include="core\Connection.ts" />
+    <TypeScriptCompile Include="core\Features.ts" />
+    <TypeScriptCompile Include="screens\ErrorDisplay.tsx" />
     <TypeScriptCompile Include="language\english.ts" />
-    <TypeScriptCompile Include="setup\GameSetup.tsx" />
-    <TypeScriptCompile Include="game\ISystem.ts" />
-    <TypeScriptCompile Include="setup\SystemListItem.tsx" />
-    <TypeScriptCompile Include="setup\SystemSelect.tsx" />
-    <TypeScriptCompile Include="game\DamageControl\DamageControl.tsx" />
-    <TypeScriptCompile Include="game\Deflector\Deflector.tsx" />
-    <TypeScriptCompile Include="GameClient.tsx" />
-    <TypeScriptCompile Include="game\Helm\Helm.tsx" />
-    <TypeScriptCompile Include="Intrinsics.ts" />
-    <TypeScriptCompile Include="game\Power\Power.tsx" />
-    <TypeScriptCompile Include="game\SystemContainer.tsx" />
-    <TypeScriptCompile Include="game\Power\PowerCardGroup.tsx" />
-    <TypeScriptCompile Include="game\Sensors\Sensors.tsx" />
-    <TypeScriptCompile Include="game\Shields\Shields.tsx" />
-    <TypeScriptCompile Include="game\Shields\ShieldBlock.ts" />
-    <TypeScriptCompile Include="game\Shields\ShieldCursor.ts" />
-    <TypeScriptCompile Include="game\Shields\ShieldData.ts" />
-    <TypeScriptCompile Include="game\Shields\ShieldDisplay.tsx" />
-    <TypeScriptCompile Include="game\Weapons\WeaponTarget.ts" />
-    <TypeScriptCompile Include="game\Weapons\WeaponTargetInfo.tsx" />
-    <TypeScriptCompile Include="game\Weapons\WeaponTargetSelect.tsx" />
-    <TypeScriptCompile Include="ui\Buttons.tsx" />
-    <TypeScriptCompile Include="ui\AxisInput.tsx" />
-    <TypeScriptCompile Include="ui\Canvas.tsx" />
-    <TypeScriptCompile Include="game\ViewScreen\ViewScreen.tsx" />
-    <TypeScriptCompile Include="game\Weapons\Weapons.tsx" />
+    <TypeScriptCompile Include="core\GameClient.tsx" />
+    <TypeScriptCompile Include="core\Intrinsics.ts" />
     <TypeScriptCompile Include="typings\react-dom.d.ts" />
     <TypeScriptCompile Include="typings\react-global.d.ts" />
     <TypeScriptCompile Include="typings\react.d.ts" />
-    <TypeScriptCompile Include="ui\Choice.tsx" />
-    <TypeScriptCompile Include="ui\Features.ts" />
-    <TypeScriptCompile Include="ui\Hotkeys.ts" />
-    <TypeScriptCompile Include="ui\TouchFunctions.ts" />
     <TypeScriptCompile Include="_references.ts" />
   </ItemGroup>
   <ItemGroup>
@@ -83,23 +51,6 @@
       <DependentUpon>compilerconfig.json</DependentUpon>
     </None>
     <Content Include="packages.config" />
-    <Content Include="ui\_choice.scss" />
-    <Content Include="ui\_buttoncolors.scss" />
-    <Content Include="ui\_buttons.scss" />
-    <Content Include="ui\_toucharea.scss" />
-    <Content Include="ui\_colors.scss" />
-    <Content Include="ui\_borders.scss" />
-    <Content Include="setup\_setup.scss" />
-    <Content Include="ui\_breakpoints.scss" />
-    <Content Include="game\_systemswitcher.scss" />
-    <Content Include="game\ViewScreen\_viewscreen.scss" />
-    <Content Include="ui\_layout.scss" />
-    <Content Include="game\Shields\_shields.scss" />
-    <Content Include="game\Weapons\_weapons.scss" />
-    <Content Include="game\Power\_power.scss" />
-    <Content Include="game\Helm\_helm.scss" />
-    <Content Include="ui\_systems.scss" />
-    <Content Include="game\DamageControl\_damagecontrol.scss" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>

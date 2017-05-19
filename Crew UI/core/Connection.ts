@@ -21,7 +21,7 @@ class Connection {
         this.close = this.socket.close.bind(this.socket);
         this.queue = [];
     }
-    send(cmd) {
+    send(cmd: string) {
         if (this.socket.readyState == 1)
             this.socket.send(cmd);
         else
@@ -40,7 +40,7 @@ class Connection {
         let pos:number = data.indexOf(' ');
         let cmd:string = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? null : data.substr(pos + 1);
-        
+/*
         if (cmd == 'id') {
             this.game.setPlayerID(data);
             this.game.setActiveScreen('systems');
@@ -75,7 +75,7 @@ class Connection {
             this.game.setActiveScreen('game');
         }
         else if (cmd == 'game-') {
-            var blame = data != null ? language.messageGameEndedUser.replace('@name@', data) : language.messageGameEnded;
+            let blame = data != null ? language.messageGameEndedUser.replace('@name@', data) : language.messageGameEnded;
             this.game.showError(blame + ' ' + language.messageWait, false);
 
             setTimeout(function() { this.game.setActiveScreen('systems'); }.bind(this), 3000);
@@ -88,7 +88,7 @@ class Connection {
             this.game.setActiveScreen('game');
         }
         else {
-            var sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
+            let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
             if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)
                 console.error(language.errorUnrecognisedCommand + cmd);
             else {
@@ -100,5 +100,6 @@ class Connection {
                     console.error(language.errorSystemDidntHandleMessage.replace('@system@', sysInfo.name).replace('@cmd@', cmd).replace('@data@', data));
             }
         }
+*/
     }
 }
