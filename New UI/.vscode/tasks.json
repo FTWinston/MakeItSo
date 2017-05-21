@@ -1,0 +1,20 @@
+{
+    "version": "0.1.0",
+    "tasks": [
+        {
+            "taskName": "ts",
+            "command": "tsc",
+            "isShellCommand": true,
+            "isBuildCommand": true,
+            "args": ["-p", "."],
+            "problemMatcher": "$tsc"
+        },
+        {
+            "taskName": "sass",
+            "command": "node-sass",
+            "isShellCommand": true,
+            "isTestCommand": true,
+            "args": ["style.scss", "output/style.css"]
+        }
+    ]
+}

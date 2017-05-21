@@ -1,0 +1,314 @@
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+@import 'ui/borders';
+@import 'ui/breakpoints';
+@import 'ui/layout';
+*/
+#gameRoot, #gameRoot > *[data-reactroot] {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: stretch;
+  background-color: #333;
+  margin: 0;
+  padding: 0;
+  color: #ccc;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  font-size: 16px;
+  /*    
+    @include font-size(1500px, 15px);
+    @include font-size(1400px, 14px);
+    @include font-size(540px, 13px);
+    @include font-size(500px, 12px);
+    @include font-size(460px, 11px);
+    @include font-size(420px, 10px);
+    @include font-size(380px, 9px);
+    @include font-size(340px, 8px);
+*/ }
+
+#gameRoot * {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 16px; }
+
+.screen {
+  flex-grow: 1;
+  padding: 1em;
+  overflow-y: auto;
+  /*
+    @include media-size(lg) {
+        width: $lg-cutoff-min - 50px;
+    }
+    @include media-size(xl) {
+        width: $xl-cutoff-min - 100px;
+    }
+*/ }
+
+p {
+  margin: 0.65em; }
+
+button, input {
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ccc;
+  color: #ccc;
+  background-color: #333;
+  padding: 0.75em;
+  transition: background-color 0.5s, color 0.5s, border-color 0.5s; }
+  button.primary, input.primary {
+    border-color: #f90;
+    color: #f90; }
+    button.primary[disabled], input.primary[disabled] {
+      color: #999;
+      cursor: not-allowed; }
+    button.primary:not([disabled]):active, button.primary:not([disabled]).active, input.primary:not([disabled]):active, input.primary:not([disabled]).active {
+      background-color: #f90;
+      color: #333; }
+    button.primary:not([disabled]):hover:not(:active):not(.active), input.primary:not([disabled]):hover:not(:active):not(.active) {
+      background-color: rgba(255, 153, 0, 0.2);
+      color: #f90; }
+  button.secondary, input.secondary {
+    border-color: #c9c;
+    color: #c9c; }
+    button.secondary[disabled], input.secondary[disabled] {
+      color: #999;
+      cursor: not-allowed; }
+    button.secondary:not([disabled]):active, button.secondary:not([disabled]).active, input.secondary:not([disabled]):active, input.secondary:not([disabled]).active {
+      background-color: #c9c;
+      color: #333; }
+    button.secondary:not([disabled]):hover:not(:active):not(.active), input.secondary:not([disabled]):hover:not(:active):not(.active) {
+      background-color: rgba(204, 153, 204, 0.2);
+      color: #c9c; }
+  button.tertiary, input.tertiary {
+    border-color: #99f;
+    color: #99f; }
+    button.tertiary[disabled], input.tertiary[disabled] {
+      color: #999;
+      cursor: not-allowed; }
+    button.tertiary:not([disabled]):active, button.tertiary:not([disabled]).active, input.tertiary:not([disabled]):active, input.tertiary:not([disabled]).active {
+      background-color: #99f;
+      color: #333; }
+    button.tertiary:not([disabled]):hover:not(:active):not(.active), input.tertiary:not([disabled]):hover:not(:active):not(.active) {
+      background-color: rgba(153, 153, 255, 0.2);
+      color: #99f; }
+  button.quaternary, input.quaternary {
+    border-color: #c69;
+    color: #c69; }
+    button.quaternary[disabled], input.quaternary[disabled] {
+      color: #999;
+      cursor: not-allowed; }
+    button.quaternary:not([disabled]):active, button.quaternary:not([disabled]).active, input.quaternary:not([disabled]):active, input.quaternary:not([disabled]).active {
+      background-color: #c69;
+      color: #333; }
+    button.quaternary:not([disabled]):hover:not(:active):not(.active), input.quaternary:not([disabled]):hover:not(:active):not(.active) {
+      background-color: rgba(204, 102, 153, 0.2);
+      color: #c69; }
+  button.quandry, input.quandry {
+    border-color: #fc9;
+    color: #fc9; }
+    button.quandry[disabled], input.quandry[disabled] {
+      color: #999;
+      cursor: not-allowed; }
+    button.quandry:not([disabled]):active, button.quandry:not([disabled]).active, input.quandry:not([disabled]):active, input.quandry:not([disabled]).active {
+      background-color: #fc9;
+      color: #333; }
+    button.quandry:not([disabled]):hover:not(:active):not(.active), input.quandry:not([disabled]):hover:not(:active):not(.active) {
+      background-color: rgba(255, 204, 153, 0.2);
+      color: #fc9; }
+  button:focus, input:focus {
+    outline: none; }
+
+input {
+  border-radius: 0.75em; }
+
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+button {
+  cursor: pointer; }
+  button.confirm.active {
+    background-color: #f66 !important;
+    border-color: #f66 !important; }
+    button.confirm.active::before {
+      content: 'Confirm: '; }
+
+*:not(.buttons) > button {
+  border-radius: 0.75em; }
+
+.buttons.vertical > button {
+  display: block; }
+  .buttons.vertical > button:first-of-type {
+    border-top-left-radius: 0.75em;
+    border-top-right-radius: 0.75em; }
+  .buttons.vertical > button:last-of-type {
+    border-bottom-left-radius: 0.75em;
+    border-bottom-right-radius: 0.75em; }
+
+.buttons.vertical > button + button {
+  border-top-width: 0; }
+
+.buttons:not(.vertical) > button:first-of-type {
+  border-top-left-radius: 0.75em;
+  border-bottom-left-radius: 0.75em; }
+
+.buttons:not(.vertical) > button:last-of-type {
+  border-bottom-right-radius: 0.75em;
+  border-top-right-radius: 0.75em; }
+
+.buttons:not(.vertical) > button + button {
+  border-left-width: 0; }
+
+#error, #settings, #waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; }
+
+#game {
+  overflow-y: hidden;
+  padding: 0; }
+
+/*
+@import 'ui/systems';
+
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+@import 'ui/buttons';
+
+.disabled {
+	cursor: not-allowed;
+	color: $disabledColor !important;
+}
+
+.inline {
+	display: inline-block;
+}
+
+.inline.table {
+	display: inline-table;
+}
+
+row section, touchArea {
+	display: block;
+}
+
+spacer {
+    display: inline-block;
+}
+
+@import 'ui/choice';
+
+.table row:not(.rounded):not(:last-of-type) clicker {
+	@include border-radius-bottom(0);
+}
+
+.table row:not(.rounded):not(:first-of-type) clicker {
+	@include border-radius-top(0);
+}
+
+.table {
+	display: table;
+	border-spacing: 0.25em;
+	border-collapse: separate;
+}
+
+.table row {
+	display: table-row;
+}
+
+.table row spacer {
+	text-align: center;
+	font-size: 1.25em;
+}
+
+.table row * {
+	display: table-cell;
+}
+
+.showKeys clicker[data-hotkey] {
+	position: relative;
+	color: transparent !important;
+}
+
+.showKeys clicker[data-hotkey]:before {
+	content: "[" attr(data-hotkey) "] ";
+	color: $textColor;
+	position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+	padding-top: 0.5em;
+	text-align: center;
+	vertical-align: middle;
+}
+
+@import 'ui/buttoncolors';
+@import 'ui/toucharea.scss';
+*/
+#error {
+  white-space: pre-line; }
+
+/*
+@import 'setup/setup';
+
+output {
+    display: block;
+	white-space: pre-line;
+	padding: 0.75em;
+	background-color: $darkBackground;
+	border: solid 1px grey;
+
+    row {
+        display: block;
+
+        @include media-size-down(sm) {
+            display: inline-block;
+            padding: 1em;
+        }
+    }
+}
+
+.powerLevel {
+    font-size: 3em;
+    border-radius: 1em;
+    background-color: #0099ff;
+    border: solid #CCCCFF 0.1em;
+    margin: 0.1em;
+    padding: 0.025em;
+    display: inline-block;
+    width: 1em; height: 1em;
+    text-align: center;
+    vertical-align: middle;
+    color: #000000;
+}
+
+html, body, #gameRoot, #gameRoot > div, screen {
+    height: 100%;
+}
+
+@import 'game/systemswitcher';
+
+@import 'game/DamageControl/damagecontrol';
+@import 'game/Helm/helm';
+@import 'game/Power/power';
+@import 'game/Shields/shields';
+@import 'game/ViewScreen/viewscreen';
+@import 'game/Weapons/weapons';
+*/

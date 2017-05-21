@@ -1,0 +1,56 @@
+@import '../colors';
+
+button {
+    cursor: pointer;
+
+    &.confirm.active {
+        background-color: $btnColorConfirm !important;
+        border-color: $btnColorConfirm !important;
+
+        &::before {
+            content: 'Confirm: ';
+        }
+    }
+}
+
+*:not(.buttons) > button {
+    border-radius: $buttonRadius;
+}
+
+.buttons.vertical {
+    & > button {
+        display: block;
+        
+        &:first-of-type {
+            border-top-left-radius: $buttonRadius;
+            border-top-right-radius: $buttonRadius;
+        }
+
+        &:last-of-type {
+            border-bottom-left-radius: $buttonRadius;
+            border-bottom-right-radius: $buttonRadius;
+        }
+    }
+    
+    & > button + button {
+        border-top-width: 0;
+    }
+}
+
+.buttons:not(.vertical) {
+    & > button {
+        &:first-of-type {
+            border-top-left-radius: $buttonRadius;
+            border-bottom-left-radius: $buttonRadius;
+        }
+
+        &:last-of-type {
+            border-bottom-right-radius: $buttonRadius;
+            border-top-right-radius: $buttonRadius;
+        }
+    }
+
+    & > button + button {
+        border-left-width: 0;
+    }
+}

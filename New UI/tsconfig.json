@@ -1,0 +1,43 @@
+{
+    "compilerOptions": {
+        "target": "es5",
+        "module": "none",
+        "sourceMap": true,
+        "sourceRoot": "..",
+        "outFile": "output/makeitso.js",
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react",
+        "lib": [
+            "dom",
+            "es5"
+        ]
+    },
+    "files": [
+        "typings/react.d.ts",
+        "typings/react-dom.d.ts",
+        "typings/react-global.d.ts",
+
+        "language/english.ts",
+
+        "core/Intrinsics.ts",
+        "core/Features.ts",
+        "core/Connection.ts",
+        "core/ClientSettings.ts",
+
+        "ui/buttons/Button.tsx",
+        "ui/buttons/PushButton.tsx",
+        "ui/buttons/ConfirmButton.tsx",
+        "ui/buttons/ToggleButton.tsx",
+        "ui/buttons/HeldButton.tsx",
+        "ui/buttons/ButtonSet.tsx",
+        "ui/buttons/Choice.tsx",
+        
+        "screens/ErrorScreen.tsx",
+        "screens/SettingsScreen.tsx",
+        "screens/WaitingScreen.tsx",
+        
+        "core/GameClient.tsx"
+    ]
+}

@@ -1,0 +1,47 @@
+$buttonRadius: 0.75em;
+
+@mixin ui-color($color) {
+    border-color: $color;
+	color: $color;
+
+    &[disabled] {
+        color: #999;
+        cursor: not-allowed;
+    }
+
+    &:not([disabled]) {
+        &:active, &.active {
+            background-color: $color;
+            color: $backgroundColor;
+        }
+        &:hover:not(:active):not(.active) {
+            background-color: rgba($color, 0.2);
+            color: $color;
+        }
+    }
+}
+
+button, input {
+    border-style: solid;
+    border-width: 1px;
+    border-color: $textColor;
+    color: $textColor;
+    background-color: $backgroundColor;
+    padding: 0.75em;
+
+    &.primary { @include ui-color($btnColorPrimary) }
+    &.secondary { @include ui-color($btnColorSecondary) }
+    &.tertiary { @include ui-color($btnColorTertiary) }
+    &.quaternary { @include ui-color($btnColorQuaternary) }
+    &.quandry { @include ui-color($btnColorQuandry) }
+
+    &:focus {
+        outline:none;
+    }
+    
+    transition: background-color 0.5s, color 0.5s, border-color 0.5s;
+}
+
+input {
+    border-radius: $buttonRadius;
+}
