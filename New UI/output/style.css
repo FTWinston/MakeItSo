@@ -53,6 +53,8 @@ $lightBackground: #999;
         width: $xl-cutoff-min - 100px;
     }
 */ }
+  .screen * + * {
+    margin-top: 1.5em; }
 
 p {
   margin: 0.65em; }
@@ -128,9 +130,6 @@ button, input {
   button:focus, input:focus {
     outline: none; }
 
-input {
-  border-radius: 0.75em; }
-
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -138,12 +137,26 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 button {
-  cursor: pointer; }
+  cursor: pointer;
+  vertical-align: baseline; }
+  button.confirm::before {
+    content: '';
+    display: inline-block;
+    overflow: hidden;
+    text-align: left;
+    vertical-align: top;
+    width: 0;
+    margin-right: 0;
+    transition: width 0.5s; }
   button.confirm.active {
     background-color: #f66 !important;
     border-color: #f66 !important; }
     button.confirm.active::before {
-      content: 'Confirm: '; }
+      content: 'Confirm:';
+      width: 4em; }
+    button.confirm.active:active {
+      background-color: #fff !important;
+      border-color: #fff !important; }
 
 *:not(.buttons) > button {
   border-radius: 0.75em; }

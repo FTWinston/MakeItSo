@@ -2,13 +2,33 @@
 
 button {
     cursor: pointer;
+    vertical-align: baseline;
 
-    &.confirm.active {
-        background-color: $btnColorConfirm !important;
-        border-color: $btnColorConfirm !important;
-
+    &.confirm {
         &::before {
-            content: 'Confirm: ';
+            content: '';
+            display: inline-block;
+            overflow: hidden;
+            text-align: left;
+            vertical-align: top;
+            width: 0;
+            margin-right: 0;
+            transition: width 0.5s;
+        }
+
+        &.active {
+            background-color: $btnColorConfirm !important;
+            border-color: $btnColorConfirm !important;
+            
+            &::before {
+                content: 'Confirm:';
+                width: 4em;
+            }
+
+            &:active {
+                background-color: #fff !important;
+                border-color: #fff !important;
+            }
         }
     }
 }

@@ -325,12 +325,24 @@ var ConfirmButton = (function (_super) {
     };
     ConfirmButton.prototype.clicked = function (e) {
         if (this.state.primed) {
+            if (this.autoCancel !== undefined) {
+                clearTimeout(this.autoCancel);
+                this.autoCancel = undefined;
+            }
             if (this.props.clicked != undefined)
                 this.props.clicked();
             if (this.props.command !== undefined)
                 gameClient.server.send(this.props.command);
         }
+        else {
+            this.autoCancel = setTimeout(this.cancelPrime.bind(this), 10000);
+        }
         this.setState({ primed: !this.state.primed });
+    };
+    ConfirmButton.prototype.cancelPrime = function () {
+        if (this.state.primed)
+            this.setState({ primed: false });
+        this.autoCancel = undefined;
     };
     return ConfirmButton;
 }(React.Component));

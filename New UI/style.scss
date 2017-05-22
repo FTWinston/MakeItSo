@@ -56,13 +56,16 @@
         width: $xl-cutoff-min - 100px;
     }
 */
+    & * + * {
+        margin-top: 1.5em;
+    }
 }
 
 p {
 	margin: 0.65em;
 }
 
-@import 'ui/ui';
+@import 'ui/input';
 @import 'ui/buttons/buttons';
 
 @import 'screens/screens';
