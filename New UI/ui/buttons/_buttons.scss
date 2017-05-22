@@ -37,6 +37,10 @@ button {
     border-radius: $buttonRadius;
 }
 
+.buttons .prompt {
+    margin-bottom: 0.5em;
+}
+
 .buttons.vertical {
     & > button {
         display: block;
@@ -73,4 +77,8 @@ button {
     & > button + button {
         border-left-width: 0;
     }
+}
+
+.description {
+    margin-top: 0.5em;
 }

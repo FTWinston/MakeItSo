@@ -14,6 +14,7 @@ interface IButtonProps {
 
 interface IBaseButtonProps extends IButtonProps {
     className: string;
+    buttonType?: string;
     groupDisabled?: boolean;
     mouseLeave?: React.EventHandler<React.MouseEvent>;
     mouseEnter?: React.EventHandler<React.MouseEvent>;
@@ -23,6 +24,9 @@ interface IBaseButtonProps extends IButtonProps {
 }
 
 class Button extends React.Component<IBaseButtonProps, {}> {
+    static defaultProps = {
+        buttonType: "button"
+    };
 /*
     componentDidMount() {
         if (this.props.hotkey != null)
@@ -57,7 +61,7 @@ class Button extends React.Component<IBaseButtonProps, {}> {
                 onMouseUp={this.props.disabled ? undefined : this.props.mouseUp}
                 onMouseLeave={this.props.disabled ? undefined : this.props.mouseLeave}
                 onClick={this.props.disabled ? undefined : this.props.mouseClick}
-                data-hotkey={this.props.hotkey}>
+                data-hotkey={this.props.hotkey} type={this.props.buttonType}>
                     {this.props.children}
             </button>
         );

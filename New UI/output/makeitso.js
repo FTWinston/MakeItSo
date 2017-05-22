@@ -32,6 +32,7 @@ var language = {
     inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
     inputModeDescriptionTouchscreen: 'Use Multi-touch controls',
     inputModeDescriptionGamepad: 'Use an attached game controller',
+    userNameDescription: 'Enter the name you wish to be referred to as by your crewmates',
     gameSetupIntro: 'This screen should let you set up your ship and start a new game, browse servers, etc',
     gameSetupServerType: 'Do you wish to play with just your own crew, or with others?',
     gameSetupServerTypeLocal: 'Play a solo-crew game',
@@ -291,10 +292,13 @@ var Button = (function (_super) {
                     break;
             }
         }
-        return (React.createElement("button", { className: classes, disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey }, this.props.children));
+        return (React.createElement("button", { className: classes, disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType }, this.props.children));
     };
     return Button;
 }(React.Component));
+Button.defaultProps = {
+    buttonType: "button"
+};
 var PushButton = (function (_super) {
     __extends(PushButton, _super);
     function PushButton() {
@@ -321,7 +325,7 @@ var ConfirmButton = (function (_super) {
     }
     ConfirmButton.prototype.render = function () {
         var classList = this.state.primed ? 'confirm active' : 'confirm';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, buttonType: "submit" }, this.props.children));
     };
     ConfirmButton.prototype.clicked = function (e) {
         if (this.state.primed) {
@@ -338,6 +342,7 @@ var ConfirmButton = (function (_super) {
             this.autoCancel = setTimeout(this.cancelPrime.bind(this), 10000);
         }
         this.setState({ primed: !this.state.primed });
+        e.preventDefault();
     };
     ConfirmButton.prototype.cancelPrime = function () {
         if (this.state.primed)
@@ -462,10 +467,18 @@ var Choice = (function (_super) {
         var classes = 'choice';
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
+        var description, descStyle;
+        if (this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined) {
+            description = this.state.activeChild.props.description;
+            descStyle = undefined;
+        }
+        else {
+            description = '.';
+            descStyle = { 'visibility': 'hidden' };
+        }
         return (React.createElement(ButtonSet, { className: classes, vertical: this.props.vertical, prompt: this.props.prompt, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: this.childActivated.bind(this) },
             this.props.children,
-            this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined
-                ? React.createElement("div", { className: "description" }, this.state.activeChild.props.description) : null));
+            React.createElement("div", { className: "description", style: descStyle }, description)));
     };
     Choice.prototype.childActivated = function (activated) {
         if (this.state.activeChild !== undefined)
@@ -495,23 +508,30 @@ var SettingsScreen = (function (_super) {
         var _this = _super.call(this, props) || this;
         _this.state = {
             inputMode: props.inputMode,
-            userName: props.userName
+            userName: props.userName,
         };
         return _this;
     }
     SettingsScreen.prototype.render = function () {
+        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { clicked: this.cancel.bind(this), color: 4 /* Quandry */ }, "Cancel") : null;
+        var canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
         return (React.createElement("div", { className: "screen", id: "settings" },
-            React.createElement("p", null, language.userSettingsIntro),
-            React.createElement("div", { className: "field" },
-                React.createElement("label", null, "Input mode"),
-                React.createElement(Choice, { prompt: language.inputModePrompt, color: 0 /* Primary */ },
-                    React.createElement(ToggleButton, { activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: language.inputModeDescriptionKeyboard }, language.inputModeKeyboard),
-                    React.createElement(ToggleButton, { activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: language.inputModeDescriptionTouchscreen }, language.inputModeTouchscreen),
-                    React.createElement(ToggleButton, { disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: language.inputModeDescriptionGamepad }, language.inputModeGamepad))),
-            React.createElement("div", { className: "field" },
-                React.createElement("label", null, "User name"),
-                React.createElement("input", { className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this) })),
-            React.createElement(ConfirmButton, { color: 2 /* Tertiary */ }, "Save")));
+            React.createElement("form", null,
+                React.createElement("h1", null, language.userSettingsIntro),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", null, "Input mode"),
+                    React.createElement(Choice, { prompt: language.inputModePrompt, color: 0 /* Primary */ },
+                        React.createElement(ToggleButton, { activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: language.inputModeDescriptionKeyboard }, language.inputModeKeyboard),
+                        React.createElement(ToggleButton, { activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: language.inputModeDescriptionTouchscreen }, language.inputModeTouchscreen),
+                        React.createElement(ToggleButton, { disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: language.inputModeDescriptionGamepad }, language.inputModeGamepad))),
+                React.createElement("div", { className: "field" },
+                    React.createElement("label", { htmlFor: "txtUserName" }, "User name"),
+                    React.createElement("div", null,
+                        React.createElement("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this) }),
+                        React.createElement("div", { className: "description" }, language.userNameDescription))),
+                React.createElement("div", { className: "field actions" },
+                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave }, "Save"),
+                    cancelButton))));
     };
     SettingsScreen.prototype.setInputMode = function (mode) {
         this.setState({ inputMode: mode, userName: this.state.userName });
@@ -521,8 +541,13 @@ var SettingsScreen = (function (_super) {
     };
     SettingsScreen.prototype.save = function () {
     };
+    SettingsScreen.prototype.cancel = function () {
+    };
     return SettingsScreen;
 }(React.Component));
+SettingsScreen.defaultProps = {
+    canCancel: true,
+};
 var WaitingScreen = (function (_super) {
     __extends(WaitingScreen, _super);
     function WaitingScreen() {

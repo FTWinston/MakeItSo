@@ -36,6 +36,7 @@
     inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
     inputModeDescriptionTouchscreen: 'Use Multi-touch controls',
     inputModeDescriptionGamepad: 'Use an attached game controller',
+    userNameDescription: 'Enter the name you wish to be referred to as by your crewmates',
 
     gameSetupIntro: 'This screen should let you set up your ship and start a new game, browse servers, etc',
     gameSetupServerType: 'Do you wish to play with just your own crew, or with others?',

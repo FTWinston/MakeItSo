@@ -18,7 +18,7 @@ class ButtonSet extends React.Component<IButtonSetProps, {}> {
     };
     render() {
         let classes = 'buttons';
-        if (this.props.vertical) 
+        if (this.props.vertical)
             classes += ' vertical';
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;

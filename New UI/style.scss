@@ -56,13 +56,20 @@
         width: $xl-cutoff-min - 100px;
     }
 */
-    & * + * {
-        margin-top: 1.5em;
-    }
 }
 
 p {
 	margin: 0.65em;
+}
+
+h1 {
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+label {
+    text-decoration: underline;
+    padding-right: 1em;
 }
 
 @import 'ui/input';

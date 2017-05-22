@@ -41,3 +41,28 @@ button, input {
     
     transition: background-color 0.5s, color 0.5s, border-color 0.5s;
 }
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    & > * + * {
+        margin-top: 1.5em;
+    }
+
+    & > .field {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: baseline;
+    }
+
+    & > .actions {
+        align-self: center;
+    }
+}
+
+input[type="text"] {
+    width: 15em;
+}

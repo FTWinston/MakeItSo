@@ -53,11 +53,17 @@ $lightBackground: #999;
         width: $xl-cutoff-min - 100px;
     }
 */ }
-  .screen * + * {
-    margin-top: 1.5em; }
 
 p {
   margin: 0.65em; }
+
+h1 {
+  font-weight: bold;
+  margin-bottom: 0; }
+
+label {
+  text-decoration: underline;
+  padding-right: 1em; }
 
 button, input {
   border-style: solid;
@@ -130,6 +136,24 @@ button, input {
   button:focus, input:focus {
     outline: none; }
 
+form {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start; }
+  form > * + * {
+    margin-top: 1.5em; }
+  form > .field {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline; }
+  form > .actions {
+    align-self: center; }
+
+input[type="text"] {
+  width: 15em; }
+
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -161,6 +185,9 @@ button {
 *:not(.buttons) > button {
   border-radius: 0.75em; }
 
+.buttons .prompt {
+  margin-bottom: 0.5em; }
+
 .buttons.vertical > button {
   display: block; }
   .buttons.vertical > button:first-of-type {
@@ -183,6 +210,9 @@ button {
 
 .buttons:not(.vertical) > button + button {
   border-left-width: 0; }
+
+.description {
+  margin-top: 0.5em; }
 
 #error, #settings, #waiting {
   display: flex;
