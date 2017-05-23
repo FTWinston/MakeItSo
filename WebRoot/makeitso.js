@@ -34,13 +34,17 @@ var language = {
         },
         waiting: {
             heading: 'Please wait for your crewmates to join...',
-            prompt: 'Once all of your crew has joined, everyone must click \'Ready\' to continue.',
+            prompt: 'We need to know how many players are in your crew so we can offer you the right roles.\nOnce all of your crew has joined, everyone must click \'Ready\' to continue.',
+        },
+        roleSelection: {
+            heading: 'Select your role',
+            prompt: 'Each crew member should select a different role.\nFor advanced users, a custom role allows selection of individual ship systems.',
         }
     },
     messages: {
         confirmLeave: 'The game is still active.',
+        connecting: 'Connecting...',
         /*
-                messageConnecting: 'Connecting...',
                 messageWait: 'Please wait...',
                 messageGameEnded: 'The game has ended.',
                 messageGameEndedUser:  'User @name@ ended the game.',
@@ -102,6 +106,18 @@ var Connection = (function () {
                     this.game.setPlayerID(data);
                     this.game.setActiveScreen('systems');
                 }
+        */
+        if (cmd == 'waiting') {
+            var parts = data.split(' ');
+            var numRemaining = parseInt(parts[0]);
+            var numCrew = parseInt(parts[1]);
+            this.game.setPlayerCount(numRemaining, numCrew);
+            this.game.show(3 /* WaitingForPlayers */, true);
+        }
+        else if (cmd == 'roleSelect') {
+            this.game.show(4 /* RoleSelection */, true);
+        }
+        /*
                 else if (cmd == 'sys+') {
                     this.game.markSystemInUse(data, false);
                 }
@@ -524,7 +540,13 @@ var WaitingScreen = (function (_super) {
         return (React.createElement("div", { className: "screen", id: "waiting" },
             React.createElement("h1", null, language.screens.waiting.heading),
             React.createElement("p", { className: "prompt" }, language.screens.waiting.prompt),
-            React.createElement(ToggleButton, { color: 0 /* Primary */, activateCommand: "ready+", deactivateCommand: "ready-" }, language.common.ready),
+            React.createElement(ToggleButton, { color: 0 /* Primary */, activateCommand: "+ready", deactivateCommand: "-ready" }, language.common.ready),
+            React.createElement("p", null,
+                "Waiting for ",
+                this.props.numUnready,
+                " of ",
+                this.props.numCrew,
+                " crew members"),
             React.createElement(Menu, null,
                 React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
     };
@@ -534,6 +556,24 @@ var WaitingScreen = (function (_super) {
     };
     return WaitingScreen;
 }(React.Component));
+var RoleSelection = (function (_super) {
+    __extends(RoleSelection, _super);
+    function RoleSelection() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    RoleSelection.prototype.render = function () {
+        return (React.createElement("div", { className: "screen", id: "roleSelection" },
+            React.createElement("h1", null, language.screens.roleSelection.heading),
+            React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt),
+            React.createElement(Menu, null,
+                React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
+    };
+    RoleSelection.prototype.settingsClicked = function () {
+        if (this.props.settingsClicked !== undefined)
+            this.props.settingsClicked();
+    };
+    return RoleSelection;
+}(React.Component));
 var GameClient = (function (_super) {
     __extends(GameClient, _super);
     function GameClient(props) {
@@ -542,8 +582,8 @@ var GameClient = (function (_super) {
         _this.state = {
             vibration: FeatureDetection.Vibration ? 2 /* Enabled */ : 0 /* Unavailable */,
             settings: settings,
-            activeScreen: settings === undefined ? 1 /* Settings */ : 2 /* WaitingForPlayers */,
-            returnScreen: 2 /* WaitingForPlayers */,
+            activeScreen: settings === undefined ? 2 /* Settings */ : 1 /* Connecting */,
+            returnScreen: 1 /* Connecting */,
             errorMessage: undefined,
         };
         return _this;
@@ -558,7 +598,7 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.renderActiveScreen = function () {
         switch (this.state.activeScreen) {
-            case 1 /* Settings */:
+            case 2 /* Settings */:
                 var mode = void 0, name_1, canCancel = void 0;
                 if (this.state.settings === undefined) {
                     mode = 0 /* ButtonsAndKeyboard */;
@@ -571,21 +611,26 @@ var GameClient = (function (_super) {
                     canCancel = true;
                 }
                 return React.createElement(SettingsScreen, { inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
-            case 2 /* WaitingForPlayers */:
-                return React.createElement(WaitingScreen, { settingsClicked: this.show.bind(this, 1 /* Settings */) });
-            case 3 /* RoleSelection */:
-            case 4 /* GameSetup */:
-            case 5 /* Game */:
+            case 1 /* Connecting */:
+                return React.createElement(ErrorScreen, { message: language.messages.connecting });
+            case 3 /* WaitingForPlayers */:
+                return React.createElement(WaitingScreen, { settingsClicked: this.show.bind(this, 2 /* Settings */), numCrew: this.state.numCrew, numUnready: this.state.numCrewUnready });
+            case 4 /* RoleSelection */:
+                return React.createElement(RoleSelection, { settingsClicked: this.show.bind(this, 2 /* Settings */), numCrew: this.state.numCrew });
+            case 5 /* GameSetup */:
+            case 6 /* Game */:
             default:
                 return React.createElement(ErrorScreen, { message: this.state.errorMessage });
         }
     };
     GameClient.prototype.show = function (screen, setReturn) {
         if (setReturn === void 0) { setReturn = false; }
-        var newState = { activeScreen: screen };
+        var newState = {};
         if (setReturn)
             newState.returnScreen = screen;
-        if (!this.state.gameActive && screen == 5 /* Game */)
+        if (!setReturn || this.state.activeScreen != 2 /* Settings */)
+            newState.activeScreen = screen; // don't force user out of the settings screen
+        if (!this.state.gameActive && screen == 6 /* Game */)
             newState.gameActive = true;
         if (screen != 0 /* Error */)
             newState.errorMessage = undefined;
@@ -599,11 +644,17 @@ var GameClient = (function (_super) {
         this.setState({ settings: settings });
         this.showReturn();
     };
+    GameClient.prototype.setPlayerCount = function (numRemaining, numCrew) {
+        this.setState({
+            numCrew: numCrew,
+            numCrewUnready: numRemaining,
+        });
+    };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen
         if (prevState.activeScreen == this.state.activeScreen)
             return;
-        if (this.state.activeScreen == 5 /* Game */)
+        if (this.state.activeScreen == 6 /* Game */)
             window.addEventListener('beforeunload', this.unloadEvent);
         else
             window.removeEventListener('beforeunload', this.unloadEvent);

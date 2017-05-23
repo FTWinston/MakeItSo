@@ -49,9 +49,10 @@ class MAKEITSO_API UCrewManager : public UObject
 
 public:
 	enum ECrewState {
-		Setup = 0,
-		Active = 1,
-		Paused = 2
+		Waiting = 0,
+		Setup = 1,
+		Active = 2,
+		Paused = 3
 	};
 
 	enum ESystem
@@ -105,6 +106,7 @@ private:
 	void EndConnection(mg_connection *conn);
 	int32 GetNewUniqueIdentifier();
 	void HandleWebsocketMessage(ConnectionInfo *info);
+	void CheckReadiness();
 	void ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding);
 	void SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding);
 
@@ -129,11 +131,13 @@ public:
 		connection = conn;
 		identifier = id;
 		shipSystemFlags = 0;
+		ready = false;
 	}
 
 	mg_connection *connection;
 	int32 identifier;
 	int32 shipSystemFlags;
+	bool ready;
 };
 
 

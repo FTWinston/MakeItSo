@@ -55,7 +55,8 @@ $lightBackground: #999;
 */ }
 
 p {
-  margin: 0.65em; }
+  margin: 0.65em;
+  white-space: pre-line; }
 
 h1 {
   font-weight: bold;
@@ -192,7 +193,7 @@ button {
   button.push {
     transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s; }
     button.push:active {
-      border-radius: 0; }
+      border-radius: 0 !important; }
   button.held {
     border-style: double;
     border-width: 4px; }

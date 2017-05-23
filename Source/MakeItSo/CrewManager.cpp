@@ -55,7 +55,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	Instance = this;
 	LinkController(controller);
 
-	crewState = ECrewState::Setup;
+	crewState = ECrewState::Waiting;
 
 	nextConnectionIdentifer = 0;
 	connectionInSetup = nullptr;
@@ -280,9 +280,18 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
 
-	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
-	if (crewState == ECrewState::Active)
+	if (crewState == ECrewState::Waiting)
 	{
+		CheckReadiness();
+		return;
+	}
+	else if (crewState == ECrewState::Setup)
+	{
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "roleSelect");
+	}
+	else if (crewState == ECrewState::Active)
+	{
+		// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
 		return;
 	}
@@ -353,7 +362,11 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		}
 	}
 
-	if (!anySystems && crewState == ECrewState::Active)
+	if (crewState == ECrewState::Waiting)
+	{
+		CheckReadiness();
+	}
+	else if (!anySystems && crewState == ECrewState::Active)
 	{
 		PauseGame(true);
 	}
@@ -425,6 +438,22 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		EXTRACT(info, buffer, "+sys ");
 		int32 systemIndex = atoi(buffer);
 		ShipSystemChanged(info, systemIndex, info->connection->content[0] == '+');
+	}
+	else if (MATCHES(info, "+ready"))
+	{
+		if (crewState != ECrewState::Waiting)
+			return;
+
+		info->ready = true;
+		CheckReadiness();
+	}
+	else if (MATCHES(info, "-ready"))
+	{
+		if (crewState != ECrewState::Waiting)
+			return;
+
+		info->ready = false;
+		CheckReadiness();
 	}
 	else if (MATCHES(info, "+setup"))
 	{
@@ -548,6 +577,35 @@ void UCrewManager::InputAxis(FKey key, float value)
 	controller->InputAxis(key, value, 1, 1, true);
 }
 #endif
+
+void UCrewManager::CheckReadiness()
+{
+	int numWaiting = 0, numCrew = 0;
+
+	for (auto& conn : *currentConnections)
+	{
+		numCrew++;
+		if (!conn->ready)
+			numWaiting++;
+	}
+
+	if (numWaiting == 0 && numCrew > 0)
+	{
+		crewState = ECrewState::Setup;
+		SendCrewMessage(ESystem::Everyone, TEXT("roleSelect")); // entering role selection
+	}
+	else
+	{
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("waiting %i %i"), numWaiting, numCrew);
+		SendCrewMessage(CHARARR(message));
+#else
+		TCHAR buffer[20];
+		swprintf(buffer, sizeof(buffer), L"waiting %i %i", numWaiting, numCrew);
+		SendCrewMessage(ESystem::Everyone, buffer);
+#endif
+	}
+}
 
 void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
 {

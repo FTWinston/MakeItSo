@@ -39,6 +39,7 @@
         "screens/ErrorScreen.tsx",
         "screens/SettingsScreen.tsx",
         "screens/WaitingScreen.tsx",
+        "screens/RoleSelection.tsx",
         
         "core/GameClient.tsx"
     ]

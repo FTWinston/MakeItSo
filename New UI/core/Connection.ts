@@ -1,15 +1,7 @@
-﻿interface IConnectionSendFunc {
-    (msg: string): void
-}
-
-interface IConnectionCloseFunc {
-    (): void
-}
-
-class Connection {
+﻿class Connection {
     game: GameClient;
     socket: WebSocket;
-    close: IConnectionCloseFunc;
+    close: () => void;
     queue: string[];
     
     constructor(game: GameClient, url: string) {
@@ -45,6 +37,19 @@ class Connection {
             this.game.setPlayerID(data);
             this.game.setActiveScreen('systems');
         }
+*/
+        if (cmd == 'waiting') {
+            let parts = data.split(' ');
+            let numRemaining = parseInt(parts[0]);
+            let numCrew = parseInt(parts[1]);
+
+            this.game.setPlayerCount(numRemaining, numCrew);
+            this.game.show(GameScreen.WaitingForPlayers, true);
+        }
+        else if (cmd == 'roleSelect') {
+            this.game.show(GameScreen.RoleSelection, true);
+        }
+/*
         else if (cmd == 'sys+') {
             this.game.markSystemInUse(data, false);
         }

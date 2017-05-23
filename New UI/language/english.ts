@@ -38,14 +38,18 @@
         },
         waiting: {
             heading: 'Please wait for your crewmates to join...',
-            prompt: 'Once all of your crew has joined, everyone must click \'Ready\' to continue.',
+            prompt: 'We need to know how many players are in your crew so we can offer you the right roles.\nOnce all of your crew has joined, everyone must click \'Ready\' to continue.',
+        },
+        roleSelection: {
+            heading: 'Select your role',
+            prompt: 'Each crew member should select a different role.\nFor advanced users, a custom role allows selection of individual ship systems.',
         }
     },
 
     messages: {
         confirmLeave: 'The game is still active.',
+        connecting: 'Connecting...',
 /*
-        messageConnecting: 'Connecting...',
         messageWait: 'Please wait...',
         messageGameEnded: 'The game has ended.',
         messageGameEndedUser:  'User @name@ ended the game.',

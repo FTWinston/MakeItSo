@@ -39,7 +39,7 @@ button {
         transition: $elementTransition, border-radius 1s;
 
         &:active {
-            border-radius: 0;
+            border-radius: 0 !important;
         }
     }
 
