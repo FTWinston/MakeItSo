@@ -4,7 +4,7 @@
         "module": "none",
         "sourceMap": true,
         "sourceRoot": "..",
-        "outFile": "output/makeitso.js",
+        "outFile": "../WebRoot/makeitso.js",
         "noImplicitAny": true,
         "strictNullChecks": true,
         "allowSyntheticDefaultImports": true,

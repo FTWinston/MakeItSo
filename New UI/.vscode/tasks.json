@@ -14,7 +14,13 @@
             "command": "node-sass",
             "isShellCommand": true,
             "isTestCommand": true,
-            "args": ["style.scss", "output/style.css"]
+            "args": ["style.scss", "../WebRoot/style.css"]
+        },
+        {
+            "taskName": "test",
+            "command": "..\\Debug\\WebTest.exe",
+            "isShellCommand": true,
+            "isBackground": true
         }
     ]
 }

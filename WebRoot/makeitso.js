@@ -550,7 +550,7 @@ var GameClient = (function (_super) {
     }
     GameClient.prototype.componentDidMount = function () {
         if (FeatureDetection.CheckRequirements(this)) {
-            //this.server = new Connection(this, 'ws://' + location.host + '/ws');
+            this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
     };
     GameClient.prototype.render = function () {

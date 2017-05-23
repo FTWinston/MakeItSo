@@ -16,5 +16,4 @@ Crew UI/bin/
 *.VC.opendb
 Debug/*
 packages/*
-WebRoot/*
 .vs/*

@@ -34,7 +34,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
     }
     private componentDidMount () {
         if (FeatureDetection.CheckRequirements(this)) {
-            //this.server = new Connection(this, 'ws://' + location.host + '/ws');
+            this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
     }
     server: Connection;
@@ -73,7 +73,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         let newState: IGameClientState = {activeScreen: screen};
         if (setReturn)
             newState.returnScreen = screen;
-            
+
         if (!this.state.gameActive && screen == GameScreen.Game)
             newState.gameActive = true;
         
