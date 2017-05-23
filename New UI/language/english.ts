@@ -1,23 +1,59 @@
 ﻿const language = {
-    systemNames: ['Helm', 'Viewscreen', 'Comms', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Power', 'Deflector'],
-    errorConnectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
-    errorShipFull: 'This ship is full: there is no room for you to join.',
-    errorGameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
-    errorUnrecognisedCommand: 'Unrecognised command from server: ',
-    errorWrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
-    errorSystemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
-    errorNoWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
-    errorNoCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
-    errorParameterNotNumeric: 'Parameter was not numeric',
-    errorParameterNumber: 'Expected @num@ parameters',
-    
-    messageConnecting: 'Connecting...',
-    messageWait: 'Please wait...',
-    messageConfirmLeave: 'The game is still active.',
-    messageGameEnded: 'The game has ended.',
-    messageGameEndedUser:  'User @name@ ended the game.',
-    messageRefreshPage: 'Refresh the page to continue.',
+    common: {
+        save: 'Save',
+        cancel: 'Cancel',
+        ready: 'Ready',
+        settings: 'Settings',
+    },
+    errors: {
+        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
+        /*
+        shipFull: 'This ship is full: there is no room for you to join.',
+        gameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
+        unrecognisedCommand: 'Unrecognised command from server: ',
+        wrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
+        systemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
+        */
+        noWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
+        noCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
+        /*
+        parameterNotNumeric: 'Parameter was not numeric',
+        parameterNumber: 'Expected @num@ parameters',
+        */
+    },
+    screens: {
+        settings: {
+            intro: 'Set up how you will interact with the game, and enter your name.',
+            inputMode: 'Input mode',
+            inputModePrompt: 'Select how you wish to interact with the game. Ship systems will display differently depending on the input mode you select.',
+            inputModeKeyboard: 'Keyboard',
+            inputModeTouchscreen: 'Touchscreen',
+            inputModeGamepad: 'Gamepad',
+            inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
+            inputModeDescriptionTouchscreen: 'Use Multi-touch controls',
+            inputModeDescriptionGamepad: 'Use an attached game controller',
+            userName: 'User name',
+            userNamePlaceholder: 'Enter your name...',
+            userNameDescription: 'Enter the name you wish to display to your crewmates',
+        },
+        waiting: {
+            heading: 'Please wait for your crewmates to join...',
+            prompt: 'Once all of your crew has joined, everyone must click \'Ready\' to continue.',
+        }
+    },
 
+    messages: {
+        confirmLeave: 'The game is still active.',
+/*
+        messageConnecting: 'Connecting...',
+        messageWait: 'Please wait...',
+        messageGameEnded: 'The game has ended.',
+        messageGameEndedUser:  'User @name@ ended the game.',
+*/
+        refreshPage: 'Refresh the page to continue.',
+    },
+      
+/*
     menuGoBack: 'go back',
     all: 'all',
     none: 'none',
@@ -26,17 +62,6 @@
     systemListSetupGame: 'setup game',
     systemListResumeGame: 'resume game',
     systemListEndGame: 'end game',
-    systemListInputMode: 'helm input mode:',
-
-    userSettingsIntro: 'Set up how you will interact with the game, and enter your name.',
-    inputModePrompt: 'Select how you wish to interact with the game. Ship systems will display differently depending on the input mode you select.',
-    inputModeKeyboard: 'Keyboard',
-    inputModeTouchscreen: 'Touchscreen',
-    inputModeGamepad: 'Gamepad',
-    inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
-    inputModeDescriptionTouchscreen: 'Use Multi-touch controls',
-    inputModeDescriptionGamepad: 'Use an attached game controller',
-    userNameDescription: 'Enter the name you wish to be referred to as by your crewmates',
 
     gameSetupIntro: 'This screen should let you set up your ship and start a new game, browse servers, etc',
     gameSetupServerType: 'Do you wish to play with just your own crew, or with others?',
@@ -125,4 +150,5 @@
     weaponReroll: 'Re-roll',
     weaponDiscardRoll: 'Discard',
     weaponFire: 'Fire',
+*/
 }

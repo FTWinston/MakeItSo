@@ -33,6 +33,8 @@
         "ui/buttons/HeldButton.tsx",
         "ui/buttons/ButtonSet.tsx",
         "ui/buttons/Choice.tsx",
+
+        "ui/Menu.tsx",
         
         "screens/ErrorScreen.tsx",
         "screens/SettingsScreen.tsx",

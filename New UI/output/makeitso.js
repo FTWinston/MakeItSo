@@ -1,118 +1,52 @@
 var language = {
-    systemNames: ['Helm', 'Viewscreen', 'Comms', 'Sensors', 'Weapons', 'Shields', 'Damage Control', 'Power', 'Deflector'],
-    errorConnectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
-    errorShipFull: 'This ship is full: there is no room for you to join.',
-    errorGameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
-    errorUnrecognisedCommand: 'Unrecognised command from server: ',
-    errorWrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
-    errorSystemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
-    errorNoWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
-    errorNoCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
-    errorParameterNotNumeric: 'Parameter was not numeric',
-    errorParameterNumber: 'Expected @num@ parameters',
-    messageConnecting: 'Connecting...',
-    messageWait: 'Please wait...',
-    messageConfirmLeave: 'The game is still active.',
-    messageGameEnded: 'The game has ended.',
-    messageGameEndedUser: 'User @name@ ended the game.',
-    messageRefreshPage: 'Refresh the page to continue.',
-    menuGoBack: 'go back',
-    all: 'all',
-    none: 'none',
-    systemListPrompt: 'Select systems to control:',
-    systemListSetupGame: 'setup game',
-    systemListResumeGame: 'resume game',
-    systemListEndGame: 'end game',
-    systemListInputMode: 'helm input mode:',
-    userSettingsIntro: 'Set up how you will interact with the game, and enter your name.',
-    inputModePrompt: 'Select how you wish to interact with the game. Ship systems will display differently depending on the input mode you select.',
-    inputModeKeyboard: 'Keyboard',
-    inputModeTouchscreen: 'Touchscreen',
-    inputModeGamepad: 'Gamepad',
-    inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
-    inputModeDescriptionTouchscreen: 'Use Multi-touch controls',
-    inputModeDescriptionGamepad: 'Use an attached game controller',
-    userNameDescription: 'Enter the name you wish to be referred to as by your crewmates',
-    gameSetupIntro: 'This screen should let you set up your ship and start a new game, browse servers, etc',
-    gameSetupServerType: 'Do you wish to play with just your own crew, or with others?',
-    gameSetupServerTypeLocal: 'Play a solo-crew game',
-    gameSetupServerTypeLocalDescription: 'Play against the computer, with no other human crews.',
-    gameSetupServerTypeRemote: 'Join a multi-crew game',
-    gameSetupServerTypeRemoteDescription: 'Join a game being hosted remotely.',
-    gameSetupServerTypeHost: 'Host a multi-crew game',
-    gameSetupServerTypeHostDescription: 'Host a game which other human crews can connect to.',
-    gameSetupGameMode: 'Select the game mode you wish to play:',
-    gameSetupGameModeExploration: 'Exploration',
-    gameSetupGameModeExplorationDescription: 'Carry out missions, explore the galaxy, and boldly go where no one has gone before.',
-    gameSetupGameModeEndurance: 'Endurance',
-    gameSetupGameModeEnduranceDescription: 'Survive for as long as possible against endless waves of computer-controlled ships.',
-    gameSetupGameModeArena: 'Arena',
-    gameSetupGameModeArenaDescription: 'Human-crewed ships battle for supremacy in a single star system.',
-    gameSetupStartGame: 'start game',
-    systemContainerPause: 'pause',
-    directionForward: 'forward',
-    directionLeft: 'port',
-    directionRight: 'starboard',
-    directionBackward: 'aft',
-    directionUp: 'dorsal',
-    directionDown: 'ventral',
-    viewscreenPan: 'Pan',
-    viewscreenZoom: 'Zoom',
-    viewscreenDirection: 'direction',
-    viewscreenChaseMode: 'chase mode',
-    viewscreenCommsChannel: 'comms channel',
-    viewscreenTarget: 'target',
-    helmRotation: 'rotation',
-    helmRotateUp: 'up',
-    helmRotateDown: 'down',
-    helmRotateLeft: 'left',
-    helmRotateRight: 'right',
-    helmRotateStop: 'stop',
-    helmSpeedForward: 'forward',
-    helmSpeedBackward: 'backward',
-    helmSpeedStop: 'stop',
-    helmTranslation: 'translation',
-    helmTranslateUp: 'up',
-    helmTranslateDown: 'down',
-    helmTranslateLeft: 'left',
-    helmTranslateRight: 'right',
-    helmWarpFactor: 'warp factor',
-    helmWarpIncrease: 'increase',
-    helmWarpDecrease: 'decrease',
-    helmWarpStop: 'stop',
-    helmForwardSpeedOutput: 'Forward speed:',
-    helmSidewaysSpeedOutput: 'Lateral speed:',
-    helmVerticalSpeedOutput: 'Vertical speed:',
-    helmWarpFactorOutput: 'Warp factor:',
-    helmPitchOutput: 'Pitch:',
-    helmYawOutput: 'Yaw:',
-    helmRollOutput: 'Roll:',
-    shieldsToggleOn: 'Enable shields',
-    shieldsToggleOff: 'Disable shields',
-    shieldsEnabled: 'Shields are enabled',
-    shieldsDisabled: 'Shields are disabled',
-    shieldsRegenFocus: 'Regeneration focus:',
-    shieldsCharge: 'Charge',
-    powerLevels: 'System power levels:',
-    powerAux: 'AUX power',
-    powerCardSelect: 'Select a card to add to your library:',
-    powerCardWait: 'Please wait for new cards to become available.',
-    powerConfirmChoose: 'Add to library',
-    powerConfirmUse: 'Activate card',
-    powerCards: [
-        { name: 'Card 1', desc: 'Does some stuff', rarity: 1, cost: 1 },
-        { name: 'Card 2', desc: 'Does more stuff', rarity: 1, cost: 1 },
-        { name: 'Card 3', desc: 'Does even more stuff', rarity: 2, cost: 1 },
-        { name: 'Card 4', desc: 'Does some things', rarity: 1, cost: 2 },
-        { name: 'Card 5', desc: 'Does more things', rarity: 2, cost: 2 },
-        { name: 'Card 6', desc: 'Does even more things', rarity: 3, cost: 3 },
-        { name: 'Card 7', desc: 'Doesn\'t do very much', rarity: 1, cost: 4 },
-    ],
-    powerSystems: ['Engines', 'Sensors', 'Weapons', 'Shields', 'Repairs', 'Deflector'],
-    weaponRoll: 'Roll',
-    weaponReroll: 'Re-roll',
-    weaponDiscardRoll: 'Discard',
-    weaponFire: 'Fire',
+    common: {
+        save: 'Save',
+        cancel: 'Cancel',
+        ready: 'Ready',
+        settings: 'Settings',
+    },
+    errors: {
+        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
+        /*
+        shipFull: 'This ship is full: there is no room for you to join.',
+        gameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
+        unrecognisedCommand: 'Unrecognised command from server: ',
+        wrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
+        systemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
+        */
+        noWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
+        noCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
+    },
+    screens: {
+        settings: {
+            intro: 'Set up how you will interact with the game, and enter your name.',
+            inputMode: 'Input mode',
+            inputModePrompt: 'Select how you wish to interact with the game. Ship systems will display differently depending on the input mode you select.',
+            inputModeKeyboard: 'Keyboard',
+            inputModeTouchscreen: 'Touchscreen',
+            inputModeGamepad: 'Gamepad',
+            inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
+            inputModeDescriptionTouchscreen: 'Use Multi-touch controls',
+            inputModeDescriptionGamepad: 'Use an attached game controller',
+            userName: 'User name',
+            userNamePlaceholder: 'Enter your name...',
+            userNameDescription: 'Enter the name you wish to display to your crewmates',
+        },
+        waiting: {
+            heading: 'Please wait for your crewmates to join...',
+            prompt: 'Once all of your crew has joined, everyone must click \'Ready\' to continue.',
+        }
+    },
+    messages: {
+        confirmLeave: 'The game is still active.',
+        /*
+                messageConnecting: 'Connecting...',
+                messageWait: 'Please wait...',
+                messageGameEnded: 'The game has ended.',
+                messageGameEndedUser:  'User @name@ ended the game.',
+        */
+        refreshPage: 'Refresh the page to continue.',
+    },
 };
 ;
 var FeatureDetection = {
@@ -124,11 +58,11 @@ var FeatureDetection = {
     WebSockets: ('WebSocket' in window || 'MozWebSocket' in window),
     CheckRequirements: function (game) {
         if (!this.WebSockets) {
-            game.showError(language.errorNoWebsockets);
+            game.showError(language.errors.noWebsockets);
             return false;
         }
         if (!this.Canvas) {
-            game.showError(language.errorNoCanvas);
+            game.showError(language.errors.noCanvas);
             return false;
         }
         return true;
@@ -138,7 +72,7 @@ var Connection = (function () {
     function Connection(game, url) {
         this.game = game;
         this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = function () { this.game.showError(language.errorConnectionLost, true); }.bind(this);
+        this.socket.onerror = this.socket.onclose = function () { this.game.showError(language.errors.connectionLost, true); }.bind(this);
         this.socket.onmessage = this.messageReceived.bind(this);
         this.socket.onopen = this.connected.bind(this);
         this.close = this.socket.close.bind(this.socket);
@@ -292,7 +226,7 @@ var Button = (function (_super) {
                     break;
             }
         }
-        return (React.createElement("button", { className: classes, disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType }, this.props.children));
+        return (React.createElement("button", { className: classes, disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title }, this.props.children));
     };
     return Button;
 }(React.Component));
@@ -306,7 +240,7 @@ var PushButton = (function (_super) {
     }
     PushButton.prototype.render = function () {
         var classList = 'push';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title }, this.props.children));
     };
     PushButton.prototype.clicked = function (e) {
         if (this.props.clicked !== undefined)
@@ -325,14 +259,11 @@ var ConfirmButton = (function (_super) {
     }
     ConfirmButton.prototype.render = function () {
         var classList = this.state.primed ? 'confirm active' : 'confirm';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, buttonType: "submit" }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, buttonType: "submit" }, this.props.children));
     };
     ConfirmButton.prototype.clicked = function (e) {
         if (this.state.primed) {
-            if (this.autoCancel !== undefined) {
-                clearTimeout(this.autoCancel);
-                this.autoCancel = undefined;
-            }
+            this.clearAutoCancel();
             if (this.props.clicked != undefined)
                 this.props.clicked();
             if (this.props.command !== undefined)
@@ -349,6 +280,15 @@ var ConfirmButton = (function (_super) {
             this.setState({ primed: false });
         this.autoCancel = undefined;
     };
+    ConfirmButton.prototype.clearAutoCancel = function () {
+        if (this.autoCancel !== undefined) {
+            clearTimeout(this.autoCancel);
+            this.autoCancel = undefined;
+        }
+    };
+    ConfirmButton.prototype.componentWillUnmount = function () {
+        this.clearAutoCancel();
+    };
     return ConfirmButton;
 }(React.Component));
 var ToggleButton = (function (_super) {
@@ -364,7 +304,7 @@ var ToggleButton = (function (_super) {
     };
     ToggleButton.prototype.render = function () {
         var classList = this.state.active ? 'toggle active' : 'toggle';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title }, this.props.children));
     };
     ToggleButton.prototype.clicked = function (e) {
         if (this.state.active) {
@@ -401,7 +341,7 @@ var HeldButton = (function (_super) {
     }
     HeldButton.prototype.render = function () {
         var classList = this.state.held ? 'held active' : 'held';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title }, this.props.children));
     };
     HeldButton.prototype.mouseDown = function (e) {
         this.setState({ held: true });
@@ -497,6 +437,16 @@ Choice.defaultProps = {
     vertical: false,
     allowUnselected: false,
 };
+var Menu = (function (_super) {
+    __extends(Menu, _super);
+    function Menu() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Menu.prototype.render = function () {
+        return (React.createElement(ButtonSet, { className: "menu", color: 4 /* Quandry */ }, this.props.children));
+    };
+    return Menu;
+}(React.Component));
 var ErrorScreen = (function (_super) {
     __extends(ErrorScreen, _super);
     function ErrorScreen() {
@@ -519,24 +469,25 @@ var SettingsScreen = (function (_super) {
         return _this;
     }
     SettingsScreen.prototype.render = function () {
-        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 4 /* Quandry */, clicked: this.cancel.bind(this) }, "Cancel") : null;
+        var words = language.screens.settings;
+        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 4 /* Quandry */, clicked: this.cancel.bind(this) }, language.common.cancel) : null;
         var canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
         return (React.createElement("div", { className: "screen", id: "settings" },
             React.createElement("form", null,
-                React.createElement("h1", null, language.userSettingsIntro),
+                React.createElement("h1", null, words.intro),
                 React.createElement("div", { role: "group" },
-                    React.createElement("label", null, "Input mode"),
-                    React.createElement(Choice, { prompt: language.inputModePrompt, color: 0 /* Primary */ },
-                        React.createElement(ToggleButton, { startActive: this.state.inputMode == 0 /* ButtonsAndKeyboard */, activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: language.inputModeDescriptionKeyboard }, language.inputModeKeyboard),
-                        React.createElement(ToggleButton, { startActive: this.state.inputMode == 1 /* Touchscreen */, activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: language.inputModeDescriptionTouchscreen }, language.inputModeTouchscreen),
-                        React.createElement(ToggleButton, { startActive: this.state.inputMode == 2 /* GamePad */, disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: language.inputModeDescriptionGamepad }, language.inputModeGamepad))),
+                    React.createElement("label", null, words.inputMode),
+                    React.createElement(Choice, { prompt: words.inputModePrompt, color: 0 /* Primary */ },
+                        React.createElement(ToggleButton, { startActive: this.props.inputMode == 0 /* ButtonsAndKeyboard */, activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: words.inputModeDescriptionKeyboard }, words.inputModeKeyboard),
+                        React.createElement(ToggleButton, { startActive: this.props.inputMode == 1 /* Touchscreen */, activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: words.inputModeDescriptionTouchscreen }, words.inputModeTouchscreen),
+                        React.createElement(ToggleButton, { startActive: this.props.inputMode == 2 /* GamePad */, disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: words.inputModeDescriptionGamepad }, words.inputModeGamepad))),
                 React.createElement("div", { role: "group" },
-                    React.createElement("label", { htmlFor: "txtUserName" }, "User name"),
+                    React.createElement("label", { htmlFor: "txtUserName" }, words.userName),
                     React.createElement("div", null,
-                        React.createElement("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this), placeholder: "enter your name..." }),
-                        React.createElement("div", { className: "description" }, language.userNameDescription))),
+                        React.createElement("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this), placeholder: words.userNamePlaceholder }),
+                        React.createElement("div", { className: "description" }, words.userNameDescription))),
                 React.createElement("div", { role: "group", className: "actions" },
-                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave, clicked: this.save.bind(this) }, "Save"),
+                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave, clicked: this.save.bind(this) }, language.common.save),
                     cancelButton))));
     };
     SettingsScreen.prototype.setInputMode = function (mode) {
@@ -570,7 +521,16 @@ var WaitingScreen = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     WaitingScreen.prototype.render = function () {
-        return (React.createElement("div", { className: "screen", id: "waiting" }, "Waiting for other users..."));
+        return (React.createElement("div", { className: "screen", id: "waiting" },
+            React.createElement("h1", null, language.screens.waiting.heading),
+            React.createElement("p", { className: "prompt" }, language.screens.waiting.prompt),
+            React.createElement(ToggleButton, { color: 0 /* Primary */, activateCommand: "ready+", deactivateCommand: "ready-" }, language.common.ready),
+            React.createElement(Menu, null,
+                React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
+    };
+    WaitingScreen.prototype.settingsClicked = function () {
+        if (this.props.settingsClicked !== undefined)
+            this.props.settingsClicked();
     };
     return WaitingScreen;
 }(React.Component));
@@ -612,7 +572,7 @@ var GameClient = (function (_super) {
                 }
                 return React.createElement(SettingsScreen, { inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
             case 2 /* WaitingForPlayers */:
-                return React.createElement(WaitingScreen, null);
+                return React.createElement(WaitingScreen, { settingsClicked: this.show.bind(this, 1 /* Settings */) });
             case 3 /* RoleSelection */:
             case 4 /* GameSetup */:
             case 5 /* Game */:
@@ -623,8 +583,10 @@ var GameClient = (function (_super) {
     GameClient.prototype.show = function (screen, setReturn) {
         if (setReturn === void 0) { setReturn = false; }
         var newState = { activeScreen: screen };
-        if (setReturn || !this.state.gameActive && screen == 5 /* Game */)
+        if (setReturn)
             newState.returnScreen = screen;
+        if (!this.state.gameActive && screen == 5 /* Game */)
+            newState.gameActive = true;
         if (screen != 0 /* Error */)
             newState.errorMessage = undefined;
         this.setState(newState);
@@ -647,7 +609,7 @@ var GameClient = (function (_super) {
             window.removeEventListener('beforeunload', this.unloadEvent);
     };
     GameClient.prototype.unloadEvent = function (e) {
-        var confirmationMessage = language.messageConfirmLeave;
+        var confirmationMessage = language.messages.confirmLeave;
         (e || window.event).returnValue = confirmationMessage; //Gecko + IE
         return confirmationMessage; //Webkit, Safari, Chrome etc.
     };
@@ -656,7 +618,7 @@ var GameClient = (function (_super) {
         var state = { activeScreen: 0 /* Error */ };
         if (fatal) {
             this.server.close();
-            state.errorMessage = message + '\n\n' + language.messageRefreshPage;
+            state.errorMessage = message + '\n\n' + language.messages.refreshPage;
             state.returnScreen = 0 /* Error */;
         }
         else

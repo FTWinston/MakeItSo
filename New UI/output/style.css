@@ -169,8 +169,8 @@ button {
   cursor: pointer;
   vertical-align: baseline; }
   button.confirm {
-    border-top-left-radius: 0.1875em !important;
-    border-bottom-right-radius: 0.1875em !important; }
+    border-top-left-radius: 0.16em !important;
+    border-bottom-right-radius: 0.16em !important; }
     button.confirm::before {
       content: '';
       display: inline-block;
@@ -198,7 +198,7 @@ button {
     border-width: 4px; }
 
 *:not(.buttons) > button {
-  border-radius: 0.75em; }
+  border-radius: 0.8em; }
 
 *:not(.buttons) > button + button {
   margin-left: 0.5em; }
@@ -209,28 +209,33 @@ button {
 .buttons.vertical > button {
   display: block; }
   .buttons.vertical > button:first-of-type {
-    border-top-left-radius: 0.75em;
-    border-top-right-radius: 0.75em; }
+    border-top-left-radius: 0.8em;
+    border-top-right-radius: 0.8em; }
   .buttons.vertical > button:last-of-type {
-    border-bottom-left-radius: 0.75em;
-    border-bottom-right-radius: 0.75em; }
+    border-bottom-left-radius: 0.8em;
+    border-bottom-right-radius: 0.8em; }
 
 .buttons.vertical > button + button {
   border-top-width: 0; }
 
 .buttons:not(.vertical) > button:first-of-type {
-  border-top-left-radius: 0.75em;
-  border-bottom-left-radius: 0.75em; }
+  border-top-left-radius: 0.8em;
+  border-bottom-left-radius: 0.8em; }
 
 .buttons:not(.vertical) > button:last-of-type {
-  border-bottom-right-radius: 0.75em;
-  border-top-right-radius: 0.75em; }
+  border-bottom-right-radius: 0.8em;
+  border-top-right-radius: 0.8em; }
 
 .buttons:not(.vertical) > button + button {
   border-left-width: 0; }
 
 .description {
   margin-top: 0.5em; }
+
+.buttons.menu {
+  position: absolute;
+  top: 0.25em;
+  right: 0.25em; }
 
 #error, #settings, #waiting {
   display: flex;

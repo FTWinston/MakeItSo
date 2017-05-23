@@ -15,7 +15,7 @@ class Connection {
     constructor(game: GameClient, url: string) {
         this.game = game;
         this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = function () { this.game.showError(language.errorConnectionLost, true); }.bind(this);
+        this.socket.onerror = this.socket.onclose = function () { this.game.showError(language.errors.connectionLost, true); }.bind(this);
         this.socket.onmessage = this.messageReceived.bind(this);
         this.socket.onopen = this.connected.bind(this);
         this.close = this.socket.close.bind(this.socket);

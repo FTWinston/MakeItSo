@@ -5,8 +5,8 @@ button {
     vertical-align: baseline;
 
     &.confirm {
-        border-top-left-radius: $buttonRadius / 4 !important;
-        border-bottom-right-radius: $buttonRadius / 4 !important;
+        border-top-left-radius: $buttonRadius / 5 !important;
+        border-bottom-right-radius: $buttonRadius / 5 !important;
         
         &::before {
             content: '';
@@ -106,4 +106,10 @@ button {
 
 .description {
     margin-top: 0.5em;
+}
+
+.buttons.menu {
+    position: absolute;
+    top: 0.25em;
+    right: 0.25em;
 }

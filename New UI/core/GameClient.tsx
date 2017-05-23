@@ -61,7 +61,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
                 }
                 return <SettingsScreen inputMode={mode} userName={name} canCancel={canCancel} saved={this.changeSettings.bind(this)} cancelled={this.showReturn.bind(this)} />;
             case GameScreen.WaitingForPlayers:
-                return <WaitingScreen />;
+                return <WaitingScreen settingsClicked={this.show.bind(this, GameScreen.Settings)} />;
             case GameScreen.RoleSelection:
             case GameScreen.GameSetup:
             case GameScreen.Game:
@@ -71,8 +71,11 @@ class GameClient extends React.Component<{}, IGameClientState> {
     }
     show(screen: GameScreen, setReturn: boolean = false) {
         let newState: IGameClientState = {activeScreen: screen};
-        if (setReturn || !this.state.gameActive && screen == GameScreen.Game)
+        if (setReturn)
             newState.returnScreen = screen;
+            
+        if (!this.state.gameActive && screen == GameScreen.Game)
+            newState.gameActive = true;
         
         if (screen != GameScreen.Error)
             newState.errorMessage = undefined;
@@ -98,7 +101,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
             window.removeEventListener('beforeunload', this.unloadEvent);
     }
     private unloadEvent(e: BeforeUnloadEvent) {
-        let confirmationMessage = language.messageConfirmLeave;
+        let confirmationMessage = language.messages.confirmLeave;
 
         (e || window.event).returnValue = confirmationMessage; //Gecko + IE
         return confirmationMessage; //Webkit, Safari, Chrome etc.
@@ -107,7 +110,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         let state: IGameClientState = { activeScreen: GameScreen.Error };
         if (fatal) {
             this.server.close();
-            state.errorMessage = message + '\n\n' + language.messageRefreshPage;
+            state.errorMessage = message + '\n\n' + language.messages.refreshPage;
             state.returnScreen = GameScreen.Error;
         }
         else

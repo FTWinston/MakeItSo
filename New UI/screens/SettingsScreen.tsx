@@ -25,30 +25,31 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
         };
     }
     render() {
-        let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quandry} clicked={this.cancel.bind(this)}>Cancel</PushButton> : null;
+        let words = language.screens.settings;
+        let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quandry} clicked={this.cancel.bind(this)}>{language.common.cancel}</PushButton> : null;
         let canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
 
         return (
             <div className="screen" id="settings">
                 <form>
-                    <h1>{language.userSettingsIntro}</h1>
+                    <h1>{words.intro}</h1>
                     <div role="group">
-                        <label>Input mode</label>
-                        <Choice prompt={language.inputModePrompt} color={ButtonColor.Primary}>
-                            <ToggleButton startActive={this.state.inputMode == InputMode.ButtonsAndKeyboard} activated={this.setInputMode.bind(this, InputMode.ButtonsAndKeyboard)} description={language.inputModeDescriptionKeyboard}>{language.inputModeKeyboard}</ToggleButton>
-                            <ToggleButton startActive={this.state.inputMode == InputMode.Touchscreen} activated={this.setInputMode.bind(this, InputMode.Touchscreen)} description={language.inputModeDescriptionTouchscreen}>{language.inputModeTouchscreen}</ToggleButton>
-                            <ToggleButton startActive={this.state.inputMode == InputMode.GamePad} disabled={true} activated={this.setInputMode.bind(this, InputMode.GamePad)} description={language.inputModeDescriptionGamepad}>{language.inputModeGamepad}</ToggleButton>
+                        <label>{words.inputMode}</label>
+                        <Choice prompt={words.inputModePrompt} color={ButtonColor.Primary}>
+                            <ToggleButton startActive={this.props.inputMode == InputMode.ButtonsAndKeyboard} activated={this.setInputMode.bind(this, InputMode.ButtonsAndKeyboard)} description={words.inputModeDescriptionKeyboard}>{words.inputModeKeyboard}</ToggleButton>
+                            <ToggleButton startActive={this.props.inputMode == InputMode.Touchscreen} activated={this.setInputMode.bind(this, InputMode.Touchscreen)} description={words.inputModeDescriptionTouchscreen}>{words.inputModeTouchscreen}</ToggleButton>
+                            <ToggleButton startActive={this.props.inputMode == InputMode.GamePad} disabled={true} activated={this.setInputMode.bind(this, InputMode.GamePad)} description={words.inputModeDescriptionGamepad}>{words.inputModeGamepad}</ToggleButton>
                         </Choice>
                     </div>
                     <div role="group">
-                        <label htmlFor="txtUserName">User name</label>
+                        <label htmlFor="txtUserName">{words.userName}</label>
                         <div>
-                            <input id="txtUserName" className="value secondary" type="text" value={this.state.userName} onChange={this.nameChanged.bind(this)} placeholder="enter your name..." />
-                            <div className="description">{language.userNameDescription}</div>
+                            <input id="txtUserName" className="value secondary" type="text" value={this.state.userName} onChange={this.nameChanged.bind(this)} placeholder={words.userNamePlaceholder} />
+                            <div className="description">{words.userNameDescription}</div>
                         </div>
                     </div>
                     <div role="group" className="actions">
-                        <ConfirmButton color={ButtonColor.Tertiary} disabled={!canSave} clicked={this.save.bind(this)}>Save</ConfirmButton>
+                        <ConfirmButton color={ButtonColor.Tertiary} disabled={!canSave} clicked={this.save.bind(this)}>{language.common.save}</ConfirmButton>
                         {cancelButton}
                     </div>
                 </form>

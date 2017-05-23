@@ -20,7 +20,7 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
         return (
             <Button className={classList} hotkey={this.props.hotkey}
                 mouseDown={this.mouseDown.bind(this)} mouseUp={this.mouseUp.bind(this)}
-                color={this.props.color} disabled={this.props.disabled}>
+                color={this.props.color} disabled={this.props.disabled} title={this.props.title}>
                 {this.props.children}
             </Button>
         );

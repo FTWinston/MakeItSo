@@ -14,12 +14,12 @@ const FeatureDetection = {
 
     CheckRequirements: function(game: GameClient) {
         if (!this.WebSockets) {
-            game.showError(language.errorNoWebsockets);
+            game.showError(language.errors.noWebsockets);
             return false;
         }
         
         if (!this.Canvas) {
-            game.showError(language.errorNoCanvas);
+            game.showError(language.errors.noCanvas);
             return false;
         }
         return true;

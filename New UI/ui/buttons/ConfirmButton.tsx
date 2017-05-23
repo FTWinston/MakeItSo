@@ -11,7 +11,7 @@ class ConfirmButton extends React.Component<IPushButtonProps, IConfirmButtonStat
         let classList = this.state.primed ? 'confirm active' : 'confirm';
         return (
             <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)}
-                color={this.props.color} disabled={this.props.disabled} buttonType="submit">
+                color={this.props.color} disabled={this.props.disabled} title={this.props.title} buttonType="submit">
                 {this.props.children}
             </Button>
         );
@@ -19,10 +19,7 @@ class ConfirmButton extends React.Component<IPushButtonProps, IConfirmButtonStat
     autoCancel?: number;
     private clicked(e: React.MouseEvent) {
         if (this.state.primed) {
-            if (this.autoCancel !== undefined) {
-                clearTimeout(this.autoCancel);
-                this.autoCancel = undefined;
-            }
+            this.clearAutoCancel();
 
             if (this.props.clicked != undefined)
                 this.props.clicked();
@@ -41,5 +38,14 @@ class ConfirmButton extends React.Component<IPushButtonProps, IConfirmButtonStat
         if (this.state.primed)
             this.setState({primed: false});
         this.autoCancel = undefined;
+    }
+    private clearAutoCancel() {
+        if (this.autoCancel !== undefined) {
+            clearTimeout(this.autoCancel);
+            this.autoCancel = undefined;
+        }
+    }
+    componentWillUnmount() {
+        this.clearAutoCancel();
     }
 }

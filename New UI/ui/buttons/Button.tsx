@@ -7,6 +7,7 @@ const enum ButtonColor {
 }
 
 interface IButtonProps {
+    title?: string;
     hotkey?: string;
     color?: ButtonColor;
     disabled?: boolean;
@@ -61,7 +62,8 @@ class Button extends React.Component<IBaseButtonProps, {}> {
                 onMouseUp={this.props.disabled ? undefined : this.props.mouseUp}
                 onMouseLeave={this.props.disabled ? undefined : this.props.mouseLeave}
                 onClick={this.props.disabled ? undefined : this.props.mouseClick}
-                data-hotkey={this.props.hotkey} type={this.props.buttonType}>
+                data-hotkey={this.props.hotkey} type={this.props.buttonType}
+                title={this.props.title}>
                     {this.props.children}
             </button>
         );
