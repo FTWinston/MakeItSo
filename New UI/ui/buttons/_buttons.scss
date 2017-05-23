@@ -5,6 +5,9 @@ button {
     vertical-align: baseline;
 
     &.confirm {
+        border-top-left-radius: $buttonRadius / 4 !important;
+        border-bottom-right-radius: $buttonRadius / 4 !important;
+        
         &::before {
             content: '';
             display: inline-block;
@@ -31,10 +34,32 @@ button {
             }
         }
     }
+
+    &.push {
+        transition: $elementTransition, border-radius 1s;
+
+        &:active {
+            border-radius: 0;
+        }
+    }
+
+    &.toggle {
+        
+    }
+
+    &.held {
+        border-style: double;
+        border-width: 4px;
+    }
 }
 
-*:not(.buttons) > button {
-    border-radius: $buttonRadius;
+*:not(.buttons) {
+    & > button {
+        border-radius: $buttonRadius;
+    }
+    & > button + button {
+        margin-left: 0.5em;
+    }
 }
 
 .buttons .prompt {

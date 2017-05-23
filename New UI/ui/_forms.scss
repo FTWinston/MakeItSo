@@ -1,4 +1,5 @@
 $buttonRadius: 0.75em;
+$elementTransition: background-color 0.5s, color 0.5s, border-color 0.5s;
 
 @mixin ui-color($color) {
     border-color: $color;
@@ -6,6 +7,7 @@ $buttonRadius: 0.75em;
 
     &[disabled] {
         color: #999;
+        border-color: #999;
         cursor: not-allowed;
     }
 
@@ -14,9 +16,11 @@ $buttonRadius: 0.75em;
             background-color: $color;
             color: $backgroundColor;
         }
-        &:hover:not(:active):not(.active) {
-            background-color: rgba($color, 0.2);
-            color: $color;
+        &:not(:active):not(.active) {
+            &:hover, &:focus {
+                background-color: rgba($color, 0.2);
+                color: $color;
+            }
         }
     }
 }
@@ -39,7 +43,7 @@ button, input {
         outline:none;
     }
     
-    transition: background-color 0.5s, color 0.5s, border-color 0.5s;
+    transition: $elementTransition;
 }
 
 form {
@@ -47,15 +51,14 @@ form {
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
-    & > * + * {
-        margin-top: 1.5em;
-    }
 
-    & > .field {
+    & > * {
+        flex-shrink: 0;
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
         align-items: baseline;
+        margin-bottom: 1.5em;
     }
 
     & > .actions {
@@ -65,4 +68,9 @@ form {
 
 input[type="text"] {
     width: 15em;
+}
+
+label {
+    text-decoration: underline;
+    margin-right: 1em;
 }

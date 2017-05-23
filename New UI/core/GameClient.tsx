@@ -1,5 +1,6 @@
 interface IGameClientState {
     activeScreen?: GameScreen;
+    returnScreen?: GameScreen;
     gameActive?: boolean;
     errorMessage?: string;
     showHotkeys?: boolean;
@@ -24,59 +25,69 @@ class GameClient extends React.Component<{}, IGameClientState> {
         let settings = ClientSettings.load();
 
         this.state = {
-            gameActive: false,
             vibration: FeatureDetection.Vibration ? FeatureState.Enabled : FeatureState.Unavailable,
             settings: settings,
             activeScreen: settings === undefined ? GameScreen.Settings : GameScreen.WaitingForPlayers,
+            returnScreen: GameScreen.WaitingForPlayers,
             errorMessage: undefined,
         };
     }
-    componentDidMount () {
+    private componentDidMount () {
         if (FeatureDetection.CheckRequirements(this)) {
             //this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
     }
     server: Connection;
     render() {
-        let activeScreen: any;
+        return (
+            <div className={this.state.showHotkeys ? 'showKeys' : undefined}>
+                {this.renderActiveScreen()}
+            </div>
+        );
+    }
+    private renderActiveScreen() {
         switch(this.state.activeScreen) {
             case GameScreen.Settings:
-                let mode, name;
+                let mode, name, canCancel;
                 if (this.state.settings === undefined) {
                     mode = InputMode.ButtonsAndKeyboard;
                     name = '';
+                    canCancel = false;
                 }
                 else {
-                    mode = this.state.settings.inputMode
-                    name = this.state.settings.userName
+                    mode = this.state.settings.inputMode;
+                    name = this.state.settings.userName;
+                    canCancel = true;
                 }
-                activeScreen = <SettingsScreen inputMode={mode} userName={name} />; break;
+                return <SettingsScreen inputMode={mode} userName={name} canCancel={canCancel} saved={this.changeSettings.bind(this)} cancelled={this.showReturn.bind(this)} />;
             case GameScreen.WaitingForPlayers:
-                activeScreen = <WaitingScreen />; break;
+                return <WaitingScreen />;
             case GameScreen.RoleSelection:
             case GameScreen.GameSetup:
             case GameScreen.Game:
             default:
-                activeScreen = <ErrorScreen message={this.state.errorMessage} />; break;
-        }        
-
-        return (
-            <div className={this.state.showHotkeys ? 'showKeys' : undefined}>
-                {activeScreen}
-            </div>
-        );
+                return <ErrorScreen message={this.state.errorMessage} />;
+        }
     }
-    show(screen: GameScreen) {
+    show(screen: GameScreen, setReturn: boolean = false) {
         let newState: IGameClientState = {activeScreen: screen};
-        if (!this.state.gameActive && screen == GameScreen.Game)
-            newState.gameActive = true;
+        if (setReturn || !this.state.gameActive && screen == GameScreen.Game)
+            newState.returnScreen = screen;
         
         if (screen != GameScreen.Error)
             newState.errorMessage = undefined;
         
         this.setState(newState);
     }
-    componentDidUpdate(prevProps: any, prevState: IGameClientState) {
+    showReturn() {
+        if (this.state.returnScreen !== undefined)
+            this.show(this.state.returnScreen);
+    }
+    private changeSettings(settings: ClientSettings) {
+        this.setState({settings: settings});
+        this.showReturn();
+    }
+    private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
         // block accidental unloading only when in the game screen
         if (prevState.activeScreen == this.state.activeScreen)
             return;
@@ -86,7 +97,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         else
             window.removeEventListener('beforeunload', this.unloadEvent);
     }
-    unloadEvent(e: BeforeUnloadEvent) {    
+    private unloadEvent(e: BeforeUnloadEvent) {
         let confirmationMessage = language.messageConfirmLeave;
 
         (e || window.event).returnValue = confirmationMessage; //Gecko + IE
@@ -97,7 +108,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         if (fatal) {
             this.server.close();
             state.errorMessage = message + '\n\n' + language.messageRefreshPage;
-            state.gameActive = false;
+            state.returnScreen = GameScreen.Error;
         }
         else
             state.errorMessage = message;

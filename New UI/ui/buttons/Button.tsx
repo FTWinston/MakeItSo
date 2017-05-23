@@ -49,7 +49,7 @@ class Button extends React.Component<IBaseButtonProps, {}> {
                 case ButtonColor.Tertiary:
                     classes += ' tertiary'; break;
                 case ButtonColor.Quaternary:
-                    classes += ' Quaternary'; break;
+                    classes += ' quaternary'; break;
                 case ButtonColor.Quandry:
                     classes += ' quandry'; break;
             }

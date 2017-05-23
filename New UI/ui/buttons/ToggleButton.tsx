@@ -1,4 +1,5 @@
 interface IToggleButtonProps extends IButtonProps {
+    startActive?: boolean;
     activated?: () => void;
     deactivated?: () => void;
     activateCommand?: string;
@@ -15,11 +16,17 @@ interface IToggleButtonState {
 
 class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonState> {
     static defaultProps = {
-        inChoice: false
+        inChoice: false,
+        startActive: false,
+        allowUserDeactivate: true,
     };
     constructor(props: IToggleButtonProps) {
         super(props);
-        this.state = { active: false };
+        this.state = { active: props.startActive === true };
+    }
+    componentWillMount() {
+        if (this.props.startActive === true && this.props.choiceOptionActivated !== undefined)
+            this.props.choiceOptionActivated(this);
     }
     render() {
         let classList = this.state.active ? 'toggle active' : 'toggle';
@@ -32,7 +39,7 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
     }
     private clicked(e: React.MouseEvent) {
         if (this.state.active) {
-            if (this.props.allowUserDeactivate !== true)
+            if (this.props.allowUserDeactivate === false)
                 return; // in a choice, don't deactivate a button by clicking on it
 
             if (this.props.deactivated != undefined)

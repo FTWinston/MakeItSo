@@ -48,8 +48,7 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
             </ButtonSet>
         );
     }
-    
-    childActivated(activated: ToggleButton) {
+    private childActivated(activated: ToggleButton) {
         if (this.state.activeChild !== undefined)
             this.state.activeChild.setState({active: false});
 

@@ -285,7 +285,7 @@ var Button = (function (_super) {
                     classes += ' tertiary';
                     break;
                 case 3 /* Quaternary */:
-                    classes += ' Quaternary';
+                    classes += ' quaternary';
                     break;
                 case 4 /* Quandry */:
                     classes += ' quandry';
@@ -355,16 +355,20 @@ var ToggleButton = (function (_super) {
     __extends(ToggleButton, _super);
     function ToggleButton(props) {
         var _this = _super.call(this, props) || this;
-        _this.state = { active: false };
+        _this.state = { active: props.startActive === true };
         return _this;
     }
+    ToggleButton.prototype.componentWillMount = function () {
+        if (this.props.startActive === true && this.props.choiceOptionActivated !== undefined)
+            this.props.choiceOptionActivated(this);
+    };
     ToggleButton.prototype.render = function () {
         var classList = this.state.active ? 'toggle active' : 'toggle';
         return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled }, this.props.children));
     };
     ToggleButton.prototype.clicked = function (e) {
         if (this.state.active) {
-            if (this.props.allowUserDeactivate !== true)
+            if (this.props.allowUserDeactivate === false)
                 return; // in a choice, don't deactivate a button by clicking on it
             if (this.props.deactivated != undefined)
                 this.props.deactivated();
@@ -384,7 +388,9 @@ var ToggleButton = (function (_super) {
     return ToggleButton;
 }(React.Component));
 ToggleButton.defaultProps = {
-    inChoice: false
+    inChoice: false,
+    startActive: false,
+    allowUserDeactivate: true,
 };
 var HeldButton = (function (_super) {
     __extends(HeldButton, _super);
@@ -513,24 +519,24 @@ var SettingsScreen = (function (_super) {
         return _this;
     }
     SettingsScreen.prototype.render = function () {
-        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { clicked: this.cancel.bind(this), color: 4 /* Quandry */ }, "Cancel") : null;
+        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 4 /* Quandry */, clicked: this.cancel.bind(this) }, "Cancel") : null;
         var canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
         return (React.createElement("div", { className: "screen", id: "settings" },
             React.createElement("form", null,
                 React.createElement("h1", null, language.userSettingsIntro),
-                React.createElement("div", { className: "field" },
+                React.createElement("div", { role: "group" },
                     React.createElement("label", null, "Input mode"),
                     React.createElement(Choice, { prompt: language.inputModePrompt, color: 0 /* Primary */ },
-                        React.createElement(ToggleButton, { activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: language.inputModeDescriptionKeyboard }, language.inputModeKeyboard),
-                        React.createElement(ToggleButton, { activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: language.inputModeDescriptionTouchscreen }, language.inputModeTouchscreen),
-                        React.createElement(ToggleButton, { disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: language.inputModeDescriptionGamepad }, language.inputModeGamepad))),
-                React.createElement("div", { className: "field" },
+                        React.createElement(ToggleButton, { startActive: this.state.inputMode == 0 /* ButtonsAndKeyboard */, activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: language.inputModeDescriptionKeyboard }, language.inputModeKeyboard),
+                        React.createElement(ToggleButton, { startActive: this.state.inputMode == 1 /* Touchscreen */, activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: language.inputModeDescriptionTouchscreen }, language.inputModeTouchscreen),
+                        React.createElement(ToggleButton, { startActive: this.state.inputMode == 2 /* GamePad */, disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: language.inputModeDescriptionGamepad }, language.inputModeGamepad))),
+                React.createElement("div", { role: "group" },
                     React.createElement("label", { htmlFor: "txtUserName" }, "User name"),
                     React.createElement("div", null,
-                        React.createElement("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this) }),
+                        React.createElement("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this), placeholder: "enter your name..." }),
                         React.createElement("div", { className: "description" }, language.userNameDescription))),
-                React.createElement("div", { className: "field actions" },
-                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave }, "Save"),
+                React.createElement("div", { role: "group", className: "actions" },
+                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave, clicked: this.save.bind(this) }, "Save"),
                     cancelButton))));
     };
     SettingsScreen.prototype.setInputMode = function (mode) {
@@ -540,8 +546,18 @@ var SettingsScreen = (function (_super) {
         this.setState({ userName: event.target.value });
     };
     SettingsScreen.prototype.save = function () {
+        var settings = new ClientSettings();
+        if (this.state.inputMode !== undefined)
+            settings.inputMode = this.state.inputMode;
+        if (this.state.userName !== undefined)
+            settings.userName = this.state.userName.trim();
+        ClientSettings.save(settings);
+        if (this.props.saved !== undefined)
+            this.props.saved(settings);
     };
     SettingsScreen.prototype.cancel = function () {
+        if (this.props.cancelled !== undefined)
+            this.props.cancelled();
     };
     return SettingsScreen;
 }(React.Component));
@@ -564,10 +580,10 @@ var GameClient = (function (_super) {
         var _this = _super.call(this, props) || this;
         var settings = ClientSettings.load();
         _this.state = {
-            gameActive: false,
             vibration: FeatureDetection.Vibration ? 2 /* Enabled */ : 0 /* Unavailable */,
             settings: settings,
             activeScreen: settings === undefined ? 1 /* Settings */ : 2 /* WaitingForPlayers */,
+            returnScreen: 2 /* WaitingForPlayers */,
             errorMessage: undefined,
         };
         return _this;
@@ -578,39 +594,48 @@ var GameClient = (function (_super) {
         }
     };
     GameClient.prototype.render = function () {
-        var activeScreen;
+        return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderActiveScreen()));
+    };
+    GameClient.prototype.renderActiveScreen = function () {
         switch (this.state.activeScreen) {
             case 1 /* Settings */:
-                var mode = void 0, name_1;
+                var mode = void 0, name_1, canCancel = void 0;
                 if (this.state.settings === undefined) {
                     mode = 0 /* ButtonsAndKeyboard */;
                     name_1 = '';
+                    canCancel = false;
                 }
                 else {
                     mode = this.state.settings.inputMode;
                     name_1 = this.state.settings.userName;
+                    canCancel = true;
                 }
-                activeScreen = React.createElement(SettingsScreen, { inputMode: mode, userName: name_1 });
-                break;
+                return React.createElement(SettingsScreen, { inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
             case 2 /* WaitingForPlayers */:
-                activeScreen = React.createElement(WaitingScreen, null);
-                break;
+                return React.createElement(WaitingScreen, null);
             case 3 /* RoleSelection */:
             case 4 /* GameSetup */:
             case 5 /* Game */:
             default:
-                activeScreen = React.createElement(ErrorScreen, { message: this.state.errorMessage });
-                break;
+                return React.createElement(ErrorScreen, { message: this.state.errorMessage });
         }
-        return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, activeScreen));
     };
-    GameClient.prototype.show = function (screen) {
+    GameClient.prototype.show = function (screen, setReturn) {
+        if (setReturn === void 0) { setReturn = false; }
         var newState = { activeScreen: screen };
-        if (!this.state.gameActive && screen == 5 /* Game */)
-            newState.gameActive = true;
+        if (setReturn || !this.state.gameActive && screen == 5 /* Game */)
+            newState.returnScreen = screen;
         if (screen != 0 /* Error */)
             newState.errorMessage = undefined;
         this.setState(newState);
+    };
+    GameClient.prototype.showReturn = function () {
+        if (this.state.returnScreen !== undefined)
+            this.show(this.state.returnScreen);
+    };
+    GameClient.prototype.changeSettings = function (settings) {
+        this.setState({ settings: settings });
+        this.showReturn();
     };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen
@@ -632,7 +657,7 @@ var GameClient = (function (_super) {
         if (fatal) {
             this.server.close();
             state.errorMessage = message + '\n\n' + language.messageRefreshPage;
-            state.gameActive = false;
+            state.returnScreen = 0 /* Error */;
         }
         else
             state.errorMessage = message;

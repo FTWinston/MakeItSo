@@ -67,12 +67,7 @@ h1 {
     margin-bottom: 0;
 }
 
-label {
-    text-decoration: underline;
-    padding-right: 1em;
-}
-
-@import 'ui/input';
+@import 'ui/forms';
 @import 'ui/buttons/buttons';
 
 @import 'screens/screens';
