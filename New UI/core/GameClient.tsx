@@ -68,7 +68,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
             case GameScreen.Connecting:
                 return <ErrorScreen message={language.messages.connecting} />;
             case GameScreen.RoleSelection:
-                return <RoleSelection settingsClicked={this.show.bind(this, GameScreen.Settings)} crew={this.state.crew} />;
+                let crew = this.state.crew === undefined ? {} : this.state.crew;
+                return <RoleSelection settingsClicked={this.show.bind(this, GameScreen.Settings)} crew={crew} />;
             case GameScreen.GameSetup:
             case GameScreen.Game:
             default:
@@ -106,11 +107,30 @@ class GameClient extends React.Component<{}, IGameClientState> {
         this.setState({crewID: id});
     }
     setCrewName(id: string, name: string) {
-        // TODO
-        console.log('added ' + name + ' with ID ' + id);
+        // add new crew member, or update existing name
+        this.setState(function (state: IGameClientState) {
+            let crew = state.crew;
+            if (crew === undefined) {
+                crew = {};
+                state.crew = crew;
+            }
+
+            let member = crew[id];
+            if (member === undefined) {
+                member = new CrewMember(name);
+                crew[id] = member;
+            }
+            else
+                member.name = name;
+        });
     }
     crewQuit(id: string) {
-        // TODO
+        // remove crew member
+        this.setState(function (state) {
+            let crew = state.crew;
+            if (crew !== undefined)
+                delete crew[id];
+        });
     }
     private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
         // block accidental unloading only when in the game screen

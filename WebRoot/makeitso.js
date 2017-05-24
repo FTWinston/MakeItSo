@@ -84,20 +84,25 @@ var Connection = (function () {
     }
     Connection.prototype.send = function (cmd) {
         if (this.socket.readyState == 1)
-            this.socket.send(cmd);
+            this.sendImmediately(cmd);
         else
             this.queue.push(cmd);
+    };
+    Connection.prototype.sendImmediately = function (cmd) {
+        console.log('sent', cmd);
+        this.socket.send(cmd);
     };
     Connection.prototype.connected = function () {
         // once connection is established, send any queued messages
         var cmd = this.queue.pop();
         while (cmd !== undefined) {
-            this.socket.send(cmd);
+            this.sendImmediately(cmd);
             cmd = this.queue.pop();
         }
     };
     Connection.prototype.messageReceived = function (ev) {
         var data = (ev.data || '');
+        console.log('received', data);
         var pos = data.indexOf(' ');
         var cmd = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
@@ -542,18 +547,16 @@ var RoleSelection = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     RoleSelection.prototype.render = function () {
-        var numCrew = 0;
-        if (this.props.crew !== undefined)
-            for (var crew in this.props.crew)
-                numCrew++;
+        var crew = [];
+        for (var id in this.props.crew) {
+            crew.push(this.props.crew[id]);
+        }
         return (React.createElement("div", { className: "screen", id: "roleSelection" },
             React.createElement("h1", null, language.screens.roleSelection.heading),
             React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt),
-            React.createElement("p", null,
-                "Currently got ",
-                numCrew,
-                " crew member",
-                numCrew == 1 ? '' : 's'),
+            React.createElement("ol", { className: "crewList" }, crew.map(function (member, id) {
+                return React.createElement("li", { key: id }, member.name);
+            })),
             React.createElement(Menu, null,
                 React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
     };
@@ -605,7 +608,8 @@ var GameClient = (function (_super) {
             case 1 /* Connecting */:
                 return React.createElement(ErrorScreen, { message: language.messages.connecting });
             case 3 /* RoleSelection */:
-                return React.createElement(RoleSelection, { settingsClicked: this.show.bind(this, 2 /* Settings */), crew: this.state.crew });
+                var crew = this.state.crew === undefined ? {} : this.state.crew;
+                return React.createElement(RoleSelection, { settingsClicked: this.show.bind(this, 2 /* Settings */), crew: crew });
             case 4 /* GameSetup */:
             case 5 /* Game */:
             default:
@@ -639,11 +643,29 @@ var GameClient = (function (_super) {
         this.setState({ crewID: id });
     };
     GameClient.prototype.setCrewName = function (id, name) {
-        // TODO
-        console.log('added ' + name + ' with ID ' + id);
+        // add new crew member, or update existing name
+        this.setState(function (state) {
+            var crew = state.crew;
+            if (crew === undefined) {
+                crew = {};
+                state.crew = crew;
+            }
+            var member = crew[id];
+            if (member === undefined) {
+                member = new CrewMember(name);
+                crew[id] = member;
+            }
+            else
+                member.name = name;
+        });
     };
     GameClient.prototype.crewQuit = function (id) {
-        // TODO
+        // remove crew member
+        this.setState(function (state) {
+            var crew = state.crew;
+            if (crew !== undefined)
+                delete crew[id];
+        });
     };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen

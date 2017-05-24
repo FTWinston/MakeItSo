@@ -1,8 +1,8 @@
 ﻿class Connection {
-    game: GameClient;
-    socket: WebSocket;
+    private game: GameClient;
+    private socket: WebSocket;
     close: () => void;
-    queue: string[];
+    private queue: string[];
     
     constructor(game: GameClient, url: string) {
         this.game = game;
@@ -15,20 +15,25 @@
     }
     send(cmd: string) {
         if (this.socket.readyState == 1)
-            this.socket.send(cmd);
+            this.sendImmediately(cmd);    
         else
             this.queue.push(cmd);
     }
-    connected() {
+    private sendImmediately(cmd: string) {
+        //console.log('sent', cmd);
+        this.socket.send(cmd);
+    }
+    private connected() {
         // once connection is established, send any queued messages
         let cmd = this.queue.pop();
         while (cmd !== undefined) {
-            this.socket.send(cmd);
+            this.sendImmediately(cmd);
             cmd = this.queue.pop();
         }
     }
-    messageReceived(ev: MessageEvent) {
+    private messageReceived(ev: MessageEvent) {
         let data:string = (ev.data || '');
+        //console.log('received', data);
         let pos:number = data.indexOf(' ');
         let cmd:string = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);

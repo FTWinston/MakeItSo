@@ -271,14 +271,21 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	ConnectionInfo *info = new ConnectionInfo(conn, identifier);
 	conn->connection_param = info;
 
+	// Send connection ID back to the client.
+	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %i", info->identifier);
+
+	// send a list of all crewmates to the client
+	for (auto& other : *currentConnections)
+	{
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "crew+ %i %ls", other->identifier, other->name.c_str());
+		// TODO: send each crewmate's system selection
+	}
+
 #ifndef WEB_SERVER_TEST
 	currentConnections->Add(info);
 #else
 	currentConnections->insert(currentConnections->end(), info);
 #endif
-
-	// Send connection ID back to the client.
-	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %i", info->identifier);
 
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
@@ -446,7 +453,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		SendCrewMessage(ESystem::Everyone, CHARARR(message));
 #else
 		TCHAR message[140];
-		swprintf(message, sizeof(message), L"crew+ %i %S", info->identifier, info->name.c_str());
+		swprintf(message, sizeof(message), L"crew+ %i %ls", info->identifier, info->name.c_str());
 		SendCrewMessage(ESystem::Everyone, message);
 #endif
 	}
