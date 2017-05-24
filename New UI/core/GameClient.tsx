@@ -1,11 +1,12 @@
 interface IGameClientState {
-    activeScreen?: GameScreen;
-    returnScreen?: GameScreen;
+    visibleScreen?: GameScreen;
+    currentScreen?: GameScreen;
     gameActive?: boolean;
     errorMessage?: string;
     showHotkeys?: boolean;
-    numCrew?: number;
-    numCrewUnready?: number;
+
+    crewID?: string;
+    crew?: { [key:string]:CrewMember; };
 
     settings?: ClientSettings;
     vibration?: FeatureState;
@@ -15,7 +16,6 @@ const enum GameScreen {
     Error,
     Connecting,
     Settings,
-    WaitingForPlayers,
     RoleSelection,
     GameSetup,
     Game,
@@ -30,9 +30,11 @@ class GameClient extends React.Component<{}, IGameClientState> {
         this.state = {
             vibration: FeatureDetection.Vibration ? FeatureState.Enabled : FeatureState.Unavailable,
             settings: settings,
-            activeScreen: settings === undefined ? GameScreen.Settings : GameScreen.Connecting,
-            returnScreen: GameScreen.Connecting,
+            visibleScreen: settings === undefined ? GameScreen.Settings : GameScreen.Connecting,
+            currentScreen: GameScreen.Connecting,
             errorMessage: undefined,
+            crewID: undefined,
+            crew: {},
         };
     }
     private componentDidMount () {
@@ -44,12 +46,12 @@ class GameClient extends React.Component<{}, IGameClientState> {
     render() {
         return (
             <div className={this.state.showHotkeys ? 'showKeys' : undefined}>
-                {this.renderActiveScreen()}
+                {this.renderVisibleScreen()}
             </div>
         );
     }
-    private renderActiveScreen() {
-        switch(this.state.activeScreen) {
+    private renderVisibleScreen() {
+        switch(this.state.visibleScreen) {
             case GameScreen.Settings:
                 let mode, name, canCancel;
                 if (this.state.settings === undefined) {
@@ -65,10 +67,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
                 return <SettingsScreen inputMode={mode} userName={name} canCancel={canCancel} saved={this.changeSettings.bind(this)} cancelled={this.showReturn.bind(this)} />;
             case GameScreen.Connecting:
                 return <ErrorScreen message={language.messages.connecting} />;
-            case GameScreen.WaitingForPlayers:
-                return <WaitingScreen settingsClicked={this.show.bind(this, GameScreen.Settings)} numCrew={this.state.numCrew} numUnready={this.state.numCrewUnready} />;
             case GameScreen.RoleSelection:
-                return <RoleSelection settingsClicked={this.show.bind(this, GameScreen.Settings)} numCrew={this.state.numCrew} />;
+                return <RoleSelection settingsClicked={this.show.bind(this, GameScreen.Settings)} crew={this.state.crew} />;
             case GameScreen.GameSetup:
             case GameScreen.Game:
             default:
@@ -78,10 +78,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
     show(screen: GameScreen, setReturn: boolean = false) {
         let newState: IGameClientState = {};
         if (setReturn)
-            newState.returnScreen = screen;
+            newState.currentScreen = screen;
 
-        if (!setReturn || this.state.activeScreen != GameScreen.Settings)
-            newState.activeScreen = screen; // don't force user out of the settings screen
+        if (!setReturn || this.state.visibleScreen != GameScreen.Settings)
+            newState.visibleScreen = screen; // don't force user out of the settings screen
 
         if (!this.state.gameActive && screen == GameScreen.Game)
             newState.gameActive = true;
@@ -92,25 +92,32 @@ class GameClient extends React.Component<{}, IGameClientState> {
         this.setState(newState);
     }
     showReturn() {
-        if (this.state.returnScreen !== undefined)
-            this.show(this.state.returnScreen);
+        if (this.state.currentScreen !== undefined)
+            this.show(this.state.currentScreen);
     }
     private changeSettings(settings: ClientSettings) {
+        if (this.state.settings === undefined)
+            this.server.send('name ' + settings.userName);
+
         this.setState({settings: settings});
         this.showReturn();
     }
-    setPlayerCount(numRemaining: number, numCrew: number) {
-        this.setState({
-            numCrew: numCrew,
-            numCrewUnready: numRemaining,
-        });
+    setPlayerID(id: string) {
+        this.setState({crewID: id});
+    }
+    setCrewName(id: string, name: string) {
+        // TODO
+        console.log('added ' + name + ' with ID ' + id);
+    }
+    crewQuit(id: string) {
+        // TODO
     }
     private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
         // block accidental unloading only when in the game screen
-        if (prevState.activeScreen == this.state.activeScreen)
+        if (prevState.visibleScreen == this.state.visibleScreen)
             return;
 
-        if (this.state.activeScreen == GameScreen.Game)
+        if (this.state.currentScreen == GameScreen.Game)
             window.addEventListener('beforeunload', this.unloadEvent);
         else
             window.removeEventListener('beforeunload', this.unloadEvent);
@@ -122,11 +129,11 @@ class GameClient extends React.Component<{}, IGameClientState> {
         return confirmationMessage; //Webkit, Safari, Chrome etc.
     }
     showError(message: string, fatal: boolean = true) {
-        let state: IGameClientState = { activeScreen: GameScreen.Error };
+        let state: IGameClientState = { visibleScreen: GameScreen.Error };
         if (fatal) {
             this.server.close();
             state.errorMessage = message + '\n\n' + language.messages.refreshPage;
-            state.returnScreen = GameScreen.Error;
+            state.currentScreen = GameScreen.Error;
         }
         else
             state.errorMessage = message;

@@ -32,22 +32,23 @@
         let pos:number = data.indexOf(' ');
         let cmd:string = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
-/*
+
         if (cmd == 'id') {
             this.game.setPlayerID(data);
-            this.game.setActiveScreen('systems');
-        }
-*/
-        if (cmd == 'waiting') {
-            let parts = data.split(' ');
-            let numRemaining = parseInt(parts[0]);
-            let numCrew = parseInt(parts[1]);
 
-            this.game.setPlayerCount(numRemaining, numCrew);
-            this.game.show(GameScreen.WaitingForPlayers, true);
-        }
-        else if (cmd == 'roleSelect') {
+            if (this.game.state.settings !== undefined)
+                this.send('name ' + this.game.state.settings.userName);
+            
             this.game.show(GameScreen.RoleSelection, true);
+        }
+        else if (cmd == 'crew+') {
+            pos = data.indexOf(' ');
+            let identifier = data.substr(0, pos);
+            let name = data.substr(pos + 1);
+            this.game.setCrewName(identifier, name);
+        }
+        else if (cmd == 'crew-') {
+            this.game.crewQuit(data);
         }
 /*
         else if (cmd == 'sys+') {

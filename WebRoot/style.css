@@ -158,7 +158,8 @@ input[type="text"] {
 
 label {
   text-decoration: underline;
-  margin-right: 1em; }
+  margin-right: 1em;
+  white-space: pre; }
 
 /*
 $disabledColor: #666;

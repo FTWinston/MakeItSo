@@ -101,21 +101,20 @@ var Connection = (function () {
         var pos = data.indexOf(' ');
         var cmd = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
-        /*
-                if (cmd == 'id') {
-                    this.game.setPlayerID(data);
-                    this.game.setActiveScreen('systems');
-                }
-        */
-        if (cmd == 'waiting') {
-            var parts = data.split(' ');
-            var numRemaining = parseInt(parts[0]);
-            var numCrew = parseInt(parts[1]);
-            this.game.setPlayerCount(numRemaining, numCrew);
-            this.game.show(3 /* WaitingForPlayers */, true);
+        if (cmd == 'id') {
+            this.game.setPlayerID(data);
+            if (this.game.state.settings !== undefined)
+                this.send('name ' + this.game.state.settings.userName);
+            this.game.show(3 /* RoleSelection */, true);
         }
-        else if (cmd == 'roleSelect') {
-            this.game.show(4 /* RoleSelection */, true);
+        else if (cmd == 'crew+') {
+            pos = data.indexOf(' ');
+            var identifier = data.substr(0, pos);
+            var name_1 = data.substr(pos + 1);
+            this.game.setCrewName(identifier, name_1);
+        }
+        else if (cmd == 'crew-') {
+            this.game.crewQuit(data);
         }
         /*
                 else if (cmd == 'sys+') {
@@ -195,6 +194,12 @@ var ClientSettings = (function () {
         localStorage.setItem('userName', settings.userName);
     };
     return ClientSettings;
+}());
+var CrewMember = (function () {
+    function CrewMember(name) {
+        this.name = name;
+    }
+    return CrewMember;
 }());
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -531,40 +536,24 @@ var SettingsScreen = (function (_super) {
 SettingsScreen.defaultProps = {
     canCancel: true,
 };
-var WaitingScreen = (function (_super) {
-    __extends(WaitingScreen, _super);
-    function WaitingScreen() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    WaitingScreen.prototype.render = function () {
-        return (React.createElement("div", { className: "screen", id: "waiting" },
-            React.createElement("h1", null, language.screens.waiting.heading),
-            React.createElement("p", { className: "prompt" }, language.screens.waiting.prompt),
-            React.createElement(ToggleButton, { color: 0 /* Primary */, activateCommand: "+ready", deactivateCommand: "-ready" }, language.common.ready),
-            React.createElement("p", null,
-                "Waiting for ",
-                this.props.numUnready,
-                " of ",
-                this.props.numCrew,
-                " crew members"),
-            React.createElement(Menu, null,
-                React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
-    };
-    WaitingScreen.prototype.settingsClicked = function () {
-        if (this.props.settingsClicked !== undefined)
-            this.props.settingsClicked();
-    };
-    return WaitingScreen;
-}(React.Component));
 var RoleSelection = (function (_super) {
     __extends(RoleSelection, _super);
     function RoleSelection() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     RoleSelection.prototype.render = function () {
+        var numCrew = 0;
+        if (this.props.crew !== undefined)
+            for (var crew in this.props.crew)
+                numCrew++;
         return (React.createElement("div", { className: "screen", id: "roleSelection" },
             React.createElement("h1", null, language.screens.roleSelection.heading),
             React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt),
+            React.createElement("p", null,
+                "Currently got ",
+                numCrew,
+                " crew member",
+                numCrew == 1 ? '' : 's'),
             React.createElement(Menu, null,
                 React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
     };
@@ -582,9 +571,11 @@ var GameClient = (function (_super) {
         _this.state = {
             vibration: FeatureDetection.Vibration ? 2 /* Enabled */ : 0 /* Unavailable */,
             settings: settings,
-            activeScreen: settings === undefined ? 2 /* Settings */ : 1 /* Connecting */,
-            returnScreen: 1 /* Connecting */,
+            visibleScreen: settings === undefined ? 2 /* Settings */ : 1 /* Connecting */,
+            currentScreen: 1 /* Connecting */,
             errorMessage: undefined,
+            crewID: undefined,
+            crew: {},
         };
         return _this;
     }
@@ -594,31 +585,29 @@ var GameClient = (function (_super) {
         }
     };
     GameClient.prototype.render = function () {
-        return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderActiveScreen()));
+        return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderVisibleScreen()));
     };
-    GameClient.prototype.renderActiveScreen = function () {
-        switch (this.state.activeScreen) {
+    GameClient.prototype.renderVisibleScreen = function () {
+        switch (this.state.visibleScreen) {
             case 2 /* Settings */:
-                var mode = void 0, name_1, canCancel = void 0;
+                var mode = void 0, name_2, canCancel = void 0;
                 if (this.state.settings === undefined) {
                     mode = 0 /* ButtonsAndKeyboard */;
-                    name_1 = '';
+                    name_2 = '';
                     canCancel = false;
                 }
                 else {
                     mode = this.state.settings.inputMode;
-                    name_1 = this.state.settings.userName;
+                    name_2 = this.state.settings.userName;
                     canCancel = true;
                 }
-                return React.createElement(SettingsScreen, { inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
+                return React.createElement(SettingsScreen, { inputMode: mode, userName: name_2, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
             case 1 /* Connecting */:
                 return React.createElement(ErrorScreen, { message: language.messages.connecting });
-            case 3 /* WaitingForPlayers */:
-                return React.createElement(WaitingScreen, { settingsClicked: this.show.bind(this, 2 /* Settings */), numCrew: this.state.numCrew, numUnready: this.state.numCrewUnready });
-            case 4 /* RoleSelection */:
-                return React.createElement(RoleSelection, { settingsClicked: this.show.bind(this, 2 /* Settings */), numCrew: this.state.numCrew });
-            case 5 /* GameSetup */:
-            case 6 /* Game */:
+            case 3 /* RoleSelection */:
+                return React.createElement(RoleSelection, { settingsClicked: this.show.bind(this, 2 /* Settings */), crew: this.state.crew });
+            case 4 /* GameSetup */:
+            case 5 /* Game */:
             default:
                 return React.createElement(ErrorScreen, { message: this.state.errorMessage });
         }
@@ -627,34 +616,40 @@ var GameClient = (function (_super) {
         if (setReturn === void 0) { setReturn = false; }
         var newState = {};
         if (setReturn)
-            newState.returnScreen = screen;
-        if (!setReturn || this.state.activeScreen != 2 /* Settings */)
-            newState.activeScreen = screen; // don't force user out of the settings screen
-        if (!this.state.gameActive && screen == 6 /* Game */)
+            newState.currentScreen = screen;
+        if (!setReturn || this.state.visibleScreen != 2 /* Settings */)
+            newState.visibleScreen = screen; // don't force user out of the settings screen
+        if (!this.state.gameActive && screen == 5 /* Game */)
             newState.gameActive = true;
         if (screen != 0 /* Error */)
             newState.errorMessage = undefined;
         this.setState(newState);
     };
     GameClient.prototype.showReturn = function () {
-        if (this.state.returnScreen !== undefined)
-            this.show(this.state.returnScreen);
+        if (this.state.currentScreen !== undefined)
+            this.show(this.state.currentScreen);
     };
     GameClient.prototype.changeSettings = function (settings) {
+        if (this.state.settings === undefined)
+            this.server.send('name ' + settings.userName);
         this.setState({ settings: settings });
         this.showReturn();
     };
-    GameClient.prototype.setPlayerCount = function (numRemaining, numCrew) {
-        this.setState({
-            numCrew: numCrew,
-            numCrewUnready: numRemaining,
-        });
+    GameClient.prototype.setPlayerID = function (id) {
+        this.setState({ crewID: id });
+    };
+    GameClient.prototype.setCrewName = function (id, name) {
+        // TODO
+        console.log('added ' + name + ' with ID ' + id);
+    };
+    GameClient.prototype.crewQuit = function (id) {
+        // TODO
     };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen
-        if (prevState.activeScreen == this.state.activeScreen)
+        if (prevState.visibleScreen == this.state.visibleScreen)
             return;
-        if (this.state.activeScreen == 6 /* Game */)
+        if (this.state.currentScreen == 5 /* Game */)
             window.addEventListener('beforeunload', this.unloadEvent);
         else
             window.removeEventListener('beforeunload', this.unloadEvent);
@@ -666,11 +661,11 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.showError = function (message, fatal) {
         if (fatal === void 0) { fatal = true; }
-        var state = { activeScreen: 0 /* Error */ };
+        var state = { visibleScreen: 0 /* Error */ };
         if (fatal) {
             this.server.close();
             state.errorMessage = message + '\n\n' + language.messages.refreshPage;
-            state.returnScreen = 0 /* Error */;
+            state.currentScreen = 0 /* Error */;
         }
         else
             state.errorMessage = message;

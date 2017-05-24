@@ -25,6 +25,7 @@
         "core/Features.ts",
         "core/Connection.ts",
         "core/ClientSettings.ts",
+        "core/CrewMember.ts",
 
         "ui/buttons/Button.tsx",
         "ui/buttons/PushButton.tsx",
@@ -35,10 +36,9 @@
         "ui/buttons/Choice.tsx",
 
         "ui/Menu.tsx",
-        
+
         "screens/ErrorScreen.tsx",
         "screens/SettingsScreen.tsx",
-        "screens/WaitingScreen.tsx",
         "screens/RoleSelection.tsx",
         
         "core/GameClient.tsx"

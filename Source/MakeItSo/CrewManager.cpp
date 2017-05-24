@@ -55,9 +55,9 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	Instance = this;
 	LinkController(controller);
 
-	crewState = ECrewState::Waiting;
+	crewState = ECrewState::Setup;
 
-	nextConnectionIdentifer = 0;
+	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
 
@@ -278,20 +278,11 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 #endif
 
 	// Send connection ID back to the client.
-	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %c", 'A' + info->identifier);
+	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %i", info->identifier);
 
-	if (crewState == ECrewState::Waiting)
+	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
+	if (crewState == ECrewState::Active)
 	{
-		CheckReadiness();
-		return;
-	}
-	else if (crewState == ECrewState::Setup)
-	{
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "roleSelect");
-	}
-	else if (crewState == ECrewState::Active)
-	{
-		// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
 		return;
 	}
@@ -302,7 +293,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 
 #ifndef WEB_SERVER_TEST
 	if (controller)
-		controller->ClientMessage(FString::Printf(TEXT("Client %c connected from %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
+		controller->ClientMessage(FString::Printf(TEXT("Client %i connected from %s\n"), info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
 #endif
 
 	// update this client as to whether or not each system is currently claimed
@@ -323,10 +314,20 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 #ifndef WEB_SERVER_TEST
 	if (controller)
-		controller->ClientMessage(FString::Printf(TEXT("Client %c disconnected\n"), 'A' + info->identifier));
+		controller->ClientMessage(FString::Printf(TEXT("Client %i disconnected\n"), info->identifier));
 	currentConnections->Remove(info);
 #else
 	currentConnections->erase(std::remove(currentConnections->begin(), currentConnections->end(), info), currentConnections->end());
+#endif
+
+	// send "player quit" message to crewmates
+#ifndef WEB_SERVER_TEST
+	auto message = FString::Printf(TEXT("crew- %i"), info->identifier);
+	SendCrewMessage(ESystem::Everyone, CHARARR(message));
+#else
+	TCHAR message[140];
+	swprintf(message, sizeof(message), L"crew- %i", info->identifier);
+	SendCrewMessage(ESystem::Everyone, message);
 #endif
 
 	// decrement the counts of each system this user was using
@@ -362,11 +363,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		}
 	}
 
-	if (crewState == ECrewState::Waiting)
-	{
-		CheckReadiness();
-	}
-	else if (!anySystems && crewState == ECrewState::Active)
+	if (!anySystems && crewState == ECrewState::Active)
 	{
 		PauseGame(true);
 	}
@@ -381,7 +378,7 @@ int32 UCrewManager::GetNewUniqueIdentifier()
 	do
 	{
 		identifier = nextConnectionIdentifer++;
-		if (identifier >= MAX_CREW_CONNECTIONS)
+		if (identifier > MAX_CREW_CONNECTIONS)
 		{
 			identifier = 0;
 			nextConnectionIdentifer = 1;
@@ -398,7 +395,7 @@ int32 UCrewManager::GetNewUniqueIdentifier()
 		if (!alreadyGot)
 			return identifier;
 
-		if (++numChecked == MAX_CREW_CONNECTIONS)
+		if (++numChecked > MAX_CREW_CONNECTIONS)
 			return -1;
 	} while (true);
 }
@@ -432,28 +429,33 @@ int32 UCrewManager::HandleEvent(mg_connection *conn, enum mg_event ev)
 
 void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 {
-	if (STARTS_WITH(info, "+sys ") || STARTS_WITH(info, "-sys "))
+	if (STARTS_WITH(info, "name "))
+	{		
+		char buffer[128];
+		EXTRACT(info, buffer, "name ");
+#ifndef WEB_SERVER_TEST
+		info->name = FString(ANSI_TO_TCHAR(buffer));
+#else
+		wchar_t wBuffer[128];
+		mbstowcs(wBuffer, buffer, strlen(buffer) + 1);
+		info->name = FString(wBuffer);
+#endif
+
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("crew+ %i %s"), info->identifier, info->name);
+		SendCrewMessage(ESystem::Everyone, CHARARR(message));
+#else
+		TCHAR message[140];
+		swprintf(message, sizeof(message), L"crew+ %i %S", info->identifier, info->name.c_str());
+		SendCrewMessage(ESystem::Everyone, message);
+#endif
+	}
+	else if (STARTS_WITH(info, "+sys ") || STARTS_WITH(info, "-sys "))
 	{
 		char buffer[10];
 		EXTRACT(info, buffer, "+sys ");
 		int32 systemIndex = atoi(buffer);
 		ShipSystemChanged(info, systemIndex, info->connection->content[0] == '+');
-	}
-	else if (MATCHES(info, "+ready"))
-	{
-		if (crewState != ECrewState::Waiting)
-			return;
-
-		info->ready = true;
-		CheckReadiness();
-	}
-	else if (MATCHES(info, "-ready"))
-	{
-		if (crewState != ECrewState::Waiting)
-			return;
-
-		info->ready = false;
-		CheckReadiness();
 	}
 	else if (MATCHES(info, "+setup"))
 	{
@@ -487,13 +489,13 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		}
 	}
 	/* ship name = player name
-	else if (STARTS_WITH(info, "name "))
+	else if (STARTS_WITH(info, "shipname "))
 	{
 		if (connectionInSetup != info)
 			return;
 
 		char buffer[128];
-		EXTRACT(info, buffer, "name ");
+		EXTRACT(info, buffer, "shipname ");
 
 		name = std::string(buffer);
 	}
@@ -536,9 +538,14 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 		crewState = ECrewState::Setup;
 
-		FString message = TEXT("game- ");
-		message += ('A' + info->identifier);
+#ifndef WEB_SERVER_TEST
+		auto message = FString::Printf(TEXT("game- %i"), info->identifier);
 		SendCrewMessage(ESystem::Everyone, CHARARR(message));
+#else
+		TCHAR buffer[16];
+		swprintf(buffer, sizeof(buffer), L"game- %i", info->identifier);
+		SendCrewMessage(ESystem::Everyone, buffer);
+#endif
 
 #ifndef WEB_SERVER_TEST
 		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Main"));
@@ -558,7 +565,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	char buffer[128];
 	EXTRACT(info, buffer, "");
 	if (controller)
-		controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %c: %s\n"), 'A' + info->identifier, ANSI_TO_TCHAR(buffer)));
+		controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %i: %s\n"), info->identifier, ANSI_TO_TCHAR(buffer)));
 #endif
 }
 
@@ -577,35 +584,6 @@ void UCrewManager::InputAxis(FKey key, float value)
 	controller->InputAxis(key, value, 1, 1, true);
 }
 #endif
-
-void UCrewManager::CheckReadiness()
-{
-	int numWaiting = 0, numCrew = 0;
-
-	for (auto& conn : *currentConnections)
-	{
-		numCrew++;
-		if (!conn->ready)
-			numWaiting++;
-	}
-
-	if (numWaiting == 0 && numCrew > 0)
-	{
-		crewState = ECrewState::Setup;
-		SendCrewMessage(ESystem::Everyone, TEXT("roleSelect")); // entering role selection
-	}
-	else
-	{
-#ifndef WEB_SERVER_TEST
-		auto message = FString::Printf(TEXT("waiting %i %i"), numWaiting, numCrew);
-		SendCrewMessage(CHARARR(message));
-#else
-		TCHAR buffer[20];
-		swprintf(buffer, sizeof(buffer), L"waiting %i %i", numWaiting, numCrew);
-		SendCrewMessage(ESystem::Everyone, buffer);
-#endif
-	}
-}
 
 void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
 {

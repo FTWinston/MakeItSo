@@ -15,7 +15,7 @@
 #define snprintf _snprintf_s
 #endif
 
-#define MAX_CREW_CONNECTIONS 26
+#define MAX_CREW_CONNECTIONS 20
 
 #define STARTS_WITH(info, prefix) info->connection->content_len > sizeof(prefix) - 1 && !memcmp(info->connection->content, prefix, sizeof(prefix) - 1)
 #define MATCHES(info, prefix)     info->connection->content_len >= sizeof(prefix) - 1 && !memcmp(info->connection->content, prefix, sizeof(prefix) - 1)
@@ -49,10 +49,9 @@ class MAKEITSO_API UCrewManager : public UObject
 
 public:
 	enum ECrewState {
-		Waiting = 0,
-		Setup = 1,
-		Active = 2,
-		Paused = 3
+		Setup = 0,
+		Active = 1,
+		Paused = 2
 	};
 
 	enum ESystem
@@ -106,7 +105,6 @@ private:
 	void EndConnection(mg_connection *conn);
 	int32 GetNewUniqueIdentifier();
 	void HandleWebsocketMessage(ConnectionInfo *info);
-	void CheckReadiness();
 	void ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding);
 	void SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding);
 
@@ -131,13 +129,13 @@ public:
 		connection = conn;
 		identifier = id;
 		shipSystemFlags = 0;
-		ready = false;
+		name = FString(TEXT("New player"));
 	}
 
 	mg_connection *connection;
 	int32 identifier;
 	int32 shipSystemFlags;
-	bool ready;
+	FString name;
 };
 
 
