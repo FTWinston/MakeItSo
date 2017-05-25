@@ -106,30 +106,41 @@ class GameClient extends React.Component<{}, IGameClientState> {
     setPlayerID(id: string) {
         this.setState({crewID: id});
     }
+    private getOrCreateCrewMember(state: IGameClientState, id: string) {
+        let crew = state.crew;
+        if (crew === undefined) {
+            crew = {};
+            state.crew = crew;
+        }
+
+        let member = crew[id];
+        if (member === undefined) {
+            member = new CrewMember('Unnamed');
+            crew[id] = member;
+        }
+
+        return member;
+    }
     setCrewName(id: string, name: string) {
         // add new crew member, or update existing name
+        let that = this;
         this.setState(function (state: IGameClientState) {
-            let crew = state.crew;
-            if (crew === undefined) {
-                crew = {};
-                state.crew = crew;
-            }
-
-            let member = crew[id];
-            if (member === undefined) {
-                member = new CrewMember(name);
-                crew[id] = member;
-            }
-            else
-                member.name = name;
+            that.getOrCreateCrewMember(state, id).name = name;
         });
     }
     crewQuit(id: string) {
         // remove crew member
-        this.setState(function (state) {
+        this.setState(function (state: IGameClientState) {
             let crew = state.crew;
             if (crew !== undefined)
                 delete crew[id];
+        });
+    }
+    setSystemUsage(crewID: string, systemFlags: ShipSystem) {
+        let that = this;
+        this.setState(function(state: IGameClientState) {
+            let member = that.getOrCreateCrewMember(state, crewID);
+            member.systemFlags = systemFlags;
         });
     }
     private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
@@ -139,7 +150,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
 
         if (this.state.currentScreen == GameScreen.Game)
             window.addEventListener('beforeunload', this.unloadEvent);
-        else
+        else if (prevState.visibleScreen == GameScreen.Game)
             window.removeEventListener('beforeunload', this.unloadEvent);
     }
     private unloadEvent(e: BeforeUnloadEvent) {

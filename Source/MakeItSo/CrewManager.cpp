@@ -16,11 +16,10 @@
 
 #include "CommunicationSystem.h"
 #include "DamageControlSystem.h"
-#include "DeflectorSystem.h"
 #include "HelmSystem.h"
 #include "PowerSystem.h"
 #include "SensorSystem.h"
-#include "ShieldSystem.h"
+#include "WarpSystem.h"
 #include "ViewScreenSystem.h"
 #include "WeaponSystem.h"
 
@@ -61,9 +60,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
 
-	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
-		shipSystemCounts[i] = 0;
-
 	CreateSystems();
 	
 	if (!server)
@@ -97,14 +93,13 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 void UCrewManager::CreateSystems()
 {
 	ADDSYSTEM(ESystem::Helm, UHelmSystem);
-	ADDSYSTEM(ESystem::ViewScreen, UViewscreenSystem);
-	ADDSYSTEM(ESystem::Shields, UShieldSystem);
-	ADDSYSTEM(ESystem::PowerManagement, UPowerSystem);
-	ADDSYSTEM(ESystem::DamageControl, UDamageControlSystem);
+	ADDSYSTEM(ESystem::Warp, UWarpSystem);
 	ADDSYSTEM(ESystem::Weapons, UWeaponSystem);
 	ADDSYSTEM(ESystem::Sensors, USensorSystem);
+	ADDSYSTEM(ESystem::PowerManagement, UPowerSystem);
+	ADDSYSTEM(ESystem::DamageControl, UDamageControlSystem);
+	ADDSYSTEM(ESystem::ViewScreen, UViewscreenSystem);
 	ADDSYSTEM(ESystem::Communications, UCommunicationSystem);
-	ADDSYSTEM(ESystem::Deflector, UDeflectorSystem);
 
 	for (auto system : systems)
 	{
@@ -274,11 +269,11 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %i", info->identifier);
 
-	// send a list of all crewmates to the client
+	// send a list of all crewmates to the client, plus their system selections
 	for (auto& other : *currentConnections)
 	{
 		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "crew+ %i %ls", other->identifier, other->name.c_str());
-		// TODO: send each crewmate's system selection
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "sys %i %i", other->identifier, other->shipSystemFlags);
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -302,13 +297,6 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Client %i connected from %s\n"), info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
 #endif
-
-	// update this client as to whether or not each system is currently claimed
-	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
-	{
-		if (shipSystemCounts[i] > 0)
-			mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "sys- %i", i);
-	}
 
 	// if someone is in setup, tell this client
 	if (connectionInSetup)
@@ -336,17 +324,6 @@ void UCrewManager::EndConnection(mg_connection *conn)
 	swprintf(message, sizeof(message), L"crew- %i", info->identifier);
 	SendCrewMessage(ESystem::Everyone, message);
 #endif
-
-	// decrement the counts of each system this user was using
-	for (int32 i = 0; i < MAX_SHIP_SYSTEMS; i++)
-	{
-		int32 shipSystemFlag = 1 << i;
-		if ((info->shipSystemFlags & shipSystemFlag) == 0)
-			continue;
-
-		shipSystemCounts[i]--;
-		SendSystemSelectionMessage(info, i, false);
-	}
 
 	if (connectionInSetup == info)
 	{
@@ -457,12 +434,12 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		SendCrewMessage(ESystem::Everyone, message);
 #endif
 	}
-	else if (STARTS_WITH(info, "+sys ") || STARTS_WITH(info, "-sys "))
+	else if (STARTS_WITH(info, "sys "))
 	{
 		char buffer[10];
-		EXTRACT(info, buffer, "+sys ");
-		int32 systemIndex = atoi(buffer);
-		ShipSystemChanged(info, systemIndex, info->connection->content[0] == '+');
+		EXTRACT(info, buffer, "sys ");
+		int32 systemFlags = atoi(buffer);
+		ShipSystemChanged(info, systemFlags);
 	}
 	else if (MATCHES(info, "+setup"))
 	{
@@ -592,60 +569,15 @@ void UCrewManager::InputAxis(FKey key, float value)
 }
 #endif
 
-void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
+void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
 {
-	if (crewState == ECrewState::Active || shipSystemIndex < 0 || shipSystemIndex >= MAX_SHIP_SYSTEMS)
+	if (crewState == ECrewState::Active)
 		return;
 
-	int32 shipSystemFlag = 1 << shipSystemIndex;
-
-	// check if this client already has / doesn't have this shipSystem, and do nothing if so
-	bool alreadyHas = (info->shipSystemFlags & shipSystemFlag) != 0;
-	if (alreadyHas == adding)
-		return;
-
-	if (adding)
-		info->shipSystemFlags |= shipSystemFlag;
-	else
-		info->shipSystemFlags &= ~shipSystemFlag;
-	shipSystemCounts[shipSystemIndex] += adding ? 1 : -1;
-
-	SendSystemSelectionMessage(info, shipSystemIndex, adding);
-}
-
-void UCrewManager::SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding)
-{
-	int32 count = shipSystemCounts[shipSystemIndex];
-	if (!adding)
-		if (count > 1)
-			return; // do nothing, cos multiple people still use this
-		else if (count == 1)
-		{
-			int32 shipSystemFlag = 1 << shipSystemIndex;
-
-			// find the one user using this system, and tell them its not in use by anyone else
-			for (auto& other : *currentConnections)
-			{
-				if (info == other)
-					continue;
-
-				if ((other->shipSystemFlags & shipSystemFlag) != 0)
-				{
-					mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys+ %i", shipSystemIndex);
-					break;
-				}
-			}
-			return;
-		}
+	info->shipSystemFlags = systemFlags;
 
 	for (auto& other : *currentConnections)
-	{
-		// don't tell the player selecting a system whether it is now in use... they know
-		if (info == other)
-			continue;
-
-		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys%c %i", adding ? '-' : '+', shipSystemIndex);
-	}
+		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys %i %i", info->identifier, systemFlags);
 }
 
 void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude)

@@ -25,6 +25,7 @@
         "core/Features.ts",
         "core/Connection.ts",
         "core/ClientSettings.ts",
+        "core/ShipSystem.ts",
         "core/CrewMember.ts",
 
         "ui/buttons/Button.tsx",

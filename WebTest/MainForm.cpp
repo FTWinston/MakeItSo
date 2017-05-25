@@ -108,6 +108,7 @@ System::Void WebTest::MainForm::btnRemoveShips_Click(System::Object^  sender, Sy
 
 System::Void WebTest::MainForm::btnShieldBlock_Click(System::Object^  sender, System::EventArgs^  e)
 {
+/*
 	// pick a cell in the top row, set it to a randomly-colored normal block
 	int row = rand() % 36;
 	int color = rand() % 6;
@@ -117,10 +118,12 @@ System::Void WebTest::MainForm::btnShieldBlock_Click(System::Object^  sender, Sy
 	command += std::to_wstring(color);
 
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Shields, command.c_str());
+*/
 }
 
 System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, System::EventArgs^  e)
 {
+/*
 	// pick a random cell, set it to a randomly-colored damage block
 	int cell = rand() % 864;
 	int color = rand() % 6;
@@ -130,6 +133,7 @@ System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, S
 	command += std::to_wstring(color);
 
 	crewManager->SendCrewMessage(UCrewManager::ESystem::Shields, command.c_str());
+*/
 }
 
 System::Void WebTest::MainForm::btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e)

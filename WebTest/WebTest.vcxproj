@@ -85,12 +85,11 @@
     <ClInclude Include="..\Source\MakeItSo\CommunicationSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\CrewManager.h" />
     <ClInclude Include="..\Source\MakeItSo\DamageControlSystem.h" />
-    <ClInclude Include="..\Source\MakeItSo\DeflectorSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\HelmSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\Mongoose.h" />
     <ClInclude Include="..\Source\MakeItSo\PowerSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\SensorSystem.h" />
-    <ClInclude Include="..\Source\MakeItSo\ShieldSystem.h" />
+    <ClInclude Include="..\Source\MakeItSo\WarpSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\ViewscreenSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\WeaponSystem.h" />
     <ClInclude Include="CrewManager.Generated.h" />
@@ -104,12 +103,11 @@
     <ClCompile Include="..\Source\MakeItSo\CommunicationSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\CrewManager.cpp" />
     <ClCompile Include="..\Source\MakeItSo\DamageControlSystem.cpp" />
-    <ClCompile Include="..\Source\MakeItSo\DeflectorSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\HelmSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\Mongoose.cpp" />
     <ClCompile Include="..\Source\MakeItSo\PowerSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\SensorSystem.cpp" />
-    <ClCompile Include="..\Source\MakeItSo\ShieldSystem.cpp" />
+    <ClCompile Include="..\Source\MakeItSo\WarpSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\ViewscreenSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\WeaponSystem.cpp" />
     <ClCompile Include="MainForm.cpp" />

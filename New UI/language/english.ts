@@ -4,6 +4,7 @@
         cancel: 'Cancel',
         ready: 'Ready',
         settings: 'Settings',
+        none: 'None',
     },
     errors: {
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
@@ -56,7 +57,32 @@
 */
         refreshPage: 'Refresh the page to continue.',
     },
-      
+    systems: {
+        helm: {
+            name: 'Helm',
+        },
+        warp: {
+            name: 'Warp',
+        },
+        weapons: {
+            name: 'Weapons',
+        },
+        sensors: {
+            name: 'Sensors',
+        },
+        power: {
+            name: 'Power',
+        },
+        damage: {
+            name: 'Damage Control',
+        },
+        view: {
+            name: 'Viewscreen',
+        },
+        comms: {
+            name: 'Communications',
+        },
+    },
 /*
     menuGoBack: 'go back',
     all: 'all',

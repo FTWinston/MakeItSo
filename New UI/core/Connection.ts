@@ -55,13 +55,13 @@
         else if (cmd == 'crew-') {
             this.game.crewQuit(data);
         }
+        else if (cmd == 'sys') {
+            pos = data.indexOf(' ');
+            let crewMember = data.substr(0, pos);
+            let systemFlags = parseInt(data.substr(pos + 1)) as ShipSystem;
+            this.game.setSystemUsage(crewMember, systemFlags);
+        }
 /*
-        else if (cmd == 'sys+') {
-            this.game.markSystemInUse(data, false);
-        }
-        else if (cmd == 'sys-') {
-            this.game.markSystemInUse(data, true);
-        }
         else if (cmd == 'setup+') {
             this.game.setupScreenInUse(false);
         }

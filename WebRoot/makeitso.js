@@ -4,6 +4,7 @@ var language = {
         cancel: 'Cancel',
         ready: 'Ready',
         settings: 'Settings',
+        none: 'None',
     },
     errors: {
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
@@ -51,6 +52,32 @@ var language = {
         */
         refreshPage: 'Refresh the page to continue.',
     },
+    systems: {
+        helm: {
+            name: 'Helm',
+        },
+        warp: {
+            name: 'Warp',
+        },
+        weapons: {
+            name: 'Weapons',
+        },
+        sensors: {
+            name: 'Sensors',
+        },
+        power: {
+            name: 'Power',
+        },
+        damage: {
+            name: 'Damage Control',
+        },
+        view: {
+            name: 'Viewscreen',
+        },
+        comms: {
+            name: 'Communications',
+        },
+    },
 };
 ;
 var FeatureDetection = {
@@ -89,7 +116,7 @@ var Connection = (function () {
             this.queue.push(cmd);
     };
     Connection.prototype.sendImmediately = function (cmd) {
-        console.log('sent', cmd);
+        //console.log('sent', cmd);
         this.socket.send(cmd);
     };
     Connection.prototype.connected = function () {
@@ -102,7 +129,7 @@ var Connection = (function () {
     };
     Connection.prototype.messageReceived = function (ev) {
         var data = (ev.data || '');
-        console.log('received', data);
+        //console.log('received', data);
         var pos = data.indexOf(' ');
         var cmd = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
@@ -121,13 +148,13 @@ var Connection = (function () {
         else if (cmd == 'crew-') {
             this.game.crewQuit(data);
         }
+        else if (cmd == 'sys') {
+            pos = data.indexOf(' ');
+            var crewMember = data.substr(0, pos);
+            var systemFlags = parseInt(data.substr(pos + 1));
+            this.game.setSystemUsage(crewMember, systemFlags);
+        }
         /*
-                else if (cmd == 'sys+') {
-                    this.game.markSystemInUse(data, false);
-                }
-                else if (cmd == 'sys-') {
-                    this.game.markSystemInUse(data, true);
-                }
                 else if (cmd == 'setup+') {
                     this.game.setupScreenInUse(false);
                 }
@@ -200,10 +227,25 @@ var ClientSettings = (function () {
     };
     return ClientSettings;
 }());
+var ShipSystem;
+(function (ShipSystem) {
+    ShipSystem[ShipSystem["Helm"] = 1] = "Helm";
+    ShipSystem[ShipSystem["Warp"] = 2] = "Warp";
+    ShipSystem[ShipSystem["Weapons"] = 4] = "Weapons";
+    ShipSystem[ShipSystem["Sensors"] = 8] = "Sensors";
+    ShipSystem[ShipSystem["PowerManagement"] = 16] = "PowerManagement";
+    ShipSystem[ShipSystem["DamageControl"] = 32] = "DamageControl";
+    ShipSystem[ShipSystem["ViewScreen"] = 64] = "ViewScreen";
+    ShipSystem[ShipSystem["Communications"] = 128] = "Communications";
+})(ShipSystem || (ShipSystem = {}));
 var CrewMember = (function () {
     function CrewMember(name) {
         this.name = name;
+        this.systemFlags = 0;
     }
+    CrewMember.prototype.hasSystem = function (system) {
+        return (this.systemFlags & system) != 0;
+    };
     return CrewMember;
 }());
 var __extends = (this && this.__extends) || (function () {
@@ -551,11 +593,16 @@ var RoleSelection = (function (_super) {
         for (var id in this.props.crew) {
             crew.push(this.props.crew[id]);
         }
+        var that = this;
         return (React.createElement("div", { className: "screen", id: "roleSelection" },
             React.createElement("h1", null, language.screens.roleSelection.heading),
             React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt),
             React.createElement("ol", { className: "crewList" }, crew.map(function (member, id) {
-                return React.createElement("li", { key: id }, member.name);
+                return React.createElement("li", { key: id },
+                    member.name,
+                    React.createElement("span", { className: "systems" },
+                        ": ",
+                        that.listSystems(member.systemFlags)));
             })),
             React.createElement(Menu, null,
                 React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
@@ -563,6 +610,29 @@ var RoleSelection = (function (_super) {
     RoleSelection.prototype.settingsClicked = function () {
         if (this.props.settingsClicked !== undefined)
             this.props.settingsClicked();
+    };
+    RoleSelection.prototype.listSystems = function (flags) {
+        var output = '';
+        if (flags & ShipSystem.Helm)
+            output += ', ' + language.systems.helm.name;
+        if (flags & ShipSystem.Warp)
+            output += ', ' + language.systems.warp.name;
+        if (flags & ShipSystem.Weapons)
+            output += ', ' + language.systems.weapons.name;
+        if (flags & ShipSystem.Sensors)
+            output += ', ' + language.systems.sensors.name;
+        if (flags & ShipSystem.PowerManagement)
+            output += ', ' + language.systems.power.name;
+        if (flags & ShipSystem.DamageControl)
+            output += ', ' + language.systems.damage.name;
+        if (flags & ShipSystem.Communications)
+            output += ', ' + language.systems.comms.name;
+        if (flags & ShipSystem.ViewScreen)
+            output += ', ' + language.systems.view.name;
+        if (output == '')
+            return language.common.none;
+        else
+            return output.substr(2);
     };
     return RoleSelection;
 }(React.Component));
@@ -642,21 +712,24 @@ var GameClient = (function (_super) {
     GameClient.prototype.setPlayerID = function (id) {
         this.setState({ crewID: id });
     };
+    GameClient.prototype.getOrCreateCrewMember = function (state, id) {
+        var crew = state.crew;
+        if (crew === undefined) {
+            crew = {};
+            state.crew = crew;
+        }
+        var member = crew[id];
+        if (member === undefined) {
+            member = new CrewMember('Unnamed');
+            crew[id] = member;
+        }
+        return member;
+    };
     GameClient.prototype.setCrewName = function (id, name) {
         // add new crew member, or update existing name
+        var that = this;
         this.setState(function (state) {
-            var crew = state.crew;
-            if (crew === undefined) {
-                crew = {};
-                state.crew = crew;
-            }
-            var member = crew[id];
-            if (member === undefined) {
-                member = new CrewMember(name);
-                crew[id] = member;
-            }
-            else
-                member.name = name;
+            that.getOrCreateCrewMember(state, id).name = name;
         });
     };
     GameClient.prototype.crewQuit = function (id) {
@@ -667,13 +740,20 @@ var GameClient = (function (_super) {
                 delete crew[id];
         });
     };
+    GameClient.prototype.setSystemUsage = function (crewID, systemFlags) {
+        var that = this;
+        this.setState(function (state) {
+            var member = that.getOrCreateCrewMember(state, crewID);
+            member.systemFlags = systemFlags;
+        });
+    };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen
         if (prevState.visibleScreen == this.state.visibleScreen)
             return;
         if (this.state.currentScreen == 5 /* Game */)
             window.addEventListener('beforeunload', this.unloadEvent);
-        else
+        else if (prevState.visibleScreen == 5 /* Game */)
             window.removeEventListener('beforeunload', this.unloadEvent);
     };
     GameClient.prototype.unloadEvent = function (e) {

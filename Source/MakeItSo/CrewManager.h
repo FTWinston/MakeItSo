@@ -56,21 +56,18 @@ public:
 
 	enum ESystem
 	{
-		Helm = 0,
-		ViewScreen,
-		Communications,
-		Sensors,
-		Weapons,
-		Shields,
-		DamageControl,
-		PowerManagement,
-		Deflector,
+		Helm = 1,
+		Warp = 2,
+		Weapons = 4,
+		Sensors = 8,
+		PowerManagement = 16,
+		DamageControl = 32,
+		ViewScreen = 64,
+		Communications = 128,
 
-		MAX_SHIP_SYSTEMS,
-
-		AllStations,
-		NoStations,
-		Everyone
+		AllStations = Helm + Warp + Weapons + Sensors + PowerManagement + DamageControl + ViewScreen + Communications,
+		NoStations = 0,
+		Everyone = 256
 	};
 
 	FString Init(AShipPlayerController *controller);
@@ -105,8 +102,7 @@ private:
 	void EndConnection(mg_connection *conn);
 	int32 GetNewUniqueIdentifier();
 	void HandleWebsocketMessage(ConnectionInfo *info);
-	void ShipSystemChanged(ConnectionInfo *info, int32 shipSystemIndex, bool adding);
-	void SendSystemSelectionMessage(ConnectionInfo *info, int32 shipSystemIndex, bool adding);
+	void ShipSystemChanged(ConnectionInfo *info, int32 systemFlags);
 
 	static mg_server *server;
 	AShipPlayerController *controller;
@@ -114,8 +110,6 @@ private:
 
 	ECrewState crewState;
 	int32 nextConnectionIdentifer;
-	static const int32 maxConnectionIdentifer = 26;
-	int32 shipSystemCounts[MAX_SHIP_SYSTEMS];
 
 	TSet<ConnectionInfo*> *currentConnections;
 	ConnectionInfo *connectionInSetup;
