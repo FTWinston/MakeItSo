@@ -1,3 +1,5 @@
+@import '../ui/colors';
+
 #error, #settings {
     @include center();
 }
@@ -6,13 +8,46 @@
     display: flex;
     flex-direction: column;
 
-    .content {
-        @extend .splitEqual;
-        flex-grow: 1;
-    }
+    .roleList {
+        @include nolist();
 
-    .crewList li {
-        border-radius: 1em;
+        li {
+            border-radius: 1.75em;
+            background-color: #655;
+            display: flex;
+            flex-direction: row;
+            align-content: flex-start;
+            justify-content: flex-start;
+            padding: 0 1em 0 1em;
+
+            & + li {
+                margin-top: 0.5em;
+            }
+
+            .name {
+                font-size: 2em;
+            }
+
+            > *:not(.spacer) {
+                padding: 0.25em 0 0.25em 0;
+            }
+
+            .spacer {
+                width: 0.25em;
+                margin: 0 0.5em 0 0.5em;
+                background-color: $backgroundColor;
+            }
+        }
+    }
+    .unallocated {
+        @include nolist();
+        & > li {
+            display: inline;
+
+            &:not(:last-child)::after {
+                content: ', ';
+            }
+        }
     }
 }
 

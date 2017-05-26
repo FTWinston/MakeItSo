@@ -36,13 +36,9 @@
             userNamePlaceholder: 'Enter your name...',
             userNameDescription: 'Enter the name you wish to display to your crewmates',
         },
-        waiting: {
-            heading: 'Please wait for your crewmates to join...',
-            prompt: 'We need to know how many players are in your crew so we can offer you the right roles.\nOnce all of your crew has joined, everyone must click \'Ready\' to continue.',
-        },
         roleSelection: {
             heading: 'Select your role',
-            prompt: 'Each crew member should select a different role.\nFor advanced users, a custom role allows selection of individual ship systems.',
+            prompt: 'Each crew member should select a different role.\nThe available roles change depending on the size of your crew, so wait for everyone to join before choosing.\nFor advanced users, a custom role allows selection of individual ship systems.',
         }
     },
 

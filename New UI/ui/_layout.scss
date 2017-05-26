@@ -29,3 +29,8 @@
         flex-grow: 1;
     }
 }
+
+@mixin nolist() {
+    list-style: none;
+    padding-left: 0;
+}

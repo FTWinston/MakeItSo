@@ -9,6 +9,10 @@ enum ShipSystem {
     Communications = 128,
 }
 
+class CrewRole {
+    constructor(public readonly name: string, public readonly systemFlags: ShipSystem) { }
+}
+
 namespace ShipSystem {
     export function list(flags: ShipSystem) {
         let output = '';
@@ -34,108 +38,115 @@ namespace ShipSystem {
         else
             return output.substr(2);
     }
-    export function getRoleName(flags: ShipSystem, crewSize: number) {
-        if (flags == 0)
-            return language.roles.none;
-
+    export function getRoles(crewSize: number) {
         switch (crewSize) {
-            case 1:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.Warp | ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen | ShipSystem.Communications:
-                    return language.roles.solo;
-                }
-            case 2:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.Warp | ShipSystem.ViewScreen:
-                    return language.roles.pilot;
-                case ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen | ShipSystem.Communications:
-                    return language.roles.operations;
-                }
-            case 3:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.ViewScreen:
-                    return language.systems.helm;
-                case ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.ViewScreen | ShipSystem.Communications:
-                    return language.roles.tactical;
-                case ShipSystem.Warp | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen:
-                    return language.roles.engineering;
-                }
-            case 4:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.ViewScreen:
-                    return language.systems.helm;
-                case ShipSystem.Weapons| ShipSystem.ViewScreen:
-                    return language.roles.tactical;
-                case ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen:
-                    return language.roles.engineering;
-                case ShipSystem.Warp | ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen:
-                    return language.roles.operations
-                }
-            case 5:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.ViewScreen:
-                    return language.systems.helm;
-                case ShipSystem.Weapons | ShipSystem.ViewScreen:
-                    return language.systems.weapons;
-                case ShipSystem.PowerManagement | ShipSystem.ViewScreen:
-                    return language.systems.power;
-                case ShipSystem.Warp | ShipSystem.DamageControl | ShipSystem.ViewScreen:
-                    return language.roles.engineering;
-                case ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen:
-                    return language.roles.operations;
-                }
-            case 6:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.ViewScreen:
-                    return language.systems.helm;
-                case ShipSystem.Weapons | ShipSystem.ViewScreen:
-                    return language.systems.weapons;
-                case ShipSystem.PowerManagement | ShipSystem.ViewScreen:
-                    return language.systems.power;
-                case ShipSystem.Warp | ShipSystem.Communications | ShipSystem.ViewScreen:
-                    return language.roles.operations;
-                case ShipSystem.DamageControl | ShipSystem.ViewScreen:
-                    return language.systems.damage;
-                case ShipSystem.Sensors | ShipSystem.ViewScreen:
-                    return language.systems.sensors;
-                }
-            case 7:
-                switch (flags) {
-                case ShipSystem.Helm | ShipSystem.ViewScreen:
-                    return language.systems.helm;
-                case ShipSystem.Weapons | ShipSystem.ViewScreen:
-                    return language.systems.weapons;
-                case ShipSystem.PowerManagement | ShipSystem.ViewScreen:
-                    return language.systems.power;
-                case ShipSystem.Warp | ShipSystem.ViewScreen:
-                    return language.systems.warp;
-                case ShipSystem.Communications | ShipSystem.ViewScreen:
-                    return language.systems.comms;
-                case ShipSystem.DamageControl | ShipSystem.ViewScreen:
-                    return language.systems.damage;
-                case ShipSystem.Sensors | ShipSystem.ViewScreen:
-                    return language.systems.sensors;
-                }
-            default:
-                switch (flags) {
-                case ShipSystem.Helm:
-                    return language.systems.helm;
-                case ShipSystem.Weapons:
-                    return language.systems.weapons;
-                case ShipSystem.PowerManagement:
-                    return language.systems.power;
-                case ShipSystem.Warp:
-                    return language.systems.warp;
-                case ShipSystem.Communications:
-                    return language.systems.comms;
-                case ShipSystem.DamageControl:
-                    return language.systems.damage;
-                case ShipSystem.Sensors:
-                    return language.systems.sensors;
-                case ShipSystem.ViewScreen:
-                    return language.systems.view;
-                }
+        case 1:
+            return [
+                new CrewRole(language.roles.solo,
+                    ShipSystem.Helm | ShipSystem.Warp | ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen | ShipSystem.Communications
+                ),
+            ];
+        case 2:
+            return [
+                new CrewRole(language.roles.pilot,
+                    ShipSystem.Helm | ShipSystem.Warp | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.operations,
+                    ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen | ShipSystem.Communications
+                ),
+            ];
+        case 3:
+            return [
+                new CrewRole(language.systems.helm.name,
+                    ShipSystem.Helm | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.tactical,
+                    ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.ViewScreen | ShipSystem.Communications
+                ),
+                new CrewRole(language.roles.engineering,
+                    ShipSystem.Warp | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen
+                ),
+            ];
+        case 4:
+            return [
+                new CrewRole(language.systems.helm.name,
+                    ShipSystem.Helm | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.weapons.name,
+                    ShipSystem.Weapons | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.engineering,
+                    ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.operations,
+                    ShipSystem.Warp | ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen
+                ),
+            ];
+        case 5:
+            return [
+                new CrewRole(language.systems.helm.name,
+                    ShipSystem.Helm | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.weapons.name,
+                    ShipSystem.Weapons | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.power.name,
+                    ShipSystem.PowerManagement | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.engineering,
+                    ShipSystem.Warp | ShipSystem.DamageControl | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.operations,
+                    ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen
+                ),
+            ];
+        case 6:
+            return [
+                new CrewRole(language.systems.helm.name,
+                    ShipSystem.Helm | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.weapons.name,
+                    ShipSystem.Weapons | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.power.name,
+                    ShipSystem.PowerManagement | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.roles.operations,
+                    ShipSystem.Warp | ShipSystem.Communications | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.sensors.name,
+                    ShipSystem.Sensors | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.damage.name,
+                    ShipSystem.DamageControl | ShipSystem.ViewScreen
+                ),
+            ];
+        case 7:
+            return [
+                new CrewRole(language.systems.helm.name,
+                    ShipSystem.Helm | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.weapons.name,
+                    ShipSystem.Weapons | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.power.name,
+                    ShipSystem.PowerManagement | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.warp.name,
+                    ShipSystem.Warp | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.comms.name,
+                    ShipSystem.Communications | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.sensors.name,
+                    ShipSystem.Sensors | ShipSystem.ViewScreen
+                ),
+                new CrewRole(language.systems.damage.name,
+                    ShipSystem.DamageControl | ShipSystem.ViewScreen
+                ),
+            ];
+        default:
+            return [];
         }
-        return 'Custom';
     }
 }

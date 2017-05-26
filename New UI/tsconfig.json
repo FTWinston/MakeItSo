@@ -40,7 +40,7 @@
 
         "screens/ErrorScreen.tsx",
         "screens/SettingsScreen.tsx",
-        "screens/roleSelection/CrewListItem.tsx",
+        "screens/roleSelection/RoleListItem.tsx",
         "screens/RoleSelection.tsx",
         
         "core/GameClient.tsx"
