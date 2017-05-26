@@ -239,11 +239,34 @@ button {
   top: 0.25em;
   right: 0.25em; }
 
-#error, #settings, #waiting {
+.splitEqual, #roleSelection .content {
+  display: flex;
+  justify-content: space-around;
+  align-items: stretch; }
+  @media (orientation: portrait) {
+    .splitEqual, #roleSelection .content {
+      flex-direction: column; } }
+  @media (orientation: landscape) {
+    .splitEqual, #roleSelection .content {
+      flex-direction: row; } }
+  .splitEqual > *, #roleSelection .content > * {
+    flex-basis: 0;
+    flex-shrink: 1;
+    flex-grow: 1; }
+
+#error, #settings {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center; }
+
+#roleSelection {
+  display: flex;
+  flex-direction: column; }
+  #roleSelection .content {
+    flex-grow: 1; }
+  #roleSelection .crewList li {
+    border-radius: 1em; }
 
 #game {
   overflow-y: hidden;

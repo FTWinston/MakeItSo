@@ -1,5 +1,19 @@
-#error, #settings, #waiting {
+#error, #settings {
     @include center();
+}
+
+#roleSelection {
+    display: flex;
+    flex-direction: column;
+
+    .content {
+        @extend .splitEqual;
+        flex-grow: 1;
+    }
+
+    .crewList li {
+        border-radius: 1em;
+    }
 }
 
 #game {

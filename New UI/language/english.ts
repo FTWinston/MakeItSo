@@ -4,7 +4,6 @@
         cancel: 'Cancel',
         ready: 'Ready',
         settings: 'Settings',
-        none: 'None',
     },
     errors: {
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
@@ -57,6 +56,16 @@
 */
         refreshPage: 'Refresh the page to continue.',
     },
+
+    roles: {
+        none: 'None selected',
+        solo: 'Solo',
+        pilot: 'Pilot',
+        operations: 'Operations',
+        tactical: 'Tactical',
+        engineering: 'Engineer',
+    },
+
     systems: {
         helm: {
             name: 'Helm',

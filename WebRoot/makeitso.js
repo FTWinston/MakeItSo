@@ -4,7 +4,6 @@ var language = {
         cancel: 'Cancel',
         ready: 'Ready',
         settings: 'Settings',
-        none: 'None',
     },
     errors: {
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
@@ -51,6 +50,14 @@ var language = {
                 messageGameEndedUser:  'User @name@ ended the game.',
         */
         refreshPage: 'Refresh the page to continue.',
+    },
+    roles: {
+        none: 'None selected',
+        solo: 'Solo',
+        pilot: 'Pilot',
+        operations: 'Operations',
+        tactical: 'Tactical',
+        engineering: 'Engineer',
     },
     systems: {
         helm: {
@@ -237,6 +244,136 @@ var ShipSystem;
     ShipSystem[ShipSystem["DamageControl"] = 32] = "DamageControl";
     ShipSystem[ShipSystem["ViewScreen"] = 64] = "ViewScreen";
     ShipSystem[ShipSystem["Communications"] = 128] = "Communications";
+})(ShipSystem || (ShipSystem = {}));
+(function (ShipSystem) {
+    function list(flags) {
+        var output = '';
+        if (flags & ShipSystem.Helm)
+            output += ', ' + language.systems.helm.name;
+        if (flags & ShipSystem.Warp)
+            output += ', ' + language.systems.warp.name;
+        if (flags & ShipSystem.Weapons)
+            output += ', ' + language.systems.weapons.name;
+        if (flags & ShipSystem.Sensors)
+            output += ', ' + language.systems.sensors.name;
+        if (flags & ShipSystem.PowerManagement)
+            output += ', ' + language.systems.power.name;
+        if (flags & ShipSystem.DamageControl)
+            output += ', ' + language.systems.damage.name;
+        if (flags & ShipSystem.Communications)
+            output += ', ' + language.systems.comms.name;
+        if (flags & ShipSystem.ViewScreen)
+            output += ', ' + language.systems.view.name;
+        if (output == '')
+            return '';
+        else
+            return output.substr(2);
+    }
+    ShipSystem.list = list;
+    function getRoleName(flags, crewSize) {
+        if (flags == 0)
+            return language.roles.none;
+        switch (crewSize) {
+            case 1:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.Warp | ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen | ShipSystem.Communications:
+                        return language.roles.solo;
+                }
+            case 2:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.Warp | ShipSystem.ViewScreen:
+                        return language.roles.pilot;
+                    case ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen | ShipSystem.Communications:
+                        return language.roles.operations;
+                }
+            case 3:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.ViewScreen:
+                        return language.systems.helm;
+                    case ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.ViewScreen | ShipSystem.Communications:
+                        return language.roles.tactical;
+                    case ShipSystem.Warp | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen:
+                        return language.roles.engineering;
+                }
+            case 4:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.ViewScreen:
+                        return language.systems.helm;
+                    case ShipSystem.Weapons | ShipSystem.ViewScreen:
+                        return language.roles.tactical;
+                    case ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen:
+                        return language.roles.engineering;
+                    case ShipSystem.Warp | ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen:
+                        return language.roles.operations;
+                }
+            case 5:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.ViewScreen:
+                        return language.systems.helm;
+                    case ShipSystem.Weapons | ShipSystem.ViewScreen:
+                        return language.systems.weapons;
+                    case ShipSystem.PowerManagement | ShipSystem.ViewScreen:
+                        return language.systems.power;
+                    case ShipSystem.Warp | ShipSystem.DamageControl | ShipSystem.ViewScreen:
+                        return language.roles.engineering;
+                    case ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen:
+                        return language.roles.operations;
+                }
+            case 6:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.ViewScreen:
+                        return language.systems.helm;
+                    case ShipSystem.Weapons | ShipSystem.ViewScreen:
+                        return language.systems.weapons;
+                    case ShipSystem.PowerManagement | ShipSystem.ViewScreen:
+                        return language.systems.power;
+                    case ShipSystem.Warp | ShipSystem.Communications | ShipSystem.ViewScreen:
+                        return language.roles.operations;
+                    case ShipSystem.DamageControl | ShipSystem.ViewScreen:
+                        return language.systems.damage;
+                    case ShipSystem.Sensors | ShipSystem.ViewScreen:
+                        return language.systems.sensors;
+                }
+            case 7:
+                switch (flags) {
+                    case ShipSystem.Helm | ShipSystem.ViewScreen:
+                        return language.systems.helm;
+                    case ShipSystem.Weapons | ShipSystem.ViewScreen:
+                        return language.systems.weapons;
+                    case ShipSystem.PowerManagement | ShipSystem.ViewScreen:
+                        return language.systems.power;
+                    case ShipSystem.Warp | ShipSystem.ViewScreen:
+                        return language.systems.warp;
+                    case ShipSystem.Communications | ShipSystem.ViewScreen:
+                        return language.systems.comms;
+                    case ShipSystem.DamageControl | ShipSystem.ViewScreen:
+                        return language.systems.damage;
+                    case ShipSystem.Sensors | ShipSystem.ViewScreen:
+                        return language.systems.sensors;
+                }
+            default:
+                switch (flags) {
+                    case ShipSystem.Helm:
+                        return language.systems.helm;
+                    case ShipSystem.Weapons:
+                        return language.systems.weapons;
+                    case ShipSystem.PowerManagement:
+                        return language.systems.power;
+                    case ShipSystem.Warp:
+                        return language.systems.warp;
+                    case ShipSystem.Communications:
+                        return language.systems.comms;
+                    case ShipSystem.DamageControl:
+                        return language.systems.damage;
+                    case ShipSystem.Sensors:
+                        return language.systems.sensors;
+                    case ShipSystem.ViewScreen:
+                        return language.systems.view;
+                }
+        }
+        return 'Custom';
+    }
+    ShipSystem.getRoleName = getRoleName;
 })(ShipSystem || (ShipSystem = {}));
 var CrewMember = (function () {
     function CrewMember(name) {
@@ -583,6 +720,23 @@ var SettingsScreen = (function (_super) {
 SettingsScreen.defaultProps = {
     canCancel: true,
 };
+var CrewListItem = (function (_super) {
+    __extends(CrewListItem, _super);
+    function CrewListItem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CrewListItem.prototype.render = function () {
+        var systemList = ShipSystem.list(this.props.systemFlags);
+        var systemBreakdown = systemList == '' ? '' : React.createElement("div", { className: "systems" }, systemList);
+        var roleName = ShipSystem.getRoleName(this.props.systemFlags, this.props.crewSize);
+        return (React.createElement("li", null,
+            React.createElement("span", { className: "name" }, this.props.name),
+            ": ",
+            React.createElement("span", { className: "role" }, roleName),
+            systemBreakdown));
+    };
+    return CrewListItem;
+}(React.Component));
 var RoleSelection = (function (_super) {
     __extends(RoleSelection, _super);
     function RoleSelection() {
@@ -593,46 +747,22 @@ var RoleSelection = (function (_super) {
         for (var id in this.props.crew) {
             crew.push(this.props.crew[id]);
         }
-        var that = this;
         return (React.createElement("div", { className: "screen", id: "roleSelection" },
-            React.createElement("h1", null, language.screens.roleSelection.heading),
-            React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt),
-            React.createElement("ol", { className: "crewList" }, crew.map(function (member, id) {
-                return React.createElement("li", { key: id },
-                    member.name,
-                    React.createElement("span", { className: "systems" },
-                        ": ",
-                        that.listSystems(member.systemFlags)));
-            })),
+            React.createElement("div", null,
+                React.createElement("h1", null, language.screens.roleSelection.heading),
+                React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt)),
+            React.createElement("div", { className: "content" },
+                React.createElement("div", null,
+                    React.createElement("ol", { className: "crewList" }, crew.map(function (member, id) {
+                        return React.createElement(CrewListItem, { key: id, name: member.name, systemFlags: member.systemFlags, crewSize: crew.length });
+                    }))),
+                React.createElement("div", null, "Role list goes here")),
             React.createElement(Menu, null,
                 React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
     };
     RoleSelection.prototype.settingsClicked = function () {
         if (this.props.settingsClicked !== undefined)
             this.props.settingsClicked();
-    };
-    RoleSelection.prototype.listSystems = function (flags) {
-        var output = '';
-        if (flags & ShipSystem.Helm)
-            output += ', ' + language.systems.helm.name;
-        if (flags & ShipSystem.Warp)
-            output += ', ' + language.systems.warp.name;
-        if (flags & ShipSystem.Weapons)
-            output += ', ' + language.systems.weapons.name;
-        if (flags & ShipSystem.Sensors)
-            output += ', ' + language.systems.sensors.name;
-        if (flags & ShipSystem.PowerManagement)
-            output += ', ' + language.systems.power.name;
-        if (flags & ShipSystem.DamageControl)
-            output += ', ' + language.systems.damage.name;
-        if (flags & ShipSystem.Communications)
-            output += ', ' + language.systems.comms.name;
-        if (flags & ShipSystem.ViewScreen)
-            output += ', ' + language.systems.view.name;
-        if (output == '')
-            return language.common.none;
-        else
-            return output.substr(2);
     };
     return RoleSelection;
 }(React.Component));
