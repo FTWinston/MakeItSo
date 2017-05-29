@@ -288,7 +288,7 @@ $lightBackground: #999;
     #roleSelection .roleList li {
       border-radius: 1.75em;
       color: #333;
-      background-color: #d09bcf;
+      background-color: #9f9bfd;
       display: flex;
       flex-direction: row;
       align-content: flex-start;
@@ -297,7 +297,11 @@ $lightBackground: #999;
       #roleSelection .roleList li + li {
         margin-top: 0.5em; }
       #roleSelection .roleList li .name {
-        font-size: 2em; }
+        font-size: 2em;
+        background-color: #333;
+        color: #9f9bfd; }
+      #roleSelection .roleList li.selected .name {
+        color: #ffce9c; }
       #roleSelection .roleList li > *:not(.spacer) {
         padding: 0.25em 0 0.25em 0; }
       #roleSelection .roleList li .spacer {

@@ -14,7 +14,7 @@
         li {
             border-radius: 1.75em;
             color: $backgroundColor;
-            background-color: $colorSecondary;
+            background-color: $colorTertiary;
             display: flex;
             flex-direction: row;
             align-content: flex-start;
@@ -27,6 +27,12 @@
 
             .name {
                 font-size: 2em;
+                background-color: $backgroundColor;
+                color: $colorTertiary;
+            }
+
+            &.selected .name {
+                color: $colorQuandry;
             }
 
             > *:not(.spacer) {
