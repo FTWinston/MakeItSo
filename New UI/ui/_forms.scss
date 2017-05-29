@@ -33,11 +33,12 @@ button, input {
     background-color: $backgroundColor;
     padding: 0.75em;
 
-    &.primary { @include ui-color($btnColorPrimary) }
-    &.secondary { @include ui-color($btnColorSecondary) }
-    &.tertiary { @include ui-color($btnColorTertiary) }
-    &.quaternary { @include ui-color($btnColorQuaternary) }
-    &.quandry { @include ui-color($btnColorQuandry) }
+    &.primary { @include ui-color($colorPrimary) }
+    &.secondary { @include ui-color($colorSecondary) }
+    &.tertiary { @include ui-color($colorTertiary) }
+    &.quaternary { @include ui-color($colorQuaternary) }
+    &.quandry { @include ui-color($colorQuandry) }
+    &.highlight { @include ui-color($colorHighlight) }
 
     &:focus {
         outline:none;

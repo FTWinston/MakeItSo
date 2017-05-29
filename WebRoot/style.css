@@ -71,70 +71,83 @@ button, input {
   padding: 0.75em;
   transition: background-color 0.5s, color 0.5s, border-color 0.5s; }
   button.primary, input.primary {
-    border-color: #f90;
-    color: #f90; }
+    border-color: #ff7d01;
+    color: #ff7d01; }
     button.primary[disabled], input.primary[disabled] {
       color: #999;
       border-color: #999;
       cursor: not-allowed; }
     button.primary:not([disabled]):active, button.primary:not([disabled]).active, input.primary:not([disabled]):active, input.primary:not([disabled]).active {
-      background-color: #f90;
+      background-color: #ff7d01;
       color: #333; }
     button.primary:not([disabled]):not(:active):not(.active):hover, button.primary:not([disabled]):not(:active):not(.active):focus, input.primary:not([disabled]):not(:active):not(.active):hover, input.primary:not([disabled]):not(:active):not(.active):focus {
-      background-color: rgba(255, 153, 0, 0.2);
-      color: #f90; }
+      background-color: rgba(255, 125, 1, 0.2);
+      color: #ff7d01; }
   button.secondary, input.secondary {
-    border-color: #c9c;
-    color: #c9c; }
+    border-color: #d09bcf;
+    color: #d09bcf; }
     button.secondary[disabled], input.secondary[disabled] {
       color: #999;
       border-color: #999;
       cursor: not-allowed; }
     button.secondary:not([disabled]):active, button.secondary:not([disabled]).active, input.secondary:not([disabled]):active, input.secondary:not([disabled]).active {
-      background-color: #c9c;
+      background-color: #d09bcf;
       color: #333; }
     button.secondary:not([disabled]):not(:active):not(.active):hover, button.secondary:not([disabled]):not(:active):not(.active):focus, input.secondary:not([disabled]):not(:active):not(.active):hover, input.secondary:not([disabled]):not(:active):not(.active):focus {
-      background-color: rgba(204, 153, 204, 0.2);
-      color: #c9c; }
+      background-color: rgba(208, 155, 207, 0.2);
+      color: #d09bcf; }
   button.tertiary, input.tertiary {
-    border-color: #99f;
-    color: #99f; }
+    border-color: #9f9bfd;
+    color: #9f9bfd; }
     button.tertiary[disabled], input.tertiary[disabled] {
       color: #999;
       border-color: #999;
       cursor: not-allowed; }
     button.tertiary:not([disabled]):active, button.tertiary:not([disabled]).active, input.tertiary:not([disabled]):active, input.tertiary:not([disabled]).active {
-      background-color: #99f;
+      background-color: #9f9bfd;
       color: #333; }
     button.tertiary:not([disabled]):not(:active):not(.active):hover, button.tertiary:not([disabled]):not(:active):not(.active):focus, input.tertiary:not([disabled]):not(:active):not(.active):hover, input.tertiary:not([disabled]):not(:active):not(.active):focus {
-      background-color: rgba(153, 153, 255, 0.2);
-      color: #99f; }
+      background-color: rgba(159, 155, 253, 0.2);
+      color: #9f9bfd; }
   button.quaternary, input.quaternary {
-    border-color: #c69;
-    color: #c69; }
+    border-color: #d26369;
+    color: #d26369; }
     button.quaternary[disabled], input.quaternary[disabled] {
       color: #999;
       border-color: #999;
       cursor: not-allowed; }
     button.quaternary:not([disabled]):active, button.quaternary:not([disabled]).active, input.quaternary:not([disabled]):active, input.quaternary:not([disabled]).active {
-      background-color: #c69;
+      background-color: #d26369;
       color: #333; }
     button.quaternary:not([disabled]):not(:active):not(.active):hover, button.quaternary:not([disabled]):not(:active):not(.active):focus, input.quaternary:not([disabled]):not(:active):not(.active):hover, input.quaternary:not([disabled]):not(:active):not(.active):focus {
-      background-color: rgba(204, 102, 153, 0.2);
-      color: #c69; }
+      background-color: rgba(210, 99, 105, 0.2);
+      color: #d26369; }
   button.quandry, input.quandry {
-    border-color: #fc9;
-    color: #fc9; }
+    border-color: #ffce9c;
+    color: #ffce9c; }
     button.quandry[disabled], input.quandry[disabled] {
       color: #999;
       border-color: #999;
       cursor: not-allowed; }
     button.quandry:not([disabled]):active, button.quandry:not([disabled]).active, input.quandry:not([disabled]):active, input.quandry:not([disabled]).active {
-      background-color: #fc9;
+      background-color: #ffce9c;
       color: #333; }
     button.quandry:not([disabled]):not(:active):not(.active):hover, button.quandry:not([disabled]):not(:active):not(.active):focus, input.quandry:not([disabled]):not(:active):not(.active):hover, input.quandry:not([disabled]):not(:active):not(.active):focus {
-      background-color: rgba(255, 204, 153, 0.2);
-      color: #fc9; }
+      background-color: rgba(255, 206, 156, 0.2);
+      color: #ffce9c; }
+  button.highlight, input.highlight {
+    border-color: #e0e5f8;
+    color: #e0e5f8; }
+    button.highlight[disabled], input.highlight[disabled] {
+      color: #999;
+      border-color: #999;
+      cursor: not-allowed; }
+    button.highlight:not([disabled]):active, button.highlight:not([disabled]).active, input.highlight:not([disabled]):active, input.highlight:not([disabled]).active {
+      background-color: #e0e5f8;
+      color: #333; }
+    button.highlight:not([disabled]):not(:active):not(.active):hover, button.highlight:not([disabled]):not(:active):not(.active):focus, input.highlight:not([disabled]):not(:active):not(.active):hover, input.highlight:not([disabled]):not(:active):not(.active):focus {
+      background-color: rgba(224, 229, 248, 0.2);
+      color: #e0e5f8; }
   button:focus, input:focus {
     outline: none; }
 
@@ -183,14 +196,14 @@ button {
       margin-right: 0;
       transition: width 0.5s; }
     button.confirm.active {
-      background-color: #f66 !important;
-      border-color: #f66 !important; }
+      background-color: #de0000 !important;
+      border-color: #de0000 !important; }
       button.confirm.active::before {
         content: 'Confirm:';
         width: 4em; }
       button.confirm.active:active {
-        background-color: #fff !important;
-        border-color: #fff !important; }
+        background-color: #e0e5f8 !important;
+        border-color: #e0e5f8 !important; }
   button.push {
     transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s; }
     button.push:active {
@@ -199,10 +212,10 @@ button {
     border-style: double;
     border-width: 4px; }
 
-*:not(.buttons) > button {
+*:not(.buttons) > button, .buttons.separate > button {
   border-radius: 0.8em; }
 
-*:not(.buttons) > button + button {
+*:not(.buttons) > button + button, .buttons.separate > button + button {
   margin-left: 0.5em; }
 
 .buttons .prompt {
@@ -220,15 +233,15 @@ button {
 .buttons.vertical > button + button {
   border-top-width: 0; }
 
-.buttons:not(.vertical) > button:first-of-type {
+.buttons:not(.vertical):not(.separate) > button:first-of-type {
   border-top-left-radius: 0.8em;
   border-bottom-left-radius: 0.8em; }
 
-.buttons:not(.vertical) > button:last-of-type {
+.buttons:not(.vertical):not(.separate) > button:last-of-type {
   border-bottom-right-radius: 0.8em;
   border-top-right-radius: 0.8em; }
 
-.buttons:not(.vertical) > button + button {
+.buttons:not(.vertical):not(.separate) > button + button {
   border-left-width: 0; }
 
 .description {
@@ -274,7 +287,8 @@ $lightBackground: #999;
     padding-left: 0; }
     #roleSelection .roleList li {
       border-radius: 1.75em;
-      background-color: #655;
+      color: #333;
+      background-color: #d09bcf;
       display: flex;
       flex-direction: row;
       align-content: flex-start;

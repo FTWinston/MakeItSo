@@ -26,7 +26,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
     }
     render() {
         let words = language.screens.settings;
-        let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quandry} clicked={this.cancel.bind(this)}>{language.common.cancel}</PushButton> : null;
+        let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quaternary} clicked={this.cancel.bind(this)}>{language.common.cancel}</PushButton> : null;
         let canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
 
         return (

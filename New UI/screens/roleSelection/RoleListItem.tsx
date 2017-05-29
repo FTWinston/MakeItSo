@@ -2,9 +2,22 @@ interface IRoleListItemProps {
     name: string;
     systemFlags: ShipSystem;
     allocated?: CrewMember;
+    selected: (flags: ShipSystem) => void;
+    unselected: (flags: ShipSystem) => void;
 }
 
-class RoleListItem extends React.Component<IRoleListItemProps, {}> {
+interface IRoleListItemState {
+    selected: boolean;
+}
+
+class RoleListItem extends React.Component<IRoleListItemProps, IRoleListItemState> {
+    constructor(props: IRoleListItemProps) {
+        super(props);
+
+        this.state = {
+            selected: false
+        };
+    }
     render() {
         let allocation;
         if (this.props.allocated === undefined)
@@ -25,7 +38,7 @@ class RoleListItem extends React.Component<IRoleListItemProps, {}> {
         }
 
         return (
-            <li>
+            <li onClick={this.clicked.bind(this)}>
                 <span className="name">{this.props.name}</span>
                 <span className="spacer"></span>
                 {allocation}
@@ -33,5 +46,11 @@ class RoleListItem extends React.Component<IRoleListItemProps, {}> {
                 {systemBreakdown}
             </li>
         );
+    }
+    private clicked() {
+        if (this.state.selected)
+            this.props.selected(this.props.systemFlags);
+        else
+            this.props.unselected(this.props.systemFlags);
     }
 }

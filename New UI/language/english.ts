@@ -39,6 +39,8 @@
         roleSelection: {
             heading: 'Select your role',
             prompt: 'Each crew member should select a different role.\nThe available roles change depending on the size of your crew, so wait for everyone to join before choosing.\nFor advanced users, a custom role allows selection of individual ship systems.',
+            showSystems: 'Select systems (advanced)',
+            showRoles: 'Select roles (simple)',
         }
     },
 

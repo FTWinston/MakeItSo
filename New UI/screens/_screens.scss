@@ -13,7 +13,8 @@
 
         li {
             border-radius: 1.75em;
-            background-color: #655;
+            color: $backgroundColor;
+            background-color: $colorSecondary;
             display: flex;
             flex-direction: row;
             align-content: flex-start;

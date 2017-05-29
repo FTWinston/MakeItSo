@@ -20,8 +20,8 @@ button {
         }
 
         &.active {
-            background-color: $btnColorConfirm !important;
-            border-color: $btnColorConfirm !important;
+            background-color: $colorConfirm !important;
+            border-color: $colorConfirm !important;
             
             &::before {
                 content: 'Confirm:';
@@ -29,8 +29,8 @@ button {
             }
 
             &:active {
-                background-color: #fff !important;
-                border-color: #fff !important;
+                background-color: $colorHighlight !important;
+                border-color: $colorHighlight !important;
             }
         }
     }
@@ -53,7 +53,7 @@ button {
     }
 }
 
-*:not(.buttons) {
+*:not(.buttons), .buttons.separate {
     & > button {
         border-radius: $buttonRadius;
     }
@@ -86,7 +86,7 @@ button {
     }
 }
 
-.buttons:not(.vertical) {
+.buttons:not(.vertical):not(.separate) {
     & > button {
         &:first-of-type {
             border-top-left-radius: $buttonRadius;

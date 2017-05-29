@@ -35,6 +35,8 @@ var language = {
         roleSelection: {
             heading: 'Select your role',
             prompt: 'Each crew member should select a different role.\nThe available roles change depending on the size of your crew, so wait for everyone to join before choosing.\nFor advanced users, a custom role allows selection of individual ship systems.',
+            showSystems: 'Select systems (advanced)',
+            showRoles: 'Select roles (simple)',
         }
     },
     messages: {
@@ -603,7 +605,7 @@ var Menu = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Menu.prototype.render = function () {
-        return (React.createElement(ButtonSet, { className: "menu", color: 4 /* Quandry */ }, this.props.children));
+        return (React.createElement(ButtonSet, { className: "menu separate", color: 4 /* Quandry */ }, this.props.children));
     };
     return Menu;
 }(React.Component));
@@ -630,7 +632,7 @@ var SettingsScreen = (function (_super) {
     }
     SettingsScreen.prototype.render = function () {
         var words = language.screens.settings;
-        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 4 /* Quandry */, clicked: this.cancel.bind(this) }, language.common.cancel) : null;
+        var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 3 /* Quaternary */, clicked: this.cancel.bind(this) }, language.common.cancel) : null;
         var canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
         return (React.createElement("div", { className: "screen", id: "settings" },
             React.createElement("form", null,
@@ -677,8 +679,12 @@ SettingsScreen.defaultProps = {
 };
 var RoleListItem = (function (_super) {
     __extends(RoleListItem, _super);
-    function RoleListItem() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function RoleListItem(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            selected: false
+        };
+        return _this;
     }
     RoleListItem.prototype.render = function () {
         var allocation;
@@ -696,47 +702,48 @@ var RoleListItem = (function (_super) {
             systemBreakdown = React.createElement("div", { className: "systems" }, systemList);
             breakdownSpacer = React.createElement("span", { className: "spacer" });
         }
-        return (React.createElement("li", null,
+        return (React.createElement("li", { onClick: this.clicked.bind(this) },
             React.createElement("span", { className: "name" }, this.props.name),
             React.createElement("span", { className: "spacer" }),
             allocation,
             breakdownSpacer,
             systemBreakdown));
     };
+    RoleListItem.prototype.clicked = function () {
+        if (this.state.selected)
+            this.props.selected(this.props.systemFlags);
+        else
+            this.props.unselected(this.props.systemFlags);
+    };
     return RoleListItem;
 }(React.Component));
 var RoleSelection = (function (_super) {
     __extends(RoleSelection, _super);
-    function RoleSelection() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function RoleSelection(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            forceShowSystems: false,
+        };
+        return _this;
     }
     RoleSelection.prototype.render = function () {
         var crew = [];
-        for (var id in this.props.crew) {
+        for (var id in this.props.crew)
             crew.push(this.props.crew[id]);
-        }
-        var roles = ShipSystem.getRoles(crew.length);
-        var showSystemSelection = roles.length == 0; // or mode has been toggled on
-        var roleOrSystemSelection;
-        if (showSystemSelection) {
-            roleOrSystemSelection = React.createElement("div", null);
+        var showSystemSelection;
+        var roles;
+        if (this.state.forceShowSystems) {
+            showSystemSelection = true;
+            roles = [];
         }
         else {
-            roleOrSystemSelection = React.createElement("ol", { className: "roleList" }, roles.map(function (role, id) {
-                var crewMember = undefined;
-                for (var i = 0; i < crew.length; i++)
-                    if (crew[i].systemFlags == role.systemFlags) {
-                        crewMember = crew.splice(i)[0];
-                        break;
-                    }
-                return React.createElement(RoleListItem, { key: id, name: role.name, systemFlags: role.systemFlags, allocated: crewMember });
-            }));
+            roles = ShipSystem.getRoles(crew.length);
+            showSystemSelection = roles.length == 0;
         }
-        var unallocatedCrew;
-        if (crew.length > 0)
-            unallocatedCrew = React.createElement("ul", { className: "unallocated" }, crew.map(function (member, id) {
-                return React.createElement("li", { key: id }, member.name);
-            }));
+        var roleOrSystemSelection = showSystemSelection
+            ? this.renderSystemSelection(crew)
+            : this.renderRoleSelection(crew, roles);
+        var unallocatedCrew = this.renderUnallocatedCrew(crew);
         return (React.createElement("div", { className: "screen", id: "roleSelection" },
             React.createElement("div", null,
                 React.createElement("h1", null, language.screens.roleSelection.heading),
@@ -745,7 +752,47 @@ var RoleSelection = (function (_super) {
                 roleOrSystemSelection,
                 unallocatedCrew),
             React.createElement(Menu, null,
-                React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), title: language.common.settings }, "\u2699"))));
+                this.renderSelectionTypeSwitch(roles),
+                React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this) }, language.common.settings))));
+    };
+    RoleSelection.prototype.renderSelectionTypeSwitch = function (roles) {
+        if (roles.length == 0)
+            return undefined;
+        else if (this.state.forceShowSystems)
+            return React.createElement(PushButton, { color: 2 /* Tertiary */, clicked: this.showSystemSelection.bind(this) }, language.screens.roleSelection.showRoles);
+        else
+            return React.createElement(PushButton, { color: 2 /* Tertiary */, clicked: this.showRoleSelection.bind(this) }, language.screens.roleSelection.showSystems);
+    };
+    RoleSelection.prototype.renderSystemSelection = function (crew) {
+        return React.createElement("div", null);
+        // TODO: render system list
+    };
+    RoleSelection.prototype.renderRoleSelection = function (crew, roles) {
+        var that = this;
+        return React.createElement("ol", { className: "roleList" }, roles.map(function (role, id) {
+            var crewMember = undefined;
+            for (var i = 0; i < crew.length; i++)
+                if (crew[i].systemFlags == role.systemFlags) {
+                    crewMember = crew.splice(i)[0];
+                    break;
+                }
+            return React.createElement(RoleListItem, { key: id, name: role.name, systemFlags: role.systemFlags, allocated: crewMember, selected: that.roleSelected.bind(that), unselected: that.roleUnselected.bind(that) });
+        }));
+    };
+    RoleSelection.prototype.renderUnallocatedCrew = function (unallocated) {
+        if (unallocated.length == 0)
+            return undefined;
+        return React.createElement("ul", { className: "unallocated" }, unallocated.map(function (member, id) {
+            return React.createElement("li", { key: id }, member.name);
+        }));
+    };
+    RoleSelection.prototype.roleSelected = function (flags) {
+    };
+    RoleSelection.prototype.roleUnselected = function (flags) {
+    };
+    RoleSelection.prototype.showSystemSelection = function () {
+    };
+    RoleSelection.prototype.showRoleSelection = function () {
     };
     RoleSelection.prototype.settingsClicked = function () {
         if (this.props.settingsClicked !== undefined)
