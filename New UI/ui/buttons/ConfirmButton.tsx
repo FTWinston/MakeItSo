@@ -10,8 +10,8 @@ class ConfirmButton extends React.Component<IPushButtonProps, IConfirmButtonStat
     render() {
         let classList = this.state.primed ? 'confirm active' : 'confirm';
         return (
-            <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)}
-                color={this.props.color} disabled={this.props.disabled} title={this.props.title} buttonType="submit">
+            <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} buttonType="submit"
+                color={this.props.color} disabled={this.props.disabled} title={this.props.title} help={this.props.help}>
                 {this.props.children}
             </Button>
         );

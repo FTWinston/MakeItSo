@@ -11,11 +11,13 @@ interface IButtonProps {
     hotkey?: string;
     color?: ButtonColor;
     disabled?: boolean;
+    help?: string;
 }
 
 interface IBaseButtonProps extends IButtonProps {
     className: string;
     buttonType?: string;
+    groupColor?: ButtonColor;
     groupDisabled?: boolean;
     mouseLeave?: React.EventHandler<React.MouseEvent>;
     mouseEnter?: React.EventHandler<React.MouseEvent>;
@@ -39,9 +41,18 @@ class Button extends React.Component<IBaseButtonProps, {}> {
     }
 */
     render(): JSX.Element {
+        if (this.props.help === undefined)
+            return this.renderButton();
+        return <div className="buttons separate">
+            {this.renderButton()}
+            <button className="help" type="button" title={language.common.help}>?</button>
+        </div>
+    }
+    private determineClasses() {
         let classes = this.props.className;
-            
-        if (this.props.color !== undefined) {
+        
+        let color = this.props.color === undefined ? this.props.groupColor : this.props.color;
+        if (color !== undefined) {
             switch(this.props.color) {
                 case ButtonColor.Primary:
                     classes += ' primary'; break;
@@ -55,9 +66,10 @@ class Button extends React.Component<IBaseButtonProps, {}> {
                     classes += ' quandry'; break;
             }
         }
-
-        return (
-            <button className={classes} disabled={this.props.disabled || this.props.groupDisabled}
+        return classes;
+    }
+    private renderButton() {
+        return <button className={this.determineClasses()} disabled={this.props.disabled || this.props.groupDisabled}
                 onMouseDown={this.props.disabled ? undefined : this.props.mouseDown}
                 onMouseUp={this.props.disabled ? undefined : this.props.mouseUp}
                 onMouseLeave={this.props.disabled ? undefined : this.props.mouseLeave}
@@ -65,7 +77,6 @@ class Button extends React.Component<IBaseButtonProps, {}> {
                 data-hotkey={this.props.hotkey} type={this.props.buttonType}
                 title={this.props.title}>
                     {this.props.children}
-            </button>
-        );
+            </button>;
     }
 }

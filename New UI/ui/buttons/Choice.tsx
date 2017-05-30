@@ -5,6 +5,7 @@ class DropdownSettings {
 }
 */
 interface IChoiceProps extends IButtonSetBaseProps {
+    prompt?: string;
     //dropdown?: DropdownSettings;
 }
 
@@ -40,12 +41,15 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         }
 
         return (
-            <ButtonSet className={classes} vertical={this.props.vertical}
-                prompt={this.props.prompt} disabled={this.props.disabled} color={this.props.color}
+            <div className={classes}>
+                {this.props.prompt == null ? null : <div className="prompt">{this.props.prompt}</div>}
+                <ButtonSet vertical={this.props.vertical} separate={this.props.separate}
+                    disabled={this.props.disabled} color={this.props.color}
                     allowUnselected={this.props.allowUnselected} childActivated={this.childActivated.bind(this)}>
-                    {this.props.children}
-                    <div className="description" style={descStyle}>{description}</div>
-            </ButtonSet>
+                        {this.props.children}
+                </ButtonSet>
+                <div className="description" style={descStyle}>{description}</div>
+            </div>
         );
     }
     private childActivated(activated: ToggleButton) {

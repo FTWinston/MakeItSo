@@ -48,10 +48,10 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
                             <div className="description">{words.userNameDescription}</div>
                         </div>
                     </div>
-                    <div role="group" className="actions">
+                    <ButtonSet className="actions" separate={true}>
                         <ConfirmButton color={ButtonColor.Tertiary} disabled={!canSave} clicked={this.save.bind(this)}>{language.common.save}</ConfirmButton>
                         {cancelButton}
-                    </div>
+                    </ButtonSet>
                 </form>
             </div>
         );

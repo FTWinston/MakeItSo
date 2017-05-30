@@ -10,26 +10,6 @@
     }
 }
 
-.splitEqual {
-    display: flex;
-
-    @include portrait() {
-        flex-direction: column;
-    }
-    @include landscape() {
-        flex-direction: row;
-    }
-
-    justify-content: space-around;
-    align-items: stretch;
-
-    & > * {
-        flex-basis: 0;
-        flex-shrink: 1;
-        flex-grow: 1;
-    }
-}
-
 @mixin nolist() {
     list-style: none;
     padding-left: 0;

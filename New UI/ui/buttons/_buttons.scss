@@ -3,6 +3,7 @@
 button {
     cursor: pointer;
     vertical-align: baseline;
+    border-radius: $buttonRadius;
 
     &.confirm {
         border-top-left-radius: $buttonRadius / 5 !important;
@@ -48,68 +49,88 @@ button {
     }
 
     &.held {
-        border-style: double;
-        border-width: 4px;
+        border-left-width: 0 !important;
+        border-right-width: 0 !important;
+        border-radius: $buttonRadius !important;
+    }
+
+    &.help {
+        align-self: center;
+        padding: 0.2em 0.5em;
+        border-radius: 4em;
     }
 }
 
-*:not(.buttons), .buttons.separate {
-    & > button {
-        border-radius: $buttonRadius;
+.buttons {
+    display: flex;
+    justify-content: flex-start;
+    align-items: stretch;
+
+    &.vertical {
+        flex-direction: column;
+        max-width: 20em;
     }
-    & > button + button {
+
+    &.separate.vertical > * + * {
+        margin-top: 0.5em;
+    }
+    &.separate:not(.vertical) > * + * {
         margin-left: 0.5em;
     }
-}
 
-.buttons .prompt {
-    margin-bottom: 0.5em;
-}
+    &.vertical:not(.separate) {
+        > button {
+            &:not(:first-of-type) {
+                border-top-left-radius: 0;
+                border-top-right-radius: 0;
+            }
 
-.buttons.vertical {
-    & > button {
-        display: block;
+            &:not(:last-of-type) {
+                border-bottom-left-radius: 0;
+                border-bottom-right-radius: 0;
+            }
+        }
         
-        &:first-of-type {
-            border-top-left-radius: $buttonRadius;
-            border-top-right-radius: $buttonRadius;
-        }
-
-        &:last-of-type {
-            border-bottom-left-radius: $buttonRadius;
-            border-bottom-right-radius: $buttonRadius;
+        > button + button {
+            border-top-width: 0;
         }
     }
-    
-    & > button + button {
-        border-top-width: 0;
+
+    &:not(.vertical):not(.separate) {
+        > button {
+            &:not(:first-of-type) {
+                border-top-left-radius: 0;
+                border-bottom-left-radius: 0;
+            }
+
+            &:not(:last-of-type) {
+                border-bottom-right-radius: 0;
+                border-top-right-radius: 0;
+            }
+        }
+
+        > button + button {
+            border-left-width: 0;
+        }
+    }
+
+    &.menu {
+        position: absolute;
+        top: 0.25em;
+        right: 0.25em;
+    }
+
+    .buttons button:not(.help) {
+        flex-grow: 1;
     }
 }
 
-.buttons:not(.vertical):not(.separate) {
-    & > button {
-        &:first-of-type {
-            border-top-left-radius: $buttonRadius;
-            border-bottom-left-radius: $buttonRadius;
-        }
-
-        &:last-of-type {
-            border-bottom-right-radius: $buttonRadius;
-            border-top-right-radius: $buttonRadius;
-        }
-    }
-
-    & > button + button {
-        border-left-width: 0;
+.choice {
+    .prompt {
+        margin-bottom: 0.5em;
     }
 }
 
 .description {
     margin-top: 0.5em;
-}
-
-.buttons.menu {
-    position: absolute;
-    top: 0.25em;
-    right: 0.25em;
 }

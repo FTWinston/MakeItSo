@@ -25,7 +25,6 @@ $lightBackground: #999;
   -webkit-user-select: none;
   -ms-user-select: none;
   user-select: none;
-  font-size: 16px;
   /*    
     @include font-size(1500px, 15px);
     @include font-size(1400px, 14px);
@@ -37,7 +36,7 @@ $lightBackground: #999;
     @include font-size(340px, 8px);
 */ }
 
-#gameRoot * {
+#gameRoot, h1, button, input {
   font-family: Helvetica, Arial, sans-serif;
   font-size: 16px; }
 
@@ -70,6 +69,12 @@ button, input {
   background-color: #333;
   padding: 0.75em;
   transition: background-color 0.5s, color 0.5s, border-color 0.5s; }
+  button:not([disabled]):active, button:not([disabled]).active, input:not([disabled]):active, input:not([disabled]).active {
+    background-color: #fff;
+    color: #333; }
+  button:not([disabled]):not(:active):not(.active):hover, button:not([disabled]):not(:active):not(.active):focus, input:not([disabled]):not(:active):not(.active):hover, input:not([disabled]):not(:active):not(.active):focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff; }
   button.primary, input.primary {
     border-color: #ff7d01;
     color: #ff7d01; }
@@ -182,7 +187,8 @@ $lightBackground: #999;
 */
 button {
   cursor: pointer;
-  vertical-align: baseline; }
+  vertical-align: baseline;
+  border-radius: 0.8em; }
   button.confirm {
     border-top-left-radius: 0.16em !important;
     border-bottom-right-radius: 0.16em !important; }
@@ -209,63 +215,53 @@ button {
     button.push:active {
       border-radius: 0 !important; }
   button.held {
-    border-style: double;
-    border-width: 4px; }
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    border-radius: 0.8em !important; }
+  button.help {
+    align-self: center;
+    padding: 0.2em 0.5em;
+    border-radius: 4em; }
 
-*:not(.buttons) > button, .buttons.separate > button {
-  border-radius: 0.8em; }
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+  align-items: stretch; }
+  .buttons.vertical {
+    flex-direction: column;
+    max-width: 20em; }
+  .buttons.separate.vertical > * + * {
+    margin-top: 0.5em; }
+  .buttons.separate:not(.vertical) > * + * {
+    margin-left: 0.5em; }
+  .buttons.vertical:not(.separate) > button:not(:first-of-type) {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0; }
+  .buttons.vertical:not(.separate) > button:not(:last-of-type) {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0; }
+  .buttons.vertical:not(.separate) > button + button {
+    border-top-width: 0; }
+  .buttons:not(.vertical):not(.separate) > button:not(:first-of-type) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0; }
+  .buttons:not(.vertical):not(.separate) > button:not(:last-of-type) {
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0; }
+  .buttons:not(.vertical):not(.separate) > button + button {
+    border-left-width: 0; }
+  .buttons.menu {
+    position: absolute;
+    top: 0.25em;
+    right: 0.25em; }
+  .buttons .buttons button:not(.help) {
+    flex-grow: 1; }
 
-*:not(.buttons) > button + button, .buttons.separate > button + button {
-  margin-left: 0.5em; }
-
-.buttons .prompt {
+.choice .prompt {
   margin-bottom: 0.5em; }
-
-.buttons.vertical > button {
-  display: block; }
-  .buttons.vertical > button:first-of-type {
-    border-top-left-radius: 0.8em;
-    border-top-right-radius: 0.8em; }
-  .buttons.vertical > button:last-of-type {
-    border-bottom-left-radius: 0.8em;
-    border-bottom-right-radius: 0.8em; }
-
-.buttons.vertical > button + button {
-  border-top-width: 0; }
-
-.buttons:not(.vertical):not(.separate) > button:first-of-type {
-  border-top-left-radius: 0.8em;
-  border-bottom-left-radius: 0.8em; }
-
-.buttons:not(.vertical):not(.separate) > button:last-of-type {
-  border-bottom-right-radius: 0.8em;
-  border-top-right-radius: 0.8em; }
-
-.buttons:not(.vertical):not(.separate) > button + button {
-  border-left-width: 0; }
 
 .description {
   margin-top: 0.5em; }
-
-.buttons.menu {
-  position: absolute;
-  top: 0.25em;
-  right: 0.25em; }
-
-.splitEqual {
-  display: flex;
-  justify-content: space-around;
-  align-items: stretch; }
-  @media (orientation: portrait) {
-    .splitEqual {
-      flex-direction: column; } }
-  @media (orientation: landscape) {
-    .splitEqual {
-      flex-direction: row; } }
-  .splitEqual > * {
-    flex-basis: 0;
-    flex-shrink: 1;
-    flex-grow: 1; }
 
 /*
 $disabledColor: #666;
@@ -283,31 +279,7 @@ $lightBackground: #999;
   display: flex;
   flex-direction: column; }
   #roleSelection .roleList {
-    list-style: none;
-    padding-left: 0; }
-    #roleSelection .roleList li {
-      border-radius: 1.75em;
-      color: #333;
-      background-color: #9f9bfd;
-      display: flex;
-      flex-direction: row;
-      align-content: flex-start;
-      justify-content: flex-start;
-      padding: 0 1em 0 1em; }
-      #roleSelection .roleList li + li {
-        margin-top: 0.5em; }
-      #roleSelection .roleList li .name {
-        font-size: 2em;
-        background-color: #333;
-        color: #9f9bfd; }
-      #roleSelection .roleList li.selected .name {
-        color: #ffce9c; }
-      #roleSelection .roleList li > *:not(.spacer) {
-        padding: 0.25em 0 0.25em 0; }
-      #roleSelection .roleList li .spacer {
-        width: 0.25em;
-        margin: 0 0.5em 0 0.5em;
-        background-color: #333; }
+    align-self: center; }
   #roleSelection .unallocated {
     list-style: none;
     padding-left: 0; }

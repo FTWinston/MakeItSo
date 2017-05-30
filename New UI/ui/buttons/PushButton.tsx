@@ -8,7 +8,7 @@ class PushButton extends React.Component<IPushButtonProps, {}> {
         let classList = 'push';
         return (
             <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)}
-                color={this.props.color} disabled={this.props.disabled} title={this.props.title}>
+                color={this.props.color} disabled={this.props.disabled} title={this.props.title} help={this.props.help}>
                 {this.props.children}
             </Button>
         );

@@ -26,7 +26,6 @@
    -ms-user-select: none;
     user-select: none;
 
-    font-size: 16px;
 /*    
     @include font-size(1500px, 15px);
     @include font-size(1400px, 14px);
@@ -39,8 +38,8 @@
 */
 }
 
-#gameRoot * {
-	font-family: Helvetica, Arial, sans-serif;
+#gameRoot, h1, button, input {
+    font-family: Helvetica, Arial, sans-serif;
     font-size: 16px;
 }
 

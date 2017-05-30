@@ -9,42 +9,7 @@
     flex-direction: column;
 
     .roleList {
-        @include nolist();
-
-        li {
-            border-radius: 1.75em;
-            color: $backgroundColor;
-            background-color: $colorTertiary;
-            display: flex;
-            flex-direction: row;
-            align-content: flex-start;
-            justify-content: flex-start;
-            padding: 0 1em 0 1em;
-
-            & + li {
-                margin-top: 0.5em;
-            }
-
-            .name {
-                font-size: 2em;
-                background-color: $backgroundColor;
-                color: $colorTertiary;
-            }
-
-            &.selected .name {
-                color: $colorQuandry;
-            }
-
-            > *:not(.spacer) {
-                padding: 0.25em 0 0.25em 0;
-            }
-
-            .spacer {
-                width: 0.25em;
-                margin: 0 0.5em 0 0.5em;
-                background-color: $backgroundColor;
-            }
-        }
+        align-self: center;
     }
     .unallocated {
         @include nolist();

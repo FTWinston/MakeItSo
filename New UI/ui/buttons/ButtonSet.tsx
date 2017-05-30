@@ -1,10 +1,10 @@
 interface IButtonSetBaseProps {
     vertical?: boolean;
     className?: string;
-    prompt?: string;
     color?: ButtonColor;
     disabled?: boolean;
     allowUnselected?: boolean;
+    separate?: boolean;
 }
 
 interface IButtonSetProps extends IButtonSetBaseProps {
@@ -15,11 +15,14 @@ class ButtonSet extends React.Component<IButtonSetProps, {}> {
     static defaultProps = {
         vertical: false,
         allowUnselected: true,
+        separate: false,
     };
     render() {
         let classes = 'buttons';
         if (this.props.vertical)
             classes += ' vertical';
+        if (this.props.separate)
+            classes += ' separate';
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
         
@@ -39,7 +42,7 @@ class ButtonSet extends React.Component<IButtonSetProps, {}> {
                 if (child.type === PushButton || child.type === ConfirmButton || child.type === HeldButton)
                     return React.cloneElement(child, {
                         groupDisabled: this.props.disabled,
-                        color: this.props.color,
+                        groupColor: this.props.color,
                     });
 
                 return child;
@@ -48,7 +51,6 @@ class ButtonSet extends React.Component<IButtonSetProps, {}> {
 
         return (
         <div className={classes}>
-            {this.props.prompt == null ? null : <div className="prompt">{this.props.prompt}</div>}
             {childrenWithProps}
         </div>
         );

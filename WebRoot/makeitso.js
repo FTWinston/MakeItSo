@@ -4,6 +4,7 @@ var language = {
         cancel: 'Cancel',
         ready: 'Ready',
         settings: 'Settings',
+        help: 'Help',
     },
     errors: {
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
@@ -368,8 +369,16 @@ var Button = (function (_super) {
         }
     */
     Button.prototype.render = function () {
+        if (this.props.help === undefined)
+            return this.renderButton();
+        return React.createElement("div", { className: "buttons separate" },
+            this.renderButton(),
+            React.createElement("button", { className: "help", type: "button", title: language.common.help }, "?"));
+    };
+    Button.prototype.determineClasses = function () {
         var classes = this.props.className;
-        if (this.props.color !== undefined) {
+        var color = this.props.color === undefined ? this.props.groupColor : this.props.color;
+        if (color !== undefined) {
             switch (this.props.color) {
                 case 0 /* Primary */:
                     classes += ' primary';
@@ -388,7 +397,10 @@ var Button = (function (_super) {
                     break;
             }
         }
-        return (React.createElement("button", { className: classes, disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title }, this.props.children));
+        return classes;
+    };
+    Button.prototype.renderButton = function () {
+        return React.createElement("button", { className: this.determineClasses(), disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title }, this.props.children);
     };
     return Button;
 }(React.Component));
@@ -402,7 +414,7 @@ var PushButton = (function (_super) {
     }
     PushButton.prototype.render = function () {
         var classList = 'push';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, help: this.props.help }, this.props.children));
     };
     PushButton.prototype.clicked = function (e) {
         if (this.props.clicked !== undefined)
@@ -421,7 +433,7 @@ var ConfirmButton = (function (_super) {
     }
     ConfirmButton.prototype.render = function () {
         var classList = this.state.primed ? 'confirm active' : 'confirm';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, buttonType: "submit" }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), buttonType: "submit", color: this.props.color, disabled: this.props.disabled, title: this.props.title, help: this.props.help }, this.props.children));
     };
     ConfirmButton.prototype.clicked = function (e) {
         if (this.state.primed) {
@@ -466,7 +478,7 @@ var ToggleButton = (function (_super) {
     };
     ToggleButton.prototype.render = function () {
         var classList = this.state.active ? 'toggle active' : 'toggle';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, help: this.props.help }, this.props.children));
     };
     ToggleButton.prototype.clicked = function (e) {
         if (this.state.active) {
@@ -503,7 +515,19 @@ var HeldButton = (function (_super) {
     }
     HeldButton.prototype.render = function () {
         var classList = this.state.held ? 'held active' : 'held';
-        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title }, this.props.children));
+        return (React.createElement(Button, { className: classList, hotkey: this.props.hotkey, help: this.props.help },
+            "mouseDown=",
+            this.mouseDown.bind(this),
+            " mouseUp=",
+            this.mouseUp.bind(this),
+            "color=",
+            this.props.color,
+            " disabled=",
+            this.props.disabled,
+            " title=",
+            this.props.title,
+            ">",
+            this.props.children));
     };
     HeldButton.prototype.mouseDown = function (e) {
         this.setState({ held: true });
@@ -533,6 +557,8 @@ var ButtonSet = (function (_super) {
         var classes = 'buttons';
         if (this.props.vertical)
             classes += ' vertical';
+        if (this.props.separate)
+            classes += ' separate';
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
         var childrenWithProps = React.Children.map(this.props.children, function (child) {
@@ -548,19 +574,18 @@ var ButtonSet = (function (_super) {
             if (child.type === PushButton || child.type === ConfirmButton || child.type === HeldButton)
                 return React.cloneElement(child, {
                     groupDisabled: _this.props.disabled,
-                    color: _this.props.color,
+                    groupColor: _this.props.color,
                 });
             return child;
         });
-        return (React.createElement("div", { className: classes },
-            this.props.prompt == null ? null : React.createElement("div", { className: "prompt" }, this.props.prompt),
-            childrenWithProps));
+        return (React.createElement("div", { className: classes }, childrenWithProps));
     };
     return ButtonSet;
 }(React.Component));
 ButtonSet.defaultProps = {
     vertical: false,
     allowUnselected: true,
+    separate: false,
 };
 var Choice = (function (_super) {
     __extends(Choice, _super);
@@ -584,8 +609,9 @@ var Choice = (function (_super) {
             description = '.';
             descStyle = { 'visibility': 'hidden' };
         }
-        return (React.createElement(ButtonSet, { className: classes, vertical: this.props.vertical, prompt: this.props.prompt, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: this.childActivated.bind(this) },
-            this.props.children,
+        return (React.createElement("div", { className: classes },
+            this.props.prompt == null ? null : React.createElement("div", { className: "prompt" }, this.props.prompt),
+            React.createElement(ButtonSet, { vertical: this.props.vertical, separate: this.props.separate, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: this.childActivated.bind(this) }, this.props.children),
             React.createElement("div", { className: "description", style: descStyle }, description)));
     };
     Choice.prototype.childActivated = function (activated) {
@@ -648,7 +674,7 @@ var SettingsScreen = (function (_super) {
                     React.createElement("div", null,
                         React.createElement("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: this.nameChanged.bind(this), placeholder: words.userNamePlaceholder }),
                         React.createElement("div", { className: "description" }, words.userNameDescription))),
-                React.createElement("div", { role: "group", className: "actions" },
+                React.createElement(ButtonSet, { className: "actions", separate: true },
                     React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave, clicked: this.save.bind(this) }, language.common.save),
                     cancelButton))));
     };
@@ -677,46 +703,6 @@ var SettingsScreen = (function (_super) {
 SettingsScreen.defaultProps = {
     canCancel: true,
 };
-var RoleListItem = (function (_super) {
-    __extends(RoleListItem, _super);
-    function RoleListItem(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
-            selected: false
-        };
-        return _this;
-    }
-    RoleListItem.prototype.render = function () {
-        var allocation;
-        if (this.props.allocated === undefined)
-            allocation = React.createElement("span", { className: "allocated none" });
-        else
-            allocation = React.createElement("span", { className: "allocated" }, this.props.allocated.name);
-        var systemList = ShipSystem.list(this.props.systemFlags);
-        var systemBreakdown, breakdownSpacer;
-        if (systemList == '' || systemList == this.props.name) {
-            systemBreakdown = '';
-            breakdownSpacer = '';
-        }
-        else {
-            systemBreakdown = React.createElement("div", { className: "systems" }, systemList);
-            breakdownSpacer = React.createElement("span", { className: "spacer" });
-        }
-        return (React.createElement("li", { onClick: this.clicked.bind(this) },
-            React.createElement("span", { className: "name" }, this.props.name),
-            React.createElement("span", { className: "spacer" }),
-            allocation,
-            breakdownSpacer,
-            systemBreakdown));
-    };
-    RoleListItem.prototype.clicked = function () {
-        if (this.state.selected)
-            this.props.selected(this.props.systemFlags);
-        else
-            this.props.unselected(this.props.systemFlags);
-    };
-    return RoleListItem;
-}(React.Component));
 var RoleSelection = (function (_super) {
     __extends(RoleSelection, _super);
     function RoleSelection(props) {
@@ -748,9 +734,8 @@ var RoleSelection = (function (_super) {
             React.createElement("div", null,
                 React.createElement("h1", null, language.screens.roleSelection.heading),
                 React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt)),
-            React.createElement("div", null,
-                roleOrSystemSelection,
-                unallocatedCrew),
+            roleOrSystemSelection,
+            unallocatedCrew,
             React.createElement(Menu, null,
                 this.renderSelectionTypeSwitch(roles),
                 React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this) }, language.common.settings))));
@@ -769,14 +754,15 @@ var RoleSelection = (function (_super) {
     };
     RoleSelection.prototype.renderRoleSelection = function (crew, roles) {
         var that = this;
-        return React.createElement("ol", { className: "roleList" }, roles.map(function (role, id) {
+        return React.createElement(Choice, { color: 2 /* Tertiary */, vertical: true, separate: true, className: "roleList" }, roles.map(function (role, id) {
             var crewMember = undefined;
             for (var i = 0; i < crew.length; i++)
                 if (crew[i].systemFlags == role.systemFlags) {
                     crewMember = crew.splice(i)[0];
                     break;
                 }
-            return React.createElement(RoleListItem, { key: id, name: role.name, systemFlags: role.systemFlags, allocated: crewMember, selected: that.roleSelected.bind(that), unselected: that.roleUnselected.bind(that) });
+            var disabled = false;
+            return React.createElement(ToggleButton, { key: id, help: "blah", activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled }, role.name);
         }));
     };
     RoleSelection.prototype.renderUnallocatedCrew = function (unallocated) {
@@ -785,10 +771,6 @@ var RoleSelection = (function (_super) {
         return React.createElement("ul", { className: "unallocated" }, unallocated.map(function (member, id) {
             return React.createElement("li", { key: id }, member.name);
         }));
-    };
-    RoleSelection.prototype.roleSelected = function (flags) {
-    };
-    RoleSelection.prototype.roleUnselected = function (flags) {
     };
     RoleSelection.prototype.showSystemSelection = function () {
     };
