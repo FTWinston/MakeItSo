@@ -46,7 +46,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
                 {unallocatedCrew}
                 <Menu>
                     {this.renderSelectionTypeSwitch(roles)}
-                    <PushButton color={ButtonColor.Secondary} clicked={this.settingsClicked.bind(this)}>{language.common.settings}</PushButton>
+                    <PushButton color={ButtonColor.Secondary} clicked={this.settingsClicked.bind(this)} text={language.common.settings} />
                 </Menu>
             </div>
         );
@@ -55,9 +55,9 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
         if (roles.length == 0)
             return undefined;
         else if (this.state.forceShowSystems)
-            return <PushButton color={ButtonColor.Tertiary} clicked={this.showSystemSelection.bind(this)}>{language.screens.roleSelection.showRoles}</PushButton>;
+            return <PushButton color={ButtonColor.Tertiary} clicked={this.showSystemSelection.bind(this)} text={language.screens.roleSelection.showRoles} />;
         else
-            return <PushButton color={ButtonColor.Tertiary} clicked={this.showRoleSelection.bind(this)}>{language.screens.roleSelection.showSystems}</PushButton>;
+            return <PushButton color={ButtonColor.Tertiary} clicked={this.showRoleSelection.bind(this)} text={language.screens.roleSelection.showSystems} />;
     }
     private renderSystemSelection(crew: CrewMember[]) {
         return <div></div>;
@@ -76,7 +76,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
 
                 let disabled = false;
                 return <ToggleButton key={id} help={"blah"} activateCommand={"sys " + role.systemFlags}
-                    deactivateCommand="sys 0" disabled={disabled}>{role.name}</ToggleButton>;
+                    deactivateCommand="sys 0" disabled={disabled} text={role.name} />;
             })}
         </Choice>
     }

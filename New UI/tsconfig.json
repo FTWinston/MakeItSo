@@ -28,6 +28,8 @@
         "core/ShipSystem.ts",
         "core/CrewMember.ts",
 
+        "ui/Help.tsx",
+
         "ui/buttons/Button.tsx",
         "ui/buttons/PushButton.tsx",
         "ui/buttons/ConfirmButton.tsx",

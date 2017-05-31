@@ -26,7 +26,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
     }
     render() {
         let words = language.screens.settings;
-        let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quaternary} clicked={this.cancel.bind(this)}>{language.common.cancel}</PushButton> : null;
+        let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quaternary} clicked={this.cancel.bind(this)} text={language.common.cancel} /> : null;
         let canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
 
         return (
@@ -36,9 +36,9 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
                     <div role="group">
                         <label>{words.inputMode}</label>
                         <Choice prompt={words.inputModePrompt} color={ButtonColor.Primary}>
-                            <ToggleButton startActive={this.props.inputMode == InputMode.ButtonsAndKeyboard} activated={this.setInputMode.bind(this, InputMode.ButtonsAndKeyboard)} description={words.inputModeDescriptionKeyboard}>{words.inputModeKeyboard}</ToggleButton>
-                            <ToggleButton startActive={this.props.inputMode == InputMode.Touchscreen} activated={this.setInputMode.bind(this, InputMode.Touchscreen)} description={words.inputModeDescriptionTouchscreen}>{words.inputModeTouchscreen}</ToggleButton>
-                            <ToggleButton startActive={this.props.inputMode == InputMode.GamePad} disabled={true} activated={this.setInputMode.bind(this, InputMode.GamePad)} description={words.inputModeDescriptionGamepad}>{words.inputModeGamepad}</ToggleButton>
+                            <ToggleButton startActive={this.props.inputMode == InputMode.ButtonsAndKeyboard} activated={this.setInputMode.bind(this, InputMode.ButtonsAndKeyboard)} description={words.inputModeDescriptionKeyboard} text={words.inputModeKeyboard} />
+                            <ToggleButton startActive={this.props.inputMode == InputMode.Touchscreen} activated={this.setInputMode.bind(this, InputMode.Touchscreen)} description={words.inputModeDescriptionTouchscreen} text={words.inputModeTouchscreen} />
+                            <ToggleButton startActive={this.props.inputMode == InputMode.GamePad} disabled={true} activated={this.setInputMode.bind(this, InputMode.GamePad)} description={words.inputModeDescriptionGamepad} text={words.inputModeGamepad} />
                         </Choice>
                     </div>
                     <div role="group">
@@ -49,7 +49,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
                         </div>
                     </div>
                     <ButtonSet className="actions" separate={true}>
-                        <ConfirmButton color={ButtonColor.Tertiary} disabled={!canSave} clicked={this.save.bind(this)}>{language.common.save}</ConfirmButton>
+                        <ConfirmButton color={ButtonColor.Tertiary} disabled={!canSave} clicked={this.save.bind(this)} text={language.common.save} />
                         {cancelButton}
                     </ButtonSet>
                 </form>

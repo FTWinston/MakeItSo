@@ -11,6 +11,7 @@ interface IButtonProps {
     hotkey?: string;
     color?: ButtonColor;
     disabled?: boolean;
+    text: string;
     help?: string;
 }
 
@@ -26,10 +27,21 @@ interface IBaseButtonProps extends IButtonProps {
     mouseClick?: React.EventHandler<React.MouseEvent>;
 }
 
-class Button extends React.Component<IBaseButtonProps, {}> {
+interface IButtonState {
+    showHelp: boolean;
+}
+
+class Button extends React.Component<IBaseButtonProps, IButtonState> {
     static defaultProps = {
-        buttonType: "button"
+        buttonType: 'button',
+        text: '',
     };
+    constructor(props: IBaseButtonProps) {
+        super(props);
+        this.state = {
+            showHelp: false,
+        };
+    }
 /*
     componentDidMount() {
         if (this.props.hotkey != null)
@@ -43,10 +55,23 @@ class Button extends React.Component<IBaseButtonProps, {}> {
     render(): JSX.Element {
         if (this.props.help === undefined)
             return this.renderButton();
+        return this.renderWithHelp();
+    }
+    private renderWithHelp() {
+        let help = this.state.showHelp ?
+            <Help title={this.props.text} closed={this.showHelp.bind(this, false)}>{this.props.help}</Help>
+            : undefined;
+
         return <div className="buttons separate">
             {this.renderButton()}
-            <button className="help" type="button" title={language.common.help}>?</button>
+            <button className="help" type="button" title={language.common.help} onClick={this.showHelp.bind(this, true)}>?</button>
+            {help}
         </div>
+    }
+    private showHelp(show: boolean) {
+        this.setState({
+            showHelp: show
+        });
     }
     private determineClasses() {
         let classes = this.props.className;
@@ -76,7 +101,7 @@ class Button extends React.Component<IBaseButtonProps, {}> {
                 onClick={this.props.disabled ? undefined : this.props.mouseClick}
                 data-hotkey={this.props.hotkey} type={this.props.buttonType}
                 title={this.props.title}>
-                    {this.props.children}
+                    {this.props.text}
             </button>;
     }
 }

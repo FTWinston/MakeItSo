@@ -30,12 +30,8 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
     }
     render() {
         let classList = this.state.active ? 'toggle active' : 'toggle';
-        return (
-            <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)}
-                color={this.props.color} disabled={this.props.disabled} title={this.props.title} help={this.props.help}>
-                {this.props.children}
-            </Button>
-        );
+        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)}
+                color={this.props.color} disabled={this.props.disabled} text={this.props.text} title={this.props.title} help={this.props.help} />;
     }
     private clicked(e: React.MouseEvent) {
         if (this.state.active) {
