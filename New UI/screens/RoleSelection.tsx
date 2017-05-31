@@ -65,7 +65,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
     }
     private renderRoleSelection(crew: CrewMember[], roles: CrewRole[]) {
         let that = this;
-        return <Choice color={ButtonColor.Tertiary} vertical={true} separate={true} className="roleList">
+        return <Choice color={ButtonColor.Tertiary} vertical={true} separate={true} allowUnselected={true} className="roleList">
             {roles.map(function(role, id) {
                 let crewMember = undefined;
                 for (let i=0; i<crew.length; i++)
@@ -75,7 +75,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
                     }
 
                 let disabled = false;
-                return <ToggleButton key={id} help={"blah"} activateCommand={"sys " + role.systemFlags}
+                return <ToggleButton key={id} help={role.getHelpText()} activateCommand={"sys " + role.systemFlags}
                     deactivateCommand="sys 0" disabled={disabled} text={role.name} />;
             })}
         </Choice>

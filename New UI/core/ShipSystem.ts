@@ -11,6 +11,35 @@ enum ShipSystem {
 
 class CrewRole {
     constructor(public readonly name: string, public readonly systemFlags: ShipSystem) { }
+
+    getHelpText() {
+        let systems: { name: string, help: string }[] = [];
+
+        if (this.systemFlags & ShipSystem.Helm)
+            systems.push(language.systems.helm);
+        if (this.systemFlags & ShipSystem.Warp)
+            systems.push(language.systems.warp);
+        if (this.systemFlags & ShipSystem.Weapons)
+            systems.push(language.systems.weapons);
+        if (this.systemFlags & ShipSystem.Sensors)
+            systems.push(language.systems.sensors);
+        if (this.systemFlags & ShipSystem.PowerManagement)
+            systems.push(language.systems.power);
+        if (this.systemFlags & ShipSystem.DamageControl)
+            systems.push(language.systems.damage);
+        if (this.systemFlags & ShipSystem.Communications)
+            systems.push(language.systems.comms);
+        if (this.systemFlags & ShipSystem.ViewScreen)
+            systems.push(language.systems.view);
+
+        if (systems.length == 1)
+            return `<p>${systems[0].help}</p>`;
+
+        let output = '';
+        for(let system of systems)
+            output += `<h2>${system.name}</h2><p>${system.help}</p>`;
+        return output;
+    }
 }
 
 namespace ShipSystem {

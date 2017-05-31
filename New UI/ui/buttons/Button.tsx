@@ -7,6 +7,7 @@ const enum ButtonColor {
 }
 
 interface IButtonProps {
+    className?: string;
     title?: string;
     hotkey?: string;
     color?: ButtonColor;
@@ -16,7 +17,6 @@ interface IButtonProps {
 }
 
 interface IBaseButtonProps extends IButtonProps {
-    className: string;
     buttonType?: string;
     groupColor?: ButtonColor;
     groupDisabled?: boolean;
@@ -58,13 +58,13 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
         return this.renderWithHelp();
     }
     private renderWithHelp() {
-        let help = this.state.showHelp ?
-            <Help title={this.props.text} closed={this.showHelp.bind(this, false)}>{this.props.help}</Help>
+        let help = this.state.showHelp && this.props.help !== undefined ?
+            <Help title={this.props.text} content={this.props.help} closed={this.showHelp.bind(this, false)} />
             : undefined;
 
         return <div className="buttons separate">
             {this.renderButton()}
-            <button className="help" type="button" title={language.common.help} onClick={this.showHelp.bind(this, true)}>?</button>
+            <button className="icon" type="button" title={language.common.help} onClick={this.showHelp.bind(this, true)}>?</button>
             {help}
         </div>
     }

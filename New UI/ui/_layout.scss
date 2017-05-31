@@ -1,3 +1,19 @@
+@mixin center() {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+@mixin fullscreen() {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    display: flex;
+    align-items: stretch;
+    flex-direction: column;
+	background-color: $backgroundColor; margin: 0; padding: 0;
+}
+
 @mixin portrait() {
     @media (orientation:portrait) {
         @content;

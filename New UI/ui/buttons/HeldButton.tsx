@@ -17,6 +17,9 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
     }
     render() {
         let classList = this.state.held ? 'held active' : 'held';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
+        
         return <Button className={classList} hotkey={this.props.hotkey} text={this.props.text} help={this.props.help}
                 mouseDown={this.mouseDown.bind(this)} mouseUp={this.mouseUp.bind(this)}
                 color={this.props.color} disabled={this.props.disabled} title={this.props.title} />;

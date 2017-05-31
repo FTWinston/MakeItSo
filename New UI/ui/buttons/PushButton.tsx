@@ -6,6 +6,9 @@ interface IPushButtonProps extends IButtonProps {
 class PushButton extends React.Component<IPushButtonProps, {}> {
     render() {
         let classList = 'push';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
+        
         return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} color={this.props.color}
                 disabled={this.props.disabled} title={this.props.title} text={this.props.text} help={this.props.help} />;
     }

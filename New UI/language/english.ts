@@ -68,27 +68,35 @@
     systems: {
         helm: {
             name: 'Helm',
+            help: 'TO-DO: fill in this help text',
         },
         warp: {
             name: 'Warp',
+            help: 'TO-DO: fill in this help text',
         },
         weapons: {
             name: 'Weapons',
+            help: 'TO-DO: fill in this help text',
         },
         sensors: {
             name: 'Sensors',
+            help: 'TO-DO: fill in this help text',
         },
         power: {
             name: 'Power',
+            help: 'TO-DO: fill in this help text',
         },
         damage: {
             name: 'Damage Control',
+            help: 'TO-DO: fill in this help text',
         },
         view: {
             name: 'Viewscreen',
+            help: 'TO-DO: fill in this help text',
         },
         comms: {
             name: 'Communications',
+            help: 'TO-DO: fill in this help text',
         },
     },
 /*

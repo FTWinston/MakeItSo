@@ -1,25 +1,9 @@
 @import 'ui/colors';
+@import 'ui/layout';
 /*
 @import 'ui/borders';
 @import 'ui/breakpoints';
-@import 'ui/layout';
 */
-
-@mixin center() {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-@mixin fullscreen() {
-    position: fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
-    display: flex;
-    align-items: stretch;
-    flex-direction: column;
-	background-color: $backgroundColor; margin: 0; padding: 0;
-}
 
 #gameRoot, #gameRoot > *[data-reactroot] {
     @include fullscreen();
@@ -44,6 +28,9 @@
 
 #gameRoot, h1, button, input {
     font-family: Helvetica, Arial, sans-serif;
+}
+
+#gameRoot, button, input {
     font-size: 16px;
 }
 
@@ -68,20 +55,13 @@ p {
 
 h1 {
     font-weight: bold;
-    margin-bottom: 0;
+    margin: 0;
 }
 
-.helpView {
-    @include fullscreen();
-    z-index: 1;
-    h1 {
-        margin: 1em 0 2em 0;
-    }
-}
-
+@import 'ui/help';
 @import 'ui/forms';
-@import 'ui/buttons/buttons';
-@import 'ui/layout';
+@import 'ui/buttons/button';
+@import 'ui/buttons/buttonset';
 @import 'screens/screens';
 
 /*

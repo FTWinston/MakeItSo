@@ -61,27 +61,35 @@ var language = {
     systems: {
         helm: {
             name: 'Helm',
+            help: 'TO-DO: fill in this help text',
         },
         warp: {
             name: 'Warp',
+            help: 'TO-DO: fill in this help text',
         },
         weapons: {
             name: 'Weapons',
+            help: 'TO-DO: fill in this help text',
         },
         sensors: {
             name: 'Sensors',
+            help: 'TO-DO: fill in this help text',
         },
         power: {
             name: 'Power',
+            help: 'TO-DO: fill in this help text',
         },
         damage: {
             name: 'Damage Control',
+            help: 'TO-DO: fill in this help text',
         },
         view: {
             name: 'Viewscreen',
+            help: 'TO-DO: fill in this help text',
         },
         comms: {
             name: 'Communications',
+            help: 'TO-DO: fill in this help text',
         },
     },
 };
@@ -249,6 +257,33 @@ var CrewRole = (function () {
         this.name = name;
         this.systemFlags = systemFlags;
     }
+    CrewRole.prototype.getHelpText = function () {
+        var systems = [];
+        if (this.systemFlags & ShipSystem.Helm)
+            systems.push(language.systems.helm);
+        if (this.systemFlags & ShipSystem.Warp)
+            systems.push(language.systems.warp);
+        if (this.systemFlags & ShipSystem.Weapons)
+            systems.push(language.systems.weapons);
+        if (this.systemFlags & ShipSystem.Sensors)
+            systems.push(language.systems.sensors);
+        if (this.systemFlags & ShipSystem.PowerManagement)
+            systems.push(language.systems.power);
+        if (this.systemFlags & ShipSystem.DamageControl)
+            systems.push(language.systems.damage);
+        if (this.systemFlags & ShipSystem.Communications)
+            systems.push(language.systems.comms);
+        if (this.systemFlags & ShipSystem.ViewScreen)
+            systems.push(language.systems.view);
+        if (systems.length == 1)
+            return "<p>" + systems[0].help + "</p>";
+        var output = '';
+        for (var _i = 0, systems_1 = systems; _i < systems_1.length; _i++) {
+            var system = systems_1[_i];
+            output += "<h2>" + system.name + "</h2><p>" + system.help + "</p>";
+        }
+        return output;
+    };
     return CrewRole;
 }());
 (function (ShipSystem) {
@@ -360,10 +395,10 @@ var Help = (function (_super) {
     }
     Help.prototype.render = function () {
         var closeButton = this.props.closed === undefined ? undefined
-            : React.createElement(PushButton, { text: "X", clicked: this.props.closed, hotkey: "esc" });
+            : React.createElement(PushButton, { className: "icon", text: "X", clicked: this.props.closed, hotkey: "esc" });
         return (React.createElement("div", { className: "helpView" },
             React.createElement("h1", null, this.props.title),
-            this.props.children,
+            React.createElement("div", { className: "content", dangerouslySetInnerHTML: { __html: this.props.content } }),
             React.createElement(Menu, null, closeButton)));
     };
     return Help;
@@ -393,12 +428,12 @@ var Button = (function (_super) {
         return this.renderWithHelp();
     };
     Button.prototype.renderWithHelp = function () {
-        var help = this.state.showHelp ?
-            React.createElement(Help, { title: this.props.text, closed: this.showHelp.bind(this, false) }, this.props.help)
+        var help = this.state.showHelp && this.props.help !== undefined ?
+            React.createElement(Help, { title: this.props.text, content: this.props.help, closed: this.showHelp.bind(this, false) })
             : undefined;
         return React.createElement("div", { className: "buttons separate" },
             this.renderButton(),
-            React.createElement("button", { className: "help", type: "button", title: language.common.help, onClick: this.showHelp.bind(this, true) }, "?"),
+            React.createElement("button", { className: "icon", type: "button", title: language.common.help, onClick: this.showHelp.bind(this, true) }, "?"),
             help);
     };
     Button.prototype.showHelp = function (show) {
@@ -446,6 +481,8 @@ var PushButton = (function (_super) {
     }
     PushButton.prototype.render = function () {
         var classList = 'push';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
         return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, text: this.props.text, help: this.props.help });
     };
     PushButton.prototype.clicked = function (e) {
@@ -465,6 +502,8 @@ var ConfirmButton = (function (_super) {
     }
     ConfirmButton.prototype.render = function () {
         var classList = this.state.primed ? 'confirm active' : 'confirm';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
         return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), buttonType: "submit", color: this.props.color, disabled: this.props.disabled, text: this.props.text, title: this.props.title, help: this.props.help });
     };
     ConfirmButton.prototype.clicked = function (e) {
@@ -510,6 +549,8 @@ var ToggleButton = (function (_super) {
     };
     ToggleButton.prototype.render = function () {
         var classList = this.state.active ? 'toggle active' : 'toggle';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
         return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, text: this.props.text, title: this.props.title, help: this.props.help });
     };
     ToggleButton.prototype.clicked = function (e) {
@@ -547,6 +588,8 @@ var HeldButton = (function (_super) {
     }
     HeldButton.prototype.render = function () {
         var classList = this.state.held ? 'held active' : 'held';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
         return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, text: this.props.text, help: this.props.help, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title });
     };
     HeldButton.prototype.mouseDown = function (e) {
@@ -774,7 +817,7 @@ var RoleSelection = (function (_super) {
     };
     RoleSelection.prototype.renderRoleSelection = function (crew, roles) {
         var that = this;
-        return React.createElement(Choice, { color: 2 /* Tertiary */, vertical: true, separate: true, className: "roleList" }, roles.map(function (role, id) {
+        return React.createElement(Choice, { color: 2 /* Tertiary */, vertical: true, separate: true, allowUnselected: true, className: "roleList" }, roles.map(function (role, id) {
             var crewMember = undefined;
             for (var i = 0; i < crew.length; i++)
                 if (crew[i].systemFlags == role.systemFlags) {
@@ -782,7 +825,7 @@ var RoleSelection = (function (_super) {
                     break;
                 }
             var disabled = false;
-            return React.createElement(ToggleButton, { key: id, help: "blah", activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, text: role.name });
+            return React.createElement(ToggleButton, { key: id, help: role.getHelpText(), activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, text: role.name });
         }));
     };
     RoleSelection.prototype.renderUnallocatedCrew = function (unallocated) {

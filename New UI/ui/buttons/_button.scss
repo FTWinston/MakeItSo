@@ -1,0 +1,55 @@
+@import '../colors';
+
+button {
+    cursor: pointer;
+    vertical-align: baseline;
+    border-radius: $buttonRadius;
+    transition: $elementTransition, border-radius 1s;
+
+    &.confirm {
+        border-top-left-radius: $buttonRadius / 5 !important;
+        border-bottom-right-radius: $buttonRadius / 5 !important;
+        
+        &::before {
+            content: '';
+            display: inline-block;
+            overflow: hidden;
+            text-align: left;
+            vertical-align: top;
+            width: 0;
+            margin-right: 0;
+            transition: width 0.5s;
+        }
+
+        &.active {
+            background-color: $colorConfirm !important;
+            border-color: $colorConfirm !important;
+            
+            &::before {
+                content: 'Confirm:';
+                width: 4em;
+            }
+
+            &:active {
+                background-color: $colorHighlight !important;
+                border-color: $colorHighlight !important;
+            }
+        }
+    }
+
+    &:active {
+        border-radius: 0 !important;
+    }
+
+    &.held {
+        border-left-width: 0 !important;
+        border-right-width: 0 !important;
+        border-radius: $buttonRadius !important;
+    }
+
+    &.icon {
+        align-self: center;
+        padding: 0.2em 0.5em;
+        border-radius: 4em;
+    }
+}

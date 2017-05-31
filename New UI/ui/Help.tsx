@@ -1,17 +1,18 @@
 interface IHelpProps {
     title: string,
+    content: string,
     closed?: () => void,
 }
 
 class Help extends React.Component<IHelpProps, {}> {
     render() {
         let closeButton = this.props.closed === undefined ? undefined
-            : <PushButton text="X" clicked={this.props.closed} hotkey="esc" />;
+            : <PushButton className="icon" text="X" clicked={this.props.closed} hotkey="esc" />;
 
         return (
         <div className="helpView">
             <h1>{this.props.title}</h1>
-            {this.props.children}
+            <div className="content" dangerouslySetInnerHTML={{__html: this.props.content}}></div>
             <Menu>
                 {closeButton}
             </Menu>
