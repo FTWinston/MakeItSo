@@ -1,5 +1,6 @@
 ﻿interface IRoleSelectionProps {
-    crew: { [key:string]:CrewMember; };
+    crewSize: number;
+    otherCrewsSystems: ShipSystem;
     settingsClicked: () => void;
 }
 
@@ -15,10 +16,6 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
         };
     }
     render() {
-        let crew: CrewMember[] = [];
-        for (let id in this.props.crew)
-            crew.push(this.props.crew[id]);
-
         let showSystemSelection: boolean;
         let roles: CrewRole[];
         if (this.state.forceShowSystems) {
@@ -26,15 +23,13 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
             roles = [];
         }
         else {
-            roles = ShipSystem.getRoles(crew.length);
+            roles = ShipSystem.getRoles(this.props.crewSize);
             showSystemSelection = roles.length == 0;
         }
 
         let roleOrSystemSelection = showSystemSelection
-            ? this.renderSystemSelection(crew)
-            : this.renderRoleSelection(crew, roles);
-
-        let unallocatedCrew = this.renderUnallocatedCrew(crew);
+            ? this.renderSystemSelection()
+            : this.renderRoleSelection(roles);
 
         return (
             <div className="screen" id="roleSelection">
@@ -43,7 +38,6 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
                     <p className="prompt">{language.screens.roleSelection.prompt}</p>
                 </div>
                 {roleOrSystemSelection}
-                {unallocatedCrew}
                 <Menu>
                     {this.renderSelectionTypeSwitch(roles)}
                     <PushButton color={ButtonColor.Secondary} clicked={this.settingsClicked.bind(this)} text={language.common.settings} />
@@ -59,34 +53,30 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
         else
             return <PushButton color={ButtonColor.Tertiary} clicked={this.showRoleSelection.bind(this)} text={language.screens.roleSelection.showSystems} />;
     }
-    private renderSystemSelection(crew: CrewMember[]) {
+    private renderSystemSelection() {
         return <div></div>;
         // TODO: render system list
     }
-    private renderRoleSelection(crew: CrewMember[], roles: CrewRole[]) {
+    private renderRoleSelection(roles: CrewRole[]) {
         let that = this;
         return <Choice color={ButtonColor.Tertiary} vertical={true} separate={true} allowUnselected={true} className="roleList">
             {roles.map(function(role, id) {
-                let crewMember = undefined;
-                for (let i=0; i<crew.length; i++)
-                    if (crew[i].systemFlags == role.systemFlags) {
-                        crewMember = crew.splice(i)[0];
-                        break;
-                    }
+                let disabled: boolean;
+                let tooltip: string | undefined;
 
-                let disabled = false;
+                if ((role.systemFlags & that.props.otherCrewsSystems) == role.systemFlags) {
+                    disabled = true;
+                    tooltip = 'Selected by another crew member';
+                }
+                else {
+                    disabled = false;
+                    tooltip = undefined;
+                }
+
                 return <ToggleButton key={id} help={role.getHelpText()} activateCommand={"sys " + role.systemFlags}
-                    deactivateCommand="sys 0" disabled={disabled} text={role.name} />;
+                    deactivateCommand="sys 0" disabled={disabled} text={role.name} title={tooltip} />;
             })}
         </Choice>
-    }
-    private renderUnallocatedCrew(unallocated: CrewMember[]) {
-        if (unallocated.length == 0)
-            return undefined;
-
-        return <ul className="unallocated">{unallocated.map(function(member, id) {
-            return <li key={id}>{member.name}</li>;
-        })}</ul>;
     }
     private showSystemSelection() {
         

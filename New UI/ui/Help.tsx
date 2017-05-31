@@ -11,7 +11,7 @@ class Help extends React.Component<IHelpProps, {}> {
 
         return (
         <div className="helpView">
-            <h1>{this.props.title}</h1>
+            <h1>{language.common.help}: {this.props.title}</h1>
             <div className="content" dangerouslySetInnerHTML={{__html: this.props.content}}></div>
             <Menu>
                 {closeButton}

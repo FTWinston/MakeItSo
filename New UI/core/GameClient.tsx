@@ -5,8 +5,9 @@ interface IGameClientState {
     errorMessage?: string;
     showHotkeys?: boolean;
 
+    crewSize?: number;
     crewID?: string;
-    crew?: { [key:string]:CrewMember; };
+    otherCrewsSystems?: ShipSystem;
 
     settings?: ClientSettings;
     vibration?: FeatureState;
@@ -34,7 +35,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
             currentScreen: GameScreen.Connecting,
             errorMessage: undefined,
             crewID: undefined,
-            crew: {},
+            crewSize: 0,
+            otherCrewsSystems: 0,
         };
     }
     private componentDidMount () {
@@ -68,8 +70,9 @@ class GameClient extends React.Component<{}, IGameClientState> {
             case GameScreen.Connecting:
                 return <ErrorScreen message={language.messages.connecting} />;
             case GameScreen.RoleSelection:
-                let crew = this.state.crew === undefined ? {} : this.state.crew;
-                return <RoleSelection settingsClicked={this.show.bind(this, GameScreen.Settings)} crew={crew} />;
+                let crewSize = this.state.crewSize === undefined ? 0 : this.state.crewSize;
+                let otherSystems = this.state.otherCrewsSystems === undefined ? 0 : this.state.otherCrewsSystems;
+                return <RoleSelection crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)} />;
             case GameScreen.GameSetup:
             case GameScreen.Game:
             default:
@@ -106,42 +109,11 @@ class GameClient extends React.Component<{}, IGameClientState> {
     setPlayerID(id: string) {
         this.setState({crewID: id});
     }
-    private getOrCreateCrewMember(state: IGameClientState, id: string) {
-        let crew = state.crew;
-        if (crew === undefined) {
-            crew = {};
-            state.crew = crew;
-        }
-
-        let member = crew[id];
-        if (member === undefined) {
-            member = new CrewMember('Unnamed');
-            crew[id] = member;
-        }
-
-        return member;
+    setCrewSize(count: number) {
+        this.setState({crewSize: count});
     }
-    setCrewName(id: string, name: string) {
-        // add new crew member, or update existing name
-        let that = this;
-        this.setState(function (state: IGameClientState) {
-            that.getOrCreateCrewMember(state, id).name = name;
-        });
-    }
-    crewQuit(id: string) {
-        // remove crew member
-        this.setState(function (state: IGameClientState) {
-            let crew = state.crew;
-            if (crew !== undefined)
-                delete crew[id];
-        });
-    }
-    setSystemUsage(crewID: string, systemFlags: ShipSystem) {
-        let that = this;
-        this.setState(function(state: IGameClientState) {
-            let member = that.getOrCreateCrewMember(state, crewID);
-            member.systemFlags = systemFlags;
-        });
+    setSystemUsage(systemFlags: ShipSystem) {
+        this.setState({otherCrewsSystems: systemFlags});
     }
     private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
         // block accidental unloading only when in the game screen

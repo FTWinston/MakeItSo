@@ -11,16 +11,6 @@
     .roleList {
         align-self: center;
     }
-    .unallocated {
-        @include nolist();
-        & > li {
-            display: inline;
-
-            &:not(:last-child)::after {
-                content: ', ';
-            }
-        }
-    }
 }
 
 #game {

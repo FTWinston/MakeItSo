@@ -269,18 +269,19 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// Send connection ID back to the client.
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "id %i", info->identifier);
 
-	// send a list of all crewmates to the client, plus their system selections
-	for (auto& other : *currentConnections)
-	{
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "crew+ %i %ls", other->identifier, other->name.c_str());
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "sys %i %i", other->identifier, other->shipSystemFlags);
-	}
-
 #ifndef WEB_SERVER_TEST
 	currentConnections->Add(info);
 #else
 	currentConnections->insert(currentConnections->end(), info);
 #endif
+
+	// send the other system selections to the client
+	SendSystemUsage(info);
+
+	// send updated crew size to all clients
+	int32 size = currentConnections->size();
+	for (auto& other : *currentConnections)
+		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "crew %i", size);
 
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
@@ -317,13 +318,17 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	// send "player quit" message to crewmates
 #ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("crew- %i"), info->identifier);
+	auto message = FString::Printf(TEXT("crew %i"), currentConnections->size());
 	SendCrewMessage(ESystem::Everyone, CHARARR(message));
 #else
 	TCHAR message[140];
-	swprintf(message, sizeof(message), L"crew- %i", info->identifier);
+	swprintf(message, sizeof(message), L"crew %i", currentConnections->size());
 	SendCrewMessage(ESystem::Everyone, message);
 #endif
+
+	// send updated system usage
+	for (auto& other : *currentConnections)
+		SendSystemUsage(other);
 
 	if (connectionInSetup == info)
 	{
@@ -423,15 +428,6 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		wchar_t wBuffer[128];
 		mbstowcs(wBuffer, buffer, strlen(buffer) + 1);
 		info->name = FString(wBuffer);
-#endif
-
-#ifndef WEB_SERVER_TEST
-		auto message = FString::Printf(TEXT("crew+ %i %s"), info->identifier, info->name);
-		SendCrewMessage(ESystem::Everyone, CHARARR(message));
-#else
-		TCHAR message[140];
-		swprintf(message, sizeof(message), L"crew+ %i %ls", info->identifier, info->name.c_str());
-		SendCrewMessage(ESystem::Everyone, message);
 #endif
 	}
 	else if (STARTS_WITH(info, "sys "))
@@ -577,7 +573,18 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
 	info->shipSystemFlags = systemFlags;
 
 	for (auto& other : *currentConnections)
-		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys %i %i", info->identifier, systemFlags);
+		SendSystemUsage(other);
+}
+
+void UCrewManager::SendSystemUsage(ConnectionInfo *sendTo)
+{
+	// send flags of all the systems in use by OTHER crew members, but not by this one
+	int32 systemFlags = 0;
+	for (auto& other : *currentConnections)
+		if (other != sendTo)
+			systemFlags |= other->shipSystemFlags;
+
+	mg_websocket_printf(sendTo->connection, WEBSOCKET_OPCODE_TEXT, "sys %i", systemFlags);
 }
 
 void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude)

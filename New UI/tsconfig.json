@@ -26,7 +26,6 @@
         "core/Connection.ts",
         "core/ClientSettings.ts",
         "core/ShipSystem.ts",
-        "core/CrewMember.ts",
 
         "ui/Help.tsx",
 

@@ -46,20 +46,13 @@
             
             this.game.show(GameScreen.RoleSelection, true);
         }
-        else if (cmd == 'crew+') {
-            pos = data.indexOf(' ');
-            let identifier = data.substr(0, pos);
-            let name = data.substr(pos + 1);
-            this.game.setCrewName(identifier, name);
-        }
-        else if (cmd == 'crew-') {
-            this.game.crewQuit(data);
+        else if (cmd == 'crew') {
+            let count = parseInt(data);
+            this.game.setCrewSize(count);
         }
         else if (cmd == 'sys') {
-            pos = data.indexOf(' ');
-            let crewMember = data.substr(0, pos);
-            let systemFlags = parseInt(data.substr(pos + 1)) as ShipSystem;
-            this.game.setSystemUsage(crewMember, systemFlags);
+            let systemFlags = parseInt(data) as ShipSystem;
+            this.game.setSystemUsage(systemFlags);
         }
 /*
         else if (cmd == 'setup+') {
