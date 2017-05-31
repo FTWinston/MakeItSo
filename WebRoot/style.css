@@ -190,8 +190,10 @@ form {
     justify-content: flex-start;
     align-items: baseline;
     margin-bottom: 1.5rem; }
-  form > .actions {
-    align-self: center; }
+
+.actions {
+  align-self: center;
+  flex-shrink: 0; }
 
 input[type="text"] {
   width: 15em; }
@@ -284,6 +286,10 @@ button {
 .description {
   margin-top: 0.5em; }
 
+.imitateChoice {
+  /* account for the space the description would take up, if present */
+  margin-bottom: 1.5em; }
+
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -298,16 +304,16 @@ $lightBackground: #999;
 
 #roleSelection {
   display: flex;
-  flex-direction: column; }
-  #roleSelection .roleList {
-    align-self: center; }
-  #roleSelection .unallocated {
-    list-style: none;
-    padding-left: 0; }
-    #roleSelection .unallocated > li {
-      display: inline; }
-      #roleSelection .unallocated > li:not(:last-child)::after {
-        content: ', '; }
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; }
+  #roleSelection > .content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start; }
+  #roleSelection .systems .inUse {
+    text-decoration: line-through; }
 
 #game {
   overflow-y: hidden;

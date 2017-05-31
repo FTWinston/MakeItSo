@@ -10,7 +10,9 @@ var language = {
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
         /*
         shipFull: 'This ship is full: there is no room for you to join.',
-        gameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
+        */
+        gameStarted: 'This game has already started: wait for the crew to pause or end the game.',
+        /*
         unrecognisedCommand: 'Unrecognised command from server: ',
         wrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
         systemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
@@ -34,20 +36,25 @@ var language = {
             userNameDescription: 'Enter the name you wish to display to your crewmates',
         },
         roleSelection: {
-            heading: 'Select your role',
-            prompt: 'Each crew member should select a different role.\nThe available roles change depending on the size of your crew, so wait for everyone to join before choosing.\nFor advanced users, a custom role allows selection of individual ship systems.',
+            roleHeading: 'Select your role',
+            systemHeading: 'Select your systems',
+            rolePrompt: 'Each crew member should select a different role.\nWait for everyone to join before choosing, as the roles change depending on the size of your crew.\nEach role consists of multiple systems. Experienced crews can switch to selecting systems directly.',
+            systemPrompt: 'Multiple crew members can select the same system, but only one can view it at a time. Each system must be selected by at least one crew member. Novice crews can switch to selecting pre-set roles consisting of multiple systems.',
             showSystems: 'Select systems (advanced)',
             showRoles: 'Select roles (simple)',
+            resume: 'Resume game',
+            quit: 'Quit game',
+            setup: 'Setup game',
+            setupInUse: 'Another crew member is setting up the game',
+            systemInUse: 'Another crew member has selected this system',
         }
     },
     messages: {
         confirmLeave: 'The game is still active.',
         connecting: 'Connecting...',
-        /*
-                messageWait: 'Please wait...',
-                messageGameEnded: 'The game has ended.',
-                messageGameEndedUser:  'User @name@ ended the game.',
-        */
+        wait: 'Please wait...',
+        gameEnded: 'The game has ended.',
+        gameEndedUser: '@name@ ended the game.',
         refreshPage: 'Refresh the page to continue.',
     },
     roles: {
@@ -161,57 +168,57 @@ var Connection = (function () {
             var systemFlags = parseInt(data);
             this.game.setSystemUsage(systemFlags);
         }
+        else if (cmd == 'setup+') {
+            this.game.setupScreenInUse(false);
+        }
+        else if (cmd == 'setup-') {
+            this.game.setupScreenInUse(true);
+        }
+        else if (cmd == 'started') {
+            this.game.setGameActive(true);
+            this.game.showError(language.errors.gameStarted, false);
+        }
+        else if (cmd == 'paused') {
+            this.game.setGameActive(true);
+            this.game.show(3 /* RoleSelection */);
+        }
+        else if (cmd == 'game+') {
+            this.game.show(5 /* Game */);
+        }
+        else if (cmd == 'game-') {
+            this.game.setGameActive(false);
+            var blame = data != null ? language.messages.gameEndedUser.replace('@name@', data) : language.messages.gameEnded;
+            this.game.showError(blame + ' ' + language.messages.wait, false);
+            setTimeout(function () { this.game.setActiveScreen('systems'); }.bind(this), 3000);
+        }
+        else if (cmd == 'pause+') {
+            this.game.show(3 /* RoleSelection */);
+            //this.game.clearAllData();
+        }
+        else if (cmd == 'pause-') {
+            this.game.show(5 /* Game */);
+        }
+        else if (cmd == 'selectsys+') {
+            this.game.setDirectSystemSelection(true);
+        }
+        else if (cmd == 'selectsys-') {
+            this.game.setDirectSystemSelection(false);
+        }
         /*
-                else if (cmd == 'setup+') {
-                    this.game.setupScreenInUse(false);
-                }
-                else if (cmd == 'setup-') {
-                    this.game.setupScreenInUse(true);
-                }
-                else if (cmd == 'setup') {
-                    this.game.setActiveScreen('setup');
-                }
-                else if (cmd == 'full') {
-                    this.game.showError(language.errorShipFull, true);
-                }
-                else if (cmd == 'started') {
-                    this.game.gameAlreadyStarted();
-                    this.game.showError(language.errorGameStarted, false);
-                }
-                else if (cmd == 'paused') {
-                    this.game.gameAlreadyStarted();
-                    this.game.setActiveScreen('systems');
-                }
-                else if (cmd == 'game+') {
-                    this.game.setActiveScreen('game');
-                }
-                else if (cmd == 'game-') {
-                    let blame = data != null ? language.messageGameEndedUser.replace('@name@', data) : language.messageGameEnded;
-                    this.game.showError(blame + ' ' + language.messageWait, false);
-        
-                    setTimeout(function() { this.game.setActiveScreen('systems'); }.bind(this), 3000);
-                }
-                else if (cmd == 'pause+') {
-                    this.game.setActiveScreen('systems');
-                    this.game.clearAllData();
-                }
-                else if (cmd == 'pause-') {
-                    this.game.setActiveScreen('game');
-                }
-                else {
-                    let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
-                    if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)
-                        console.error(language.errorUnrecognisedCommand + cmd);
-                    else {
-                        cmd = cmd.substr(1);
-                        let sysInfo = this.game.state.systems[sysNum];
-                        if (sysInfo === undefined)
-                            console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
-                        else if (!sysInfo.system.receiveMessage(cmd, data))
-                            console.error(language.errorSystemDidntHandleMessage.replace('@system@', sysInfo.name).replace('@cmd@', cmd).replace('@data@', data));
-                    }
-                }
-        */
+        else {
+            let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
+            if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)
+                console.error(language.errorUnrecognisedCommand + cmd);
+            else {
+                cmd = cmd.substr(1);
+                let sysInfo = this.game.state.systems[sysNum];
+                if (sysInfo === undefined)
+                    console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
+                else if (!sysInfo.system.receiveMessage(cmd, data))
+                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', sysInfo.name).replace('@cmd@', cmd).replace('@data@', data));
+            }
+        }
+*/
     };
     return Connection;
 }());
@@ -250,60 +257,67 @@ var CrewRole = (function () {
         this.name = name;
         this.systemFlags = systemFlags;
     }
-    CrewRole.prototype.getHelpText = function () {
-        var systems = [];
-        if (this.systemFlags & ShipSystem.Helm)
-            systems.push(language.systems.helm);
-        if (this.systemFlags & ShipSystem.Warp)
-            systems.push(language.systems.warp);
-        if (this.systemFlags & ShipSystem.Weapons)
-            systems.push(language.systems.weapons);
-        if (this.systemFlags & ShipSystem.Sensors)
-            systems.push(language.systems.sensors);
-        if (this.systemFlags & ShipSystem.PowerManagement)
-            systems.push(language.systems.power);
-        if (this.systemFlags & ShipSystem.DamageControl)
-            systems.push(language.systems.damage);
-        if (this.systemFlags & ShipSystem.Communications)
-            systems.push(language.systems.comms);
-        if (this.systemFlags & ShipSystem.ViewScreen)
-            systems.push(language.systems.view);
-        if (systems.length == 1)
-            return "<p>" + systems[0].help + "</p>";
-        var output = '';
-        for (var _i = 0, systems_1 = systems; _i < systems_1.length; _i++) {
-            var system = systems_1[_i];
-            output += "<h2>" + system.name + "</h2><p>" + system.help + "</p>";
-        }
-        return output;
-    };
     return CrewRole;
 }());
 (function (ShipSystem) {
-    function list(flags) {
-        var output = '';
+    ShipSystem.allSystems = [
+        ShipSystem.Helm,
+        ShipSystem.Warp,
+        ShipSystem.Weapons,
+        ShipSystem.Sensors,
+        ShipSystem.PowerManagement,
+        ShipSystem.DamageControl,
+        ShipSystem.Communications,
+        ShipSystem.ViewScreen,
+    ];
+    ShipSystem.count = ShipSystem.allSystems.length;
+    function getInfoArray(flags) {
+        var systems = [];
         if (flags & ShipSystem.Helm)
-            output += ', ' + language.systems.helm.name;
+            systems.push(language.systems.helm);
         if (flags & ShipSystem.Warp)
-            output += ', ' + language.systems.warp.name;
+            systems.push(language.systems.warp);
         if (flags & ShipSystem.Weapons)
-            output += ', ' + language.systems.weapons.name;
+            systems.push(language.systems.weapons);
         if (flags & ShipSystem.Sensors)
-            output += ', ' + language.systems.sensors.name;
+            systems.push(language.systems.sensors);
         if (flags & ShipSystem.PowerManagement)
-            output += ', ' + language.systems.power.name;
+            systems.push(language.systems.power);
         if (flags & ShipSystem.DamageControl)
-            output += ', ' + language.systems.damage.name;
+            systems.push(language.systems.damage);
         if (flags & ShipSystem.Communications)
-            output += ', ' + language.systems.comms.name;
+            systems.push(language.systems.comms);
         if (flags & ShipSystem.ViewScreen)
-            output += ', ' + language.systems.view.name;
+            systems.push(language.systems.view);
+        return systems;
+    }
+    function getNames(flags) {
+        var systems = getInfoArray(flags);
+        if (systems.length == 1)
+            return systems[0].name;
+        var output = '';
+        for (var _i = 0, systems_1 = systems; _i < systems_1.length; _i++) {
+            var system = systems_1[_i];
+            output += ', ' + system.name;
+        }
         if (output == '')
             return '';
         else
             return output.substr(2);
     }
-    ShipSystem.list = list;
+    ShipSystem.getNames = getNames;
+    function getHelpText(systemFlags) {
+        var systems = getInfoArray(systemFlags);
+        if (systems.length == 1)
+            return "<p>" + systems[0].help + "</p>";
+        var output = '';
+        for (var _i = 0, systems_2 = systems; _i < systems_2.length; _i++) {
+            var system = systems_2[_i];
+            output += "<h2>" + system.name + "</h2><p>" + system.help + "</p>";
+        }
+        return output;
+    }
+    ShipSystem.getHelpText = getHelpText;
     function getRoles(crewSize) {
         switch (crewSize) {
             case 1:
@@ -419,7 +433,7 @@ var Button = (function (_super) {
             : undefined;
         return React.createElement("div", { className: "buttons separate" },
             this.renderButton(),
-            React.createElement("button", { className: "icon", type: "button", title: language.common.help, onClick: this.showHelp.bind(this, true) }, "?"),
+            React.createElement("button", { className: "icon push", type: "button", title: language.common.help, onClick: this.showHelp.bind(this, true) }, "?"),
             help);
     };
     Button.prototype.showHelp = function (show) {
@@ -755,16 +769,12 @@ SettingsScreen.defaultProps = {
 var RoleSelection = (function (_super) {
     __extends(RoleSelection, _super);
     function RoleSelection(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
-            forceShowSystems: false,
-        };
-        return _this;
+        return _super.call(this, props) || this;
     }
     RoleSelection.prototype.render = function () {
         var showSystemSelection;
         var roles;
-        if (this.state.forceShowSystems) {
+        if (this.props.forceShowSystems) {
             showSystemSelection = true;
             roles = [];
         }
@@ -775,30 +785,40 @@ var RoleSelection = (function (_super) {
         var roleOrSystemSelection = showSystemSelection
             ? this.renderSystemSelection()
             : this.renderRoleSelection(roles);
+        var words = language.screens.roleSelection;
         return (React.createElement("div", { className: "screen", id: "roleSelection" },
             React.createElement("div", null,
-                React.createElement("h1", null, language.screens.roleSelection.heading),
-                React.createElement("p", { className: "prompt" }, language.screens.roleSelection.prompt)),
-            roleOrSystemSelection,
+                React.createElement("h1", null, showSystemSelection ? words.systemHeading : words.roleHeading),
+                React.createElement("p", { className: "prompt" }, showSystemSelection ? words.systemPrompt : words.rolePrompt)),
+            React.createElement("div", { className: "content" },
+                roleOrSystemSelection,
+                this.renderActionButtons()),
             React.createElement(Menu, null,
-                this.renderSelectionTypeSwitch(roles),
-                React.createElement(PushButton, { color: 1 /* Secondary */, clicked: this.settingsClicked.bind(this), text: language.common.settings }))));
+                React.createElement(PushButton, { color: 4 /* Quandry */, clicked: this.settingsClicked.bind(this), text: "\u2699", className: "icon", title: language.common.settings }))));
     };
-    RoleSelection.prototype.renderSelectionTypeSwitch = function (roles) {
-        if (roles.length == 0)
+    RoleSelection.prototype.renderSelectionTypeSwitch = function () {
+        if (this.props.crewSize >= ShipSystem.count)
             return undefined;
-        else if (this.state.forceShowSystems)
-            return React.createElement(PushButton, { color: 2 /* Tertiary */, clicked: this.showSystemSelection.bind(this), text: language.screens.roleSelection.showRoles });
+        else if (this.props.forceShowSystems)
+            return React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "-selectsys", text: language.screens.roleSelection.showRoles });
         else
-            return React.createElement(PushButton, { color: 2 /* Tertiary */, clicked: this.showRoleSelection.bind(this), text: language.screens.roleSelection.showSystems });
+            return React.createElement(ConfirmButton, { color: 1 /* Secondary */, command: "+selectsys", text: language.screens.roleSelection.showSystems });
     };
     RoleSelection.prototype.renderSystemSelection = function () {
-        return React.createElement("div", null);
-        // TODO: render system list
+        var that = this;
+        return React.createElement("div", { className: "systems imitateChoice" },
+            React.createElement(ButtonSet, { color: 1 /* Secondary */, vertical: true, separate: true }, ShipSystem.allSystems.map(function (system, id) {
+                var inUse = (system & that.props.otherCrewsSystems) == system;
+                var name = ShipSystem.getNames(system);
+                var help = ShipSystem.getHelpText(system);
+                var tooltip = inUse ? language.screens.roleSelection.systemInUse : undefined;
+                var classes = inUse ? 'inUse' : undefined;
+                return React.createElement(ToggleButton, { key: id, help: help, activateCommand: "sys+ " + system, deactivateCommand: "sys- " + system, className: classes, title: tooltip, text: name });
+            })));
     };
     RoleSelection.prototype.renderRoleSelection = function (roles) {
         var that = this;
-        return React.createElement(Choice, { color: 2 /* Tertiary */, vertical: true, separate: true, allowUnselected: true, className: "roleList" }, roles.map(function (role, id) {
+        return React.createElement(Choice, { color: 2 /* Tertiary */, vertical: true, separate: true, allowUnselected: true }, roles.map(function (role, id) {
             var disabled;
             var tooltip;
             if ((role.systemFlags & that.props.otherCrewsSystems) == role.systemFlags) {
@@ -809,18 +829,60 @@ var RoleSelection = (function (_super) {
                 disabled = false;
                 tooltip = undefined;
             }
-            return React.createElement(ToggleButton, { key: id, help: role.getHelpText(), activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, text: role.name, title: tooltip });
+            var help = ShipSystem.getHelpText(role.systemFlags);
+            return React.createElement(ToggleButton, { key: id, help: help, activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, text: role.name, title: tooltip });
         }));
     };
-    RoleSelection.prototype.showSystemSelection = function () {
-    };
-    RoleSelection.prototype.showRoleSelection = function () {
+    RoleSelection.prototype.renderActionButtons = function () {
+        var resumeButton, quitButton, setupButton;
+        if (this.props.gameActive) {
+            resumeButton = React.createElement(PushButton, { color: 0 /* Primary */, command: "resume", text: language.screens.roleSelection.resume });
+            quitButton = React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "quit", text: language.screens.roleSelection.quit });
+        }
+        else {
+            var disabled = void 0;
+            var tooltip = void 0;
+            if (this.props.setupInUse) {
+                disabled = true;
+                tooltip = language.screens.roleSelection.setupInUse;
+            }
+            else {
+                disabled = false;
+                tooltip = undefined;
+            }
+            setupButton = React.createElement(PushButton, { color: 0 /* Primary */, text: language.screens.roleSelection.setup, disabled: disabled, command: "+setup", clicked: this.props.setupClicked, title: tooltip });
+        }
+        return React.createElement(ButtonSet, { className: "actions", separate: true },
+            this.renderSelectionTypeSwitch(),
+            resumeButton,
+            quitButton,
+            setupButton);
     };
     RoleSelection.prototype.settingsClicked = function () {
         if (this.props.settingsClicked !== undefined)
             this.props.settingsClicked();
     };
     return RoleSelection;
+}(React.Component));
+var GameSetup = (function (_super) {
+    __extends(GameSetup, _super);
+    function GameSetup() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    GameSetup.prototype.render = function () {
+        return React.createElement("div", { className: "screen" });
+    };
+    return GameSetup;
+}(React.Component));
+var GameActive = (function (_super) {
+    __extends(GameActive, _super);
+    function GameActive() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    GameActive.prototype.render = function () {
+        return React.createElement("div", { className: "game" });
+    };
+    return GameActive;
 }(React.Component));
 var GameClient = (function (_super) {
     __extends(GameClient, _super);
@@ -832,10 +894,12 @@ var GameClient = (function (_super) {
             settings: settings,
             visibleScreen: settings === undefined ? 2 /* Settings */ : 1 /* Connecting */,
             currentScreen: 1 /* Connecting */,
+            gameActive: false,
             errorMessage: undefined,
             crewID: undefined,
             crewSize: 0,
             otherCrewsSystems: 0,
+            selectSystemsDirectly: false,
         };
         return _this;
     }
@@ -867,9 +931,14 @@ var GameClient = (function (_super) {
             case 3 /* RoleSelection */:
                 var crewSize = this.state.crewSize === undefined ? 0 : this.state.crewSize;
                 var otherSystems = this.state.otherCrewsSystems === undefined ? 0 : this.state.otherCrewsSystems;
-                return React.createElement(RoleSelection, { crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */) });
+                var gameActive = this.state.gameActive === undefined ? false : this.state.gameActive;
+                var setupInUse = this.state.setupInUse === undefined ? false : this.state.setupInUse;
+                var systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
+                return React.createElement(RoleSelection, { crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
             case 4 /* GameSetup */:
+                return React.createElement(GameSetup, null);
             case 5 /* Game */:
+                return React.createElement(GameActive, null);
             default:
                 return React.createElement(ErrorScreen, { message: this.state.errorMessage });
         }
@@ -905,6 +974,15 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.setSystemUsage = function (systemFlags) {
         this.setState({ otherCrewsSystems: systemFlags });
+    };
+    GameClient.prototype.setGameActive = function (active) {
+        this.setState({ gameActive: active });
+    };
+    GameClient.prototype.setDirectSystemSelection = function (value) {
+        this.setState({ selectSystemsDirectly: value });
+    };
+    GameClient.prototype.setupScreenInUse = function (inUse) {
+        this.setState({ setupInUse: inUse });
     };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen

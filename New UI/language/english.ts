@@ -10,7 +10,9 @@
         connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
         /*
         shipFull: 'This ship is full: there is no room for you to join.',
-        gameStarted: 'This game has already started: wait for the crew to pause or end the game, then try again.',
+        */
+        gameStarted: 'This game has already started: wait for the crew to pause or end the game.',
+        /*
         unrecognisedCommand: 'Unrecognised command from server: ',
         wrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
         systemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
@@ -38,21 +40,26 @@
             userNameDescription: 'Enter the name you wish to display to your crewmates',
         },
         roleSelection: {
-            heading: 'Select your role',
-            prompt: 'Each crew member should select a different role.\nThe available roles change depending on the size of your crew, so wait for everyone to join before choosing.\nFor advanced users, a custom role allows selection of individual ship systems.',
+            roleHeading: 'Select your role',
+            systemHeading: 'Select your systems',
+            rolePrompt: 'Each crew member should select a different role.\nWait for everyone to join before choosing, as the roles change depending on the size of your crew.\nEach role consists of multiple systems. Experienced crews can switch to selecting systems directly.',
+            systemPrompt: 'Multiple crew members can select the same system, but only one can view it at a time. Each system must be selected by at least one crew member. Novice crews can switch to selecting pre-set roles consisting of multiple systems.',
             showSystems: 'Select systems (advanced)',
             showRoles: 'Select roles (simple)',
+            resume: 'Resume game',
+            quit: 'Quit game',
+            setup: 'Setup game',
+            setupInUse: 'Another crew member is setting up the game',
+            systemInUse: 'Another crew member has selected this system',
         }
     },
 
     messages: {
         confirmLeave: 'The game is still active.',
         connecting: 'Connecting...',
-/*
-        messageWait: 'Please wait...',
-        messageGameEnded: 'The game has ended.',
-        messageGameEndedUser:  'User @name@ ended the game.',
-*/
+        wait: 'Please wait...',
+        gameEnded: 'The game has ended.',
+        gameEndedUser:  '@name@ ended the game.',
         refreshPage: 'Refresh the page to continue.',
     },
 

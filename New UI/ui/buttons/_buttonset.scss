@@ -71,3 +71,7 @@
 .description {
     margin-top: 0.5em;
 }
+
+.imitateChoice { /* account for the space the description would take up, if present */
+    margin-bottom: 1.5em;
+}

@@ -1,15 +1,18 @@
 @import '../ui/colors';
 
 #error, #settings {
-    @include center();
+    @include center(true);
 }
 
 #roleSelection {
-    display: flex;
-    flex-direction: column;
+    @include center(false);
 
-    .roleList {
-        align-self: center;
+    & > .content {
+        @include center(false);
+    }
+
+    .systems .inUse {
+        text-decoration: line-through;
     }
 }
 

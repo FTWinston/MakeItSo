@@ -9,28 +9,70 @@ enum ShipSystem {
     Communications = 128,
 }
 
+interface SystemInfo {
+    name: string;
+    help: string;
+}
+
 class CrewRole {
     constructor(public readonly name: string, public readonly systemFlags: ShipSystem) { }
+}
 
-    getHelpText() {
-        let systems: { name: string, help: string }[] = [];
+namespace ShipSystem {
+    export const allSystems = [
+        ShipSystem.Helm,
+        ShipSystem.Warp,
+        ShipSystem.Weapons,
+        ShipSystem.Sensors,
+        ShipSystem.PowerManagement,
+        ShipSystem.DamageControl,
+        ShipSystem.Communications,
+        ShipSystem.ViewScreen,
+    ];
 
-        if (this.systemFlags & ShipSystem.Helm)
+    export const count = allSystems.length;
+
+    function getInfoArray(flags: ShipSystem) {
+        let systems: SystemInfo[] = [];
+
+        if (flags & ShipSystem.Helm)
             systems.push(language.systems.helm);
-        if (this.systemFlags & ShipSystem.Warp)
+        if (flags & ShipSystem.Warp)
             systems.push(language.systems.warp);
-        if (this.systemFlags & ShipSystem.Weapons)
+        if (flags & ShipSystem.Weapons)
             systems.push(language.systems.weapons);
-        if (this.systemFlags & ShipSystem.Sensors)
+        if (flags & ShipSystem.Sensors)
             systems.push(language.systems.sensors);
-        if (this.systemFlags & ShipSystem.PowerManagement)
+        if (flags & ShipSystem.PowerManagement)
             systems.push(language.systems.power);
-        if (this.systemFlags & ShipSystem.DamageControl)
+        if (flags & ShipSystem.DamageControl)
             systems.push(language.systems.damage);
-        if (this.systemFlags & ShipSystem.Communications)
+        if (flags & ShipSystem.Communications)
             systems.push(language.systems.comms);
-        if (this.systemFlags & ShipSystem.ViewScreen)
+        if (flags & ShipSystem.ViewScreen)
             systems.push(language.systems.view);
+
+        return systems;
+    }
+
+    export function getNames(flags: ShipSystem) {
+        let systems = getInfoArray(flags);
+        
+        if (systems.length == 1)
+            return systems[0].name;
+
+        let output = '';
+        for (let system of systems)
+            output += ', ' + system.name;
+        
+        if (output == '')
+            return '';
+        else
+            return output.substr(2);
+    }
+    
+    export function getHelpText(systemFlags: ShipSystem) {
+        let systems = getInfoArray(systemFlags);
 
         if (systems.length == 1)
             return `<p>${systems[0].help}</p>`;
@@ -40,33 +82,7 @@ class CrewRole {
             output += `<h2>${system.name}</h2><p>${system.help}</p>`;
         return output;
     }
-}
 
-namespace ShipSystem {
-    export function list(flags: ShipSystem) {
-        let output = '';
-        if (flags & ShipSystem.Helm)
-            output += ', ' + language.systems.helm.name;
-        if (flags & ShipSystem.Warp)
-            output += ', ' + language.systems.warp.name;
-        if (flags & ShipSystem.Weapons)
-            output += ', ' + language.systems.weapons.name;
-        if (flags & ShipSystem.Sensors)
-            output += ', ' + language.systems.sensors.name;
-        if (flags & ShipSystem.PowerManagement)
-            output += ', ' + language.systems.power.name;
-        if (flags & ShipSystem.DamageControl)
-            output += ', ' + language.systems.damage.name;
-        if (flags & ShipSystem.Communications)
-            output += ', ' + language.systems.comms.name;
-        if (flags & ShipSystem.ViewScreen)
-            output += ', ' + language.systems.view.name;
-        
-        if (output == '')
-            return '';
-        else
-            return output.substr(2);
-    }
     export function getRoles(crewSize: number) {
         switch (crewSize) {
         case 1:

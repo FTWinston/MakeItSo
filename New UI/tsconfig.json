@@ -42,6 +42,8 @@
         "screens/ErrorScreen.tsx",
         "screens/SettingsScreen.tsx",
         "screens/RoleSelection.tsx",
+        "screens/GameSetup.tsx",
+        "screens/GameActive.tsx",
         
         "core/GameClient.tsx"
     ]

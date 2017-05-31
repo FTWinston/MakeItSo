@@ -56,6 +56,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 	crewState = ECrewState::Setup;
 
+	selectSystemsDirectly = false;
 	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
@@ -283,6 +284,9 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	for (auto& other : *currentConnections)
 		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "crew %i", size);
 
+	// send whether systems are selected directly, or whether roles are used
+	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, selectSystemsDirectly ? "selectsys+" : "selectsys-");
+
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
 	{
@@ -437,15 +441,26 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		int32 systemFlags = atoi(buffer);
 		ShipSystemChanged(info, systemFlags);
 	}
+	else if (STARTS_WITH(info, "sys+ "))
+	{
+		char buffer[10];
+		EXTRACT(info, buffer, "sys+ ");
+		int32 systemFlags = atoi(buffer);
+		ShipSystemChanged(info, info->shipSystemFlags | systemFlags);
+	}
+	else if (STARTS_WITH(info, "sys- "))
+	{
+		char buffer[10];
+		EXTRACT(info, buffer, "sys- ");
+		int32 systemFlags = atoi(buffer);
+		ShipSystemChanged(info, info->shipSystemFlags & ~systemFlags);
+	}
 	else if (MATCHES(info, "+setup"))
 	{
 		if (connectionInSetup != nullptr || crewState != ECrewState::Setup)
 			return;
 
 		connectionInSetup = info;
-
-		// send "show setup" message to this user
-		mg_websocket_printf(info->connection, WEBSOCKET_OPCODE_TEXT, "setup");
 
 		// send "setup in use" message to all others
 		for (auto& other : *currentConnections)
@@ -461,12 +476,26 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 
 		connectionInSetup = nullptr;
 
-		// send "setup not in use" message to all
+		// send "setup not in use" message to all others
 		for (auto& other : *currentConnections)
 		{
 			if (other != info)
 				mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "setup+");
 		}
+	}
+	else if (MATCHES(info, "+selectsys"))
+	{
+		selectSystemsDirectly = true;
+		// send updated selection mode
+		for (auto& other : *currentConnections)
+			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "selectsys+");
+	}
+	else if (MATCHES(info, "-selectsys"))
+	{
+		selectSystemsDirectly = false;
+		// send updated selection mode
+		for (auto& other : *currentConnections)
+			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "selectsys-");
 	}
 	/* ship name = player name
 	else if (STARTS_WITH(info, "shipname "))

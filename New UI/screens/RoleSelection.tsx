@@ -2,23 +2,20 @@
     crewSize: number;
     otherCrewsSystems: ShipSystem;
     settingsClicked: () => void;
-}
-
-interface IRoleSelectionState {
+    setupClicked: () => void;
+    gameActive: boolean;
+    setupInUse: boolean;
     forceShowSystems: boolean;
 }
 
-class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionState> {
+class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
     constructor(props: IRoleSelectionProps) {
         super(props);
-        this.state = {
-            forceShowSystems: false,
-        };
     }
     render() {
         let showSystemSelection: boolean;
         let roles: CrewRole[];
-        if (this.state.forceShowSystems) {
+        if (this.props.forceShowSystems) {
             showSystemSelection = true;
             roles = [];
         }
@@ -31,35 +28,51 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
             ? this.renderSystemSelection()
             : this.renderRoleSelection(roles);
 
+        let words = language.screens.roleSelection;
         return (
             <div className="screen" id="roleSelection">
                 <div>
-                    <h1>{language.screens.roleSelection.heading}</h1>
-                    <p className="prompt">{language.screens.roleSelection.prompt}</p>
+                    <h1>{showSystemSelection ? words.systemHeading : words.roleHeading}</h1>
+                    <p className="prompt">{showSystemSelection ? words.systemPrompt : words.rolePrompt}</p>
                 </div>
-                {roleOrSystemSelection}
+                <div className="content">
+                    {roleOrSystemSelection}
+                    {this.renderActionButtons()}
+                </div>
                 <Menu>
-                    {this.renderSelectionTypeSwitch(roles)}
-                    <PushButton color={ButtonColor.Secondary} clicked={this.settingsClicked.bind(this)} text={language.common.settings} />
+                    <PushButton color={ButtonColor.Quandry} clicked={this.settingsClicked.bind(this)} text="&#9881;" className="icon" title={language.common.settings} />
                 </Menu>
             </div>
         );
     }
-    private renderSelectionTypeSwitch(roles: CrewRole[]) {
-        if (roles.length == 0)
+    private renderSelectionTypeSwitch() {
+        if (this.props.crewSize >= ShipSystem.count)
             return undefined;
-        else if (this.state.forceShowSystems)
-            return <PushButton color={ButtonColor.Tertiary} clicked={this.showSystemSelection.bind(this)} text={language.screens.roleSelection.showRoles} />;
+        else if (this.props.forceShowSystems)
+            return <ConfirmButton color={ButtonColor.Tertiary} command="-selectsys" text={language.screens.roleSelection.showRoles} />;
         else
-            return <PushButton color={ButtonColor.Tertiary} clicked={this.showRoleSelection.bind(this)} text={language.screens.roleSelection.showSystems} />;
+            return <ConfirmButton color={ButtonColor.Secondary} command="+selectsys" text={language.screens.roleSelection.showSystems} />;
     }
     private renderSystemSelection() {
-        return <div></div>;
-        // TODO: render system list
+        let that = this;
+        return <div className="systems imitateChoice">
+            <ButtonSet color={ButtonColor.Secondary} vertical={true} separate={true}>
+            {ShipSystem.allSystems.map(function(system, id) {
+                let inUse = (system & that.props.otherCrewsSystems) == system;
+                let name = ShipSystem.getNames(system);
+                let help = ShipSystem.getHelpText(system);
+                let tooltip = inUse ? language.screens.roleSelection.systemInUse : undefined;
+                let classes = inUse ? 'inUse' : undefined;
+
+                return <ToggleButton key={id} help={help} activateCommand={"sys+ " + system}
+                    deactivateCommand={"sys- " + system} className={classes} title={tooltip} text={name} />;
+            })}
+            </ButtonSet>
+        </div>;
     }
     private renderRoleSelection(roles: CrewRole[]) {
         let that = this;
-        return <Choice color={ButtonColor.Tertiary} vertical={true} separate={true} allowUnselected={true} className="roleList">
+        return <Choice color={ButtonColor.Tertiary} vertical={true} separate={true} allowUnselected={true}>
             {roles.map(function(role, id) {
                 let disabled: boolean;
                 let tooltip: string | undefined;
@@ -73,16 +86,41 @@ class RoleSelection extends React.Component<IRoleSelectionProps, IRoleSelectionS
                     tooltip = undefined;
                 }
 
-                return <ToggleButton key={id} help={role.getHelpText()} activateCommand={"sys " + role.systemFlags}
+                let help = ShipSystem.getHelpText(role.systemFlags);
+                return <ToggleButton key={id} help={help} activateCommand={"sys " + role.systemFlags}
                     deactivateCommand="sys 0" disabled={disabled} text={role.name} title={tooltip} />;
             })}
-        </Choice>
+        </Choice>;
     }
-    private showSystemSelection() {
-        
-    }
-    private showRoleSelection() {
-        
+    private renderActionButtons() {
+        let resumeButton, quitButton, setupButton;
+
+        if (this.props.gameActive) {
+            resumeButton = <PushButton color={ButtonColor.Primary} command="resume" text={language.screens.roleSelection.resume} />
+            quitButton = <ConfirmButton color={ButtonColor.Tertiary} command="quit" text={language.screens.roleSelection.quit} />
+        }
+        else {
+            let disabled: boolean;
+            let tooltip: string | undefined;
+            if (this.props.setupInUse) {
+                disabled = true;
+                tooltip = language.screens.roleSelection.setupInUse;
+            }
+            else {
+                disabled = false;
+                tooltip = undefined;
+            }
+
+            setupButton = <PushButton color={ButtonColor.Primary} text={language.screens.roleSelection.setup}
+                                disabled={disabled} command="+setup" clicked={this.props.setupClicked} title={tooltip}/>
+        }
+
+        return <ButtonSet className="actions" separate={true}>
+            {this.renderSelectionTypeSwitch()}
+            {resumeButton}
+            {quitButton}
+            {setupButton}
+        </ButtonSet>
     }
     private settingsClicked() {
         if (this.props.settingsClicked !== undefined)

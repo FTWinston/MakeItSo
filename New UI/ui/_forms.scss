@@ -74,10 +74,11 @@ form {
         align-items: baseline;
         margin-bottom: 1.5rem;
     }
+}
 
-    & > .actions {
-        align-self: center;
-    }
+.actions {
+    align-self: center;
+    flex-shrink: 0;
 }
 
 input[type="text"] {

@@ -54,43 +54,49 @@
             let systemFlags = parseInt(data) as ShipSystem;
             this.game.setSystemUsage(systemFlags);
         }
-/*
         else if (cmd == 'setup+') {
             this.game.setupScreenInUse(false);
         }
         else if (cmd == 'setup-') {
             this.game.setupScreenInUse(true);
         }
-        else if (cmd == 'setup') {
-            this.game.setActiveScreen('setup');
-        }
+/*
         else if (cmd == 'full') {
             this.game.showError(language.errorShipFull, true);
         }
+*/
         else if (cmd == 'started') {
-            this.game.gameAlreadyStarted();
-            this.game.showError(language.errorGameStarted, false);
+            this.game.setGameActive(true);
+            this.game.showError(language.errors.gameStarted, false);
         }
         else if (cmd == 'paused') {
-            this.game.gameAlreadyStarted();
-            this.game.setActiveScreen('systems');
+            this.game.setGameActive(true);
+            this.game.show(GameScreen.RoleSelection);
         }
         else if (cmd == 'game+') {
-            this.game.setActiveScreen('game');
+            this.game.show(GameScreen.Game);
         }
         else if (cmd == 'game-') {
-            let blame = data != null ? language.messageGameEndedUser.replace('@name@', data) : language.messageGameEnded;
-            this.game.showError(blame + ' ' + language.messageWait, false);
+            this.game.setGameActive(false);
+            let blame = data != null ? language.messages.gameEndedUser.replace('@name@', data) : language.messages.gameEnded;
+            this.game.showError(blame + ' ' + language.messages.wait, false);
 
             setTimeout(function() { this.game.setActiveScreen('systems'); }.bind(this), 3000);
         }
         else if (cmd == 'pause+') {
-            this.game.setActiveScreen('systems');
-            this.game.clearAllData();
+            this.game.show(GameScreen.RoleSelection);
+            //this.game.clearAllData();
         }
         else if (cmd == 'pause-') {
-            this.game.setActiveScreen('game');
+            this.game.show(GameScreen.Game);
         }
+        else if (cmd == 'selectsys+') {
+            this.game.setDirectSystemSelection(true);
+        }
+        else if (cmd == 'selectsys-') {
+            this.game.setDirectSystemSelection(false);
+        }
+        /*
         else {
             let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
             if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)

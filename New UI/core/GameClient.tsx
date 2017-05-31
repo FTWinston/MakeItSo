@@ -8,6 +8,8 @@ interface IGameClientState {
     crewSize?: number;
     crewID?: string;
     otherCrewsSystems?: ShipSystem;
+    selectSystemsDirectly?: boolean;
+    setupInUse?: boolean;
 
     settings?: ClientSettings;
     vibration?: FeatureState;
@@ -33,10 +35,12 @@ class GameClient extends React.Component<{}, IGameClientState> {
             settings: settings,
             visibleScreen: settings === undefined ? GameScreen.Settings : GameScreen.Connecting,
             currentScreen: GameScreen.Connecting,
+            gameActive: false,
             errorMessage: undefined,
             crewID: undefined,
             crewSize: 0,
             otherCrewsSystems: 0,
+            selectSystemsDirectly: false,
         };
     }
     private componentDidMount () {
@@ -67,14 +71,25 @@ class GameClient extends React.Component<{}, IGameClientState> {
                     canCancel = true;
                 }
                 return <SettingsScreen inputMode={mode} userName={name} canCancel={canCancel} saved={this.changeSettings.bind(this)} cancelled={this.showReturn.bind(this)} />;
+
             case GameScreen.Connecting:
                 return <ErrorScreen message={language.messages.connecting} />;
+
             case GameScreen.RoleSelection:
                 let crewSize = this.state.crewSize === undefined ? 0 : this.state.crewSize;
                 let otherSystems = this.state.otherCrewsSystems === undefined ? 0 : this.state.otherCrewsSystems;
-                return <RoleSelection crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)} />;
+                let gameActive = this.state.gameActive === undefined ? false : this.state.gameActive;
+                let setupInUse = this.state.setupInUse === undefined ? false : this.state.setupInUse;
+                let systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
+                return <RoleSelection crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)}
+                        forceShowSystems={systemSelection} gameActive={gameActive} setupInUse={setupInUse} setupClicked={this.show.bind(this, GameScreen.GameSetup)} />;
+                
             case GameScreen.GameSetup:
+                return <GameSetup />
+
             case GameScreen.Game:
+                return <GameActive />
+
             default:
                 return <ErrorScreen message={this.state.errorMessage} />;
         }
@@ -114,6 +129,15 @@ class GameClient extends React.Component<{}, IGameClientState> {
     }
     setSystemUsage(systemFlags: ShipSystem) {
         this.setState({otherCrewsSystems: systemFlags});
+    }
+    setGameActive(active: boolean) {
+        this.setState({gameActive: active});
+    }
+    setDirectSystemSelection(value: boolean) {
+        this.setState({selectSystemsDirectly: value});
+    }
+    setupScreenInUse(inUse: boolean) {
+        this.setState({setupInUse: inUse});
     }
     private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
         // block accidental unloading only when in the game screen

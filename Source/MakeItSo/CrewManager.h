@@ -111,6 +111,7 @@ private:
 
 	ECrewState crewState;
 	int32 nextConnectionIdentifer;
+	bool selectSystemsDirectly;
 
 	TSet<ConnectionInfo*> *currentConnections;
 	ConnectionInfo *connectionInSetup;
