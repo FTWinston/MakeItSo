@@ -39,7 +39,7 @@ var language = {
             roleHeading: 'Select your role',
             systemHeading: 'Select your systems',
             rolePrompt: 'Each crew member should select a different role.\nWait for everyone to join before choosing, as the roles change depending on the size of your crew.\nEach role consists of multiple systems. Experienced crews can switch to selecting systems directly.',
-            systemPrompt: 'Multiple crew members can select the same system, but only one can view it at a time. Each system must be selected by at least one crew member. Novice crews can switch to selecting pre-set roles consisting of multiple systems.',
+            systemPrompt: 'Multiple crew members can select the same system, but only one can view it at a time.\nEach system must be selected by at least one crew member.\nNovice crews can switch to selecting pre-set roles consisting of multiple systems.',
             showSystems: 'Select systems (advanced)',
             showRoles: 'Select roles (simple)',
             resume: 'Resume game',
@@ -466,7 +466,10 @@ var Button = (function (_super) {
         return classes;
     };
     Button.prototype.renderButton = function () {
-        return React.createElement("button", { className: this.determineClasses(), disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title }, this.props.text);
+        var subtext = this.props.subtext === undefined ? undefined : React.createElement("div", { className: "subtext" }, this.props.subtext);
+        return React.createElement("button", { className: this.determineClasses(), disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
+            this.props.text,
+            subtext);
     };
     return Button;
 }(React.Component));
@@ -483,7 +486,7 @@ var PushButton = (function (_super) {
         var classList = 'push';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, text: this.props.text, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, text: this.props.text, subtext: this.props.subtext, help: this.props.help });
     };
     PushButton.prototype.clicked = function (e) {
         if (this.props.clicked !== undefined)
@@ -504,7 +507,7 @@ var ConfirmButton = (function (_super) {
         var classList = this.state.primed ? 'confirm active' : 'confirm';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), buttonType: "submit", color: this.props.color, disabled: this.props.disabled, text: this.props.text, title: this.props.title, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), buttonType: "submit", color: this.props.color, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title, help: this.props.help });
     };
     ConfirmButton.prototype.clicked = function (e) {
         if (this.state.primed) {
@@ -551,7 +554,7 @@ var ToggleButton = (function (_super) {
         var classList = this.state.active ? 'toggle active' : 'toggle';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, text: this.props.text, title: this.props.title, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title, help: this.props.help });
     };
     ToggleButton.prototype.clicked = function (e) {
         if (this.state.active) {
@@ -590,7 +593,7 @@ var HeldButton = (function (_super) {
         var classList = this.state.held ? 'held active' : 'held';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, text: this.props.text, help: this.props.help, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, text: this.props.text, subtext: this.props.subtext, help: this.props.help, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title });
     };
     HeldButton.prototype.mouseDown = function (e) {
         this.setState({ held: true });
@@ -829,8 +832,11 @@ var RoleSelection = (function (_super) {
                 disabled = false;
                 tooltip = undefined;
             }
+            var systemList = ShipSystem.getNames(role.systemFlags);
+            if (systemList == role.name)
+                systemList = undefined; // don't show subtext if its the same as the main text
             var help = ShipSystem.getHelpText(role.systemFlags);
-            return React.createElement(ToggleButton, { key: id, help: help, activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, text: role.name, title: tooltip });
+            return React.createElement(ToggleButton, { key: id, text: role.name, subtext: systemList, title: tooltip, help: help, activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, className: "bold" });
         }));
     };
     RoleSelection.prototype.renderActionButtons = function () {

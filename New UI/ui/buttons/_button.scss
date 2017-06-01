@@ -52,4 +52,13 @@ button {
         padding: 0.2em 0.5em;
         border-radius: 4em;
     }
+
+    .subtext {
+        font-size: 0.7em;
+        border-top: 1px solid gray;
+        position:  relative;
+        top: 0.35em;
+        padding-top: 0.35em;
+        font-weight: normal;
+    }
 }

@@ -13,6 +13,7 @@ interface IButtonProps {
     color?: ButtonColor;
     disabled?: boolean;
     text: string;
+    subtext?: string;
     help?: string;
 }
 
@@ -94,6 +95,8 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
         return classes;
     }
     private renderButton() {
+        let subtext = this.props.subtext === undefined ? undefined : <div className="subtext">{this.props.subtext}</div>;
+
         return <button className={this.determineClasses()} disabled={this.props.disabled || this.props.groupDisabled}
                 onMouseDown={this.props.disabled ? undefined : this.props.mouseDown}
                 onMouseUp={this.props.disabled ? undefined : this.props.mouseUp}
@@ -102,6 +105,7 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
                 data-hotkey={this.props.hotkey} type={this.props.buttonType}
                 title={this.props.title}>
                     {this.props.text}
+                    {subtext}
             </button>;
     }
 }

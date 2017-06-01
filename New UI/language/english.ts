@@ -43,7 +43,7 @@
             roleHeading: 'Select your role',
             systemHeading: 'Select your systems',
             rolePrompt: 'Each crew member should select a different role.\nWait for everyone to join before choosing, as the roles change depending on the size of your crew.\nEach role consists of multiple systems. Experienced crews can switch to selecting systems directly.',
-            systemPrompt: 'Multiple crew members can select the same system, but only one can view it at a time. Each system must be selected by at least one crew member. Novice crews can switch to selecting pre-set roles consisting of multiple systems.',
+            systemPrompt: 'Multiple crew members can select the same system, but only one can view it at a time.\nEach system must be selected by at least one crew member.\nNovice crews can switch to selecting pre-set roles consisting of multiple systems.',
             showSystems: 'Select systems (advanced)',
             showRoles: 'Select roles (simple)',
             resume: 'Resume game',

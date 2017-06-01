@@ -86,9 +86,13 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
                     tooltip = undefined;
                 }
 
+                let systemList: string | undefined = ShipSystem.getNames(role.systemFlags);
+                if (systemList == role.name)
+                    systemList = undefined; // don't show subtext if its the same as the main text
+
                 let help = ShipSystem.getHelpText(role.systemFlags);
-                return <ToggleButton key={id} help={help} activateCommand={"sys " + role.systemFlags}
-                    deactivateCommand="sys 0" disabled={disabled} text={role.name} title={tooltip} />;
+                return <ToggleButton key={id} text={role.name} subtext={systemList} title={tooltip} help={help} 
+                     activateCommand={"sys " + role.systemFlags} deactivateCommand="sys 0"disabled={disabled} className="bold" />;
             })}
         </Choice>;
     }
