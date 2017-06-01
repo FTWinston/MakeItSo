@@ -47,6 +47,7 @@ var language = {
             setup: 'Setup game',
             setupInUse: 'Another crew member is setting up the game',
             systemInUse: 'Another crew member has selected this system',
+            affectsAllCrew: 'This affects all crew members',
         }
     },
     messages: {
@@ -807,10 +808,11 @@ var RoleSelection = (function (_super) {
     RoleSelection.prototype.renderSelectionTypeSwitch = function () {
         if (this.props.crewSize >= ShipSystem.count)
             return undefined;
-        else if (this.props.forceShowSystems)
-            return React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "-selectsys", text: language.screens.roleSelection.showRoles });
+        var words = language.screens.roleSelection;
+        if (this.props.forceShowSystems)
+            return React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "-selectsys", text: words.showRoles, subtext: words.affectsAllCrew });
         else
-            return React.createElement(ConfirmButton, { color: 1 /* Secondary */, command: "+selectsys", text: language.screens.roleSelection.showSystems });
+            return React.createElement(ConfirmButton, { color: 1 /* Secondary */, command: "+selectsys", text: words.showSystems, subtext: words.affectsAllCrew });
     };
     RoleSelection.prototype.renderSystemSelection = function () {
         var that = this;
@@ -847,7 +849,7 @@ var RoleSelection = (function (_super) {
     RoleSelection.prototype.renderActionButtons = function () {
         var resumeButton, quitButton, setupButton;
         if (this.props.gameActive) {
-            resumeButton = React.createElement(PushButton, { color: 0 /* Primary */, command: "resume", text: language.screens.roleSelection.resume });
+            resumeButton = React.createElement(PushButton, { className: "bold", color: 0 /* Primary */, command: "resume", text: language.screens.roleSelection.resume });
             quitButton = React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "quit", text: language.screens.roleSelection.quit });
         }
         else {
@@ -861,7 +863,7 @@ var RoleSelection = (function (_super) {
                 disabled = false;
                 tooltip = undefined;
             }
-            setupButton = React.createElement(PushButton, { color: 0 /* Primary */, text: language.screens.roleSelection.setup, disabled: disabled, command: "+setup", clicked: this.props.setupClicked, title: tooltip });
+            setupButton = React.createElement(PushButton, { className: "bold", color: 0 /* Primary */, text: language.screens.roleSelection.setup, disabled: disabled, command: "+setup", clicked: this.props.setupClicked, title: tooltip });
         }
         return React.createElement(ButtonSet, { className: "actions", separate: true },
             this.renderSelectionTypeSwitch(),

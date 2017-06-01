@@ -48,10 +48,12 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
     private renderSelectionTypeSwitch() {
         if (this.props.crewSize >= ShipSystem.count)
             return undefined;
-        else if (this.props.forceShowSystems)
-            return <ConfirmButton color={ButtonColor.Tertiary} command="-selectsys" text={language.screens.roleSelection.showRoles} />;
+
+        let words = language.screens.roleSelection;
+        if (this.props.forceShowSystems)
+            return <ConfirmButton color={ButtonColor.Tertiary} command="-selectsys" text={words.showRoles} subtext={words.affectsAllCrew} />;
         else
-            return <ConfirmButton color={ButtonColor.Secondary} command="+selectsys" text={language.screens.roleSelection.showSystems} />;
+            return <ConfirmButton color={ButtonColor.Secondary} command="+selectsys" text={words.showSystems} subtext={words.affectsAllCrew} />;
     }
     private renderSystemSelection() {
         let that = this;
@@ -104,7 +106,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
         let resumeButton, quitButton, setupButton;
 
         if (this.props.gameActive) {
-            resumeButton = <PushButton color={ButtonColor.Primary} command="resume" text={language.screens.roleSelection.resume} />
+            resumeButton = <PushButton className="bold" color={ButtonColor.Primary} command="resume" text={language.screens.roleSelection.resume} />
             quitButton = <ConfirmButton color={ButtonColor.Tertiary} command="quit" text={language.screens.roleSelection.quit} />
         }
         else {
@@ -119,7 +121,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
                 tooltip = undefined;
             }
 
-            setupButton = <PushButton color={ButtonColor.Primary} text={language.screens.roleSelection.setup}
+            setupButton = <PushButton className="bold" color={ButtonColor.Primary} text={language.screens.roleSelection.setup}
                                 disabled={disabled} command="+setup" clicked={this.props.setupClicked} title={tooltip}/>
         }
 
