@@ -49,6 +49,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         }
     }
     server: Connection;
+    roleSelection: RoleSelection | null;
     render() {
         return (
             <div className={this.state.showHotkeys ? 'showKeys' : undefined}>
@@ -81,7 +82,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
                 let gameActive = this.state.gameActive === undefined ? false : this.state.gameActive;
                 let setupInUse = this.state.setupInUse === undefined ? false : this.state.setupInUse;
                 let systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
-                return <RoleSelection crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)}
+                return <RoleSelection ref={ref => {this.roleSelection = ref;}} crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)}
                         forceShowSystems={systemSelection} gameActive={gameActive} setupInUse={setupInUse} setupClicked={this.show.bind(this, GameScreen.GameSetup)} />;
                 
             case GameScreen.GameSetup:
@@ -126,6 +127,9 @@ class GameClient extends React.Component<{}, IGameClientState> {
     }
     setCrewSize(count: number) {
         this.setState({crewSize: count});
+
+        if (this.roleSelection !== null)
+            this.roleSelection.clearSelection();
     }
     setSystemUsage(systemFlags: ShipSystem) {
         this.setState({otherCrewsSystems: systemFlags});

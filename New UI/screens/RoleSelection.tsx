@@ -65,11 +65,14 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
                 let classes = inUse ? 'inUse' : undefined;
 
                 return <ToggleButton key={id} help={help} activateCommand={"sys+ " + system}
-                    deactivateCommand={"sys- " + system} className={classes} title={tooltip} text={name} />;
+                        deactivateCommand={"sys- " + system} className={classes} title={tooltip} text={name}
+                        ref={ref => {that.selectionButtons[id] = ref}} />;
             })}
             </ButtonSet>
         </div>;
     }
+    
+    selectionButtons: { [key:number]:ToggleButton; } = {};
     private renderRoleSelection(roles: CrewRole[]) {
         let that = this;
         return <Choice color={ButtonColor.Tertiary} vertical={true} separate={true} allowUnselected={true}>
@@ -92,7 +95,8 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
 
                 let help = ShipSystem.getHelpText(role.systemFlags);
                 return <ToggleButton key={id} text={role.name} subtext={systemList} title={tooltip} help={help} 
-                     activateCommand={"sys " + role.systemFlags} deactivateCommand="sys 0"disabled={disabled} className="bold" />;
+                        activateCommand={"sys " + role.systemFlags} deactivateCommand="sys 0"disabled={disabled} className="bold"
+                        ref={ref => {that.selectionButtons[id] = ref}} />;
             })}
         </Choice>;
     }
@@ -129,5 +133,12 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
     private settingsClicked() {
         if (this.props.settingsClicked !== undefined)
             this.props.settingsClicked();
+    }
+    clearSelection() {
+        for (let id in this.selectionButtons) {
+            let button = this.selectionButtons[id];
+            if (button != null)
+                button.select(false);
+        }
     }
 }

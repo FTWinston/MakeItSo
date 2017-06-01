@@ -575,6 +575,9 @@ var ToggleButton = (function (_super) {
         }
         this.setState({ active: !this.state.active });
     };
+    ToggleButton.prototype.select = function (selected) {
+        this.setState({ active: selected });
+    };
     return ToggleButton;
 }(React.Component));
 ToggleButton.defaultProps = {
@@ -772,7 +775,9 @@ SettingsScreen.defaultProps = {
 var RoleSelection = (function (_super) {
     __extends(RoleSelection, _super);
     function RoleSelection(props) {
-        return _super.call(this, props) || this;
+        var _this = _super.call(this, props) || this;
+        _this.selectionButtons = {};
+        return _this;
     }
     RoleSelection.prototype.render = function () {
         var showSystemSelection;
@@ -816,7 +821,7 @@ var RoleSelection = (function (_super) {
                 var help = ShipSystem.getHelpText(system);
                 var tooltip = inUse ? language.screens.roleSelection.systemInUse : undefined;
                 var classes = inUse ? 'inUse' : undefined;
-                return React.createElement(ToggleButton, { key: id, help: help, activateCommand: "sys+ " + system, deactivateCommand: "sys- " + system, className: classes, title: tooltip, text: name });
+                return React.createElement(ToggleButton, { key: id, help: help, activateCommand: "sys+ " + system, deactivateCommand: "sys- " + system, className: classes, title: tooltip, text: name, ref: function (ref) { that.selectionButtons[id] = ref; } });
             })));
     };
     RoleSelection.prototype.renderRoleSelection = function (roles) {
@@ -836,7 +841,7 @@ var RoleSelection = (function (_super) {
             if (systemList == role.name)
                 systemList = undefined; // don't show subtext if its the same as the main text
             var help = ShipSystem.getHelpText(role.systemFlags);
-            return React.createElement(ToggleButton, { key: id, text: role.name, subtext: systemList, title: tooltip, help: help, activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, className: "bold" });
+            return React.createElement(ToggleButton, { key: id, text: role.name, subtext: systemList, title: tooltip, help: help, activateCommand: "sys " + role.systemFlags, deactivateCommand: "sys 0", disabled: disabled, className: "bold", ref: function (ref) { that.selectionButtons[id] = ref; } });
         }));
     };
     RoleSelection.prototype.renderActionButtons = function () {
@@ -867,6 +872,13 @@ var RoleSelection = (function (_super) {
     RoleSelection.prototype.settingsClicked = function () {
         if (this.props.settingsClicked !== undefined)
             this.props.settingsClicked();
+    };
+    RoleSelection.prototype.clearSelection = function () {
+        for (var id in this.selectionButtons) {
+            var button = this.selectionButtons[id];
+            if (button != null)
+                button.select(false);
+        }
     };
     return RoleSelection;
 }(React.Component));
@@ -918,6 +930,7 @@ var GameClient = (function (_super) {
         return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderVisibleScreen()));
     };
     GameClient.prototype.renderVisibleScreen = function () {
+        var _this = this;
         switch (this.state.visibleScreen) {
             case 2 /* Settings */:
                 var mode = void 0, name_1, canCancel = void 0;
@@ -940,7 +953,7 @@ var GameClient = (function (_super) {
                 var gameActive = this.state.gameActive === undefined ? false : this.state.gameActive;
                 var setupInUse = this.state.setupInUse === undefined ? false : this.state.setupInUse;
                 var systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
-                return React.createElement(RoleSelection, { crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
+                return React.createElement(RoleSelection, { ref: function (ref) { _this.roleSelection = ref; }, crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
             case 4 /* GameSetup */:
                 return React.createElement(GameSetup, null);
             case 5 /* Game */:
@@ -977,6 +990,8 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.setCrewSize = function (count) {
         this.setState({ crewSize: count });
+        if (this.roleSelection !== null)
+            this.roleSelection.clearSelection();
     };
     GameClient.prototype.setSystemUsage = function (systemFlags) {
         this.setState({ otherCrewsSystems: systemFlags });

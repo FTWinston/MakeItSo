@@ -275,14 +275,15 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 #else
 	currentConnections->insert(currentConnections->end(), info);
 #endif
-
-	// send the other system selections to the client
-	SendSystemUsage(info);
-
-	// send updated crew size to all clients
+	
+	// send updated crew size to all clients, and clear system selection
 	int32 size = currentConnections->size();
 	for (auto& other : *currentConnections)
+	{
+		other->shipSystemFlags = 0;
 		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "crew %i", size);
+		mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys 0");
+	}
 
 	// send whether systems are selected directly, or whether roles are used
 	mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, selectSystemsDirectly ? "selectsys+" : "selectsys-");
@@ -486,16 +487,24 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	else if (MATCHES(info, "+selectsys"))
 	{
 		selectSystemsDirectly = true;
-		// send updated selection mode
+		// send updated selection mode and clear system selections
 		for (auto& other : *currentConnections)
+		{
+			other->shipSystemFlags = 0;
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "selectsys+");
+			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys 0");
+		}
 	}
 	else if (MATCHES(info, "-selectsys"))
 	{
 		selectSystemsDirectly = false;
-		// send updated selection mode
+		// send updated selection mode and clear system selections
 		for (auto& other : *currentConnections)
+		{
+			other->shipSystemFlags = 0;
 			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "selectsys-");
+			mg_websocket_printf(other->connection, WEBSOCKET_OPCODE_TEXT, "sys 0");
+		}
 	}
 	/* ship name = player name
 	else if (STARTS_WITH(info, "shipname "))
