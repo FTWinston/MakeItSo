@@ -51,9 +51,9 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
 
         let words = language.screens.roleSelection;
         if (this.props.forceShowSystems)
-            return <ConfirmButton color={ButtonColor.Tertiary} command="-selectsys" text={words.showRoles} subtext={words.affectsAllCrew} />;
+            return <ConfirmButton color={ButtonColor.Tertiary} command="-selectsys" text={words.showRoles} />;
         else
-            return <ConfirmButton color={ButtonColor.Secondary} command="+selectsys" text={words.showSystems} subtext={words.affectsAllCrew} />;
+            return <ConfirmButton color={ButtonColor.Secondary} command="+selectsys" text={words.showSystems} />;
     }
     private renderSystemSelection() {
         let that = this;

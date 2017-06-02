@@ -86,7 +86,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
                         forceShowSystems={systemSelection} gameActive={gameActive} setupInUse={setupInUse} setupClicked={this.show.bind(this, GameScreen.GameSetup)} />;
                 
             case GameScreen.GameSetup:
-                return <GameSetup cancelled={this.showReturn.bind(this)} saved={this.startGame.bind(this)} />
+                return <GameSetup cancelled={this.showReturn.bind(this)} started={this.startGame.bind(this)} />
 
             case GameScreen.Game:
                 return <GameActive />
@@ -172,7 +172,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
         this.setState(state);
     }
     private startGame(settings: IGameSetupState) {
-        // TODO: actually start game
+        // TODO: actually start game of specified type, using specified options
+        this.server.send('startGame');
     }
 };
 

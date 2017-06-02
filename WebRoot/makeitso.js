@@ -47,7 +47,6 @@ var language = {
             setup: 'Setup game',
             setupInUse: 'Another crew member is setting up the game',
             systemInUse: 'Another crew member has selected this system',
-            affectsAllCrew: 'This affects all crew members',
         },
         setup: {
             intro: 'Create or join a game',
@@ -215,16 +214,17 @@ var Connection = (function () {
         }
         else if (cmd == 'paused') {
             this.game.setGameActive(true);
-            this.game.show(3 /* RoleSelection */);
+            this.game.show(3 /* RoleSelection */, true);
         }
         else if (cmd == 'game+') {
-            this.game.show(5 /* Game */);
+            this.game.setGameActive(true);
+            this.game.show(5 /* Game */, true);
         }
         else if (cmd == 'game-') {
             this.game.setGameActive(false);
             var blame = data != null ? language.messages.gameEndedUser.replace('@name@', data) : language.messages.gameEnded;
             this.game.showError(blame + ' ' + language.messages.wait, false);
-            setTimeout(function () { this.game.setActiveScreen('systems'); }.bind(this), 3000);
+            setTimeout(function () { this.game.show(3 /* RoleSelection */, true); }.bind(this), 3000);
         }
         else if (cmd == 'pause+') {
             this.game.show(3 /* RoleSelection */);
@@ -844,9 +844,9 @@ var RoleSelection = (function (_super) {
             return undefined;
         var words = language.screens.roleSelection;
         if (this.props.forceShowSystems)
-            return React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "-selectsys", text: words.showRoles, subtext: words.affectsAllCrew });
+            return React.createElement(ConfirmButton, { color: 2 /* Tertiary */, command: "-selectsys", text: words.showRoles });
         else
-            return React.createElement(ConfirmButton, { color: 1 /* Secondary */, command: "+selectsys", text: words.showSystems, subtext: words.affectsAllCrew });
+            return React.createElement(ConfirmButton, { color: 1 /* Secondary */, command: "+selectsys", text: words.showSystems });
     };
     RoleSelection.prototype.renderSystemSelection = function () {
         var that = this;
@@ -918,30 +918,6 @@ var RoleSelection = (function (_super) {
     };
     return RoleSelection;
 }(React.Component));
-var GameType;
-(function (GameType) {
-    GameType[GameType["Local"] = 0] = "Local";
-    GameType[GameType["Join"] = 1] = "Join";
-    GameType[GameType["Host"] = 2] = "Host";
-})(GameType || (GameType = {}));
-var GameMode;
-(function (GameMode) {
-    GameMode[GameMode["Arena"] = 0] = "Arena";
-    GameMode[GameMode["Survival"] = 1] = "Survival";
-    GameMode[GameMode["Exploration"] = 2] = "Exploration";
-})(GameMode || (GameMode = {}));
-(function (GameMode) {
-    function usesDifficulty(mode) {
-        switch (mode) {
-            case GameMode.Survival:
-            case GameMode.Exploration:
-                return true;
-            default:
-                return false;
-        }
-    }
-    GameMode.usesDifficulty = usesDifficulty;
-})(GameMode || (GameMode = {}));
 var GameSetup = (function (_super) {
     __extends(GameSetup, _super);
     function GameSetup(props) {
@@ -978,7 +954,7 @@ var GameSetup = (function (_super) {
                 this.renderDifficulty(),
                 this.renderHostGameOptions(),
                 React.createElement(ButtonSet, { className: "actions", separate: true },
-                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canStart, clicked: this.save.bind(this), text: this.getContinueText() }),
+                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canStart, clicked: this.start.bind(this), text: this.getContinueText() }),
                     React.createElement(PushButton, { color: 3 /* Quaternary */, clicked: this.cancel.bind(this), text: language.common.cancel }))));
     };
     GameSetup.prototype.renderShipName = function () {
@@ -996,12 +972,12 @@ var GameSetup = (function (_super) {
         return React.createElement("div", { role: "group" },
             React.createElement("label", null, words.gameType),
             React.createElement(Choice, { prompt: words.gameTypePrompt, color: 0 /* Primary */ },
-                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Local), description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
-                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Join), description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
-                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Host), description: words.gameTypeHostDescription, text: words.gameTypeHost })));
+                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, 0 /* Local */), description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
+                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, 1 /* Join */), description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
+                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, 2 /* Host */), description: words.gameTypeHostDescription, text: words.gameTypeHost })));
     };
     GameSetup.prototype.renderJoinGameOptions = function () {
-        if (this.state.gameType != GameType.Join)
+        if (this.state.gameType != 1 /* Join */)
             return undefined;
         var words = language.screens.setup;
         return React.createElement("div", { role: "group" },
@@ -1011,18 +987,18 @@ var GameSetup = (function (_super) {
                 React.createElement("div", { className: "description" }, words.joinAddressDescription)));
     };
     GameSetup.prototype.renderGameMode = function () {
-        if (this.state.gameType === undefined || this.state.gameType == GameType.Join)
+        if (this.state.gameType === undefined || this.state.gameType == 1 /* Join */)
             return undefined;
         var words = language.screens.setup;
         return React.createElement("div", { role: "group" },
             React.createElement("label", null, words.gameMode),
             React.createElement(Choice, { prompt: words.gameModePrompt, color: 1 /* Secondary */ },
-                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, GameMode.Exploration), description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
-                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, GameMode.Survival), description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
-                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, GameMode.Arena), description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType == GameType.Local })));
+                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, 2 /* Exploration */), description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
+                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, 1 /* Survival */), description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
+                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, 0 /* Arena */), description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType == 0 /* Local */ })));
     };
     GameSetup.prototype.renderDifficulty = function () {
-        if (this.state.gameType == GameType.Join || this.state.gameMode === undefined || !GameMode.usesDifficulty(this.state.gameMode))
+        if (this.state.gameType == 1 /* Join */ || this.state.gameMode === undefined || !this.usesDifficulty(this.state.gameMode))
             return undefined;
         var words = language.screens.setup;
         var levels = [];
@@ -1033,7 +1009,7 @@ var GameSetup = (function (_super) {
             React.createElement(Choice, { prompt: words.difficultyPrompt, color: 2 /* Tertiary */ }, levels));
     };
     GameSetup.prototype.renderHostGameOptions = function () {
-        if (this.state.gameType != GameType.Host)
+        if (this.state.gameType != 2 /* Host */)
             return undefined;
         var words = language.screens.setup;
         return React.createElement("div", { role: "group" },
@@ -1047,24 +1023,37 @@ var GameSetup = (function (_super) {
             return false;
         if (this.state.shipName === undefined || this.state.shipName.trim().length == 0)
             return false;
-        if (this.state.gameType == GameType.Join) {
+        if (this.state.gameType == 1 /* Join */) {
             if (this.state.joinAddress === undefined || this.state.joinAddress.trim().length == 0)
                 return false;
         }
-        if (this.state.gameType == GameType.Local || this.state.gameType == GameType.Host) {
+        if (this.state.gameType == 0 /* Local */ || this.state.gameType == 2 /* Host */) {
             if (this.state.gameMode === undefined)
                 return false;
-            if (GameMode.usesDifficulty(this.state.gameMode) && this.state.difficulty === undefined)
+            if (this.usesDifficulty(this.state.gameMode) && this.state.difficulty === undefined)
                 return false;
         }
-        if (this.state.gameType == GameType.Host) {
+        if (this.state.gameType == 2 /* Host */) {
             if (this.state.serverName === undefined || this.state.serverName.trim().length == 0)
                 return false;
         }
+        else if (this.state.gameType == 0 /* Local */) {
+            if (this.state.gameMode == 0 /* Arena */)
+                return false; // invalid combo
+        }
         return true;
     };
+    GameSetup.prototype.usesDifficulty = function (mode) {
+        switch (mode) {
+            case 1 /* Survival */:
+            case 2 /* Exploration */:
+                return true;
+            default:
+                return false;
+        }
+    };
     GameSetup.prototype.getContinueText = function () {
-        return this.state.gameType == GameType.Join
+        return this.state.gameType == 1 /* Join */
             ? language.screens.setup.gameTypeJoin
             : language.screens.setup.start;
     };
@@ -1086,9 +1075,9 @@ var GameSetup = (function (_super) {
     GameSetup.prototype.serverNameChanged = function (event) {
         this.setState({ serverName: event.target.value });
     };
-    GameSetup.prototype.save = function () {
-        if (this.props.saved !== undefined)
-            this.props.saved(this.state);
+    GameSetup.prototype.start = function () {
+        if (this.props.started !== undefined)
+            this.props.started(this.state);
     };
     GameSetup.prototype.cancel = function () {
         if (this.props.cancelled !== undefined)
@@ -1159,7 +1148,7 @@ var GameClient = (function (_super) {
                 var systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
                 return React.createElement(RoleSelection, { ref: function (ref) { _this.roleSelection = ref; }, crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
             case 4 /* GameSetup */:
-                return React.createElement(GameSetup, { cancelled: this.showReturn.bind(this), saved: this.startGame.bind(this) });
+                return React.createElement(GameSetup, { cancelled: this.showReturn.bind(this), started: this.startGame.bind(this) });
             case 5 /* Game */:
                 return React.createElement(GameActive, null);
             default:
@@ -1236,7 +1225,8 @@ var GameClient = (function (_super) {
         this.setState(state);
     };
     GameClient.prototype.startGame = function (settings) {
-        // TODO: actually start game
+        // TODO: actually start game of specified type, using specified options
+        this.server.send('startGame');
     };
     return GameClient;
 }(React.Component));

@@ -71,17 +71,18 @@
         }
         else if (cmd == 'paused') {
             this.game.setGameActive(true);
-            this.game.show(GameScreen.RoleSelection);
+            this.game.show(GameScreen.RoleSelection, true);
         }
         else if (cmd == 'game+') {
-            this.game.show(GameScreen.Game);
+            this.game.setGameActive(true);
+            this.game.show(GameScreen.Game, true);
         }
         else if (cmd == 'game-') {
             this.game.setGameActive(false);
             let blame = data != null ? language.messages.gameEndedUser.replace('@name@', data) : language.messages.gameEnded;
             this.game.showError(blame + ' ' + language.messages.wait, false);
 
-            setTimeout(function() { this.game.setActiveScreen('systems'); }.bind(this), 3000);
+            setTimeout(function() { this.game.show(GameScreen.RoleSelection, true); }.bind(this), 3000);
         }
         else if (cmd == 'pause+') {
             this.game.show(GameScreen.RoleSelection);

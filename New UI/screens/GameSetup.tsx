@@ -1,10 +1,10 @@
-﻿enum GameType {
+﻿const enum GameType {
     Local,
     Join,
     Host,
 }
 
-enum GameMode {
+const enum GameMode {
     Arena,
     Survival,
     Exploration,
@@ -12,20 +12,8 @@ enum GameMode {
 
 type Difficulty = 1|2|3|4|5|6|7|8|9|10;
 
-namespace GameMode {
-    export function usesDifficulty(mode: GameMode) {
-        switch (mode) {
-            case GameMode.Survival:
-            case GameMode.Exploration:
-                return true;
-            default:
-                return false;
-        }
-    }
-}
-
 interface IGameSetupProps {
-    saved?: (settings: IGameSetupState) => void;
+    started?: (settings: IGameSetupState) => void;
     cancelled?: () => void;
 }
 
@@ -75,7 +63,7 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
                 {this.renderDifficulty()}
                 {this.renderHostGameOptions()}
                 <ButtonSet className="actions" separate={true}>
-                    <ConfirmButton color={ButtonColor.Tertiary} disabled={!canStart} clicked={this.save.bind(this)} text={this.getContinueText()} />
+                    <ConfirmButton color={ButtonColor.Tertiary} disabled={!canStart} clicked={this.start.bind(this)} text={this.getContinueText()} />
                     <PushButton color={ButtonColor.Quaternary} clicked={this.cancel.bind(this)} text={language.common.cancel} />
                 </ButtonSet>
             </form>
@@ -137,7 +125,7 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
         </div>
     }
     private renderDifficulty() {
-        if (this.state.gameType == GameType.Join || this.state.gameMode === undefined || !GameMode.usesDifficulty(this.state.gameMode))
+        if (this.state.gameType == GameType.Join || this.state.gameMode === undefined || !this.usesDifficulty(this.state.gameMode))
             return undefined;
 
         let words = language.screens.setup;
@@ -182,7 +170,7 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
             if (this.state.gameMode === undefined)
                 return false;
 
-            if (GameMode.usesDifficulty(this.state.gameMode) && this.state.difficulty === undefined)
+            if (this.usesDifficulty(this.state.gameMode) && this.state.difficulty === undefined)
                 return false;
         }
 
@@ -190,8 +178,21 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
              if (this.state.serverName === undefined || this.state.serverName.trim().length == 0)
                 return false;
         }
+        else if (this.state.gameType == GameType.Local) {
+            if (this.state.gameMode == GameMode.Arena)
+                return false; // invalid combo
+        }
 
         return true;
+    }
+    private usesDifficulty(mode: GameMode) {
+        switch (mode) {
+            case GameMode.Survival:
+            case GameMode.Exploration:
+                return true;
+            default:
+                return false;
+        }
     }
     private getContinueText() {
         return this.state.gameType == GameType.Join
@@ -216,9 +217,9 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
     private serverNameChanged(event: any) {
         this.setState({ serverName: event.target.value });
     }
-    private save() {
-        if (this.props.saved !== undefined)
-            this.props.saved(this.state);
+    private start() {
+        if (this.props.started !== undefined)
+            this.props.started(this.state);
     }
     private cancel() {
         if (this.props.cancelled !== undefined)

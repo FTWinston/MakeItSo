@@ -51,7 +51,6 @@
             setup: 'Setup game',
             setupInUse: 'Another crew member is setting up the game',
             systemInUse: 'Another crew member has selected this system',
-            affectsAllCrew: 'This affects all crew members',
         },
         setup: {
             intro: 'Create or join a game',
