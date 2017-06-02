@@ -52,7 +52,7 @@ var language = {
         setup: {
             intro: 'Create or join a game',
             gameType: 'Game type',
-            gameTypePrompt: 'Select a type of game to play',
+            gameTypePrompt: 'Do you wish to play with just your own crew, or with others?',
             gameTypeLocal: 'Single crew',
             gameTypeLocalDescription: 'Play against the computer, with only your crew',
             gameTypeJoin: 'Join game',
@@ -61,6 +61,21 @@ var language = {
             gameTypeHostDescription: 'Host a multi-crew game that others can join',
             shipName: 'Ship name',
             shipNameDescription: 'The name of the ship your crew will operate',
+            joinAddress: 'Server address',
+            joinAddressDescription: 'IP address or URL of the game server to join',
+            serverName: 'Server name',
+            serverNameDescription: 'The name of the game to display to other crews',
+            gameMode: 'Game mode',
+            gameModePrompt: 'Select the kind of game you want to play:',
+            gameModeExploration: 'Exploration',
+            gameModeSurvival: 'Survival',
+            gameModeArena: 'Arena',
+            gameModeExplorationDescription: 'Carry out missions, explore the galaxy, and boldly go where no one has gone before.',
+            gameModeSurvivalDescription: 'Survive for as long as possible against endless waves of computer-controlled ships.',
+            gameModeArenaDescription: 'Human-crewed ships battle for supremacy in a single star system.',
+            difficulty: 'Difficulty',
+            difficultyPrompt: 'Higher values give more, tougher AI opponents.',
+            start: 'Start game',
             shipNames: [
                 'Excalibur',
                 'Bosephorous',
@@ -909,12 +924,32 @@ var GameType;
     GameType[GameType["Join"] = 1] = "Join";
     GameType[GameType["Host"] = 2] = "Host";
 })(GameType || (GameType = {}));
+var GameMode;
+(function (GameMode) {
+    GameMode[GameMode["Arena"] = 0] = "Arena";
+    GameMode[GameMode["Survival"] = 1] = "Survival";
+    GameMode[GameMode["Exploration"] = 2] = "Exploration";
+})(GameMode || (GameMode = {}));
+(function (GameMode) {
+    function usesDifficulty(mode) {
+        switch (mode) {
+            case GameMode.Survival:
+            case GameMode.Exploration:
+                return true;
+            default:
+                return false;
+        }
+    }
+    GameMode.usesDifficulty = usesDifficulty;
+})(GameMode || (GameMode = {}));
 var GameSetup = (function (_super) {
     __extends(GameSetup, _super);
     function GameSetup(props) {
         var _this = _super.call(this, props) || this;
         _this.state = {
             shipName: _this.getRandomName(),
+            joinAddress: '',
+            serverName: '',
         };
         return _this;
     }
@@ -932,32 +967,124 @@ var GameSetup = (function (_super) {
     };
     GameSetup.prototype.render = function () {
         var words = language.screens.setup;
-        var canSave = this.state.gameType !== undefined && this.state.shipName.trim().length > 0;
+        var canStart = this.decideCanStart();
         return React.createElement("div", { className: "screen", id: "setup" },
             React.createElement("form", null,
                 React.createElement("h1", null, words.intro),
-                React.createElement("div", { role: "group" },
-                    React.createElement("label", null, words.gameType),
-                    React.createElement(Choice, { prompt: words.gameTypePrompt, color: 0 /* Primary */ },
-                        React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Local), description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
-                        React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Join), description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
-                        React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Host), description: words.gameTypeHostDescription, text: words.gameTypeHost }))),
-                React.createElement("div", { role: "group" },
-                    React.createElement("label", { htmlFor: "txtShipName" }, words.shipName),
-                    React.createElement("div", null,
-                        React.createElement(ButtonSet, { separate: true },
-                            React.createElement("input", { id: "txtShipName", className: "value tertiary", type: "text", value: this.state.shipName, onChange: this.shipNameChanged.bind(this) }),
-                            React.createElement("button", { className: "push icon", type: "button", onClick: this.randomizeName.bind(this) }, "\u2685")),
-                        React.createElement("div", { className: "description" }, words.shipNameDescription))),
+                this.renderShipName(),
+                this.renderGameType(),
+                this.renderJoinGameOptions(),
+                this.renderGameMode(),
+                this.renderDifficulty(),
+                this.renderHostGameOptions(),
                 React.createElement(ButtonSet, { className: "actions", separate: true },
-                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave, clicked: this.save.bind(this), text: language.common.save }),
+                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canStart, clicked: this.save.bind(this), text: this.getContinueText() }),
                     React.createElement(PushButton, { color: 3 /* Quaternary */, clicked: this.cancel.bind(this), text: language.common.cancel }))));
     };
+    GameSetup.prototype.renderShipName = function () {
+        var words = language.screens.setup;
+        return React.createElement("div", { role: "group" },
+            React.createElement("label", { htmlFor: "txtShipName" }, words.shipName),
+            React.createElement("div", null,
+                React.createElement(ButtonSet, { separate: true },
+                    React.createElement("input", { id: "txtShipName", className: "value tertiary", type: "text", value: this.state.shipName, onChange: this.shipNameChanged.bind(this) }),
+                    React.createElement("button", { className: "push icon", type: "button", onClick: this.randomizeName.bind(this) }, "\u21BA")),
+                React.createElement("div", { className: "description" }, words.shipNameDescription)));
+    };
+    GameSetup.prototype.renderGameType = function () {
+        var words = language.screens.setup;
+        return React.createElement("div", { role: "group" },
+            React.createElement("label", null, words.gameType),
+            React.createElement(Choice, { prompt: words.gameTypePrompt, color: 0 /* Primary */ },
+                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Local), description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
+                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Join), description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
+                React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Host), description: words.gameTypeHostDescription, text: words.gameTypeHost })));
+    };
+    GameSetup.prototype.renderJoinGameOptions = function () {
+        if (this.state.gameType != GameType.Join)
+            return undefined;
+        var words = language.screens.setup;
+        return React.createElement("div", { role: "group" },
+            React.createElement("label", { htmlFor: "txtJoinAddress" }, words.joinAddress),
+            React.createElement("div", null,
+                React.createElement("input", { id: "txtJoinAddress", className: "value tertiary", type: "text", value: this.state.joinAddress, onChange: this.joinAddressChanged.bind(this) }),
+                React.createElement("div", { className: "description" }, words.joinAddressDescription)));
+    };
+    GameSetup.prototype.renderGameMode = function () {
+        if (this.state.gameType === undefined || this.state.gameType == GameType.Join)
+            return undefined;
+        var words = language.screens.setup;
+        return React.createElement("div", { role: "group" },
+            React.createElement("label", null, words.gameMode),
+            React.createElement(Choice, { prompt: words.gameModePrompt, color: 1 /* Secondary */ },
+                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, GameMode.Exploration), description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
+                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, GameMode.Survival), description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
+                React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, GameMode.Arena), description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType == GameType.Local })));
+    };
+    GameSetup.prototype.renderDifficulty = function () {
+        if (this.state.gameType == GameType.Join || this.state.gameMode === undefined || !GameMode.usesDifficulty(this.state.gameMode))
+            return undefined;
+        var words = language.screens.setup;
+        var levels = [];
+        for (var i = 1; i <= 10; i++)
+            levels.push(React.createElement(ToggleButton, { key: i, activated: this.setDifficulty.bind(this, i), text: i.toString() }));
+        return React.createElement("div", { role: "group" },
+            React.createElement("label", null, words.difficulty),
+            React.createElement(Choice, { prompt: words.difficultyPrompt, color: 2 /* Tertiary */ }, levels));
+    };
+    GameSetup.prototype.renderHostGameOptions = function () {
+        if (this.state.gameType != GameType.Host)
+            return undefined;
+        var words = language.screens.setup;
+        return React.createElement("div", { role: "group" },
+            React.createElement("label", { htmlFor: "txtServerName" }, words.serverName),
+            React.createElement("div", null,
+                React.createElement("input", { id: "txtServerName", className: "value tertiary", type: "text", value: this.state.serverName, onChange: this.serverNameChanged.bind(this) }),
+                React.createElement("div", { className: "description" }, words.serverNameDescription)));
+    };
+    GameSetup.prototype.decideCanStart = function () {
+        if (this.state.gameType === undefined)
+            return false;
+        if (this.state.shipName === undefined || this.state.shipName.trim().length == 0)
+            return false;
+        if (this.state.gameType == GameType.Join) {
+            if (this.state.joinAddress === undefined || this.state.joinAddress.trim().length == 0)
+                return false;
+        }
+        if (this.state.gameType == GameType.Local || this.state.gameType == GameType.Host) {
+            if (this.state.gameMode === undefined)
+                return false;
+            if (GameMode.usesDifficulty(this.state.gameMode) && this.state.difficulty === undefined)
+                return false;
+        }
+        if (this.state.gameType == GameType.Host) {
+            if (this.state.serverName === undefined || this.state.serverName.trim().length == 0)
+                return false;
+        }
+        return true;
+    };
+    GameSetup.prototype.getContinueText = function () {
+        return this.state.gameType == GameType.Join
+            ? language.screens.setup.gameTypeJoin
+            : language.screens.setup.start;
+    };
     GameSetup.prototype.setGameType = function (type) {
-        this.setState({ gameType: type, shipName: this.state.shipName });
+        this.setState({ gameType: type });
+    };
+    GameSetup.prototype.setGameMode = function (mode) {
+        this.setState({ gameMode: mode });
+    };
+    GameSetup.prototype.setDifficulty = function (level) {
+        this.setState({ difficulty: level });
     };
     GameSetup.prototype.shipNameChanged = function (event) {
         this.setState({ shipName: event.target.value });
+    };
+    GameSetup.prototype.joinAddressChanged = function (event) {
+        this.setState({ joinAddress: event.target.value });
+    };
+    GameSetup.prototype.serverNameChanged = function (event) {
+        this.setState({ serverName: event.target.value });
     };
     GameSetup.prototype.save = function () {
         if (this.props.saved !== undefined)
