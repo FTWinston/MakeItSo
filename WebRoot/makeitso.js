@@ -48,7 +48,26 @@ var language = {
             setupInUse: 'Another crew member is setting up the game',
             systemInUse: 'Another crew member has selected this system',
             affectsAllCrew: 'This affects all crew members',
-        }
+        },
+        setup: {
+            intro: 'Create or join a game',
+            gameType: 'Game type',
+            gameTypePrompt: 'Select a type of game to play',
+            gameTypeLocal: 'Single crew',
+            gameTypeLocalDescription: 'Play against the computer, with only your crew',
+            gameTypeJoin: 'Join game',
+            gameTypeJoinDescription: 'Join a multi-crew game hosted elsewhere',
+            gameTypeHost: 'Host game',
+            gameTypeHostDescription: 'Host a multi-crew game that others can join',
+            shipName: 'Ship name',
+            shipNameDescription: 'The name of the ship your crew will operate',
+            shipNames: [
+                'Excalibur',
+                'Bosephorous',
+                'Enigma',
+                'Praetor',
+            ],
+        },
     },
     messages: {
         confirmLeave: 'The game is still active.',
@@ -884,13 +903,69 @@ var RoleSelection = (function (_super) {
     };
     return RoleSelection;
 }(React.Component));
+var GameType;
+(function (GameType) {
+    GameType[GameType["Local"] = 0] = "Local";
+    GameType[GameType["Join"] = 1] = "Join";
+    GameType[GameType["Host"] = 2] = "Host";
+})(GameType || (GameType = {}));
 var GameSetup = (function (_super) {
     __extends(GameSetup, _super);
-    function GameSetup() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function GameSetup(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            shipName: _this.getRandomName(),
+        };
+        return _this;
     }
+    GameSetup.prototype.getRandomName = function () {
+        var randomNames = language.screens.setup.shipNames;
+        var index = Math.floor(Math.random() * randomNames.length);
+        return randomNames[index];
+    };
+    GameSetup.prototype.randomizeName = function () {
+        var name;
+        do {
+            name = this.getRandomName();
+        } while (name == this.state.shipName);
+        this.setState({ shipName: name });
+    };
     GameSetup.prototype.render = function () {
-        return React.createElement("div", { className: "screen" });
+        var words = language.screens.setup;
+        var canSave = this.state.gameType !== undefined && this.state.shipName.trim().length > 0;
+        return React.createElement("div", { className: "screen", id: "setup" },
+            React.createElement("form", null,
+                React.createElement("h1", null, words.intro),
+                React.createElement("div", { role: "group" },
+                    React.createElement("label", null, words.gameType),
+                    React.createElement(Choice, { prompt: words.gameTypePrompt, color: 0 /* Primary */ },
+                        React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Local), description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
+                        React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Join), description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
+                        React.createElement(ToggleButton, { activated: this.setGameType.bind(this, GameType.Host), description: words.gameTypeHostDescription, text: words.gameTypeHost }))),
+                React.createElement("div", { role: "group" },
+                    React.createElement("label", { htmlFor: "txtShipName" }, words.shipName),
+                    React.createElement("div", null,
+                        React.createElement(ButtonSet, { separate: true },
+                            React.createElement("input", { id: "txtShipName", className: "value tertiary", type: "text", value: this.state.shipName, onChange: this.shipNameChanged.bind(this) }),
+                            React.createElement("button", { className: "push icon", type: "button", onClick: this.randomizeName.bind(this) }, "\u2685")),
+                        React.createElement("div", { className: "description" }, words.shipNameDescription))),
+                React.createElement(ButtonSet, { className: "actions", separate: true },
+                    React.createElement(ConfirmButton, { color: 2 /* Tertiary */, disabled: !canSave, clicked: this.save.bind(this), text: language.common.save }),
+                    React.createElement(PushButton, { color: 3 /* Quaternary */, clicked: this.cancel.bind(this), text: language.common.cancel }))));
+    };
+    GameSetup.prototype.setGameType = function (type) {
+        this.setState({ gameType: type, shipName: this.state.shipName });
+    };
+    GameSetup.prototype.shipNameChanged = function (event) {
+        this.setState({ shipName: event.target.value });
+    };
+    GameSetup.prototype.save = function () {
+        if (this.props.saved !== undefined)
+            this.props.saved(this.state);
+    };
+    GameSetup.prototype.cancel = function () {
+        if (this.props.cancelled !== undefined)
+            this.props.cancelled();
     };
     return GameSetup;
 }(React.Component));
@@ -957,7 +1032,7 @@ var GameClient = (function (_super) {
                 var systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
                 return React.createElement(RoleSelection, { ref: function (ref) { _this.roleSelection = ref; }, crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
             case 4 /* GameSetup */:
-                return React.createElement(GameSetup, null);
+                return React.createElement(GameSetup, { cancelled: this.showReturn.bind(this), saved: this.startGame.bind(this) });
             case 5 /* Game */:
                 return React.createElement(GameActive, null);
             default:
@@ -1032,6 +1107,9 @@ var GameClient = (function (_super) {
         else
             state.errorMessage = message;
         this.setState(state);
+    };
+    GameClient.prototype.startGame = function (settings) {
+        // TODO: actually start game
     };
     return GameClient;
 }(React.Component));

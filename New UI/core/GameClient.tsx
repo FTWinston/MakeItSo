@@ -86,7 +86,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
                         forceShowSystems={systemSelection} gameActive={gameActive} setupInUse={setupInUse} setupClicked={this.show.bind(this, GameScreen.GameSetup)} />;
                 
             case GameScreen.GameSetup:
-                return <GameSetup />
+                return <GameSetup cancelled={this.showReturn.bind(this)} saved={this.startGame.bind(this)} />
 
             case GameScreen.Game:
                 return <GameActive />
@@ -170,6 +170,9 @@ class GameClient extends React.Component<{}, IGameClientState> {
             state.errorMessage = message;
         
         this.setState(state);
+    }
+    private startGame(settings: IGameSetupState) {
+        // TODO: actually start game
     }
 };
 

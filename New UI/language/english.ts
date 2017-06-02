@@ -52,7 +52,27 @@
             setupInUse: 'Another crew member is setting up the game',
             systemInUse: 'Another crew member has selected this system',
             affectsAllCrew: 'This affects all crew members',
-        }
+        },
+        setup: {
+            intro: 'Create or join a game',
+            gameType: 'Game type',
+            gameTypePrompt: 'Select a type of game to play',
+            gameTypeLocal: 'Single crew',
+            gameTypeLocalDescription: 'Play against the computer, with only your crew',
+            gameTypeJoin: 'Join game',
+            gameTypeJoinDescription: 'Join a multi-crew game hosted elsewhere',
+            gameTypeHost: 'Host game',
+            gameTypeHostDescription: 'Host a multi-crew game that others can join',
+            shipName: 'Ship name',
+            shipNameDescription: 'The name of the ship your crew will operate',
+            
+            shipNames: [
+                'Excalibur',
+                'Bosephorous',
+                'Enigma',
+                'Praetor',
+            ],
+        },
     },
 
     messages: {

@@ -62,7 +62,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
     private nameChanged(event: any) {
         this.setState({ userName: event.target.value });
     }
-    save() {
+    private save() {
         var settings = new ClientSettings();
         if (this.state.inputMode !== undefined)
             settings.inputMode = this.state.inputMode;
@@ -74,7 +74,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
         if (this.props.saved !== undefined)
             this.props.saved(settings);
     }
-    cancel() {
+    private cancel() {
         if (this.props.cancelled !== undefined)
             this.props.cancelled();
     }

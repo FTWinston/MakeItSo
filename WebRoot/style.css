@@ -306,7 +306,7 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
-#error, #settings {
+#error, #settings, #setup {
   display: flex;
   flex-direction: column;
   align-items: center;
