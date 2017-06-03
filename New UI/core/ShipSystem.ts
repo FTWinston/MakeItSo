@@ -194,4 +194,27 @@ namespace ShipSystem {
             return [];
         }
     }
+
+    export function getIcon(system: ShipSystem): Icon | undefined {
+        switch (system) {
+            case ShipSystem.Helm:
+                return 'helm';
+            case ShipSystem.Warp:
+                return 'warp';
+            case ShipSystem.Weapons:
+                return 'weapons';
+            case ShipSystem.Sensors:
+                return 'sensors';
+            case ShipSystem.PowerManagement:
+                return 'power';
+            case ShipSystem.DamageControl:
+                return 'damage';
+            case ShipSystem.ViewScreen:
+                return 'view';
+            case ShipSystem.Communications:
+                return 'comms';
+            default:
+                 return undefined;
+        }
+    }
 }

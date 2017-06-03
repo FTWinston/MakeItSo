@@ -409,6 +409,29 @@ var CrewRole = (function () {
         }
     }
     ShipSystem.getRoles = getRoles;
+    function getIcon(system) {
+        switch (system) {
+            case ShipSystem.Helm:
+                return 'helm';
+            case ShipSystem.Warp:
+                return 'warp';
+            case ShipSystem.Weapons:
+                return 'weapons';
+            case ShipSystem.Sensors:
+                return 'sensors';
+            case ShipSystem.PowerManagement:
+                return 'power';
+            case ShipSystem.DamageControl:
+                return 'damage';
+            case ShipSystem.ViewScreen:
+                return 'view';
+            case ShipSystem.Communications:
+                return 'comms';
+            default:
+                return undefined;
+        }
+    }
+    ShipSystem.getIcon = getIcon;
 })(ShipSystem || (ShipSystem = {}));
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -455,6 +478,22 @@ var IconButton = (function (_super) {
                 return this.renderHelp();
             case 'pause':
                 return this.renderPause();
+            case 'helm':
+                return this.renderHelm();
+            case 'warp':
+                return this.renderWarp();
+            case 'weapons':
+                return this.renderWeapons();
+            case 'sensors':
+                return this.renderSensors();
+            case 'power':
+                return this.renderPower();
+            case 'damage':
+                return this.renderDamage();
+            case 'comms':
+                return this.renderComms();
+            case 'view':
+                return this.renderViewscreen();
         }
     };
     IconButton.prototype.renderRefresh = function () {
@@ -484,6 +523,48 @@ var IconButton = (function (_super) {
         return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("rect", { x: "6", y: "4", width: "4", height: "16" }),
             React.createElement("rect", { x: "14", y: "4", width: "4", height: "16" }));
+    };
+    IconButton.prototype.renderHelm = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("polygon", { points: "3 11 22 2 13 21 11 13 3 11" }));
+    };
+    IconButton.prototype.renderWarp = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
+            React.createElement("polygon", { points: "16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" }));
+    };
+    IconButton.prototype.renderWeapons = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
+            React.createElement("line", { x1: "22", y1: "12", x2: "18", y2: "12" }),
+            React.createElement("line", { x1: "6", y1: "12", x2: "2", y2: "12" }),
+            React.createElement("line", { x1: "12", y1: "6", x2: "12", y2: "2" }),
+            React.createElement("line", { x1: "12", y1: "22", x2: "12", y2: "18" }));
+    };
+    IconButton.prototype.renderSensors = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("polyline", { points: "22 12 18 12 15 21 9 3 6 12 2 12" }));
+    };
+    IconButton.prototype.renderPower = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("path", { d: "M18.36 6.64a9 9 0 1 1-12.73 0" }),
+            React.createElement("line", { x1: "12", y1: "2", x2: "12", y2: "12" }));
+    };
+    IconButton.prototype.renderDamage = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("path", { d: "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" }),
+            React.createElement("line", { x1: "12", y1: "9", x2: "12", y2: "13" }),
+            React.createElement("line", { x1: "12", y1: "17", x2: "12", y2: "17" }));
+    };
+    IconButton.prototype.renderComms = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("path", { d: "M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" }));
+    };
+    IconButton.prototype.renderViewscreen = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("rect", { x: "2", y: "3", width: "20", height: "14", rx: "2", ry: "2" }),
+            React.createElement("line", { x1: "8", y1: "21", x2: "16", y2: "21" }),
+            React.createElement("line", { x1: "12", y1: "17", x2: "12", y2: "21" }));
     };
     return IconButton;
 }(React.Component));
