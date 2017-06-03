@@ -7,7 +7,7 @@ interface IHelpProps {
 class Help extends React.Component<IHelpProps, {}> {
     render() {
         let closeButton = this.props.closed === undefined ? undefined
-            : <PushButton className="icon" text="X" clicked={this.props.closed} hotkey="esc" />;
+            : <IconButton clicked={this.props.closed} icon="close" />; // hotkey="esc"
 
         return (
         <div className="helpView">

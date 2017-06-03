@@ -65,7 +65,7 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
 
         return <div className="buttons separate">
             {this.renderButton()}
-            <button className="icon push" type="button" title={language.common.help} onClick={this.showHelp.bind(this, true)}>?</button>
+            <IconButton clicked={this.showHelp.bind(this, true)} icon="help" />
             {help}
         </div>
     }

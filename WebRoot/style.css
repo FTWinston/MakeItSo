@@ -314,6 +314,9 @@ $lightBackground: #999;
   align-items: center;
   justify-content: center; }
 
+#error {
+  white-space: pre-line; }
+
 #roleSelection {
   display: flex;
   flex-direction: column;
@@ -339,6 +342,28 @@ $lightBackground: #999;
 #game {
   overflow-y: hidden;
   padding: 0; }
+
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+svg.icon {
+  min-width: 24px;
+  min-height: 24px;
+  cursor: pointer;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  align-self: center;
+  stroke-width: 2;
+  stroke: #e0e5f8;
+  transition: stroke 1s; }
+  svg.icon:hover {
+    stroke: #ffce9c; }
+  svg.icon:active {
+    stroke: #de0000; }
 
 /*
 @import 'ui/systems';
@@ -420,11 +445,7 @@ spacer {
 
 @import 'ui/buttoncolors';
 @import 'ui/toucharea.scss';
-*/
-#error {
-  white-space: pre-line; }
 
-/*
 @import 'setup/setup';
 
 output {

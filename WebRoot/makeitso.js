@@ -427,7 +427,7 @@ var Help = (function (_super) {
     }
     Help.prototype.render = function () {
         var closeButton = this.props.closed === undefined ? undefined
-            : React.createElement(PushButton, { className: "icon", text: "X", clicked: this.props.closed, hotkey: "esc" });
+            : React.createElement(IconButton, { clicked: this.props.closed, icon: "close" }); // hotkey="esc"
         return (React.createElement("div", { className: "helpView" },
             React.createElement("h1", null,
                 language.common.help,
@@ -437,6 +437,55 @@ var Help = (function (_super) {
             React.createElement(Menu, null, closeButton)));
     };
     return Help;
+}(React.Component));
+var IconButton = (function (_super) {
+    __extends(IconButton, _super);
+    function IconButton() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    IconButton.prototype.render = function () {
+        switch (this.props.icon) {
+            case 'refresh':
+                return this.renderRefresh();
+            case 'settings':
+                return this.renderSettings();
+            case 'close':
+                return this.renderClose();
+            case 'help':
+                return this.renderHelp();
+            case 'pause':
+                return this.renderPause();
+        }
+    };
+    IconButton.prototype.renderRefresh = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("polyline", { points: "1 4 1 10 7 10" }),
+            React.createElement("polyline", { points: "23 20 23 14 17 14" }),
+            React.createElement("path", { d: "M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" }));
+    };
+    IconButton.prototype.renderSettings = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("circle", { cx: "12", cy: "12", r: "3" }),
+            React.createElement("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z", strokeMiterlimit: "10" }));
+    };
+    IconButton.prototype.renderClose = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
+            React.createElement("line", { x1: "15", y1: "9", x2: "9", y2: "15" }),
+            React.createElement("line", { x1: "9", y1: "9", x2: "15", y2: "15" }));
+    };
+    IconButton.prototype.renderHelp = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
+            React.createElement("line", { x1: "12", y1: "16", x2: "12", y2: "12" }),
+            React.createElement("line", { x1: "12", y1: "8", x2: "12", y2: "8" }));
+    };
+    IconButton.prototype.renderPause = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("rect", { x: "6", y: "4", width: "4", height: "16" }),
+            React.createElement("rect", { x: "14", y: "4", width: "4", height: "16" }));
+    };
+    return IconButton;
 }(React.Component));
 var Button = (function (_super) {
     __extends(Button, _super);
@@ -468,7 +517,7 @@ var Button = (function (_super) {
             : undefined;
         return React.createElement("div", { className: "buttons separate" },
             this.renderButton(),
-            React.createElement("button", { className: "icon push", type: "button", title: language.common.help, onClick: this.showHelp.bind(this, true) }, "?"),
+            React.createElement(IconButton, { clicked: this.showHelp.bind(this, true), icon: "help" }),
             help);
     };
     Button.prototype.showHelp = function (show) {
@@ -837,7 +886,7 @@ var RoleSelection = (function (_super) {
                 roleOrSystemSelection,
                 this.renderActionButtons()),
             React.createElement(Menu, null,
-                React.createElement(PushButton, { color: 4 /* Quandry */, clicked: this.settingsClicked.bind(this), text: "\u2699", className: "icon", title: language.common.settings }))));
+                React.createElement(IconButton, { clicked: this.settingsClicked.bind(this), icon: "settings", title: language.common.settings }))));
     };
     RoleSelection.prototype.renderSelectionTypeSwitch = function () {
         if (this.props.crewSize >= ShipSystem.count)
@@ -964,7 +1013,7 @@ var GameSetup = (function (_super) {
             React.createElement("div", null,
                 React.createElement(ButtonSet, { separate: true },
                     React.createElement("input", { id: "txtShipName", className: "value tertiary", type: "text", value: this.state.shipName, onChange: this.shipNameChanged.bind(this) }),
-                    React.createElement("button", { className: "push icon", type: "button", onClick: this.randomizeName.bind(this) }, "\u21BA")),
+                    React.createElement(IconButton, { icon: "refresh", clicked: this.randomizeName.bind(this) })),
                 React.createElement("div", { className: "description" }, words.shipNameDescription)));
     };
     GameSetup.prototype.renderGameType = function () {

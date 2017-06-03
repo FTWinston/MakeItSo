@@ -40,7 +40,7 @@ class RoleSelection extends React.Component<IRoleSelectionProps, {}> {
                     {this.renderActionButtons()}
                 </div>
                 <Menu>
-                    <PushButton color={ButtonColor.Quandry} clicked={this.settingsClicked.bind(this)} text="&#9881;" className="icon" title={language.common.settings} />
+                    <IconButton clicked={this.settingsClicked.bind(this)} icon="settings" title={language.common.settings} />
                 </Menu>
             </div>
         );

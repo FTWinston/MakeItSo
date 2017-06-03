@@ -63,6 +63,7 @@ h1 {
 @import 'ui/buttons/button';
 @import 'ui/buttons/buttonset';
 @import 'screens/screens';
+@import 'ui/icons';
 
 /*
 @import 'ui/systems';
@@ -144,12 +145,7 @@ spacer {
 
 @import 'ui/buttoncolors';
 @import 'ui/toucharea.scss';
-*/
 
-#error {
-	white-space: pre-line;
-}
-/*
 @import 'setup/setup';
 
 output {

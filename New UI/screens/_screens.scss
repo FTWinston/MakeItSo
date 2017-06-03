@@ -4,6 +4,10 @@
     @include center(true);
 }
 
+#error {
+    white-space: pre-line;
+}
+
 #roleSelection {
     @include center(false);
 

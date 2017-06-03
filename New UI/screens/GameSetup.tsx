@@ -77,7 +77,7 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
             <div>
                 <ButtonSet separate={true}>
                     <input id="txtShipName" className="value tertiary" type="text" value={this.state.shipName} onChange={this.shipNameChanged.bind(this)} />
-                    <button className="push icon" type="button" onClick={this.randomizeName.bind(this)}>&#8634;</button>
+                    <IconButton icon="refresh" clicked={this.randomizeName.bind(this)} />
                 </ButtonSet>
                 <div className="description">{words.shipNameDescription}</div>
             </div>

@@ -1,0 +1,23 @@
+@import 'ui/colors';
+
+svg.icon {
+    min-width: 24px;
+    min-height: 24px;
+    cursor: pointer;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    align-self: center;
+
+    stroke-width: 2;
+    stroke: $colorHighlight;
+    transition: stroke 1s;
+
+    &:hover {
+        stroke: $colorQuandry;
+    }
+    
+    &:active{ 
+        stroke: $colorConfirm;
+    }
+}

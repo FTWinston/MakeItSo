@@ -29,6 +29,7 @@
 
         "ui/Help.tsx",
 
+        "ui/buttons/IconButton.tsx",
         "ui/buttons/Button.tsx",
         "ui/buttons/PushButton.tsx",
         "ui/buttons/ConfirmButton.tsx",
