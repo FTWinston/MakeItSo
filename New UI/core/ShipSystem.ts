@@ -31,6 +31,27 @@ namespace ShipSystem {
     ];
 
     export const count = allSystems.length;
+    
+    export function getSingle(flags: ShipSystem) {
+        if (flags & ShipSystem.Helm)
+            return ShipSystem.Helm;
+        if (flags & ShipSystem.Warp)
+            return ShipSystem.Warp;
+        if (flags & ShipSystem.Weapons)
+            return ShipSystem.Weapons;
+        if (flags & ShipSystem.Sensors)
+            return ShipSystem.Sensors;
+        if (flags & ShipSystem.PowerManagement)
+            return ShipSystem.PowerManagement;
+        if (flags & ShipSystem.DamageControl)
+            return ShipSystem.DamageControl;
+        if (flags & ShipSystem.Communications)
+            return ShipSystem.Communications;
+        if (flags & ShipSystem.ViewScreen)
+            return ShipSystem.ViewScreen;
+
+        return 0;
+    }
 
     function getInfoArray(flags: ShipSystem) {
         let systems: SystemInfo[] = [];

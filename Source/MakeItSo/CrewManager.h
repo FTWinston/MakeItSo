@@ -104,6 +104,7 @@ private:
 	void HandleWebsocketMessage(ConnectionInfo *info);
 	void ShipSystemChanged(ConnectionInfo *info, int32 systemFlags);
 	void SendSystemUsage(ConnectionInfo *sendTo);
+	void SendGameActive();
 
 	static mg_server *server;
 	AShipPlayerController *controller;

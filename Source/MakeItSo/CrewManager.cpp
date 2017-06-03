@@ -145,14 +145,12 @@ void UCrewManager::PauseGame(bool state)
 	if (state)
 	{
 		crewState = ECrewState::Paused;
-		SendCrewMessage(ESystem::Everyone, TEXT("pause+"));
+		SendCrewMessage(ESystem::Everyone, TEXT("pause"));
 	}
 	else
 	{
 		crewState = ECrewState::Active;
-
-		SendCrewMessage(ESystem::AllStations, TEXT("pause-"));
-		SendCrewMessage(ESystem::NoStations, TEXT("started")); // game resumed, keep out
+		SendGameActive();
 		SendAllCrewData();
 	}
 
@@ -291,12 +289,12 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
 	{
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "started");
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "game+ 0");
 		return;
 	}
 	else if (crewState == ECrewState::Paused)
 	{
-		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "paused");
+		mg_websocket_printf(conn, WEBSOCKET_OPCODE_TEXT, "pause");
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -527,8 +525,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		crewState = ECrewState::Active;
 
 		SendAllCrewData();
-		SendCrewMessage(ESystem::AllStations, TEXT("game+")); // game started
-		SendCrewMessage(ESystem::NoStations, TEXT("started")); // game started, keep out
+		SendGameActive();
 
 #ifndef WEB_SERVER_TEST
 		//todo: this should consider the game mode/type selected
@@ -623,6 +620,12 @@ void UCrewManager::SendSystemUsage(ConnectionInfo *sendTo)
 			systemFlags |= other->shipSystemFlags;
 
 	mg_websocket_printf(sendTo->connection, WEBSOCKET_OPCODE_TEXT, "sys %i", systemFlags);
+}
+
+void UCrewManager::SendGameActive()
+{
+	for (auto& info : *currentConnections)
+		mg_websocket_printf(info->connection, WEBSOCKET_OPCODE_TEXT, "game+ %i", info->shipSystemFlags);
 }
 
 void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude)

@@ -200,7 +200,7 @@ var Connection = (function () {
         }
         else if (cmd == 'sys') {
             var systemFlags = parseInt(data);
-            this.game.setSystemUsage(systemFlags);
+            this.game.setCrewmateSystemUsage(systemFlags);
         }
         else if (cmd == 'setup+') {
             this.game.setupScreenInUse(false);
@@ -208,30 +208,20 @@ var Connection = (function () {
         else if (cmd == 'setup-') {
             this.game.setupScreenInUse(true);
         }
-        else if (cmd == 'started') {
-            this.game.setGameActive(true);
-            this.game.showError(language.errors.gameStarted, false);
-        }
-        else if (cmd == 'paused') {
+        else if (cmd == 'pause') {
             this.game.setGameActive(true);
             this.game.show(3 /* RoleSelection */, true);
         }
         else if (cmd == 'game+') {
+            var systemFlags = parseInt(data);
+            this.game.setSystemUsage(systemFlags);
             this.game.setGameActive(true);
-            this.game.show(5 /* Game */, true);
         }
         else if (cmd == 'game-') {
             this.game.setGameActive(false);
             var blame = data != null ? language.messages.gameEndedUser.replace('@name@', data) : language.messages.gameEnded;
             this.game.showError(blame + ' ' + language.messages.wait, false);
             setTimeout(function () { this.game.show(3 /* RoleSelection */, true); }.bind(this), 3000);
-        }
-        else if (cmd == 'pause+') {
-            this.game.show(3 /* RoleSelection */);
-            //this.game.clearAllData();
-        }
-        else if (cmd == 'pause-') {
-            this.game.show(5 /* Game */);
         }
         else if (cmd == 'selectsys+') {
             this.game.setDirectSystemSelection(true);
@@ -306,6 +296,26 @@ var CrewRole = (function () {
         ShipSystem.ViewScreen,
     ];
     ShipSystem.count = ShipSystem.allSystems.length;
+    function getSingle(flags) {
+        if (flags & ShipSystem.Helm)
+            return ShipSystem.Helm;
+        if (flags & ShipSystem.Warp)
+            return ShipSystem.Warp;
+        if (flags & ShipSystem.Weapons)
+            return ShipSystem.Weapons;
+        if (flags & ShipSystem.Sensors)
+            return ShipSystem.Sensors;
+        if (flags & ShipSystem.PowerManagement)
+            return ShipSystem.PowerManagement;
+        if (flags & ShipSystem.DamageControl)
+            return ShipSystem.DamageControl;
+        if (flags & ShipSystem.Communications)
+            return ShipSystem.Communications;
+        if (flags & ShipSystem.ViewScreen)
+            return ShipSystem.ViewScreen;
+        return 0;
+    }
+    ShipSystem.getSingle = getSingle;
     function getInfoArray(flags) {
         var systems = [];
         if (flags & ShipSystem.Helm)
@@ -869,6 +879,16 @@ var Menu = (function (_super) {
     };
     return Menu;
 }(React.Component));
+var SystemHeader = (function (_super) {
+    __extends(SystemHeader, _super);
+    function SystemHeader() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SystemHeader.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return SystemHeader;
+}(React.Component));
 var ErrorScreen = (function (_super) {
     __extends(ErrorScreen, _super);
     function ErrorScreen() {
@@ -1217,13 +1237,126 @@ var GameSetup = (function (_super) {
 }(React.Component));
 var GameActive = (function (_super) {
     __extends(GameActive, _super);
-    function GameActive() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function GameActive(props) {
+        var _this = _super.call(this, props) || this;
+        _this.setInitialScreen();
+        return _this;
     }
+    GameActive.prototype.componentDidUpdate = function (prevProps) {
+        if (prevProps.selectedSystems != this.props.selectedSystems)
+            this.setInitialScreen();
+    };
+    GameActive.prototype.setInitialScreen = function () {
+        this.setState({ activeSystem: ShipSystem.getSingle(this.props.selectedSystems) });
+    };
     GameActive.prototype.render = function () {
-        return React.createElement("div", { className: "game" });
+        return React.createElement("div", { className: "screen", id: "active" },
+            React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems }),
+            this.renderActiveSystem());
+    };
+    GameActive.prototype.renderActiveSystem = function () {
+        switch (this.state.activeSystem) {
+            case ShipSystem.Helm:
+                return React.createElement(HelmSystem, null);
+            case ShipSystem.Warp:
+                return React.createElement(WarpSystem, null);
+            case ShipSystem.Weapons:
+                return React.createElement(WeaponsSystem, null);
+            case ShipSystem.Sensors:
+                return React.createElement(SensorsSystem, null);
+            case ShipSystem.PowerManagement:
+                return React.createElement(PowerSystem, null);
+            case ShipSystem.DamageControl:
+                return React.createElement(DamageControlSystem, null);
+            case ShipSystem.ViewScreen:
+                return React.createElement(ViewScreenSystem, null);
+            case ShipSystem.Communications:
+                return React.createElement(CommunicationsSystem, null);
+            default:
+                return undefined;
+        }
     };
     return GameActive;
+}(React.Component));
+var CommunicationsSystem = (function (_super) {
+    __extends(CommunicationsSystem, _super);
+    function CommunicationsSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    CommunicationsSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return CommunicationsSystem;
+}(React.Component));
+var DamageControlSystem = (function (_super) {
+    __extends(DamageControlSystem, _super);
+    function DamageControlSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    DamageControlSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return DamageControlSystem;
+}(React.Component));
+var HelmSystem = (function (_super) {
+    __extends(HelmSystem, _super);
+    function HelmSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    HelmSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return HelmSystem;
+}(React.Component));
+var PowerSystem = (function (_super) {
+    __extends(PowerSystem, _super);
+    function PowerSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    PowerSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return PowerSystem;
+}(React.Component));
+var SensorsSystem = (function (_super) {
+    __extends(SensorsSystem, _super);
+    function SensorsSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    SensorsSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return SensorsSystem;
+}(React.Component));
+var ViewScreenSystem = (function (_super) {
+    __extends(ViewScreenSystem, _super);
+    function ViewScreenSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ViewScreenSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return ViewScreenSystem;
+}(React.Component));
+var WarpSystem = (function (_super) {
+    __extends(WarpSystem, _super);
+    function WarpSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    WarpSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return WarpSystem;
+}(React.Component));
+var WeaponsSystem = (function (_super) {
+    __extends(WeaponsSystem, _super);
+    function WeaponsSystem() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    WeaponsSystem.prototype.render = function () {
+        return React.createElement("div", null);
+    };
+    return WeaponsSystem;
 }(React.Component));
 var GameClient = (function (_super) {
     __extends(GameClient, _super);
@@ -1239,6 +1372,7 @@ var GameClient = (function (_super) {
             errorMessage: undefined,
             crewID: undefined,
             crewSize: 0,
+            selectedSystems: 0,
             otherCrewsSystems: 0,
             selectSystemsDirectly: false,
         };
@@ -1280,7 +1414,8 @@ var GameClient = (function (_super) {
             case 4 /* GameSetup */:
                 return React.createElement(GameSetup, { cancelled: this.showReturn.bind(this), started: this.startGame.bind(this) });
             case 5 /* Game */:
-                return React.createElement(GameActive, null);
+                var systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
+                return React.createElement(GameActive, { selectedSystems: systems });
             default:
                 return React.createElement(ErrorScreen, { message: this.state.errorMessage });
         }
@@ -1317,10 +1452,19 @@ var GameClient = (function (_super) {
             this.roleSelection.clearSelection();
     };
     GameClient.prototype.setSystemUsage = function (systemFlags) {
+        this.setState({ selectedSystems: systemFlags });
+    };
+    GameClient.prototype.setCrewmateSystemUsage = function (systemFlags) {
         this.setState({ otherCrewsSystems: systemFlags });
     };
     GameClient.prototype.setGameActive = function (active) {
         this.setState({ gameActive: active });
+        if (!active)
+            return;
+        if (this.state.selectedSystems == 0)
+            this.showError(language.errors.gameStarted, false);
+        else
+            this.show(5 /* Game */, true);
     };
     GameClient.prototype.setDirectSystemSelection = function (value) {
         this.setState({ selectSystemsDirectly: value });

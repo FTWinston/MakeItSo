@@ -7,6 +7,7 @@ interface IGameClientState {
 
     crewSize?: number;
     crewID?: string;
+    selectedSystems?: ShipSystem;
     otherCrewsSystems?: ShipSystem;
     selectSystemsDirectly?: boolean;
     setupInUse?: boolean;
@@ -39,6 +40,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
             errorMessage: undefined,
             crewID: undefined,
             crewSize: 0,
+            selectedSystems: 0,
             otherCrewsSystems: 0,
             selectSystemsDirectly: false,
         };
@@ -89,7 +91,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
                 return <GameSetup cancelled={this.showReturn.bind(this)} started={this.startGame.bind(this)} />
 
             case GameScreen.Game:
-                return <GameActive />
+                let systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
+                return <GameActive selectedSystems={systems} />;
 
             default:
                 return <ErrorScreen message={this.state.errorMessage} />;
@@ -132,10 +135,20 @@ class GameClient extends React.Component<{}, IGameClientState> {
             this.roleSelection.clearSelection();
     }
     setSystemUsage(systemFlags: ShipSystem) {
+        this.setState({selectedSystems: systemFlags});
+    }
+    setCrewmateSystemUsage(systemFlags: ShipSystem) {
         this.setState({otherCrewsSystems: systemFlags});
     }
     setGameActive(active: boolean) {
         this.setState({gameActive: active});
+        if (!active)
+            return;
+
+        if (this.state.selectedSystems == 0)
+            this.showError(language.errors.gameStarted, false);
+        else
+            this.show(GameScreen.Game, true);
     }
     setDirectSystemSelection(value: boolean) {
         this.setState({selectSystemsDirectly: value});

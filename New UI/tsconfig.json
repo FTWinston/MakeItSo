@@ -39,6 +39,7 @@
         "ui/buttons/Choice.tsx",
 
         "ui/Menu.tsx",
+        "ui/SystemHeader.tsx",
 
         "screens/ErrorScreen.tsx",
         "screens/SettingsScreen.tsx",
@@ -46,6 +47,15 @@
         "screens/GameSetup.tsx",
         "screens/GameActive.tsx",
         
+        "systems/Communications.tsx",
+        "systems/DamageControl.tsx",
+        "systems/Helm.tsx",
+        "systems/Power.tsx",
+        "systems/Sensors.tsx",
+        "systems/Viewscreen.tsx",
+        "systems/Warp.tsx",
+        "systems/Weapons.tsx",
+
         "core/GameClient.tsx"
     ]
 }

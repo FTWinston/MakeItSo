@@ -52,7 +52,7 @@
         }
         else if (cmd == 'sys') {
             let systemFlags = parseInt(data) as ShipSystem;
-            this.game.setSystemUsage(systemFlags);
+            this.game.setCrewmateSystemUsage(systemFlags);
         }
         else if (cmd == 'setup+') {
             this.game.setupScreenInUse(false);
@@ -65,17 +65,14 @@
             this.game.showError(language.errorShipFull, true);
         }
 */
-        else if (cmd == 'started') {
-            this.game.setGameActive(true);
-            this.game.showError(language.errors.gameStarted, false);
-        }
-        else if (cmd == 'paused') {
+        else if (cmd == 'pause') {
             this.game.setGameActive(true);
             this.game.show(GameScreen.RoleSelection, true);
         }
         else if (cmd == 'game+') {
+            let systemFlags = parseInt(data) as ShipSystem;
+            this.game.setSystemUsage(systemFlags);
             this.game.setGameActive(true);
-            this.game.show(GameScreen.Game, true);
         }
         else if (cmd == 'game-') {
             this.game.setGameActive(false);
@@ -83,13 +80,6 @@
             this.game.showError(blame + ' ' + language.messages.wait, false);
 
             setTimeout(function() { this.game.show(GameScreen.RoleSelection, true); }.bind(this), 3000);
-        }
-        else if (cmd == 'pause+') {
-            this.game.show(GameScreen.RoleSelection);
-            //this.game.clearAllData();
-        }
-        else if (cmd == 'pause-') {
-            this.game.show(GameScreen.Game);
         }
         else if (cmd == 'selectsys+') {
             this.game.setDirectSystemSelection(true);
