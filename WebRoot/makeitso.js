@@ -171,7 +171,7 @@ var Connection = (function () {
             this.queue.push(cmd);
     };
     Connection.prototype.sendImmediately = function (cmd) {
-        //console.log('sent', cmd);
+        console.log('sent', cmd);
         this.socket.send(cmd);
     };
     Connection.prototype.connected = function () {
@@ -184,7 +184,7 @@ var Connection = (function () {
     };
     Connection.prototype.messageReceived = function (ev) {
         var data = (ev.data || '');
-        //console.log('received', data);
+        console.log('received', data);
         var pos = data.indexOf(' ');
         var cmd = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
@@ -881,11 +881,34 @@ var Menu = (function (_super) {
 }(React.Component));
 var SystemHeader = (function (_super) {
     __extends(SystemHeader, _super);
-    function SystemHeader() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function SystemHeader(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            showHelp: false,
+        };
+        return _this;
     }
     SystemHeader.prototype.render = function () {
-        return React.createElement("div", null);
+        var name = ShipSystem.getNames(this.props.activeSystem);
+        var help = this.renderHelp(name);
+        var otherSystems = ShipSystem.getNames(this.props.allSystems & ~this.props.activeSystem);
+        return React.createElement("div", { className: "systemHeader" },
+            React.createElement("h1", { className: "name" }, name),
+            help,
+            React.createElement(ButtonSet, { separate: true },
+                React.createElement(IconButton, { clicked: this.showHelp.bind(this, true), icon: "help" }),
+                React.createElement(IconButton, { icon: "pause" })));
+    };
+    SystemHeader.prototype.renderHelp = function (name) {
+        if (!this.state.showHelp || this.props.activeSystem == 0)
+            return undefined;
+        var help = ShipSystem.getHelpText(this.props.activeSystem);
+        return React.createElement(Help, { title: name, content: help, closed: this.showHelp.bind(this, false) });
+    };
+    SystemHeader.prototype.showHelp = function (show) {
+        this.setState({
+            showHelp: show
+        });
     };
     return SystemHeader;
 }(React.Component));
@@ -1239,18 +1262,17 @@ var GameActive = (function (_super) {
     __extends(GameActive, _super);
     function GameActive(props) {
         var _this = _super.call(this, props) || this;
-        _this.setInitialScreen();
+        _this.state = {
+            activeSystem: ShipSystem.getSingle(_this.props.selectedSystems),
+        };
         return _this;
     }
     GameActive.prototype.componentDidUpdate = function (prevProps) {
         if (prevProps.selectedSystems != this.props.selectedSystems)
-            this.setInitialScreen();
-    };
-    GameActive.prototype.setInitialScreen = function () {
-        this.setState({ activeSystem: ShipSystem.getSingle(this.props.selectedSystems) });
+            this.setState({ activeSystem: ShipSystem.getSingle(this.props.selectedSystems) });
     };
     GameActive.prototype.render = function () {
-        return React.createElement("div", { className: "screen", id: "active" },
+        return React.createElement("div", { className: "screen", id: "game" },
             React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems }),
             this.renderActiveSystem());
     };

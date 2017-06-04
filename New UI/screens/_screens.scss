@@ -32,4 +32,32 @@
 #game {
     overflow-y: hidden;
     padding: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: stretch;
+
+    > .systemHeader {
+        flex-shrink: 0;
+        flex-grow: 0;
+        height: 2em;
+        background-color: $colorTertiary;
+        margin: 0.3em 0.2em 1em 0.2em;
+        padding: 0 0.75em;
+        border-radius: 1em;
+
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-content: center;
+
+        > h1.name {
+            font-size: 2em;
+            background-color: $backgroundColor;
+            padding: 0em 0.25em;
+            margin-left: 0.5em;
+            align-self: stretch;
+        }
+    }
 }

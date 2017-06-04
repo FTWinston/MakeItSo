@@ -9,17 +9,16 @@ interface IGameActiveState {
 class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {   
     constructor(props: IGameActiveProps) {
         super(props);
-        this.setInitialScreen();
+        this.state = {
+            activeSystem: ShipSystem.getSingle(this.props.selectedSystems),
+        };
     }
     componentDidUpdate(prevProps: IGameActiveProps) {
         if (prevProps.selectedSystems != this.props.selectedSystems)
-            this.setInitialScreen();
-    }
-    setInitialScreen() {
-        this.setState({activeSystem: ShipSystem.getSingle(this.props.selectedSystems)});
+            this.setState({activeSystem: ShipSystem.getSingle(this.props.selectedSystems)});
     }
     render() {
-        return <div className="screen" id="active">
+        return <div className="screen" id="game">
             <SystemHeader activeSystem={this.state.activeSystem} allSystems={this.props.selectedSystems} />
             {this.renderActiveSystem()}
         </div>;
