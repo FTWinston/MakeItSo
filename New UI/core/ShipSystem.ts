@@ -53,6 +53,29 @@ namespace ShipSystem {
         return 0;
     }
 
+    export function getArray(flags: ShipSystem) {
+        let systems: ShipSystem[] = [];
+
+        if (flags & ShipSystem.Helm)
+            systems.push(ShipSystem.Helm);
+        if (flags & ShipSystem.Warp)
+            systems.push(ShipSystem.Warp);
+        if (flags & ShipSystem.Weapons)
+            systems.push(ShipSystem.Weapons);
+        if (flags & ShipSystem.Sensors)
+            systems.push(ShipSystem.Sensors);
+        if (flags & ShipSystem.PowerManagement)
+            systems.push(ShipSystem.PowerManagement);
+        if (flags & ShipSystem.DamageControl)
+            systems.push(ShipSystem.DamageControl);
+        if (flags & ShipSystem.Communications)
+            systems.push(ShipSystem.Communications);
+        if (flags & ShipSystem.ViewScreen)
+            systems.push(ShipSystem.ViewScreen);
+
+        return systems;
+    }
+
     function getInfoArray(flags: ShipSystem) {
         let systems: SystemInfo[] = [];
 

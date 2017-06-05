@@ -4,6 +4,16 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+@media (max-width: 600px) {
+  .showLargeUp {
+    display: none; } }
+
+.showMediumDown {
+  display: none; }
+  @media (max-width: 600px) {
+    .showMediumDown {
+      display: initial; } }
+
 /*
 @import 'ui/borders';
 @import 'ui/breakpoints';
@@ -246,10 +256,6 @@ button {
     border-left-width: 0 !important;
     border-right-width: 0 !important;
     border-radius: 0.8em !important; }
-  button.icon {
-    align-self: center;
-    padding: 0.2em 0.5em;
-    border-radius: 4em; }
   button .subtext {
     font-size: 0.7em;
     border-top: 1px solid gray;
@@ -364,6 +370,9 @@ $lightBackground: #999;
       padding: 0em 0.25em;
       margin-left: 0.5em;
       align-self: stretch; }
+    #game > .systemHeader svg.icon.disabled {
+      color: #ccc !important;
+      cursor: not-allowed; }
 
 /*
 $disabledColor: #666;

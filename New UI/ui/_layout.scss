@@ -35,3 +35,17 @@
     list-style: none;
     padding-left: 0;
 }
+
+// TEMPORARY page size media queries. Get a proper system in here.
+.showLargeUp {
+    @media (max-width: 600px) {
+        display: none;
+    }
+}
+
+.showMediumDown {
+    display: none;
+    @media (max-width: 600px) {
+        display: initial;
+    }
+}

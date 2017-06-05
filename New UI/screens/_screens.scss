@@ -59,5 +59,10 @@
             margin-left: 0.5em;
             align-self: stretch;
         }
+
+        svg.icon.disabled {
+            color: #ccc !important;
+            cursor: not-allowed;
+        }
     }
 }

@@ -19,7 +19,7 @@ class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {
     }
     render() {
         return <div className="screen" id="game">
-            <SystemHeader activeSystem={this.state.activeSystem} allSystems={this.props.selectedSystems} />
+            <SystemHeader activeSystem={this.state.activeSystem} allSystems={this.props.selectedSystems} switchSystem={this.switchSystem.bind(this)} />
             {this.renderActiveSystem()}
         </div>;
     }
@@ -44,5 +44,10 @@ class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {
             default:
                  return undefined;
         }
+    }
+    private switchSystem(system: ShipSystem) {
+        this.setState({
+            activeSystem: system,
+        });
     }
 }

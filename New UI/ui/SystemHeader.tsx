@@ -1,6 +1,7 @@
 interface ISystemHeaderProps {
     activeSystem: ShipSystem;
     allSystems: ShipSystem;
+    switchSystem: (system: ShipSystem) => void;
 }
 
 interface ISystemHeaderState {
@@ -17,15 +18,30 @@ class SystemHeader extends React.Component<ISystemHeaderProps, ISystemHeaderStat
     render() {
         let name = ShipSystem.getNames(this.props.activeSystem);
         let help = this.renderHelp(name);
-        let otherSystems = ShipSystem.getNames(this.props.allSystems &~ this.props.activeSystem);
+        let systemList = this.props.activeSystem == this.props.allSystems ? undefined 
+            : ShipSystem.getArray(this.props.allSystems);
+
+        let prev, next, allSystemIcons;
+        if (systemList === undefined) {
+            prev = next = allSystemIcons = undefined;
+        }
+        else {
+            prev = this.renderNavIcon(this.getPreviousSystem(systemList), undefined, 'prev', false);
+            next = this.renderNavIcon(this.getNextSystem(systemList), undefined, 'next', false);
+            let that = this;
+            allSystemIcons = systemList.map(function(system, id) {
+                return that.renderNavIcon(system, id, undefined, true);
+            });
+        }
 
         return <div className="systemHeader">
             <h1 className="name">{name}</h1>
             {help}
-            <ButtonSet separate={true}>
-                <IconButton clicked={this.showHelp.bind(this, true)} icon="help" />
-                <IconButton icon="pause" />
-            </ButtonSet>
+            {prev}
+            {next}
+            {allSystemIcons}
+            <IconButton clicked={this.showHelp.bind(this, true)} icon="help" />
+            <IconButton icon="pause" />
         </div>;
     }
     private renderHelp(name: string) {
@@ -39,5 +55,48 @@ class SystemHeader extends React.Component<ISystemHeaderProps, ISystemHeaderStat
         this.setState({
             showHelp: show
         });
+    }
+    private renderNavIcon(system: ShipSystem, id: number | undefined, icon?: Icon, showOnLarge: boolean = true) {
+        if (icon === undefined) {
+            icon = ShipSystem.getIcon(system);
+            if (icon === undefined)
+                icon = 'help';
+        }
+        
+        let name = system == 0 ? undefined : ShipSystem.getNames(system);
+        let classes = system == 0 || system == this.props.activeSystem ? 'disabled' : '';
+        classes += showOnLarge ? ' showLargeUp' : ' showMediumDown';
+        let clicked = system == 0 ? undefined : this.switchSystem.bind(this, system);
+
+        return <IconButton icon={icon} title={name} className={classes} clicked={clicked} key={id} />
+    }
+    private switchSystem(system: ShipSystem) {
+        this.props.switchSystem(system);
+    }
+    private getPreviousSystem(systemList: ShipSystem[]) {
+        let activeIndex = -1;
+        for (let i=0; i<systemList.length; i++)
+            if (systemList[i] == this.props.activeSystem) {
+                activeIndex = i;
+                break;
+            }
+
+        if (activeIndex <= 0)
+            return 0;
+
+        return systemList[activeIndex - 1];
+    }
+    private getNextSystem(systemList: ShipSystem[]) {
+        let activeIndex = -1;
+        for (let i=0; i<systemList.length; i++)
+            if (systemList[i] == this.props.activeSystem) {
+                activeIndex = i;
+                break;
+            }
+
+        if (activeIndex == -1 || activeIndex >= systemList.length - 1)
+            return 0;
+
+        return systemList[activeIndex + 1];
     }
 }

@@ -51,7 +51,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
         }
     }
     server: Connection;
-    roleSelection: RoleSelection | null;
+    roleSelection?: RoleSelection;
     render() {
         return (
             <div className={this.state.showHotkeys ? 'showKeys' : undefined}>
@@ -131,7 +131,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
     setCrewSize(count: number) {
         this.setState({crewSize: count});
 
-        if (this.roleSelection !== null)
+        if (this.roleSelection !== undefined)
             this.roleSelection.clearSelection();
     }
     setSystemUsage(systemFlags: ShipSystem) {

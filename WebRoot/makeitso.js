@@ -171,7 +171,7 @@ var Connection = (function () {
             this.queue.push(cmd);
     };
     Connection.prototype.sendImmediately = function (cmd) {
-        console.log('sent', cmd);
+        //console.log('sent', cmd);
         this.socket.send(cmd);
     };
     Connection.prototype.connected = function () {
@@ -184,7 +184,7 @@ var Connection = (function () {
     };
     Connection.prototype.messageReceived = function (ev) {
         var data = (ev.data || '');
-        console.log('received', data);
+        //console.log('received', data);
         var pos = data.indexOf(' ');
         var cmd = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
@@ -316,6 +316,27 @@ var CrewRole = (function () {
         return 0;
     }
     ShipSystem.getSingle = getSingle;
+    function getArray(flags) {
+        var systems = [];
+        if (flags & ShipSystem.Helm)
+            systems.push(ShipSystem.Helm);
+        if (flags & ShipSystem.Warp)
+            systems.push(ShipSystem.Warp);
+        if (flags & ShipSystem.Weapons)
+            systems.push(ShipSystem.Weapons);
+        if (flags & ShipSystem.Sensors)
+            systems.push(ShipSystem.Sensors);
+        if (flags & ShipSystem.PowerManagement)
+            systems.push(ShipSystem.PowerManagement);
+        if (flags & ShipSystem.DamageControl)
+            systems.push(ShipSystem.DamageControl);
+        if (flags & ShipSystem.Communications)
+            systems.push(ShipSystem.Communications);
+        if (flags & ShipSystem.ViewScreen)
+            systems.push(ShipSystem.ViewScreen);
+        return systems;
+    }
+    ShipSystem.getArray = getArray;
     function getInfoArray(flags) {
         var systems = [];
         if (flags & ShipSystem.Helm)
@@ -488,6 +509,10 @@ var IconButton = (function (_super) {
                 return this.renderHelp();
             case 'pause':
                 return this.renderPause();
+            case 'next':
+                return this.renderNext();
+            case 'prev':
+                return this.renderPrev();
             case 'helm':
                 return this.renderHelm();
             case 'warp':
@@ -506,45 +531,58 @@ var IconButton = (function (_super) {
                 return this.renderViewscreen();
         }
     };
+    IconButton.prototype.getClasses = function () {
+        return this.props.className === undefined ? 'icon' : 'icon ' + this.props.className;
+    };
     IconButton.prototype.renderRefresh = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("polyline", { points: "1 4 1 10 7 10" }),
             React.createElement("polyline", { points: "23 20 23 14 17 14" }),
             React.createElement("path", { d: "M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" }));
     };
     IconButton.prototype.renderSettings = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("circle", { cx: "12", cy: "12", r: "3" }),
             React.createElement("path", { d: "M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z", strokeMiterlimit: "10" }));
     };
     IconButton.prototype.renderClose = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
             React.createElement("line", { x1: "15", y1: "9", x2: "9", y2: "15" }),
             React.createElement("line", { x1: "9", y1: "9", x2: "15", y2: "15" }));
     };
     IconButton.prototype.renderHelp = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
             React.createElement("line", { x1: "12", y1: "16", x2: "12", y2: "12" }),
             React.createElement("line", { x1: "12", y1: "8", x2: "12", y2: "8" }));
     };
     IconButton.prototype.renderPause = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("rect", { x: "6", y: "4", width: "4", height: "16" }),
             React.createElement("rect", { x: "14", y: "4", width: "4", height: "16" }));
     };
+    IconButton.prototype.renderNext = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("polygon", { points: "5 4 15 12 5 20 5 4" }),
+            React.createElement("line", { x1: "19", y1: "5", x2: "19", y2: "19" }));
+    };
+    IconButton.prototype.renderPrev = function () {
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+            React.createElement("polygon", { points: "19 20 9 12 19 4 19 20" }),
+            React.createElement("line", { x1: "5", y1: "19", x2: "5", y2: "5" }));
+    };
     IconButton.prototype.renderHelm = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("polygon", { points: "3 11 22 2 13 21 11 13 3 11" }));
     };
     IconButton.prototype.renderWarp = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
             React.createElement("polygon", { points: "16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" }));
     };
     IconButton.prototype.renderWeapons = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("circle", { cx: "12", cy: "12", r: "10" }),
             React.createElement("line", { x1: "22", y1: "12", x2: "18", y2: "12" }),
             React.createElement("line", { x1: "6", y1: "12", x2: "2", y2: "12" }),
@@ -552,26 +590,26 @@ var IconButton = (function (_super) {
             React.createElement("line", { x1: "12", y1: "22", x2: "12", y2: "18" }));
     };
     IconButton.prototype.renderSensors = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("polyline", { points: "22 12 18 12 15 21 9 3 6 12 2 12" }));
     };
     IconButton.prototype.renderPower = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("path", { d: "M18.36 6.64a9 9 0 1 1-12.73 0" }),
             React.createElement("line", { x1: "12", y1: "2", x2: "12", y2: "12" }));
     };
     IconButton.prototype.renderDamage = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("path", { d: "M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" }),
             React.createElement("line", { x1: "12", y1: "9", x2: "12", y2: "13" }),
             React.createElement("line", { x1: "12", y1: "17", x2: "12", y2: "17" }));
     };
     IconButton.prototype.renderComms = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("path", { d: "M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" }));
     };
     IconButton.prototype.renderViewscreen = function () {
-        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: "icon", role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
+        return React.createElement("svg", { onClick: this.props.clicked, title: this.props.title, className: this.getClasses(), role: "button", xmlns: "http://www.w3.org/2000/svg", width: "24", height: "24", viewBox: "0 0 24 24" },
             React.createElement("rect", { x: "2", y: "3", width: "20", height: "14", rx: "2", ry: "2" }),
             React.createElement("line", { x1: "8", y1: "21", x2: "16", y2: "21" }),
             React.createElement("line", { x1: "12", y1: "17", x2: "12", y2: "21" }));
@@ -891,13 +929,28 @@ var SystemHeader = (function (_super) {
     SystemHeader.prototype.render = function () {
         var name = ShipSystem.getNames(this.props.activeSystem);
         var help = this.renderHelp(name);
-        var otherSystems = ShipSystem.getNames(this.props.allSystems & ~this.props.activeSystem);
+        var systemList = this.props.activeSystem == this.props.allSystems ? undefined
+            : ShipSystem.getArray(this.props.allSystems);
+        var prev, next, allSystemIcons;
+        if (systemList === undefined) {
+            prev = next = allSystemIcons = undefined;
+        }
+        else {
+            prev = this.renderNavIcon(this.getPreviousSystem(systemList), undefined, 'prev', false);
+            next = this.renderNavIcon(this.getNextSystem(systemList), undefined, 'next', false);
+            var that_1 = this;
+            allSystemIcons = systemList.map(function (system, id) {
+                return that_1.renderNavIcon(system, id, undefined, true);
+            });
+        }
         return React.createElement("div", { className: "systemHeader" },
             React.createElement("h1", { className: "name" }, name),
             help,
-            React.createElement(ButtonSet, { separate: true },
-                React.createElement(IconButton, { clicked: this.showHelp.bind(this, true), icon: "help" }),
-                React.createElement(IconButton, { icon: "pause" })));
+            prev,
+            next,
+            allSystemIcons,
+            React.createElement(IconButton, { clicked: this.showHelp.bind(this, true), icon: "help" }),
+            React.createElement(IconButton, { icon: "pause" }));
     };
     SystemHeader.prototype.renderHelp = function (name) {
         if (!this.state.showHelp || this.props.activeSystem == 0)
@@ -909,6 +962,44 @@ var SystemHeader = (function (_super) {
         this.setState({
             showHelp: show
         });
+    };
+    SystemHeader.prototype.renderNavIcon = function (system, id, icon, showOnLarge) {
+        if (showOnLarge === void 0) { showOnLarge = true; }
+        if (icon === undefined) {
+            icon = ShipSystem.getIcon(system);
+            if (icon === undefined)
+                icon = 'help';
+        }
+        var name = system == 0 ? undefined : ShipSystem.getNames(system);
+        var classes = system == 0 || system == this.props.activeSystem ? 'disabled' : '';
+        classes += showOnLarge ? ' showLargeUp' : ' showMediumDown';
+        var clicked = system == 0 ? undefined : this.switchSystem.bind(this, system);
+        return React.createElement(IconButton, { icon: icon, title: name, className: classes, clicked: clicked, key: id });
+    };
+    SystemHeader.prototype.switchSystem = function (system) {
+        this.props.switchSystem(system);
+    };
+    SystemHeader.prototype.getPreviousSystem = function (systemList) {
+        var activeIndex = -1;
+        for (var i = 0; i < systemList.length; i++)
+            if (systemList[i] == this.props.activeSystem) {
+                activeIndex = i;
+                break;
+            }
+        if (activeIndex <= 0)
+            return 0;
+        return systemList[activeIndex - 1];
+    };
+    SystemHeader.prototype.getNextSystem = function (systemList) {
+        var activeIndex = -1;
+        for (var i = 0; i < systemList.length; i++)
+            if (systemList[i] == this.props.activeSystem) {
+                activeIndex = i;
+                break;
+            }
+        if (activeIndex == -1 || activeIndex >= systemList.length - 1)
+            return 0;
+        return systemList[activeIndex + 1];
     };
     return SystemHeader;
 }(React.Component));
@@ -1273,7 +1364,7 @@ var GameActive = (function (_super) {
     };
     GameActive.prototype.render = function () {
         return React.createElement("div", { className: "screen", id: "game" },
-            React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems }),
+            React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems, switchSystem: this.switchSystem.bind(this) }),
             this.renderActiveSystem());
     };
     GameActive.prototype.renderActiveSystem = function () {
@@ -1297,6 +1388,11 @@ var GameActive = (function (_super) {
             default:
                 return undefined;
         }
+    };
+    GameActive.prototype.switchSystem = function (system) {
+        this.setState({
+            activeSystem: system,
+        });
     };
     return GameActive;
 }(React.Component));
@@ -1470,7 +1566,7 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.setCrewSize = function (count) {
         this.setState({ crewSize: count });
-        if (this.roleSelection !== null)
+        if (this.roleSelection !== undefined)
             this.roleSelection.clearSelection();
     };
     GameClient.prototype.setSystemUsage = function (systemFlags) {
