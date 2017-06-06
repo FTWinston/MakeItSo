@@ -1,4 +1,4 @@
-﻿interface IErrorScreenProps {
+﻿interface IErrorScreenProps extends IScreenProps {
     message?: string;
 }
 

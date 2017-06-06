@@ -1,4 +1,4 @@
-﻿interface IRoleSelectionProps {
+﻿interface IRoleSelectionProps extends IScreenProps {
     crewSize: number;
     otherCrewsSystems: ShipSystem;
     settingsClicked: () => void;

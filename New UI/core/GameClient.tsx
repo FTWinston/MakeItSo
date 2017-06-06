@@ -14,6 +14,9 @@ interface IGameClientState {
 
     settings?: ClientSettings;
     vibration?: FeatureState;
+
+    screenWidth?: number;
+    screenHeight?: number;
 }
 
 const enum GameScreen {
@@ -45,11 +48,21 @@ class GameClient extends React.Component<{}, IGameClientState> {
             selectSystemsDirectly: false,
         };
     }
+    
+    private updateDimensions() {
+        this.setState({screenWidth: window.innerWidth, screenHeight: window.innerHeight});
+    }
+    private componentWillMount() {
+        this.updateDimensions();
+    }
     private componentDidMount () {
+        window.addEventListener('resize', this.updateDimensions.bind(this));
+
         if (FeatureDetection.CheckRequirements(this)) {
             this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
     }
+
     server: Connection;
     roleSelection?: RoleSelection;
     render() {
@@ -60,6 +73,9 @@ class GameClient extends React.Component<{}, IGameClientState> {
         );
     }
     private renderVisibleScreen() {
+        let width = this.state.screenWidth === undefined ? 0 : this.state.screenWidth;
+        let height = this.state.screenHeight === undefined ? 0 : this.state.screenHeight;
+
         switch(this.state.visibleScreen) {
             case GameScreen.Settings:
                 let mode, name, canCancel;
@@ -73,10 +89,10 @@ class GameClient extends React.Component<{}, IGameClientState> {
                     name = this.state.settings.userName;
                     canCancel = true;
                 }
-                return <SettingsScreen inputMode={mode} userName={name} canCancel={canCancel} saved={this.changeSettings.bind(this)} cancelled={this.showReturn.bind(this)} />;
+                return <SettingsScreen width={width} height={height} inputMode={mode} userName={name} canCancel={canCancel} saved={this.changeSettings.bind(this)} cancelled={this.showReturn.bind(this)} />;
 
             case GameScreen.Connecting:
-                return <ErrorScreen message={language.messages.connecting} />;
+                return <ErrorScreen width={width} height={height} message={language.messages.connecting} />;
 
             case GameScreen.RoleSelection:
                 let crewSize = this.state.crewSize === undefined ? 0 : this.state.crewSize;
@@ -84,18 +100,18 @@ class GameClient extends React.Component<{}, IGameClientState> {
                 let gameActive = this.state.gameActive === undefined ? false : this.state.gameActive;
                 let setupInUse = this.state.setupInUse === undefined ? false : this.state.setupInUse;
                 let systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
-                return <RoleSelection ref={ref => {this.roleSelection = ref;}} crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)}
+                return <RoleSelection width={width} height={height} ref={ref => {this.roleSelection = ref;}} crewSize={crewSize} otherCrewsSystems={otherSystems} settingsClicked={this.show.bind(this, GameScreen.Settings)}
                         forceShowSystems={systemSelection} gameActive={gameActive} setupInUse={setupInUse} setupClicked={this.show.bind(this, GameScreen.GameSetup)} />;
                 
             case GameScreen.GameSetup:
-                return <GameSetup cancelled={this.showReturn.bind(this)} started={this.startGame.bind(this)} />
+                return <GameSetup width={width} height={height} cancelled={this.showReturn.bind(this)} started={this.startGame.bind(this)} />
 
             case GameScreen.Game:
                 let systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
-                return <GameActive selectedSystems={systems} />;
+                return <GameActive width={width} height={height} selectedSystems={systems} />;
 
             default:
-                return <ErrorScreen message={this.state.errorMessage} />;
+                return <ErrorScreen width={width} height={height} message={this.state.errorMessage} />;
         }
     }
     show(screen: GameScreen, setReturn: boolean = false) {
@@ -189,6 +205,11 @@ class GameClient extends React.Component<{}, IGameClientState> {
         this.server.send('startGame');
     }
 };
+
+interface IScreenProps {
+    width: number;
+    height: number;
+}
 
 let gameClient = ReactDOM.render(
     <GameClient />,

@@ -1,4 +1,4 @@
-﻿interface IGameActiveProps {
+﻿interface IGameActiveProps extends IScreenProps {
     selectedSystems: ShipSystem;
 }
 

@@ -1033,12 +1033,13 @@ var SettingsScreen = (function (_super) {
         var words = language.screens.settings;
         var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 3 /* Quaternary */, clicked: this.cancel.bind(this), text: language.common.cancel }) : null;
         var canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
+        var inputModeVertical = this.props.width <= 310;
         return (React.createElement("div", { className: "screen", id: "settings" },
             React.createElement("form", null,
                 React.createElement("h1", null, words.intro),
                 React.createElement("div", { role: "group" },
                     React.createElement("label", null, words.inputMode),
-                    React.createElement(Choice, { prompt: words.inputModePrompt, color: 0 /* Primary */ },
+                    React.createElement(Choice, { prompt: words.inputModePrompt, color: 0 /* Primary */, vertical: inputModeVertical },
                         React.createElement(ToggleButton, { startActive: this.props.inputMode == 0 /* ButtonsAndKeyboard */, activated: this.setInputMode.bind(this, 0 /* ButtonsAndKeyboard */), description: words.inputModeDescriptionKeyboard, text: words.inputModeKeyboard }),
                         React.createElement(ToggleButton, { startActive: this.props.inputMode == 1 /* Touchscreen */, activated: this.setInputMode.bind(this, 1 /* Touchscreen */), description: words.inputModeDescriptionTouchscreen, text: words.inputModeTouchscreen }),
                         React.createElement(ToggleButton, { startActive: this.props.inputMode == 2 /* GamePad */, disabled: true, activated: this.setInputMode.bind(this, 2 /* GamePad */), description: words.inputModeDescriptionGamepad, text: words.inputModeGamepad }))),
@@ -1501,7 +1502,14 @@ var GameClient = (function (_super) {
         };
         return _this;
     }
+    GameClient.prototype.updateDimensions = function () {
+        this.setState({ screenWidth: window.innerWidth, screenHeight: window.innerHeight });
+    };
+    GameClient.prototype.componentWillMount = function () {
+        this.updateDimensions();
+    };
     GameClient.prototype.componentDidMount = function () {
+        window.addEventListener('resize', this.updateDimensions.bind(this));
         if (FeatureDetection.CheckRequirements(this)) {
             this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
@@ -1511,6 +1519,8 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.renderVisibleScreen = function () {
         var _this = this;
+        var width = this.state.screenWidth === undefined ? 0 : this.state.screenWidth;
+        var height = this.state.screenHeight === undefined ? 0 : this.state.screenHeight;
         switch (this.state.visibleScreen) {
             case 2 /* Settings */:
                 var mode = void 0, name_1, canCancel = void 0;
@@ -1524,23 +1534,23 @@ var GameClient = (function (_super) {
                     name_1 = this.state.settings.userName;
                     canCancel = true;
                 }
-                return React.createElement(SettingsScreen, { inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
+                return React.createElement(SettingsScreen, { width: width, height: height, inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
             case 1 /* Connecting */:
-                return React.createElement(ErrorScreen, { message: language.messages.connecting });
+                return React.createElement(ErrorScreen, { width: width, height: height, message: language.messages.connecting });
             case 3 /* RoleSelection */:
                 var crewSize = this.state.crewSize === undefined ? 0 : this.state.crewSize;
                 var otherSystems = this.state.otherCrewsSystems === undefined ? 0 : this.state.otherCrewsSystems;
                 var gameActive = this.state.gameActive === undefined ? false : this.state.gameActive;
                 var setupInUse = this.state.setupInUse === undefined ? false : this.state.setupInUse;
                 var systemSelection = this.state.selectSystemsDirectly == undefined ? false : this.state.selectSystemsDirectly;
-                return React.createElement(RoleSelection, { ref: function (ref) { _this.roleSelection = ref; }, crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
+                return React.createElement(RoleSelection, { width: width, height: height, ref: function (ref) { _this.roleSelection = ref; }, crewSize: crewSize, otherCrewsSystems: otherSystems, settingsClicked: this.show.bind(this, 2 /* Settings */), forceShowSystems: systemSelection, gameActive: gameActive, setupInUse: setupInUse, setupClicked: this.show.bind(this, 4 /* GameSetup */) });
             case 4 /* GameSetup */:
-                return React.createElement(GameSetup, { cancelled: this.showReturn.bind(this), started: this.startGame.bind(this) });
+                return React.createElement(GameSetup, { width: width, height: height, cancelled: this.showReturn.bind(this), started: this.startGame.bind(this) });
             case 5 /* Game */:
                 var systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
-                return React.createElement(GameActive, { selectedSystems: systems });
+                return React.createElement(GameActive, { width: width, height: height, selectedSystems: systems });
             default:
-                return React.createElement(ErrorScreen, { message: this.state.errorMessage });
+                return React.createElement(ErrorScreen, { width: width, height: height, message: this.state.errorMessage });
         }
     };
     GameClient.prototype.show = function (screen, setReturn) {

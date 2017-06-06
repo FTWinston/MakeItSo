@@ -12,7 +12,7 @@ const enum GameMode {
 
 type Difficulty = 1|2|3|4|5|6|7|8|9|10;
 
-interface IGameSetupProps {
+interface IGameSetupProps extends IScreenProps {
     started?: (settings: IGameSetupState) => void;
     cancelled?: () => void;
 }

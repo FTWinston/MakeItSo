@@ -3,7 +3,7 @@
     inputMode?: InputMode;
 }
 
-interface ISettingsScreenProps extends ISettingsScreenBase {
+interface ISettingsScreenProps extends ISettingsScreenBase, IScreenProps {
     canCancel?: boolean;
     saved?: (settings: ClientSettings) => void;
     cancelled?: () => void;
@@ -17,7 +17,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
     static defaultProps = {
         canCancel: true,
     }
-    constructor(props: ISettingsScreenState) {
+    constructor(props: ISettingsScreenProps) {
         super(props);
         this.state = {
             inputMode: props.inputMode,
@@ -29,13 +29,15 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
         let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quaternary} clicked={this.cancel.bind(this)} text={language.common.cancel} /> : null;
         let canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
 
+        let inputModeVertical = this.props.width <= 310;
+
         return (
             <div className="screen" id="settings">
                 <form>
                     <h1>{words.intro}</h1>
                     <div role="group">
                         <label>{words.inputMode}</label>
-                        <Choice prompt={words.inputModePrompt} color={ButtonColor.Primary}>
+                        <Choice prompt={words.inputModePrompt} color={ButtonColor.Primary} vertical={inputModeVertical}>
                             <ToggleButton startActive={this.props.inputMode == InputMode.ButtonsAndKeyboard} activated={this.setInputMode.bind(this, InputMode.ButtonsAndKeyboard)} description={words.inputModeDescriptionKeyboard} text={words.inputModeKeyboard} />
                             <ToggleButton startActive={this.props.inputMode == InputMode.Touchscreen} activated={this.setInputMode.bind(this, InputMode.Touchscreen)} description={words.inputModeDescriptionTouchscreen} text={words.inputModeTouchscreen} />
                             <ToggleButton startActive={this.props.inputMode == InputMode.GamePad} disabled={true} activated={this.setInputMode.bind(this, InputMode.GamePad)} description={words.inputModeDescriptionGamepad} text={words.inputModeGamepad} />

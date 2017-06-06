@@ -8,6 +8,21 @@
     white-space: pre-line;
 }
 
+#settings {
+    & > form {
+        @media(max-width: 425px) {
+            & > div[role="group"] {
+                flex-direction: column;
+            }
+
+            label {
+                font-size: 1.2em;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
 #roleSelection {
     @include center(false);
 

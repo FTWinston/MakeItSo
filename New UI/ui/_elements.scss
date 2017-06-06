@@ -1,0 +1,15 @@
+p {
+	margin: 0.65em;
+    white-space: pre-line;
+}
+
+h1 {
+    font-weight: bold;
+    margin: 0;
+
+    font-size: calc(1.2em + 1vw);
+}
+
+p, label {
+    font-size: calc(1em + 0.25vw);
+}
