@@ -60,11 +60,29 @@ button, input {
     transition: $elementTransition;
 }
 
-form {
+.screen > form {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: flex-start;
+
+    width: calc(100vw - 2em);
+    max-width: 800em;
+
+    @media (min-width: 500px) {
+        width: calc(400px + 20vw);
+    }
+
+    @media(max-width: 500px) {
+        & > div[role="group"] {
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    }
 
     & > * {
         flex-shrink: 0;
@@ -83,8 +101,16 @@ form {
 
 input[type="text"] {
     width: 15em;
+}
 
-    @media (max-width: 310px) {
+@media (max-width: 295px) {
+    *:not(.separate) > input[type="text"] {
+        width: calc(100% - 1.75em);
+    }
+}
+
+@media (max-width: 335px) { /* textbox with an icon after needs a bit more width */
+    .separate > input[type="text"] {
         width: calc(100% - 1.75em);
     }
 }

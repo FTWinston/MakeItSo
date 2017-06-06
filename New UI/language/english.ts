@@ -55,7 +55,7 @@
         setup: {
             intro: 'Create or join a game',
             gameType: 'Game type',
-            gameTypePrompt: 'Do you wish to play with just your own crew, or with others?',
+            gameTypePrompt: 'Will you play with just your own crew, or with others?',
             gameTypeLocal: 'Single crew',
             gameTypeLocalDescription: 'Play against the computer, with only your crew',
             gameTypeJoin: 'Join game',

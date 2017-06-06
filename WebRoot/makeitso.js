@@ -51,7 +51,7 @@ var language = {
         setup: {
             intro: 'Create or join a game',
             gameType: 'Game type',
-            gameTypePrompt: 'Do you wish to play with just your own crew, or with others?',
+            gameTypePrompt: 'Will you play with just your own crew, or with others?',
             gameTypeLocal: 'Single crew',
             gameTypeLocalDescription: 'Play against the computer, with only your crew',
             gameTypeJoin: 'Join game',
@@ -885,19 +885,19 @@ var Choice = (function (_super) {
         var classes = 'choice';
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
-        var description, descStyle;
+        var description, descClass;
         if (this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined) {
             description = this.state.activeChild.props.description;
-            descStyle = undefined;
+            descClass = 'description';
         }
         else {
             description = '.';
-            descStyle = { 'visibility': 'hidden' };
+            descClass = 'description hidden';
         }
         return (React.createElement("div", { className: classes },
             this.props.prompt == null ? null : React.createElement("div", { className: "prompt" }, this.props.prompt),
             React.createElement(ButtonSet, { vertical: this.props.vertical, separate: this.props.separate, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: this.childActivated.bind(this) }, this.props.children),
-            React.createElement("div", { className: "description", style: descStyle }, description)));
+            React.createElement("div", { className: descClass }, description)));
     };
     Choice.prototype.childActivated = function (activated) {
         if (this.state.activeChild !== undefined)
@@ -1033,7 +1033,7 @@ var SettingsScreen = (function (_super) {
         var words = language.screens.settings;
         var cancelButton = this.props.canCancel ? React.createElement(PushButton, { color: 3 /* Quaternary */, clicked: this.cancel.bind(this), text: language.common.cancel }) : null;
         var canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
-        var inputModeVertical = this.props.width <= 310;
+        var inputModeVertical = this.props.width < 330;
         return (React.createElement("div", { className: "screen", id: "settings" },
             React.createElement("form", null,
                 React.createElement("h1", null, words.intro),
@@ -1239,9 +1239,10 @@ var GameSetup = (function (_super) {
     };
     GameSetup.prototype.renderGameType = function () {
         var words = language.screens.setup;
+        var vertical = this.props.width < 300;
         return React.createElement("div", { role: "group" },
             React.createElement("label", null, words.gameType),
-            React.createElement(Choice, { prompt: words.gameTypePrompt, color: 0 /* Primary */ },
+            React.createElement(Choice, { prompt: words.gameTypePrompt, color: 0 /* Primary */, vertical: vertical },
                 React.createElement(ToggleButton, { activated: this.setGameType.bind(this, 0 /* Local */), description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
                 React.createElement(ToggleButton, { activated: this.setGameType.bind(this, 1 /* Join */), description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
                 React.createElement(ToggleButton, { activated: this.setGameType.bind(this, 2 /* Host */), description: words.gameTypeHostDescription, text: words.gameTypeHost })));
@@ -1260,9 +1261,10 @@ var GameSetup = (function (_super) {
         if (this.state.gameType === undefined || this.state.gameType == 1 /* Join */)
             return undefined;
         var words = language.screens.setup;
+        var vertical = this.props.width < 300;
         return React.createElement("div", { role: "group" },
             React.createElement("label", null, words.gameMode),
-            React.createElement(Choice, { prompt: words.gameModePrompt, color: 1 /* Secondary */ },
+            React.createElement(Choice, { prompt: words.gameModePrompt, color: 1 /* Secondary */, vertical: vertical },
                 React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, 2 /* Exploration */), description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
                 React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, 1 /* Survival */), description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
                 React.createElement(ToggleButton, { activated: this.setGameMode.bind(this, 0 /* Arena */), description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType == 0 /* Local */ })));
@@ -1271,12 +1273,13 @@ var GameSetup = (function (_super) {
         if (this.state.gameType == 1 /* Join */ || this.state.gameMode === undefined || !this.usesDifficulty(this.state.gameMode))
             return undefined;
         var words = language.screens.setup;
+        var vertical = this.props.width < 400;
         var levels = [];
         for (var i = 1; i <= 10; i++)
             levels.push(React.createElement(ToggleButton, { key: i, activated: this.setDifficulty.bind(this, i), text: i.toString() }));
         return React.createElement("div", { role: "group" },
             React.createElement("label", null, words.difficulty),
-            React.createElement(Choice, { prompt: words.difficultyPrompt, color: 2 /* Tertiary */ }, levels));
+            React.createElement(Choice, { prompt: words.difficultyPrompt, color: 2 /* Tertiary */, vertical: vertical }, levels));
     };
     GameSetup.prototype.renderHostGameOptions = function () {
         if (this.state.gameType != 2 /* Host */)

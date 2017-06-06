@@ -26,26 +26,9 @@
 */
 }
 
-#gameRoot, h1, button, input {
+* {
+    font-size: 1rem;
     font-family: Helvetica, Arial, sans-serif;
-}
-
-#gameRoot, button, input {
-    font-size: 1em;
-}
-
-.screen {
-    flex-grow: 1;
-    padding: 1em;
-    overflow-y: auto;
-/*
-    @include media-size(lg) {
-        width: $lg-cutoff-min - 50px;
-    }
-    @include media-size(xl) {
-        width: $xl-cutoff-min - 100px;
-    }
-*/
 }
 
 @import 'ui/elements';

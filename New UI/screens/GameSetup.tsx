@@ -85,10 +85,11 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
     }
     private renderGameType() {
         let words = language.screens.setup;
+        let vertical = this.props.width < 300;
         
         return <div role="group">
             <label>{words.gameType}</label>
-            <Choice prompt={words.gameTypePrompt} color={ButtonColor.Primary}>
+            <Choice prompt={words.gameTypePrompt} color={ButtonColor.Primary} vertical={vertical}>
                 <ToggleButton activated={this.setGameType.bind(this, GameType.Local)} description={words.gameTypeLocalDescription} text={words.gameTypeLocal} />
                 <ToggleButton activated={this.setGameType.bind(this, GameType.Join)} description={words.gameTypeJoinDescription} text={words.gameTypeJoin} />
                 <ToggleButton activated={this.setGameType.bind(this, GameType.Host)} description={words.gameTypeHostDescription} text={words.gameTypeHost} />
@@ -114,10 +115,11 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
             return undefined;
 
         let words = language.screens.setup;
+        let vertical = this.props.width < 300;
         
         return <div role="group">
             <label>{words.gameMode}</label>
-            <Choice prompt={words.gameModePrompt} color={ButtonColor.Secondary}>
+            <Choice prompt={words.gameModePrompt} color={ButtonColor.Secondary} vertical={vertical}>
                 <ToggleButton activated={this.setGameMode.bind(this, GameMode.Exploration)} description={words.gameModeExplorationDescription} text={words.gameModeExploration} />
                 <ToggleButton activated={this.setGameMode.bind(this, GameMode.Survival)} description={words.gameModeSurvivalDescription} text={words.gameModeSurvival} />
                 <ToggleButton activated={this.setGameMode.bind(this, GameMode.Arena)} description={words.gameModeArenaDescription} text={words.gameModeArena} disabled={this.state.gameType == GameType.Local} />
@@ -129,13 +131,15 @@ class GameSetup extends React.Component<IGameSetupProps, IGameSetupState> {
             return undefined;
 
         let words = language.screens.setup;
+        let vertical = this.props.width < 400;
+
         let levels = [];
         for (let i=1; i<=10; i++)
             levels.push(<ToggleButton key={i} activated={this.setDifficulty.bind(this, i)} text={i.toString()} />)
         
         return <div role="group">
             <label>{words.difficulty}</label>
-            <Choice prompt={words.difficultyPrompt} color={ButtonColor.Tertiary}>
+            <Choice prompt={words.difficultyPrompt} color={ButtonColor.Tertiary} vertical={vertical}>
                 {levels}
             </Choice>
         </div>

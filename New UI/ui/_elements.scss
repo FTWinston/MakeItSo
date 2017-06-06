@@ -7,9 +7,9 @@ h1 {
     font-weight: bold;
     margin: 0;
 
-    font-size: calc(1.2em + 1vw);
+    font-size: calc(1.2rem + 1vw);
 }
 
-p, label {
-    font-size: calc(1em + 0.25vw);
+p, label, button, input {
+    font-size: calc(1rem + 0.25vw);
 }

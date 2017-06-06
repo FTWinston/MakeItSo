@@ -1,26 +1,17 @@
 @import '../ui/colors';
 
+.screen {
+    flex-grow: 1;
+    padding: 1em;
+    overflow-y: auto;
+}
+
 #error, #settings {
     @include center(true);
 }
 
 #error {
     white-space: pre-line;
-}
-
-#settings {
-    & > form {
-        @media(max-width: 425px) {
-            & > div[role="group"] {
-                flex-direction: column;
-            }
-
-            label {
-                font-size: 1.2em;
-                font-weight: bold;
-            }
-        }
-    }
 }
 
 #roleSelection {
@@ -38,10 +29,6 @@
 
 #setup {
     @include center(false);
-
-    & > form {
-        min-width: 45em; // calculated based on size of longest label. That's neither responsive or multi-lingual! But keeping it in for now to stop the form moving left/right as rows are shown/hidden
-    }
 }
 
 #game {

@@ -70,6 +70,10 @@
 
 .description {
     margin-top: 0.5em;
+
+    &.hidden {
+        visibility: hidden;
+    }
 }
 
 .imitateChoice { /* account for the space the description would take up, if present */

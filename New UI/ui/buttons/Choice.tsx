@@ -30,14 +30,14 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
 
-        let description: string, descStyle: React.CSSProperties | undefined;
+        let description: string, descClass: string;
         if (this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined) {
             description = this.state.activeChild.props.description;
-            descStyle = undefined;
+            descClass = 'description';
         }
         else {
             description = '.';
-            descStyle = {'visibility': 'hidden'};
+            descClass = 'description hidden';
         }
 
         return (
@@ -48,7 +48,7 @@ class Choice extends React.Component<IChoiceProps, IChoiceState> {
                     allowUnselected={this.props.allowUnselected} childActivated={this.childActivated.bind(this)}>
                         {this.props.children}
                 </ButtonSet>
-                <div className="description" style={descStyle}>{description}</div>
+                <div className={descClass}>{description}</div>
             </div>
         );
     }

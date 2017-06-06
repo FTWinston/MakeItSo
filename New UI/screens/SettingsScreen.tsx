@@ -29,7 +29,7 @@ class SettingsScreen extends React.Component<ISettingsScreenProps, ISettingsScre
         let cancelButton = this.props.canCancel ? <PushButton color={ButtonColor.Quaternary} clicked={this.cancel.bind(this)} text={language.common.cancel} /> : null;
         let canSave = this.state.inputMode !== undefined && this.state.userName != null && this.state.userName.trim().length > 0;
 
-        let inputModeVertical = this.props.width <= 310;
+        let inputModeVertical = this.props.width < 330;
 
         return (
             <div className="screen" id="settings">
