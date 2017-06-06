@@ -87,6 +87,9 @@
                 'Praetor',
             ],
         },
+        active: {
+            pause: 'Pause',
+        },
     },
 
     messages: {

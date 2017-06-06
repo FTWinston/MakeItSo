@@ -21,9 +21,9 @@ class SystemHeader extends React.Component<ISystemHeaderProps, ISystemHeaderStat
         let systemList = this.props.activeSystem == this.props.allSystems ? undefined 
             : ShipSystem.getArray(this.props.allSystems);
 
-        let prev, next, allSystemIcons;
+        let prev, next, allSystemIcons, separator;
         if (systemList === undefined) {
-            prev = next = allSystemIcons = undefined;
+            prev = next = allSystemIcons = separator = undefined;
         }
         else {
             prev = this.renderNavIcon(this.getPreviousSystem(systemList), undefined, 'prev', false);
@@ -32,6 +32,7 @@ class SystemHeader extends React.Component<ISystemHeaderProps, ISystemHeaderStat
             allSystemIcons = systemList.map(function(system, id) {
                 return that.renderNavIcon(system, id, undefined, true);
             });
+            separator = <div className="separator"></div>;
         }
 
         return <div className="systemHeader">
@@ -40,8 +41,9 @@ class SystemHeader extends React.Component<ISystemHeaderProps, ISystemHeaderStat
             {prev}
             {next}
             {allSystemIcons}
-            <IconButton clicked={this.showHelp.bind(this, true)} icon="help" />
-            <IconButton icon="pause" />
+            {separator}
+            <IconButton title={language.common.help} clicked={this.showHelp.bind(this, true)} icon="help" />
+            <IconButton title={language.screens.active.pause} icon="pause" />
         </div>;
     }
     private renderHelp(name: string) {

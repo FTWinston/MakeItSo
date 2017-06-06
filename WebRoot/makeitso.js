@@ -82,6 +82,9 @@ var language = {
                 'Praetor',
             ],
         },
+        active: {
+            pause: 'Pause',
+        },
     },
     messages: {
         confirmLeave: 'The game is still active.',
@@ -931,9 +934,9 @@ var SystemHeader = (function (_super) {
         var help = this.renderHelp(name);
         var systemList = this.props.activeSystem == this.props.allSystems ? undefined
             : ShipSystem.getArray(this.props.allSystems);
-        var prev, next, allSystemIcons;
+        var prev, next, allSystemIcons, separator;
         if (systemList === undefined) {
-            prev = next = allSystemIcons = undefined;
+            prev = next = allSystemIcons = separator = undefined;
         }
         else {
             prev = this.renderNavIcon(this.getPreviousSystem(systemList), undefined, 'prev', false);
@@ -942,6 +945,7 @@ var SystemHeader = (function (_super) {
             allSystemIcons = systemList.map(function (system, id) {
                 return that_1.renderNavIcon(system, id, undefined, true);
             });
+            separator = React.createElement("div", { className: "separator" });
         }
         return React.createElement("div", { className: "systemHeader" },
             React.createElement("h1", { className: "name" }, name),
@@ -949,8 +953,9 @@ var SystemHeader = (function (_super) {
             prev,
             next,
             allSystemIcons,
-            React.createElement(IconButton, { clicked: this.showHelp.bind(this, true), icon: "help" }),
-            React.createElement(IconButton, { icon: "pause" }));
+            separator,
+            React.createElement(IconButton, { title: language.common.help, clicked: this.showHelp.bind(this, true), icon: "help" }),
+            React.createElement(IconButton, { title: language.screens.active.pause, icon: "pause" }));
     };
     SystemHeader.prototype.renderHelp = function (name) {
         if (!this.state.showHelp || this.props.activeSystem == 0)

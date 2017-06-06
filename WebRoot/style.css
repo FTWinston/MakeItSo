@@ -371,8 +371,11 @@ $lightBackground: #999;
       margin-left: 0.5em;
       align-self: stretch; }
     #game > .systemHeader svg.icon.disabled {
-      color: #ccc !important;
+      stroke: #bbb !important;
       cursor: not-allowed; }
+    #game > .systemHeader .separator {
+      width: 2px;
+      background-color: #333; }
 
 /*
 $disabledColor: #666;

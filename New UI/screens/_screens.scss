@@ -61,8 +61,13 @@
         }
 
         svg.icon.disabled {
-            color: #ccc !important;
+            stroke: #bbb !important;
             cursor: not-allowed;
+        }
+
+        .separator {
+            width: 2px;
+            background-color: $backgroundColor;
         }
     }
 }
