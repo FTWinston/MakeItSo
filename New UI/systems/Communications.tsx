@@ -1,4 +1,4 @@
-class CommunicationsSystem extends React.Component<{}, {}> {
+class CommunicationsSystem extends React.Component<ISystemProps, {}> {
     render() {
         return <div></div>;
     }

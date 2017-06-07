@@ -1379,21 +1379,21 @@ var GameActive = (function (_super) {
     GameActive.prototype.renderActiveSystem = function () {
         switch (this.state.activeSystem) {
             case ShipSystem.Helm:
-                return React.createElement(HelmSystem, null);
+                return React.createElement(HelmSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.Warp:
-                return React.createElement(WarpSystem, null);
+                return React.createElement(WarpSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.Weapons:
-                return React.createElement(WeaponsSystem, null);
+                return React.createElement(WeaponsSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.Sensors:
-                return React.createElement(SensorsSystem, null);
+                return React.createElement(SensorsSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.PowerManagement:
-                return React.createElement(PowerSystem, null);
+                return React.createElement(PowerSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.DamageControl:
-                return React.createElement(DamageControlSystem, null);
+                return React.createElement(DamageControlSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.ViewScreen:
-                return React.createElement(ViewScreenSystem, null);
+                return React.createElement(ViewScreenSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.Communications:
-                return React.createElement(CommunicationsSystem, null);
+                return React.createElement(CommunicationsSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             default:
                 return undefined;
         }
@@ -1551,7 +1551,8 @@ var GameClient = (function (_super) {
                 return React.createElement(GameSetup, { width: width, height: height, cancelled: this.showReturn.bind(this), started: this.startGame.bind(this) });
             case 5 /* Game */:
                 var systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
-                return React.createElement(GameActive, { width: width, height: height, selectedSystems: systems });
+                var inputMode = this.state.settings === undefined ? 0 /* ButtonsAndKeyboard */ : this.state.settings.inputMode;
+                return React.createElement(GameActive, { width: width, height: height, selectedSystems: systems, inputMode: inputMode });
             default:
                 return React.createElement(ErrorScreen, { width: width, height: height, message: this.state.errorMessage });
         }

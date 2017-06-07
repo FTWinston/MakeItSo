@@ -1,4 +1,4 @@
-class DamageControlSystem extends React.Component<{}, {}> {
+class DamageControlSystem extends React.Component<ISystemProps, {}> {
     render() {
         return <div></div>;
     }

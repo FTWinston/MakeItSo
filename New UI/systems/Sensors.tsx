@@ -1,4 +1,4 @@
-class SensorsSystem extends React.Component<{}, {}> {
+class SensorsSystem extends React.Component<ISystemProps, {}> {
     render() {
         return <div></div>;
     }

@@ -1,9 +1,16 @@
 ﻿interface IGameActiveProps extends IScreenProps {
     selectedSystems: ShipSystem;
+    inputMode: InputMode;
 }
 
 interface IGameActiveState {
     activeSystem: ShipSystem;
+}
+
+interface ISystemProps {
+    width: number;
+    height: number;
+    inputMode: InputMode;
 }
 
 class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {   
@@ -26,21 +33,21 @@ class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {
     private renderActiveSystem() {
         switch (this.state.activeSystem) {
             case ShipSystem.Helm:
-                return <HelmSystem />;
+                return <HelmSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.Warp:
-                return <WarpSystem />;
+                return <WarpSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.Weapons:
-                return <WeaponsSystem />;
+                return <WeaponsSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.Sensors:
-                return <SensorsSystem />;
+                return <SensorsSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.PowerManagement:
-                return <PowerSystem />;
+                return <PowerSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.DamageControl:
-                return <DamageControlSystem />;
+                return <DamageControlSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.ViewScreen:
-                return <ViewScreenSystem />;
+                return <ViewScreenSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.Communications:
-                return <CommunicationsSystem />;
+                return <CommunicationsSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             default:
                  return undefined;
         }

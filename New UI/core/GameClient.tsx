@@ -108,7 +108,8 @@ class GameClient extends React.Component<{}, IGameClientState> {
 
             case GameScreen.Game:
                 let systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
-                return <GameActive width={width} height={height} selectedSystems={systems} />;
+                let inputMode = this.state.settings === undefined ? InputMode.ButtonsAndKeyboard : this.state.settings.inputMode;
+                return <GameActive width={width} height={height} selectedSystems={systems} inputMode={inputMode} />;
 
             default:
                 return <ErrorScreen width={width} height={height} message={this.state.errorMessage} />;
