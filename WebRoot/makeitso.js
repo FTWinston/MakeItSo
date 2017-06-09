@@ -232,21 +232,19 @@ var Connection = (function () {
         else if (cmd == 'selectsys-') {
             this.game.setDirectSystemSelection(false);
         }
-        /*
         else {
-            let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
-            if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)
+            var sysNum = cmd.length > 1 ? parseInt(cmd.substr(0, 1)) : NaN;
+            if (isNaN(sysNum))
                 console.error(language.errorUnrecognisedCommand + cmd);
             else {
-                cmd = cmd.substr(1);
-                let sysInfo = this.game.state.systems[sysNum];
-                if (sysInfo === undefined)
+                cmd = cmd.substr(1); // TODO: now that system are bit flags, this won't just always be a single digit
+                var system = this.game.getSystem(sysNum);
+                if (system === undefined)
                     console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
-                else if (!sysInfo.system.receiveMessage(cmd, data))
-                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', sysInfo.name).replace('@cmd@', cmd).replace('@data@', data));
+                if (!system.receiveMessage(cmd, data))
+                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', system.name).replace('@cmd@', cmd).replace('@data@', data));
             }
         }
-*/
     };
     return Connection;
 }());
@@ -1361,24 +1359,44 @@ var GameSetup = (function (_super) {
 }(React.Component));
 var GameActive = (function (_super) {
     __extends(GameActive, _super);
-    function GameActive(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
-            activeSystem: ShipSystem.getSingle(_this.props.selectedSystems),
-        };
+    function GameActive() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.systems = {};
         return _this;
     }
-    GameActive.prototype.componentDidUpdate = function (prevProps) {
-        if (prevProps.selectedSystems != this.props.selectedSystems)
-            this.setState({ activeSystem: ShipSystem.getSingle(this.props.selectedSystems) });
+    GameActive.prototype.componentWillMount = function () {
+        this.updateSystems(this.props);
+    };
+    GameActive.prototype.componentWillReceiveProps = function (nextProps) {
+        if (nextProps.selectedSystems != this.props.selectedSystems)
+            this.updateSystems(nextProps);
+    };
+    GameActive.prototype.updateSystems = function (newProps) {
+        this.setState({ activeSystem: ShipSystem.getSingle(this.props.selectedSystems) });
+        var newSystems = {};
+        var systemList = ShipSystem.getArray(newProps.selectedSystems);
+        for (var _i = 0, systemList_1 = systemList; _i < systemList_1.length; _i++) {
+            var system = systemList_1[_i];
+            var systemInstance = this.systems[system];
+            if (systemInstance === undefined) {
+                systemInstance = this.renderSystem(system);
+                if (systemInstance === undefined)
+                    continue;
+            }
+            newSystems[system] = systemInstance;
+        }
+        this.systems = newSystems;
+    };
+    GameActive.prototype.getSystem = function (system) {
+        return this.systems[system];
     };
     GameActive.prototype.render = function () {
         return React.createElement("div", { className: "screen", id: "game" },
             React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems, switchSystem: this.switchSystem.bind(this) }),
-            this.renderActiveSystem());
+            this.systems[this.state.activeSystem]);
     };
-    GameActive.prototype.renderActiveSystem = function () {
-        switch (this.state.activeSystem) {
+    GameActive.prototype.renderSystem = function (system) {
+        switch (system) {
             case ShipSystem.Helm:
                 return React.createElement(HelmSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
             case ShipSystem.Warp:
@@ -1432,7 +1450,7 @@ var HelmSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     HelmSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        return React.createElement("div", null, "Helm");
     };
     return HelmSystem;
 }(React.Component));
@@ -1442,7 +1460,7 @@ var PowerSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     PowerSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        return React.createElement("div", null, "Power");
     };
     return PowerSystem;
 }(React.Component));
@@ -1518,6 +1536,11 @@ var GameClient = (function (_super) {
             this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
     };
+    GameClient.prototype.getSystem = function (system) {
+        if (this.gameRoot === undefined)
+            return undefined;
+        return this.gameRoot.getSystem(system);
+    };
     GameClient.prototype.render = function () {
         return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderVisibleScreen()));
     };
@@ -1553,7 +1576,7 @@ var GameClient = (function (_super) {
             case 5 /* Game */:
                 var systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
                 var inputMode = this.state.settings === undefined ? 0 /* ButtonsAndKeyboard */ : this.state.settings.inputMode;
-                return React.createElement(GameActive, { width: width, height: height, selectedSystems: systems, inputMode: inputMode });
+                return React.createElement(GameActive, { width: width, height: height, selectedSystems: systems, inputMode: inputMode, ref: function (c) { return _this.gameRoot = c; } });
             default:
                 return React.createElement(ErrorScreen, { width: width, height: height, message: this.state.errorMessage });
         }

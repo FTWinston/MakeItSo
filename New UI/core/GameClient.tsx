@@ -62,6 +62,13 @@ class GameClient extends React.Component<{}, IGameClientState> {
             this.server = new Connection(this, 'ws://' + location.host + '/ws');
         }
     }
+    
+    private gameRoot: GameActive;
+    getSystem(system: ShipSystem) {
+        if (this.gameRoot === undefined)
+            return undefined;
+        return this.gameRoot.getSystem(system);
+    }
 
     server: Connection;
     roleSelection?: RoleSelection;
@@ -72,6 +79,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
             </div>
         );
     }
+
     private renderVisibleScreen() {
         let width = this.state.screenWidth === undefined ? 0 : this.state.screenWidth;
         let height = this.state.screenHeight === undefined ? 0 : this.state.screenHeight;
@@ -109,7 +117,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
             case GameScreen.Game:
                 let systems = this.state.selectedSystems === undefined ? 0 : this.state.selectedSystems;
                 let inputMode = this.state.settings === undefined ? InputMode.ButtonsAndKeyboard : this.state.settings.inputMode;
-                return <GameActive width={width} height={height} selectedSystems={systems} inputMode={inputMode} />;
+                return <GameActive width={width} height={height} selectedSystems={systems} inputMode={inputMode} ref={(c) => this.gameRoot = c} />;
 
             default:
                 return <ErrorScreen width={width} height={height} message={this.state.errorMessage} />;

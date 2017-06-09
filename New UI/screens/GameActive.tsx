@@ -13,25 +13,48 @@ interface ISystemProps {
     inputMode: InputMode;
 }
 
+type SystemMap = { [key: number]:JSX.Element; };
+
 class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {   
-    constructor(props: IGameActiveProps) {
-        super(props);
-        this.state = {
-            activeSystem: ShipSystem.getSingle(this.props.selectedSystems),
-        };
+    componentWillMount() {
+        this.updateSystems(this.props);
     }
-    componentDidUpdate(prevProps: IGameActiveProps) {
-        if (prevProps.selectedSystems != this.props.selectedSystems)
-            this.setState({activeSystem: ShipSystem.getSingle(this.props.selectedSystems)});
+    componentWillReceiveProps(nextProps: IGameActiveProps) {
+        if (nextProps.selectedSystems != this.props.selectedSystems)
+            this.updateSystems(nextProps);
     }
+
+    private systems: SystemMap = {};
+    private updateSystems(newProps: IGameActiveProps) {
+        this.setState({activeSystem: ShipSystem.getSingle(this.props.selectedSystems)});
+
+        let newSystems: SystemMap = {};
+
+        let systemList = ShipSystem.getArray(newProps.selectedSystems);
+        for (let system of systemList) {
+            let systemInstance: JSX.Element | undefined = this.systems[system];
+            if (systemInstance === undefined) {
+                systemInstance = this.renderSystem(system);
+                if (systemInstance === undefined)
+                    continue;
+            }
+            newSystems[system] = systemInstance;
+        }
+
+        this.systems = newSystems;
+    }
+    getSystem(system: ShipSystem) {
+        return this.systems[system];
+    }
+
     render() {
         return <div className="screen" id="game">
             <SystemHeader activeSystem={this.state.activeSystem} allSystems={this.props.selectedSystems} switchSystem={this.switchSystem.bind(this)} />
-            {this.renderActiveSystem()}
+            {this.systems[this.state.activeSystem]}
         </div>;
     }
-    private renderActiveSystem() {
-        switch (this.state.activeSystem) {
+    private renderSystem(system: ShipSystem) {
+        switch (system) {
             case ShipSystem.Helm:
                 return <HelmSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
             case ShipSystem.Warp:

@@ -262,3 +262,7 @@ namespace ShipSystem {
         }
     }
 }
+
+interface IShipSystem {
+    
+}

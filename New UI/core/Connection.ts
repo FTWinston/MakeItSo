@@ -87,20 +87,21 @@
         else if (cmd == 'selectsys-') {
             this.game.setDirectSystemSelection(false);
         }
-        /*
+        
         else {
             let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
-            if (isNaN(sysNum) || sysNum < 0 || sysNum > this.game.state.systems.length)
+            if (isNaN(sysNum))
                 console.error(language.errorUnrecognisedCommand + cmd);
             else {
-                cmd = cmd.substr(1);
-                let sysInfo = this.game.state.systems[sysNum];
-                if (sysInfo === undefined)
+                cmd = cmd.substr(1); // TODO: now that system are bit flags, this won't just always be a single digit
+
+                let system = this.game.getSystem(sysNum);
+                if (system === undefined)
                     console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
-                else if (!sysInfo.system.receiveMessage(cmd, data))
-                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', sysInfo.name).replace('@cmd@', cmd).replace('@data@', data));
+
+                if (!system.receiveMessage(cmd, data))
+                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', system.name).replace('@cmd@', cmd).replace('@data@', data));
             }
         }
-*/
     }
 }
