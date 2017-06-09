@@ -524,8 +524,8 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 		connectionInSetup = nullptr; // game started, no one is setting it up anymore
 		crewState = ECrewState::Active;
 
-		SendAllCrewData();
 		SendGameActive();
+		SendAllCrewData();
 
 #ifndef WEB_SERVER_TEST
 		//todo: this should consider the game mode/type selected
@@ -634,9 +634,11 @@ void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, Connect
 	int32 systemFlags;
 
 #ifndef WEB_SERVER_TEST
-	FString withSystem = FString::Printf(TEXT("%i%s\n"), (int32)system, message);
+	FString withSystem = FString::Printf(TEXT("x %i %s\n"), (int32)system, message);
 #else
-	std::wstring withSystem = std::to_wstring(system);
+	std::wstring withSystem = TEXT("x ");
+	withSystem += std::to_wstring(system);
+	withSystem += TEXT(" ");
 	withSystem += message;
 	char szText[2048];
 #endif

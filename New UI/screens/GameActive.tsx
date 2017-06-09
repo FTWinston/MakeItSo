@@ -11,73 +11,87 @@ interface ISystemProps {
     width: number;
     height: number;
     inputMode: InputMode;
+    visible: boolean;
 }
 
-type SystemMap = { [key: number]:JSX.Element; };
+type SystemMap = { [key: number]:IShipSystem | null; };
 
 class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {   
+    constructor(props: IGameActiveProps) {
+        super(props);
+        this.state = {
+            activeSystem: 0,
+        };
+    }
+
+    private systemRefs: SystemMap = {};
+    private selectedSystems: ShipSystem[];
+    
     componentWillMount() {
-        this.updateSystems(this.props);
+        this.updateSystems(this.props.selectedSystems);
     }
     componentWillReceiveProps(nextProps: IGameActiveProps) {
         if (nextProps.selectedSystems != this.props.selectedSystems)
-            this.updateSystems(nextProps);
+            this.updateSystems(nextProps.selectedSystems);
     }
 
-    private systems: SystemMap = {};
-    private updateSystems(newProps: IGameActiveProps) {
-        this.setState({activeSystem: ShipSystem.getSingle(this.props.selectedSystems)});
+    private updateSystems(systemFlags: ShipSystem) {
+        this.selectedSystems = ShipSystem.getArray(systemFlags);
 
-        let newSystems: SystemMap = {};
-
-        let systemList = ShipSystem.getArray(newProps.selectedSystems);
-        for (let system of systemList) {
-            let systemInstance: JSX.Element | undefined = this.systems[system];
-            if (systemInstance === undefined) {
-                systemInstance = this.renderSystem(system);
-                if (systemInstance === undefined)
-                    continue;
-            }
-            newSystems[system] = systemInstance;
-        }
-
-        this.systems = newSystems;
+        if ((systemFlags & this.state.activeSystem) == 0)
+            this.setState({ activeSystem: ShipSystem.getSingle(systemFlags) });
     }
+
     getSystem(system: ShipSystem) {
-        return this.systems[system];
+        return this.systemRefs[system];
+    }
+
+    private registerSystem(system: ShipSystem, ref: IShipSystem | null) {
+        this.systemRefs[system] = ref;
+    }
+
+    private switchSystem(system: ShipSystem) {
+        this.setState({
+            activeSystem: system,
+        });
     }
 
     render() {
         return <div className="screen" id="game">
             <SystemHeader activeSystem={this.state.activeSystem} allSystems={this.props.selectedSystems} switchSystem={this.switchSystem.bind(this)} />
-            {this.systems[this.state.activeSystem]}
+            {this.selectedSystems.map(this.renderSystem.bind(this))}
         </div>;
     }
-    private renderSystem(system: ShipSystem) {
+    private renderSystem(system: ShipSystem, id: number) {
+        let that = this;
+        let sharedProps = {
+            inputMode: this.props.inputMode,
+            width: this.props.width,
+            height: this.props.height,
+            ref: (c: IShipSystem | null) => that.registerSystem(system, c),
+            visible: this.state.activeSystem == system,
+            key: id
+        };
+
         switch (system) {
             case ShipSystem.Helm:
-                return <HelmSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <HelmSystem {...sharedProps} />;
             case ShipSystem.Warp:
-                return <WarpSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <WarpSystem {...sharedProps} />;
             case ShipSystem.Weapons:
-                return <WeaponsSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <WeaponsSystem {...sharedProps} />;
             case ShipSystem.Sensors:
-                return <SensorsSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <SensorsSystem {...sharedProps} />;
             case ShipSystem.PowerManagement:
-                return <PowerSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <PowerSystem {...sharedProps} />;
             case ShipSystem.DamageControl:
-                return <DamageControlSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <DamageControlSystem {...sharedProps} />;
             case ShipSystem.ViewScreen:
-                return <ViewScreenSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <ViewScreenSystem {...sharedProps} />;
             case ShipSystem.Communications:
-                return <CommunicationsSystem inputMode={this.props.inputMode} width={this.props.width} height={this.props.height} />;
+                return <CommunicationsSystem {...sharedProps} />;
             default:
                  return undefined;
         }
-    }
-    private switchSystem(system: ShipSystem) {
-        this.setState({
-            activeSystem: system,
-        });
     }
 }

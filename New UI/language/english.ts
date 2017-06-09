@@ -12,11 +12,9 @@
         shipFull: 'This ship is full: there is no room for you to join.',
         */
         gameStarted: 'This game has already started: wait for the crew to pause or end the game.',
-        /*
-        unrecognisedCommand: 'Unrecognised command from server: ',
-        wrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
-        systemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
-        */
+        unrecognisedCommand: 'Unrecognised command from server: @cmd@',
+        wrongSystem: 'Received command for @system@, which was not selected by this client: @cmd@',
+        systemDidntHandleMessage: '@system@ failed to handle command from server: @cmd@',
         noWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
         noCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
         /*

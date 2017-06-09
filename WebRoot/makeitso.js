@@ -12,11 +12,9 @@ var language = {
         shipFull: 'This ship is full: there is no room for you to join.',
         */
         gameStarted: 'This game has already started: wait for the crew to pause or end the game.',
-        /*
-        unrecognisedCommand: 'Unrecognised command from server: ',
-        wrongSystem: 'Received command for system #@num@, which was not selected by this client: ',
-        systemDidntHandleMessage: '@system@ failed to handle "@cmd@" command from server, with data @data@',
-        */
+        unrecognisedCommand: 'Unrecognised command from server: @cmd@',
+        wrongSystem: 'Received command for @system@, which was not selected by this client: @cmd@',
+        systemDidntHandleMessage: '@system@ failed to handle command from server: @cmd@',
         noWebsockets: 'Your web browser doesn\'t support Web Sockets. Make It So uses these to communicate with the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
         noCanvas: 'Your web browser doesn\'t support Canvas. Make It So uses this to draw various elements of the game.<br/>See <a href="http://caniuse.com/#feat=canvas,websockets">here</a> for a list of browsers that support Make It So\'s required features.',
     },
@@ -159,19 +157,19 @@ var FeatureDetection = {
 };
 var Connection = (function () {
     function Connection(game, url) {
+        this.sendQueue = [];
         this.game = game;
         this.socket = new WebSocket(url);
         this.socket.onerror = this.socket.onclose = function () { this.game.showError(language.errors.connectionLost, true); }.bind(this);
         this.socket.onmessage = this.messageReceived.bind(this);
         this.socket.onopen = this.connected.bind(this);
         this.close = this.socket.close.bind(this.socket);
-        this.queue = [];
     }
     Connection.prototype.send = function (cmd) {
         if (this.socket.readyState == 1)
             this.sendImmediately(cmd);
         else
-            this.queue.push(cmd);
+            this.sendQueue.push(cmd);
     };
     Connection.prototype.sendImmediately = function (cmd) {
         //console.log('sent', cmd);
@@ -179,10 +177,10 @@ var Connection = (function () {
     };
     Connection.prototype.connected = function () {
         // once connection is established, send any queued messages
-        var cmd = this.queue.pop();
+        var cmd = this.sendQueue.pop();
         while (cmd !== undefined) {
             this.sendImmediately(cmd);
-            cmd = this.queue.pop();
+            cmd = this.sendQueue.pop();
         }
     };
     Connection.prototype.messageReceived = function (ev) {
@@ -191,7 +189,11 @@ var Connection = (function () {
         var pos = data.indexOf(' ');
         var cmd = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
-        if (cmd == 'id') {
+        if (cmd == 'x') {
+            this.systemMessageReceived(data);
+            return;
+        }
+        else if (cmd == 'id') {
             this.game.setPlayerID(data);
             if (this.game.state.settings !== undefined)
                 this.send('name ' + this.game.state.settings.userName);
@@ -233,17 +235,28 @@ var Connection = (function () {
             this.game.setDirectSystemSelection(false);
         }
         else {
-            var sysNum = cmd.length > 1 ? parseInt(cmd.substr(0, 1)) : NaN;
-            if (isNaN(sysNum))
-                console.error(language.errorUnrecognisedCommand + cmd);
-            else {
-                cmd = cmd.substr(1); // TODO: now that system are bit flags, this won't just always be a single digit
-                var system = this.game.getSystem(sysNum);
-                if (system === undefined)
-                    console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
-                if (!system.receiveMessage(cmd, data))
-                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', system.name).replace('@cmd@', cmd).replace('@data@', data));
-            }
+            console.error(language.errors.unrecognisedCommand.replace('@cmd@', cmd));
+        }
+    };
+    Connection.prototype.systemMessageReceived = function (msg) {
+        var pos = msg.indexOf(' ');
+        var sys = pos == -1 ? msg : msg.substr(0, pos);
+        msg = pos == -1 ? '' : msg.substr(pos + 1);
+        var system = parseInt(sys);
+        var instance = this.game.getSystem(system);
+        if (instance === null) {
+            var name_1 = ShipSystem.getNames(system);
+            if (name_1 == '')
+                name_1 = '#' + sys;
+            console.error(language.errors.wrongSystem.replace('@system@', name_1).replace('@cmd@', msg));
+            return;
+        }
+        pos = msg.indexOf(' ');
+        var cmd = pos == -1 ? msg : msg.substr(0, pos);
+        var data = pos == -1 ? '' : msg.substr(pos + 1);
+        if (!instance.receiveMessage(cmd, data)) {
+            var name_2 = ShipSystem.getNames(system);
+            console.error(language.errors.systemDidntHandleMessage.replace('@system@', name_2).replace('@cmd@', msg));
         }
     };
     return Connection;
@@ -1357,70 +1370,82 @@ var GameSetup = (function (_super) {
     };
     return GameSetup;
 }(React.Component));
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var GameActive = (function (_super) {
     __extends(GameActive, _super);
-    function GameActive() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.systems = {};
+    function GameActive(props) {
+        var _this = _super.call(this, props) || this;
+        _this.systemRefs = {};
+        _this.state = {
+            activeSystem: 0,
+        };
         return _this;
     }
     GameActive.prototype.componentWillMount = function () {
-        this.updateSystems(this.props);
+        this.updateSystems(this.props.selectedSystems);
     };
     GameActive.prototype.componentWillReceiveProps = function (nextProps) {
         if (nextProps.selectedSystems != this.props.selectedSystems)
-            this.updateSystems(nextProps);
+            this.updateSystems(nextProps.selectedSystems);
     };
-    GameActive.prototype.updateSystems = function (newProps) {
-        this.setState({ activeSystem: ShipSystem.getSingle(this.props.selectedSystems) });
-        var newSystems = {};
-        var systemList = ShipSystem.getArray(newProps.selectedSystems);
-        for (var _i = 0, systemList_1 = systemList; _i < systemList_1.length; _i++) {
-            var system = systemList_1[_i];
-            var systemInstance = this.systems[system];
-            if (systemInstance === undefined) {
-                systemInstance = this.renderSystem(system);
-                if (systemInstance === undefined)
-                    continue;
-            }
-            newSystems[system] = systemInstance;
-        }
-        this.systems = newSystems;
+    GameActive.prototype.updateSystems = function (systemFlags) {
+        this.selectedSystems = ShipSystem.getArray(systemFlags);
+        if ((systemFlags & this.state.activeSystem) == 0)
+            this.setState({ activeSystem: ShipSystem.getSingle(systemFlags) });
     };
     GameActive.prototype.getSystem = function (system) {
-        return this.systems[system];
+        return this.systemRefs[system];
     };
-    GameActive.prototype.render = function () {
-        return React.createElement("div", { className: "screen", id: "game" },
-            React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems, switchSystem: this.switchSystem.bind(this) }),
-            this.systems[this.state.activeSystem]);
-    };
-    GameActive.prototype.renderSystem = function (system) {
-        switch (system) {
-            case ShipSystem.Helm:
-                return React.createElement(HelmSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.Warp:
-                return React.createElement(WarpSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.Weapons:
-                return React.createElement(WeaponsSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.Sensors:
-                return React.createElement(SensorsSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.PowerManagement:
-                return React.createElement(PowerSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.DamageControl:
-                return React.createElement(DamageControlSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.ViewScreen:
-                return React.createElement(ViewScreenSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            case ShipSystem.Communications:
-                return React.createElement(CommunicationsSystem, { inputMode: this.props.inputMode, width: this.props.width, height: this.props.height });
-            default:
-                return undefined;
-        }
+    GameActive.prototype.registerSystem = function (system, ref) {
+        this.systemRefs[system] = ref;
     };
     GameActive.prototype.switchSystem = function (system) {
         this.setState({
             activeSystem: system,
         });
+    };
+    GameActive.prototype.render = function () {
+        return React.createElement("div", { className: "screen", id: "game" },
+            React.createElement(SystemHeader, { activeSystem: this.state.activeSystem, allSystems: this.props.selectedSystems, switchSystem: this.switchSystem.bind(this) }),
+            this.selectedSystems.map(this.renderSystem.bind(this)));
+    };
+    GameActive.prototype.renderSystem = function (system, id) {
+        var that = this;
+        var sharedProps = {
+            inputMode: this.props.inputMode,
+            width: this.props.width,
+            height: this.props.height,
+            ref: function (c) { return that.registerSystem(system, c); },
+            visible: this.state.activeSystem == system,
+            key: id
+        };
+        switch (system) {
+            case ShipSystem.Helm:
+                return React.createElement(HelmSystem, __assign({}, sharedProps));
+            case ShipSystem.Warp:
+                return React.createElement(WarpSystem, __assign({}, sharedProps));
+            case ShipSystem.Weapons:
+                return React.createElement(WeaponsSystem, __assign({}, sharedProps));
+            case ShipSystem.Sensors:
+                return React.createElement(SensorsSystem, __assign({}, sharedProps));
+            case ShipSystem.PowerManagement:
+                return React.createElement(PowerSystem, __assign({}, sharedProps));
+            case ShipSystem.DamageControl:
+                return React.createElement(DamageControlSystem, __assign({}, sharedProps));
+            case ShipSystem.ViewScreen:
+                return React.createElement(ViewScreenSystem, __assign({}, sharedProps));
+            case ShipSystem.Communications:
+                return React.createElement(CommunicationsSystem, __assign({}, sharedProps));
+            default:
+                return undefined;
+        }
     };
     return GameActive;
 }(React.Component));
@@ -1430,7 +1455,12 @@ var CommunicationsSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CommunicationsSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        if (!this.props.visible)
+            return null;
+        return React.createElement("div", null, "comms");
+    };
+    CommunicationsSystem.prototype.receiveMessage = function (cmd, data) {
+        return false;
     };
     return CommunicationsSystem;
 }(React.Component));
@@ -1440,7 +1470,16 @@ var DamageControlSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     DamageControlSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        if (!this.props.visible)
+            return null;
+        return React.createElement("div", null, "damage");
+    };
+    DamageControlSystem.prototype.receiveMessage = function (cmd, data) {
+        if (cmd == 'dmgcell')
+            return true;
+        if (cmd == 'dmggrid')
+            return true;
+        return false;
     };
     return DamageControlSystem;
 }(React.Component));
@@ -1450,7 +1489,12 @@ var HelmSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     HelmSystem.prototype.render = function () {
+        if (!this.props.visible)
+            return null;
         return React.createElement("div", null, "Helm");
+    };
+    HelmSystem.prototype.receiveMessage = function (cmd, data) {
+        return false;
     };
     return HelmSystem;
 }(React.Component));
@@ -1460,7 +1504,12 @@ var PowerSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     PowerSystem.prototype.render = function () {
+        if (!this.props.visible)
+            return null;
         return React.createElement("div", null, "Power");
+    };
+    PowerSystem.prototype.receiveMessage = function (cmd, data) {
+        return false;
     };
     return PowerSystem;
 }(React.Component));
@@ -1470,7 +1519,12 @@ var SensorsSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     SensorsSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        if (!this.props.visible)
+            return null;
+        return React.createElement("div", null, "Sensors");
+    };
+    SensorsSystem.prototype.receiveMessage = function (cmd, data) {
+        return false;
     };
     return SensorsSystem;
 }(React.Component));
@@ -1480,7 +1534,16 @@ var ViewScreenSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ViewScreenSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        if (!this.props.visible)
+            return null;
+        return React.createElement("div", null, "View");
+    };
+    ViewScreenSystem.prototype.receiveMessage = function (cmd, data) {
+        if (cmd == 'view')
+            return true;
+        if (cmd == 'zoom')
+            return true;
+        return false;
     };
     return ViewScreenSystem;
 }(React.Component));
@@ -1490,7 +1553,12 @@ var WarpSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     WarpSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        if (!this.props.visible)
+            return null;
+        return React.createElement("div", null, "Warp");
+    };
+    WarpSystem.prototype.receiveMessage = function (cmd, data) {
+        return false;
     };
     return WarpSystem;
 }(React.Component));
@@ -1500,7 +1568,14 @@ var WeaponsSystem = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     WeaponsSystem.prototype.render = function () {
-        return React.createElement("div", null);
+        if (!this.props.visible)
+            return null;
+        return React.createElement("div", null, "Weapons");
+    };
+    WeaponsSystem.prototype.receiveMessage = function (cmd, data) {
+        if (cmd == 'dice')
+            return true;
+        return false;
     };
     return WeaponsSystem;
 }(React.Component));
@@ -1538,7 +1613,7 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.getSystem = function (system) {
         if (this.gameRoot === undefined)
-            return undefined;
+            return null;
         return this.gameRoot.getSystem(system);
     };
     GameClient.prototype.render = function () {
@@ -1550,18 +1625,18 @@ var GameClient = (function (_super) {
         var height = this.state.screenHeight === undefined ? 0 : this.state.screenHeight;
         switch (this.state.visibleScreen) {
             case 2 /* Settings */:
-                var mode = void 0, name_1, canCancel = void 0;
+                var mode = void 0, name_3, canCancel = void 0;
                 if (this.state.settings === undefined) {
                     mode = 0 /* ButtonsAndKeyboard */;
-                    name_1 = '';
+                    name_3 = '';
                     canCancel = false;
                 }
                 else {
                     mode = this.state.settings.inputMode;
-                    name_1 = this.state.settings.userName;
+                    name_3 = this.state.settings.userName;
                     canCancel = true;
                 }
-                return React.createElement(SettingsScreen, { width: width, height: height, inputMode: mode, userName: name_1, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
+                return React.createElement(SettingsScreen, { width: width, height: height, inputMode: mode, userName: name_3, canCancel: canCancel, saved: this.changeSettings.bind(this), cancelled: this.showReturn.bind(this) });
             case 1 /* Connecting */:
                 return React.createElement(ErrorScreen, { width: width, height: height, message: language.messages.connecting });
             case 3 /* RoleSelection */:

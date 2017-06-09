@@ -264,5 +264,5 @@ namespace ShipSystem {
 }
 
 interface IShipSystem {
-    
+    receiveMessage: (cmd: string, data: string) => boolean;
 }

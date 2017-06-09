@@ -66,7 +66,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
     private gameRoot: GameActive;
     getSystem(system: ShipSystem) {
         if (this.gameRoot === undefined)
-            return undefined;
+            return null;
         return this.gameRoot.getSystem(system);
     }
 

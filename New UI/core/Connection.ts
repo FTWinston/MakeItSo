@@ -2,7 +2,7 @@
     private game: GameClient;
     private socket: WebSocket;
     close: () => void;
-    private queue: string[];
+    private sendQueue: string[] = [];
     
     constructor(game: GameClient, url: string) {
         this.game = game;
@@ -11,13 +11,12 @@
         this.socket.onmessage = this.messageReceived.bind(this);
         this.socket.onopen = this.connected.bind(this);
         this.close = this.socket.close.bind(this.socket);
-        this.queue = [];
     }
     send(cmd: string) {
         if (this.socket.readyState == 1)
             this.sendImmediately(cmd);    
         else
-            this.queue.push(cmd);
+            this.sendQueue.push(cmd);
     }
     private sendImmediately(cmd: string) {
         //console.log('sent', cmd);
@@ -25,10 +24,10 @@
     }
     private connected() {
         // once connection is established, send any queued messages
-        let cmd = this.queue.pop();
+        let cmd = this.sendQueue.pop();
         while (cmd !== undefined) {
             this.sendImmediately(cmd);
-            cmd = this.queue.pop();
+            cmd = this.sendQueue.pop();
         }
     }
     private messageReceived(ev: MessageEvent) {
@@ -38,7 +37,11 @@
         let cmd:string = pos == -1 ? data : data.substr(0, pos);
         data = pos == -1 ? '' : data.substr(pos + 1);
 
-        if (cmd == 'id') {
+        if (cmd == 'x') {
+            this.systemMessageReceived(data);
+            return;
+        }
+        else if (cmd == 'id') {
             this.game.setPlayerID(data);
 
             if (this.game.state.settings !== undefined)
@@ -87,21 +90,33 @@
         else if (cmd == 'selectsys-') {
             this.game.setDirectSystemSelection(false);
         }
-        
         else {
-            let sysNum = cmd.length > 1 ? parseInt(cmd.substr(0,1)) : NaN;
-            if (isNaN(sysNum))
-                console.error(language.errorUnrecognisedCommand + cmd);
-            else {
-                cmd = cmd.substr(1); // TODO: now that system are bit flags, this won't just always be a single digit
+            console.error(language.errors.unrecognisedCommand.replace('@cmd@', cmd));
+        }
+    }
+    private systemMessageReceived(msg: string) {
+        let pos:number = msg.indexOf(' ');
+        let sys:string = pos == -1 ? msg : msg.substr(0, pos);
+        msg = pos == -1 ? '' : msg.substr(pos + 1);
 
-                let system = this.game.getSystem(sysNum);
-                if (system === undefined)
-                    console.error(language.errorWrongSystem.replace('@num@', sysNum.toString()) + cmd);
+        let system: ShipSystem = parseInt(sys);
+        let instance = this.game.getSystem(system);
 
-                if (!system.receiveMessage(cmd, data))
-                    console.error(language.errorSystemDidntHandleMessage.replace('@system@', system.name).replace('@cmd@', cmd).replace('@data@', data));
-            }
+        if (instance === null) {
+            let name = ShipSystem.getNames(system);
+            if (name == '')
+                name = '#' + sys;
+            console.error(language.errors.wrongSystem.replace('@system@', name).replace('@cmd@', msg));
+            return;
+        }
+        
+        pos = msg.indexOf(' ');
+        let cmd = pos == -1 ? msg : msg.substr(0, pos);
+        let data = pos == -1 ? '' : msg.substr(pos + 1);
+
+        if (!instance.receiveMessage(cmd, data)) {
+            let name = ShipSystem.getNames(system);
+            console.error(language.errors.systemDidntHandleMessage.replace('@system@', name).replace('@cmd@', msg));
         }
     }
 }
