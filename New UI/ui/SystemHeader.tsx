@@ -32,14 +32,16 @@ class SystemHeader extends React.Component<ISystemHeaderProps, ISystemHeaderStat
             allSystemIcons = systemList.map(function(system, id) {
                 return that.renderNavIcon(system, id, undefined, true);
             });
-            separator = <div className="separator"></div>;
+            separator = <div className="separator showLargeUp"></div>;
         }
 
         return <div className="systemHeader">
-            <h1 className="name">{name}</h1>
+            <div className="nameWrapper">
+                {prev}
+                {next}
+                <h1 className="name">{name}</h1>
+            </div>
             {help}
-            {prev}
-            {next}
             {allSystemIcons}
             {separator}
             <IconButton title={language.common.help} clicked={this.showHelp.bind(this, true)} icon="help" />

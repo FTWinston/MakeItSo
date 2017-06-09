@@ -377,7 +377,14 @@ $lightBackground: #999;
     flex-direction: row;
     justify-content: space-between;
     align-content: center; }
-    #game > .systemHeader > h1.name {
+    #game > .systemHeader > .nameWrapper {
+      display: flex;
+      flex-direction: row;
+      justify-content: flex-start;
+      align-content: center; }
+      #game > .systemHeader > .nameWrapper > *:not(:first-child) {
+        margin-left: 0.5em; }
+    #game > .systemHeader h1.name {
       font-size: 2em;
       background-color: #333;
       padding: 0em 0.25em;

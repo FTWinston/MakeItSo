@@ -945,13 +945,14 @@ var SystemHeader = (function (_super) {
             allSystemIcons = systemList.map(function (system, id) {
                 return that_1.renderNavIcon(system, id, undefined, true);
             });
-            separator = React.createElement("div", { className: "separator" });
+            separator = React.createElement("div", { className: "separator showLargeUp" });
         }
         return React.createElement("div", { className: "systemHeader" },
-            React.createElement("h1", { className: "name" }, name),
+            React.createElement("div", { className: "nameWrapper" },
+                prev,
+                next,
+                React.createElement("h1", { className: "name" }, name)),
             help,
-            prev,
-            next,
             allSystemIcons,
             separator,
             React.createElement(IconButton, { title: language.common.help, clicked: this.showHelp.bind(this, true), icon: "help" }),
