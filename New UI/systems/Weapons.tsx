@@ -1,5 +1,5 @@
 class WeaponsSystem extends React.Component<ISystemProps, {}> implements IShipSystem {
-    render(): any {
+    render() {
         if (!this.props.visible)
             return null;
         return <div>Weapons</div>;
