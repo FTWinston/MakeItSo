@@ -236,7 +236,8 @@ button {
   cursor: pointer;
   vertical-align: baseline;
   border-radius: 0.8em;
-  transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s; }
+  transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s;
+  box-sizing: border-box; }
   button.confirm {
     border-top-left-radius: 0.16em !important;
     border-bottom-right-radius: 0.16em !important; }
@@ -263,7 +264,7 @@ button {
   button.held {
     border-left-width: 0 !important;
     border-right-width: 0 !important;
-    border-radius: 0.8em !important; }
+    border-radius: 0.8em; }
   button .subtext {
     font-size: 0.7em;
     border-top: 1px solid gray;
@@ -289,22 +290,27 @@ button {
   .buttons.vertical:not(.separate) > button:not(:last-of-type) {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0; }
-  .buttons.vertical:not(.separate) > button + button {
+  .buttons.vertical:not(.separate) > button:not(.held) + button {
     border-top-width: 0; }
+  .buttons.vertical:not(.separate) > button.held:not(:last-of-type) {
+    border-bottom-width: 0; }
   .buttons:not(.vertical):not(.separate) > button:not(:first-of-type) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0; }
   .buttons:not(.vertical):not(.separate) > button:not(:last-of-type) {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0; }
-  .buttons:not(.vertical):not(.separate) > button + button {
+  .buttons:not(.vertical):not(.separate) > button:not(.held) + button {
     border-left-width: 0; }
   .buttons.menu {
     position: absolute;
     top: 0.25em;
     right: 0.25em; }
-  .buttons .buttons button:not(.icon) {
-    flex-grow: 1; }
+  .buttons .buttons {
+    justify-content: stretch; }
+    .buttons .buttons > button, .buttons .buttons > .spacer {
+      flex-grow: 1;
+      flex-basis: 0; }
 
 .choice .prompt {
   margin-bottom: 0.5em; }
@@ -396,6 +402,8 @@ $lightBackground: #999;
     #game > .systemHeader .separator {
       width: 2px;
       background-color: #333; }
+  #game > :not(.systemHeader) {
+    flex-grow: 1; }
 
 /*
 $disabledColor: #666;
@@ -419,130 +427,10 @@ svg.icon {
   svg.icon:active {
     stroke: #de0000; }
 
-/*
-@import 'ui/systems';
-
-
-canvas {
-    width: 100%;
-    height: 100%;
-}
-@import 'ui/buttons';
-
-.disabled {
-	cursor: not-allowed;
-	color: $disabledColor !important;
-}
-
-.inline {
-	display: inline-block;
-}
-
-.inline.table {
-	display: inline-table;
-}
-
-row section, touchArea {
-	display: block;
-}
-
-spacer {
-    display: inline-block;
-}
-
-@import 'ui/choice';
-
-.table row:not(.rounded):not(:last-of-type) clicker {
-	@include border-radius-bottom(0);
-}
-
-.table row:not(.rounded):not(:first-of-type) clicker {
-	@include border-radius-top(0);
-}
-
-.table {
-	display: table;
-	border-spacing: 0.25em;
-	border-collapse: separate;
-}
-
-.table row {
-	display: table-row;
-}
-
-.table row spacer {
-	text-align: center;
-	font-size: 1.25em;
-}
-
-.table row * {
-	display: table-cell;
-}
-
-.showKeys clicker[data-hotkey] {
-	position: relative;
-	color: transparent !important;
-}
-
-.showKeys clicker[data-hotkey]:before {
-	content: "[" attr(data-hotkey) "] ";
-	color: $textColor;
-	position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-	padding-top: 0.5em;
-	text-align: center;
-	vertical-align: middle;
-}
-
-@import 'ui/buttoncolors';
-@import 'ui/toucharea.scss';
-
-@import 'setup/setup';
-
-output {
-    display: block;
-	white-space: pre-line;
-	padding: 0.75em;
-	background-color: $darkBackground;
-	border: solid 1px grey;
-
-    row {
-        display: block;
-
-        @include media-size-down(sm) {
-            display: inline-block;
-            padding: 1em;
-        }
-    }
-}
-
-.powerLevel {
-    font-size: 3em;
-    border-radius: 1em;
-    background-color: #0099ff;
-    border: solid #CCCCFF 0.1em;
-    margin: 0.1em;
-    padding: 0.025em;
-    display: inline-block;
-    width: 1em; height: 1em;
-    text-align: center;
-    vertical-align: middle;
-    color: #000000;
-}
-
-html, body, #gameRoot, #gameRoot > div, screen {
-    height: 100%;
-}
-
-@import 'game/systemswitcher';
-
-@import 'game/DamageControl/damagecontrol';
-@import 'game/Helm/helm';
-@import 'game/Power/power';
-@import 'game/Shields/shields';
-@import 'game/ViewScreen/viewscreen';
-@import 'game/Weapons/weapons';
-*/
+#helm.buttonInput {
+  display: flex;
+  justify-content: space-around;
+  align-items: center; }
+  @media (orientation: portrait) {
+    #helm.buttonInput {
+      flex-direction: column; } }

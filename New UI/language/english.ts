@@ -112,6 +112,17 @@
         helm: {
             name: 'Helm',
             help: 'TO-DO: fill in this help text',
+
+            up: 'Up',
+            down: 'Down',
+            left: 'Left',
+            right: 'Right',
+            stop: 'Stop',
+            faster: 'Faster',
+            slower: 'Slower',
+            rotation: 'Rotation',
+            translation: 'Translation',
+            speed: 'Speed',
         },
         warp: {
             name: 'Warp',

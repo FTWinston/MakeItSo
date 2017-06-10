@@ -1,0 +1,9 @@
+#helm.buttonInput {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+
+    @include portrait() {
+        flex-direction: column;
+    }
+}

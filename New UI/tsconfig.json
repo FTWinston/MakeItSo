@@ -49,7 +49,7 @@
         
         "systems/Communications.tsx",
         "systems/DamageControl.tsx",
-        "systems/Helm.tsx",
+        "systems/helm/Helm.tsx",
         "systems/Power.tsx",
         "systems/Sensors.tsx",
         "systems/Viewscreen.tsx",

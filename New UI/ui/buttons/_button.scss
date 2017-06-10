@@ -5,6 +5,7 @@ button {
     vertical-align: baseline;
     border-radius: $buttonRadius;
     transition: $elementTransition, border-radius 1s;
+    box-sizing: border-box;
 
     &.confirm {
         border-top-left-radius: $buttonRadius / 5 !important;
@@ -44,7 +45,7 @@ button {
     &.held {
         border-left-width: 0 !important;
         border-right-width: 0 !important;
-        border-radius: $buttonRadius !important;
+        border-radius: $buttonRadius;
     }
 
     .subtext {

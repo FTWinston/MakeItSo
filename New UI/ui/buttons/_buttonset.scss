@@ -28,8 +28,12 @@
             }
         }
         
-        > button + button {
+        > button:not(.held) + button {
             border-top-width: 0;
+        }
+        
+        > button.held:not(:last-of-type) {
+            border-bottom-width: 0;
         }
     }
 
@@ -46,7 +50,7 @@
             }
         }
 
-        > button + button {
+        > button:not(.held) + button {
             border-left-width: 0;
         }
     }
@@ -57,8 +61,13 @@
         right: 0.25em;
     }
 
-    .buttons button:not(.icon) {
-        flex-grow: 1;
+    .buttons {
+        justify-content: stretch;
+
+        & > button, & > .spacer {
+            flex-grow: 1;
+            flex-basis: 0;
+        }
     }
 }
 

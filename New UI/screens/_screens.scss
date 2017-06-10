@@ -82,4 +82,7 @@
             background-color: $backgroundColor;
         }
     }
+    > :not(.systemHeader) {
+        flex-grow: 1;
+    }
 }

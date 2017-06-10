@@ -104,6 +104,16 @@ var language = {
         helm: {
             name: 'Helm',
             help: 'TO-DO: fill in this help text',
+            up: 'Up',
+            down: 'Down',
+            left: 'Left',
+            right: 'Right',
+            stop: 'Stop',
+            faster: 'Faster',
+            slower: 'Slower',
+            rotation: 'Rotation',
+            translation: 'Translation',
+            speed: 'Speed',
         },
         warp: {
             name: 'Warp',
@@ -1491,7 +1501,62 @@ var HelmSystem = (function (_super) {
     HelmSystem.prototype.render = function () {
         if (!this.props.visible)
             return null;
-        return React.createElement("div", null, "Helm");
+        switch (this.props.inputMode) {
+            case 0 /* ButtonsAndKeyboard */:
+                return this.renderButtons();
+            case 1 /* Touchscreen */:
+                return this.renderTouch();
+            case 2 /* GamePad */:
+                return this.renderGamepad();
+        }
+    };
+    HelmSystem.prototype.renderButtons = function () {
+        var words = language.systems.helm;
+        return React.createElement("div", { id: "helm", className: "buttonInput" },
+            React.createElement("fieldset", { className: "rotation" },
+                React.createElement("legend", null, words.rotation),
+                React.createElement(ButtonSet, { vertical: true },
+                    React.createElement(ButtonSet, null,
+                        React.createElement("div", { className: "spacer" }),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.up }),
+                        React.createElement("div", { className: "spacer" })),
+                    React.createElement(ButtonSet, null,
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.left }),
+                        React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop }),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.right })),
+                    React.createElement(ButtonSet, null,
+                        React.createElement("div", { className: "spacer" }),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.down }),
+                        React.createElement("div", { className: "spacer" })))),
+            React.createElement("fieldset", { className: "translation" },
+                React.createElement("legend", null, words.translation),
+                React.createElement(ButtonSet, { vertical: true },
+                    React.createElement(ButtonSet, null,
+                        React.createElement("div", { className: "spacer" }),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.up }),
+                        React.createElement("div", { className: "spacer" })),
+                    React.createElement(ButtonSet, null,
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.left }),
+                        React.createElement(PushButton, { color: 2 /* Tertiary */, text: words.stop }),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.right })),
+                    React.createElement(ButtonSet, null,
+                        React.createElement("div", { className: "spacer" }),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.down }),
+                        React.createElement("div", { className: "spacer" })))),
+            React.createElement("fieldset", { className: "speed" },
+                React.createElement("legend", null, words.speed),
+                React.createElement(ButtonSet, { vertical: true },
+                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.faster }),
+                    React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop }),
+                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.slower }))));
+    };
+    HelmSystem.prototype.renderTouch = function () {
+        var words = language.systems.helm;
+        return React.createElement("div", { id: "helm", className: "touchInput" });
+    };
+    HelmSystem.prototype.renderGamepad = function () {
+        var words = language.systems.helm;
+        return React.createElement("div", { id: "helm", className: "gamepadInput" });
     };
     HelmSystem.prototype.receiveMessage = function (cmd, data) {
         return false;
