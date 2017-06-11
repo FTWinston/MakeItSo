@@ -60,8 +60,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
-
-	CreateSystems();
 	
 	if (!server)
 		server = mg_create_server(this, EventReceived);
@@ -520,6 +518,9 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info)
 	{
 		if (connectionInSetup != info || crewState != ECrewState::Setup)
 			return;
+
+		if (!systems.empty())
+			CreateSystems();
 
 		connectionInSetup = nullptr; // game started, no one is setting it up anymore
 		crewState = ECrewState::Active;
