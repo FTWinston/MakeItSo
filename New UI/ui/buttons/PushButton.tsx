@@ -17,7 +17,7 @@ class PushButton extends React.Component<IPushButtonProps, IPushButtonState> {
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} color={this.props.color} disabled={this.props.disabled}
+        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} color={this.props.color} disabled={this.props.disabled} fullBorder={this.props.fullBorder}
                 mouseDown={this.mouseDown.bind(this)} mouseUp={this.mouseUp.bind(this)} title={this.props.title} text={this.props.text} subtext={this.props.subtext} help={this.props.help} />;
     }
     private clicked(e: React.MouseEvent) {

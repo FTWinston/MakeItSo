@@ -15,6 +15,7 @@ interface IButtonProps {
     text: string;
     subtext?: string;
     help?: string;
+    fullBorder?: boolean;
 }
 
 interface IBaseButtonProps extends IButtonProps {
@@ -34,6 +35,7 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
     static defaultProps = {
         buttonType: 'button',
         text: '',
+        fullBorder: false,
     };
     constructor(props: IBaseButtonProps) {
         super(props);
@@ -73,6 +75,9 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
     private determineClasses() {
         let classes = this.props.className;
         
+        if (this.props.fullBorder)
+            classes += ' fullBorder';
+
         let color = this.props.color;
         if (color !== undefined) {
             switch(this.props.color) {

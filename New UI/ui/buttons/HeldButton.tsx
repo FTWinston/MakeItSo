@@ -20,7 +20,7 @@ class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonState> {
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} text={this.props.text} subtext={this.props.subtext} help={this.props.help}
+        return <Button className={classList} hotkey={this.props.hotkey} text={this.props.text} subtext={this.props.subtext} help={this.props.help} fullBorder={this.props.fullBorder}
                 mouseDown={this.mouseDown.bind(this)} mouseUp={this.mouseUp.bind(this)} color={this.props.color} disabled={this.props.disabled} title={this.props.title} />;
     }
     private mouseDown(e: React.MouseEvent) {

@@ -28,12 +28,12 @@
             }
         }
         
-        > button:not(.held) + button {
-            border-top-width: 0;
+        > button:not(.fullBorder):not(:last-child) {
+            border-bottom-width: 0;
         }
         
-        > button.held:not(:last-of-type) {
-            border-bottom-width: 0;
+        > button.fullBorder + button {
+            border-top-width: 0;
         }
     }
 
@@ -50,7 +50,11 @@
             }
         }
 
-        > button:not(.held) + button {
+        > button:not(.fullBorder):not(:last-child) {
+            border-right-width: 0;
+        }
+
+        > button.fullBorder + button {
             border-left-width: 0;
         }
     }

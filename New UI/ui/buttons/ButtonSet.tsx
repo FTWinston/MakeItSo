@@ -30,10 +30,14 @@ class ButtonSet extends React.Component<IButtonSetProps, {}> {
             (child: React.ReactElement<any>) => {
                 if (child === null)
                     return null;
+                if (child.type !== PushButton && child.type !== ToggleButton && child.type !== HeldButton && child.type !== ConfirmButton)
+                    return child;
 
+                let childHasColor = child.props.color !== undefined;
                 let childProps: any = {
                     disabled: this.props.disabled || child.props.disabled,
-                    color: child.props.color === undefined ? this.props.color : child.props.color,
+                    color: childHasColor ? child.props.color : this.props.color,
+                    fullBorder: childHasColor && this.props.color !== undefined,
                 }
 
                 if (child.type === ToggleButton) {

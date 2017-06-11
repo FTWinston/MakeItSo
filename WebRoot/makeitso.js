@@ -745,7 +745,9 @@ var Button = (function (_super) {
     };
     Button.prototype.determineClasses = function () {
         var classes = this.props.className;
-        var color = this.props.color === undefined ? this.props.groupColor : this.props.color;
+        if (this.props.fullBorder)
+            classes += ' fullBorder';
+        var color = this.props.color;
         if (color !== undefined) {
             switch (this.props.color) {
                 case 0 /* Primary */:
@@ -769,7 +771,7 @@ var Button = (function (_super) {
     };
     Button.prototype.renderButton = function () {
         var subtext = this.props.subtext === undefined ? undefined : React.createElement("div", { className: "subtext" }, this.props.subtext);
-        return React.createElement("button", { className: this.determineClasses(), disabled: this.props.disabled || this.props.groupDisabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
+        return React.createElement("button", { className: this.determineClasses(), disabled: this.props.disabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
             this.props.text,
             subtext);
     };
@@ -798,6 +800,7 @@ var Button = (function (_super) {
 Button.defaultProps = {
     buttonType: 'button',
     text: '',
+    fullBorder: false,
 };
 var PushButton = (function (_super) {
     __extends(PushButton, _super);
@@ -810,7 +813,7 @@ var PushButton = (function (_super) {
         var classList = this.state.held ? 'push active' : 'push';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), title: this.props.title, text: this.props.text, subtext: this.props.subtext, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, fullBorder: this.props.fullBorder, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), title: this.props.title, text: this.props.text, subtext: this.props.subtext, help: this.props.help });
     };
     PushButton.prototype.clicked = function (e) {
         if (this.props.clicked !== undefined)
@@ -837,7 +840,7 @@ var ConfirmButton = (function (_super) {
         var classList = this.state.primed ? 'confirm active' : 'confirm';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), buttonType: "submit", color: this.props.color, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), buttonType: "submit", color: this.props.color, fullBorder: this.props.fullBorder, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title, help: this.props.help });
     };
     ConfirmButton.prototype.clicked = function (e) {
         if (this.state.primed) {
@@ -884,7 +887,7 @@ var ToggleButton = (function (_super) {
         var classList = this.state.active ? 'toggle active' : 'toggle';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, fullBorder: this.props.fullBorder, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title, help: this.props.help });
     };
     ToggleButton.prototype.clicked = function (e) {
         if (this.state.active) {
@@ -926,7 +929,7 @@ var HeldButton = (function (_super) {
         var classList = this.state.held ? 'held active' : 'held';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, text: this.props.text, subtext: this.props.subtext, help: this.props.help, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, text: this.props.text, subtext: this.props.subtext, help: this.props.help, fullBorder: this.props.fullBorder, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title });
     };
     HeldButton.prototype.mouseDown = function (e) {
         this.setState({ held: true });
@@ -963,19 +966,19 @@ var ButtonSet = (function (_super) {
         var childrenWithProps = React.Children.map(this.props.children, function (child) {
             if (child === null)
                 return null;
-            if (child.type === ToggleButton)
-                return React.cloneElement(child, {
-                    groupDisabled: _this.props.disabled,
-                    color: _this.props.color,
-                    allowUserDeactivate: _this.props.allowUnselected,
-                    choiceOptionActivated: _this.props.childActivated,
-                });
-            if (child.type === PushButton || child.type === ConfirmButton || child.type === HeldButton)
-                return React.cloneElement(child, {
-                    groupDisabled: _this.props.disabled,
-                    groupColor: _this.props.color,
-                });
-            return child;
+            if (child.type !== PushButton && child.type !== ToggleButton && child.type !== HeldButton && child.type !== ConfirmButton)
+                return child;
+            var childHasColor = child.props.color !== undefined;
+            var childProps = {
+                disabled: _this.props.disabled || child.props.disabled,
+                color: childHasColor ? child.props.color : _this.props.color,
+                fullBorder: childHasColor && _this.props.color !== undefined,
+            };
+            if (child.type === ToggleButton) {
+                childProps.allowUserDeactivate = _this.props.allowUnselected;
+                childProps.choiceOptionActivated = _this.props.childActivated;
+            }
+            return React.cloneElement(child, childProps);
         });
         return (React.createElement("div", { className: classes }, childrenWithProps));
     };
@@ -1612,39 +1615,53 @@ var HelmSystem = (function (_super) {
             React.createElement("fieldset", { className: "rotation" },
                 React.createElement("legend", null, words.rotation),
                 React.createElement(ButtonSet, { vertical: true },
-                    React.createElement(ButtonSet, null,
+                    React.createElement(ButtonSet, { color: 1 /* Secondary */ },
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.up, hotkey: "W" }),
+                        React.createElement(HeldButton, { text: words.up, hotkey: "W" }),
                         React.createElement("div", { className: "spacer" })),
-                    React.createElement(ButtonSet, null,
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.left, hotkey: "A" }),
+                    React.createElement(ButtonSet, { color: 1 /* Secondary */ },
+                        React.createElement(HeldButton, { text: words.left, hotkey: "A" }),
                         React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop, hotkey: "S" }),
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.right, hotkey: "D" })),
-                    React.createElement(ButtonSet, null,
+                        React.createElement(HeldButton, { text: words.right, hotkey: "D" })),
+                    React.createElement(ButtonSet, { color: 1 /* Secondary */ },
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.down, hotkey: "X" }),
+                        React.createElement(HeldButton, { text: words.down, hotkey: "X" }),
                         React.createElement("div", { className: "spacer" })))),
             React.createElement("fieldset", { className: "translation" },
                 React.createElement("legend", null, words.translation),
                 React.createElement(ButtonSet, { vertical: true },
-                    React.createElement(ButtonSet, null,
+                    React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.up, hotkey: "I" }),
+                        React.createElement(HeldButton, { text: words.up, hotkey: "I" }),
                         React.createElement("div", { className: "spacer" })),
-                    React.createElement(ButtonSet, null,
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.left, hotkey: "J" }),
+                    React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
+                        React.createElement(HeldButton, { text: words.left, hotkey: "J" }),
                         React.createElement(PushButton, { color: 2 /* Tertiary */, text: words.stop, hotkey: "K" }),
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.right, hotkey: "L" })),
-                    React.createElement(ButtonSet, null,
+                        React.createElement(HeldButton, { text: words.right, hotkey: "L" })),
+                    React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.down, hotkey: "M" }),
+                        React.createElement(HeldButton, { text: words.down, hotkey: "M" }),
                         React.createElement("div", { className: "spacer" })))),
             React.createElement("fieldset", { className: "speed" },
                 React.createElement("legend", null, words.speed),
-                React.createElement(ButtonSet, { vertical: true },
-                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.faster, hotkey: "shift" }),
+                React.createElement(ButtonSet, { vertical: true, color: 1 /* Secondary */ },
+                    React.createElement(HeldButton, { text: words.faster, hotkey: "shift" }),
                     React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop, hotkey: "space" }),
-                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.slower, hotkey: "control" }))));
+                    React.createElement(HeldButton, { text: words.slower, hotkey: "control" }))),
+            React.createElement("fieldset", { className: "speed" },
+                React.createElement("legend", null, words.speed),
+                React.createElement(Choice, { color: 1 /* Secondary */ },
+                    React.createElement(ToggleButton, { text: "-1/4" }),
+                    React.createElement(ToggleButton, { text: "-1/8" }),
+                    React.createElement(ToggleButton, { color: 0 /* Primary */, text: words.stop }),
+                    React.createElement(ToggleButton, { text: "1/8" }),
+                    React.createElement(ToggleButton, { text: "1/4" }),
+                    React.createElement(ToggleButton, { text: "3/8" }),
+                    React.createElement(ToggleButton, { text: "1/2" }),
+                    React.createElement(ToggleButton, { text: "5/8" }),
+                    React.createElement(ToggleButton, { text: "3/4" }),
+                    React.createElement(ToggleButton, { text: "7/8" }),
+                    React.createElement(ToggleButton, { text: "Full" }))));
     };
     HelmSystem.prototype.renderTouch = function () {
         var words = language.systems.helm;

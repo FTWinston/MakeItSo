@@ -319,17 +319,19 @@ button {
   .buttons.vertical:not(.separate) > button:not(:last-of-type) {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0; }
-  .buttons.vertical:not(.separate) > button:not(.held) + button {
-    border-top-width: 0; }
-  .buttons.vertical:not(.separate) > button.held:not(:last-of-type) {
+  .buttons.vertical:not(.separate) > button:not(.fullBorder):not(:last-child) {
     border-bottom-width: 0; }
+  .buttons.vertical:not(.separate) > button.fullBorder + button {
+    border-top-width: 0; }
   .buttons:not(.vertical):not(.separate) > button:not(:first-of-type) {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0; }
   .buttons:not(.vertical):not(.separate) > button:not(:last-of-type) {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0; }
-  .buttons:not(.vertical):not(.separate) > button:not(.held) + button {
+  .buttons:not(.vertical):not(.separate) > button:not(.fullBorder):not(:last-child) {
+    border-right-width: 0; }
+  .buttons:not(.vertical):not(.separate) > button.fullBorder + button {
     border-left-width: 0; }
   .buttons.menu {
     position: absolute;
@@ -459,7 +461,8 @@ svg.icon {
 #helm.buttonInput {
   display: flex;
   justify-content: space-around;
-  align-items: center; }
+  align-items: center;
+  flex-wrap: wrap; }
   @media (orientation: portrait) {
     #helm.buttonInput {
       flex-direction: column; } }
