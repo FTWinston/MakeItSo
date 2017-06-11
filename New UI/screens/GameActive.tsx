@@ -14,8 +14,6 @@ interface ISystemProps {
     visible: boolean;
 }
 
-type SystemMap = { [key: number]:IShipSystem | null; };
-
 class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {   
     constructor(props: IGameActiveProps) {
         super(props);
@@ -24,7 +22,7 @@ class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {
         };
     }
 
-    private systemRefs: SystemMap = {};
+    private systemRefs: { [key: number]:IShipSystem | null; } = {};
     private selectedSystems: ShipSystem[];
     
     componentWillMount() {
@@ -47,7 +45,10 @@ class GameActive extends React.Component<IGameActiveProps, IGameActiveState> {
     }
 
     private registerSystem(system: ShipSystem, ref: IShipSystem | null) {
-        this.systemRefs[system] = ref;
+        if (ref === null) 
+            delete this.systemRefs[system];
+        else
+            this.systemRefs[system] = ref;
     }
 
     private switchSystem(system: ShipSystem) {

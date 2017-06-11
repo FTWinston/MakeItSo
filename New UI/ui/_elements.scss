@@ -1,3 +1,5 @@
+@import 'colors';
+
 p {
 	margin: 0.65em;
     white-space: pre-line;
@@ -12,4 +14,14 @@ h1 {
 
 p, label, button, input {
     font-size: calc(1rem + 0.25vw);
+}
+
+fieldset {
+    padding: 1em;
+    border-color: $colorQuandry;
+}
+
+legend {
+    color: $colorQuandry;
+    padding: 0 0.5em;
 }

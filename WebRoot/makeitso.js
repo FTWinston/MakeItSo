@@ -112,7 +112,7 @@ var language = {
             faster: 'Faster',
             slower: 'Slower',
             rotation: 'Rotation',
-            translation: 'Translation',
+            translation: 'Lateral',
             speed: 'Speed',
         },
         warp: {
@@ -488,6 +488,73 @@ var CrewRole = (function () {
     }
     ShipSystem.getIcon = getIcon;
 })(ShipSystem || (ShipSystem = {}));
+var Hotkeys = (function () {
+    function Hotkeys() {
+    }
+    Hotkeys.getKeyCode = function (hotkey) {
+        var keyCode = this.keyCodes[hotkey];
+        if (keyCode !== undefined)
+            return keyCode;
+        return hotkey.charCodeAt(0);
+    };
+    Hotkeys.register = function (hotkey, button) {
+        var keyCode = this.getKeyCode(hotkey);
+        this.bindings[keyCode] = button;
+    };
+    Hotkeys.unregister = function (hotkey, button) {
+        var keyCode = this.getKeyCode(hotkey);
+        if (this.bindings[keyCode] == button)
+            delete this.bindings[keyCode];
+    };
+    Hotkeys.initialize = function () {
+        document.onkeydown = Hotkeys.onKeyDown;
+        document.onkeyup = Hotkeys.onKeyUp;
+    };
+    Hotkeys.onKeyDown = function (e) {
+        var button = Hotkeys.bindings[e.which];
+        if (button === undefined) {
+            if (e.which == 112) {
+                Hotkeys.showHotkeys = !Hotkeys.showHotkeys;
+                gameClient.showHotkeys(Hotkeys.showHotkeys);
+                e.preventDefault();
+            }
+            return;
+        }
+        if (button.keyDown != undefined)
+            button.keyDown(e);
+    };
+    Hotkeys.onKeyUp = function (e) {
+        var button = Hotkeys.bindings[e.which];
+        if (button === undefined)
+            return;
+        if (button.keyUp != undefined)
+            button.keyUp(e);
+        if (button.keyPress != undefined)
+            button.keyPress(e);
+    };
+    return Hotkeys;
+}());
+Hotkeys.bindings = {};
+Hotkeys.showHotkeys = false;
+Hotkeys.keyCodes = {
+    'enter': 13,
+    'space': 32,
+    'tab': 9,
+    'control': 17,
+    'shift': 16,
+    'alt': 18,
+    'F2': 113,
+    'F3': 114,
+    'F4': 115,
+    'F5': 116,
+    'F6': 117,
+    'F7': 118,
+    'F8': 119,
+    'F9': 120,
+    'F10': 121,
+};
+;
+Hotkeys.initialize();
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -649,16 +716,14 @@ var Button = (function (_super) {
         };
         return _this;
     }
-    /*
-        componentDidMount() {
-            if (this.props.hotkey != null)
-                Hotkeys.register(this.props.hotkey, this);
-        }
-        componentWillUnmount() {
-            if (this.props.hotkey != null)
-                Hotkeys.unregister(this.props.hotkey, this);
-        }
-    */
+    Button.prototype.componentDidMount = function () {
+        if (this.props.hotkey != null)
+            Hotkeys.register(this.props.hotkey, this);
+    };
+    Button.prototype.componentWillUnmount = function () {
+        if (this.props.hotkey != null)
+            Hotkeys.unregister(this.props.hotkey, this);
+    };
     Button.prototype.render = function () {
         if (this.props.help === undefined)
             return this.renderButton();
@@ -708,6 +773,26 @@ var Button = (function (_super) {
             this.props.text,
             subtext);
     };
+    Button.prototype.keyDown = function (e) {
+        if (this.props.mouseDown !== undefined)
+            this.props.mouseDown(e);
+    };
+    Button.prototype.keyUp = function (e) {
+        if (this.props.mouseUp !== undefined)
+            this.props.mouseUp(e);
+    };
+    Button.prototype.keyPress = function (e) {
+        if (this.props.mouseClick !== undefined)
+            this.props.mouseClick(e);
+    };
+    Button.prototype.fakeMouseEvent = function (keyboard) {
+        return new MouseEvent('click', {
+            bubbles: false,
+            button: 0,
+            cancelable: true,
+            view: window,
+        });
+    };
     return Button;
 }(React.Component));
 Button.defaultProps = {
@@ -716,20 +801,28 @@ Button.defaultProps = {
 };
 var PushButton = (function (_super) {
     __extends(PushButton, _super);
-    function PushButton() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function PushButton(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = { held: false };
+        return _this;
     }
     PushButton.prototype.render = function () {
-        var classList = 'push';
+        var classList = this.state.held ? 'push active' : 'push';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, title: this.props.title, text: this.props.text, subtext: this.props.subtext, help: this.props.help });
+        return React.createElement(Button, { className: classList, hotkey: this.props.hotkey, mouseClick: this.clicked.bind(this), color: this.props.color, disabled: this.props.disabled, mouseDown: this.mouseDown.bind(this), mouseUp: this.mouseUp.bind(this), title: this.props.title, text: this.props.text, subtext: this.props.subtext, help: this.props.help });
     };
     PushButton.prototype.clicked = function (e) {
         if (this.props.clicked !== undefined)
             this.props.clicked();
         if (this.props.command !== undefined)
             gameClient.server.send(this.props.command);
+    };
+    PushButton.prototype.mouseDown = function (e) {
+        this.setState({ held: true });
+    };
+    PushButton.prototype.mouseUp = function (e) {
+        this.setState({ held: false });
     };
     return PushButton;
 }(React.Component));
@@ -1414,7 +1507,10 @@ var GameActive = (function (_super) {
         return this.systemRefs[system];
     };
     GameActive.prototype.registerSystem = function (system, ref) {
-        this.systemRefs[system] = ref;
+        if (ref === null)
+            delete this.systemRefs[system];
+        else
+            this.systemRefs[system] = ref;
     };
     GameActive.prototype.switchSystem = function (system) {
         this.setState({
@@ -1518,37 +1614,37 @@ var HelmSystem = (function (_super) {
                 React.createElement(ButtonSet, { vertical: true },
                     React.createElement(ButtonSet, null,
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.up }),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.up, hotkey: "W" }),
                         React.createElement("div", { className: "spacer" })),
                     React.createElement(ButtonSet, null,
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.left }),
-                        React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop }),
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.right })),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.left, hotkey: "A" }),
+                        React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop, hotkey: "S" }),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.right, hotkey: "D" })),
                     React.createElement(ButtonSet, null,
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.down }),
+                        React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.down, hotkey: "X" }),
                         React.createElement("div", { className: "spacer" })))),
             React.createElement("fieldset", { className: "translation" },
                 React.createElement("legend", null, words.translation),
                 React.createElement(ButtonSet, { vertical: true },
                     React.createElement(ButtonSet, null,
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.up }),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.up, hotkey: "I" }),
                         React.createElement("div", { className: "spacer" })),
                     React.createElement(ButtonSet, null,
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.left }),
-                        React.createElement(PushButton, { color: 2 /* Tertiary */, text: words.stop }),
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.right })),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.left, hotkey: "J" }),
+                        React.createElement(PushButton, { color: 2 /* Tertiary */, text: words.stop, hotkey: "K" }),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.right, hotkey: "L" })),
                     React.createElement(ButtonSet, null,
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.down }),
+                        React.createElement(HeldButton, { color: 3 /* Quaternary */, text: words.down, hotkey: "M" }),
                         React.createElement("div", { className: "spacer" })))),
             React.createElement("fieldset", { className: "speed" },
                 React.createElement("legend", null, words.speed),
                 React.createElement(ButtonSet, { vertical: true },
-                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.faster }),
-                    React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop }),
-                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.slower }))));
+                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.faster, hotkey: "shift" }),
+                    React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop, hotkey: "space" }),
+                    React.createElement(HeldButton, { color: 1 /* Secondary */, text: words.slower, hotkey: "control" }))));
     };
     HelmSystem.prototype.renderTouch = function () {
         var words = language.systems.helm;
@@ -1682,7 +1778,7 @@ var GameClient = (function (_super) {
         return this.gameRoot.getSystem(system);
     };
     GameClient.prototype.render = function () {
-        return (React.createElement("div", { className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderVisibleScreen()));
+        return (React.createElement("div", { id: "client", className: this.state.showHotkeys ? 'showKeys' : undefined }, this.renderVisibleScreen()));
     };
     GameClient.prototype.renderVisibleScreen = function () {
         var _this = this;
@@ -1772,6 +1868,9 @@ var GameClient = (function (_super) {
     };
     GameClient.prototype.setupScreenInUse = function (inUse) {
         this.setState({ setupInUse: inUse });
+    };
+    GameClient.prototype.showHotkeys = function (show) {
+        this.setState({ showHotkeys: show });
     };
     GameClient.prototype.componentDidUpdate = function (prevProps, prevState) {
         // block accidental unloading only when in the game screen

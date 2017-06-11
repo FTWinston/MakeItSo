@@ -6,4 +6,8 @@
     @include portrait() {
         flex-direction: column;
     }
+
+    fieldset.rotation, fieldset.translation {
+        width: 14em;
+    }
 }

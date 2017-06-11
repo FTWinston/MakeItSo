@@ -27,6 +27,7 @@
         "core/ClientSettings.ts",
         "core/ShipSystem.ts",
 
+        "ui/Hotkeys.ts",
         "ui/Help.tsx",
 
         "ui/buttons/IconButton.tsx",

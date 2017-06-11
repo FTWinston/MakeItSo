@@ -74,7 +74,7 @@ class GameClient extends React.Component<{}, IGameClientState> {
     roleSelection?: RoleSelection;
     render() {
         return (
-            <div className={this.state.showHotkeys ? 'showKeys' : undefined}>
+            <div id="client" className={this.state.showHotkeys ? 'showKeys' : undefined}>
                 {this.renderVisibleScreen()}
             </div>
         );
@@ -180,6 +180,9 @@ class GameClient extends React.Component<{}, IGameClientState> {
     }
     setupScreenInUse(inUse: boolean) {
         this.setState({setupInUse: inUse});
+    }
+    showHotkeys(show: boolean) {
+        this.setState({showHotkeys: show});
     }
     private componentDidUpdate(prevProps: any, prevState: IGameClientState) {
         // block accidental unloading only when in the game screen

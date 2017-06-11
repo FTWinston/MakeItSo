@@ -21,17 +21,17 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
                 <ButtonSet vertical={true}>
                     <ButtonSet>
                         <div className="spacer" />
-                        <HeldButton color={ButtonColor.Secondary} text={words.up} />
+                        <HeldButton color={ButtonColor.Secondary} text={words.up} hotkey="W" />
                         <div className="spacer" />
                     </ButtonSet>
                     <ButtonSet>
-                        <HeldButton color={ButtonColor.Secondary} text={words.left} />
-                        <PushButton color={ButtonColor.Primary} text={words.stop} />
-                        <HeldButton color={ButtonColor.Secondary} text={words.right} />
+                        <HeldButton color={ButtonColor.Secondary} text={words.left} hotkey="A" />
+                        <PushButton color={ButtonColor.Primary} text={words.stop} hotkey="S" />
+                        <HeldButton color={ButtonColor.Secondary} text={words.right} hotkey="D" />
                     </ButtonSet>
                     <ButtonSet>
                         <div className="spacer" />
-                        <HeldButton color={ButtonColor.Secondary} text={words.down} />
+                        <HeldButton color={ButtonColor.Secondary} text={words.down} hotkey="X" />
                         <div className="spacer" />
                     </ButtonSet>
                 </ButtonSet>
@@ -41,17 +41,17 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
                 <ButtonSet vertical={true}>
                     <ButtonSet>
                         <div className="spacer" />
-                        <HeldButton color={ButtonColor.Quaternary} text={words.up} />
+                        <HeldButton color={ButtonColor.Quaternary} text={words.up} hotkey="I" />
                         <div className="spacer" />
                     </ButtonSet>
                     <ButtonSet>
-                        <HeldButton color={ButtonColor.Quaternary} text={words.left} />
-                        <PushButton color={ButtonColor.Tertiary} text={words.stop} />
-                        <HeldButton color={ButtonColor.Quaternary} text={words.right} />
+                        <HeldButton color={ButtonColor.Quaternary} text={words.left} hotkey="J" />
+                        <PushButton color={ButtonColor.Tertiary} text={words.stop} hotkey="K" />
+                        <HeldButton color={ButtonColor.Quaternary} text={words.right} hotkey="L" />
                     </ButtonSet>
                     <ButtonSet>
                         <div className="spacer" />
-                        <HeldButton color={ButtonColor.Quaternary} text={words.down} />
+                        <HeldButton color={ButtonColor.Quaternary} text={words.down} hotkey="M" />
                         <div className="spacer" />
                     </ButtonSet>
                 </ButtonSet>
@@ -59,9 +59,9 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
             <fieldset className="speed">
                 <legend>{words.speed}</legend>
                 <ButtonSet vertical={true}>
-                    <HeldButton color={ButtonColor.Secondary} text={words.faster} />
-                    <PushButton color={ButtonColor.Primary} text={words.stop} />
-                    <HeldButton color={ButtonColor.Secondary} text={words.slower} />
+                    <HeldButton color={ButtonColor.Secondary} text={words.faster} hotkey="shift" />
+                    <PushButton color={ButtonColor.Primary} text={words.stop} hotkey="space" />
+                    <HeldButton color={ButtonColor.Secondary} text={words.slower} hotkey="control" />
                 </ButtonSet>
             </fieldset>
         </div>;

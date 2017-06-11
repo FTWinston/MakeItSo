@@ -57,3 +57,22 @@ button {
         font-weight: normal;
     }
 }
+
+ 
+#client.showKeys button[data-hotkey] {
+	position: relative;
+	color: transparent !important; // hide text
+
+    &:before {
+        content: "[" attr(data-hotkey) "] ";
+        color: $textColor;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding-top: 0.5em;
+        text-align: center;
+        vertical-align: middle;
+    }
+}

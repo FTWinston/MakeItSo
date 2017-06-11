@@ -121,7 +121,7 @@
             faster: 'Faster',
             slower: 'Slower',
             rotation: 'Rotation',
-            translation: 'Translation',
+            translation: 'Lateral',
             speed: 'Speed',
         },
         warp: {

@@ -9,7 +9,7 @@ const enum ButtonColor {
 interface IButtonProps {
     className?: string;
     title?: string;
-    hotkey?: string;
+    hotkey?: Hotkey;
     color?: ButtonColor;
     disabled?: boolean;
     text: string;
@@ -43,7 +43,6 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
             showHelp: false,
         };
     }
-/*
     componentDidMount() {
         if (this.props.hotkey != null)
             Hotkeys.register(this.props.hotkey, this);
@@ -52,7 +51,6 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
         if (this.props.hotkey != null)
             Hotkeys.unregister(this.props.hotkey, this);
     }
-*/
     render(): JSX.Element {
         if (this.props.help === undefined)
             return this.renderButton();
@@ -107,5 +105,26 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
                     {this.props.text}
                     {subtext}
             </button>;
+    }
+    keyDown(e: any) {
+        if (this.props.mouseDown !== undefined)
+            this.props.mouseDown(e);
+    }
+    keyUp(e: any) {
+        if (this.props.mouseUp !== undefined)
+            this.props.mouseUp(e);
+    }
+    keyPress(e: any) {
+        if (this.props.mouseClick !== undefined)
+            this.props.mouseClick(e);
+    }
+    private fakeMouseEvent(keyboard: KeyboardEvent) {
+
+        return new MouseEvent('click', {
+            bubbles: false,
+            button: 0,
+            cancelable: true,
+            view: window,
+        });
     }
 }
