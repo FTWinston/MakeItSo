@@ -1002,6 +1002,19 @@ var Choice = (function (_super) {
         var classes = 'choice';
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
+        return (React.createElement("div", { className: classes },
+            this.props.prompt == null ? null : React.createElement("div", { className: "prompt" }, this.props.prompt),
+            React.createElement(ButtonSet, { vertical: this.props.vertical, separate: this.props.separate, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: this.childActivated.bind(this) }, this.props.children),
+            this.renderDescription()));
+    };
+    Choice.prototype.renderDescription = function () {
+        var anyDesc = false;
+        React.Children.forEach(this.props.children, function (child) {
+            if (child.props.description !== undefined)
+                anyDesc = true;
+        });
+        if (!anyDesc)
+            return undefined;
         var description, descClass;
         if (this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined) {
             description = this.state.activeChild.props.description;
@@ -1011,10 +1024,7 @@ var Choice = (function (_super) {
             description = '.';
             descClass = 'description hidden';
         }
-        return (React.createElement("div", { className: classes },
-            this.props.prompt == null ? null : React.createElement("div", { className: "prompt" }, this.props.prompt),
-            React.createElement(ButtonSet, { vertical: this.props.vertical, separate: this.props.separate, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: this.childActivated.bind(this) }, this.props.children),
-            React.createElement("div", { className: descClass }, description)));
+        return React.createElement("div", { className: descClass }, description);
     };
     Choice.prototype.childActivated = function (activated) {
         if (this.state.activeChild !== undefined)
@@ -1621,7 +1631,7 @@ var HelmSystem = (function (_super) {
                         React.createElement("div", { className: "spacer" })),
                     React.createElement(ButtonSet, { color: 1 /* Secondary */ },
                         React.createElement(HeldButton, { text: words.left, hotkey: "A" }),
-                        React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop, hotkey: "S" }),
+                        React.createElement(PushButton, { text: words.stop, hotkey: "S", color: 0 /* Primary */ }),
                         React.createElement(HeldButton, { text: words.right, hotkey: "D" })),
                     React.createElement(ButtonSet, { color: 1 /* Secondary */ },
                         React.createElement("div", { className: "spacer" }),
@@ -1636,7 +1646,7 @@ var HelmSystem = (function (_super) {
                         React.createElement("div", { className: "spacer" })),
                     React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
                         React.createElement(HeldButton, { text: words.left, hotkey: "J" }),
-                        React.createElement(PushButton, { color: 2 /* Tertiary */, text: words.stop, hotkey: "K" }),
+                        React.createElement(PushButton, { text: words.stop, hotkey: "K", color: 2 /* Tertiary */ }),
                         React.createElement(HeldButton, { text: words.right, hotkey: "L" })),
                     React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
                         React.createElement("div", { className: "spacer" }),
@@ -1644,24 +1654,14 @@ var HelmSystem = (function (_super) {
                         React.createElement("div", { className: "spacer" })))),
             React.createElement("fieldset", { className: "speed" },
                 React.createElement("legend", null, words.speed),
-                React.createElement(ButtonSet, { vertical: true, color: 1 /* Secondary */ },
-                    React.createElement(HeldButton, { text: words.faster, hotkey: "shift" }),
-                    React.createElement(PushButton, { color: 0 /* Primary */, text: words.stop, hotkey: "space" }),
-                    React.createElement(HeldButton, { text: words.slower, hotkey: "control" }))),
-            React.createElement("fieldset", { className: "speed" },
-                React.createElement("legend", null, words.speed),
-                React.createElement(Choice, { color: 1 /* Secondary */ },
-                    React.createElement(ToggleButton, { text: "-1/4" }),
-                    React.createElement(ToggleButton, { text: "-1/8" }),
-                    React.createElement(ToggleButton, { color: 0 /* Primary */, text: words.stop }),
-                    React.createElement(ToggleButton, { text: "1/8" }),
-                    React.createElement(ToggleButton, { text: "1/4" }),
-                    React.createElement(ToggleButton, { text: "3/8" }),
-                    React.createElement(ToggleButton, { text: "1/2" }),
-                    React.createElement(ToggleButton, { text: "5/8" }),
-                    React.createElement(ToggleButton, { text: "3/4" }),
-                    React.createElement(ToggleButton, { text: "7/8" }),
-                    React.createElement(ToggleButton, { text: "Full" }))));
+                React.createElement(Choice, { color: 1 /* Secondary */, allowUnselected: true },
+                    React.createElement(ToggleButton, { text: "-1/2", hotkey: "1" }),
+                    React.createElement(ToggleButton, { text: "-1/4", hotkey: "2" }),
+                    React.createElement(ToggleButton, { text: words.stop, hotkey: "3", color: 0 /* Primary */ }),
+                    React.createElement(ToggleButton, { text: "1/4", hotkey: "4" }),
+                    React.createElement(ToggleButton, { text: "1/2", hotkey: "5" }),
+                    React.createElement(ToggleButton, { text: "3/4", hotkey: "6" }),
+                    React.createElement(ToggleButton, { text: "Full", hotkey: "7" }))));
     };
     HelmSystem.prototype.renderTouch = function () {
         var words = language.systems.helm;

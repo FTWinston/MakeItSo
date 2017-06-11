@@ -26,7 +26,7 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Secondary}>
                         <HeldButton text={words.left} hotkey="A" />
-                        <PushButton color={ButtonColor.Primary} text={words.stop} hotkey="S" />
+                        <PushButton text={words.stop} hotkey="S" color={ButtonColor.Primary} />
                         <HeldButton text={words.right} hotkey="D" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Secondary}>
@@ -46,7 +46,7 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Quaternary}>
                         <HeldButton text={words.left} hotkey="J" />
-                        <PushButton color={ButtonColor.Tertiary} text={words.stop} hotkey="K" />
+                        <PushButton text={words.stop} hotkey="K" color={ButtonColor.Tertiary} />
                         <HeldButton text={words.right} hotkey="L" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Quaternary}>
@@ -55,30 +55,17 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
                         <div className="spacer" />
                     </ButtonSet>
                 </ButtonSet>
-            </fieldset>
+            </fieldset>            
             <fieldset className="speed">
                 <legend>{words.speed}</legend>
-                <ButtonSet vertical={true}  color={ButtonColor.Secondary}>
-                    <HeldButton text={words.faster} hotkey="shift" />
-                    <PushButton color={ButtonColor.Primary} text={words.stop} hotkey="space" />
-                    <HeldButton text={words.slower} hotkey="control" />
-                </ButtonSet>
-            </fieldset>
-            
-            <fieldset className="speed">
-                <legend>{words.speed}</legend>
-                <Choice color={ButtonColor.Secondary}>
-                    <ToggleButton text="-1/4" />
-                    <ToggleButton text="-1/8" />
-                    <ToggleButton color={ButtonColor.Primary} text={words.stop} />
-                    <ToggleButton text="1/8" />
-                    <ToggleButton text="1/4" />
-                    <ToggleButton text="3/8" />
-                    <ToggleButton text="1/2" />
-                    <ToggleButton text="5/8" />
-                    <ToggleButton text="3/4" />
-                    <ToggleButton text="7/8" />
-                    <ToggleButton text="Full" />
+                <Choice color={ButtonColor.Secondary} allowUnselected={true}>
+                    <ToggleButton text="-1/2" hotkey="1" />
+                    <ToggleButton text="-1/4" hotkey="2" />
+                    <ToggleButton text={words.stop} hotkey="3" color={ButtonColor.Primary} />
+                    <ToggleButton text="1/4" hotkey="4" />
+                    <ToggleButton text="1/2" hotkey="5" />
+                    <ToggleButton text="3/4" hotkey="6" />
+                    <ToggleButton text="Full" hotkey="7" />
                 </Choice>
             </fieldset>
         </div>;

@@ -388,6 +388,8 @@ $lightBackground: #999;
   #roleSelection .systems .inUse {
     opacity: 0.5;
     text-decoration: line-through; }
+  #roleSelection .buttons.actions {
+    margin-top: 1.5em; }
 
 #setup {
   display: flex;
