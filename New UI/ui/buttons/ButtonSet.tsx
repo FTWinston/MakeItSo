@@ -31,21 +31,17 @@ class ButtonSet extends React.Component<IButtonSetProps, {}> {
                 if (child === null)
                     return null;
 
-                if (child.type === ToggleButton)
-                    return React.cloneElement(child, {
-                        groupDisabled: this.props.disabled,
-                        color: this.props.color,
-                        allowUserDeactivate: this.props.allowUnselected,
-                        choiceOptionActivated: this.props.childActivated,
-                    });
+                let childProps: any = {
+                    disabled: this.props.disabled || child.props.disabled,
+                    color: child.props.color === undefined ? this.props.color : child.props.color,
+                }
 
-                if (child.type === PushButton || child.type === ConfirmButton || child.type === HeldButton)
-                    return React.cloneElement(child, {
-                        groupDisabled: this.props.disabled,
-                        groupColor: this.props.color,
-                    });
+                if (child.type === ToggleButton) {
+                    childProps.allowUserDeactivate = this.props.allowUnselected
+                    childProps.choiceOptionActivated = this.props.childActivated;
+                }
 
-                return child;
+                return React.cloneElement(child, childProps);
             }
         );
 

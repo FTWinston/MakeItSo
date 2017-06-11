@@ -19,8 +19,6 @@ interface IButtonProps {
 
 interface IBaseButtonProps extends IButtonProps {
     buttonType?: string;
-    groupColor?: ButtonColor;
-    groupDisabled?: boolean;
     mouseLeave?: React.EventHandler<React.MouseEvent>;
     mouseEnter?: React.EventHandler<React.MouseEvent>;
     mouseDown?: React.EventHandler<React.MouseEvent>;
@@ -75,7 +73,7 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
     private determineClasses() {
         let classes = this.props.className;
         
-        let color = this.props.color === undefined ? this.props.groupColor : this.props.color;
+        let color = this.props.color;
         if (color !== undefined) {
             switch(this.props.color) {
                 case ButtonColor.Primary:
@@ -95,7 +93,7 @@ class Button extends React.Component<IBaseButtonProps, IButtonState> {
     private renderButton() {
         let subtext = this.props.subtext === undefined ? undefined : <div className="subtext">{this.props.subtext}</div>;
 
-        return <button className={this.determineClasses()} disabled={this.props.disabled || this.props.groupDisabled}
+        return <button className={this.determineClasses()} disabled={this.props.disabled}
                 onMouseDown={this.props.disabled ? undefined : this.props.mouseDown}
                 onMouseUp={this.props.disabled ? undefined : this.props.mouseUp}
                 onMouseLeave={this.props.disabled ? undefined : this.props.mouseLeave}
