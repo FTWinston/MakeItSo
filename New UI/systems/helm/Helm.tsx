@@ -41,13 +41,13 @@ class HelmSystem extends React.Component<ISystemProps, {}> implements IShipSyste
                 <ButtonSet vertical={true}>
                     <ButtonSet color={ButtonColor.Quaternary}>
                         <div className="spacer" />
-                        <HeldButton text={words.up} hotkey="I" />
+                        <HeldButton text={words.up} hotkey="U" />
                         <div className="spacer" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Quaternary}>
-                        <HeldButton text={words.left} hotkey="J" />
-                        <PushButton text={words.stop} hotkey="K" color={ButtonColor.Tertiary} />
-                        <HeldButton text={words.right} hotkey="L" />
+                        <HeldButton text={words.left} hotkey="H" />
+                        <PushButton text={words.stop} hotkey="J" color={ButtonColor.Tertiary} />
+                        <HeldButton text={words.right} hotkey="K" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Quaternary}>
                         <div className="spacer" />

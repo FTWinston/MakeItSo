@@ -552,6 +552,9 @@ Hotkeys.keyCodes = {
     'F8': 119,
     'F9': 120,
     'F10': 121,
+    ',': 188,
+    '.': 190,
+    '/': 191,
 };
 ;
 Hotkeys.initialize();
@@ -1642,12 +1645,12 @@ var HelmSystem = (function (_super) {
                 React.createElement(ButtonSet, { vertical: true },
                     React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
                         React.createElement("div", { className: "spacer" }),
-                        React.createElement(HeldButton, { text: words.up, hotkey: "I" }),
+                        React.createElement(HeldButton, { text: words.up, hotkey: "U" }),
                         React.createElement("div", { className: "spacer" })),
                     React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
-                        React.createElement(HeldButton, { text: words.left, hotkey: "J" }),
-                        React.createElement(PushButton, { text: words.stop, hotkey: "K", color: 2 /* Tertiary */ }),
-                        React.createElement(HeldButton, { text: words.right, hotkey: "L" })),
+                        React.createElement(HeldButton, { text: words.left, hotkey: "H" }),
+                        React.createElement(PushButton, { text: words.stop, hotkey: "J", color: 2 /* Tertiary */ }),
+                        React.createElement(HeldButton, { text: words.right, hotkey: "K" })),
                     React.createElement(ButtonSet, { color: 3 /* Quaternary */ },
                         React.createElement("div", { className: "spacer" }),
                         React.createElement(HeldButton, { text: words.down, hotkey: "M" }),
