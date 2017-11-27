@@ -15,6 +15,13 @@
             "type": "shell",
             "command": "../Debug/WebTest.exe",
             "problemMatcher": []
+        },
+        {
+            "type": "npm",
+            "script": "prod",
+            "problemMatcher": [
+                "$tsc"
+            ]
         }
     ]
 }
