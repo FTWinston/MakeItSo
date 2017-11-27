@@ -81,7 +81,6 @@ public:
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
-	static FString GetLocalURL();
 	static void EventReceived(mg_connection *conn, int ev, void *ev_data);
 	
 	static UCrewManager *Instance;
@@ -107,7 +106,6 @@ private:
 	void SendGameActive();
 
 	static mg_mgr *mgr;
-	int httpPort;
 	AShipPlayerController *controller;
 	TMap<ESystem, UCrewSystem*> systems;
 

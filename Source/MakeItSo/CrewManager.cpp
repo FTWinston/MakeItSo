@@ -61,23 +61,43 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
+	FString strPort;
 
 	if (!mgr)
 	{
+		mgr = new mg_mgr();
 		mg_mgr_init(mgr, NULL);
 
 		// try port 80 for user convenience
 		struct mg_connection *conn = mg_bind(mgr, "80", EventReceived);
-		if (conn == NULL)
+		if (conn != NULL)
+		{
+			strPort = TEXT(""); // don't display port 80
+		}
+		else
 		{
 			// if that's in use, try port 8080
 			conn = mg_bind(mgr, "8080", EventReceived);
-			if (conn == NULL)
+			if (conn != NULL)
+			{
+				strPort = TEXT(":8080");
+			}
+			else
 			{
 				// failing that, select a port automatically
 				conn = mg_bind(mgr, "0", EventReceived);
 
-				if (conn == NULL)
+				if (conn != NULL)
+				{
+					char szPort[16];
+					mg_conn_addr_to_str(conn, szPort, sizeof(szPort), MG_SOCK_STRINGIFY_PORT);
+
+					std::string tmpString = szPort;
+					FString tmpFString(tmpString.length(), L' ');
+					std::copy(tmpString.begin(), tmpString.end(), tmpFString.begin());
+					strPort = TEXT(":") + tmpFString;
+				}
+				else
 				{
 #ifndef WEB_SERVER_TEST
 					if (controller)
@@ -89,7 +109,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 		if (conn != NULL)
 		{
-			httpPort = ntohs(conn->sa.sin.sin_port);
 			mg_set_protocol_http_websocket(conn);
 		}
 
@@ -101,7 +120,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 #endif
 	}
 
-	FString url = GetLocalURL();
+	FString url = GetLocalIP() + strPort;
 
 #ifndef WEB_SERVER_TEST
 	// display address info that web clients should connect to
@@ -228,27 +247,6 @@ FString UCrewManager::GetLocalIP()
 
 #else
 	return FString(TEXT("ERROR_NO_WIN32"));
-#endif
-}
-
-FString UCrewManager::GetLocalURL()
-{
-	int port = Instance->httpPort;
-	bool showPort = port != 80;
-	
-	FString ipAddress = GetLocalIP();
-
-	if (!showPort)
-		return ipAddress;
-
-#ifndef WEB_SERVER_TEST
-	return FString::Printf(TEXT("%s:%i\n"), *ipAddress, port);
-#else
-	FString url = ipAddress;
-
-	url += TEXT(":");
-	url += port;
-	return url;
 #endif
 }
 
