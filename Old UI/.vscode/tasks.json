@@ -14,7 +14,7 @@
             "command": "node-sass",
             "isShellCommand": true,
             "isTestCommand": true,
-            "args": ["style.scss", "../WebRoot/style.css"]
+            "args": ["style.scss", "../wwwroot/style.css"]
         },
         {
             "taskName": "test",

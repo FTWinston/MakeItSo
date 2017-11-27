@@ -113,9 +113,9 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 		}
 
 #ifdef WEB_SERVER_TEST
-		s_http_server_opts.document_root = "../WebRoot";
+		s_http_server_opts.document_root = "../wwwroot";
 #else
-		FString rootPath = FPaths::GameDir() / TEXT("WebRoot");
+		FString rootPath = FPaths::GameDir() / TEXT("wwwroot");
 		s_http_server_opts.document_root = TCHAR_TO_ANSI(*rootPath);
 #endif
 	}
