@@ -23,9 +23,9 @@ void UWeaponSystem::ResetDice()
 		dice[i] = 0;
 }
 
-bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(info, "wpnroll "))
+	if (STARTS_WITH(msg, "wpnroll "))
 	{
 		if (timesRolled >= MAX_REROLLS)
 			return true; // don't re-roll beyond the limit
@@ -33,7 +33,7 @@ bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info)
 		timesRolled++;
 
 		char buffer[8];
-		EXTRACT(info, buffer, "wpnroll ");
+		EXTRACT(msg, buffer, "wpnroll ");
 
 		// update lock, roll non-locked dice
 		for (int i = 0; i < NUM_DICE; i++)
@@ -47,11 +47,11 @@ bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 		SendDice();
 	}
-	else if (MATCHES(info, "wpnunroll")) {
+	else if (MATCHES(msg, "wpnunroll")) {
 		ClearDice();
 		SendDice();
 	}
-	else if (MATCHES(info, "wpnfire"))
+	else if (MATCHES(msg, "wpnfire"))
 	{
 		// TODO: actually fire or something
 

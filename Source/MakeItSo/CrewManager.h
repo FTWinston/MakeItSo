@@ -17,8 +17,8 @@
 
 #define MAX_CREW_CONNECTIONS 20
 
-#define STARTS_WITH(info, prefix) info->connection->content_len > sizeof(prefix) - 1 && !memcmp(info->connection->content, prefix, sizeof(prefix) - 1)
-#define MATCHES(info, prefix)     info->connection->content_len >= sizeof(prefix) - 1 && !memcmp(info->connection->content, prefix, sizeof(prefix) - 1)
+#define STARTS_WITH(msg, prefix) msg->size > sizeof(prefix) - 1 && !memcmp(msg->data, prefix, sizeof(prefix) - 1)
+#define MATCHES(msg, prefix)     msg->size >= sizeof(prefix) - 1 && !memcmp(msg->data, prefix, sizeof(prefix) - 1)
 
 #ifndef WEB_SERVER_TEST
 #define CHARARR(str) *str
@@ -30,7 +30,7 @@
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
 #define NOTEMPTY(set) !set.empty()
-#define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)       min(sizeof(buffer) - 1, info->connection->content_len - sizeof(offset) + 1), info->connection->content + sizeof(offset) - 1)
+#define EXTRACT(msg, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)       min(sizeof(buffer) - 1, msg->size - sizeof(offset) + 1), msg->data + sizeof(offset) - 1)
 #define APPENDINT(str, i) str += std::to_wstring(i);
 #endif
 
@@ -74,17 +74,18 @@ public:
 	virtual void BeginDestroy();
 
 	void LinkController(AShipPlayerController *controller);
-	void Poll() { mg_poll_server(server, 1); }
-	int32 HandleEvent(mg_connection *conn, enum mg_event ev);
+	void Poll() { mg_mgr_poll(mgr, 1); }
+	void HandleEvent(mg_connection *conn, int ev, void *ev_data);
 	void SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude = nullptr);
 	void SendAllCrewData();
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
 
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static FString GetLocalURL();
-	static int32 EventReceived(mg_connection *conn, enum mg_event ev);
+	static void EventReceived(mg_connection *conn, int ev, void *ev_data);
 	
 	static UCrewManager *Instance;
+	static struct mg_serve_http_opts s_http_server_opts;
 
 #ifndef WEB_SERVER_TEST
 	void InputKey(FKey key, bool down);
@@ -95,18 +96,18 @@ private:
 	void CreateSystems();
 	void ResetData();
 	void PauseGame(bool state);
-	void AllocateListenPort();
 	static FString GetLocalIP();
 
 	void SetupConnection(mg_connection *conn);
 	void EndConnection(mg_connection *conn);
 	int32 GetNewUniqueIdentifier();
-	void HandleWebsocketMessage(ConnectionInfo *info);
+	void HandleWebsocketMessage(ConnectionInfo *info, websocket_message *msg);
 	void ShipSystemChanged(ConnectionInfo *info, int32 systemFlags);
 	void SendSystemUsage(ConnectionInfo *sendTo);
 	void SendGameActive();
 
-	static mg_server *server;
+	static mg_mgr *mgr;
+	int httpPort;
 	AShipPlayerController *controller;
 	TMap<ESystem, UCrewSystem*> systems;
 
@@ -144,7 +145,7 @@ class MAKEITSO_API UCrewSystem : public UObject
 
 public:
 	virtual void Init(UCrewManager *manager) { crewManager = manager; }
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info) { return false; }
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) { return false; }
 	virtual bool ProcessSystemMessage(FString message) { return false; }
 	virtual void SendAllData() { }
 	virtual void ResetData() { }

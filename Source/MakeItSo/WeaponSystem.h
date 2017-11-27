@@ -15,7 +15,7 @@ class MAKEITSO_API UWeaponSystem : public UCrewSystem
 public:
 	virtual void Init(UCrewManager *manager);
 	virtual void ResetData();
-	bool ReceiveCrewMessage(ConnectionInfo *info);
+	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
 	bool ProcessSystemMessage(FString message);
 	virtual void SendAllData();
 protected:

@@ -6,12 +6,12 @@
 #include "ViewscreenSystem.h"
 
 
-bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(info, "viewdir "))
+	if (STARTS_WITH(msg, "viewdir "))
 	{
 		char buffer[2];
-		EXTRACT(info, buffer, "viewdir ");
+		EXTRACT(msg, buffer, "viewdir ");
 
 		char dir = buffer[0];
 		if (dir == 'f')
@@ -53,44 +53,44 @@ bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info)
 		viewTarget = nullptr;
 		SendViewAngles();
 	}
-	else if (STARTS_WITH(info, "viewtarget "))
+	else if (STARTS_WITH(msg, "viewtarget "))
 	{
 		char buffer[20];
-		EXTRACT(info, buffer, "viewtarget ");
+		EXTRACT(msg, buffer, "viewtarget ");
 		DetermineViewTarget(buffer);
 		DetermineTargetAngles();
 		SendViewAngles();
 		SendViewZoomDist();
 	}
-	else if (MATCHES(info, "viewup"))
+	else if (MATCHES(msg, "viewup"))
 	{
 		viewPitch += viewAngleStep;
 		if (viewPitch > 90)
 			viewPitch = 90;
 		SendViewAngles();
 	}
-	else if (MATCHES(info, "viewdown"))
+	else if (MATCHES(msg, "viewdown"))
 	{
 		viewPitch -= viewAngleStep;
 		if (viewPitch < -90)
 			viewPitch = -90;
 		SendViewAngles();
 	}
-	else if (MATCHES(info, "viewleft"))
+	else if (MATCHES(msg, "viewleft"))
 	{
 		viewYaw -= viewAngleStep;
 		if (viewYaw < 0)
 			viewYaw += 360;
 		SendViewAngles();
 	}
-	else if (MATCHES(info, "viewright"))
+	else if (MATCHES(msg, "viewright"))
 	{
 		viewYaw += viewAngleStep;
 		if (viewYaw >= 360)
 			viewYaw -= 360;
 		SendViewAngles();
 	}
-	else if (MATCHES(info, "viewin"))
+	else if (MATCHES(msg, "viewin"))
 	{
 		if (viewChase)
 		{
@@ -107,7 +107,7 @@ bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 		SendViewZoomDist();
 	}
-	else if (MATCHES(info, "viewout"))
+	else if (MATCHES(msg, "viewout"))
 	{
 		if (viewChase)
 		{
@@ -124,22 +124,22 @@ bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 		SendViewZoomDist();
 	}
-	else if (MATCHES(info, "+viewchase"))
+	else if (MATCHES(msg, "+viewchase"))
 	{
 		viewChase = true;
 		SendCrewMessage(TEXT("chase on"));
 	}
-	else if (MATCHES(info, "-viewchase"))
+	else if (MATCHES(msg, "-viewchase"))
 	{
 		viewChase = false;
 		SendCrewMessage(TEXT("chase off"));
 	}
-	else if (MATCHES(info, "+viewcomms"))
+	else if (MATCHES(msg, "+viewcomms"))
 	{
 		viewComms = true;
 		SendCrewMessage(TEXT("comms on"));
 	}
-	else if (MATCHES(info, "-viewcomms"))
+	else if (MATCHES(msg, "-viewcomms"))
 	{
 		viewComms = false;
 		SendCrewMessage(TEXT("comms off"));

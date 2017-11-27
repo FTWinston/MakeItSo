@@ -22,7 +22,7 @@ public:
 		MAX_POWER_SYSTEMS
 	};
 
-	bool ReceiveCrewMessage(ConnectionInfo *info);
+	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
 	virtual void SendAllData();
 	virtual bool ProcessSystemMessage(FString message);
 protected:

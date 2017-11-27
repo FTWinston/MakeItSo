@@ -7,12 +7,12 @@
 #include "PowerSystem.h"
 
 
-bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(info, "pickCard "))
+	if (STARTS_WITH(msg, "pickCard "))
 	{
 		char buffer[8];
-		EXTRACT(info, buffer, "pickCard ");
+		EXTRACT(msg, buffer, "pickCard ");
 		int32 cardID = atoi(buffer);
 
 		TSet<int32> cardChoice;
@@ -45,10 +45,10 @@ bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info)
 		SendCardChoice();
 		SendCardLibrary();
 	}
-	else if (STARTS_WITH(info, "useCard "))
+	else if (STARTS_WITH(msg, "useCard "))
 	{
 		char buffer[8];
-		EXTRACT(info, buffer, "useCard ");
+		EXTRACT(msg, buffer, "useCard ");
 		int32 cardID = atoi(buffer);
 
 #ifndef WEB_SERVER_TEST

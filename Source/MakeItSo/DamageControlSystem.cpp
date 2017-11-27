@@ -11,12 +11,12 @@
 #define SIZENUM(set) set.size()
 #endif
 
-bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(info, "dcdir "))
+	if (STARTS_WITH(msg, "dcdir "))
 	{
 		char buffer[8];
-		EXTRACT(info, buffer, "dcdir ");
+		EXTRACT(msg, buffer, "dcdir ");
 		EOrdinalDirection dir = (EOrdinalDirection)atoi(buffer);
 
 		// check they didn't switch to the opposite direction ... that isn't allowed

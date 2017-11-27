@@ -54,7 +54,7 @@ public:
 	void Init(UCrewManager* manager);
 	void ResetData();
 
-	bool ReceiveCrewMessage(ConnectionInfo *info);
+	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
 	bool ProcessSystemMessage(FString message);
 	void SendAllData();
 protected:
