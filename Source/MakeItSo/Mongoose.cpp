@@ -3051,8 +3051,11 @@ void mg_broadcast(struct mg_mgr *mgr, mg_event_handler_t cb, void *data,
 
     ctl_msg.callback = cb;
     memcpy(ctl_msg.message, data, len);
-    dummy = MG_SEND_FUNC(mgr->ctl[0], (char *) &ctl_msg,
-                         offsetof(struct ctl_msg, message) + len, 0);
+    dummy = MG_SEND_FUNC(mgr->ctl[0],
+						(char *) &ctl_msg,
+                         //offsetof(struct ctl_msg, message) // C++ definition of offsetof differs from C one, and doesn't compile here cos mongoose is really C not C++
+						((size_t)&(((struct ctl_msg*)0)->message))
+						+ len, 0);
     dummy = MG_RECV_FUNC(mgr->ctl[0], (char *) &len, 1, 0);
     (void) dummy; /* https://gcc.gnu.org/bugzilla/show_bug.cgi?id=25509 */
   }
