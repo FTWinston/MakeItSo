@@ -1,4 +1,4 @@
-import './site.scss';
+import './Client.scss';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { AppContainer } from 'react-hot-loader';
