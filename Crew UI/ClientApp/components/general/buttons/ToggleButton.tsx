@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Button, IButtonProps } from './Button';
 
-interface IToggleButtonProps extends IButtonProps {
+export interface IToggleButtonProps extends IButtonProps {
     startActive?: boolean;
     activated?: () => void;
     deactivated?: () => void;
@@ -32,11 +32,11 @@ export class ToggleButton extends React.Component<IToggleButtonProps, IToggleBut
             this.props.choiceOptionActivated(this);
     }
     render() {
-        let classList = this.state.active ? 'button--toggle button--primed' : 'button--toggle';
+        let classList = this.state.active ? 'button--toggle state--active' : 'button--toggle';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} color={this.props.color} fullBorder={this.props.fullBorder}
+        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={e => this.clicked(e)} color={this.props.color} fullBorder={this.props.fullBorder}
                 disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} />;
     }
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {

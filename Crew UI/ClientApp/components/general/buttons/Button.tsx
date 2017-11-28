@@ -1,6 +1,6 @@
-import './buttons.scss';
 import * as React from 'react';
 import { Hotkey, Hotkeys } from '../../../Hotkeys';
+import './buttons.scss';
 
 export const enum ButtonColor {
     Primary,
@@ -53,21 +53,19 @@ export class Button extends React.Component<IBaseButtonProps, {}> {
         if (this.props.fullBorder)
             classes += ' fullBorder';
 
-        let color = this.props.color;
-        if (color !== undefined) {
-            switch(this.props.color) {
-                case ButtonColor.Primary:
-                    classes += ' button--primary'; break;
-                case ButtonColor.Secondary:
-                    classes += ' button--secondary'; break;
-                case ButtonColor.Tertiary:
-                    classes += ' button--tertiary'; break;
-                case ButtonColor.Quaternary:
-                    classes += ' button--quaternary'; break;
-                case ButtonColor.Quandry:
-                    classes += ' button--quandry'; break;
-            }
+        switch(this.props.color) {
+            case ButtonColor.Primary:
+                classes += ' button--primary'; break;
+            case ButtonColor.Secondary:
+                classes += ' button--secondary'; break;
+            case ButtonColor.Tertiary:
+                classes += ' button--tertiary'; break;
+            case ButtonColor.Quaternary:
+                classes += ' button--quaternary'; break;
+            case ButtonColor.Quandry:
+                classes += ' button--quandry'; break;
         }
+        
         return classes;
     }
     render(): JSX.Element {

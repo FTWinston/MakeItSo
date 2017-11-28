@@ -9,6 +9,10 @@ $buttonRadius: 0.8em;
     vertical-align: baseline;
     border-radius: $buttonRadius;
     box-sizing: border-box;
+
+    &.state--active {
+        border-radius: 0 !important;
+    }
 }
 
 .button--primary { @include ui-color($colorPrimary) }
@@ -24,10 +28,6 @@ $buttonRadius: 0.8em;
     top: 0.35em;
     padding-top: 0.35em;
     font-weight: normal;
-}
-
-.button--primed {
-    border-radius: 0 !important;
 }
 
 .button--confirm {
@@ -46,7 +46,7 @@ $buttonRadius: 0.8em;
     }
 }
 
-.button--confirm.button--primed {
+.button--confirm.state--active {
     background-color: $colorConfirm !important;
     border-color: $colorConfirm !important;
     

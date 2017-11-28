@@ -19,12 +19,12 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
         this.state = { held: false };
     }
     render() {
-        let classList = this.state.held ? 'button--held button--primed' : 'button--held';
+        let classList = this.state.held ? 'button--held state--active' : 'button--held';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
         return <Button className={classList} hotkey={this.props.hotkey} text={this.props.text} subtext={this.props.subtext} fullBorder={this.props.fullBorder}
-                mouseDown={this.mouseDown.bind(this)} mouseUp={this.mouseUp.bind(this)} color={this.props.color} disabled={this.props.disabled} title={this.props.title} />;
+                mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} color={this.props.color} disabled={this.props.disabled} title={this.props.title} />;
     }
     private mouseDown(e: React.MouseEvent<HTMLButtonElement>) {
         this.setState({held: true});

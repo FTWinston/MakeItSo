@@ -16,11 +16,11 @@ export class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirm
         this.state = { primed: false };
     }
     render() {
-        let classList = this.state.primed ? 'button--confirm button--primed' : 'button--confirm';
+        let classList = this.state.primed ? 'button--confirm state--active' : 'button--confirm';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} buttonType="submit" color={this.props.color} fullBorder={this.props.fullBorder}
+        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={e => this.clicked(e)} buttonType="submit" color={this.props.color} fullBorder={this.props.fullBorder}
                 disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} />;
     }
     autoCancel?: number;
@@ -37,7 +37,7 @@ export class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirm
             */
         }
         else {
-            this.autoCancel = setTimeout(this.cancelPrime.bind(this), 10000);
+            this.autoCancel = setTimeout(() => this.cancelPrime(), 10000);
         }
 
         this.setState({primed: !this.state.primed});

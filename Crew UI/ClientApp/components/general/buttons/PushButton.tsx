@@ -16,12 +16,12 @@ export class PushButton extends React.Component<IPushButtonProps, IPushButtonSta
         this.state = { held: false };
     }
     render() {
-        let classList = this.state.held ? 'button--push button--primed' : 'button--push';
+        let classList = this.state.held ? 'button--push state--active' : 'button--push';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} color={this.props.color} disabled={this.props.disabled} fullBorder={this.props.fullBorder}
-                mouseDown={this.mouseDown.bind(this)} mouseUp={this.mouseUp.bind(this)} title={this.props.title} text={this.props.text} subtext={this.props.subtext} />;
+        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={e => this.clicked(e)} color={this.props.color} disabled={this.props.disabled} fullBorder={this.props.fullBorder}
+                mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} title={this.props.title} text={this.props.text} subtext={this.props.subtext} />;
     }
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {
         if (this.props.clicked !== undefined)

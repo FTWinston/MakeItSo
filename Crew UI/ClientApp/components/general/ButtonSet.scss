@@ -1,22 +1,13 @@
-.buttons {
+.buttonset {
     display: flex;
     justify-content: flex-start;
     align-items: stretch;
 
-    &.vertical {
+    &.buttonset--vertical {
         flex-direction: column;
         max-width: 20em;
-    }
-
-    &.separate.vertical > * + * {
-        margin-top: 0.5em;
-    }
-    &.separate:not(.vertical) > * + * {
-        margin-left: 0.5em;
-    }
-
-    &.vertical:not(.separate) {
-        > button {
+        
+        > .button {
             &:not(:first-of-type) {
                 border-top-left-radius: 0;
                 border-top-right-radius: 0;
@@ -37,8 +28,8 @@
         }
     }
 
-    &:not(.vertical):not(.separate) {
-        > button {
+    &:not(.buttonset--vertical) {
+        > .button {
             &:not(:first-of-type) {
                 border-top-left-radius: 0;
                 border-bottom-left-radius: 0;
@@ -50,45 +41,21 @@
             }
         }
 
-        > button:not(.fullBorder):not(:last-child) {
+        > .button:not(.fullBorder):not(:last-child) {
             border-right-width: 0;
         }
 
-        > button.fullBorder + button {
+        > .button.fullBorder + button {
             border-left-width: 0;
         }
     }
 
-    &.menu {
-        position: absolute;
-        top: 0.25em;
-        right: 0.25em;
-    }
-
-    .buttons {
+    .buttonset {
         justify-content: stretch;
 
-        & > button, & > .spacer {
+        & > .button, & > .spacer {
             flex-grow: 1;
             flex-basis: 0;
         }
     }
-}
-
-.choice {
-    .prompt {
-        margin-bottom: 0.5em;
-    }
-}
-
-.description {
-    margin-top: 0.5em;
-
-    &.hidden {
-        visibility: hidden;
-    }
-}
-
-.imitateChoice { /* account for the space the description would take up, if present */
-    margin-bottom: 1.5em;
 }
