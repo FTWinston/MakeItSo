@@ -1,30 +1,40 @@
+import * as React from 'react';
+import { Button, IButtonProps } from './Button';
+
+interface IConfirmButtonProps extends IButtonProps {
+    clicked?: () => void;
+    command?: string;
+}
+
 interface IConfirmButtonState {
     primed: boolean;
 }
 
-class ConfirmButton extends React.Component<IPushButtonProps, IConfirmButtonState> {
-    constructor(props: IPushButtonProps) {
+export class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirmButtonState> {
+    constructor(props: IConfirmButtonProps) {
         super(props);
         this.state = { primed: false };
     }
     render() {
-        let classList = this.state.primed ? 'confirm active' : 'confirm';
+        let classList = this.state.primed ? 'button--confirm button--primed' : 'button--confirm';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
         return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} buttonType="submit" color={this.props.color} fullBorder={this.props.fullBorder}
-                disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} help={this.props.help} />;
+                disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} />;
     }
     autoCancel?: number;
-    private clicked(e: React.MouseEvent) {
+    private clicked(e: React.MouseEvent<HTMLButtonElement>) {
         if (this.state.primed) {
             this.clearAutoCancel();
 
             if (this.props.clicked != undefined)
                 this.props.clicked();
             
+            /*
             if (this.props.command !== undefined)
                 gameClient.server.send(this.props.command);
+            */
         }
         else {
             this.autoCancel = setTimeout(this.cancelPrime.bind(this), 10000);

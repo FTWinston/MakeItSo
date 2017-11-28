@@ -1,3 +1,6 @@
+import * as React from 'react';
+import { Button, IButtonProps } from './Button';
+
 interface IToggleButtonProps extends IButtonProps {
     startActive?: boolean;
     activated?: () => void;
@@ -14,7 +17,7 @@ interface IToggleButtonState {
     active: boolean;
 }
 
-class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonState> {
+export class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonState> {
     static defaultProps = {
         inChoice: false,
         startActive: false,
@@ -29,14 +32,14 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
             this.props.choiceOptionActivated(this);
     }
     render() {
-        let classList = this.state.active ? 'toggle active' : 'toggle';
+        let classList = this.state.active ? 'button--toggle button--primed' : 'button--toggle';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
         return <Button className={classList} hotkey={this.props.hotkey} mouseClick={this.clicked.bind(this)} color={this.props.color} fullBorder={this.props.fullBorder}
-                disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} help={this.props.help} />;
+                disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} />;
     }
-    private clicked(e: React.MouseEvent) {
+    private clicked(e: React.MouseEvent<HTMLButtonElement>) {
         if (this.state.active) {
             if (this.props.allowUserDeactivate === false)
                 return; // in a choice, don't deactivate a button by clicking on it
@@ -44,8 +47,10 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
             if (this.props.deactivated != undefined)
                this.props.deactivated();
 
+            /*
             if (this.props.deactivateCommand !== undefined)
                 gameClient.server.send(this.props.deactivateCommand);
+            */
         }
         else {
             if (this.props.choiceOptionActivated !== undefined)
@@ -53,9 +58,11 @@ class ToggleButton extends React.Component<IToggleButtonProps, IToggleButtonStat
 
             if (this.props.activated != undefined)
                 this.props.activated();
-                
+            
+            /*
             if (this.props.activateCommand !== undefined)
                 gameClient.server.send(this.props.activateCommand);
+            */
         }
         
         this.setState({active: !this.state.active});

@@ -1,0 +1,86 @@
+@import '../../../colors';
+@import '../mixins';
+
+$buttonRadius: 0.8em;
+
+.button {
+    @include form-element();
+    cursor: pointer;
+    vertical-align: baseline;
+    border-radius: $buttonRadius;
+    box-sizing: border-box;
+}
+
+.button--primary { @include ui-color($colorPrimary) }
+.button--secondary { @include ui-color($colorSecondary) }
+.button--tertiary { @include ui-color($colorTertiary) }
+.button--quaternary { @include ui-color($colorQuaternary) }
+.button--quandry { @include ui-color($colorQuandry) }
+
+.button__subtext {
+    font-size: 0.7em;
+    border-top: 1px solid gray;
+    position:  relative;
+    top: 0.35em;
+    padding-top: 0.35em;
+    font-weight: normal;
+}
+
+.button--primed {
+    border-radius: 0 !important;
+}
+
+.button--confirm {
+    border-top-left-radius: $buttonRadius / 5 !important;
+    border-bottom-right-radius: $buttonRadius / 5 !important;
+    
+    &::before {
+        content: '';
+        display: inline-block;
+        overflow: hidden;
+        text-align: left;
+        vertical-align: top;
+        width: 0;
+        margin-right: 0;
+        transition: width 0.5s;
+    }
+}
+
+.button--confirm.button--primed {
+    background-color: $colorConfirm !important;
+    border-color: $colorConfirm !important;
+    
+    &::before {
+        content: 'Confirm:';
+        width: 4em;
+    }
+
+    &:active {
+        background-color: $colorHighlight !important;
+        border-color: $colorHighlight !important;
+    }
+}
+
+.button--held {
+    border-left-width: 0 !important;
+    border-right-width: 0 !important;
+    border-radius: $buttonRadius;
+}
+
+#client.showKeys .button[data-hotkey] {
+	position: relative;
+	color: transparent !important; // hide text
+
+    &:before {
+        content: "[" attr(data-hotkey) "] ";
+        color: $textColor;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        padding-top: 0.5em;
+        text-align: center;
+        vertical-align: middle;
+    }
+}
