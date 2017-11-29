@@ -82,8 +82,7 @@ export const actionCreators = {
 
 const unloadedState: CrewState = { players: [], selectSystemsDirectly: false };
 
-export const reducer: Reducer<CrewState> = (state: CrewState, incomingAction: Action) => {
-    const action = incomingAction as KnownAction;
+export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownAction) => {
     switch (action.type) {
         case 'ADD_PLAYERS':
             return {

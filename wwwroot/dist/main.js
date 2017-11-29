@@ -135,7 +135,7 @@ var reducer = function (state, action) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_domain_task__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_domain_task__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_domain_task___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_domain_task__);
 
 // ----------------
@@ -192,11 +192,11 @@ var reducer = function (state, incomingAction) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = configureStore;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_thunk__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(24);
 
 
 
@@ -253,7 +253,7 @@ var routes = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPO
 /* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(25);
+module.exports = __webpack_require__(29);
 
 
 /***/ }),
@@ -263,7 +263,7 @@ module.exports = __webpack_require__(25);
 // style-loader: Adds some css to the DOM by adding a <style> tag
 
 // load the styles
-var content = __webpack_require__(21);
+var content = __webpack_require__(25);
 if(typeof content === 'string') content = [[module.i, content, '']];
 // Prepare cssTransformation
 var transform;
@@ -271,7 +271,7 @@ var transform;
 var options = {}
 options.transform = transform
 // add the styles to the DOM
-var update = __webpack_require__(27)(content, options);
+var update = __webpack_require__(31)(content, options);
 if(content.locals) module.exports = content.locals;
 // Hot Module Replacement
 if(false) {
@@ -305,19 +305,19 @@ module.exports = (__webpack_require__(0))(139);
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client_scss__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0__Client_scss__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_dom__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_dom__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_hot_loader__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_hot_loader___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_react_hot_loader__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_react_router_redux__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6_history__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__configureStore__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__routes__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_redux__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_react_router_redux__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_history__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__configureStore__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__routes__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client_scss__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__Client_scss__);
 
 
 
@@ -326,19 +326,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 
+var routes = __WEBPACK_IMPORTED_MODULE_7__routes__["a" /* routes */];
 
-var routes = __WEBPACK_IMPORTED_MODULE_8__routes__["a" /* routes */];
-// Create browser history to use in the Redux store
-var history = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6_history__["createBrowserHistory"])();
-// Get the application-wide store instance, prepopulating with state from the server where available.
-var initialState = window.initialReduxState;
-var store = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_7__configureStore__["a" /* default */])(history, initialState);
+var history = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5_history__["createBrowserHistory"])();
+var store = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__configureStore__["a" /* default */])(history);
 function renderApp() {
-    // This code starts up the React app when it runs in a browser. It sets up the routing configuration
-    // and injects the app into a DOM element.
-    __WEBPACK_IMPORTED_MODULE_2_react_dom__["render"](__WEBPACK_IMPORTED_MODULE_1_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3_react_hot_loader__["AppContainer"], null,
-        __WEBPACK_IMPORTED_MODULE_1_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4_react_redux__["Provider"], { store: store },
-            __WEBPACK_IMPORTED_MODULE_1_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5_react_router_redux__["ConnectedRouter"], { history: history, children: routes }))), document.getElementById('react-app'));
+    __WEBPACK_IMPORTED_MODULE_1_react_dom__["render"](__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__["AppContainer"], null,
+        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3_react_redux__["Provider"], { store: store },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4_react_router_redux__["ConnectedRouter"], { history: history, children: routes }))), document.getElementById('react-app'));
 }
 renderApp();
 // Allow Hot Module Replacement
@@ -638,6 +633,53 @@ var NavMenu = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Localisations; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(20);
+
+var Localisations = [
+    {
+        name: 'English',
+        flag: 'english.png',
+        load: function () { return __WEBPACK_IMPORTED_MODULE_0__localisations_English__["a" /* default */]; },
+    }
+];
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+var words = {
+    common: {
+        save: 'Save',
+        cancel: 'Cancel',
+        ready: 'Ready',
+        settings: 'Settings',
+        help: 'Help',
+    },
+    screens: {
+        settings: {
+            intro: 'Please fill in the following',
+            userName: 'Your name',
+            userNamePlaceholder: 'Enter your name...',
+            userNameDescription: 'This is only visible to your crewmates.',
+            inputMode: 'Input mode',
+            inputModePrompt: 'Select how you wish to interact with ship systems. Systems may display differently depending on your selection.',
+            inputModeKeyboard: 'Mouse and keyboard',
+            inputModeTouch: 'Touchscreen',
+            inputModeGamepad: 'Game controller',
+        }
+    }
+};
+/* harmony default export */ __webpack_exports__["a"] = (words);
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* unused harmony export actionCreators */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducer; });
 // ----------------
@@ -646,17 +688,16 @@ var NavMenu = (function (_super) {
 var actionCreators = {
     addPlayers: function (players) { return ({ type: 'ADD_PLAYERS', players: players }); },
     removePlayer: function (playerID) { return ({ type: 'REMOVE_PLAYER', playerID: playerID }); },
-    ChangePlayerNameAction: function (playerID, name) { return ({ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name }); },
-    SetPlayerSystemsAction: function (playerID, flags) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags }); },
-    SetLocalPlayerAction: function (playerID) { return ({ type: 'SET_LOCAL_PLAYER', playerID: playerID }); },
+    changePlayerName: function (playerID, name) { return ({ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name }); },
+    setPlayerSystems: function (playerID, flags) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags }); },
+    etLocalPlayer: function (playerID) { return ({ type: 'SET_LOCAL_PLAYER', playerID: playerID }); },
     setSetupPlayer: function (playerID) { return ({ type: 'SET_SETUP_PLAYER', playerID: playerID }); },
     setSelectionMode: function (selectSystems) { return ({ type: 'SET_SELECTION_MODE', selectSystemsDirectly: selectSystems }); },
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 var unloadedState = { players: [], selectSystemsDirectly: false };
-var reducer = function (state, incomingAction) {
-    var action = incomingAction;
+var reducer = function (state, action) {
     switch (action.type) {
         case 'ADD_PLAYERS':
             return {
@@ -730,14 +771,117 @@ var reducer = function (state, incomingAction) {
 
 
 /***/ }),
-/* 20 */
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export ClientScreen */
+/* unused harmony export actionCreators */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducer; });
+var ClientScreen;
+(function (ClientScreen) {
+    ClientScreen[ClientScreen["Connecting"] = 0] = "Connecting";
+    ClientScreen[ClientScreen["UserSettings"] = 1] = "UserSettings";
+    ClientScreen[ClientScreen["WaitingForPlayers"] = 2] = "WaitingForPlayers";
+    ClientScreen[ClientScreen["SelectingRoles"] = 3] = "SelectingRoles";
+    ClientScreen[ClientScreen["SetupGame"] = 4] = "SetupGame";
+    ClientScreen[ClientScreen["ActiveGame"] = 5] = "ActiveGame";
+    ClientScreen[ClientScreen["WaitingForGame"] = 6] = "WaitingForGame";
+    ClientScreen[ClientScreen["Paused"] = 7] = "Paused";
+    ClientScreen[ClientScreen["Finished"] = 8] = "Finished";
+})(ClientScreen || (ClientScreen = {}));
+// ----------------
+// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
+// They don't directly mutate state, but they can have external side-effects (such as loading data).
+var actionCreators = {
+    showUserSettings: function (canCancel) { return ({ type: 'SHOW_SETTINGS', canCancel: canCancel }); },
+    showWaitingForPlayers: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForPlayers }); },
+    showRoleSelection: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.SelectingRoles }); },
+    showGameSetup: function () { /* sendEnterSetup(); */ return { type: 'SHOW_SCREEN', display: ClientScreen.SetupGame }; },
+    showGame: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.ActiveGame }); },
+    showWaitingForGame: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForGame }); },
+    showPause: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.Paused }); },
+    showFinish: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.Finished }); },
+};
+// ----------------
+// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+var unloadedState = { display: ClientScreen.Connecting, canCancelSettings: false };
+var reducer = function (state, rawAction) {
+    var action = rawAction;
+    switch (action.type) {
+        case 'SHOW_SCREEN':
+            return {
+                display: action.display,
+                canCancelSettings: state.canCancelSettings,
+            };
+        case 'SHOW_SETTINGS':
+            return {
+                display: ClientScreen.UserSettings,
+                canCancelSettings: action.canCancel,
+            };
+        default:
+            // The following line guarantees that every action in the KnownAction union has been covered by a case above
+            var exhaustiveCheck = action;
+    }
+    return state || unloadedState;
+};
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* unused harmony export actionCreators */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducer; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__ = __webpack_require__(19);
+
+// ----------------
+// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
+// They don't directly mutate state, but they can have external side-effects (such as loading data).
+var actionCreators = {
+    setInputMode: function (inputMode) { return ({ type: 'INPUT_MODE', inputMode: inputMode }); },
+    setLocalisation: function (localisation) { return ({ type: 'LOCALISATION', localisation: localisation }); },
+};
+// ----------------
+// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+var unloadedState = { inputMode: 1 /* Touchscreen */, localisation: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0], text: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0].load() };
+var reducer = function (state, rawAction) {
+    var action = rawAction;
+    switch (action.type) {
+        case 'INPUT_MODE':
+            return {
+                inputMode: action.inputMode,
+                localisation: state.localisation,
+                text: state.text,
+            };
+        case 'LOCALISATION':
+            return {
+                inputMode: state.inputMode,
+                localisation: action.localisation,
+                text: action.localisation.load(),
+            };
+        default:
+            // The following line guarantees that every action in the KnownAction union has been covered by a case above
+            var exhaustiveCheck = action;
+    }
+    return state || unloadedState;
+};
+
+
+/***/ }),
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducers; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Crew__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__WeatherForecasts__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Counter__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__WeatherForecasts__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Counter__ = __webpack_require__(5);
+
+
 
 
 
@@ -745,17 +889,19 @@ var reducer = function (state, incomingAction) {
 // the reducer with the matching name. It's important that the names match exactly, and that the reducer
 // acts on the corresponding ApplicationState property type.
 var reducers = {
-    crew: __WEBPACK_IMPORTED_MODULE_0__Crew__["a" /* reducer */],
-    counter: __WEBPACK_IMPORTED_MODULE_2__Counter__["a" /* reducer */],
-    weatherForecasts: __WEBPACK_IMPORTED_MODULE_1__WeatherForecasts__["a" /* reducer */]
+    user: __WEBPACK_IMPORTED_MODULE_0__User__["a" /* reducer */],
+    crew: __WEBPACK_IMPORTED_MODULE_1__Crew__["a" /* reducer */],
+    screen: __WEBPACK_IMPORTED_MODULE_2__Screen__["a" /* reducer */],
+    counter: __WEBPACK_IMPORTED_MODULE_4__Counter__["a" /* reducer */],
+    weatherForecasts: __WEBPACK_IMPORTED_MODULE_3__WeatherForecasts__["a" /* reducer */]
 };
 
 
 /***/ }),
-/* 21 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
-exports = module.exports = __webpack_require__(22)(undefined);
+exports = module.exports = __webpack_require__(26)(undefined);
 // imports
 
 
@@ -766,7 +912,7 @@ exports.push([module.i, "body {\n  color: #ccc;\n  background-color: #333;\n  -m
 
 
 /***/ }),
-/* 22 */
+/* 26 */
 /***/ (function(module, exports) {
 
 /*
@@ -848,7 +994,7 @@ function toComment(sourceMap) {
 
 
 /***/ }),
-/* 23 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -857,13 +1003,13 @@ function toComment(sourceMap) {
 
 
 if (true) {
-  module.exports = __webpack_require__(24);
+  module.exports = __webpack_require__(28);
 } else {
   module.exports = require('./AppContainer.dev');
 }
 
 /***/ }),
-/* 24 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -908,7 +1054,7 @@ var AppContainer = function (_Component) {
 module.exports = AppContainer;
 
 /***/ }),
-/* 25 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -917,22 +1063,22 @@ module.exports = AppContainer;
 
 
 if (true) {
-  module.exports = __webpack_require__(26);
+  module.exports = __webpack_require__(30);
 } else {
   module.exports = require('./index.dev');
 }
 
 /***/ }),
-/* 26 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports.AppContainer = __webpack_require__(23);
+module.exports.AppContainer = __webpack_require__(27);
 
 /***/ }),
-/* 27 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /*
@@ -978,7 +1124,7 @@ var singleton = null;
 var	singletonCounter = 0;
 var	stylesInsertedAtTop = [];
 
-var	fixUrls = __webpack_require__(28);
+var	fixUrls = __webpack_require__(32);
 
 module.exports = function(list, options) {
 	if (typeof DEBUG !== "undefined" && DEBUG) {
@@ -1291,7 +1437,7 @@ function updateLink (link, options, obj) {
 
 
 /***/ }),
-/* 28 */
+/* 32 */
 /***/ (function(module, exports) {
 
 
@@ -1386,19 +1532,19 @@ module.exports = function (css) {
 
 
 /***/ }),
-/* 29 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(136);
 
 /***/ }),
-/* 30 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(143);
 
 /***/ }),
-/* 31 */
+/* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(73);

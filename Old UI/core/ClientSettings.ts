@@ -1,10 +1,4 @@
-﻿const enum InputMode {
-    ButtonsAndKeyboard,
-    Touchscreen,
-    GamePad,
-}
-
-class ClientSettings {
+﻿class ClientSettings {
     inputMode: InputMode;
     userName: string;
 

@@ -1,4 +1,4 @@
-import { Button } from './components/general/buttons/Button';
+import { Button } from '../components/general/buttons/Button';
 
 export type Hotkey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'L' | 'K' | 'M'
             | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z'

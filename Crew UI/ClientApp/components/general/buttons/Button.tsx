@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Hotkey, Hotkeys } from '../../../Hotkeys';
+import { Hotkey, Hotkeys } from '../../../functionality/Hotkeys';
 import './buttons.scss';
 
 export const enum ButtonColor {
