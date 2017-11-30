@@ -1,0 +1,25 @@
+.screen {
+    min-height: 100vh;
+    padding: 0.5em;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.screen--centered {
+    justify-content: center;
+    align-items: center;
+}
+
+.screen--noScrolling {
+    overflow: hidden;
+    height: 100vh;
+    max-height: 100vh;
+}
+
+.screen__heading {
+    font-weight: bold;
+    font-size: 1.5rem;
+}

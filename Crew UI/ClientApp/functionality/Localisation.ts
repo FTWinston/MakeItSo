@@ -24,6 +24,9 @@ export interface TextLocalisation {
         help: string;
     }
     screens: {
+        connecting: {
+            connecting: string;
+        }
         settings: {
             intro: string;
             userName: string;

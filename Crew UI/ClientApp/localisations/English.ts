@@ -9,6 +9,9 @@ let words: TextLocalisation = {
         help: 'Help',
     },
     screens: {
+        connecting: {
+            connecting: 'Connecting to your ship...',
+        },
         settings: {
             intro: 'Please fill in the following',
             userName: 'Your name',

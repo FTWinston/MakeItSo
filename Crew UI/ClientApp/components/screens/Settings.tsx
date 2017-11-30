@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../store';
 import * as UserStore from '../../store/User';
@@ -7,13 +6,13 @@ import * as CrewStore from '../../store/Crew';
 import * as ScreenStore from '../../store/Screen';
 import { InputMode } from '../../functionality/InputMode';
 import { Localisation, Localisations, TextLocalisation } from '../../functionality/Localisation';
+import { Screen } from '../general/Screen';
 
 interface SettingsDataProps {
     localPlayerID: number;
     inputMode: InputMode;
     localisation: Localisation;
     text: TextLocalisation;
-    canCancel: boolean;
     userName?: string;
 }
 
@@ -21,8 +20,7 @@ type SettingsProps =
     SettingsDataProps
     & typeof UserStore.actionCreators
     & typeof CrewStore.actionCreators
-    & typeof ScreenStore.actionCreators
-    & RouteComponentProps<{}>;
+    & typeof ScreenStore.actionCreators;
 
 interface SettingsState {
     userName: string;
@@ -36,12 +34,10 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
             userName: props.userName === undefined ? '' : props.userName,
         };
     }
-    
+
     public render() {
         let words = this.props.text.screens.settings;
-        return <div>
-            <h1>{words.intro}</h1>
-            
+        return <Screen heading={words.intro}>
             <div role="group">
                 <label htmlFor="txtUserName">{words.userName}</label>
                 <div>
@@ -56,9 +52,7 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
                     <div className="description">{words.userNameDescription}</div>
                 </div>
             </div>
-
-            {this.props.canCancel ? 'You can cancel' : 'You cannot cancel'}
-        </div>;
+        </Screen>;
     }
 
     private sendChanges() {
@@ -75,7 +69,6 @@ const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) 
         inputMode: state.user.inputMode,
         localisation: state.user.localisation,
         text: state.user.text,
-        canCancel: state.screen.canCancelSettings,
         userName: state.crew.players.filter(p => p.id === state.crew.localPlayerID)[0].name,
     }
 };
@@ -84,4 +77,4 @@ const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) 
 export default connect(
     mapStateToProps,
     {...UserStore.actionCreators, ...CrewStore.actionCreators, ...ScreenStore.actionCreators}
-)(Settings) as typeof Settings;
+)(Settings);
