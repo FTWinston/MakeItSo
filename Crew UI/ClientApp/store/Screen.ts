@@ -73,19 +73,18 @@ export const reducer: Reducer<ScreenState> = (state: ScreenState, rawAction: Act
     switch (action.type) {
         case 'SHOW_SCREEN':
             return {
+                ...state,
                 display: action.display,
-                gameInProgress: state.gameInProgress,
             };
         case 'GAME_IN_PROGRESS':
             return {
-                display: state.display,
+                ...state,
                 gameInProgress: action.inProgress,
-                errorMessage: state.errorMessage,
             };
         case 'SHOW_ERROR':
             return {
+                ...state,
                 display: ClientScreen.Error,
-                gameInProgress: state.gameInProgress,
                 errorMessage: action.message,
             };
         default:

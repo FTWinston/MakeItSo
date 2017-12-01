@@ -86,20 +86,17 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
     switch (action.type) {
         case 'ADD_PLAYERS':
             return {
+                ...state,
                 players: state.players.concat(action.players),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
             };
         case 'REMOVE_PLAYER':
             return {
+                ...state,
                 players: state.players.filter(p => p.id !== action.playerID),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
             };
         case 'CHANGE_PLAYER_NAME':
             return {
+                ...state,
                 players: state.players.map((player, index) => {
                     if (player.id === action.playerID) {
                         return Object.assign({}, player, {
@@ -108,12 +105,10 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                     }
                     return player;
                 }),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
             };
         case 'SET_PLAYER_SYSTEMS':
             return {
+                ...state,
                 players: state.players.map((player, index) => {
                     if (player.id === action.playerID) {
                         return Object.assign({}, player, {
@@ -122,30 +117,21 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                     }
                     return player;
                 }),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
             };
         case 'SET_LOCAL_PLAYER':
             return {
-                players: state.players,
+                ...state,
                 localPlayerID: action.playerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
             };
         case 'SET_SETUP_PLAYER':
             return {
-                players: state.players,
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
+                ...state,
                 playerInSetup: action.playerID,
             };
         case 'SET_SELECTION_MODE':
             return {
-                players: state.players,
-                localPlayerID: state.localPlayerID,
+                ...state,
                 selectSystemsDirectly: action.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
             };
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above

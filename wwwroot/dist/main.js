@@ -92,6 +92,14 @@ module.exports = (__webpack_require__(0))(140);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ClientScreen; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return reducer; });
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 var ClientScreen;
 (function (ClientScreen) {
     ClientScreen[ClientScreen["Connecting"] = 0] = "Connecting";
@@ -127,22 +135,11 @@ var reducer = function (state, rawAction) {
     var action = rawAction;
     switch (action.type) {
         case 'SHOW_SCREEN':
-            return {
-                display: action.display,
-                gameInProgress: state.gameInProgress,
-            };
+            return __assign({}, state, { display: action.display });
         case 'GAME_IN_PROGRESS':
-            return {
-                display: state.display,
-                gameInProgress: action.inProgress,
-                errorMessage: state.errorMessage,
-            };
+            return __assign({}, state, { gameInProgress: action.inProgress });
         case 'SHOW_ERROR':
-            return {
-                display: ClientScreen.Error,
-                gameInProgress: state.gameInProgress,
-                errorMessage: action.message,
-            };
+            return __assign({}, state, { display: ClientScreen.Error, errorMessage: action.message });
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             var exhaustiveCheck = action;
@@ -248,7 +245,7 @@ renderApp();
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Screen; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Screen_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -319,6 +316,14 @@ var Localisations = [
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
@@ -337,68 +342,33 @@ var unloadedState = { players: [], selectSystemsDirectly: false };
 var reducer = function (state, action) {
     switch (action.type) {
         case 'ADD_PLAYERS':
-            return {
-                players: state.players.concat(action.players),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
-            };
+            return __assign({}, state, { players: state.players.concat(action.players) });
         case 'REMOVE_PLAYER':
-            return {
-                players: state.players.filter(function (p) { return p.id !== action.playerID; }),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
-            };
+            return __assign({}, state, { players: state.players.filter(function (p) { return p.id !== action.playerID; }) });
         case 'CHANGE_PLAYER_NAME':
-            return {
-                players: state.players.map(function (player, index) {
+            return __assign({}, state, { players: state.players.map(function (player, index) {
                     if (player.id === action.playerID) {
                         return Object.assign({}, player, {
                             name: action.name
                         });
                     }
                     return player;
-                }),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
-            };
+                }) });
         case 'SET_PLAYER_SYSTEMS':
-            return {
-                players: state.players.map(function (player, index) {
+            return __assign({}, state, { players: state.players.map(function (player, index) {
                     if (player.id === action.playerID) {
                         return Object.assign({}, player, {
                             flags: action.flags
                         });
                     }
                     return player;
-                }),
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
-            };
+                }) });
         case 'SET_LOCAL_PLAYER':
-            return {
-                players: state.players,
-                localPlayerID: action.playerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
-            };
+            return __assign({}, state, { localPlayerID: action.playerID });
         case 'SET_SETUP_PLAYER':
-            return {
-                players: state.players,
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: state.selectSystemsDirectly,
-                playerInSetup: action.playerID,
-            };
+            return __assign({}, state, { playerInSetup: action.playerID });
         case 'SET_SELECTION_MODE':
-            return {
-                players: state.players,
-                localPlayerID: state.localPlayerID,
-                selectSystemsDirectly: action.selectSystemsDirectly,
-                playerInSetup: state.playerInSetup,
-            };
+            return __assign({}, state, { selectSystemsDirectly: action.selectSystemsDirectly });
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             var exhaustiveCheck = action;
@@ -478,11 +448,11 @@ var mapStateToProps = function (state) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = configureStore;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(28);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_thunk__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(30);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(21);
 
 
 
@@ -636,7 +606,7 @@ var Hotkeys = (function () {
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(27);
+module.exports = __webpack_require__(25);
 
 
 /***/ }),
@@ -828,104 +798,10 @@ var words = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export actionCreators */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducer; });
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-var actionCreators = {
-    increment: function () { return ({ type: 'INCREMENT_COUNT' }); },
-    decrement: function () { return ({ type: 'DECREMENT_COUNT' }); }
-};
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-var reducer = function (state, action) {
-    switch (action.type) {
-        case 'INCREMENT_COUNT':
-            return { count: state.count + 1 };
-        case 'DECREMENT_COUNT':
-            return { count: state.count - 1 };
-        default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            var exhaustiveCheck = action;
-    }
-    // For unrecognized actions (or in cases where actions have no effect), must return the existing state
-    //  (or default initial state if none was supplied)
-    return state || { count: 0 };
-};
-
-
-/***/ }),
-/* 22 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* unused harmony export actionCreators */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_domain_task__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_domain_task___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_domain_task__);
-
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-var actionCreators = {
-    requestWeatherForecasts: function (startDateIndex) { return function (dispatch, getState) {
-        // Only load data if it's something we don't already have (and are not already loading)
-        if (startDateIndex !== getState().weatherForecasts.startDateIndex) {
-            var fetchTask = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_domain_task__["fetch"])("api/SampleData/WeatherForecasts?startDateIndex=" + startDateIndex)
-                .then(function (response) { return response.json(); })
-                .then(function (data) {
-                dispatch({ type: 'RECEIVE_WEATHER_FORECASTS', startDateIndex: startDateIndex, forecasts: data });
-            });
-            __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_domain_task__["addTask"])(fetchTask); // Ensure server-side prerendering waits for this to complete
-            dispatch({ type: 'REQUEST_WEATHER_FORECASTS', startDateIndex: startDateIndex });
-        }
-    }; }
-};
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-var unloadedState = { forecasts: [], isLoading: false };
-var reducer = function (state, incomingAction) {
-    var action = incomingAction;
-    switch (action.type) {
-        case 'REQUEST_WEATHER_FORECASTS':
-            return {
-                startDateIndex: action.startDateIndex,
-                forecasts: state.forecasts,
-                isLoading: true
-            };
-        case 'RECEIVE_WEATHER_FORECASTS':
-            // Only accept the incoming data if it matches the most recent request. This ensures we correctly
-            // handle out-of-order responses.
-            if (action.startDateIndex === state.startDateIndex) {
-                return {
-                    startDateIndex: action.startDateIndex,
-                    forecasts: action.forecasts,
-                    isLoading: false
-                };
-            }
-            break;
-        default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            var exhaustiveCheck = action;
-    }
-    return state || unloadedState;
-};
-
-
-/***/ }),
-/* 23 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducers; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__WeatherForecasts__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Counter__ = __webpack_require__(21);
-
-
 
 
 
@@ -936,19 +812,17 @@ var reducers = {
     user: __WEBPACK_IMPORTED_MODULE_0__User__["b" /* reducer */],
     crew: __WEBPACK_IMPORTED_MODULE_1__Crew__["b" /* reducer */],
     screen: __WEBPACK_IMPORTED_MODULE_2__Screen__["c" /* reducer */],
-    counter: __WEBPACK_IMPORTED_MODULE_4__Counter__["a" /* reducer */],
-    weatherForecasts: __WEBPACK_IMPORTED_MODULE_3__WeatherForecasts__["a" /* reducer */]
 };
 
 
 /***/ }),
-/* 24 */
+/* 22 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 25 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -957,13 +831,13 @@ var reducers = {
 
 
 if (true) {
-  module.exports = __webpack_require__(26);
+  module.exports = __webpack_require__(24);
 } else {
   module.exports = require('./AppContainer.dev');
 }
 
 /***/ }),
-/* 26 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1008,7 +882,7 @@ var AppContainer = function (_Component) {
 module.exports = AppContainer;
 
 /***/ }),
-/* 27 */
+/* 25 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -1017,40 +891,34 @@ module.exports = AppContainer;
 
 
 if (true) {
-  module.exports = __webpack_require__(28);
+  module.exports = __webpack_require__(26);
 } else {
   module.exports = require('./index.dev');
 }
 
 /***/ }),
-/* 28 */
+/* 26 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports.AppContainer = __webpack_require__(25);
+module.exports.AppContainer = __webpack_require__(23);
 
 /***/ }),
-/* 29 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = (__webpack_require__(0))(136);
-
-/***/ }),
-/* 30 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(142);
 
 /***/ }),
-/* 31 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(143);
 
 /***/ }),
-/* 32 */
+/* 29 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(73);
