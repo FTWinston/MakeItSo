@@ -2,7 +2,10 @@ const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 require('sass-loader');
+
+const vendorFiles = ['dist/vendor.js'];
 
 module.exports = (env) => {
     const isDevBuild = !(env && env.prod);
@@ -17,7 +20,7 @@ module.exports = (env) => {
                 { test: /\.tsx?$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
                 { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
                 { test: /\.css$/, use: ExtractTextPlugin.extract({ use: isDevBuild ? 'css-loader' : 'css-loader?minimize' }) },
-                { test: /\.scss$/, use: isDevBuild ? ['style-loader', 'css-loader', 'sass-loader'] : ExtractTextPlugin.extract({ use: ['css-loader', 'sass-loader?minimize'] }) }
+                { test: /\.scss$/, use: ExtractTextPlugin.extract({ use: isDevBuild ? ['css-loader', 'sass-loader'] : ['css-loader?minimize', 'sass-loader?minimize'] }) },
             ]
         },
         output: {
@@ -31,6 +34,13 @@ module.exports = (env) => {
             new webpack.DllReferencePlugin({
                 context: __dirname,
                 manifest: require('../wwwroot/dist/vendor-manifest.json')
+            }),
+            new HtmlWebpackPlugin({
+                filename: '../index.html',
+                template: 'index.html',
+                inject: true,
+                xhtml: true,
+                vendorFiles,
             })
         ].concat(isDevBuild ? [
             // Plugins that apply in development builds only
