@@ -3,6 +3,7 @@ const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlCriticalPlugin = require("html-critical-webpack-plugin");
 require('sass-loader');
 
 const vendorFiles = ['dist/vendor.js'];
@@ -49,6 +50,19 @@ module.exports = (env) => {
                 moduleFilenameTemplate: path.relative(clientBundleOutputDir, '[resourcePath]') // Point sourcemap entries to the original file locations on disk
             })
         ] : [
+            new HtmlCriticalPlugin({
+                base: path.join(__dirname, clientBundleOutputDir),
+                src: '../index.html',
+                dest: '../index.html',
+                inline: true,
+                minify: true,
+                extract: true,
+                width: 800,
+                height: 600,
+                penthouse: {
+                    blockJSRequests: true,
+                }
+            }),
             // Plugins that apply in production builds only
             new webpack.optimize.UglifyJsPlugin()
         ])
