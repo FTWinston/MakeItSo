@@ -1,3 +1,5 @@
+import { store } from '../Client';
+import { actionCreators } from '../store/User';
 import { Button } from '../components/general/buttons/Button';
 
 export type Hotkey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'L' | 'K' | 'M'
@@ -8,7 +10,6 @@ export type Hotkey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' |
 
 export class Hotkeys {
     private static bindings: { [key: number]:Button; } = {};
-    private static showHotkeys: boolean = false;
     
     private static keyCodes: { [key: string]:number; } = {
         'enter': 13,
@@ -53,16 +54,14 @@ export class Hotkeys {
     private static onKeyDown(e: KeyboardEvent) {
         var button = Hotkeys.bindings[e.which];
         if (button === undefined) {
-            if (e.which == 112) {
-                Hotkeys.showHotkeys = !Hotkeys.showHotkeys;
-                //gameClient.showHotkeys(Hotkeys.showHotkeys); // TODO: handle this toggle
-                
+            if (e.which === 112) {
+                store.dispatch(actionCreators.showHotkeys(!store.getState().user.showHotkeys));
                 e.preventDefault();
             }
             return;
         }
         
-        if (button.keyDown != undefined)
+        if (button.keyDown !== undefined)
             button.keyDown(e);
     }
     private static onKeyUp(e: KeyboardEvent) {
@@ -70,11 +69,9 @@ export class Hotkeys {
         if (button === undefined)
             return;
         
-        if (button.keyUp != undefined)
+        if (button.keyUp !== undefined)
             button.keyUp(e);
-        if (button.keyPress != undefined)
+        if (button.keyPress !== undefined)
             button.keyPress(e);
     }
 };
-
-Hotkeys.initialize();

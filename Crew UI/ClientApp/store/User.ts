@@ -9,6 +9,7 @@ export interface UserState {
     inputMode: InputMode;
     localisation: Localisation;
     text: TextLocalisation;
+    showHotkeys: boolean;
 }
 
 // -----------------
@@ -25,9 +26,14 @@ interface SetLocalisationAction {
     localisation: Localisation;
 }
 
+interface ShowHotkeysAction {
+    type: 'SHOW_HOTKEYS';
+    show: boolean;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetInputModeAction | SetLocalisationAction;
+type KnownAction = SetInputModeAction | SetLocalisationAction | ShowHotkeysAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -36,27 +42,32 @@ type KnownAction = SetInputModeAction | SetLocalisationAction;
 export const actionCreators = {
     setInputMode: (inputMode: InputMode) => <SetInputModeAction>{ type: 'INPUT_MODE', inputMode: inputMode },
     setLocalisation: (localisation: Localisation) => <SetLocalisationAction>{ type: 'LOCALISATION', localisation: localisation },
+    showHotkeys: (show: boolean) => <ShowHotkeysAction>{ type: 'SHOW_HOTKEYS', show: show },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: UserState = { inputMode: InputMode.Touchscreen, localisation: Localisations[0], text: Localisations[0].load() };
+const unloadedState: UserState = { inputMode: InputMode.Touchscreen, localisation: Localisations[0], text: Localisations[0].load(), showHotkeys: false };
 
 export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action) => {
     let action = rawAction as KnownAction;
     switch (action.type) {
         case 'INPUT_MODE':
             return {
+                ...state,
                 inputMode: action.inputMode,
-                localisation: state.localisation,
-                text: state.text,
             };
         case 'LOCALISATION':
             return {
-                inputMode: state.inputMode,
+                ...state,
                 localisation: action.localisation,
                 text: action.localisation.load(),
+            };
+        case 'SHOW_HOTKEYS':
+            return {
+                ...state,
+                showHotkeys: action.show,
             };
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above

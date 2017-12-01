@@ -5,11 +5,14 @@ import { Provider } from 'react-redux';
 import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
 import ScreenSelector from './components/ScreenSelector';
+import { Hotkeys } from './functionality/Hotkeys';
 import './Client.scss';
 
 const history = createBrowserHistory();
 
-const store = configureStore(history);
+export const store = configureStore(history);
+
+Hotkeys.initialize();
 
 function renderApp() {
     ReactDOM.render(

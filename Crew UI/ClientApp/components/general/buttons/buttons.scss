@@ -67,7 +67,7 @@ $buttonRadius: 0.8em;
     border-radius: $buttonRadius;
 }
 
-#client.showKeys .button[data-hotkey] {
+.client--showHotkeys .button[data-hotkey] {
 	position: relative;
 	color: transparent !important; // hide text
 

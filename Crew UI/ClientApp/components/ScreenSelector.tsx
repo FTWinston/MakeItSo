@@ -8,10 +8,20 @@ import { Screen } from './general/Screen';
 interface ScreenSelectorProps {
     screen: ClientScreen;
     errorMessage?: string;
+    showHotkeys: boolean;
 }
 
 class ScreenSelector extends React.Component<ScreenSelectorProps, {}> {
     render() {
+        let classes = 'client';
+        if (this.props.showHotkeys) {
+            classes += ' client--showHotkeys';
+        }
+        
+        return <div className={classes}>{this.renderScreen()}</div>;
+    }
+
+    private renderScreen() {
         switch (this.props.screen) {
             case ClientScreen.Connecting:
                 return <Connecting />;
@@ -30,6 +40,7 @@ const mapStateToProps: (state: ApplicationState) => ScreenSelectorProps = (state
     return {
         screen: state.screen.display,
         errorMessage: state.screen.errorMessage,
+        showHotkeys: state.user.showHotkeys,
     }
 };
 
