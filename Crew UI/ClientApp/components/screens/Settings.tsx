@@ -64,12 +64,13 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) => {
+    let player = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
     return {
         localPlayerID: state.crew.localPlayerID === undefined ? -1 : state.crew.localPlayerID,
         inputMode: state.user.inputMode,
         localisation: state.user.localisation,
         text: state.user.text,
-        userName: state.crew.players.filter(p => p.id === state.crew.localPlayerID)[0].name,
+        userName: player.length > 0 ? player[0].name : undefined,
     }
 };
 

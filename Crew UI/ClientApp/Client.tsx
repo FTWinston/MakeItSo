@@ -5,12 +5,15 @@ import { Provider } from 'react-redux';
 import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
 import ScreenSelector from './components/ScreenSelector';
+import { Connection } from './functionality/Connection';
 import { Hotkeys } from './functionality/Hotkeys';
 import './Client.scss';
 
 const history = createBrowserHistory();
 
 export const store = configureStore(history);
+
+export const connection = new Connection('ws://' + location.host + '/ws');
 
 Hotkeys.initialize();
 

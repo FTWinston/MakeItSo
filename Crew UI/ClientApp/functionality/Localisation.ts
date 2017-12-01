@@ -23,6 +23,9 @@ export interface TextLocalisation {
         settings: string;
         help: string;
     }
+    errors: {
+        connectionLost: string;
+    }
     screens: {
         connecting: {
             connecting: string;

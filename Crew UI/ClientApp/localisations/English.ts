@@ -8,6 +8,9 @@ let words: TextLocalisation = {
         settings: 'Settings',
         help: 'Help',
     },
+    errors: {
+        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
+    },
     screens: {
         connecting: {
             connecting: 'Connecting to your ship...',

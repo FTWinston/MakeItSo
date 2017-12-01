@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../store';
 import * as UserStore from '../../store/User';
-import { Localisation, Localisations, TextLocalisation } from '../../functionality/Localisation';
+import { TextLocalisation } from '../../functionality/Localisation';
 import { Screen } from '../general/Screen';
 
 interface ConnectingDataProps {

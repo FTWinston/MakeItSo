@@ -74,4 +74,4 @@ export class Hotkeys {
         if (button.keyPress !== undefined)
             button.keyPress(e);
     }
-};
+}
