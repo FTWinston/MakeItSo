@@ -1,33 +1,36 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { store, connection }  from '../../Client';
 import { ApplicationState }  from '../../store';
 import * as UserStore from '../../store/User';
-import * as CrewStore from '../../store/Crew';
 import * as ScreenStore from '../../store/Screen';
+import * as CrewStore from '../../store/Crew';
 import { InputMode } from '../../functionality/InputMode';
 import { Localisation, Localisations, TextLocalisation } from '../../functionality/Localisation';
 import { ToggleButton, PushButton, ButtonColor, Screen, Field, Choice, Textbox } from '../general';
 
 interface SettingsDataProps {
-    localPlayerID: number;
+    userName: string;
     inputMode: InputMode;
     localisation: Localisation;
     text: TextLocalisation;
-    userName?: string;
     screenWidth: number;
     screenHeight: number;
+    
+    gameInProgress: boolean;
+    players: CrewStore.CrewPlayer[];
+    localPlayerID?: number;
 }
 
 type SettingsProps =
     SettingsDataProps
     & typeof UserStore.actionCreators
-    & typeof CrewStore.actionCreators
     & typeof ScreenStore.actionCreators;
 
 class Settings extends React.Component<SettingsProps, {}> {
     public render() {
         let words = this.props.text.screens.settings;
-        let hasUserName = this.props.userName !== undefined && this.props.userName.length !== 0;
+        let hasUserName = this.props.userName.trim().length > 0;
         let inputModeVertical = this.props.screenWidth < 330;
 
         return <Screen heading={words.intro} pageLayout={true}>
@@ -41,7 +44,7 @@ class Settings extends React.Component<SettingsProps, {}> {
                 <div className="description">{words.userNameDescription}</div>
             </Field>
 
-            <Field labelText={words.inputMode} labelBehaviour={false}>
+            <Field labelText={words.inputMode}>
                 <Choice prompt={words.inputModePrompt} color={ButtonColor.Secondary} vertical={inputModeVertical}>
                     <ToggleButton startActive={this.props.inputMode === InputMode.KeyboardAndMouse} activated={() => this.inputModeChanged(InputMode.KeyboardAndMouse)} description={words.inputModeDescriptionKeyboard} text={words.inputModeKeyboard} />
                     <ToggleButton startActive={this.props.inputMode === InputMode.Touchscreen} activated={() => this.inputModeChanged(InputMode.Touchscreen)} description={words.inputModeDescriptionTouch} text={words.inputModeTouch} />
@@ -57,39 +60,51 @@ class Settings extends React.Component<SettingsProps, {}> {
     }
 
     private nameChanged(name: string) {
-        name = name.trim();
-        
-        // TODO: save to localStorage
-        // TODO: send to server
-        this.props.changePlayerName(this.props.localPlayerID, name);
+        this.props.setUserName(name);
     }
 
     private inputModeChanged(mode: InputMode) {
-        // TODO: save to localStorage
         this.props.setInputMode(mode);
     }
 
     private close() {
-        // TODO: switch to waiting for players / role selection / pause screens, depending on ... something
+        connection.send(`name ${this.props.userName.trim()}`);
+
+        let localPlayer = this.props.players.filter(p => p.id === this.props.localPlayerID);
+        if (localPlayer.length === 0) {
+            if (this.props.gameInProgress) {
+                this.props.showWaitingForGame();
+            } else {
+                this.props.showWaitingForPlayers();
+            }
+        } else {
+            if (this.props.gameInProgress) {
+                this.props.showPause();
+            } else {
+                this.props.showRoleSelection();
+            }
+        }
     }
 }
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) => {
-    let player = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
     return {
-        localPlayerID: state.crew.localPlayerID === undefined ? -1 : state.crew.localPlayerID,
+        userName: state.user.userName,
         inputMode: state.user.inputMode,
         localisation: state.user.localisation,
         text: state.user.text,
-        userName: player.length > 0 ? player[0].name : undefined,
         screenWidth: state.user.screenWidth,
         screenHeight: state.user.screenHeight,
+
+        gameInProgress: state.screen.gameInProgress,
+        players: state.crew.players,
+        localPlayerID: state.crew.localPlayerID,
     }
 };
 
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {...UserStore.actionCreators, ...CrewStore.actionCreators, ...ScreenStore.actionCreators}
+    {...UserStore.actionCreators, ...ScreenStore.actionCreators}
 )(Settings);

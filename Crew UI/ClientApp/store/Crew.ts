@@ -72,7 +72,7 @@ export const actionCreators = {
     removePlayer: (playerID: number) => <RemovePlayerAction>{ type: 'REMOVE_PLAYER', playerID: playerID },
     changePlayerName: (playerID: number, name: string) => <ChangePlayerNameAction>{ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name },
     setPlayerSystems: (playerID: number, flags: SystemFlags) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags },
-    etLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
+    setLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
     setSetupPlayer: (playerID: number | undefined) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
     setSelectionMode: (selectSystems: boolean) => <SetSelectionModeAction>{ type: 'SET_SELECTION_MODE', selectSystemsDirectly: selectSystems },
 };

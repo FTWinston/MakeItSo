@@ -1,4 +1,5 @@
 import { store } from '../Client';
+import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
 import { actionCreators as screenActions } from '../store/Screen';
 import { TextLocalisation } from './Localisation';
@@ -30,5 +31,14 @@ export class Connection {
         let pos:number = data.indexOf(' ');
         let cmd:string = pos === -1 ? data : data.substr(0, pos);
         data = pos === -1 ? '' : data.substr(pos + 1);
+
+        switch (cmd) {
+            case 'id':
+                store.dispatch(crewActions.setLocalPlayer(parseInt(data)));
+                break;
+            default:
+                console.log(`Unexpected command: ${cmd}`);
+                break;
+        }
     }
 }

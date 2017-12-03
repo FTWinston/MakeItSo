@@ -11,7 +11,7 @@ interface IFieldProps {
 export class Field extends React.Component<IFieldProps, {}> {
     static defaultProps = {
         centered: false,
-        labelBehaviour: true,
+        labelBehaviour: false,
     };
 
     render() {

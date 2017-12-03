@@ -6,6 +6,7 @@ import { Localisation, Localisations, TextLocalisation } from '../functionality/
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface UserState {
+    userName: string;
     inputMode: InputMode;
     localisation: Localisation;
     text: TextLocalisation;
@@ -17,6 +18,11 @@ export interface UserState {
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
+
+interface SetUserNameAction {
+    type: 'USER_NAME';
+    name: string;
+}
 
 interface SetInputModeAction {
     type: 'INPUT_MODE';
@@ -41,14 +47,21 @@ interface SetScreenSizeAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetInputModeAction | SetLocalisationAction | ShowHotkeysAction | SetScreenSizeAction;
+type KnownAction = SetUserNameAction | SetInputModeAction | SetLocalisationAction | ShowHotkeysAction | SetScreenSizeAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    setInputMode: (inputMode: InputMode) => <SetInputModeAction>{ type: 'INPUT_MODE', inputMode: inputMode },
+    setUserName: (name: string) => {
+        localStorage.setItem('userName', name);
+        return <SetUserNameAction>{ type: 'USER_NAME', name: name }
+    },
+    setInputMode: (inputMode: InputMode) => {
+        localStorage.setItem('inputMode', inputMode.toString());
+        return <SetInputModeAction>{ type: 'INPUT_MODE', inputMode: inputMode }
+    },
     setLocalisation: (localisation: Localisation) => <SetLocalisationAction>{ type: 'LOCALISATION', localisation: localisation },
     showHotkeys: (show: boolean) => <ShowHotkeysAction>{ type: 'SHOW_HOTKEYS', show: show },
     setScreenSize: (width: number, height: number) => <SetScreenSizeAction>{ type: 'SET_SCREEN_SIZE', width: width, height: height },
@@ -56,9 +69,11 @@ export const actionCreators = {
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+let savedInputMode = localStorage.getItem('inputMode');
 
 const unloadedState: UserState = {
-    inputMode: InputMode.Touchscreen,
+    userName: localStorage.getItem('userName') || '',
+    inputMode: savedInputMode === null ? InputMode.Touchscreen : parseInt(savedInputMode),
     localisation: Localisations[0],
     text: Localisations[0].load(),
     showHotkeys: false,
@@ -69,6 +84,11 @@ const unloadedState: UserState = {
 export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action) => {
     let action = rawAction as KnownAction;
     switch (action.type) {
+        case 'USER_NAME':
+            return {
+                ...state,
+                userName: action.name,
+            };
         case 'INPUT_MODE':
             return {
                 ...state,
