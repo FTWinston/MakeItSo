@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState }  from '../../store';
 import * as UserStore from '../../store/User';
 import { TextLocalisation } from '../../functionality/Localisation';
-import { Screen } from '../general/Screen';
+import { Screen } from '../general';
 
 interface ConnectingDataProps {
     text: TextLocalisation;

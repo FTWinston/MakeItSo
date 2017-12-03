@@ -6,10 +6,7 @@ import * as CrewStore from '../../store/Crew';
 import * as ScreenStore from '../../store/Screen';
 import { InputMode } from '../../functionality/InputMode';
 import { Localisation, Localisations, TextLocalisation } from '../../functionality/Localisation';
-import { Screen } from '../general/Screen';
-import { Field } from '../general/Field';
-import { Choice } from '../general/Choice';
-import { ToggleButton, PushButton, ButtonColor } from '../general/buttons';
+import { ToggleButton, PushButton, ButtonColor, Screen, Field, Choice, Textbox } from '../general';
 
 interface SettingsDataProps {
     localPlayerID: number;
@@ -34,20 +31,18 @@ class Settings extends React.Component<SettingsProps, {}> {
         let inputModeVertical = this.props.screenWidth < 330;
 
         return <Screen heading={words.intro} pageLayout={true}>
-            <Field label={words.userName}>
-                <input
-                    id="txtUserName"
-                    className="value secondary"
-                    type="text"
-                    value={this.props.userName}
-                    onChange={e => this.nameChanged(e.target.value)}
+            <Field labelText={words.userName} labelBehaviour={true}>
+                <Textbox
+                    color={ButtonColor.Primary}
+                    text={this.props.userName}
+                    textChanged={t => this.nameChanged(t)}
                     placeholder={words.userNamePlaceholder}
                 />
                 <div className="description">{words.userNameDescription}</div>
             </Field>
 
-            <Field label={words.inputMode}>
-                <Choice prompt={words.inputModePrompt} color={ButtonColor.Primary} vertical={inputModeVertical}>
+            <Field labelText={words.inputMode} labelBehaviour={false}>
+                <Choice prompt={words.inputModePrompt} color={ButtonColor.Secondary} vertical={inputModeVertical}>
                     <ToggleButton startActive={this.props.inputMode === InputMode.KeyboardAndMouse} activated={() => this.inputModeChanged(InputMode.KeyboardAndMouse)} description={words.inputModeDescriptionKeyboard} text={words.inputModeKeyboard} />
                     <ToggleButton startActive={this.props.inputMode === InputMode.Touchscreen} activated={() => this.inputModeChanged(InputMode.Touchscreen)} description={words.inputModeDescriptionTouch} text={words.inputModeTouch} />
                     <ToggleButton startActive={this.props.inputMode === InputMode.Gamepad} disabled={true} activated={() => this.inputModeChanged(InputMode.Gamepad)} description={words.inputModeDescriptionGamepad} text={words.inputModeGamepad} />
@@ -65,6 +60,7 @@ class Settings extends React.Component<SettingsProps, {}> {
         name = name.trim();
         
         // TODO: save to localStorage
+        // TODO: send to server
         this.props.changePlayerName(this.props.localPlayerID, name);
     }
 
@@ -74,7 +70,7 @@ class Settings extends React.Component<SettingsProps, {}> {
     }
 
     private close() {
-        // TODO: switch to waiting for players OR role selection screen
+        // TODO: switch to waiting for players / role selection / pause screens, depending on ... something
     }
 }
 

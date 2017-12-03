@@ -1,4 +1,3 @@
-@import '../../../colors';
 @import '../mixins';
 
 $buttonRadius: 0.8em;
@@ -8,11 +7,6 @@ $buttonRadius: 0.8em;
     cursor: pointer;
     vertical-align: baseline;
     border-radius: $buttonRadius;
-    box-sizing: border-box;
-
-    &.state--active {
-        border-radius: 0 !important;
-    }
 }
 
 .button--primary { @include ui-color($colorPrimary) }

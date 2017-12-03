@@ -2,15 +2,19 @@
 
 .field {
     display: flex;
+    align-items: baseline;
 
     @media(max-width: 500px) {
         flex-direction: column;
+        align-items: flex-start;
     }
 }
 
 .field__label {
-    font-size: 1.2em;
     font-weight: bold;
+    min-width: 6em;
+    white-space: pre;
+    margin-right: 1em;
 }
 
 .field__content {
@@ -22,4 +26,8 @@
 
 .field__content--centered {
     align-items: center;
+}
+
+.field + .field {
+    margin-top: 1.5rem;
 }

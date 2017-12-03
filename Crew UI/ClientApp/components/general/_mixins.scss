@@ -27,6 +27,7 @@ $clientPadding: 0.5em;
 }
 
 @mixin form-element() {
+    box-sizing: border-box;
     border-style: solid;
     border-width: 1px;
     border-color: $textColor;

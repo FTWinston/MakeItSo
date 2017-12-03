@@ -21,7 +21,7 @@ let words: TextLocalisation = {
             userNamePlaceholder: 'Enter your name...',
             userNameDescription: 'This is only visible to your crewmates.',
             inputMode: 'Input mode',
-            inputModePrompt: 'Select how you wish to interact with ship systems. Systems may display differently depending on your selection.',
+            inputModePrompt: 'Select how you will interact with ship systems. Systems may display differently depending on your selection.',
             inputModeKeyboard: 'Mouse and keyboard',
             inputModeTouch: 'Touchscreen',
             inputModeGamepad: 'Game controller',

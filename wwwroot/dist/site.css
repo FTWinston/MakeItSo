@@ -34,7 +34,8 @@ $lightBackground: #999;
 
 .screen__heading {
   font-weight: bold;
-  font-size: 1.5rem; }
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -42,14 +43,18 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .field {
-  display: flex; }
+  display: flex;
+  align-items: baseline; }
   @media (max-width: 500px) {
     .field {
-      flex-direction: column; } }
+      flex-direction: column;
+      align-items: flex-start; } }
 
 .field__label {
-  font-size: 1.2em;
-  font-weight: bold; }
+  font-weight: bold;
+  min-width: 6em;
+  white-space: pre;
+  margin-right: 1em; }
 
 .field__content {
   display: flex;
@@ -59,12 +64,9 @@ $lightBackground: #999;
 
 .field__content--centered {
   align-items: center; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
+
+.field + .field {
+  margin-top: 1.5rem; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -72,6 +74,7 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .button {
+  box-sizing: border-box;
   border-style: solid;
   border-width: 1px;
   border-color: #ccc;
@@ -81,8 +84,7 @@ $lightBackground: #999;
   transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s;
   cursor: pointer;
   vertical-align: baseline;
-  border-radius: 0.8em;
-  box-sizing: border-box; }
+  border-radius: 0.8em; }
   .button:not([disabled]):active, .button:not([disabled]).state--active {
     background-color: #fff;
     color: #333; }
@@ -91,8 +93,6 @@ $lightBackground: #999;
     color: #fff; }
   .button:focus {
     outline: none; }
-  .button.state--active {
-    border-radius: 0 !important; }
 
 .button--primary {
   border-color: #ff7d01;
@@ -254,6 +254,103 @@ $lightBackground: #999;
 
 .choice__description--hidden {
   visibility: hidden; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.textbox {
+  box-sizing: border-box;
+  border-style: solid;
+  border-width: 1px;
+  border-color: #ccc;
+  color: #ccc;
+  background-color: #333;
+  padding: 0.75em;
+  transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s;
+  width: 15em; }
+  .textbox:not([disabled]):active, .textbox:not([disabled]).state--active {
+    background-color: #fff;
+    color: #333; }
+  .textbox:not([disabled]):not(:active):not(.state--active):hover, .textbox:not([disabled]):not(:active):not(.state--active):focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff; }
+  .textbox:focus {
+    outline: none; }
+  @media (max-width: 295px) {
+    .textbox {
+      width: calc(100% - 1.75em); } }
+
+.textbox--primary {
+  border-color: #ff7d01;
+  color: #ff7d01; }
+  .textbox--primary[disabled] {
+    color: #999;
+    border-color: #999;
+    cursor: not-allowed; }
+  .textbox--primary:not([disabled]):active, .textbox--primary:not([disabled]).state--active {
+    background-color: #ff7d01;
+    color: #333; }
+  .textbox--primary:not([disabled]):not(:active):not(.state--active):hover, .textbox--primary:not([disabled]):not(:active):not(.state--active):focus {
+    background-color: rgba(255, 125, 1, 0.2);
+    color: #ff7d01; }
+
+.textbox--secondary {
+  border-color: #d09bcf;
+  color: #d09bcf; }
+  .textbox--secondary[disabled] {
+    color: #999;
+    border-color: #999;
+    cursor: not-allowed; }
+  .textbox--secondary:not([disabled]):active, .textbox--secondary:not([disabled]).state--active {
+    background-color: #d09bcf;
+    color: #333; }
+  .textbox--secondary:not([disabled]):not(:active):not(.state--active):hover, .textbox--secondary:not([disabled]):not(:active):not(.state--active):focus {
+    background-color: rgba(208, 155, 207, 0.2);
+    color: #d09bcf; }
+
+.textbox--tertiary {
+  border-color: #9f9bfd;
+  color: #9f9bfd; }
+  .textbox--tertiary[disabled] {
+    color: #999;
+    border-color: #999;
+    cursor: not-allowed; }
+  .textbox--tertiary:not([disabled]):active, .textbox--tertiary:not([disabled]).state--active {
+    background-color: #9f9bfd;
+    color: #333; }
+  .textbox--tertiary:not([disabled]):not(:active):not(.state--active):hover, .textbox--tertiary:not([disabled]):not(:active):not(.state--active):focus {
+    background-color: rgba(159, 155, 253, 0.2);
+    color: #9f9bfd; }
+
+.textbox--quaternary {
+  border-color: #d26369;
+  color: #d26369; }
+  .textbox--quaternary[disabled] {
+    color: #999;
+    border-color: #999;
+    cursor: not-allowed; }
+  .textbox--quaternary:not([disabled]):active, .textbox--quaternary:not([disabled]).state--active {
+    background-color: #d26369;
+    color: #333; }
+  .textbox--quaternary:not([disabled]):not(:active):not(.state--active):hover, .textbox--quaternary:not([disabled]):not(:active):not(.state--active):focus {
+    background-color: rgba(210, 99, 105, 0.2);
+    color: #d26369; }
+
+.textbox--quandry {
+  border-color: #ffce9c;
+  color: #ffce9c; }
+  .textbox--quandry[disabled] {
+    color: #999;
+    border-color: #999;
+    cursor: not-allowed; }
+  .textbox--quandry:not([disabled]):active, .textbox--quandry:not([disabled]).state--active {
+    background-color: #ffce9c;
+    color: #333; }
+  .textbox--quandry:not([disabled]):not(:active):not(.state--active):hover, .textbox--quandry:not([disabled]):not(:active):not(.state--active):focus {
+    background-color: rgba(255, 206, 156, 0.2);
+    color: #ffce9c; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

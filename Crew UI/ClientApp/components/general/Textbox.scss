@@ -1,0 +1,16 @@
+@import 'mixins';
+
+.textbox {
+    @include form-element();
+    width: 15em;
+    
+    @media (max-width: 295px) {
+        width: calc(100% - 1.75em);
+    }
+}
+
+.textbox--primary { @include ui-color($colorPrimary) }
+.textbox--secondary { @include ui-color($colorSecondary) }
+.textbox--tertiary { @include ui-color($colorTertiary) }
+.textbox--quaternary { @include ui-color($colorQuaternary) }
+.textbox--quandry { @include ui-color($colorQuandry) }

@@ -2,8 +2,8 @@
 import './Field.scss';
 
 interface IFieldProps {
-    label?: string;
-    labelFor?: string;
+    labelText?: string;
+    labelBehaviour?: boolean;
     description?: string;
     centered?: boolean;
 }
@@ -11,6 +11,7 @@ interface IFieldProps {
 export class Field extends React.Component<IFieldProps, {}> {
     static defaultProps = {
         centered: false,
+        labelBehaviour: true,
     };
 
     render() {
@@ -21,17 +22,28 @@ export class Field extends React.Component<IFieldProps, {}> {
         }
 
         let label;
-        if (this.props.label !== undefined) {
-            label = <label className="field__label" htmlFor={this.props.labelFor}>{this.props.label}</label>;
+        if (this.props.labelText !== undefined) {
+            label = <div className="field__label">{this.props.labelText}</div>;
         }
 
-        return (
-            <div className='field' role="group">
-                {label}
-                <div className={contentClasses}>
-                    {this.props.children}
+        if (this.props.labelBehaviour) {
+            return (
+                <label className='field'>
+                    {label}
+                    <div className={contentClasses}>
+                        {this.props.children}
+                    </div>
+                </label>
+            );
+        } else {
+            return (
+                <div className='field' role="group">
+                    {label}
+                    <div className={contentClasses}>
+                        {this.props.children}
+                    </div>
                 </div>
-            </div>
-        );
+            );
+        }
     }
 }
