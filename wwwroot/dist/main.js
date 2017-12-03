@@ -63,20 +63,20 @@
 /******/ 	__webpack_require__.p = "dist/";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 6);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-module.exports = vendor_a65b3acf96981fd3289a;
+module.exports = (__webpack_require__(1))(6);
 
 /***/ }),
 /* 1 */
-/***/ (function(module, exports, __webpack_require__) {
+/***/ (function(module, exports) {
 
-module.exports = (__webpack_require__(0))(6);
+module.exports = vendor_a65b3acf96981fd3289a;
 
 /***/ }),
 /* 2 */
@@ -85,7 +85,7 @@ module.exports = (__webpack_require__(0))(6);
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__ = __webpack_require__(28);
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -137,10 +137,101 @@ var reducer = function (state, rawAction) {
 /* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(0))(140);
+module.exports = (__webpack_require__(1))(140);
 
 /***/ }),
 /* 4 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Button; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality_Hotkeys__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__buttons_scss__);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var Button = (function (_super) {
+    __extends(Button, _super);
+    function Button() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Button.prototype.componentDidMount = function () {
+        if (this.props.hotkey != null)
+            __WEBPACK_IMPORTED_MODULE_1__functionality_Hotkeys__["a" /* Hotkeys */].register(this.props.hotkey, this);
+    };
+    Button.prototype.componentWillUnmount = function () {
+        if (this.props.hotkey != null)
+            __WEBPACK_IMPORTED_MODULE_1__functionality_Hotkeys__["a" /* Hotkeys */].unregister(this.props.hotkey, this);
+    };
+    Button.prototype.determineClasses = function () {
+        var classes = 'button';
+        if (this.props.className !== undefined) {
+            classes += ' ' + this.props.className;
+        }
+        if (this.props.fullBorder)
+            classes += ' fullBorder';
+        switch (this.props.color) {
+            case 0 /* Primary */:
+                classes += ' button--primary';
+                break;
+            case 1 /* Secondary */:
+                classes += ' button--secondary';
+                break;
+            case 2 /* Tertiary */:
+                classes += ' button--tertiary';
+                break;
+            case 3 /* Quaternary */:
+                classes += ' button--quaternary';
+                break;
+            case 4 /* Quandry */:
+                classes += ' button--quandry';
+                break;
+        }
+        return classes;
+    };
+    Button.prototype.render = function () {
+        var subtext = this.props.subtext === undefined ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "button__subtext" }, this.props.subtext);
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("button", { className: this.determineClasses(), disabled: this.props.disabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
+            this.props.text,
+            subtext);
+    };
+    Button.prototype.keyDown = function (e) {
+        if (this.props.mouseDown !== undefined)
+            this.props.mouseDown(e);
+    };
+    Button.prototype.keyUp = function (e) {
+        if (this.props.mouseUp !== undefined)
+            this.props.mouseUp(e);
+    };
+    Button.prototype.keyPress = function (e) {
+        if (this.props.mouseClick !== undefined)
+            this.props.mouseClick(e);
+    };
+    Button.defaultProps = {
+        buttonType: 'button',
+        text: '',
+        fullBorder: false,
+    };
+    return Button;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -204,26 +295,26 @@ var reducer = function (state, rawAction) {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "store", function() { return store; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "connection", function() { return connection; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_redux__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configureStore__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_ScreenManager__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality_Connection__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__functionality_Hotkeys__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client_scss__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configureStore__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_ScreenManager__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality_Connection__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__functionality_Hotkeys__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client_scss__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__Client_scss__);
 
 
@@ -248,14 +339,14 @@ renderApp();
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Screen; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Screen_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -303,247 +394,12 @@ var Screen = (function (_super) {
 
 
 /***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Localisations; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(20);
-
-var Localisations = [
-    {
-        name: 'English',
-        flag: 'english.png',
-        load: function () { return __WEBPACK_IMPORTED_MODULE_0__localisations_English__["a" /* default */]; },
-    }
-];
-
-
-/***/ }),
 /* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-var actionCreators = {
-    addPlayers: function (players) { return ({ type: 'ADD_PLAYERS', players: players }); },
-    removePlayer: function (playerID) { return ({ type: 'REMOVE_PLAYER', playerID: playerID }); },
-    changePlayerName: function (playerID, name) { return ({ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name }); },
-    setPlayerSystems: function (playerID, flags) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags }); },
-    etLocalPlayer: function (playerID) { return ({ type: 'SET_LOCAL_PLAYER', playerID: playerID }); },
-    setSetupPlayer: function (playerID) { return ({ type: 'SET_SETUP_PLAYER', playerID: playerID }); },
-    setSelectionMode: function (selectSystems) { return ({ type: 'SET_SELECTION_MODE', selectSystemsDirectly: selectSystems }); },
-};
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-var unloadedState = { players: [], selectSystemsDirectly: false };
-var reducer = function (state, action) {
-    switch (action.type) {
-        case 'ADD_PLAYERS':
-            return __assign({}, state, { players: state.players.concat(action.players) });
-        case 'REMOVE_PLAYER':
-            return __assign({}, state, { players: state.players.filter(function (p) { return p.id !== action.playerID; }) });
-        case 'CHANGE_PLAYER_NAME':
-            return __assign({}, state, { players: state.players.map(function (player, index) {
-                    if (player.id === action.playerID) {
-                        return Object.assign({}, player, {
-                            name: action.name
-                        });
-                    }
-                    return player;
-                }) });
-        case 'SET_PLAYER_SYSTEMS':
-            return __assign({}, state, { players: state.players.map(function (player, index) {
-                    if (player.id === action.playerID) {
-                        return Object.assign({}, player, {
-                            flags: action.flags
-                        });
-                    }
-                    return player;
-                }) });
-        case 'SET_LOCAL_PLAYER':
-            return __assign({}, state, { localPlayerID: action.playerID });
-        case 'SET_SETUP_PLAYER':
-            return __assign({}, state, { playerInSetup: action.playerID });
-        case 'SET_SELECTION_MODE':
-            return __assign({}, state, { selectSystemsDirectly: action.selectSystemsDirectly });
-        default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            var exhaustiveCheck = action;
-    }
-    return state || unloadedState;
-};
-
-
-/***/ }),
-/* 9 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__general_Screen__ = __webpack_require__(6);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-
-
-
-
-
-var ScreenManager = (function (_super) {
-    __extends(ScreenManager, _super);
-    function ScreenManager() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    ScreenManager.prototype.componentWillMount = function () {
-        var _this = this;
-        this.updateDimensions();
-        window.addEventListener('resize', function () { return _this.updateDimensions(); });
-    };
-    ScreenManager.prototype.render = function () {
-        var classes = 'client';
-        if (this.props.showHotkeys) {
-            classes += ' client--showHotkeys';
-        }
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes }, this.renderScreen());
-    };
-    ScreenManager.prototype.renderScreen = function () {
-        switch (this.props.screen) {
-            case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].Connecting:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["a" /* Connecting */], null);
-            case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].UserSettings:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["b" /* Settings */], null);
-            default:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general_Screen__["a" /* Screen */], { centered: true },
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("h1", { className: "screen__heading" },
-                        "Unable to render required screen: ",
-                        this.props.screen));
-        }
-    };
-    ScreenManager.prototype.updateDimensions = function () {
-        this.props.setScreenSize(window.innerWidth, window.innerHeight);
-    };
-    return ScreenManager;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
-// Selects which state properties are merged into the component's props
-var mapStateToProps = function (state) {
-    return {
-        screen: state.screen.display,
-        errorMessage: state.screen.errorMessage,
-        showHotkeys: state.user.showHotkeys,
-    };
-};
-// Wire up the React component to the Redux store
-/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, __WEBPACK_IMPORTED_MODULE_3__store_User__["a" /* actionCreators */])(ScreenManager));
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (immutable) */ __webpack_exports__["a"] = configureStore;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(29);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(28);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_thunk__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(21);
-
-
-
-
-function configureStore(history, initialState) {
-    // Build middleware. These are functions that can process the actions before they reach the store.
-    var windowIfDefined = typeof window === 'undefined' ? null : window;
-    // If devTools is installed, connect to it
-    var devToolsExtension = windowIfDefined && windowIfDefined.devToolsExtension;
-    var createStoreWithMiddleware = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["compose"])(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["applyMiddleware"])(__WEBPACK_IMPORTED_MODULE_1_redux_thunk___default.a, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_react_router_redux__["routerMiddleware"])(history)), devToolsExtension ? devToolsExtension() : function (next) { return next; })(__WEBPACK_IMPORTED_MODULE_0_redux__["createStore"]);
-    // Combine all reducers and instantiate the app-wide store instance
-    var allReducers = buildRootReducer(__WEBPACK_IMPORTED_MODULE_3__store__["a" /* reducers */]);
-    var store = createStoreWithMiddleware(allReducers, initialState);
-    // Enable Webpack hot module replacement for reducers
-    if (false) {
-        module.hot.accept('./store', function () {
-            var nextRootReducer = require('./store');
-            store.replaceReducer(buildRootReducer(nextRootReducer.reducers));
-        });
-    }
-    return store;
-}
-function buildRootReducer(allReducers) {
-    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["combineReducers"])(Object.assign({}, allReducers, { routing: __WEBPACK_IMPORTED_MODULE_2_react_router_redux__["routerReducer"] }));
-}
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Connection; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Screen__ = __webpack_require__(4);
-
-
-var Connection = (function () {
-    function Connection(url) {
-        var _this = this;
-        this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = function () { return __WEBPACK_IMPORTED_MODULE_1__store_Screen__["b" /* actionCreators */].showError(__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.text.errors.connectionLost); };
-        this.socket.onmessage = function (e) { return _this.messageReceived(e); };
-        this.socket.onopen = function () { return _this.connected(); };
-        this.close = this.socket.close.bind(this.socket);
-    }
-    Connection.prototype.send = function (cmd) {
-        this.socket.send(cmd);
-    };
-    Connection.prototype.connected = function () {
-        __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Screen__["b" /* actionCreators */].showUserSettings());
-    };
-    Connection.prototype.messageReceived = function (ev) {
-        var data = (ev.data || '');
-        console.log('received', data);
-        var pos = data.indexOf(' ');
-        var cmd = pos === -1 ? data : data.substr(0, pos);
-        data = pos === -1 ? '' : data.substr(pos + 1);
-    };
-    return Connection;
-}());
-
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Hotkeys; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(2);
 
 
@@ -617,40 +473,727 @@ var Hotkeys = (function () {
 
 
 /***/ }),
+/* 9 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ConfirmButton__ = __webpack_require__(21);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_0__ConfirmButton__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeldButton__ = __webpack_require__(22);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_1__HeldButton__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__PushButton__ = __webpack_require__(23);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_2__PushButton__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ToggleButton__ = __webpack_require__(24);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_3__ToggleButton__["a"]; });
+
+
+
+
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+// ----------------
+// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
+// They don't directly mutate state, but they can have external side-effects (such as loading data).
+var actionCreators = {
+    addPlayers: function (players) { return ({ type: 'ADD_PLAYERS', players: players }); },
+    removePlayer: function (playerID) { return ({ type: 'REMOVE_PLAYER', playerID: playerID }); },
+    changePlayerName: function (playerID, name) { return ({ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name }); },
+    setPlayerSystems: function (playerID, flags) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags }); },
+    etLocalPlayer: function (playerID) { return ({ type: 'SET_LOCAL_PLAYER', playerID: playerID }); },
+    setSetupPlayer: function (playerID) { return ({ type: 'SET_SETUP_PLAYER', playerID: playerID }); },
+    setSelectionMode: function (selectSystems) { return ({ type: 'SET_SELECTION_MODE', selectSystemsDirectly: selectSystems }); },
+};
+// ----------------
+// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+var unloadedState = { players: [], selectSystemsDirectly: false };
+var reducer = function (state, action) {
+    switch (action.type) {
+        case 'ADD_PLAYERS':
+            return __assign({}, state, { players: state.players.concat(action.players) });
+        case 'REMOVE_PLAYER':
+            return __assign({}, state, { players: state.players.filter(function (p) { return p.id !== action.playerID; }) });
+        case 'CHANGE_PLAYER_NAME':
+            return __assign({}, state, { players: state.players.map(function (player, index) {
+                    if (player.id === action.playerID) {
+                        return Object.assign({}, player, {
+                            name: action.name
+                        });
+                    }
+                    return player;
+                }) });
+        case 'SET_PLAYER_SYSTEMS':
+            return __assign({}, state, { players: state.players.map(function (player, index) {
+                    if (player.id === action.playerID) {
+                        return Object.assign({}, player, {
+                            flags: action.flags
+                        });
+                    }
+                    return player;
+                }) });
+        case 'SET_LOCAL_PLAYER':
+            return __assign({}, state, { localPlayerID: action.playerID });
+        case 'SET_SETUP_PLAYER':
+            return __assign({}, state, { playerInSetup: action.playerID });
+        case 'SET_SELECTION_MODE':
+            return __assign({}, state, { selectSystemsDirectly: action.selectSystemsDirectly });
+        default:
+            // The following line guarantees that every action in the KnownAction union has been covered by a case above
+            var exhaustiveCheck = action;
+    }
+    return state || unloadedState;
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__general_Screen__ = __webpack_require__(7);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+
+
+var ScreenManager = (function (_super) {
+    __extends(ScreenManager, _super);
+    function ScreenManager() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ScreenManager.prototype.componentWillMount = function () {
+        var _this = this;
+        this.updateDimensions();
+        window.addEventListener('resize', function () { return _this.updateDimensions(); });
+    };
+    ScreenManager.prototype.render = function () {
+        var classes = 'client';
+        if (this.props.showHotkeys) {
+            classes += ' client--showHotkeys';
+        }
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes }, this.renderScreen());
+    };
+    ScreenManager.prototype.renderScreen = function () {
+        switch (this.props.screen) {
+            case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].Connecting:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["a" /* Connecting */], null);
+            case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].UserSettings:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["b" /* Settings */], null);
+            default:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general_Screen__["a" /* Screen */], { centered: true },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("h1", { className: "screen__heading" },
+                        "Unable to render required screen: ",
+                        this.props.screen));
+        }
+    };
+    ScreenManager.prototype.updateDimensions = function () {
+        this.props.setScreenSize(window.innerWidth, window.innerHeight);
+    };
+    return ScreenManager;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+// Selects which state properties are merged into the component's props
+var mapStateToProps = function (state) {
+    return {
+        screen: state.screen.display,
+        errorMessage: state.screen.errorMessage,
+        showHotkeys: state.user.showHotkeys,
+    };
+};
+// Wire up the React component to the Redux store
+/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, __WEBPACK_IMPORTED_MODULE_3__store_User__["a" /* actionCreators */])(ScreenManager));
+
+
+/***/ }),
+/* 12 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = configureStore;
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_thunk__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(30);
+
+
+
+
+function configureStore(history, initialState) {
+    // Build middleware. These are functions that can process the actions before they reach the store.
+    var windowIfDefined = typeof window === 'undefined' ? null : window;
+    // If devTools is installed, connect to it
+    var devToolsExtension = windowIfDefined && windowIfDefined.devToolsExtension;
+    var createStoreWithMiddleware = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["compose"])(__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["applyMiddleware"])(__WEBPACK_IMPORTED_MODULE_1_redux_thunk___default.a, __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2_react_router_redux__["routerMiddleware"])(history)), devToolsExtension ? devToolsExtension() : function (next) { return next; })(__WEBPACK_IMPORTED_MODULE_0_redux__["createStore"]);
+    // Combine all reducers and instantiate the app-wide store instance
+    var allReducers = buildRootReducer(__WEBPACK_IMPORTED_MODULE_3__store__["a" /* reducers */]);
+    var store = createStoreWithMiddleware(allReducers, initialState);
+    // Enable Webpack hot module replacement for reducers
+    if (false) {
+        module.hot.accept('./store', function () {
+            var nextRootReducer = require('./store');
+            store.replaceReducer(buildRootReducer(nextRootReducer.reducers));
+        });
+    }
+    return store;
+}
+function buildRootReducer(allReducers) {
+    return __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_0_redux__["combineReducers"])(Object.assign({}, allReducers, { routing: __WEBPACK_IMPORTED_MODULE_2_react_router_redux__["routerReducer"] }));
+}
+
+
+/***/ }),
 /* 13 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Connection; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Screen__ = __webpack_require__(5);
+
+
+var Connection = (function () {
+    function Connection(url) {
+        var _this = this;
+        this.socket = new WebSocket(url);
+        this.socket.onerror = this.socket.onclose = function () { return __WEBPACK_IMPORTED_MODULE_1__store_Screen__["b" /* actionCreators */].showError(__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.text.errors.connectionLost); };
+        this.socket.onmessage = function (e) { return _this.messageReceived(e); };
+        this.socket.onopen = function () { return _this.connected(); };
+        this.close = this.socket.close.bind(this.socket);
+    }
+    Connection.prototype.send = function (cmd) {
+        this.socket.send(cmd);
+    };
+    Connection.prototype.connected = function () {
+        __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Screen__["b" /* actionCreators */].showUserSettings());
+    };
+    Connection.prototype.messageReceived = function (ev) {
+        var data = (ev.data || '');
+        console.log('received', data);
+        var pos = data.indexOf(' ');
+        var cmd = pos === -1 ? data : data.substr(0, pos);
+        data = pos === -1 ? '' : data.substr(pos + 1);
+    };
+    return Connection;
+}());
+
+
+
+/***/ }),
+/* 14 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 14 */
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(25);
-
-
-/***/ }),
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(0))(138);
+module.exports = __webpack_require__(38);
+
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(0))(139);
+module.exports = (__webpack_require__(1))(138);
 
 /***/ }),
 /* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = (__webpack_require__(1))(139);
+
+/***/ }),
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ButtonSet; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var ButtonSet = (function (_super) {
+    __extends(ButtonSet, _super);
+    function ButtonSet() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    ButtonSet.prototype.render = function () {
+        var _this = this;
+        var classes = 'buttonset';
+        if (this.props.vertical)
+            classes += ' buttonset--vertical';
+        if (this.props.className !== undefined)
+            classes += ' ' + this.props.className;
+        var childrenWithProps = __WEBPACK_IMPORTED_MODULE_0_react__["Children"].map(this.props.children, function (child) {
+            if (typeof child === 'string' || typeof child === 'number' || child === null)
+                return child;
+            if (child.type !== __WEBPACK_IMPORTED_MODULE_1__buttons__["b" /* PushButton */] && child.type !== __WEBPACK_IMPORTED_MODULE_1__buttons__["a" /* ToggleButton */] && child.type !== __WEBPACK_IMPORTED_MODULE_1__buttons__["c" /* HeldButton */] && child.type !== __WEBPACK_IMPORTED_MODULE_1__buttons__["d" /* ConfirmButton */])
+                return child;
+            var childHasColor = child.props.color !== undefined;
+            var childProps = {
+                disabled: _this.props.disabled || child.props.disabled,
+                color: childHasColor ? child.props.color : _this.props.color,
+                fullBorder: childHasColor && _this.props.color !== undefined,
+            };
+            if (child.type === __WEBPACK_IMPORTED_MODULE_1__buttons__["a" /* ToggleButton */]) {
+                var toggleProps = childProps;
+                toggleProps.allowUserDeactivate = _this.props.allowUnselected;
+                toggleProps.choiceOptionActivated = _this.props.childActivated;
+            }
+            return __WEBPACK_IMPORTED_MODULE_0_react__["cloneElement"](child, childProps);
+        });
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes }, childrenWithProps));
+    };
+    ButtonSet.defaultProps = {
+        vertical: false,
+        allowUnselected: true,
+    };
+    return ButtonSet;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Choice; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Choice_scss__);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+var Choice = (function (_super) {
+    __extends(Choice, _super);
+    function Choice(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            activeChild: undefined
+        };
+        return _this;
+    }
+    Choice.prototype.render = function () {
+        var _this = this;
+        var classes = 'choice';
+        if (this.props.className !== undefined)
+            classes += ' ' + this.props.className;
+        var prompt = this.props.prompt == null ? null : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "choice__prompt" }, this.props.prompt);
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes },
+            prompt,
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__ButtonSet__["a" /* ButtonSet */], { vertical: this.props.vertical, disabled: this.props.disabled, color: this.props.color, allowUnselected: this.props.allowUnselected, childActivated: function (c) { return _this.childActivated(c); } }, this.props.children),
+            this.renderDescription()));
+    };
+    Choice.prototype.renderDescription = function () {
+        var anyDesc = false;
+        __WEBPACK_IMPORTED_MODULE_0_react__["Children"].forEach(this.props.children, function (child) {
+            if (child.props.description !== undefined)
+                anyDesc = true;
+        });
+        if (!anyDesc)
+            return undefined;
+        var description, descClass;
+        if (this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined) {
+            description = this.state.activeChild.props.description;
+            descClass = 'choice__description';
+        }
+        else {
+            description = '.';
+            descClass = 'choice__description choice__description--hidden';
+        }
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: descClass }, description);
+    };
+    Choice.prototype.childActivated = function (activated) {
+        if (this.state.activeChild !== undefined)
+            this.state.activeChild.setState({ active: false });
+        this.setState({ activeChild: activated });
+    };
+    Choice.defaultProps = {
+        vertical: false,
+        allowUnselected: false,
+    };
+    return Choice;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Field; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Field_scss__);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var Field = (function (_super) {
+    __extends(Field, _super);
+    function Field() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    Field.prototype.render = function () {
+        var contentClasses = 'field__content';
+        if (this.props.centered) {
+            contentClasses += ' field__content--centered';
+        }
+        var label;
+        if (this.props.label !== undefined) {
+            label = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("label", { className: "field__label", htmlFor: this.props.labelFor }, this.props.label);
+        }
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: 'field', role: "group" },
+            label,
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: contentClasses }, this.props.children)));
+    };
+    Field.defaultProps = {
+        centered: false,
+    };
+    return Field;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ConfirmButton; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(4);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ConfirmButton = (function (_super) {
+    __extends(ConfirmButton, _super);
+    function ConfirmButton(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = { primed: false };
+        return _this;
+    }
+    ConfirmButton.prototype.render = function () {
+        var _this = this;
+        var classList = this.state.primed ? 'button--confirm state--active' : 'button--confirm';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], { className: classList, hotkey: this.props.hotkey, mouseClick: function (e) { return _this.clicked(e); }, buttonType: "submit", color: this.props.color, fullBorder: this.props.fullBorder, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title });
+    };
+    ConfirmButton.prototype.clicked = function (e) {
+        var _this = this;
+        if (this.state.primed) {
+            this.clearAutoCancel();
+            if (this.props.clicked != undefined)
+                this.props.clicked();
+            /*
+            if (this.props.command !== undefined)
+                gameClient.server.send(this.props.command);
+            */
+        }
+        else {
+            this.autoCancel = setTimeout(function () { return _this.cancelPrime(); }, 10000);
+        }
+        this.setState({ primed: !this.state.primed });
+        e.preventDefault();
+    };
+    ConfirmButton.prototype.cancelPrime = function () {
+        if (this.state.primed)
+            this.setState({ primed: false });
+        this.autoCancel = undefined;
+    };
+    ConfirmButton.prototype.clearAutoCancel = function () {
+        if (this.autoCancel !== undefined) {
+            clearTimeout(this.autoCancel);
+            this.autoCancel = undefined;
+        }
+    };
+    ConfirmButton.prototype.componentWillUnmount = function () {
+        this.clearAutoCancel();
+    };
+    return ConfirmButton;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 22 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HeldButton; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(4);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var HeldButton = (function (_super) {
+    __extends(HeldButton, _super);
+    function HeldButton(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = { held: false };
+        return _this;
+    }
+    HeldButton.prototype.render = function () {
+        var _this = this;
+        var classList = this.state.held ? 'button--held state--active' : 'button--held';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], { className: classList, hotkey: this.props.hotkey, text: this.props.text, subtext: this.props.subtext, fullBorder: this.props.fullBorder, mouseDown: function (e) { return _this.mouseDown(e); }, mouseUp: function (e) { return _this.mouseUp(e); }, color: this.props.color, disabled: this.props.disabled, title: this.props.title });
+    };
+    HeldButton.prototype.mouseDown = function (e) {
+        this.setState({ held: true });
+        if (this.props.pressed != undefined)
+            this.props.pressed();
+        /*
+        if (this.props.pressCommand !== undefined)
+            gameClient.server.send(this.props.pressCommand);
+        */
+    };
+    HeldButton.prototype.mouseUp = function (e) {
+        if (!this.state.held)
+            return;
+        this.setState({ held: false });
+        if (this.props.released != undefined)
+            this.props.released();
+        /*
+        if (this.props.releaseCommand !== undefined)
+            gameClient.server.send(this.props.releaseCommand);
+        */
+    };
+    return HeldButton;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 23 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PushButton; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(4);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var PushButton = (function (_super) {
+    __extends(PushButton, _super);
+    function PushButton(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = { held: false };
+        return _this;
+    }
+    PushButton.prototype.render = function () {
+        var _this = this;
+        var classList = this.state.held ? 'button--push state--active' : 'button--push';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], { className: classList, hotkey: this.props.hotkey, mouseClick: function (e) { return _this.clicked(e); }, color: this.props.color, disabled: this.props.disabled, fullBorder: this.props.fullBorder, mouseDown: function (e) { return _this.mouseDown(e); }, mouseUp: function (e) { return _this.mouseUp(e); }, title: this.props.title, text: this.props.text, subtext: this.props.subtext });
+    };
+    PushButton.prototype.clicked = function (e) {
+        if (this.props.clicked !== undefined)
+            this.props.clicked();
+        /*
+        if (this.props.command !== undefined)
+            gameClient.server.send(this.props.command);
+        */
+    };
+    PushButton.prototype.mouseDown = function (e) {
+        this.setState({ held: true });
+    };
+    PushButton.prototype.mouseUp = function (e) {
+        this.setState({ held: false });
+    };
+    return PushButton;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 24 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ToggleButton; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(4);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+var ToggleButton = (function (_super) {
+    __extends(ToggleButton, _super);
+    function ToggleButton(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = { active: props.startActive === true };
+        return _this;
+    }
+    ToggleButton.prototype.componentWillMount = function () {
+        if (this.props.startActive === true && this.props.choiceOptionActivated !== undefined)
+            this.props.choiceOptionActivated(this);
+    };
+    ToggleButton.prototype.render = function () {
+        var _this = this;
+        var classList = this.state.active ? 'button--toggle state--active' : 'button--toggle';
+        if (this.props.className !== undefined)
+            classList += ' ' + this.props.className;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], { className: classList, hotkey: this.props.hotkey, mouseClick: function (e) { return _this.clicked(e); }, color: this.props.color, fullBorder: this.props.fullBorder, disabled: this.props.disabled, text: this.props.text, subtext: this.props.subtext, title: this.props.title });
+    };
+    ToggleButton.prototype.clicked = function (e) {
+        if (this.state.active) {
+            if (this.props.allowUserDeactivate === false)
+                return; // in a choice, don't deactivate a button by clicking on it
+            if (this.props.deactivated != undefined)
+                this.props.deactivated();
+            /*
+            if (this.props.deactivateCommand !== undefined)
+                gameClient.server.send(this.props.deactivateCommand);
+            */
+        }
+        else {
+            if (this.props.choiceOptionActivated !== undefined)
+                this.props.choiceOptionActivated(this);
+            if (this.props.activated != undefined)
+                this.props.activated();
+            /*
+            if (this.props.activateCommand !== undefined)
+                gameClient.server.send(this.props.activateCommand);
+            */
+        }
+        this.setState({ active: !this.state.active });
+    };
+    ToggleButton.prototype.select = function (selected) {
+        this.setState({ active: selected });
+    };
+    ToggleButton.defaultProps = {
+        inChoice: false,
+        startActive: false,
+        allowUserDeactivate: true,
+    };
+    return ToggleButton;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 25 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general_Screen__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general_Screen__ = __webpack_require__(7);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -686,18 +1229,20 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 18 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Crew__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Screen__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__functionality_Localisation__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__general_Screen__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Crew__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Screen__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__general_Screen__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__general_Field__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__general_Choice__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__general_buttons__ = __webpack_require__(9);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -723,33 +1268,45 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 
 
 
+
+
 var Settings = (function (_super) {
     __extends(Settings, _super);
-    function Settings(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
-            userName: props.userName === undefined ? '' : props.userName,
-        };
-        return _this;
+    function Settings() {
+        return _super !== null && _super.apply(this, arguments) || this;
     }
     Settings.prototype.render = function () {
         var _this = this;
         var words = this.props.text.screens.settings;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__general_Screen__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { role: "group" },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("label", { htmlFor: "txtUserName" }, words.userName),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: function (e) { return _this.setState({ userName: e.target.value.trim() }); }, placeholder: words.userNamePlaceholder }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription))),
+        var hasUserName = this.props.userName !== undefined && this.props.userName.length !== 0;
+        var inputModeVertical = this.props.screenWidth < 330;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general_Screen__["a" /* Screen */], { heading: words.intro, pageLayout: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__general_Field__["a" /* Field */], { label: words.userName },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.props.userName, onChange: function (e) { return _this.nameChanged(e.target.value); }, placeholder: words.userNamePlaceholder }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription)),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__general_Field__["a" /* Field */], { label: words.inputMode },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_7__general_Choice__["a" /* Choice */], { prompt: words.inputModePrompt, color: 0 /* Primary */, vertical: inputModeVertical },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_8__general_buttons__["a" /* ToggleButton */], { startActive: this.props.inputMode === 0 /* KeyboardAndMouse */, activated: function () { return _this.inputModeChanged(0 /* KeyboardAndMouse */); }, description: words.inputModeDescriptionKeyboard, text: words.inputModeKeyboard }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_8__general_buttons__["a" /* ToggleButton */], { startActive: this.props.inputMode === 1 /* Touchscreen */, activated: function () { return _this.inputModeChanged(1 /* Touchscreen */); }, description: words.inputModeDescriptionTouch, text: words.inputModeTouch }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_8__general_buttons__["a" /* ToggleButton */], { startActive: this.props.inputMode === 2 /* Gamepad */, disabled: true, activated: function () { return _this.inputModeChanged(2 /* Gamepad */); }, description: words.inputModeDescriptionGamepad, text: words.inputModeGamepad }))),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__general_Field__["a" /* Field */], { centered: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_8__general_buttons__["b" /* PushButton */], { color: 2 /* Tertiary */, disabled: !hasUserName, clicked: function () { return _this.close(); }, text: this.props.text.common.save })),
             "Screen size is ",
             this.props.screenWidth,
             "x",
             this.props.screenHeight);
     };
-    Settings.prototype.sendChanges = function () {
-        this.props.changePlayerName(this.props.localPlayerID, this.state.userName);
-        this.props.setInputMode(0 /* KeyboardAndMouse */); // TODO: get from UI
-        this.props.setLocalisation(__WEBPACK_IMPORTED_MODULE_5__functionality_Localisation__["a" /* Localisations */][0]); // TODO: ok yeah should we just update these as you click them? To heck with cancelling...
+    Settings.prototype.nameChanged = function (name) {
+        name = name.trim();
+        // TODO: save to localStorage
+        this.props.changePlayerName(this.props.localPlayerID, name);
+    };
+    Settings.prototype.inputModeChanged = function (mode) {
+        // TODO: save to localStorage
+        this.props.setInputMode(mode);
+    };
+    Settings.prototype.close = function () {
+        // TODO: switch to waiting for players OR role selection screen
     };
     return Settings;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -771,20 +1328,37 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 19 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connecting__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connecting__ = __webpack_require__(25);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Connecting__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Settings__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Settings__ = __webpack_require__(26);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Settings__["a"]; });
 
 
 
 
 /***/ }),
-/* 20 */
+/* 28 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Localisations; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(29);
+
+var Localisations = [
+    {
+        name: 'English',
+        flag: 'english.png',
+        load: function () { return __WEBPACK_IMPORTED_MODULE_0__localisations_English__["a" /* default */]; },
+    }
+];
+
+
+/***/ }),
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -813,6 +1387,9 @@ var words = {
             inputModeKeyboard: 'Mouse and keyboard',
             inputModeTouch: 'Touchscreen',
             inputModeGamepad: 'Game controller',
+            inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
+            inputModeDescriptionTouch: 'Use Multi-touch controls',
+            inputModeDescriptionGamepad: 'Use an attached game controller',
         }
     }
 };
@@ -820,14 +1397,14 @@ var words = {
 
 
 /***/ }),
-/* 21 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducers; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(5);
 
 
 
@@ -842,13 +1419,37 @@ var reducers = {
 
 
 /***/ }),
-/* 22 */
+/* 31 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 23 */
+/* 32 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 33 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 34 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 35 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -857,13 +1458,13 @@ var reducers = {
 
 
 if (true) {
-  module.exports = __webpack_require__(24);
+  module.exports = __webpack_require__(37);
 } else {
   module.exports = require('./AppContainer.dev');
 }
 
 /***/ }),
-/* 24 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -879,7 +1480,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var React = __webpack_require__(1);
+var React = __webpack_require__(0);
 var Component = React.Component;
 
 var AppContainer = function (_Component) {
@@ -908,7 +1509,7 @@ var AppContainer = function (_Component) {
 module.exports = AppContainer;
 
 /***/ }),
-/* 25 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -917,37 +1518,37 @@ module.exports = AppContainer;
 
 
 if (true) {
-  module.exports = __webpack_require__(26);
+  module.exports = __webpack_require__(39);
 } else {
   module.exports = require('./index.dev');
 }
 
 /***/ }),
-/* 26 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports.AppContainer = __webpack_require__(23);
+module.exports.AppContainer = __webpack_require__(36);
 
 /***/ }),
-/* 27 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(0))(142);
+module.exports = (__webpack_require__(1))(142);
 
 /***/ }),
-/* 28 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(0))(143);
+module.exports = (__webpack_require__(1))(143);
 
 /***/ }),
-/* 29 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(0))(73);
+module.exports = (__webpack_require__(1))(73);
 
 /***/ })
 /******/ ]);

@@ -25,6 +25,9 @@ let words: TextLocalisation = {
             inputModeKeyboard: 'Mouse and keyboard',
             inputModeTouch: 'Touchscreen',
             inputModeGamepad: 'Game controller',
+            inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
+            inputModeDescriptionTouch: 'Use Multi-touch controls',
+            inputModeDescriptionGamepad: 'Use an attached game controller',
         }
     }
 };

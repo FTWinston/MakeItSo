@@ -40,6 +40,9 @@ export interface TextLocalisation {
             inputModeKeyboard: string;
             inputModeTouch: string;
             inputModeGamepad: string;
+            inputModeDescriptionKeyboard: string;
+            inputModeDescriptionTouch: string;
+            inputModeDescriptionGamepad: string;
         }
     }
 }

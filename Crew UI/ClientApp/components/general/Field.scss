@@ -1,0 +1,25 @@
+@import 'mixins';
+
+.field {
+    display: flex;
+
+    @media(max-width: 500px) {
+        flex-direction: column;
+    }
+}
+
+.field__label {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.field__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-grow: 1;
+}
+
+.field__content--centered {
+    align-items: center;
+}
