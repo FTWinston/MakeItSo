@@ -3,7 +3,7 @@ import './Screen.scss';
 
 interface IScreenProps {
     centered?: boolean;
-    scrollable?: boolean;
+    pageLayout?: boolean;
     className?: string;
     heading?: string;
 }
@@ -11,7 +11,7 @@ interface IScreenProps {
 export class Screen extends React.Component<IScreenProps, {}> {
     static defaultProps = {
         centered: false,
-        scrollable: true,
+        pageLayout: false,
     };
 
     render() {
@@ -24,9 +24,9 @@ export class Screen extends React.Component<IScreenProps, {}> {
         if (this.props.centered) {
             classes += ' screen--centered';
         }
-
-        if (!this.props.scrollable) {
-            classes += ' screen--noScrolling';
+        
+        if (this.props.pageLayout) {
+            classes += ' screen--pageLayout';
         }
 
         let heading;

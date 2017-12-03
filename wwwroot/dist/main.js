@@ -80,12 +80,67 @@ module.exports = (__webpack_require__(0))(6);
 
 /***/ }),
 /* 2 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__ = __webpack_require__(7);
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+
+// ----------------
+// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
+// They don't directly mutate state, but they can have external side-effects (such as loading data).
+var actionCreators = {
+    setInputMode: function (inputMode) { return ({ type: 'INPUT_MODE', inputMode: inputMode }); },
+    setLocalisation: function (localisation) { return ({ type: 'LOCALISATION', localisation: localisation }); },
+    showHotkeys: function (show) { return ({ type: 'SHOW_HOTKEYS', show: show }); },
+    setScreenSize: function (width, height) { return ({ type: 'SET_SCREEN_SIZE', width: width, height: height }); },
+};
+// ----------------
+// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+var unloadedState = {
+    inputMode: 1 /* Touchscreen */,
+    localisation: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0],
+    text: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0].load(),
+    showHotkeys: false,
+    screenWidth: window.innerWidth,
+    screenHeight: window.innerHeight,
+};
+var reducer = function (state, rawAction) {
+    var action = rawAction;
+    switch (action.type) {
+        case 'INPUT_MODE':
+            return __assign({}, state, { inputMode: action.inputMode });
+        case 'LOCALISATION':
+            return __assign({}, state, { localisation: action.localisation, text: action.localisation.load() });
+        case 'SHOW_HOTKEYS':
+            return __assign({}, state, { showHotkeys: action.show });
+        case 'SET_SCREEN_SIZE':
+            return __assign({}, state, { screenWidth: action.width, screenHeight: action.height });
+        default:
+            // The following line guarantees that every action in the KnownAction union has been covered by a case above
+            var exhaustiveCheck = action;
+    }
+    return state || unloadedState;
+};
+
+
+/***/ }),
+/* 3 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(0))(140);
 
 /***/ }),
-/* 3 */
+/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -149,51 +204,6 @@ var reducer = function (state, rawAction) {
 
 
 /***/ }),
-/* 4 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__ = __webpack_require__(7);
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-var actionCreators = {
-    setInputMode: function (inputMode) { return ({ type: 'INPUT_MODE', inputMode: inputMode }); },
-    setLocalisation: function (localisation) { return ({ type: 'LOCALISATION', localisation: localisation }); },
-    showHotkeys: function (show) { return ({ type: 'SHOW_HOTKEYS', show: show }); },
-};
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-var unloadedState = { inputMode: 1 /* Touchscreen */, localisation: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0], text: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0].load(), showHotkeys: false };
-var reducer = function (state, rawAction) {
-    var action = rawAction;
-    switch (action.type) {
-        case 'INPUT_MODE':
-            return __assign({}, state, { inputMode: action.inputMode });
-        case 'LOCALISATION':
-            return __assign({}, state, { localisation: action.localisation, text: action.localisation.load() });
-        case 'SHOW_HOTKEYS':
-            return __assign({}, state, { showHotkeys: action.show });
-        default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            var exhaustiveCheck = action;
-    }
-    return state || unloadedState;
-};
-
-
-/***/ }),
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -207,10 +217,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_redux__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_redux__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configureStore__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_ScreenSelector__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_ScreenManager__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality_Connection__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__functionality_Hotkeys__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client_scss__ = __webpack_require__(13);
@@ -232,7 +242,7 @@ __WEBPACK_IMPORTED_MODULE_8__functionality_Hotkeys__["a" /* Hotkeys */].initiali
 function renderApp() {
     __WEBPACK_IMPORTED_MODULE_1_react_dom__["render"](__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__["AppContainer"], null,
         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3_react_redux__["Provider"], { store: store },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__components_ScreenSelector__["a" /* default */], null))), document.getElementById('client-root'));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__components_ScreenManager__["a" /* default */], null))), document.getElementById('client-root'));
 }
 renderApp();
 
@@ -272,8 +282,8 @@ var Screen = (function (_super) {
         if (this.props.centered) {
             classes += ' screen--centered';
         }
-        if (!this.props.scrollable) {
-            classes += ' screen--noScrolling';
+        if (this.props.pageLayout) {
+            classes += ' screen--pageLayout';
         }
         var heading;
         if (this.props.heading !== undefined) {
@@ -285,7 +295,7 @@ var Screen = (function (_super) {
     };
     Screen.defaultProps = {
         centered: false,
-        scrollable: true,
+        pageLayout: false,
     };
     return Screen;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -384,10 +394,11 @@ var reducer = function (state, action) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__screens__ = __webpack_require__(19);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general_Screen__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__general_Screen__ = __webpack_require__(6);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -403,32 +414,41 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var ScreenSelector = (function (_super) {
-    __extends(ScreenSelector, _super);
-    function ScreenSelector() {
+
+var ScreenManager = (function (_super) {
+    __extends(ScreenManager, _super);
+    function ScreenManager() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    ScreenSelector.prototype.render = function () {
+    ScreenManager.prototype.componentWillMount = function () {
+        var _this = this;
+        this.updateDimensions();
+        window.addEventListener('resize', function () { return _this.updateDimensions(); });
+    };
+    ScreenManager.prototype.render = function () {
         var classes = 'client';
         if (this.props.showHotkeys) {
             classes += ' client--showHotkeys';
         }
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes }, this.renderScreen());
     };
-    ScreenSelector.prototype.renderScreen = function () {
+    ScreenManager.prototype.renderScreen = function () {
         switch (this.props.screen) {
             case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].Connecting:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__screens__["a" /* Connecting */], null);
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["a" /* Connecting */], null);
             case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].UserSettings:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__screens__["b" /* Settings */], null);
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["b" /* Settings */], null);
             default:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general_Screen__["a" /* Screen */], { centered: true },
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general_Screen__["a" /* Screen */], { centered: true },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("h1", { className: "screen__heading" },
                         "Unable to render required screen: ",
                         this.props.screen));
         }
     };
-    return ScreenSelector;
+    ScreenManager.prototype.updateDimensions = function () {
+        this.props.setScreenSize(window.innerWidth, window.innerHeight);
+    };
+    return ScreenManager;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
 // Selects which state properties are merged into the component's props
 var mapStateToProps = function (state) {
@@ -439,7 +459,7 @@ var mapStateToProps = function (state) {
     };
 };
 // Wire up the React component to the Redux store
-/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, {})(ScreenSelector));
+/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, __WEBPACK_IMPORTED_MODULE_3__store_User__["a" /* actionCreators */])(ScreenManager));
 
 
 /***/ }),
@@ -487,7 +507,7 @@ function buildRootReducer(allReducers) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Connection; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Screen__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Screen__ = __webpack_require__(4);
 
 
 var Connection = (function () {
@@ -524,7 +544,7 @@ var Connection = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Hotkeys; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(2);
 
 
 var Hotkeys = (function () {
@@ -628,8 +648,8 @@ module.exports = (__webpack_require__(0))(139);
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general_Screen__ = __webpack_require__(6);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -672,10 +692,10 @@ var mapStateToProps = function (state) {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Crew__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Screen__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Screen__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__functionality_Localisation__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__general_Screen__ = __webpack_require__(6);
 var __extends = (this && this.__extends) || (function () {
@@ -715,12 +735,16 @@ var Settings = (function (_super) {
     Settings.prototype.render = function () {
         var _this = this;
         var words = this.props.text.screens.settings;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__general_Screen__["a" /* Screen */], { heading: words.intro },
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__general_Screen__["a" /* Screen */], { heading: words.intro, pageLayout: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { role: "group" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("label", { htmlFor: "txtUserName" }, words.userName),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("input", { id: "txtUserName", className: "value secondary", type: "text", value: this.state.userName, onChange: function (e) { return _this.setState({ userName: e.target.value.trim() }); }, placeholder: words.userNamePlaceholder }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription))));
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription))),
+            "Screen size is ",
+            this.props.screenWidth,
+            "x",
+            this.props.screenHeight);
     };
     Settings.prototype.sendChanges = function () {
         this.props.changePlayerName(this.props.localPlayerID, this.state.userName);
@@ -738,6 +762,8 @@ var mapStateToProps = function (state) {
         localisation: state.user.localisation,
         text: state.user.text,
         userName: player.length > 0 ? player[0].name : undefined,
+        screenWidth: state.user.screenWidth,
+        screenHeight: state.user.screenHeight,
     };
 };
 // Wire up the React component to the Redux store
@@ -775,7 +801,7 @@ var words = {
     },
     screens: {
         connecting: {
-            connecting: 'Connecting...',
+            connecting: 'Connecting to your ship...',
         },
         settings: {
             intro: 'Please fill in the following',
@@ -799,9 +825,9 @@ var words = {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducers; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(4);
 
 
 

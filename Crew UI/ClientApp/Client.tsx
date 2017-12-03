@@ -4,7 +4,7 @@ import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
-import ScreenSelector from './components/ScreenSelector';
+import ScreenManager from './components/ScreenManager';
 import { Connection } from './functionality/Connection';
 import { Hotkeys } from './functionality/Hotkeys';
 import './Client.scss';
@@ -21,7 +21,7 @@ function renderApp() {
     ReactDOM.render(
         <AppContainer>
             <Provider store={ store }>
-                <ScreenSelector />
+                <ScreenManager />
             </Provider>
         </AppContainer>,
         document.getElementById('client-root')

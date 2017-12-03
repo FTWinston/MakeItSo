@@ -1,6 +1,11 @@
+@import 'mixins';
+
 .screen {
-    min-height: 100vh;
-    padding: 0.5em;
+    min-height: calc(100vh - #{$clientPadding * 2});
+    height: calc(100vh - #{$clientPadding * 2});
+    max-height: calc(100vh - #{$clientPadding * 2});
+    overflow: hidden;
+
     box-sizing: border-box;
 
     display: flex;
@@ -13,10 +18,32 @@
     align-items: center;
 }
 
-.screen--noScrolling {
-    overflow: hidden;
-    height: 100vh;
-    max-height: 100vh;
+.screen--pageLayout {
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    height: unset;
+    max-height: unset;
+    overflow: unset;
+    overflow-y: auto;
+
+    width: calc(100vw - 2em);
+    max-width: 800em;
+
+    @media (min-width: 500px) {
+        width: calc(400px + 20vw);
+    }
+
+    @media(max-width: 500px) {
+        & > div[role="group"] {
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+    }
 }
 
 .screen__heading {

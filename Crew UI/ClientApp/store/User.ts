@@ -10,6 +10,8 @@ export interface UserState {
     localisation: Localisation;
     text: TextLocalisation;
     showHotkeys: boolean;
+    screenWidth: number;
+    screenHeight: number;
 }
 
 // -----------------
@@ -31,9 +33,15 @@ interface ShowHotkeysAction {
     show: boolean;
 }
 
+interface SetScreenSizeAction {
+    type: 'SET_SCREEN_SIZE';
+    width: number;
+    height: number;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetInputModeAction | SetLocalisationAction | ShowHotkeysAction;
+type KnownAction = SetInputModeAction | SetLocalisationAction | ShowHotkeysAction | SetScreenSizeAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -43,12 +51,20 @@ export const actionCreators = {
     setInputMode: (inputMode: InputMode) => <SetInputModeAction>{ type: 'INPUT_MODE', inputMode: inputMode },
     setLocalisation: (localisation: Localisation) => <SetLocalisationAction>{ type: 'LOCALISATION', localisation: localisation },
     showHotkeys: (show: boolean) => <ShowHotkeysAction>{ type: 'SHOW_HOTKEYS', show: show },
+    setScreenSize: (width: number, height: number) => <SetScreenSizeAction>{ type: 'SET_SCREEN_SIZE', width: width, height: height },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: UserState = { inputMode: InputMode.Touchscreen, localisation: Localisations[0], text: Localisations[0].load(), showHotkeys: false };
+const unloadedState: UserState = {
+    inputMode: InputMode.Touchscreen,
+    localisation: Localisations[0],
+    text: Localisations[0].load(),
+    showHotkeys: false,
+    screenWidth: window.innerWidth,
+    screenHeight: window.innerHeight,
+};
 
 export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action) => {
     let action = rawAction as KnownAction;
@@ -68,6 +84,12 @@ export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action)
             return {
                 ...state,
                 showHotkeys: action.show,
+            };
+        case 'SET_SCREEN_SIZE':
+            return {
+                ...state,
+                screenWidth: action.width,
+                screenHeight: action.height,
             };
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above

@@ -14,6 +14,8 @@ interface SettingsDataProps {
     localisation: Localisation;
     text: TextLocalisation;
     userName?: string;
+    screenWidth: number;
+    screenHeight: number;
 }
 
 type SettingsProps =
@@ -37,7 +39,7 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
 
     public render() {
         let words = this.props.text.screens.settings;
-        return <Screen heading={words.intro}>
+        return <Screen heading={words.intro} pageLayout={true}>
             <div role="group">
                 <label htmlFor="txtUserName">{words.userName}</label>
                 <div>
@@ -52,6 +54,7 @@ class Settings extends React.Component<SettingsProps, SettingsState> {
                     <div className="description">{words.userNameDescription}</div>
                 </div>
             </div>
+            Screen size is {this.props.screenWidth}x{this.props.screenHeight}
         </Screen>;
     }
 
@@ -71,6 +74,8 @@ const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) 
         localisation: state.user.localisation,
         text: state.user.text,
         userName: player.length > 0 ? player[0].name : undefined,
+        screenWidth: state.user.screenWidth,
+        screenHeight: state.user.screenHeight,
     }
 };
 

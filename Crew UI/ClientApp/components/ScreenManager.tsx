@@ -2,16 +2,25 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../store';
 import { ClientScreen } from '../store/Screen';
+import * as UserStore from '../store/User';
 import { Connecting, Settings } from './screens'
 import { Screen } from './general/Screen';
 
-interface ScreenSelectorProps {
+interface ScreenManagerDataProps {
     screen: ClientScreen;
     errorMessage?: string;
     showHotkeys: boolean;
 }
 
-class ScreenSelector extends React.Component<ScreenSelectorProps, {}> {
+type ScreenManagerProps = ScreenManagerDataProps
+    & typeof UserStore.actionCreators;
+
+class ScreenManager extends React.Component<ScreenManagerProps, {}> {
+    componentWillMount() {
+        this.updateDimensions();
+        window.addEventListener('resize', () => this.updateDimensions());
+    }
+
     render() {
         let classes = 'client';
         if (this.props.showHotkeys) {
@@ -33,10 +42,14 @@ class ScreenSelector extends React.Component<ScreenSelectorProps, {}> {
                 </Screen>
         }
     }
+
+    private updateDimensions() {
+        this.props.setScreenSize(window.innerWidth, window.innerHeight);
+    }
 }
 
 // Selects which state properties are merged into the component's props
-const mapStateToProps: (state: ApplicationState) => ScreenSelectorProps = (state) => {
+const mapStateToProps: (state: ApplicationState) => ScreenManagerDataProps = (state) => {
     return {
         screen: state.screen.display,
         errorMessage: state.screen.errorMessage,
@@ -47,5 +60,5 @@ const mapStateToProps: (state: ApplicationState) => ScreenSelectorProps = (state
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {}
-)(ScreenSelector);
+    UserStore.actionCreators,
+)(ScreenManager);

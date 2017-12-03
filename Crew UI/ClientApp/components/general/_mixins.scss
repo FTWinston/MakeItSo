@@ -1,5 +1,7 @@
 @import '../../colors';
 
+$clientPadding: 0.5em;
+
 @mixin ui-color($color) {
     border-color: $color;
 	color: $color;
