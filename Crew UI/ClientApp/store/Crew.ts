@@ -14,7 +14,7 @@ export interface CrewState {
 
 export interface CrewPlayer {
     id: number;
-    name?: string;
+    name: string;
     flags: SystemFlags;
 }
 

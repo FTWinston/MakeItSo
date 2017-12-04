@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState }  from '../store';
 import { ClientScreen } from '../store/Screen';
 import * as UserStore from '../store/User';
-import { Connecting, Settings } from './screens'
-import { Screen } from './general/Screen';
+import * as Screen from './screens'
 
 interface ScreenManagerDataProps {
     screen: ClientScreen;
@@ -33,13 +32,13 @@ class ScreenManager extends React.Component<ScreenManagerProps, {}> {
     private renderScreen() {
         switch (this.props.screen) {
             case ClientScreen.Connecting:
-                return <Connecting />;
+                return <Screen.Connecting />;
             case ClientScreen.UserSettings:
-                return <Settings />;
+                return <Screen.Settings />;
+            case ClientScreen.WaitingForPlayers:
+                return <Screen.WaitingForPlayers />;
             default:
-                return <Screen centered={true}>
-                    <h1 className="screen__heading">Unable to render required screen: {this.props.screen}</h1>
-                </Screen>
+                return <h1 className="screen__heading">Unable to render required screen: {this.props.screen}</h1>;
         }
     }
 

@@ -28,7 +28,11 @@ let words: TextLocalisation = {
             inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
             inputModeDescriptionTouch: 'Use Multi-touch controls',
             inputModeDescriptionGamepad: 'Use an attached game controller',
-        }
+        },
+        waiting: {
+            intro: 'Please wait for all of your crew to join, then click \'Ready\'',
+            players: 'Current players:',
+        },
     }
 };
 

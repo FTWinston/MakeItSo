@@ -43,6 +43,10 @@ export interface TextLocalisation {
             inputModeDescriptionKeyboard: string;
             inputModeDescriptionTouch: string;
             inputModeDescriptionGamepad: string;
-        }
+        },
+        waiting: {
+            intro: string;
+            players: string;
+        },
     }
 }
