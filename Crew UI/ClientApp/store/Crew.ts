@@ -22,20 +22,15 @@ export interface CrewPlayer {
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface AddPlayersAction {
-    type: 'ADD_PLAYERS';
-    players: CrewPlayer[];
-}
-
 interface RemovePlayerAction {
     type: 'REMOVE_PLAYER';
     playerID: number;
 }
 
-interface ChangePlayerNameAction {
-    type: 'CHANGE_PLAYER_NAME';
+interface UpdatePlayerAction {
+    type: 'UPDATE_PLAYER';
     playerID: number;
-    name?: string;
+    name: string;
 }
 
 interface SetPlayerSystemsAction {
@@ -61,16 +56,15 @@ interface SetSelectionModeAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = AddPlayersAction | RemovePlayerAction | ChangePlayerNameAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction | SetSelectionModeAction;
+type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction | SetSelectionModeAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    addPlayers: (players: CrewPlayer[]) => <AddPlayersAction>{ type: 'ADD_PLAYERS', players: players },
+    updatePlayer: (playerID: number, name: string) => <UpdatePlayerAction>{ type: 'UPDATE_PLAYER', playerID: playerID, name: name },
     removePlayer: (playerID: number) => <RemovePlayerAction>{ type: 'REMOVE_PLAYER', playerID: playerID },
-    changePlayerName: (playerID: number, name: string) => <ChangePlayerNameAction>{ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name },
     setPlayerSystems: (playerID: number, flags: SystemFlags) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags },
     setLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
     setSetupPlayer: (playerID: number | undefined) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
@@ -84,27 +78,34 @@ const unloadedState: CrewState = { players: [], selectSystemsDirectly: false };
 
 export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownAction) => {
     switch (action.type) {
-        case 'ADD_PLAYERS':
-            return {
-                ...state,
-                players: state.players.concat(action.players),
-            };
         case 'REMOVE_PLAYER':
             return {
                 ...state,
                 players: state.players.filter(p => p.id !== action.playerID),
             };
-        case 'CHANGE_PLAYER_NAME':
+        case 'UPDATE_PLAYER':
+            let existing = false;
+            let players = state.players.map((player, index) => {
+                if (player.id === action.playerID) {
+                    existing = true;
+                    return Object.assign({}, player, {
+                        name: action.name
+                    });
+                }
+                return player;
+            });
+
+            if (!existing) {
+                players.push({
+                    id: action.playerID,
+                    name: action.name,
+                    flags: 0,
+                });
+            }
+
             return {
                 ...state,
-                players: state.players.map((player, index) => {
-                    if (player.id === action.playerID) {
-                        return Object.assign({}, player, {
-                            name: action.name
-                        });
-                    }
-                    return player;
-                }),
+                players: players,
             };
         case 'SET_PLAYER_SYSTEMS':
             return {

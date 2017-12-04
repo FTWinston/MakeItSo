@@ -559,9 +559,8 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 var actionCreators = {
-    addPlayers: function (players) { return ({ type: 'ADD_PLAYERS', players: players }); },
+    updatePlayer: function (playerID, name) { return ({ type: 'UPDATE_PLAYER', playerID: playerID, name: name }); },
     removePlayer: function (playerID) { return ({ type: 'REMOVE_PLAYER', playerID: playerID }); },
-    changePlayerName: function (playerID, name) { return ({ type: 'CHANGE_PLAYER_NAME', playerID: playerID, name: name }); },
     setPlayerSystems: function (playerID, flags) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags }); },
     setLocalPlayer: function (playerID) { return ({ type: 'SET_LOCAL_PLAYER', playerID: playerID }); },
     setSetupPlayer: function (playerID) { return ({ type: 'SET_SETUP_PLAYER', playerID: playerID }); },
@@ -572,19 +571,27 @@ var actionCreators = {
 var unloadedState = { players: [], selectSystemsDirectly: false };
 var reducer = function (state, action) {
     switch (action.type) {
-        case 'ADD_PLAYERS':
-            return __assign({}, state, { players: state.players.concat(action.players) });
         case 'REMOVE_PLAYER':
             return __assign({}, state, { players: state.players.filter(function (p) { return p.id !== action.playerID; }) });
-        case 'CHANGE_PLAYER_NAME':
-            return __assign({}, state, { players: state.players.map(function (player, index) {
-                    if (player.id === action.playerID) {
-                        return Object.assign({}, player, {
-                            name: action.name
-                        });
-                    }
-                    return player;
-                }) });
+        case 'UPDATE_PLAYER':
+            var existing_1 = false;
+            var players = state.players.map(function (player, index) {
+                if (player.id === action.playerID) {
+                    existing_1 = true;
+                    return Object.assign({}, player, {
+                        name: action.name
+                    });
+                }
+                return player;
+            });
+            if (!existing_1) {
+                players.push({
+                    id: action.playerID,
+                    name: action.name,
+                    flags: 0,
+                });
+            }
+            return __assign({}, state, { players: players });
         case 'SET_PLAYER_SYSTEMS':
             return __assign({}, state, { players: state.players.map(function (player, index) {
                     if (player.id === action.playerID) {
@@ -756,6 +763,19 @@ var Connection = (function () {
         switch (cmd) {
             case 'id':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setLocalPlayer(parseInt(data)));
+                break;
+            case 'all_present':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showRoleSelection());
+                break;
+            case 'player': {
+                pos = data.indexOf(' ');
+                var playerID = parseInt(data.substr(0, pos));
+                var playerName = data.substr(pos + 1);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].updatePlayer(playerID, playerName));
+                break;
+            }
+            case 'disconnect':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].removePlayer(parseInt(data)));
                 break;
             default:
                 console.log("Unexpected command: " + cmd);
@@ -1412,8 +1432,8 @@ var Settings = (function (_super) {
     };
     Settings.prototype.close = function () {
         var _this = this;
-        __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("name " + this.props.userName.trim());
         var localPlayer = this.props.players.filter(function (p) { return p.id === _this.props.localPlayerID; });
+        __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("name " + this.props.userName.trim());
         if (localPlayer.length === 0) {
             if (this.props.gameInProgress) {
                 this.props.showWaitingForGame();
@@ -1485,12 +1505,12 @@ var WaitingForPlayers = (function (_super) {
         var words = this.props.text.screens.waiting;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true, labelText: words.players },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("ul", null, this.props.playerNames.map(function (n) { return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("li", null, n); }))),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("ul", null, this.props.playerNames.map(function (n, id) { return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("li", { key: id }, n); }))),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["c" /* PushButton */], { color: 2 /* Tertiary */, clicked: function () { return _this.continue(); }, text: this.props.text.common.ready })));
     };
     WaitingForPlayers.prototype.continue = function () {
-        __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("ready");
+        __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('all_present');
     };
     return WaitingForPlayers;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -1556,7 +1576,7 @@ var words = {
     },
     screens: {
         connecting: {
-            connecting: 'Connecting to your ship...',
+            connecting: 'Connecting...',
         },
         settings: {
             intro: 'Enter your name, and choose an input mode:',

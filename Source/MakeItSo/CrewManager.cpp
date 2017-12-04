@@ -269,18 +269,23 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// Send connection ID back to the client.
 	mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "id %i", info->identifier);
 
+	// send all other players to this client
+	for (auto& other : *currentConnections)
+	{
+		if (other->hasName)
+			mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "player %i %S", other->identifier, CHARARR(other->name));
+	}
+
 #ifndef WEB_SERVER_TEST
 	currentConnections->Add(info);
 #else
 	currentConnections->insert(currentConnections->end(), info);
 #endif
 	
-	// send updated crew size to all clients, and clear system selection
-	int32 size = currentConnections->size();
+	// clear system selection
 	for (auto& other : *currentConnections)
 	{
 		other->shipSystemFlags = 0;
-		mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "crew %i", size);
 		mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "sys 0");
 	}
 
@@ -322,11 +327,11 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	// send "player quit" message to crewmates
 #ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("crew %i"), currentConnections->size());
+	auto message = FString::Printf(TEXT("disconnect %i"), info->identifier);
 	SendCrewMessage(ESystem::Everyone, CHARARR(message));
 #else
 	TCHAR message[140];
-	swprintf(message, sizeof(message), L"crew %i", currentConnections->size());
+	swprintf(message, sizeof(message), L"disconnect %i", info->identifier);
 	SendCrewMessage(ESystem::Everyone, message);
 #endif
 
@@ -429,6 +434,21 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		mbstowcs(wBuffer, buffer, strlen(buffer) + 1);
 		info->name = FString(wBuffer);
 #endif
+		info->hasName = true;
+		
+		for (auto& other : *currentConnections)
+		{
+			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "player %i %S", info->identifier, CHARARR(info->name));
+		}
+	}
+	else if (MATCHES(msg, "all_present"))
+	{
+		// TODO: if game in progress, do nothing
+
+		for (auto& other : *currentConnections)
+		{
+			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "all_present");
+		}
 	}
 	else if (STARTS_WITH(msg, "sys "))
 	{

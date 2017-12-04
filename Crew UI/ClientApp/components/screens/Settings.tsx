@@ -68,9 +68,10 @@ class Settings extends React.Component<SettingsProps, {}> {
     }
 
     private close() {
+        let localPlayer = this.props.players.filter(p => p.id === this.props.localPlayerID);
+
         connection.send(`name ${this.props.userName.trim()}`);
 
-        let localPlayer = this.props.players.filter(p => p.id === this.props.localPlayerID);
         if (localPlayer.length === 0) {
             if (this.props.gameInProgress) {
                 this.props.showWaitingForGame();

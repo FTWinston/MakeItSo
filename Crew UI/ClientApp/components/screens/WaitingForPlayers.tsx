@@ -18,7 +18,7 @@ class WaitingForPlayers extends React.Component<WaitingProps, {}> {
         return <Screen heading={words.intro} pageLayout={true}>
             <Field centered={true} labelText={words.players}>
                 <ul>
-                    {this.props.playerNames.map(n => <li>{n}</li>)}
+                    {this.props.playerNames.map((n, id) => <li key={id}>{n}</li>)}
                 </ul>
             </Field>
             
@@ -29,7 +29,7 @@ class WaitingForPlayers extends React.Component<WaitingProps, {}> {
     }
 
     private continue() {
-        connection.send(`ready`);
+        connection.send('all_present');
     }
 }
 

@@ -36,6 +36,19 @@ export class Connection {
             case 'id':
                 store.dispatch(crewActions.setLocalPlayer(parseInt(data)));
                 break;
+            case 'all_present':
+                store.dispatch(screenActions.showRoleSelection());
+                break;
+            case 'player': {
+                pos = data.indexOf(' ');
+                let playerID = parseInt(data.substr(0, pos));
+                let playerName = data.substr(pos + 1);
+                store.dispatch(crewActions.updatePlayer(playerID, playerName));
+                break;
+            }
+            case 'disconnect':
+                store.dispatch(crewActions.removePlayer(parseInt(data)));
+                break;
             default:
                 console.log(`Unexpected command: ${cmd}`);
                 break;

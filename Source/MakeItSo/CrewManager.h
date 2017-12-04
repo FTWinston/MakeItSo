@@ -125,13 +125,14 @@ public:
 		connection = conn;
 		identifier = id;
 		shipSystemFlags = 0;
-		name = FString(TEXT("New player"));
+		hasName = false;
 	}
 
 	mg_connection *connection;
 	int32 identifier;
 	int32 shipSystemFlags;
 	FString name;
+	bool hasName;
 };
 
 
