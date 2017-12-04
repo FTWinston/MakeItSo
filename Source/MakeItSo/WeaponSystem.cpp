@@ -112,7 +112,7 @@ void UWeaponSystem::SendDice()
 #endif
 	}
 
-	SendCrewMessage(CHARARR(output));
+	crewManager->SendAll(output);
 }
 
 uint8 UWeaponSystem::Roll()

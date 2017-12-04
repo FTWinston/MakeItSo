@@ -17,8 +17,8 @@
 
 #define MAX_CREW_CONNECTIONS 20
 
-#define STARTS_WITH(msg, prefix) msg->size > sizeof(prefix) - 1 && !memcmp(msg->data, prefix, sizeof(prefix) - 1)
-#define MATCHES(msg, prefix)     msg->size >= sizeof(prefix) - 1 && !memcmp(msg->data, prefix, sizeof(prefix) - 1)
+#define STARTS_WITH(msg, text) msg->size >  sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
+#define MATCHES(msg, text)     msg->size >= sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
 
 #ifndef WEB_SERVER_TEST
 #define CHARARR(str) *str
@@ -67,7 +67,6 @@ public:
 
 		AllStations = Helm + Warp + Weapons + Sensors + PowerManagement + DamageControl + ViewScreen + Communications,
 		NoStations = 0,
-		Everyone = 256
 	};
 
 	FString Init(AShipPlayerController *controller);
@@ -76,7 +75,15 @@ public:
 	void LinkController(AShipPlayerController *controller);
 	void Poll() { mg_mgr_poll(mgr, 1); }
 	void HandleEvent(mg_connection *conn, int ev, void *ev_data);
-	void SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude = nullptr);
+	void SendFixed(mg_connection *conn, const char *message);
+	void Send(mg_connection *conn, const char *message, ...);
+	void Send(mg_connection *conn, FString message);
+	void SendAllFixed(const char *message);
+	void SendAll(const char *message, ...);
+	void SendAll(FString message);
+	void SendSystemFixed(ESystem system, const char *message);
+	void SendSystem(ESystem system, const char *message, ...);
+	void SendSystem(ESystem system, FString message);
 	void SendAllCrewData();
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
 
@@ -149,7 +156,6 @@ public:
 	virtual void SendAllData() { }
 	virtual void ResetData() { }
 protected:
-	void SendCrewMessage(const TCHAR *message, ConnectionInfo *exclude = nullptr) { crewManager->SendCrewMessage(GetSystem(), message, exclude); }
 	UCrewManager* crewManager;
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::NoStations; }
 };

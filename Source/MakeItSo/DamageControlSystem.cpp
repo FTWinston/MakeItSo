@@ -153,7 +153,7 @@ void UDamageControlSystem::SendDamageGrid()
 	for (int32 id : damageGrid)
 		AppendCellType(output, id);
 
-	SendCrewMessage(CHARARR(output));
+	crewManager->SendAll(output);
 }
 
 void UDamageControlSystem::AdvanceSnake()
@@ -218,7 +218,7 @@ void UDamageControlSystem::AdvanceSnake()
 	prevSnakeDir = snakeDir;
 
 	// send crew message listing changed cells
-	SendCrewMessage(CHARARR(crewMessage));
+	crewManager->SendAll(crewMessage);
 }
 
 int32 UDamageControlSystem::LookAhead(int32 oldHead)
@@ -481,7 +481,7 @@ void UDamageControlSystem::CreateDamage(EDamageSection section, int32 amount)
 		numUpdated++;
 	}
 
-	SendCrewMessage(CHARARR(crewMessage));
+	crewManager->SendAll(crewMessage);
 }
 
 UDamageControlSystem::EDamageSection UDamageControlSystem::GetDamageCellSection(int32 cellIndex)

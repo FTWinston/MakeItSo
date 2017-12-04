@@ -117,26 +117,12 @@ void UPowerSystem::IncrementAuxPower()
 
 void UPowerSystem::SendAuxPower()
 {
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("aux %i"), auxPower);
-	SendCrewMessage(CHARARR(message));
-#else
-	TCHAR buffer[8];
-	swprintf(buffer, sizeof(buffer), L"aux %i", auxPower);
-	SendCrewMessage(buffer);
-#endif
+	crewManager->SendAll("aux %i", auxPower);
 }
 
 void UPowerSystem::SendPowerLevels()
 {
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("levels %.0f %.0f %.0f %.0f %.0f %.0f"), powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
-	SendCrewMessage(CHARARR(message));
-#else
-	TCHAR buffer[32];
-	swprintf(buffer, sizeof(buffer), L"levels %.0f %.0f %.0f %.0f %.0f %.0f", powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
-	SendCrewMessage(buffer);
-#endif
+	crewManager->SendAll("levels %.0f %.0f %.0f %.0f %.0f %.0f", powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
 }
 
 #ifndef WEB_SERVER_TEST
@@ -172,7 +158,7 @@ void UPowerSystem::SendCardChoice()
 #else
 	if (cardChoices.empty())
 #endif
-		SendCrewMessage(TEXT("choice "));
+		crewManager->SendAllFixed("choice ");
 	else
 	{
 #ifndef WEB_SERVER_TEST
@@ -183,14 +169,14 @@ void UPowerSystem::SendCardChoice()
 #endif
 
 		auto command = CombineIDs(TEXT("choice "), choiceIDs);
-		SendCrewMessage(CHARARR(command));
+		crewManager->SendAll(command);
 	}
 }
 
 void UPowerSystem::SendCardLibrary()
 {
 	auto command = CombineIDs(TEXT("lib "), cardLibrary);
-	SendCrewMessage(CHARARR(command));
+	crewManager->SendAll(command);
 }
 
 FString UPowerSystem::CombineIDs(const TCHAR *prefix, TSet<int32> IDs)

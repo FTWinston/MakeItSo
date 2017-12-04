@@ -127,22 +127,22 @@ bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_messa
 	else if (MATCHES(msg, "+viewchase"))
 	{
 		viewChase = true;
-		SendCrewMessage(TEXT("chase on"));
+		crewManager->SendAllFixed("chase on");
 	}
 	else if (MATCHES(msg, "-viewchase"))
 	{
 		viewChase = false;
-		SendCrewMessage(TEXT("chase off"));
+		crewManager->SendAllFixed("chase off");
 	}
 	else if (MATCHES(msg, "+viewcomms"))
 	{
 		viewComms = true;
-		SendCrewMessage(TEXT("comms on"));
+		crewManager->SendAllFixed("comms on");
 	}
 	else if (MATCHES(msg, "-viewcomms"))
 	{
 		viewComms = false;
-		SendCrewMessage(TEXT("comms off"));
+		crewManager->SendAllFixed("comms off");
 	}
 	else
 		return false;
@@ -173,38 +173,17 @@ void UViewscreenSystem::DetermineTargetAngles()
 
 void UViewscreenSystem::SendViewAngles()
 {
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("view %i %i"), (int)viewYaw, (int)viewPitch);
-	SendCrewMessage(CHARARR(message));
-#else
-	TCHAR buffer[16];
-	swprintf(buffer, sizeof(buffer), L"view %i %i", (int)viewYaw, (int)viewPitch);
-	SendCrewMessage(buffer);
-#endif
+	crewManager->SendAll("view %i %i", (int)viewYaw, (int)viewPitch);
 }
 
 void UViewscreenSystem::SendViewZoomDist()
 {
 	if (viewChase)
 	{
-#ifndef WEB_SERVER_TEST
-		auto message = FString::Printf(TEXT("dist %i"), (int)viewChaseDist);
-		SendCrewMessage(CHARARR(message));
-#else
-		TCHAR buffer[16];
-		swprintf(buffer, sizeof(buffer), L"dist %i", (int)viewChaseDist);
-		SendCrewMessage(buffer);
-#endif
+		crewManager->SendAll("dist %i", (int)viewChaseDist);
 	}
 	else
 	{
-#ifndef WEB_SERVER_TEST
-		auto message = FString::Printf(TEXT("zoom %.2f"), viewZoom);
-		SendCrewMessage(CHARARR(message));
-#else
-		TCHAR buffer[24];
-		swprintf(buffer, sizeof(buffer), L"zoom %.2f", viewZoom);
-		SendCrewMessage(buffer);
-#endif
+		crewManager->SendAll("zoom %.2f", viewZoom);
 	}
 }

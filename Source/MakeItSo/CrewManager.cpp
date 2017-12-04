@@ -191,7 +191,7 @@ void UCrewManager::PauseGame(bool state)
 	if (state)
 	{
 		crewState = ECrewState::Paused;
-		SendCrewMessage(ESystem::Everyone, TEXT("pause"));
+		SendAll("pause");
 	}
 	else
 	{
@@ -255,25 +255,21 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	int32 identifier = GetNewUniqueIdentifier();
 	if (identifier == -1)
 	{
-		mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "full");
+		Send(conn, "full");
 		return;
 	}
-
-	// HOW TO: write connection's IP address
-	// char addr[32];
-	// mg_sock_addr_to_str(&nc->sa, addr, sizeof(addr), MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT);
 
 	ConnectionInfo *info = new ConnectionInfo(conn, identifier);
 	conn->user_data = info;
 
 	// Send connection ID back to the client.
-	mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "id %i", info->identifier);
+	Send(conn, "id %i", info->identifier);
 
 	// send all other players to this client
 	for (auto& other : *currentConnections)
 	{
 		if (other->hasName)
-			mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "player %i %S", other->identifier, CHARARR(other->name));
+			Send(conn, "player %i %S", other->identifier, CHARARR(other->name));
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -282,25 +278,18 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	currentConnections->insert(currentConnections->end(), info);
 #endif
 	
-	// clear system selection
-	for (auto& other : *currentConnections)
-	{
-		other->shipSystemFlags = 0;
-		mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "sys 0");
-	}
-
 	// send whether systems are selected directly, or whether roles are used
-	mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, selectSystemsDirectly ? "selectsys+" : "selectsys-");
+	Send(conn, selectSystemsDirectly ? "selectsys+" : "selectsys-");
 
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
 	{
-		mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "game+ 0");
+		Send(conn, "game+ 0");
 		return;
 	}
 	else if (crewState == ECrewState::Paused)
 	{
-		mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "pause");
+		Send(conn, "pause");
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -310,7 +299,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 
 	// if someone is in setup, tell this client
 	if (connectionInSetup)
-		mg_printf_websocket_frame(conn, WEBSOCKET_OP_TEXT, "setup-");
+		Send(conn, "setup-");
 }
 
 void UCrewManager::EndConnection(mg_connection *conn)
@@ -326,14 +315,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 #endif
 
 	// send "player quit" message to crewmates
-#ifndef WEB_SERVER_TEST
-	auto message = FString::Printf(TEXT("disconnect %i"), info->identifier);
-	SendCrewMessage(ESystem::Everyone, CHARARR(message));
-#else
-	TCHAR message[140];
-	swprintf(message, sizeof(message), L"disconnect %i", info->identifier);
-	SendCrewMessage(ESystem::Everyone, message);
-#endif
+	SendAll("disconnect %i", info->identifier);
 
 	// send updated system usage
 	for (auto& other : *currentConnections)
@@ -344,10 +326,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		connectionInSetup = nullptr;
 
 		// send "setup not in use" message to all
-		for (auto& other : *currentConnections)
-		{
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "setup+");
-		}
+		SendAll("setup+");
 	}
 
 	// if there are no connections in currentConnections with any ship system set, automatically pause the game
@@ -436,20 +415,15 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 #endif
 		info->hasName = true;
 		
-		for (auto& other : *currentConnections)
-		{
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "player %i %S", info->identifier, CHARARR(info->name));
-		}
+		SendAll("player %i %S", info->identifier, CHARARR(info->name));
 	}
 	else if (MATCHES(msg, "all_present"))
 	{
 		// TODO: if game in progress, do nothing
 
-		for (auto& other : *currentConnections)
-		{
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "all_present");
-		}
+		SendAll("all_present");
 	}
+	/*
 	else if (STARTS_WITH(msg, "sys "))
 	{
 		char buffer[10];
@@ -479,11 +453,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		connectionInSetup = info;
 
 		// send "setup in use" message to all others
-		for (auto& other : *currentConnections)
-		{
-			if (other != info)
-				mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "setup-");
-		}
+		SendAll("setup-");
 	}
 	else if (MATCHES(msg, "-setup"))
 	{
@@ -493,35 +463,9 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		connectionInSetup = nullptr;
 
 		// send "setup not in use" message to all others
-		for (auto& other : *currentConnections)
-		{
-			if (other != info)
-				mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "setup+");
-		}
+		SendAll("setup+");
 	}
-	else if (MATCHES(msg, "+selectsys"))
-	{
-		selectSystemsDirectly = true;
-		// send updated selection mode and clear system selections
-		for (auto& other : *currentConnections)
-		{
-			other->shipSystemFlags = 0;
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "selectsys+");
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "sys 0");
-		}
-	}
-	else if (MATCHES(msg, "-selectsys"))
-	{
-		selectSystemsDirectly = false;
-		// send updated selection mode and clear system selections
-		for (auto& other : *currentConnections)
-		{
-			other->shipSystemFlags = 0;
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "selectsys-");
-			mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, "sys 0");
-		}
-	}
-	/* ship name = player name
+	// ship name = player name
 	else if (STARTS_WITH(msg, "shipname "))
 	{
 		if (connectionInSetup != info)
@@ -532,7 +476,6 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 
 		name = std::string(buffer);
 	}
-	*/
 	else if (MATCHES(msg, "startGame"))
 	{
 		if (connectionInSetup != info || crewState != ECrewState::Setup)
@@ -579,13 +522,14 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 #else
 		TCHAR buffer[16];
 		swprintf(buffer, sizeof(buffer), L"game- %i", info->identifier);
-		SendCrewMessage(ESystem::Everyone, buffer);
+		SendSystemMessage(ESystem::Everyone, buffer);
 #endif
 
 #ifndef WEB_SERVER_TEST
 		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Main"));
 #endif
 	}
+	*/
 
 	for (auto system : systems)
 #ifndef WEB_SERVER_TEST
@@ -639,63 +583,138 @@ void UCrewManager::SendSystemUsage(ConnectionInfo *sendTo)
 		if (other != sendTo)
 			systemFlags |= other->shipSystemFlags;
 
-	mg_printf_websocket_frame(sendTo->connection, WEBSOCKET_OP_TEXT, "sys %i", systemFlags);
+	Send(sendTo->connection, "sys %i", systemFlags);
 }
 
 void UCrewManager::SendGameActive()
 {
 	for (auto& info : *currentConnections)
-		mg_printf_websocket_frame(info->connection, WEBSOCKET_OP_TEXT, "game+ %i", info->shipSystemFlags);
+		Send(info->connection, "game+ %i", info->shipSystemFlags);
 }
 
-void UCrewManager::SendCrewMessage(ESystem system, const TCHAR *message, ConnectionInfo *exclude)
+void UCrewManager::SendFixed(mg_connection *conn, const char *message)
 {
-	bool includeNoSystems = false;
-	int32 systemFlags;
+	int32 len = strlen(message);
+	mg_send_websocket_frame(conn, WEBSOCKET_OP_TEXT, message, len);
+}
 
+void UCrewManager::Send(mg_connection *conn, const char *message, ...)
+{
+	// copied from mg_printf_websocket_frame cos we can't pas var args into that
+	char mem[MG_VPRINTF_BUFFER_SIZE], *buf = mem;
+	va_list ap;
+
+	va_start(ap, message);
+	if ((mg_avprintf(&buf, sizeof(mem), message, ap)) > 0)
+	{
+		SendFixed(conn, buf);
+	}
+	va_end(ap);
+
+	if (buf != mem && buf != NULL)
+	{
+		free(buf);
+	}
+}
+
+void UCrewManager::Send(mg_connection *conn, FString message)
+{
 #ifndef WEB_SERVER_TEST
-	FString withSystem = FString::Printf(TEXT("x %i %s\n"), (int32)system, message);
+	auto nMessage = TCHAR_TO_ANSI(message);
 #else
-	std::wstring withSystem = TEXT("x ");
-	withSystem += std::to_wstring(system);
-	withSystem += TEXT(" ");
-	withSystem += message;
-	char szText[2048];
+	char nMessage[2048];
+	int32 len = wcslen(message.c_str());
+	wcstombs(nMessage, message.c_str(), len);
+	nMessage[len] = '\0';
 #endif
 
-	switch (system)
-	{
-	case ESystem::Everyone:
-		includeNoSystems = true;
-	case ESystem::AllStations:
-		systemFlags = ~0; // every system flag should be set
-		break;
-	case ESystem::NoStations:
-		systemFlags = 0; // no system flag should be set
-		includeNoSystems = true;
-		break;
-	default:
-		message = CHARARR(withSystem);
-		systemFlags = 1 << system; // only the flag for the given system should be set
-		break;
-	}
+	SendFixed(conn, nMessage);
+}
+
+void UCrewManager::SendAllFixed(const char *message)
+{
+	int32 len = strlen(message);
 
 	for (auto& other : *currentConnections)
 	{
-		if (other == exclude)
-			continue;
-
-		if (!(includeNoSystems && other->shipSystemFlags == 0) && !(other->shipSystemFlags & systemFlags) != 0)
-			continue;
-		
-#ifndef WEB_SERVER_TEST
-		mg_printf_websocket_frame(other->connection, TCHAR_TO_ANSI(message));
-#else
-		wcstombs(szText, message, wcslen(message));
-		szText[wcslen(message)] = '\0';
-		mg_printf_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, szText);
-#endif
+		mg_send_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, message, len);
 	}
+}
+
+void UCrewManager::SendAll(const char *message, ...)
+{
+	char mem[MG_VPRINTF_BUFFER_SIZE], *buf = mem;
+	va_list ap;
+
+	va_start(ap, message);
+	if ((mg_avprintf(&buf, sizeof(mem), message, ap)) > 0)
+	{
+		SendAllFixed(buf);
+	}
+	va_end(ap);
+
+	if (buf != mem && buf != NULL)
+	{
+		free(buf);
+	}
+}
+
+void UCrewManager::SendAll(FString message)
+{
+#ifndef WEB_SERVER_TEST
+	auto nMessage = TCHAR_TO_ANSI(message);
+#else
+	char nMessage[2048];
+	int len = wcslen(message.c_str());
+	wcstombs(nMessage, message.c_str(), len);
+	nMessage[len] = '\0';
+#endif
+
+	SendAllFixed(nMessage);
+}
+
+void UCrewManager::SendSystemFixed(ESystem system, const char *message)
+{
+	int32 systemFlags = system;
+	int32 len = strlen(message);
+
+	for (auto& other : *currentConnections)
+	{
+		if (other->shipSystemFlags & systemFlags)
+			mg_send_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, message, len);
+	}
+}
+
+void UCrewManager::SendSystem(ESystem system, const char *message, ...)
+{
+	char mem[MG_VPRINTF_BUFFER_SIZE], *buf = mem;
+	va_list ap;
+
+	va_start(ap, message);
+	if ((mg_avprintf(&buf, sizeof(mem), message, ap)) > 0)
+	{
+		SendAllFixed(buf);
+	}
+	va_end(ap);
+
+	if (buf != mem && buf != NULL)
+	{
+		free(buf);
+	}
+}
+
+void UCrewManager::SendSystem(ESystem system, FString message)
+{
+#ifndef WEB_SERVER_TEST
+	auto nMessage = TCHAR_TO_ANSI(message);
+#else
+	char nMessage[2048];
+	int len = wcslen(message.c_str());
+	wcstombs(nMessage, message.c_str(), len);
+	nMessage[len] = '\0';
+#endif
+
+	SendSystemFixed(system, nMessage);
 }
 
 void UCrewManager::SendAllCrewData()
