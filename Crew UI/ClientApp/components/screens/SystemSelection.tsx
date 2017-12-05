@@ -11,10 +11,11 @@ import './SystemSelection.scss';
 
 interface SystemSelectionDataProps {
     playersBySystem: { [key: number]: string };
-    //groupsBySystem?: { [key: number]: string };
     canEnterSetup: boolean;
     gameInProgress: boolean;
     text: TextLocalisation;
+    numPlayers: number;
+    preselectedSystems?: ShipSystem;
 }
 
 type SystemSelectionProps = SystemSelectionDataProps
@@ -24,6 +25,7 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
     public render() {
         let words = this.props.text.screens.systemSelection;
         let systemNames = this.props.text.systemNames;
+        let suggestedGroupings = this.determineSuggestedGroupings();
 
         let setupButton: JSX.Element | undefined, resumeButton: JSX.Element | undefined;
 
@@ -50,15 +52,16 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
 
         return <Screen heading={words.intro} pageLayout={true}>
             <Field centered={true}>
+                <p>{suggestedGroupings.length === 0 ? undefined : words.suggestionPrompt}</p>
                 <div className="systemSelection">
-                    {this.renderSystemControls(systemNames.helm, ShipSystem.Helm)}
-                    {this.renderSystemControls(systemNames.warp, ShipSystem.Warp)}
-                    {this.renderSystemControls(systemNames.weapons, ShipSystem.Weapons)}
-                    {this.renderSystemControls(systemNames.sensors, ShipSystem.Sensors)}
-                    {this.renderSystemControls(systemNames.power, ShipSystem.PowerManagement)}
-                    {this.renderSystemControls(systemNames.damage, ShipSystem.DamageControl)}
-                    {this.renderSystemControls(systemNames.comms, ShipSystem.Communications)}
-                    {this.renderSystemControls(systemNames.view, ShipSystem.ViewScreen)}
+                    {this.renderSystemControls(systemNames.helm, ShipSystem.Helm, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.warp, ShipSystem.Warp, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.weapons, ShipSystem.Weapons, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.sensors, ShipSystem.Sensors, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.power, ShipSystem.PowerManagement, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.damage, ShipSystem.DamageControl, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.comms, ShipSystem.Communications, suggestedGroupings)}
+                    {this.renderSystemControls(systemNames.view, ShipSystem.ViewScreen, suggestedGroupings)}
                 </div>
             </Field>
             <Field centered={true} displayAsRow={true}>
@@ -68,14 +71,23 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
             </Field>
         </Screen>;
     }
-    private renderSystemControls(name: string, system: ShipSystem) {
+
+    private renderSystemControls(name: string, system: ShipSystem, suggestedGroupings: ShipSystem[]) {
         let players = this.props.playersBySystem[system as number];
 
-        // TODO: select by default systems chosen by the current player, so they can go to settings and back without screwing with the UI
-        let preselected = false;
+        const groupNames = ['Δ', 'Ω', 'Ψ', 'Χ', 'Θ', 'Σ'];
+        let groups = '';
+        for (let i=0; i<suggestedGroupings.length; i++) {
+            if ((suggestedGroupings[i] & system) !== 0) {
+                groups += groupNames[i];
+            }
+        }
+
+        // select by default systems chosen by the current player, so they can go to settings and back without screwing with the UI
+        let preselected = this.props.preselectedSystems !== undefined && (this.props.preselectedSystems & system) !== 0;
 
         return [
-            <div key="a" className="systemSelection__group" />,
+            <div key="a" className="systemSelection__group">{groups}</div>,
             <ToggleButton
                 key="b"
                 text={name}
@@ -88,10 +100,56 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
             <div key="d" className="systemSelection__who">{players}</div>
         ];
     }
+
+    private determineSuggestedGroupings() {
+        switch (this.props.numPlayers) {
+            case 2:
+                return [
+                    ShipSystem.Helm | ShipSystem.Warp | ShipSystem.ViewScreen,
+                    ShipSystem.Warp | ShipSystem.Weapons | ShipSystem.Sensors | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.Communications | ShipSystem.ViewScreen,
+                ];
+            case 3:
+                return [
+                    ShipSystem.Helm | ShipSystem.Warp | ShipSystem.ViewScreen,
+                    ShipSystem.Weapons | ShipSystem.Sensors |ShipSystem.Communications | ShipSystem.ViewScreen,
+                    ShipSystem.Warp | ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen,
+                ];
+            case 4:
+                return [
+                    ShipSystem.Helm | ShipSystem.Warp,
+                    ShipSystem.Weapons | ShipSystem.Communications | ShipSystem.ViewScreen,
+                    ShipSystem.PowerManagement | ShipSystem.DamageControl | ShipSystem.ViewScreen,
+                    ShipSystem.Warp | ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen,
+                ];
+            case 5:
+                return [
+                    ShipSystem.Helm,
+                    ShipSystem.Weapons | ShipSystem.Communications | ShipSystem.ViewScreen,
+                    ShipSystem.PowerManagement | ShipSystem.Warp,
+                    ShipSystem.DamageControl | ShipSystem.Warp,
+                    ShipSystem.Sensors | ShipSystem.Communications | ShipSystem.ViewScreen,
+                ];
+            case 6:
+                return [
+                    ShipSystem.Helm,
+                    ShipSystem.Weapons | ShipSystem.ViewScreen,
+                    ShipSystem.PowerManagement,
+                    ShipSystem.Warp | ShipSystem.Communications,
+                    ShipSystem.Sensors | ShipSystem.ViewScreen,
+                    ShipSystem.DamageControl,
+                ];
+            default:
+                return [];
+        }
+    }
 }
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => SystemSelectionDataProps = (state) => {
+    // use the current player's selections if we have any
+    let localPlayer = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
+    let preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].flags; // if 0, use saved session values?
+
     let players: { [key: number]: string } = {};
 
     for (var system of allSystems) {
@@ -103,6 +161,8 @@ const mapStateToProps: (state: ApplicationState) => SystemSelectionDataProps = (
         text: state.user.text,
         canEnterSetup: state.crew.playerInSetup !== undefined && state.crew.playerInSetup !== state.crew.localPlayerID,
         gameInProgress: state.screen.gameInProgress,
+        numPlayers: state.crew.players.length,
+        preselectedSystems: preselectedSystems,
     };
 };
 

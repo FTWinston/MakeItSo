@@ -51,8 +51,38 @@ export interface TextLocalisation {
         },
         systemSelection: {
             intro: string,
+            suggestionPrompt: string,
             setupGame: string,
             resumeGame: string,
+        },
+        gameSetup: {
+            intro: string;
+            gameType: string;
+            gameTypePrompt: string;
+            gameTypeLocal: string;
+            gameTypeLocalDescription: string;
+            gameTypeJoin: string;
+            gameTypeJoinDescription: string;
+            gameTypeHost: string;
+            gameTypeHostDescription: string;
+            shipName: string;
+            shipNameDescription: string;
+            joinAddress: string;
+            joinAddressDescription: string;
+            serverName: string;
+            serverNameDescription: string;
+            gameMode: string;
+            gameModePrompt: string;
+            gameModeExploration: string;
+            gameModeSurvival: string;
+            gameModeArena: string;
+            gameModeExplorationDescription: string;
+            gameModeSurvivalDescription: string;
+            gameModeArenaDescription: string;
+            difficulty: string;
+            difficultyPrompt: string;
+            startGame: string;
+            shipNames: string[];
         },
         error: {
             heading: string;
