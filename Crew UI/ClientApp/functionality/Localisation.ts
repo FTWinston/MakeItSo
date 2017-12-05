@@ -24,6 +24,7 @@ export interface TextLocalisation {
         help: string;
     }
     errors: {
+        unknown: string;
         connectionLost: string;
     }
     screens: {
@@ -51,6 +52,9 @@ export interface TextLocalisation {
         systemSelection: {
             intro: string,
             setupGame: string,
+        },
+        error: {
+            heading: string;
         },
     },
     systemNames: {

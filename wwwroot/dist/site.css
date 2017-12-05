@@ -364,6 +364,9 @@ $lightBackground: #999;
 
 .systemSelection__help, .systemSelection__group {
   justify-self: center; }
+.errorMessage {
+  white-space: pre-wrap;
+  line-height: 2em; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

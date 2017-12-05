@@ -9,7 +9,8 @@ let words: TextLocalisation = {
         help: 'Help',
     },
     errors: {
-        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.',
+        unknown: 'Unable to display information on this error. Sorry.',
+        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.\nOtherwise, refresh the page to reconnect.',
     },
     screens: {
         connecting: {
@@ -36,6 +37,9 @@ let words: TextLocalisation = {
         systemSelection: {
             intro: 'Select the ship systems you will control',
             setupGame: 'Setup game',
+        },
+        error: {
+            heading: 'An error has occurred',
         },
     },
     systemNames: {
