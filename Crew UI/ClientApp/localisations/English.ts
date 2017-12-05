@@ -37,6 +37,7 @@ let words: TextLocalisation = {
         systemSelection: {
             intro: 'Select the ship systems you will control',
             setupGame: 'Setup game',
+            resumeGame: 'Resume game',
         },
         error: {
             heading: 'An error has occurred',

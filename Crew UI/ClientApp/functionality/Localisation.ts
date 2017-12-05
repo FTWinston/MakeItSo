@@ -52,6 +52,7 @@ export interface TextLocalisation {
         systemSelection: {
             intro: string,
             setupGame: string,
+            resumeGame: string,
         },
         error: {
             heading: string;

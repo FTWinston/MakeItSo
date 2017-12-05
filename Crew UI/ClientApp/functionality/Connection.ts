@@ -57,6 +57,17 @@ export class Connection {
             case 'disconnect':
                 store.dispatch(crewActions.removePlayer(parseInt(data)));
                 break;
+            case 'setup+': {
+                let playerID = parseInt(data);
+                store.dispatch(crewActions.setSetupPlayer(playerID));
+                if (playerID === store.getState().crew.localPlayerID) {
+                    store.dispatch(screenActions.showGameSetup());
+                }
+                break;
+            }
+            case 'setup-':
+                store.dispatch(crewActions.setSetupPlayer(undefined));
+                break;
             default:
                 console.log(`Unexpected command: ${cmd}`);
                 break;

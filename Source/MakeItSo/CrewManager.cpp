@@ -485,6 +485,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
 #endif
 	}
+	*/
 	else if (MATCHES(msg, "pause"))
 	{
 		if (crewState != ECrewState::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
@@ -499,6 +500,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 
 		PauseGame(false);
 	}
+	/*
 	else if (MATCHES(msg, "quit"))
 	{
 		if (crewState != ECrewState::Paused)

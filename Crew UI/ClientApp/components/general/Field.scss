@@ -28,6 +28,20 @@
     align-items: center;
 }
 
+.field__content--row {
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+
+    & > .button + .button {
+        margin-left: 0.5em;
+    }
+}
+
+.field__content--row.field__content--centered {
+    justify-content: center;
+}
+
 .field + .field {
-    margin-top: 1.5rem;
+    margin-top: 1.5em;
 }

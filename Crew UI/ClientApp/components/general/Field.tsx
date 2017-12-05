@@ -6,12 +6,14 @@ interface IFieldProps {
     labelBehaviour?: boolean;
     description?: string;
     centered?: boolean;
+    displayAsRow?: boolean;
 }
 
 export class Field extends React.Component<IFieldProps, {}> {
     static defaultProps = {
         centered: false,
         labelBehaviour: false,
+        displayAsRow: false,
     };
 
     render() {
@@ -19,6 +21,10 @@ export class Field extends React.Component<IFieldProps, {}> {
 
         if (this.props.centered) {
             contentClasses += ' field__content--centered';
+        }
+
+        if (this.props.displayAsRow) {
+            contentClasses += ' field__content--row';
         }
 
         let label;
