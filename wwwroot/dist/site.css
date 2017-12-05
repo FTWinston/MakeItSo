@@ -351,6 +351,15 @@ $lightBackground: #999;
   .textbox--quandry:not([disabled]):not(:active):not(.state--active):hover, .textbox--quandry:not([disabled]):not(:active):not(.state--active):focus {
     background-color: rgba(255, 206, 156, 0.2);
     color: #ffce9c; }
+.systemSelection {
+  display: grid;
+  grid-template-columns: 2em 10em 2em 1fr;
+  grid-row-gap: 0.5em;
+  justify-items: stretch;
+  align-items: center; }
+
+.systemSelection__help, .systemSelection__group {
+  justify-self: center; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

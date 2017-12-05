@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, IButtonProps } from './Button';
+import { connection } from '../../../Client';
 
 export interface IToggleButtonProps extends IButtonProps {
     startActive?: boolean;
@@ -47,10 +48,8 @@ export class ToggleButton extends React.Component<IToggleButtonProps, IToggleBut
             if (this.props.deactivated != undefined)
                this.props.deactivated();
 
-            /*
             if (this.props.deactivateCommand !== undefined)
-                gameClient.server.send(this.props.deactivateCommand);
-            */
+                connection.send(this.props.deactivateCommand);
         }
         else {
             if (this.props.choiceOptionActivated !== undefined)
@@ -59,10 +58,8 @@ export class ToggleButton extends React.Component<IToggleButtonProps, IToggleBut
             if (this.props.activated != undefined)
                 this.props.activated();
             
-            /*
             if (this.props.activateCommand !== undefined)
-                gameClient.server.send(this.props.activateCommand);
-            */
+                connection.send(this.props.activateCommand);
         }
         
         this.setState({active: !this.state.active});

@@ -109,7 +109,6 @@ private:
 	int32 GetNewUniqueIdentifier();
 	void HandleWebsocketMessage(ConnectionInfo *info, websocket_message *msg);
 	void ShipSystemChanged(ConnectionInfo *info, int32 systemFlags);
-	void SendSystemUsage(ConnectionInfo *sendTo);
 	void SendGameActive();
 
 	static mg_mgr *mgr;
@@ -118,7 +117,6 @@ private:
 
 	ECrewState crewState;
 	int32 nextConnectionIdentifer;
-	bool selectSystemsDirectly;
 
 	TSet<ConnectionInfo*> *currentConnections;
 	ConnectionInfo *connectionInSetup;

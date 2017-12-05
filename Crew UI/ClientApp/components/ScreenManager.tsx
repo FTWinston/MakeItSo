@@ -37,6 +37,8 @@ class ScreenManager extends React.Component<ScreenManagerProps, {}> {
                 return <Screen.Settings />;
             case ClientScreen.WaitingForPlayers:
                 return <Screen.WaitingForPlayers />;
+            case ClientScreen.SelectingSystems:
+                return <Screen.SystemSelection />;
             default:
                 return <h1 className="screen__heading">Unable to render required screen: {this.props.screen}</h1>;
         }

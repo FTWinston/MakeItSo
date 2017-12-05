@@ -57,7 +57,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 	crewState = ECrewState::Setup;
 
-	selectSystemsDirectly = false;
 	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
 	currentConnections = new TSet<ConnectionInfo*>();
@@ -269,7 +268,10 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	for (auto& other : *currentConnections)
 	{
 		if (other->hasName)
+		{
 			Send(conn, "player %i %S", other->identifier, CHARARR(other->name));
+			Send(conn, "playersys %i %i", other->identifier, other->shipSystemFlags);
+		}
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -278,9 +280,6 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	currentConnections->insert(currentConnections->end(), info);
 #endif
 	
-	// send whether systems are selected directly, or whether roles are used
-	Send(conn, selectSystemsDirectly ? "selectsys+" : "selectsys-");
-
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
 	{
@@ -316,17 +315,13 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	// send "player quit" message to crewmates
 	SendAll("disconnect %i", info->identifier);
-
-	// send updated system usage
-	for (auto& other : *currentConnections)
-		SendSystemUsage(other);
-
+	
 	if (connectionInSetup == info)
 	{
 		connectionInSetup = nullptr;
 
 		// send "setup not in use" message to all
-		SendAll("setup+");
+		SendAllFixed("setup-");
 	}
 
 	// if there are no connections in currentConnections with any ship system set, automatically pause the game
@@ -423,14 +418,6 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 
 		SendAll("all_present");
 	}
-	/*
-	else if (STARTS_WITH(msg, "sys "))
-	{
-		char buffer[10];
-		EXTRACT(msg, buffer, "sys ");
-		int32 systemFlags = atoi(buffer);
-		ShipSystemChanged(info, systemFlags);
-	}
 	else if (STARTS_WITH(msg, "sys+ "))
 	{
 		char buffer[10];
@@ -453,7 +440,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		connectionInSetup = info;
 
 		// send "setup in use" message to all others
-		SendAll("setup-");
+		SendAll("setup+ %i", info->identifier);
 	}
 	else if (MATCHES(msg, "-setup"))
 	{
@@ -463,8 +450,9 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		connectionInSetup = nullptr;
 
 		// send "setup not in use" message to all others
-		SendAll("setup+");
+		SendAllFixed("setup-");
 	}
+	/*
 	// ship name = player name
 	else if (STARTS_WITH(msg, "shipname "))
 	{
@@ -571,19 +559,7 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
 
 	info->shipSystemFlags = systemFlags;
 
-	for (auto& other : *currentConnections)
-		SendSystemUsage(other);
-}
-
-void UCrewManager::SendSystemUsage(ConnectionInfo *sendTo)
-{
-	// send flags of all the systems in use by OTHER crew members, but not by this one
-	int32 systemFlags = 0;
-	for (auto& other : *currentConnections)
-		if (other != sendTo)
-			systemFlags |= other->shipSystemFlags;
-
-	Send(sendTo->connection, "sys %i", systemFlags);
+	SendAll("playersys %i %i", info->identifier, systemFlags);
 }
 
 void UCrewManager::SendGameActive()

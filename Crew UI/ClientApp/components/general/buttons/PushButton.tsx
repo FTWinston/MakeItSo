@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, IButtonProps } from './Button';
+import { connection } from '../../../Client';
 
 interface IPushButtonProps extends IButtonProps {
     clicked?: () => void;
@@ -27,10 +28,8 @@ export class PushButton extends React.Component<IPushButtonProps, IPushButtonSta
         if (this.props.clicked !== undefined)
             this.props.clicked();
         
-        /*
         if (this.props.command !== undefined)
-            gameClient.server.send(this.props.command);
-        */
+            connection.send(this.props.command);
     }
     private mouseDown(e: React.MouseEvent<HTMLButtonElement>) {
         this.setState({held: true});

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Button, IButtonProps } from './Button';
+import { connection } from '../../../Client';
 
 interface IHeldButtonProps extends IButtonProps {
     pressed?: () => void;
@@ -32,10 +33,8 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
         if (this.props.pressed != undefined)
             this.props.pressed();
 
-        /*
         if (this.props.pressCommand !== undefined)
-            gameClient.server.send(this.props.pressCommand);
-        */
+            connection.send(this.props.pressCommand);
     }
     private mouseUp(e: React.MouseEvent<HTMLButtonElement>) {
         if (!this.state.held)
@@ -46,9 +45,7 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
         if (this.props.released != undefined)
             this.props.released();
         
-        /*
         if (this.props.releaseCommand !== undefined)
-            gameClient.server.send(this.props.releaseCommand);
-        */
+            connection.send(this.props.releaseCommand);
     }
 }

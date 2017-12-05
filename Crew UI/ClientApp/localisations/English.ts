@@ -33,7 +33,21 @@ let words: TextLocalisation = {
             intro: 'Please wait for all of your crew to join, then click \'Ready\'',
             players: 'Current players:',
         },
-    }
+        systemSelection: {
+            intro: 'Select the ship systems you will control',
+            setupGame: 'Setup game',
+        },
+    },
+    systemNames: {
+        helm: 'Helm',
+        warp: 'Warp',
+        weapons: 'Weapons',
+        sensors: 'Sensors',
+        power: 'Power',
+        damage: 'Damage Control',
+        view: 'Viewscreen',
+        comms: 'Communications',
+    },
 };
 
 export default words;

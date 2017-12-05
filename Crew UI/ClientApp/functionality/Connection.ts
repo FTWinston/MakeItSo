@@ -3,6 +3,7 @@ import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
 import { actionCreators as screenActions } from '../store/Screen';
 import { TextLocalisation } from './Localisation';
+import { ShipSystem } from 'ClientApp/functionality/ShipSystem';
 
 export class Connection {
     private socket: WebSocket;
@@ -13,7 +14,7 @@ export class Connection {
         this.socket.onerror = this.socket.onclose = () => screenActions.showError(store.getState().user.text.errors.connectionLost);
         this.socket.onmessage = e => this.messageReceived(e);
         this.socket.onopen = () => this.connected();
-        this.close = this.socket.close.bind(this.socket);
+        this.close = () => this.socket.close();
     }
     
     send(cmd: string) {
@@ -44,6 +45,13 @@ export class Connection {
                 let playerID = parseInt(data.substr(0, pos));
                 let playerName = data.substr(pos + 1);
                 store.dispatch(crewActions.updatePlayer(playerID, playerName));
+                break;
+            }
+            case 'playersys': {
+                pos = data.indexOf(' ');
+                let playerID = parseInt(data.substr(0, pos));
+                let systems = parseInt(data.substr(pos + 1)) as ShipSystem;
+                store.dispatch(crewActions.setPlayerSystems(playerID, systems));
                 break;
             }
             case 'disconnect':

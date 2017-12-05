@@ -48,5 +48,19 @@ export interface TextLocalisation {
             intro: string;
             players: string;
         },
-    }
+        systemSelection: {
+            intro: string,
+            setupGame: string,
+        },
+    },
+    systemNames: {
+        helm: string,
+        warp: string,
+        weapons: string,
+        sensors: string,
+        power: string,
+        damage: string,
+        comms: string,
+        view: string,
+    },
 }

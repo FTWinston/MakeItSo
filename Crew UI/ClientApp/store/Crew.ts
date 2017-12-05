@@ -1,6 +1,5 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-
-type SystemFlags = number; // TODO: flags enum
+import { ShipSystem } from '../functionality/ShipSystem';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -8,14 +7,13 @@ type SystemFlags = number; // TODO: flags enum
 export interface CrewState {
     players: CrewPlayer[];
     localPlayerID?: number;
-    selectSystemsDirectly: boolean;
     playerInSetup?: number;
 }
 
 export interface CrewPlayer {
     id: number;
     name: string;
-    flags: SystemFlags;
+    flags: ShipSystem;
 }
 
 // -----------------
@@ -36,7 +34,7 @@ interface UpdatePlayerAction {
 interface SetPlayerSystemsAction {
     type: 'SET_PLAYER_SYSTEMS';
     playerID: number;
-    flags: SystemFlags;
+    flags: ShipSystem;
 }
 
 interface SetLocalPlayerAction {
@@ -49,14 +47,9 @@ interface SetSetupPlayerAction {
     playerID?: number;
 }
 
-interface SetSelectionModeAction {
-    type: 'SET_SELECTION_MODE';
-    selectSystemsDirectly: boolean;
-}
-
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction | SetSelectionModeAction;
+type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -65,16 +58,15 @@ type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAct
 export const actionCreators = {
     updatePlayer: (playerID: number, name: string) => <UpdatePlayerAction>{ type: 'UPDATE_PLAYER', playerID: playerID, name: name },
     removePlayer: (playerID: number) => <RemovePlayerAction>{ type: 'REMOVE_PLAYER', playerID: playerID },
-    setPlayerSystems: (playerID: number, flags: SystemFlags) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags },
+    setPlayerSystems: (playerID: number, flags: ShipSystem) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags },
     setLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
     setSetupPlayer: (playerID: number | undefined) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
-    setSelectionMode: (selectSystems: boolean) => <SetSelectionModeAction>{ type: 'SET_SELECTION_MODE', selectSystemsDirectly: selectSystems },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: CrewState = { players: [], selectSystemsDirectly: false };
+const unloadedState: CrewState = { players: [] };
 
 export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownAction) => {
     switch (action.type) {
@@ -128,11 +120,6 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
             return {
                 ...state,
                 playerInSetup: action.playerID,
-            };
-        case 'SET_SELECTION_MODE':
-            return {
-                ...state,
-                selectSystemsDirectly: action.selectSystemsDirectly,
             };
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above

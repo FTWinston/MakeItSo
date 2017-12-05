@@ -13,7 +13,7 @@ export enum ClientScreen {
     Connecting,
     UserSettings,
     WaitingForPlayers,
-    SelectingRoles,
+    SelectingSystems,
     SetupGame,
     ActiveGame,
     WaitingForGame,
@@ -52,7 +52,7 @@ type KnownAction = ShowScreenAction | SetGameInProgressAction | ShowErrorAction;
 export const actionCreators = {
     showUserSettings: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.UserSettings },
     showWaitingForPlayers: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForPlayers },
-    showRoleSelection: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SelectingRoles },
+    showRoleSelection: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SelectingSystems },
     showGameSetup: () => { /* sendEnterSetup(); */ return <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SetupGame }},
     showGame: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.ActiveGame },
     showWaitingForGame: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForGame },
