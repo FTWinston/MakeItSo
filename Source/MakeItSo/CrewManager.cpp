@@ -10,6 +10,8 @@
 #include <iostream>
 #include <sstream>
 #include <iterator>
+#include <locale>
+#include <codecvt>
 #endif
 
 #include "CrewManager.h"
@@ -598,10 +600,7 @@ void UCrewManager::Send(mg_connection *conn, FString message)
 #ifndef WEB_SERVER_TEST
 	auto nMessage = TCHAR_TO_ANSI(message);
 #else
-	char nMessage[2048];
-	int32 len = wcslen(message.c_str());
-	wcstombs(nMessage, message.c_str(), len);
-	nMessage[len] = '\0';
+	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
 #endif
 
 	SendFixed(conn, nMessage);
@@ -640,10 +639,7 @@ void UCrewManager::SendAll(FString message)
 #ifndef WEB_SERVER_TEST
 	auto nMessage = TCHAR_TO_ANSI(message);
 #else
-	char nMessage[2048];
-	int len = wcslen(message.c_str());
-	wcstombs(nMessage, message.c_str(), len);
-	nMessage[len] = '\0';
+	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
 #endif
 
 	SendAllFixed(nMessage);
@@ -684,10 +680,7 @@ void UCrewManager::SendSystem(ESystem system, FString message)
 #ifndef WEB_SERVER_TEST
 	auto nMessage = TCHAR_TO_ANSI(message);
 #else
-	char nMessage[2048];
-	int len = wcslen(message.c_str());
-	wcstombs(nMessage, message.c_str(), len);
-	nMessage[len] = '\0';
+	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
 #endif
 
 	SendSystemFixed(system, nMessage);
