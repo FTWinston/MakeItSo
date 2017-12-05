@@ -11,7 +11,7 @@ export class Connection {
 
     constructor(url: string) {
         this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = () => screenActions.showError(store.getState().user.text.errors.connectionLost);
+        this.socket.onerror = this.socket.onclose = () => store.dispatch(screenActions.showError(store.getState().user.text.errors.connectionLost));
         this.socket.onmessage = e => this.messageReceived(e);
         this.socket.onopen = () => this.connected();
         this.close = () => this.socket.close();

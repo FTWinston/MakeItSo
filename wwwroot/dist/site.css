@@ -197,7 +197,7 @@ $lightBackground: #999;
   @media (max-width: 500px) {
     .field {
       flex-direction: column;
-      align-items: flex-start; } }
+      align-items: stretch; } }
 
 .field__label {
   font-weight: bold;
@@ -243,12 +243,6 @@ $lightBackground: #999;
   @media (min-width: 500px) {
     .screen--pageLayout {
       width: calc(400px + 20vw); } }
-  @media (max-width: 500px) {
-    .screen--pageLayout > div[role="group"] {
-      flex-direction: column; }
-    .screen--pageLayout label {
-      font-size: 1.2em;
-      font-weight: bold; } }
 
 .screen__heading {
   font-weight: bold;
@@ -351,12 +345,22 @@ $lightBackground: #999;
   .textbox--quandry:not([disabled]):not(:active):not(.state--active):hover, .textbox--quandry:not([disabled]):not(:active):not(.state--active):focus {
     background-color: rgba(255, 206, 156, 0.2);
     color: #ffce9c; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 .systemSelection {
   display: grid;
   grid-template-columns: 2em 10em 2em 1fr;
   grid-row-gap: 0.5em;
   justify-items: stretch;
-  align-items: center; }
+  align-items: center;
+  min-width: 25em; }
+  @media (max-width: 440px) {
+    .systemSelection {
+      min-width: calc(100vw - 2em); } }
 
 .systemSelection__help, .systemSelection__group {
   justify-self: center; }

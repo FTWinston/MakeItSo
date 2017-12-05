@@ -21,22 +21,11 @@
     overflow: unset;
     overflow-y: auto;
 
-    width: calc(100vw - 2em);
+    width: calc(100vw - #{$clientPadding * 4});
     max-width: 800em;
 
     @media (min-width: 500px) {
         width: calc(400px + 20vw);
-    }
-
-    @media(max-width: 500px) {
-        & > div[role="group"] {
-            flex-direction: column;
-        }
-
-        label {
-            font-size: 1.2em;
-            font-weight: bold;
-        }
     }
 }
 

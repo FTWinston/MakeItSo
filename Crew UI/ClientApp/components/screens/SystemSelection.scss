@@ -1,9 +1,17 @@
+@import '../general/mixins';
+
 .systemSelection {
     display: grid;
     grid-template-columns: 2em 10em 2em 1fr;
     grid-row-gap: 0.5em;
     justify-items: stretch;
     align-items: center;
+
+    min-width: 25em;
+
+    @media (max-width: 440px) { // was 500px, but this makes the transition smooth when resizing
+        min-width: calc(100vw - #{$clientPadding * 4});
+    }
 }
 
 .systemSelection__help, .systemSelection__group {

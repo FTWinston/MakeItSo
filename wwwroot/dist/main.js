@@ -742,7 +742,7 @@ var Connection = (function () {
     function Connection(url) {
         var _this = this;
         this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = function () { return __WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showError(__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.text.errors.connectionLost); };
+        this.socket.onerror = this.socket.onclose = function () { return __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showError(__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.text.errors.connectionLost)); };
         this.socket.onmessage = function (e) { return _this.messageReceived(e); };
         this.socket.onopen = function () { return _this.connected(); };
         this.close = function () { return _this.socket.close(); };
@@ -1687,7 +1687,7 @@ var words = {
     },
     screens: {
         connecting: {
-            connecting: 'Connecting to your ship...',
+            connecting: 'Connecting...',
         },
         settings: {
             intro: 'Enter your name, and choose an input mode:',
