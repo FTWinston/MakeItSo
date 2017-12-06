@@ -66,10 +66,13 @@ export interface TextLocalisation {
             gameTypeHost: string;
             gameTypeHostDescription: string;
             shipName: string;
+            shipNamePlaceholder: string
             shipNameDescription: string;
             joinAddress: string;
+            joinAddressPlaceholder: string;
             joinAddressDescription: string;
             serverName: string;
+            serverNamePlaceholder: string
             serverNameDescription: string;
             gameMode: string;
             gameModePrompt: string;

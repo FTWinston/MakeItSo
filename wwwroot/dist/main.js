@@ -134,20 +134,20 @@ module.exports = vendor_a65b3acf96981fd3289a;
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(10);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["d"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["d"]; });
 /* unused harmony reexport HeldButton */
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(9);
 /* unused harmony reexport ButtonSet */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice__ = __webpack_require__(19);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_2__Choice__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_2__Choice__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Field__ = __webpack_require__(20);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_3__Field__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Screen__ = __webpack_require__(21);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_4__Screen__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Textbox__ = __webpack_require__(22);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_5__Textbox__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_5__Textbox__["a"]; });
 
 
 
@@ -191,7 +191,7 @@ var ClientScreen;
 var actionCreators = {
     showUserSettings: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.UserSettings }); },
     showWaitingForPlayers: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForPlayers }); },
-    showRoleSelection: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.SelectingSystems }); },
+    showSystemSelection: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.SelectingSystems }); },
     showGameSetup: function () { /* sendEnterSetup(); */ return { type: 'SHOW_SCREEN', display: ClientScreen.SetupGame }; },
     showGame: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.ActiveGame }); },
     showWaitingForGame: function () { return ({ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForGame }); },
@@ -768,7 +768,7 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setLocalPlayer(parseInt(data)));
                 break;
             case 'all_present':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showRoleSelection());
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
                 break;
             case 'player': {
                 pos = data.indexOf(' ');
@@ -1438,9 +1438,8 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(6);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Screen__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general__ = __webpack_require__(4);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1463,7 +1462,6 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 
 
 
-
 var GameSetup = (function (_super) {
     __extends(GameSetup, _super);
     function GameSetup(props) {
@@ -1479,15 +1477,107 @@ var GameSetup = (function (_super) {
     GameSetup.prototype.render = function () {
         var _this = this;
         var words = this.props.text.screens.gameSetup;
-        var inputModeVertical = this.props.screenWidth < 500;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true, displayAsRow: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["c" /* ConfirmButton */], { color: 0 /* Primary */, clicked: function () { return _this.startGame(); }, text: words.startGame })));
+        var choicesVertical = this.props.screenWidth < 300;
+        var joinAddress;
+        var gameMode;
+        var difficulty;
+        var hostName;
+        if (this.state.gameType === 1 /* Join */) {
+            joinAddress = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { labelText: words.joinAddress, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["c" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.joinAddress, placeholder: words.joinAddressPlaceholder, textChanged: function (address) { return _this.setState({ joinAddress: address }); } }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.joinAddressDescription)));
+        }
+        else {
+            if (this.state.gameType !== undefined) {
+                gameMode = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { labelText: words.gameMode },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* Choice */], { prompt: words.gameModePrompt, color: 0 /* Primary */, vertical: choicesVertical },
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 2 /* Exploration */ }); }, description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 1 /* Survival */ }); }, description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 0 /* Arena */ }); }, description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType === 0 /* Local */ }))));
+                if (this.usesDifficulty()) {
+                    var levels = [];
+                    var _loop_1 = function (i) {
+                        levels.push(__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { key: i, activated: function () { return _this.setState({ difficulty: i }); }, text: i.toString() }));
+                    };
+                    for (var i = 1; i <= 10; i++) {
+                        _loop_1(i);
+                    }
+                    difficulty = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { labelText: words.difficulty },
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* Choice */], { prompt: words.difficultyPrompt, color: 2 /* Tertiary */, vertical: this.props.screenWidth < 400 }, levels)));
+                }
+                if (this.state.gameType === 2 /* Host */) {
+                    hostName = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { labelText: words.serverName, labelBehaviour: true },
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["c" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.serverName, placeholder: words.serverNamePlaceholder, textChanged: function (name) { return _this.setState({ serverName: name }); } }),
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.serverNameDescription)));
+                }
+            }
+        }
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { labelText: words.shipName, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["c" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.shipName, textChanged: function (name) { return _this.setState({ shipName: name }); } }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("button", { onClick: function () { return _this.randomizeName(); } }, "refresh"),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.shipNameDescription)),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { labelText: words.gameType },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* Choice */], { prompt: words.gameTypePrompt, color: 0 /* Primary */, vertical: choicesVertical },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 0 /* Local */ }); }, description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 1 /* Join */ }); }, description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 2 /* Host */ }); }, description: words.gameTypeHostDescription, text: words.gameTypeHost }))),
+            joinAddress,
+            gameMode,
+            difficulty,
+            hostName,
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true, displayAsRow: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["f" /* ConfirmButton */], { color: 0 /* Primary */, clicked: function () { return _this.startGame(); }, text: words.startGame, disabled: !this.decideCanStart() }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["g" /* PushButton */], { color: 3 /* Quaternary */, clicked: function () { return _this.cancel(); }, text: this.props.text.common.cancel, command: "-setup" })));
     };
     GameSetup.prototype.getRandomName = function () {
         var randomNames = this.props.text.screens.gameSetup.shipNames;
         var index = Math.floor(Math.random() * randomNames.length);
         return randomNames[index];
+    };
+    GameSetup.prototype.randomizeName = function () {
+        var name;
+        do {
+            name = this.getRandomName();
+        } while (name == this.state.shipName);
+        this.setState({ shipName: name });
+    };
+    GameSetup.prototype.usesDifficulty = function () {
+        switch (this.state.gameMode) {
+            case 1 /* Survival */:
+            case 2 /* Exploration */:
+                return true;
+            default:
+                return false;
+        }
+    };
+    GameSetup.prototype.decideCanStart = function () {
+        if (this.state.gameType === undefined)
+            return false;
+        if (this.state.shipName === undefined || this.state.shipName.trim().length == 0)
+            return false;
+        if (this.state.gameType === 1 /* Join */) {
+            if (this.state.joinAddress === undefined || this.state.joinAddress.trim().length == 0)
+                return false;
+        }
+        if (this.state.gameType === 0 /* Local */ || this.state.gameType === 2 /* Host */) {
+            if (this.state.gameMode === undefined)
+                return false;
+            if (this.usesDifficulty() && this.state.difficulty === undefined)
+                return false;
+        }
+        if (this.state.gameType === 2 /* Host */) {
+            if (this.state.serverName === undefined || this.state.serverName.trim().length == 0)
+                return false;
+        }
+        else if (this.state.gameType === 0 /* Local */) {
+            if (this.state.gameMode === 0 /* Arena */)
+                return false; // invalid combo
+        }
+        return true;
+    };
+    GameSetup.prototype.cancel = function () {
+        this.props.showSystemSelection();
     };
     GameSetup.prototype.startGame = function () {
         // TODO: send all the values currently in state with the appropriate "start" command
@@ -1503,7 +1593,7 @@ var mapStateToProps = function (state) {
     };
 };
 // Wire up the React component to the Redux store
-/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, __assign({}, __WEBPACK_IMPORTED_MODULE_2__store_User__["a" /* actionCreators */], __WEBPACK_IMPORTED_MODULE_3__store_Screen__["b" /* actionCreators */]))(GameSetup));
+/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, __assign({}, __WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */]))(GameSetup));
 
 
 /***/ }),
@@ -1554,15 +1644,15 @@ var Settings = (function (_super) {
         var inputModeVertical = this.props.screenWidth < 330;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["b" /* Field */], { labelText: words.userName, labelBehaviour: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["f" /* Textbox */], { color: 0 /* Primary */, text: this.props.userName, textChanged: function (t) { return _this.nameChanged(t); }, placeholder: words.userNamePlaceholder }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["c" /* Textbox */], { color: 0 /* Primary */, text: this.props.userName, textChanged: function (t) { return _this.nameChanged(t); }, placeholder: words.userNamePlaceholder }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription)),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["b" /* Field */], { labelText: words.inputMode },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["g" /* Choice */], { prompt: words.inputModePrompt, color: 1 /* Secondary */, vertical: inputModeVertical },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["d" /* Choice */], { prompt: words.inputModePrompt, color: 1 /* Secondary */, vertical: inputModeVertical },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* ToggleButton */], { startActive: this.props.inputMode === 0 /* KeyboardAndMouse */, activated: function () { return _this.inputModeChanged(0 /* KeyboardAndMouse */); }, description: words.inputModeDescriptionKeyboard, text: words.inputModeKeyboard }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* ToggleButton */], { startActive: this.props.inputMode === 1 /* Touchscreen */, activated: function () { return _this.inputModeChanged(1 /* Touchscreen */); }, description: words.inputModeDescriptionTouch, text: words.inputModeTouch }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* ToggleButton */], { startActive: this.props.inputMode === 2 /* Gamepad */, disabled: true, activated: function () { return _this.inputModeChanged(2 /* Gamepad */); }, description: words.inputModeDescriptionGamepad, text: words.inputModeGamepad }))),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["b" /* Field */], { centered: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["d" /* PushButton */], { color: 2 /* Tertiary */, disabled: !hasUserName, clicked: function () { return _this.close(); }, text: this.props.text.common.save })),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["g" /* PushButton */], { color: 2 /* Tertiary */, disabled: !hasUserName, clicked: function () { return _this.close(); }, text: this.props.text.common.save })),
             "Screen size is ",
             this.props.screenWidth,
             "x",
@@ -1591,7 +1681,7 @@ var Settings = (function (_super) {
                 this.props.showPause();
             }
             else {
-                this.props.showRoleSelection();
+                this.props.showSystemSelection();
             }
         }
     };
@@ -1656,12 +1746,12 @@ var SystemSelection = (function (_super) {
         var suggestedGroupings = this.determineSuggestedGroupings();
         var setupButton, resumeButton;
         if (this.props.gameInProgress) {
-            resumeButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* PushButton */], { color: 1 /* Secondary */, text: words.resumeGame, command: "resume" });
+            resumeButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* PushButton */], { color: 1 /* Secondary */, text: words.resumeGame, command: "resume" });
         }
         else {
-            setupButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* PushButton */], { color: 1 /* Secondary */, text: words.setupGame, command: "+setup", disabled: this.props.canEnterSetup });
+            setupButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* PushButton */], { color: 1 /* Secondary */, text: words.setupGame, command: "+setup", disabled: this.props.canEnterSetup });
         }
-        var settingsButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* PushButton */], { color: 2 /* Tertiary */, text: this.props.text.common.settings, clicked: function () { return _this.props.showUserSettings(); } });
+        var settingsButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* PushButton */], { color: 2 /* Tertiary */, text: this.props.text.common.settings, clicked: function () { return _this.props.showUserSettings(); } });
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("p", null, suggestedGroupings.length === 0 ? undefined : words.suggestionPrompt),
@@ -1799,7 +1889,7 @@ var WaitingForPlayers = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true, labelText: words.players },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("ul", null, this.props.playerNames.map(function (n, id) { return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("li", { key: id }, n); }))),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* PushButton */], { color: 2 /* Tertiary */, clicked: function () { return _this.continue(); }, text: this.props.text.common.ready })));
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["g" /* PushButton */], { color: 2 /* Tertiary */, clicked: function () { return _this.continue(); }, text: this.props.text.common.ready })));
     };
     WaitingForPlayers.prototype.continue = function () {
         __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('all_present');
@@ -1945,11 +2035,14 @@ var words = {
             gameTypeHost: 'Host game',
             gameTypeHostDescription: 'Host a multi-crew game that others can join',
             shipName: 'Ship name',
+            shipNamePlaceholder: 'You must name your ship',
             shipNameDescription: 'The name of the ship your crew will operate',
             joinAddress: 'Server address',
+            joinAddressPlaceholder: 'Enter address',
             joinAddressDescription: 'IP address or URL of the game server to join',
             serverName: 'Server name',
-            serverNameDescription: 'The name of the game to display to other crews',
+            serverNamePlaceholder: 'Enter a name',
+            serverNameDescription: 'The game name to display to other crews',
             gameMode: 'Game mode',
             gameModePrompt: 'Select the kind of game you want to play:',
             gameModeExploration: 'Exploration',

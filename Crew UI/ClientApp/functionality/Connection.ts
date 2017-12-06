@@ -38,7 +38,7 @@ export class Connection {
                 store.dispatch(crewActions.setLocalPlayer(parseInt(data)));
                 break;
             case 'all_present':
-                store.dispatch(screenActions.showRoleSelection());
+                store.dispatch(screenActions.showSystemSelection());
                 break;
             case 'player': {
                 pos = data.indexOf(' ');

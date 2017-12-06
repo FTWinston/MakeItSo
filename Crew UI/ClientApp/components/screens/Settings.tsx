@@ -82,7 +82,7 @@ class Settings extends React.Component<SettingsProps, {}> {
             if (this.props.gameInProgress) {
                 this.props.showPause();
             } else {
-                this.props.showRoleSelection();
+                this.props.showSystemSelection();
             }
         }
     }
