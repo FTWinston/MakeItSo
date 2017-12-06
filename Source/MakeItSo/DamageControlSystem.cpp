@@ -15,9 +15,7 @@ bool UDamageControlSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_me
 {
 	if (STARTS_WITH(msg, "dcdir "))
 	{
-		char buffer[8];
-		EXTRACT(msg, buffer, "dcdir ");
-		EOrdinalDirection dir = (EOrdinalDirection)atoi(buffer);
+		EOrdinalDirection dir = (EOrdinalDirection)ExtractInt(msg, sizeof("dcdir "));
 
 		// check they didn't switch to the opposite direction ... that isn't allowed
 		int32 combinedDirs = dir + prevSnakeDir;

@@ -11,9 +11,7 @@ bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *m
 {
 	if (STARTS_WITH(msg, "pickCard "))
 	{
-		char buffer[8];
-		EXTRACT(msg, buffer, "pickCard ");
-		int32 cardID = atoi(buffer);
+		int32 cardID = ExtractInt(msg, sizeof("pickCard "));
 
 		TSet<int32> cardChoice;
 #ifndef WEB_SERVER_TEST
@@ -47,9 +45,7 @@ bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *m
 	}
 	else if (STARTS_WITH(msg, "useCard "))
 	{
-		char buffer[8];
-		EXTRACT(msg, buffer, "useCard ");
-		int32 cardID = atoi(buffer);
+		int32 cardID = ExtractInt(msg, sizeof("useCard "));
 
 #ifndef WEB_SERVER_TEST
 		if (!cardLibrary.Contains(cardID))

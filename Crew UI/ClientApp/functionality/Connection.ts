@@ -68,6 +68,18 @@ export class Connection {
             case 'setup-':
                 store.dispatch(crewActions.setSetupPlayer(undefined));
                 break;
+            case 'game+':
+                store.dispatch(crewActions.setSetupPlayer(undefined));
+                store.dispatch(screenActions.setGameInProgress(true));
+                store.dispatch(screenActions.showGame());
+                break;
+            case 'game-':
+                store.dispatch(screenActions.setGameInProgress(false));
+                store.dispatch(screenActions.showSystemSelection());
+                break;
+            case 'pause':
+                store.dispatch(screenActions.showPause());
+                break;
             default:
                 console.log(`Unexpected command: ${cmd}`);
                 break;

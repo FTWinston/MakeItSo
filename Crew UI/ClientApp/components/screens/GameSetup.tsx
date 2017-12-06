@@ -130,7 +130,7 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
             {hostName}
 
             <Field centered={true} displayAsRow={true}>
-                <ConfirmButton color={ButtonColor.Primary} clicked={() => this.startGame()} text={words.startGame} disabled={!this.decideCanStart()} />
+                <ConfirmButton color={ButtonColor.Quandry} clicked={() => this.startGame()} text={words.startGame} disabled={!this.decideCanStart()} />
                 <PushButton color={ButtonColor.Quaternary} clicked={() => this.cancel()} text={this.props.text.common.cancel} command="-setup" />
             </Field>
         </Screen>;
@@ -198,7 +198,34 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
     }
 
     private startGame() {
-        // TODO: send all the values currently in state with the appropriate "start" command
+        connection.send(`shipName ${this.state.shipName}`);
+        
+        let command = 'startGame';
+
+        if (this.state.gameType === GameType.Join) {
+            command += ` join ${this.state.joinAddress}`;
+        }
+        else {
+            switch (this.state.gameType) {
+                case GameType.Host:
+                    command += ' host'; break;
+                case GameType.Local:
+                    command += ' local'; break;
+                default:
+                    return;
+            }
+
+            switch (this.state.gameMode) {
+                case GameMode.Exploration:
+                    command += ` exploration ${this.state.difficulty}`; break;
+                case GameMode.Survival:
+                    command += ` survival ${this.state.difficulty}`; break;
+                case GameMode.Arena:
+                    command += ' arena'; break;
+            }
+        }
+
+        connection.send(command);
     }
 }
 

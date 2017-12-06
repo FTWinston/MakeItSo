@@ -192,12 +192,12 @@ void UCrewManager::PauseGame(bool state)
 	if (state)
 	{
 		crewState = ECrewState::Paused;
-		SendAll("pause");
+		SendAllFixed("pause");
 	}
 	else
 	{
 		crewState = ECrewState::Active;
-		SendGameActive();
+		SendAllFixed("game+");
 		SendAllCrewData();
 	}
 
@@ -386,7 +386,7 @@ void UCrewManager::HandleEvent(mg_connection *conn, int ev, void *ev_data)
 		break;
 	case MG_EV_WEBSOCKET_FRAME: {
 		ConnectionInfo *info = (ConnectionInfo*)conn->user_data;
-		if (info) // if this connection hasn't been allocated a crew position, don't let them do stuff
+		if (info)
 			HandleWebsocketMessage(info, (struct websocket_message *) ev_data);
 		break;
 	}
@@ -422,16 +422,12 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 	}
 	else if (STARTS_WITH(msg, "sys+ "))
 	{
-		char buffer[10];
-		EXTRACT(msg, buffer, "sys+ ");
-		int32 systemFlags = atoi(buffer);
+		int32 systemFlags = ExtractInt(msg, sizeof("sys+ "));
 		ShipSystemChanged(info, info->shipSystemFlags | systemFlags);
 	}
 	else if (STARTS_WITH(msg, "sys- "))
 	{
-		char buffer[10];
-		EXTRACT(msg, buffer, "sys- ");
-		int32 systemFlags = atoi(buffer);
+		int32 systemFlags = ExtractInt(msg, sizeof("sys- "));
 		ShipSystemChanged(info, info->shipSystemFlags & ~systemFlags);
 	}
 	else if (MATCHES(msg, "+setup"))
@@ -454,38 +450,25 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		// send "setup not in use" message to all others
 		SendAllFixed("setup-");
 	}
-	/*
 	// ship name = player name
-	else if (STARTS_WITH(msg, "shipname "))
+	else if (STARTS_WITH(msg, "shipName "))
 	{
 		if (connectionInSetup != info)
 			return;
 
 		char buffer[128];
-		EXTRACT(msg, buffer, "shipname ");
+		EXTRACT(msg, buffer, "shipName ");
 
-		name = std::string(buffer);
+		// TODO: set player name
+		// name = std::string(buffer);
 	}
-	else if (MATCHES(msg, "startGame"))
+	else if (STARTS_WITH(msg, "startGame"))
 	{
 		if (connectionInSetup != info || crewState != ECrewState::Setup)
 			return;
 
-		if (!systems.empty())
-			CreateSystems();
-
-		connectionInSetup = nullptr; // game started, no one is setting it up anymore
-		crewState = ECrewState::Active;
-
-		SendGameActive();
-		SendAllCrewData();
-
-#ifndef WEB_SERVER_TEST
-		//todo: this should consider the game mode/type selected
-		UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
-#endif
+		StartGame(msg);
 	}
-	*/
 	else if (MATCHES(msg, "pause"))
 	{
 		if (crewState != ECrewState::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
@@ -522,22 +505,86 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 #endif
 	}
 	*/
-
-	for (auto system : systems)
+	else
+	{
+		for (auto system : systems)
 #ifndef WEB_SERVER_TEST
-		if (system.Value->ReceiveCrewMessage(info, msg))
+			if (system.Value->ReceiveCrewMessage(info, msg))
 #else
-		if (system.second->ReceiveCrewMessage(info, msg))
+			if (system.second->ReceiveCrewMessage(info, msg))
 #endif
-			return;
+				return;
 
 #ifndef WEB_SERVER_TEST
-	// write all unrecognised commands to the console
-	char buffer[128];
-	EXTRACT(info, buffer, "");
-	if (controller)
-		controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %i: %s\n"), info->identifier, ANSI_TO_TCHAR(buffer)));
+		// write all unrecognised commands to the console
+		// TODO: try this instead: printf("%.*s\n", (int)msg->size, msg->data);
+		char buffer[128];
+		EXTRACT(info, buffer, "");
+		if (controller)
+			controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %i: %s\n"), info->identifier, ANSI_TO_TCHAR(buffer)));
 #endif
+	}
+}
+
+void UCrewManager::StartGame(websocket_message *msg)
+{
+	auto a = msg->size > sizeof("startGame local") - 1;
+	auto b = !memcmp(msg->data, "startGame local", sizeof("startGame local") - 1);
+
+	if (STARTS_WITH(msg, "startGame local"))
+	{
+		if (STARTS_WITH(msg, "startGame local exploration")) {
+			int difficulty = ExtractInt(msg, sizeof("startGame local exploration "));
+#ifndef WEB_SERVER_TEST
+			// TODO: load exploration map with specified difficulty
+			UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
+#endif
+		}
+		else if (STARTS_WITH(msg, "startGame local survival")) {
+			int difficulty = ExtractInt(msg, sizeof("startGame local survival "));
+#ifndef WEB_SERVER_TEST
+			// TODO: load survival map with specified difficulty
+			UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
+#endif
+		}
+		else
+			return;
+	}
+	else if (STARTS_WITH(msg, "startGame host"))
+	{
+		if (STARTS_WITH(msg, "startGame host exploration")) {
+			int difficulty = ExtractInt(msg, sizeof("startGame host exploration "));
+			// TODO: host an exploration game with specified difficulty
+		}
+		else if (STARTS_WITH(msg, "startGame host survival")) {
+			int difficulty = ExtractInt(msg, sizeof("startGame host survival "));
+			// TODO: host a survival game with specified difficulty
+		}
+		else if (MATCHES(msg, "startGame host arena")) {
+			// TODO: host an arena game
+		}
+		else
+			return;
+	}
+	else if (STARTS_WITH(msg, "startGame join"))
+	{
+		char buffer[128];
+		EXTRACT(msg, buffer, "startGame join ");
+		// TODO: join server address contained in buffer
+	}
+	else
+		return;
+
+	// no need to send corresponding setup-, as game+ clears the setup player on clients
+	connectionInSetup = nullptr;
+
+	if (!systems.empty())
+		CreateSystems();
+
+	crewState = ECrewState::Active;
+
+	SendAllFixed("game+");
+	SendAllCrewData();
 }
 
 #ifndef WEB_SERVER_TEST
@@ -564,12 +611,6 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
 	info->shipSystemFlags = systemFlags;
 
 	SendAll("playersys %i %i", info->identifier, systemFlags);
-}
-
-void UCrewManager::SendGameActive()
-{
-	for (auto& info : *currentConnections)
-		Send(info->connection, "game+ %i", info->shipSystemFlags);
 }
 
 void UCrewManager::SendFixed(mg_connection *conn, const char *message)

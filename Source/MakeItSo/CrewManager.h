@@ -17,23 +17,26 @@
 
 #define MAX_CREW_CONNECTIONS 20
 
-#define STARTS_WITH(msg, text) msg->size >  sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
-#define MATCHES(msg, text)     msg->size >= sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
-
 #ifndef WEB_SERVER_TEST
 #define CHARARR(str) *str
 #define EMPTY(set) set.Num() == 0
 #define NOTEMPTY(set) set.Num() != 0
-#define EXTRACT(info, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)FMath::Min(sizeof(buffer) - 1, info->connection->content_len - sizeof(offset) + 1), info->connection->content + sizeof(offset) - 1)
-#define APPENDINT(str, i) str.AppendInt(i);
+#define APPENDINT(str, i) str.AppendInt(i)
+#define GETMIN(a, b) FMath::Min(a, b)
+#define GETMAX(a, b) FMath::Max(a, b)
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
 #define NOTEMPTY(set) !set.empty()
-#define EXTRACT(msg, buffer, offset) snprintf(buffer, sizeof(buffer), "%.*s\0", (int)       min(sizeof(buffer) - 1, msg->size - sizeof(offset) + 1), msg->data + sizeof(offset) - 1)
-#define APPENDINT(str, i) str += std::to_wstring(i);
+#define APPENDINT(str, i) str += std::to_wstring(i)
+#define GETMIN(a, b) min(a, b)
+#define GETMAX(a, b) max(a, b)
 #endif
 
+#define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
+#define MATCHES(msg, text)   msg->size == sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
+#define EXTRACT(msg, buffer, skipText) EXTRACT_WITH_OFFSET(msg, buffer, sizeof(skipText))
+#define EXTRACT_WITH_OFFSET(msg, buffer, offsetLength) snprintf(buffer, sizeof(buffer), "%.*s\0", (int32)GETMIN(sizeof(buffer) - 1, msg->size - offsetLength + 1), msg->data + offsetLength - 1)
 
 class ConnectionInfo;
 class AShipPlayerController;
@@ -87,6 +90,12 @@ public:
 	void SendAllCrewData();
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
 
+	int32 ExtractInt(websocket_message *msg, int offset) {
+		char buffer[12];
+		EXTRACT_WITH_OFFSET(msg, buffer, offset);
+		return atoi(buffer);
+	}
+
 	UFUNCTION(BlueprintCallable, Category = MISUtils)
 	static void EventReceived(mg_connection *conn, int ev, void *ev_data);
 	
@@ -108,8 +117,8 @@ private:
 	void EndConnection(mg_connection *conn);
 	int32 GetNewUniqueIdentifier();
 	void HandleWebsocketMessage(ConnectionInfo *info, websocket_message *msg);
+	void StartGame(websocket_message *msg);
 	void ShipSystemChanged(ConnectionInfo *info, int32 systemFlags);
-	void SendGameActive();
 
 	static mg_mgr *mgr;
 	AShipPlayerController *controller;
@@ -156,4 +165,5 @@ public:
 protected:
 	UCrewManager* crewManager;
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::NoStations; }
+	int32 ExtractInt(websocket_message *msg, int offset) { return crewManager->ExtractInt(msg, offset); }
 };

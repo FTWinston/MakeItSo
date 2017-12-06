@@ -108,5 +108,3 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info)
 
 	return true;
 }
-
-
