@@ -67,22 +67,12 @@ class Settings extends React.Component<SettingsProps, {}> {
     }
 
     private close() {
-        let localPlayer = this.props.players.filter(p => p.id === this.props.localPlayerID);
-
         connection.send(`name ${this.props.userName.trim()}`);
 
-        if (localPlayer.length === 0) {
-            if (this.props.gameInProgress) {
-                this.props.showWaitingForGame();
-            } else {
-                this.props.showWaitingForPlayers();
-            }
+        if (this.props.gameInProgress) {
+            this.props.showWaitingForGame();
         } else {
-            if (this.props.gameInProgress) {
-                this.props.showPause();
-            } else {
-                this.props.showSystemSelection();
-            }
+            this.props.showSystemSelection();
         }
     }
 }
@@ -97,7 +87,8 @@ const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) 
         screenWidth: state.user.screenWidth,
         screenHeight: state.user.screenHeight,
 
-        gameInProgress: state.screen.gameInProgress,
+        gameInProgress: state.screen.gameState === ScreenStore.GameState.Active
+                     || state.screen.gameState === ScreenStore.GameState.Finished,
         players: state.crew.players,
         localPlayerID: state.crew.localPlayerID,
     }

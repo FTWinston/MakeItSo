@@ -263,7 +263,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	ConnectionInfo *info = new ConnectionInfo(conn, identifier);
 	conn->user_data = info;
 
-	// Send connection ID back to the client.
+	// send connection ID back to the client.
 	Send(conn, "id %i", info->identifier);
 
 	// send all other players to this client
@@ -285,12 +285,12 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
 	if (crewState == ECrewState::Active)
 	{
-		Send(conn, "game+ 0");
+		Send(conn, "already_started");
 		return;
 	}
 	else if (crewState == ECrewState::Paused)
 	{
-		Send(conn, "pause");
+		Send(conn, "already_paused");
 	}
 
 #ifndef WEB_SERVER_TEST
@@ -413,12 +413,6 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		info->hasName = true;
 		
 		SendAll("player %i %S", info->identifier, CHARARR(info->name));
-	}
-	else if (MATCHES(msg, "all_present"))
-	{
-		// TODO: if game in progress, do nothing
-
-		SendAll("all_present");
 	}
 	else if (STARTS_WITH(msg, "sys+ "))
 	{

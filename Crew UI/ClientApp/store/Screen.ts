@@ -3,21 +3,26 @@ import { Action, Reducer, ActionCreator } from 'redux';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
+export enum GameState {
+    Setup,
+    Paused,
+    Active,
+    Finished,
+}
+
 export interface ScreenState {
     display: ClientScreen;
-    gameInProgress: boolean;
+    gameState: GameState;
     errorMessage?: string;
 }
 
 export enum ClientScreen {
     Connecting,
     UserSettings,
-    WaitingForPlayers,
     SelectingSystems,
     SetupGame,
     ActiveGame,
     WaitingForGame,
-    Paused,
     Finished,
     Error,
 }
@@ -31,9 +36,9 @@ interface ShowScreenAction {
     display: ClientScreen;
 }
 
-interface SetGameInProgressAction {
-    type: 'GAME_IN_PROGRESS';
-    inProgress: boolean;
+interface SetGameStateAction {
+    type: 'GAME_STATE';
+    state: GameState;
 }
 
 interface ShowErrorAction {
@@ -43,7 +48,7 @@ interface ShowErrorAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = ShowScreenAction | SetGameInProgressAction | ShowErrorAction;
+type KnownAction = ShowScreenAction | SetGameStateAction | ShowErrorAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -51,22 +56,22 @@ type KnownAction = ShowScreenAction | SetGameInProgressAction | ShowErrorAction;
 
 export const actionCreators = {
     showUserSettings: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.UserSettings },
-    showWaitingForPlayers: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForPlayers },
     showSystemSelection: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SelectingSystems },
     showGameSetup: () => { /* sendEnterSetup(); */ return <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SetupGame }},
     showGame: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.ActiveGame },
     showWaitingForGame: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForGame },
-    showPause: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.Paused },
     showFinish: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.Finished },
     
-    setGameInProgress: (inProgress: boolean) => <SetGameInProgressAction>{ type: 'GAME_IN_PROGRESS', inProgress: inProgress },
+    setGameActive: () => <SetGameStateAction>{ type: 'GAME_STATE', state: GameState.Active },
+    setGamePaused: () => <SetGameStateAction>{ type: 'GAME_STATE', state: GameState.Paused },
+    setGameFinished: () => <SetGameStateAction>{ type: 'GAME_STATE', state: GameState.Finished },
     showError: (message: string) => <ShowErrorAction>{ type: 'SHOW_ERROR', message: message },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: ScreenState = { display: ClientScreen.Connecting, gameInProgress: false };
+const unloadedState: ScreenState = { display: ClientScreen.Connecting, gameState: GameState.Setup };
 
 export const reducer: Reducer<ScreenState> = (state: ScreenState, rawAction: Action) => {
     let action = rawAction as KnownAction;
@@ -76,10 +81,10 @@ export const reducer: Reducer<ScreenState> = (state: ScreenState, rawAction: Act
                 ...state,
                 display: action.display,
             };
-        case 'GAME_IN_PROGRESS':
+        case 'GAME_STATE':
             return {
                 ...state,
-                gameInProgress: action.inProgress,
+                gameState: action.state,
             };
         case 'SHOW_ERROR':
             return {

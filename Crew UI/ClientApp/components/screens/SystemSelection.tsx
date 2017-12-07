@@ -161,7 +161,7 @@ const mapStateToProps: (state: ApplicationState) => SystemSelectionDataProps = (
         playersBySystem: players,
         text: state.user.text,
         canEnterSetup: state.crew.playerInSetup !== undefined && state.crew.playerInSetup !== state.crew.localPlayerID,
-        gameInProgress: state.screen.gameInProgress,
+        gameInProgress: state.screen.gameState === ScreenStore.GameState.Paused,
         numPlayers: state.crew.players.length,
         preselectedSystems: preselectedSystems,
     };

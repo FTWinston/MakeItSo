@@ -37,7 +37,7 @@ class GameActive extends React.Component<GameActiveProps, {}> {
                 <div className="systemHeader__separator" />
                 <div className="systemHeader__commonIcons">
                     <IconButton title={this.props.text.common.help} icon={Icon.Help} />
-                    <IconButton title={this.props.text.screens.active.pause} icon={Icon.Pause} />
+                    <IconButton title={this.props.text.screens.active.pause} icon={Icon.Pause} command="pause" />
                 </div>
             </div>
         </Screen>;
@@ -57,7 +57,7 @@ class GameActive extends React.Component<GameActiveProps, {}> {
     }
 
     private renderSystemIcon(system: ShipSystem, icon: Icon) {
-        if ((this.props.displaySystems & ShipSystem.Helm) === 0)
+        if ((this.props.displaySystems & system) === 0)
             return undefined;
 
         let color = this.props.activeSystem === system ? ButtonColor.Quandry : undefined;

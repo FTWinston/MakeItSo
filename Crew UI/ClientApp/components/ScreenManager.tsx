@@ -35,8 +35,6 @@ class ScreenManager extends React.Component<ScreenManagerProps, {}> {
                 return <Screen.Connecting />;
             case ClientScreen.UserSettings:
                 return <Screen.Settings />;
-            case ClientScreen.WaitingForPlayers:
-                return <Screen.WaitingForPlayers />;
             case ClientScreen.SelectingSystems:
                 return <Screen.SystemSelection />;
             case ClientScreen.SetupGame:

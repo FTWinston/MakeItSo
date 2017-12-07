@@ -37,9 +37,6 @@ export class Connection {
             case 'id':
                 store.dispatch(crewActions.setLocalPlayer(parseInt(data)));
                 break;
-            case 'all_present':
-                store.dispatch(screenActions.showSystemSelection());
-                break;
             case 'player': {
                 pos = data.indexOf(' ');
                 let playerID = parseInt(data.substr(0, pos));
@@ -77,15 +74,22 @@ export class Connection {
                 break;
             case 'game+':
                 store.dispatch(crewActions.setSetupPlayer(undefined));
-                store.dispatch(screenActions.setGameInProgress(true));
+                store.dispatch(screenActions.setGameActive());
                 store.dispatch(screenActions.showGame());
                 break;
             case 'game-':
-                store.dispatch(screenActions.setGameInProgress(false));
+                store.dispatch(screenActions.setGameFinished());
                 store.dispatch(screenActions.showSystemSelection());
                 break;
             case 'pause':
-                store.dispatch(screenActions.showPause());
+                store.dispatch(screenActions.setGamePaused());
+                store.dispatch(screenActions.showSystemSelection());
+                break;
+            case 'already_started':
+                store.dispatch(screenActions.setGameActive());
+                break;
+            case 'already_paused':
+                store.dispatch(screenActions.setGamePaused());
                 break;
             default:
                 console.log(`Unexpected command: ${cmd}`);
