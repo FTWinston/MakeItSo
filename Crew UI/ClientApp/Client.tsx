@@ -5,8 +5,7 @@ import { Provider } from 'react-redux';
 import { createBrowserHistory } from 'history';
 import configureStore from './configureStore';
 import ScreenManager from './components/ScreenManager';
-import { Connection } from './functionality/Connection';
-import { Hotkeys } from './functionality/Hotkeys';
+import { Connection, Hotkeys } from './functionality';
 import './Client.scss';
 
 const history = createBrowserHistory();

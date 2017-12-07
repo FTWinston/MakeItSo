@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { store, connection }  from '../../Client';
 import { ApplicationState }  from '../../store';
 import * as CrewStore from '../../store/User';
-import { TextLocalisation } from '../../functionality/Localisation';
+import { TextLocalisation } from '../../functionality';
 import { PushButton, ButtonColor, Field, Screen } from '../general';
 
 interface WaitingProps {

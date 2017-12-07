@@ -82,19 +82,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "connection", function() { return connection; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_dom___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_react_dom__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_hot_loader___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configureStore__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_ScreenManager__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality_Connection__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__functionality_Hotkeys__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client_scss__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__Client_scss__);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client_scss__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__Client_scss__);
 
 
 
@@ -106,8 +104,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 var history = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_4_history__["createBrowserHistory"])();
 var store = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_5__configureStore__["a" /* default */])(history);
-var connection = new __WEBPACK_IMPORTED_MODULE_7__functionality_Connection__["a" /* Connection */]('ws://' + location.host + '/ws');
-__WEBPACK_IMPORTED_MODULE_8__functionality_Hotkeys__["a" /* Hotkeys */].initialize();
+var connection = new __WEBPACK_IMPORTED_MODULE_7__functionality__["a" /* Connection */]('ws://' + location.host + '/ws');
+__WEBPACK_IMPORTED_MODULE_7__functionality__["b" /* Hotkeys */].initialize();
 function renderApp() {
     __WEBPACK_IMPORTED_MODULE_1_react_dom__["render"](__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2_react_hot_loader__["AppContainer"], null,
         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3_react_redux__["Provider"], { store: store },
@@ -142,13 +140,13 @@ module.exports = vendor_a65b3acf96981fd3289a;
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(9);
 /* unused harmony reexport ButtonSet */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice__ = __webpack_require__(18);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_2__Choice__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Field__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Field__ = __webpack_require__(19);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_3__Field__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Screen__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Screen__ = __webpack_require__(20);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_4__Screen__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Textbox__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Textbox__ = __webpack_require__(21);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_5__Textbox__["a"]; });
 
 
@@ -230,8 +228,8 @@ var reducer = function (state, rawAction) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Button; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality_Hotkeys__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__buttons_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -253,11 +251,11 @@ var Button = (function (_super) {
     }
     Button.prototype.componentDidMount = function () {
         if (this.props.hotkey != null)
-            __WEBPACK_IMPORTED_MODULE_1__functionality_Hotkeys__["a" /* Hotkeys */].register(this.props.hotkey, this);
+            __WEBPACK_IMPORTED_MODULE_1__functionality__["b" /* Hotkeys */].register(this.props.hotkey, this);
     };
     Button.prototype.componentWillUnmount = function () {
         if (this.props.hotkey != null)
-            __WEBPACK_IMPORTED_MODULE_1__functionality_Hotkeys__["a" /* Hotkeys */].unregister(this.props.hotkey, this);
+            __WEBPACK_IMPORTED_MODULE_1__functionality__["b" /* Hotkeys */].unregister(this.props.hotkey, this);
     };
     Button.prototype.determineClasses = function () {
         var classes = 'button';
@@ -320,7 +318,7 @@ var Button = (function (_super) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality__ = __webpack_require__(8);
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -345,6 +343,7 @@ var actionCreators = {
     setLocalisation: function (localisation) { return ({ type: 'LOCALISATION', localisation: localisation }); },
     showHotkeys: function (show) { return ({ type: 'SHOW_HOTKEYS', show: show }); },
     setScreenSize: function (width, height) { return ({ type: 'SET_SCREEN_SIZE', width: width, height: height }); },
+    setActiveSystem: function (system) { return ({ type: 'SET_ACTIVE_SYSTEM', system: system }); },
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -352,8 +351,8 @@ var savedInputMode = localStorage.getItem('inputMode');
 var unloadedState = {
     userName: localStorage.getItem('userName') || '',
     inputMode: savedInputMode === null ? 1 /* Touchscreen */ : parseInt(savedInputMode),
-    localisation: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0],
-    text: __WEBPACK_IMPORTED_MODULE_0__functionality_Localisation__["a" /* Localisations */][0].load(),
+    localisation: __WEBPACK_IMPORTED_MODULE_0__functionality__["c" /* Localisations */][0],
+    text: __WEBPACK_IMPORTED_MODULE_0__functionality__["c" /* Localisations */][0].load(),
     showHotkeys: false,
     screenWidth: window.innerWidth,
     screenHeight: window.innerHeight,
@@ -371,6 +370,8 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { showHotkeys: action.show });
         case 'SET_SCREEN_SIZE':
             return __assign({}, state, { screenWidth: action.width, screenHeight: action.height });
+        case 'SET_ACTIVE_SYSTEM':
+            return __assign({}, state, { activeSystem: action.system });
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             var exhaustiveCheck = action;
@@ -384,77 +385,18 @@ var reducer = function (state, rawAction) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Hotkeys; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connection__ = __webpack_require__(34);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Connection__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Hotkeys__ = __webpack_require__(35);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Hotkeys__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Localisation__ = __webpack_require__(36);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__Localisation__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ShipSystem__ = __webpack_require__(37);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["b"]; });
 
 
-var Hotkeys = (function () {
-    function Hotkeys() {
-    }
-    Hotkeys.getKeyCode = function (hotkey) {
-        var keyCode = this.keyCodes[hotkey];
-        if (keyCode !== undefined)
-            return keyCode;
-        return hotkey.charCodeAt(0);
-    };
-    Hotkeys.register = function (hotkey, button) {
-        var keyCode = this.getKeyCode(hotkey);
-        this.bindings[keyCode] = button;
-    };
-    Hotkeys.unregister = function (hotkey, button) {
-        var keyCode = this.getKeyCode(hotkey);
-        if (this.bindings[keyCode] == button)
-            delete this.bindings[keyCode];
-    };
-    Hotkeys.initialize = function () {
-        document.onkeydown = Hotkeys.onKeyDown;
-        document.onkeyup = Hotkeys.onKeyUp;
-    };
-    Hotkeys.onKeyDown = function (e) {
-        var button = Hotkeys.bindings[e.which];
-        if (button === undefined) {
-            if (e.which === 112) {
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_User__["a" /* actionCreators */].showHotkeys(!__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.showHotkeys));
-                e.preventDefault();
-            }
-            return;
-        }
-        if (button.keyDown !== undefined)
-            button.keyDown(e);
-    };
-    Hotkeys.onKeyUp = function (e) {
-        var button = Hotkeys.bindings[e.which];
-        if (button === undefined)
-            return;
-        if (button.keyUp !== undefined)
-            button.keyUp(e);
-        if (button.keyPress !== undefined)
-            button.keyPress(e);
-    };
-    Hotkeys.bindings = {};
-    Hotkeys.keyCodes = {
-        'enter': 13,
-        'space': 32,
-        'tab': 9,
-        'control': 17,
-        'shift': 16,
-        'alt': 18,
-        'F2': 113,
-        'F3': 114,
-        'F4': 115,
-        'F5': 116,
-        'F6': 117,
-        'F7': 118,
-        'F8': 119,
-        'F9': 120,
-        'F10': 121,
-        ',': 188,
-        '.': 190,
-        '/': 191,
-    };
-    return Hotkeys;
-}());
+
 
 
 
@@ -467,7 +409,7 @@ var Hotkeys = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(40);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -528,16 +470,16 @@ var ButtonSet = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ConfirmButton__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__ConfirmButton__ = __webpack_require__(22);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_0__ConfirmButton__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeldButton__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__HeldButton__ = __webpack_require__(23);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_1__HeldButton__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__IconButton__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__IconButton__ = __webpack_require__(24);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_2__IconButton__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_2__IconButton__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PushButton__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__PushButton__ = __webpack_require__(25);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_3__PushButton__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToggleButton__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__ToggleButton__ = __webpack_require__(26);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_4__ToggleButton__["a"]; });
 
 
@@ -628,7 +570,7 @@ var reducer = function (state, action) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(33);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -704,11 +646,11 @@ var mapStateToProps = function (state) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = configureStore;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(55);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(56);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(55);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_thunk__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(53);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(54);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(39);
 
 
 
@@ -738,121 +680,31 @@ function buildRootReducer(allReducers) {
 
 /***/ }),
 /* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Connection; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Crew__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
-
-
-
-var Connection = (function () {
-    function Connection(url) {
-        var _this = this;
-        this.socket = new WebSocket(url);
-        this.socket.onerror = this.socket.onclose = function () { return __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showError(__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.text.errors.connectionLost)); };
-        this.socket.onmessage = function (e) { return _this.messageReceived(e); };
-        this.socket.onopen = function () { return _this.connected(); };
-        this.close = function () { return _this.socket.close(); };
-    }
-    Connection.prototype.send = function (cmd) {
-        this.socket.send(cmd);
-    };
-    Connection.prototype.connected = function () {
-        __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showUserSettings());
-    };
-    Connection.prototype.messageReceived = function (ev) {
-        var data = (ev.data || '');
-        console.log('received', data);
-        var pos = data.indexOf(' ');
-        var cmd = pos === -1 ? data : data.substr(0, pos);
-        data = pos === -1 ? '' : data.substr(pos + 1);
-        switch (cmd) {
-            case 'id':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setLocalPlayer(parseInt(data)));
-                break;
-            case 'all_present':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
-                break;
-            case 'player': {
-                pos = data.indexOf(' ');
-                var playerID = parseInt(data.substr(0, pos));
-                var playerName = data.substr(pos + 1);
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].updatePlayer(playerID, playerName));
-                break;
-            }
-            case 'playersys': {
-                pos = data.indexOf(' ');
-                var playerID = parseInt(data.substr(0, pos));
-                var systems = parseInt(data.substr(pos + 1));
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setPlayerSystems(playerID, systems));
-                break;
-            }
-            case 'disconnect':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].removePlayer(parseInt(data)));
-                break;
-            case 'setup+': {
-                var playerID = parseInt(data);
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(playerID));
-                if (playerID === __WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().crew.localPlayerID) {
-                    __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showGameSetup());
-                }
-                break;
-            }
-            case 'setup-':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(undefined));
-                break;
-            case 'game+':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(undefined));
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameInProgress(true));
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showGame());
-                break;
-            case 'game-':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameInProgress(false));
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
-                break;
-            case 'pause':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showPause());
-                break;
-            default:
-                console.log("Unexpected command: " + cmd);
-                break;
-        }
-    };
-    return Connection;
-}());
-
-
-
-/***/ }),
-/* 15 */
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
 
 /***/ }),
-/* 16 */
+/* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(49);
+module.exports = __webpack_require__(50);
 
 
 /***/ }),
-/* 17 */
+/* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(3))(138);
 
 /***/ }),
-/* 18 */
+/* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(3))(139);
 
 /***/ }),
-/* 19 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -860,7 +712,7 @@ module.exports = (__webpack_require__(3))(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Choice_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -929,14 +781,14 @@ var Choice = (function (_super) {
 
 
 /***/ }),
-/* 20 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Field; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Field_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -989,14 +841,14 @@ var Field = (function (_super) {
 
 
 /***/ }),
-/* 21 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Screen; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Screen_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1044,14 +896,14 @@ var Screen = (function (_super) {
 
 
 /***/ }),
-/* 22 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Textbox; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox_scss__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox_scss__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Textbox_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1102,7 +954,7 @@ var Textbox = (function (_super) {
 
 
 /***/ }),
-/* 23 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1173,7 +1025,7 @@ var ConfirmButton = (function (_super) {
 
 
 /***/ }),
-/* 24 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1231,7 +1083,7 @@ var HeldButton = (function (_super) {
 
 
 /***/ }),
-/* 25 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1254,8 +1106,8 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var HelpIcon = __webpack_require__(51);
-var RefreshIcon = __webpack_require__(52);
+var HelpIcon = __webpack_require__(52);
+var RefreshIcon = __webpack_require__(53);
 var Icon;
 (function (Icon) {
     Icon[Icon["Help"] = 0] = "Help";
@@ -1295,7 +1147,7 @@ var IconButton = (function (_super) {
 
 
 /***/ }),
-/* 26 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1349,7 +1201,7 @@ var PushButton = (function (_super) {
 
 
 /***/ }),
-/* 27 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1422,7 +1274,7 @@ var ToggleButton = (function (_super) {
 
 
 /***/ }),
-/* 28 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1466,7 +1318,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 29 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1474,7 +1326,7 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__general__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Error_scss__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Error_scss__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Error_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Error_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1513,7 +1365,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 30 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1710,7 +1562,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1819,7 +1671,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1827,9 +1679,9 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__ = __webpack_require__(36);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__functionality__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1869,14 +1721,14 @@ var SystemSelection = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("p", null, suggestedGroupings.length === 0 ? undefined : words.suggestionPrompt),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemSelection" },
-                    this.renderSystemControls(systemNames.helm, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Helm, suggestedGroupings),
-                    this.renderSystemControls(systemNames.warp, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp, suggestedGroupings),
-                    this.renderSystemControls(systemNames.weapons, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Weapons, suggestedGroupings),
-                    this.renderSystemControls(systemNames.sensors, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Sensors, suggestedGroupings),
-                    this.renderSystemControls(systemNames.power, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].PowerManagement, suggestedGroupings),
-                    this.renderSystemControls(systemNames.damage, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].DamageControl, suggestedGroupings),
-                    this.renderSystemControls(systemNames.comms, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications, suggestedGroupings),
-                    this.renderSystemControls(systemNames.view, __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen, suggestedGroupings))),
+                    this.renderSystemControls(systemNames.helm, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm, suggestedGroupings),
+                    this.renderSystemControls(systemNames.warp, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp, suggestedGroupings),
+                    this.renderSystemControls(systemNames.weapons, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons, suggestedGroupings),
+                    this.renderSystemControls(systemNames.sensors, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors, suggestedGroupings),
+                    this.renderSystemControls(systemNames.power, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement, suggestedGroupings),
+                    this.renderSystemControls(systemNames.damage, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl, suggestedGroupings),
+                    this.renderSystemControls(systemNames.comms, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications, suggestedGroupings),
+                    this.renderSystemControls(systemNames.view, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen, suggestedGroupings))),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true, displayAsRow: true },
                 settingsButton,
                 setupButton,
@@ -1905,38 +1757,38 @@ var SystemSelection = (function (_super) {
         switch (this.props.numPlayers) {
             case 2:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
                 ];
             case 3:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
                 ];
             case 4:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
                 ];
             case 5:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Helm,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
                 ];
             case 6:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Helm,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].PowerManagement,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Communications,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["a" /* ShipSystem */].DamageControl,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl,
                 ];
             default:
                 return [];
@@ -1950,7 +1802,7 @@ var mapStateToProps = function (state) {
     var localPlayer = state.crew.players.filter(function (p) { return p.id === state.crew.localPlayerID; });
     var preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].flags; // if 0, use saved session values?
     var players = {};
-    for (var _i = 0, allSystems_1 = __WEBPACK_IMPORTED_MODULE_3__functionality_ShipSystem__["b" /* allSystems */]; _i < allSystems_1.length; _i++) {
+    for (var _i = 0, allSystems_1 = __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* allSystems */]; _i < allSystems_1.length; _i++) {
         var system = allSystems_1[_i];
         players[system] = state.crew.players.filter(function (p) { return p.flags & system; }).map(function (p) { return p.name; }).join(', ');
     }
@@ -1968,7 +1820,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2022,21 +1874,21 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connecting__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connecting__ = __webpack_require__(27);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Connecting__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Settings__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Settings__ = __webpack_require__(30);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Settings__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__WaitingForPlayers__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__WaitingForPlayers__ = __webpack_require__(32);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__WaitingForPlayers__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SystemSelection__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SystemSelection__ = __webpack_require__(31);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__SystemSelection__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GameSetup__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GameSetup__ = __webpack_require__(29);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_4__GameSetup__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Error__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Error__ = __webpack_require__(28);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_5__Error__["a"]; });
 
 
@@ -2047,12 +1899,181 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
+/* 34 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Connection; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Crew__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
+
+
+
+var Connection = (function () {
+    function Connection(url) {
+        var _this = this;
+        this.socket = new WebSocket(url);
+        this.socket.onerror = this.socket.onclose = function () { return __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showError(__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.text.errors.connectionLost)); };
+        this.socket.onmessage = function (e) { return _this.messageReceived(e); };
+        this.socket.onopen = function () { return _this.connected(); };
+        this.close = function () { return _this.socket.close(); };
+    }
+    Connection.prototype.send = function (cmd) {
+        this.socket.send(cmd);
+    };
+    Connection.prototype.connected = function () {
+        __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showUserSettings());
+    };
+    Connection.prototype.messageReceived = function (ev) {
+        var data = (ev.data || '');
+        console.log('received', data);
+        var pos = data.indexOf(' ');
+        var cmd = pos === -1 ? data : data.substr(0, pos);
+        data = pos === -1 ? '' : data.substr(pos + 1);
+        switch (cmd) {
+            case 'id':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setLocalPlayer(parseInt(data)));
+                break;
+            case 'all_present':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
+                break;
+            case 'player': {
+                pos = data.indexOf(' ');
+                var playerID = parseInt(data.substr(0, pos));
+                var playerName = data.substr(pos + 1);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].updatePlayer(playerID, playerName));
+                break;
+            }
+            case 'playersys': {
+                pos = data.indexOf(' ');
+                var playerID = parseInt(data.substr(0, pos));
+                var systems = parseInt(data.substr(pos + 1));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setPlayerSystems(playerID, systems));
+                break;
+            }
+            case 'disconnect':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].removePlayer(parseInt(data)));
+                break;
+            case 'setup+': {
+                var playerID = parseInt(data);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(playerID));
+                if (playerID === __WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().crew.localPlayerID) {
+                    __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showGameSetup());
+                }
+                break;
+            }
+            case 'setup-':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(undefined));
+                break;
+            case 'game+':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(undefined));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameInProgress(true));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showGame());
+                break;
+            case 'game-':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameInProgress(false));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
+                break;
+            case 'pause':
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showPause());
+                break;
+            default:
+                console.log("Unexpected command: " + cmd);
+                break;
+        }
+    };
+    return Connection;
+}());
+
+
+
+/***/ }),
 /* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Hotkeys; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(7);
+
+
+var Hotkeys = (function () {
+    function Hotkeys() {
+    }
+    Hotkeys.getKeyCode = function (hotkey) {
+        var keyCode = this.keyCodes[hotkey];
+        if (keyCode !== undefined)
+            return keyCode;
+        return hotkey.charCodeAt(0);
+    };
+    Hotkeys.register = function (hotkey, button) {
+        var keyCode = this.getKeyCode(hotkey);
+        this.bindings[keyCode] = button;
+    };
+    Hotkeys.unregister = function (hotkey, button) {
+        var keyCode = this.getKeyCode(hotkey);
+        if (this.bindings[keyCode] == button)
+            delete this.bindings[keyCode];
+    };
+    Hotkeys.initialize = function () {
+        document.onkeydown = Hotkeys.onKeyDown;
+        document.onkeyup = Hotkeys.onKeyUp;
+    };
+    Hotkeys.onKeyDown = function (e) {
+        var button = Hotkeys.bindings[e.which];
+        if (button === undefined) {
+            if (e.which === 112) {
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_User__["a" /* actionCreators */].showHotkeys(!__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().user.showHotkeys));
+                e.preventDefault();
+            }
+            return;
+        }
+        if (button.keyDown !== undefined)
+            button.keyDown(e);
+    };
+    Hotkeys.onKeyUp = function (e) {
+        var button = Hotkeys.bindings[e.which];
+        if (button === undefined)
+            return;
+        if (button.keyUp !== undefined)
+            button.keyUp(e);
+        if (button.keyPress !== undefined)
+            button.keyPress(e);
+    };
+    Hotkeys.bindings = {};
+    Hotkeys.keyCodes = {
+        'enter': 13,
+        'space': 32,
+        'tab': 9,
+        'control': 17,
+        'shift': 16,
+        'alt': 18,
+        'F2': 113,
+        'F3': 114,
+        'F4': 115,
+        'F5': 116,
+        'F6': 117,
+        'F7': 118,
+        'F8': 119,
+        'F9': 120,
+        'F10': 121,
+        ',': 188,
+        '.': 190,
+        '/': 191,
+    };
+    return Hotkeys;
+}());
+
+
+
+/***/ }),
+/* 36 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Localisations; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(37);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(38);
 
 var Localisations = [
     {
@@ -2064,7 +2085,7 @@ var Localisations = [
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2094,7 +2115,7 @@ var allSystems = [
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2269,7 +2290,7 @@ var words = {
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2289,12 +2310,6 @@ var reducers = {
     screen: __WEBPACK_IMPORTED_MODULE_2__Screen__["c" /* reducer */],
 };
 
-
-/***/ }),
-/* 39 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
 
 /***/ }),
 /* 40 */
@@ -2340,6 +2355,12 @@ var reducers = {
 
 /***/ }),
 /* 47 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2348,13 +2369,13 @@ var reducers = {
 
 
 if (true) {
-  module.exports = __webpack_require__(48);
+  module.exports = __webpack_require__(49);
 } else {
   module.exports = require('./AppContainer.dev');
 }
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2399,7 +2420,7 @@ var AppContainer = function (_Component) {
 module.exports = AppContainer;
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2408,22 +2429,22 @@ module.exports = AppContainer;
 
 
 if (true) {
-  module.exports = __webpack_require__(50);
+  module.exports = __webpack_require__(51);
 } else {
   module.exports = require('./index.dev');
 }
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports.AppContainer = __webpack_require__(47);
+module.exports.AppContainer = __webpack_require__(48);
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(0);
@@ -2442,7 +2463,7 @@ Icon.default = Icon;
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(0);
@@ -2461,19 +2482,19 @@ Icon.default = Icon;
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(3))(142);
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(3))(143);
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = (__webpack_require__(3))(73);

@@ -5,8 +5,7 @@ import { ApplicationState }  from '../../store';
 import * as UserStore from '../../store/User';
 import * as ScreenStore from '../../store/Screen';
 import * as CrewStore from '../../store/Crew';
-import { InputMode } from '../../functionality/InputMode';
-import { Localisation, Localisations, TextLocalisation } from '../../functionality/Localisation';
+import { InputMode, Localisation, Localisations, TextLocalisation } from '../../functionality';
 import { ToggleButton, PushButton, ButtonColor, Screen, Field, Choice, Textbox } from '../general';
 
 interface SettingsDataProps {

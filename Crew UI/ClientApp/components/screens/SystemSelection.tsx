@@ -4,8 +4,7 @@ import { store, connection }  from '../../Client';
 import { ApplicationState }  from '../../store';
 import * as CrewStore from '../../store/User';
 import * as ScreenStore from '../../store/Screen';
-import { TextLocalisation } from '../../functionality/Localisation';
-import { ShipSystem, allSystems } from '../../functionality/ShipSystem';
+import { ShipSystem, allSystems, TextLocalisation } from '../../functionality';
 import { PushButton, ToggleButton, IconButton, Icon, ButtonColor, Field, Screen } from '../general';
 import './SystemSelection.scss';
 

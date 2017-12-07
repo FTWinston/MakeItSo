@@ -3,7 +3,7 @@ import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
 import { actionCreators as screenActions } from '../store/Screen';
 import { TextLocalisation } from './Localisation';
-import { ShipSystem } from 'ClientApp/functionality/ShipSystem';
+import { ShipSystem } from '../functionality';
 
 export class Connection {
     private socket: WebSocket;

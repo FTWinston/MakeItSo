@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../store';
-import { TextLocalisation } from '../../functionality/Localisation';
+import { TextLocalisation } from '../../functionality';
 import { Screen } from '../general';
 import './Error.scss';
 
