@@ -424,6 +424,11 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		int32 systemFlags = ExtractInt(msg, sizeof("sys- "));
 		ShipSystemChanged(info, info->shipSystemFlags & ~systemFlags);
 	}
+	else if (STARTS_WITH(msg, "viewsys "))
+	{
+		int32 systemFlag = ExtractInt(msg, sizeof("viewsys "));
+		// TODO: see if no one else is viewing this system, and if so, send to all players that this player is viewing it. clear what they're currently viewing.
+	}
 	else if (MATCHES(msg, "+setup"))
 	{
 		if (connectionInSetup != nullptr || crewState != ECrewState::Setup)
@@ -568,6 +573,8 @@ void UCrewManager::StartGame(websocket_message *msg)
 	}
 	else
 		return;
+
+	// TODO: allocate players to "viewing" systems, go through the players in turn and give them the first unallocated system they have selected. Send the results of this to all players.
 
 	// no need to send corresponding setup-, as game+ clears the setup player on clients
 	connectionInSetup = nullptr;
