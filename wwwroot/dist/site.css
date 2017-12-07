@@ -131,6 +131,17 @@ $lightBackground: #999;
   border-right-width: 0 !important;
   border-radius: 0.8em; }
 
+.button--icon {
+  border: none;
+  background-color: transparent !important;
+  padding: 0.2em;
+  opacity: 0.85; }
+  .button--icon:not([disabled]):hover, .button--icon:not([disabled]):focus {
+    opacity: 1; }
+  .button--icon:not([disabled]):active {
+    opacity: 1;
+    color: white !important; }
+
 .client--showHotkeys .button[data-hotkey] {
   position: relative;
   color: transparent !important; }
@@ -223,6 +234,10 @@ $lightBackground: #999;
 
 .field__content--row.field__content--centered {
   justify-content: center; }
+
+.field__contentRow {
+  display: flex;
+  align-items: center; }
 
 .field + .field {
   margin-top: 1.5em; }

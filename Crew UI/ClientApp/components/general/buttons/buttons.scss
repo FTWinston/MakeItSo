@@ -61,6 +61,24 @@ $buttonRadius: 0.8em;
     border-radius: $buttonRadius;
 }
 
+.button--icon {
+    border: none;
+    background-color: transparent !important;
+    padding: 0.2em;
+    opacity: 0.85;
+    
+    &:not([disabled]) {
+        &:hover, &:focus {
+            opacity: 1;
+        }
+        
+        &:active {
+            opacity: 1;
+            color: white !important;
+        }
+    }
+}
+
 .client--showHotkeys .button[data-hotkey] {
 	position: relative;
 	color: transparent !important; // hide text

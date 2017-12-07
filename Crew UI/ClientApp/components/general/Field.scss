@@ -42,6 +42,11 @@
     justify-content: center;
 }
 
+.field__contentRow {
+    display: flex;
+    align-items: center;
+}
+
 .field + .field {
     margin-top: 1.5em;
 }

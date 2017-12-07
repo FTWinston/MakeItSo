@@ -10,18 +10,21 @@ export const enum ButtonColor {
     Quandry,
 }
 
-export interface IButtonProps {
+export interface IBaseButtonProps {
     className?: string;
     title?: string;
     hotkey?: Hotkey;
     color?: ButtonColor;
     disabled?: boolean;
-    text: string;
     subtext?: string;
     fullBorder?: boolean;
 }
 
-interface IBaseButtonProps extends IButtonProps {
+export interface ICommonButtonProps extends IBaseButtonProps {
+    text: string;
+}
+
+interface IButtonProps extends IBaseButtonProps {
     buttonType?: string;
     mouseLeave?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
     mouseEnter?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
@@ -30,7 +33,7 @@ interface IBaseButtonProps extends IButtonProps {
     mouseClick?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 }
 
-export class Button extends React.Component<IBaseButtonProps, {}> {
+export class Button extends React.Component<IButtonProps, {}> {
     static defaultProps = {
         buttonType: 'button',
         text: '',
@@ -78,7 +81,7 @@ export class Button extends React.Component<IBaseButtonProps, {}> {
                 onClick={this.props.disabled ? undefined : this.props.mouseClick}
                 data-hotkey={this.props.hotkey} type={this.props.buttonType}
                 title={this.props.title}>
-                    {this.props.text}
+                    {this.props.children}
                     {subtext}
             </button>;
     }

@@ -6,7 +6,7 @@ import * as CrewStore from '../../store/User';
 import * as ScreenStore from '../../store/Screen';
 import { TextLocalisation } from '../../functionality/Localisation';
 import { ShipSystem, allSystems } from '../../functionality/ShipSystem';
-import { PushButton, ToggleButton, ButtonColor, Field, Screen } from '../general';
+import { PushButton, ToggleButton, IconButton, Icon, ButtonColor, Field, Screen } from '../general';
 import './SystemSelection.scss';
 
 interface SystemSelectionDataProps {
@@ -96,7 +96,9 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
                 deactivateCommand={`sys- ${system}`}
                 startActive={preselected}
             />,
-            <div key="c" className="systemSelection__help">?</div>,
+            <div key="c" className="systemSelection__help">
+                <IconButton color={ButtonColor.Quandry} icon={Icon.Help} />
+            </div>,
             <div key="d" className="systemSelection__who">{players}</div>
         ];
     }

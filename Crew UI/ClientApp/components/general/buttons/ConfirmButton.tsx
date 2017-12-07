@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button, IButtonProps } from './Button';
+import { Button, ICommonButtonProps } from './Button';
 import { connection } from '../../../Client';
 
-interface IConfirmButtonProps extends IButtonProps {
+interface IConfirmButtonProps extends ICommonButtonProps {
     clicked?: () => void;
     command?: string;
 }
@@ -22,7 +22,7 @@ export class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirm
             classList += ' ' + this.props.className;
         
         return <Button className={classList} hotkey={this.props.hotkey} mouseClick={e => this.clicked(e)} buttonType="submit" color={this.props.color} fullBorder={this.props.fullBorder}
-                disabled={this.props.disabled} text={this.props.text} subtext={this.props.subtext} title={this.props.title} />;
+                disabled={this.props.disabled} subtext={this.props.subtext} title={this.props.title}>{this.props.text}</Button>;
     }
     autoCancel?: number;
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {
