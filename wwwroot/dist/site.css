@@ -158,9 +158,9 @@ $lightBackground: #999;
     .buttonset.buttonset--vertical > .button:not(:last-of-type) {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0; }
-    .buttonset.buttonset--vertical > button:not(.fullBorder):not(:last-child) {
+    .buttonset.buttonset--vertical > .button:not(.button--fullBorder):not(:last-child) {
       border-bottom-width: 0; }
-    .buttonset.buttonset--vertical > button.fullBorder + button {
+    .buttonset.buttonset--vertical > .button--fullBorder + button {
       border-top-width: 0; }
   .buttonset:not(.buttonset--vertical) > .button:not(:first-of-type) {
     border-top-left-radius: 0;
@@ -168,9 +168,9 @@ $lightBackground: #999;
   .buttonset:not(.buttonset--vertical) > .button:not(:last-of-type) {
     border-bottom-right-radius: 0;
     border-top-right-radius: 0; }
-  .buttonset:not(.buttonset--vertical) > .button:not(.fullBorder):not(:last-child) {
+  .buttonset:not(.buttonset--vertical) > .button:not(.button--fullBorder):not(:last-child) {
     border-right-width: 0; }
-  .buttonset:not(.buttonset--vertical) > .button.fullBorder + button {
+  .buttonset:not(.buttonset--vertical) > .button--fullBorder + button {
     border-left-width: 0; }
   .buttonset .buttonset {
     justify-content: stretch; }

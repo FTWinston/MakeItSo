@@ -329,7 +329,7 @@ var Button = (function (_super) {
             classes += ' ' + this.props.className;
         }
         if (this.props.fullBorder)
-            classes += ' fullBorder';
+            classes += ' button--fullBorder';
         switch (this.props.color) {
             case 0 /* Primary */:
                 classes += ' button--primary';
@@ -2036,7 +2036,7 @@ var words = {
     },
     errors: {
         unknown: 'Unable to display information on this error. Sorry.',
-        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection.\nOtherwise, refresh the page to reconnect.',
+        connectionLost: 'The connection to your ship has been lost.\nIf the game is still running, check your network connection then refresh the page.',
     },
     screens: {
         connecting: {

@@ -51,7 +51,7 @@ export class Button extends React.Component<IBaseButtonProps, {}> {
         }
         
         if (this.props.fullBorder)
-            classes += ' fullBorder';
+            classes += ' button--fullBorder';
 
         switch(this.props.color) {
             case ButtonColor.Primary:

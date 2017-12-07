@@ -19,11 +19,11 @@
             }
         }
         
-        > button:not(.fullBorder):not(:last-child) {
+        > .button:not(.button--fullBorder):not(:last-child) {
             border-bottom-width: 0;
         }
         
-        > button.fullBorder + button {
+        > .button--fullBorder + button {
             border-top-width: 0;
         }
     }
@@ -41,11 +41,11 @@
             }
         }
 
-        > .button:not(.fullBorder):not(:last-child) {
+        > .button:not(.button--fullBorder):not(:last-child) {
             border-right-width: 0;
         }
 
-        > .button.fullBorder + button {
+        > .button--fullBorder + button {
             border-left-width: 0;
         }
     }
