@@ -41,6 +41,8 @@ class ScreenManager extends React.Component<ScreenManagerProps, {}> {
                 return <Screen.SystemSelection />;
             case ClientScreen.SetupGame:
                 return <Screen.GameSetup />;
+            case ClientScreen.ActiveGame:
+                return <Screen.GameActive />;
             case ClientScreen.Error:
                 return <Screen.Error />;
             default:

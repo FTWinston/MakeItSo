@@ -54,6 +54,13 @@ export class Connection {
                 store.dispatch(crewActions.setPlayerSystems(playerID, systems));
                 break;
             }
+            case 'viewsys': {
+                pos = data.indexOf(' ');
+                let playerID = parseInt(data.substr(0, pos));
+                let system = parseInt(data.substr(pos + 1)) as ShipSystem;
+                store.dispatch(crewActions.setActiveSystem(playerID, system === 0 ? undefined : system));
+                break;
+            }
             case 'disconnect':
                 store.dispatch(crewActions.removePlayer(parseInt(data)));
                 break;

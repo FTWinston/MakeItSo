@@ -13,7 +13,8 @@ export interface CrewState {
 export interface CrewPlayer {
     id: number;
     name: string;
-    flags: ShipSystem;
+    selectedSystems: ShipSystem;
+    activeSystem?: ShipSystem;
 }
 
 // -----------------
@@ -34,7 +35,7 @@ interface UpdatePlayerAction {
 interface SetPlayerSystemsAction {
     type: 'SET_PLAYER_SYSTEMS';
     playerID: number;
-    flags: ShipSystem;
+    systems: ShipSystem;
 }
 
 interface SetLocalPlayerAction {
@@ -47,9 +48,15 @@ interface SetSetupPlayerAction {
     playerID?: number;
 }
 
+interface SetActiveSystemAction {
+    type: 'SET_ACTIVE_SYSTEM';
+    playerID: number;
+    system: ShipSystem;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction;
+type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction | SetActiveSystemAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -58,9 +65,10 @@ type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAct
 export const actionCreators = {
     updatePlayer: (playerID: number, name: string) => <UpdatePlayerAction>{ type: 'UPDATE_PLAYER', playerID: playerID, name: name },
     removePlayer: (playerID: number) => <RemovePlayerAction>{ type: 'REMOVE_PLAYER', playerID: playerID },
-    setPlayerSystems: (playerID: number, flags: ShipSystem) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags },
+    setPlayerSystems: (playerID: number, systems: ShipSystem) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, systems: systems },
     setLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
-    setSetupPlayer: (playerID: number | undefined) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
+    setSetupPlayer: (playerID?: number) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
+    setActiveSystem: (playerID: number, system?: ShipSystem) => <SetActiveSystemAction>{ type: 'SET_ACTIVE_SYSTEM', playerID: playerID, system: system },
 };
 
 // ----------------
@@ -91,7 +99,7 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 players.push({
                     id: action.playerID,
                     name: action.name,
-                    flags: 0,
+                    selectedSystems: 0,
                 });
             }
 
@@ -105,7 +113,7 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 players: state.players.map((player, index) => {
                     if (player.id === action.playerID) {
                         return Object.assign({}, player, {
-                            flags: action.flags
+                            selectedSystems: action.systems
                         });
                     }
                     return player;
@@ -121,6 +129,18 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 ...state,
                 playerInSetup: action.playerID,
             };
+        case 'SET_ACTIVE_SYSTEM':
+            return {
+                ...state,
+                players: state.players.map((player, index) => {
+                    if (player.id === action.playerID) {
+                        return Object.assign({}, player, {
+                            activeSystem: action.system
+                        });
+                    }
+                    return player;
+                }),
+            }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             const exhaustiveCheck: never = action;

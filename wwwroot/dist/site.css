@@ -248,6 +248,8 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .screen {
+  width: calc(100vw - 1em);
+  min-height: calc(100vh - 1em);
   max-height: calc(100vh - 1em);
   overflow: hidden;
   display: flex;
@@ -259,7 +261,7 @@ $lightBackground: #999;
 
 .screen--pageLayout {
   justify-content: flex-start;
-  height: unset;
+  min-height: unset;
   max-height: unset;
   overflow: unset;
   overflow-y: auto;
@@ -273,6 +275,10 @@ $lightBackground: #999;
   font-weight: bold;
   font-size: 1.5rem;
   margin-bottom: 1.5rem; }
+
+.screen--gameActive {
+  justify-content: flex-start;
+  align-content: stretch; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -389,6 +395,58 @@ $lightBackground: #999;
 
 .systemSelection__help, .systemSelection__group {
   justify-self: center; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.systemHeader {
+  flex-shrink: 0;
+  flex-grow: 0;
+  height: 2em;
+  background-color: #9f9bfd;
+  margin: 0.3em 0.2em 1em 0.2em;
+  padding: 0 0.75em;
+  border-radius: 1em;
+  display: flex;
+  justify-content: space-between;
+  align-content: center; }
+
+.systemHeader__nameWrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-content: center;
+  flex-shrink: 0;
+  flex-grow: 0; }
+  .systemHeader__nameWrapper > *:not(:first-child) {
+    margin-left: 0.5em; }
+
+.systemHeader__name {
+  font-size: 2em;
+  background-color: #333;
+  padding: 0em 0.25em;
+  margin-left: 0.5em;
+  align-self: stretch; }
+
+.systemHeader__systemIcons {
+  flex-grow: 1;
+  flex-shrink: 1;
+  display: flex; }
+  .systemHeader__systemIcons > * {
+    flex-grow: 1;
+    flex-shrink: 1;
+    max-width: 6em;
+    min-width: calc(24px + 0.2em); }
+
+.systemHeader__commonIcons {
+  padding-left: 0.5em;
+  flex-shrink: 0;
+  flex-grow: 0; }
+
+.systemHeader__separator {
+  width: 2px;
+  background-color: #333; }
 .errorMessage {
   white-space: pre-wrap;
   line-height: 2em; }

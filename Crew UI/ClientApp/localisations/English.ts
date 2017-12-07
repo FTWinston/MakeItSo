@@ -53,6 +53,7 @@ let words: TextLocalisation = {
             shipName: 'Ship name',
             shipNamePlaceholder: 'You must name your ship',
             shipNameDescription: 'The name of the ship your crew will operate',
+            shipNameRandom: 'Pick a random name for your ship',
             joinAddress: 'Server address',
             joinAddressPlaceholder: 'Enter address',
             joinAddressDescription: 'IP address or URL of the game server to join',
@@ -152,6 +153,9 @@ let words: TextLocalisation = {
                 'Yukon',
                 'Zodiac',
             ],
+        },
+        active: {
+            pause: 'Pause',
         },
         error: {
             heading: 'An error has occurred',

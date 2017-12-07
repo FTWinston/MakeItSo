@@ -96,7 +96,7 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
                 startActive={preselected}
             />,
             <div key="c" className="systemSelection__help">
-                <IconButton color={ButtonColor.Quandry} icon={Icon.Help} />
+                <IconButton color={ButtonColor.Quandry} icon={Icon.Help} title={this.props.text.common.help} />
             </div>,
             <div key="d" className="systemSelection__who">{players}</div>
         ];
@@ -149,12 +149,12 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
 const mapStateToProps: (state: ApplicationState) => SystemSelectionDataProps = (state) => {
     // use the current player's selections if we have any
     let localPlayer = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
-    let preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].flags; // if 0, use saved session values?
+    let preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].selectedSystems; // if 0, use saved session values?
 
     let players: { [key: number]: string } = {};
 
     for (var system of allSystems) {
-        players[system] = state.crew.players.filter(p => p.flags & system).map(p => p.name).join(', ');
+        players[system] = state.crew.players.filter(p => p.selectedSystems & system).map(p => p.name).join(', ');
     }
 
     return {

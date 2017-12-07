@@ -1,6 +1,8 @@
 @import 'mixins';
 
 .screen {
+    width: calc(100vw - #{$clientPadding * 2});
+    min-height: calc(100vh - #{$clientPadding * 2});
     max-height: calc(100vh - #{$clientPadding * 2});
     overflow: hidden;
 
@@ -16,7 +18,7 @@
 .screen--pageLayout {
     justify-content: flex-start;
 
-    height: unset;
+    min-height: unset;
     max-height: unset;
     overflow: unset;
     overflow-y: auto;
@@ -33,4 +35,9 @@
     font-weight: bold;
     font-size: 1.5rem;
     margin-bottom: 1.5rem;
+}
+
+.screen--gameActive {
+    justify-content: flex-start;
+    align-content: stretch;
 }

@@ -70,7 +70,7 @@
 /* 0 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(6);
+module.exports = (__webpack_require__(4))(6);
 
 /***/ }),
 /* 1 */
@@ -90,7 +90,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4_history__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configureStore__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__components_ScreenManager__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__functionality__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client_scss__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__Client_scss__);
 
@@ -118,36 +118,30 @@ renderApp();
 /* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(140);
+module.exports = (__webpack_require__(4))(140);
 
 /***/ }),
 /* 3 */
-/***/ (function(module, exports) {
-
-module.exports = vendor_a65b3acf96981fd3289a;
-
-/***/ }),
-/* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(10);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["d"]; });
 /* unused harmony reexport HeldButton */
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["e"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["f"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["e"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["f"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(9);
 /* unused harmony reexport ButtonSet */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice__ = __webpack_require__(18);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_2__Choice__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_2__Choice__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Field__ = __webpack_require__(19);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_3__Field__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__Field__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Screen__ = __webpack_require__(20);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_4__Screen__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Textbox__ = __webpack_require__(21);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_5__Textbox__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_5__Textbox__["a"]; });
 
 
 
@@ -155,6 +149,12 @@ module.exports = vendor_a65b3acf96981fd3289a;
 
 
 
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports) {
+
+module.exports = vendor_a65b3acf96981fd3289a;
 
 /***/ }),
 /* 5 */
@@ -225,11 +225,32 @@ var reducer = function (state, rawAction) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connection__ = __webpack_require__(35);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Connection__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Hotkeys__ = __webpack_require__(36);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Hotkeys__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Localisation__ = __webpack_require__(37);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__Localisation__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ShipSystem__ = __webpack_require__(38);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["c"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["b"]; });
+
+
+
+
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Button; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss__ = __webpack_require__(45);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss__ = __webpack_require__(46);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__buttons_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__buttons_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -312,13 +333,13 @@ var Button = (function (_super) {
 
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality__ = __webpack_require__(6);
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -343,7 +364,6 @@ var actionCreators = {
     setLocalisation: function (localisation) { return ({ type: 'LOCALISATION', localisation: localisation }); },
     showHotkeys: function (show) { return ({ type: 'SHOW_HOTKEYS', show: show }); },
     setScreenSize: function (width, height) { return ({ type: 'SET_SCREEN_SIZE', width: width, height: height }); },
-    setActiveSystem: function (system) { return ({ type: 'SET_ACTIVE_SYSTEM', system: system }); },
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -370,34 +390,12 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { showHotkeys: action.show });
         case 'SET_SCREEN_SIZE':
             return __assign({}, state, { screenWidth: action.width, screenHeight: action.height });
-        case 'SET_ACTIVE_SYSTEM':
-            return __assign({}, state, { activeSystem: action.system });
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             var exhaustiveCheck = action;
     }
     return state || unloadedState;
 };
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connection__ = __webpack_require__(34);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Connection__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Hotkeys__ = __webpack_require__(35);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Hotkeys__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Localisation__ = __webpack_require__(36);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__Localisation__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__ShipSystem__ = __webpack_require__(37);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["a"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_3__ShipSystem__["b"]; });
-
-
-
-
 
 
 /***/ }),
@@ -409,7 +407,7 @@ var reducer = function (state, rawAction) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(40);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(41);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -509,9 +507,10 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 var actionCreators = {
     updatePlayer: function (playerID, name) { return ({ type: 'UPDATE_PLAYER', playerID: playerID, name: name }); },
     removePlayer: function (playerID) { return ({ type: 'REMOVE_PLAYER', playerID: playerID }); },
-    setPlayerSystems: function (playerID, flags) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, flags: flags }); },
+    setPlayerSystems: function (playerID, systems) { return ({ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, systems: systems }); },
     setLocalPlayer: function (playerID) { return ({ type: 'SET_LOCAL_PLAYER', playerID: playerID }); },
     setSetupPlayer: function (playerID) { return ({ type: 'SET_SETUP_PLAYER', playerID: playerID }); },
+    setActiveSystem: function (playerID, system) { return ({ type: 'SET_ACTIVE_SYSTEM', playerID: playerID, system: system }); },
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -535,7 +534,7 @@ var reducer = function (state, action) {
                 players.push({
                     id: action.playerID,
                     name: action.name,
-                    flags: 0,
+                    selectedSystems: 0,
                 });
             }
             return __assign({}, state, { players: players });
@@ -543,7 +542,7 @@ var reducer = function (state, action) {
             return __assign({}, state, { players: state.players.map(function (player, index) {
                     if (player.id === action.playerID) {
                         return Object.assign({}, player, {
-                            flags: action.flags
+                            selectedSystems: action.systems
                         });
                     }
                     return player;
@@ -552,6 +551,15 @@ var reducer = function (state, action) {
             return __assign({}, state, { localPlayerID: action.playerID });
         case 'SET_SETUP_PLAYER':
             return __assign({}, state, { playerInSetup: action.playerID });
+        case 'SET_ACTIVE_SYSTEM':
+            return __assign({}, state, { players: state.players.map(function (player, index) {
+                    if (player.id === action.playerID) {
+                        return Object.assign({}, player, {
+                            activeSystem: action.system
+                        });
+                    }
+                    return player;
+                }) });
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             var exhaustiveCheck = action;
@@ -569,8 +577,8 @@ var reducer = function (state, action) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__screens__ = __webpack_require__(34);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -615,8 +623,10 @@ var ScreenManager = (function (_super) {
                 return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["d" /* SystemSelection */], null);
             case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].SetupGame:
                 return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["e" /* GameSetup */], null);
+            case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].ActiveGame:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["f" /* GameActive */], null);
             case __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].Error:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["f" /* Error */], null);
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__screens__["g" /* Error */], null);
             default:
                 return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("h1", { className: "screen__heading" },
                     "Unable to render screen: ",
@@ -646,11 +656,11 @@ var mapStateToProps = function (state) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = configureStore;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(56);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(55);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_redux__ = __webpack_require__(69);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk__ = __webpack_require__(68);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_redux_thunk___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_redux_thunk__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(54);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(39);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_react_router_redux__ = __webpack_require__(67);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store__ = __webpack_require__(40);
 
 
 
@@ -688,20 +698,20 @@ function buildRootReducer(allReducers) {
 /* 15 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__(50);
+module.exports = __webpack_require__(52);
 
 
 /***/ }),
 /* 16 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(138);
+module.exports = (__webpack_require__(4))(138);
 
 /***/ }),
 /* 17 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(139);
+module.exports = (__webpack_require__(4))(139);
 
 /***/ }),
 /* 18 */
@@ -712,7 +722,7 @@ module.exports = (__webpack_require__(3))(139);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(41);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(42);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Choice_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -788,7 +798,7 @@ var Choice = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Field; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss__ = __webpack_require__(42);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss__ = __webpack_require__(43);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Field_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Field_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -848,7 +858,7 @@ var Field = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Screen; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(43);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss__ = __webpack_require__(44);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Screen_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Screen_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -903,7 +913,7 @@ var Screen = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Textbox; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox_scss__ = __webpack_require__(44);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox_scss__ = __webpack_require__(45);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__Textbox_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -961,7 +971,7 @@ var Textbox = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ConfirmButton; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1032,7 +1042,7 @@ var ConfirmButton = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HeldButton; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1091,7 +1101,7 @@ var HeldButton = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return IconButton; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1106,12 +1116,34 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
-var HelpIcon = __webpack_require__(52);
-var RefreshIcon = __webpack_require__(53);
+var HelpIcon = __webpack_require__(58);
+var PauseIcon = __webpack_require__(60);
+var RefreshIcon = __webpack_require__(63);
+var SkipBack = __webpack_require__(64);
+var SkipForward = __webpack_require__(65);
+var HelmIcon = __webpack_require__(59);
+var WarpIcon = __webpack_require__(56);
+var WeaponsIcon = __webpack_require__(57);
+var SensorsIcon = __webpack_require__(54);
+var PowerIcon = __webpack_require__(62);
+var DamageIcon = __webpack_require__(55);
+var ViewScreenIcon = __webpack_require__(66);
+var CommunicationsIcon = __webpack_require__(61);
 var Icon;
 (function (Icon) {
     Icon[Icon["Help"] = 0] = "Help";
-    Icon[Icon["Refresh"] = 1] = "Refresh";
+    Icon[Icon["Pause"] = 1] = "Pause";
+    Icon[Icon["Refresh"] = 2] = "Refresh";
+    Icon[Icon["SkipBack"] = 3] = "SkipBack";
+    Icon[Icon["SkipForward"] = 4] = "SkipForward";
+    Icon[Icon["Helm"] = 5] = "Helm";
+    Icon[Icon["Warp"] = 6] = "Warp";
+    Icon[Icon["Weapons"] = 7] = "Weapons";
+    Icon[Icon["Sensors"] = 8] = "Sensors";
+    Icon[Icon["PowerManagement"] = 9] = "PowerManagement";
+    Icon[Icon["DamageControl"] = 10] = "DamageControl";
+    Icon[Icon["ViewScreen"] = 11] = "ViewScreen";
+    Icon[Icon["Communications"] = 12] = "Communications";
 })(Icon || (Icon = {}));
 var IconButton = (function (_super) {
     __extends(IconButton, _super);
@@ -1127,10 +1159,32 @@ var IconButton = (function (_super) {
     };
     IconButton.prototype.renderIcon = function () {
         switch (this.props.icon) {
-            case Icon.Refresh:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](RefreshIcon, null);
             case Icon.Help:
                 return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](HelpIcon, null);
+            case Icon.Pause:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](PauseIcon, null);
+            case Icon.Refresh:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](RefreshIcon, null);
+            case Icon.SkipBack:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SkipBack, null);
+            case Icon.SkipForward:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SkipForward, null);
+            case Icon.Helm:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](HelmIcon, null);
+            case Icon.Warp:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](WarpIcon, null);
+            case Icon.Weapons:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](WeaponsIcon, null);
+            case Icon.Sensors:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SensorsIcon, null);
+            case Icon.PowerManagement:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](PowerIcon, null);
+            case Icon.DamageControl:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](DamageIcon, null);
+            case Icon.ViewScreen:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ViewScreenIcon, null);
+            case Icon.Communications:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](CommunicationsIcon, null);
             default:
                 var exhaustiveCheck = this.props.icon;
         }
@@ -1154,7 +1208,7 @@ var IconButton = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PushButton; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1208,7 +1262,7 @@ var PushButton = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ToggleButton; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Button__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1281,8 +1335,8 @@ var ToggleButton = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_User__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general__ = __webpack_require__(3);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1325,8 +1379,8 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__general__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Error_scss__ = __webpack_require__(46);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__general__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Error_scss__ = __webpack_require__(47);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Error_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__Error_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1373,8 +1427,106 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__functionality__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GameActive_scss__ = __webpack_require__(48);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GameActive_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__GameActive_scss__);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+
+
+
+
+
+var GameActive = (function (_super) {
+    __extends(GameActive, _super);
+    function GameActive() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    GameActive.prototype.render = function () {
+        var activeSystemName = this.props.activeSystem === undefined ? undefined : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* getSystemName */])(this.props.activeSystem, this.props.text);
+        var prev;
+        var next;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["a" /* Screen */], null,
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader" },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__nameWrapper" },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("h1", { className: "systemHeader__name" }, activeSystemName)),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__separator" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__systemIcons systemHeader__systemIcons--fullWidth" }, this.renderSystemIcons()),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__systemIcons systemHeader__systemIcons--truncated" },
+                    prev,
+                    next),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__separator" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__commonIcons" },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { title: this.props.text.common.help, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Help }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { title: this.props.text.screens.active.pause, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Pause }))));
+    };
+    GameActive.prototype.renderSystemIcons = function () {
+        return [
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Helm),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Warp),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Weapons),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Sensors),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].PowerManagement),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].DamageControl),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Communications),
+            this.renderSystemIcon(__WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen, __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].ViewScreen),
+        ];
+    };
+    GameActive.prototype.renderSystemIcon = function (system, icon) {
+        if ((this.props.displaySystems & __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm) === 0)
+            return undefined;
+        var color = this.props.activeSystem === system ? 4 /* Quandry */ : undefined;
+        var disabled = (this.props.disableSystems & system) !== 0;
+        var clicked = this.props.activeSystem === system ? undefined : function () { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("viewsys " + system); };
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { key: system, title: __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* getSystemName */])(system, this.props.text), icon: icon, disabled: disabled, color: color, clicked: clicked });
+    };
+    return GameActive;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+// Selects which state properties are merged into the component's props
+var mapStateToProps = function (state) {
+    var player = state.crew.players.filter(function (p) { return p.id === state.crew.localPlayerID; });
+    var disabled = 0;
+    for (var _i = 0, _a = state.crew.players; _i < _a.length; _i++) {
+        var other = _a[_i];
+        if (other.id !== state.crew.localPlayerID && other.activeSystem !== undefined) {
+            disabled |= other.activeSystem;
+        }
+    }
+    var activeSystem = player[0].activeSystem;
+    var activeName = activeSystem === undefined ? undefined : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* getSystemName */])(activeSystem, state.user.text);
+    return {
+        text: state.user.text,
+        activeSystem: activeSystem,
+        activeSystemName: activeName,
+        displaySystems: player[0].selectedSystems,
+        disableSystems: disabled,
+    };
+};
+// Wire up the React component to the Redux store
+/* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, {})(GameActive));
+
+
+/***/ }),
+/* 30 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Screen__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(3);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1419,51 +1571,51 @@ var GameSetup = (function (_super) {
         var difficulty;
         var hostName;
         if (this.state.gameType === 1 /* Join */) {
-            joinAddress = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { labelText: words.joinAddress, labelBehaviour: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["c" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.joinAddress, placeholder: words.joinAddressPlaceholder, textChanged: function (address) { return _this.setState({ joinAddress: address }); } }),
+            joinAddress = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { labelText: words.joinAddress, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.joinAddress, placeholder: words.joinAddressPlaceholder, textChanged: function (address) { return _this.setState({ joinAddress: address }); } }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.joinAddressDescription)));
         }
         else {
             if (this.state.gameType !== undefined) {
-                gameMode = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { labelText: words.gameMode },
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Choice */], { prompt: words.gameModePrompt, color: 0 /* Primary */, vertical: choicesVertical },
-                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 2 /* Exploration */ }); }, description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
-                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 1 /* Survival */ }); }, description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
-                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 0 /* Arena */ }); }, description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType === 0 /* Local */ }))));
+                gameMode = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { labelText: words.gameMode },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["f" /* Choice */], { prompt: words.gameModePrompt, color: 0 /* Primary */, vertical: choicesVertical },
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 2 /* Exploration */ }); }, description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 1 /* Survival */ }); }, description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 0 /* Arena */ }); }, description: words.gameModeArenaDescription, text: words.gameModeArena, disabled: this.state.gameType === 0 /* Local */ }))));
                 if (this.usesDifficulty()) {
                     var levels = [];
                     var _loop_1 = function (i) {
-                        levels.push(__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { key: i, activated: function () { return _this.setState({ difficulty: i }); }, text: i.toString() }));
+                        levels.push(__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { key: i, activated: function () { return _this.setState({ difficulty: i }); }, text: i.toString() }));
                     };
                     for (var i = 1; i <= 10; i++) {
                         _loop_1(i);
                     }
-                    difficulty = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { labelText: words.difficulty },
-                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Choice */], { prompt: words.difficultyPrompt, color: 2 /* Tertiary */, vertical: this.props.screenWidth < 400 }, levels)));
+                    difficulty = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { labelText: words.difficulty },
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["f" /* Choice */], { prompt: words.difficultyPrompt, color: 2 /* Tertiary */, vertical: this.props.screenWidth < 400 }, levels)));
                 }
                 if (this.state.gameType === 2 /* Host */) {
-                    hostName = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { labelText: words.serverName, labelBehaviour: true },
-                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["c" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.serverName, placeholder: words.serverNamePlaceholder, textChanged: function (name) { return _this.setState({ serverName: name }); } }),
+                    hostName = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { labelText: words.serverName, labelBehaviour: true },
+                        __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.serverName, placeholder: words.serverNamePlaceholder, textChanged: function (name) { return _this.setState({ serverName: name }); } }),
                         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.serverNameDescription)));
                 }
             }
         }
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { labelText: words.shipName, labelBehaviour: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { labelText: words.shipName, labelBehaviour: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "field__contentRow" },
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["c" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.shipName, textChanged: function (name) { return _this.setState({ shipName: name }); } }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["f" /* IconButton */], { color: 2 /* Tertiary */, icon: __WEBPACK_IMPORTED_MODULE_4__general__["g" /* Icon */].Refresh, clicked: function () { return _this.randomizeName(); } })),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.shipName, textChanged: function (name) { return _this.setState({ shipName: name }); } }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { color: 2 /* Tertiary */, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Refresh, clicked: function () { return _this.randomizeName(); }, title: words.shipNameRandom })),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.shipNameDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { labelText: words.gameType },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Choice */], { prompt: words.gameTypePrompt, color: 0 /* Primary */, vertical: choicesVertical },
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 0 /* Local */ }); }, description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 1 /* Join */ }); }, description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 2 /* Host */ }); }, description: words.gameTypeHostDescription, text: words.gameTypeHost }))),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { labelText: words.gameType },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["f" /* Choice */], { prompt: words.gameTypePrompt, color: 0 /* Primary */, vertical: choicesVertical },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 0 /* Local */ }); }, description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 1 /* Join */ }); }, description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 2 /* Host */ }); }, description: words.gameTypeHostDescription, text: words.gameTypeHost }))),
             joinAddress,
             gameMode,
             difficulty,
             hostName,
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { centered: true, displayAsRow: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["h" /* ConfirmButton */], { color: 4 /* Quandry */, clicked: function () { return _this.startGame(); }, text: words.startGame, disabled: !this.decideCanStart() }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["i" /* PushButton */], { color: 3 /* Quaternary */, clicked: function () { return _this.cancel(); }, text: this.props.text.common.cancel, command: "-setup" })));
     };
@@ -1562,7 +1714,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1570,9 +1722,9 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_User__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Screen__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__general__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__general__ = __webpack_require__(3);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1608,15 +1760,15 @@ var Settings = (function (_super) {
         var hasUserName = this.props.userName.trim().length > 0;
         var inputModeVertical = this.props.screenWidth < 330;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["b" /* Field */], { labelText: words.userName, labelBehaviour: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["c" /* Textbox */], { color: 0 /* Primary */, text: this.props.userName, textChanged: function (t) { return _this.nameChanged(t); }, placeholder: words.userNamePlaceholder }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["d" /* Field */], { labelText: words.userName, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* Textbox */], { color: 0 /* Primary */, text: this.props.userName, textChanged: function (t) { return _this.nameChanged(t); }, placeholder: words.userNamePlaceholder }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["b" /* Field */], { labelText: words.inputMode },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["d" /* Choice */], { prompt: words.inputModePrompt, color: 1 /* Secondary */, vertical: inputModeVertical },
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* ToggleButton */], { startActive: this.props.inputMode === 0 /* KeyboardAndMouse */, activated: function () { return _this.inputModeChanged(0 /* KeyboardAndMouse */); }, description: words.inputModeDescriptionKeyboard, text: words.inputModeKeyboard }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* ToggleButton */], { startActive: this.props.inputMode === 1 /* Touchscreen */, activated: function () { return _this.inputModeChanged(1 /* Touchscreen */); }, description: words.inputModeDescriptionTouch, text: words.inputModeTouch }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["e" /* ToggleButton */], { startActive: this.props.inputMode === 2 /* Gamepad */, disabled: true, activated: function () { return _this.inputModeChanged(2 /* Gamepad */); }, description: words.inputModeDescriptionGamepad, text: words.inputModeGamepad }))),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["b" /* Field */], { centered: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["d" /* Field */], { labelText: words.inputMode },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["f" /* Choice */], { prompt: words.inputModePrompt, color: 1 /* Secondary */, vertical: inputModeVertical },
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["g" /* ToggleButton */], { startActive: this.props.inputMode === 0 /* KeyboardAndMouse */, activated: function () { return _this.inputModeChanged(0 /* KeyboardAndMouse */); }, description: words.inputModeDescriptionKeyboard, text: words.inputModeKeyboard }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["g" /* ToggleButton */], { startActive: this.props.inputMode === 1 /* Touchscreen */, activated: function () { return _this.inputModeChanged(1 /* Touchscreen */); }, description: words.inputModeDescriptionTouch, text: words.inputModeTouch }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["g" /* ToggleButton */], { startActive: this.props.inputMode === 2 /* Gamepad */, disabled: true, activated: function () { return _this.inputModeChanged(2 /* Gamepad */); }, description: words.inputModeDescriptionGamepad, text: words.inputModeGamepad }))),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["d" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__general__["i" /* PushButton */], { color: 2 /* Tertiary */, disabled: !hasUserName, clicked: function () { return _this.close(); }, text: this.props.text.common.save })),
             "Screen size is ",
             this.props.screenWidth,
@@ -1671,7 +1823,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1679,9 +1831,9 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__functionality__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss__ = __webpack_require__(47);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__functionality__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__general__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss__ = __webpack_require__(49);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5__SystemSelection_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1718,18 +1870,18 @@ var SystemSelection = (function (_super) {
         }
         var settingsButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["i" /* PushButton */], { color: 2 /* Tertiary */, text: this.props.text.common.settings, clicked: function () { return _this.props.showUserSettings(); } });
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("p", null, suggestedGroupings.length === 0 ? undefined : words.suggestionPrompt),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemSelection" },
-                    this.renderSystemControls(systemNames.helm, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm, suggestedGroupings),
-                    this.renderSystemControls(systemNames.warp, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp, suggestedGroupings),
-                    this.renderSystemControls(systemNames.weapons, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons, suggestedGroupings),
-                    this.renderSystemControls(systemNames.sensors, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors, suggestedGroupings),
-                    this.renderSystemControls(systemNames.power, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement, suggestedGroupings),
-                    this.renderSystemControls(systemNames.damage, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl, suggestedGroupings),
-                    this.renderSystemControls(systemNames.comms, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications, suggestedGroupings),
-                    this.renderSystemControls(systemNames.view, __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen, suggestedGroupings))),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* Field */], { centered: true, displayAsRow: true },
+                    this.renderSystemControls(systemNames.helm, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm, suggestedGroupings),
+                    this.renderSystemControls(systemNames.warp, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp, suggestedGroupings),
+                    this.renderSystemControls(systemNames.weapons, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons, suggestedGroupings),
+                    this.renderSystemControls(systemNames.sensors, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors, suggestedGroupings),
+                    this.renderSystemControls(systemNames.power, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement, suggestedGroupings),
+                    this.renderSystemControls(systemNames.damage, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl, suggestedGroupings),
+                    this.renderSystemControls(systemNames.comms, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications, suggestedGroupings),
+                    this.renderSystemControls(systemNames.view, __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen, suggestedGroupings))),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["d" /* Field */], { centered: true, displayAsRow: true },
                 settingsButton,
                 setupButton,
                 resumeButton));
@@ -1747,9 +1899,9 @@ var SystemSelection = (function (_super) {
         var preselected = this.props.preselectedSystems !== undefined && (this.props.preselectedSystems & system) !== 0;
         return [
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { key: "a", className: "systemSelection__group" }, groups),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["e" /* ToggleButton */], { key: "b", text: name, color: 0 /* Primary */, activateCommand: "sys+ " + system, deactivateCommand: "sys- " + system, startActive: preselected }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["g" /* ToggleButton */], { key: "b", text: name, color: 0 /* Primary */, activateCommand: "sys+ " + system, deactivateCommand: "sys- " + system, startActive: preselected }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { key: "c", className: "systemSelection__help" },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["f" /* IconButton */], { color: 4 /* Quandry */, icon: __WEBPACK_IMPORTED_MODULE_4__general__["g" /* Icon */].Help })),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { color: 4 /* Quandry */, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Help, title: this.props.text.common.help })),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { key: "d", className: "systemSelection__who" }, players)
         ];
     };
@@ -1757,38 +1909,38 @@ var SystemSelection = (function (_super) {
         switch (this.props.numPlayers) {
             case 2:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
                 ];
             case 3:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
                 ];
             case 4:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
                 ];
             case 5:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
                 ];
             case 6:
                 return [
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Helm,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].PowerManagement,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Communications,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].ViewScreen,
-                    __WEBPACK_IMPORTED_MODULE_3__functionality__["d" /* ShipSystem */].DamageControl,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Helm,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Weapons | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].PowerManagement,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Warp | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Communications,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].Sensors | __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].ViewScreen,
+                    __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* ShipSystem */].DamageControl,
                 ];
             default:
                 return [];
@@ -1800,11 +1952,11 @@ var SystemSelection = (function (_super) {
 var mapStateToProps = function (state) {
     // use the current player's selections if we have any
     var localPlayer = state.crew.players.filter(function (p) { return p.id === state.crew.localPlayerID; });
-    var preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].flags; // if 0, use saved session values?
+    var preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].selectedSystems; // if 0, use saved session values?
     var players = {};
-    for (var _i = 0, allSystems_1 = __WEBPACK_IMPORTED_MODULE_3__functionality__["e" /* allSystems */]; _i < allSystems_1.length; _i++) {
+    for (var _i = 0, allSystems_1 = __WEBPACK_IMPORTED_MODULE_3__functionality__["f" /* allSystems */]; _i < allSystems_1.length; _i++) {
         var system = allSystems_1[_i];
-        players[system] = state.crew.players.filter(function (p) { return p.flags & system; }).map(function (p) { return p.name; }).join(', ');
+        players[system] = state.crew.players.filter(function (p) { return p.selectedSystems & system; }).map(function (p) { return p.name; }).join(', ');
     }
     return {
         playersBySystem: players,
@@ -1820,7 +1972,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1828,7 +1980,7 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general__ = __webpack_require__(4);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__general__ = __webpack_require__(3);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1852,9 +2004,9 @@ var WaitingForPlayers = (function (_super) {
         var _this = this;
         var words = this.props.text.screens.waiting;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true, labelText: words.players },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* Field */], { centered: true, labelText: words.players },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("ul", null, this.props.playerNames.map(function (n, id) { return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("li", { key: id }, n); }))),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["b" /* Field */], { centered: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["i" /* PushButton */], { color: 2 /* Tertiary */, clicked: function () { return _this.continue(); }, text: this.props.text.common.ready })));
     };
     WaitingForPlayers.prototype.continue = function () {
@@ -1874,22 +2026,25 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Connecting__ = __webpack_require__(27);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Connecting__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Settings__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Settings__ = __webpack_require__(31);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Settings__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__WaitingForPlayers__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__WaitingForPlayers__ = __webpack_require__(33);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_2__WaitingForPlayers__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SystemSelection__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SystemSelection__ = __webpack_require__(32);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__SystemSelection__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GameSetup__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__GameSetup__ = __webpack_require__(30);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_4__GameSetup__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Error__ = __webpack_require__(28);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_5__Error__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__GameActive__ = __webpack_require__(29);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_5__GameActive__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Error__ = __webpack_require__(28);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_6__Error__["a"]; });
+
 
 
 
@@ -1899,7 +2054,7 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1952,6 +2107,13 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setPlayerSystems(playerID, systems));
                 break;
             }
+            case 'viewsys': {
+                pos = data.indexOf(' ');
+                var playerID = parseInt(data.substr(0, pos));
+                var system = parseInt(data.substr(pos + 1));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setActiveSystem(playerID, system === 0 ? undefined : system));
+                break;
+            }
             case 'disconnect':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].removePlayer(parseInt(data)));
                 break;
@@ -1989,13 +2151,13 @@ var Connection = (function () {
 
 
 /***/ }),
-/* 35 */
+/* 36 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Hotkeys; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_User__ = __webpack_require__(8);
 
 
 var Hotkeys = (function () {
@@ -2068,12 +2230,12 @@ var Hotkeys = (function () {
 
 
 /***/ }),
-/* 36 */
+/* 37 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Localisations; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(38);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__localisations_English__ = __webpack_require__(39);
 
 var Localisations = [
     {
@@ -2085,12 +2247,13 @@ var Localisations = [
 
 
 /***/ }),
-/* 37 */
+/* 38 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ShipSystem; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return allSystems; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return allSystems; });
+/* harmony export (immutable) */ __webpack_exports__["b"] = getSystemName;
 var ShipSystem;
 (function (ShipSystem) {
     ShipSystem[ShipSystem["Helm"] = 1] = "Helm";
@@ -2112,10 +2275,32 @@ var allSystems = [
     ShipSystem.Communications,
     ShipSystem.ViewScreen,
 ];
+function getSystemName(system, text) {
+    switch (system) {
+        case ShipSystem.Helm:
+            return text.systemNames.helm;
+        case ShipSystem.Warp:
+            return text.systemNames.warp;
+        case ShipSystem.Weapons:
+            return text.systemNames.weapons;
+        case ShipSystem.Sensors:
+            return text.systemNames.sensors;
+        case ShipSystem.PowerManagement:
+            return text.systemNames.power;
+        case ShipSystem.DamageControl:
+            return text.systemNames.damage;
+        case ShipSystem.Communications:
+            return text.systemNames.comms;
+        case ShipSystem.ViewScreen:
+            return text.systemNames.view;
+        default:
+            var exhaustiveCheck = system;
+    }
+}
 
 
 /***/ }),
-/* 38 */
+/* 39 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2172,6 +2357,7 @@ var words = {
             shipName: 'Ship name',
             shipNamePlaceholder: 'You must name your ship',
             shipNameDescription: 'The name of the ship your crew will operate',
+            shipNameRandom: 'Pick a random name for your ship',
             joinAddress: 'Server address',
             joinAddressPlaceholder: 'Enter address',
             joinAddressDescription: 'IP address or URL of the game server to join',
@@ -2271,6 +2457,9 @@ var words = {
                 'Zodiac',
             ],
         },
+        active: {
+            pause: 'Pause',
+        },
         error: {
             heading: 'An error has occurred',
         },
@@ -2290,12 +2479,12 @@ var words = {
 
 
 /***/ }),
-/* 39 */
+/* 40 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducers; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(5);
 
@@ -2310,12 +2499,6 @@ var reducers = {
     screen: __WEBPACK_IMPORTED_MODULE_2__Screen__["c" /* reducer */],
 };
 
-
-/***/ }),
-/* 40 */
-/***/ (function(module, exports) {
-
-// removed by extract-text-webpack-plugin
 
 /***/ }),
 /* 41 */
@@ -2361,6 +2544,18 @@ var reducers = {
 
 /***/ }),
 /* 48 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 49 */
+/***/ (function(module, exports) {
+
+// removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2369,13 +2564,13 @@ var reducers = {
 
 
 if (true) {
-  module.exports = __webpack_require__(49);
+  module.exports = __webpack_require__(51);
 } else {
   module.exports = require('./AppContainer.dev');
 }
 
 /***/ }),
-/* 49 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2420,7 +2615,7 @@ var AppContainer = function (_Component) {
 module.exports = AppContainer;
 
 /***/ }),
-/* 50 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -2429,22 +2624,98 @@ module.exports = AppContainer;
 
 
 if (true) {
-  module.exports = __webpack_require__(51);
+  module.exports = __webpack_require__(53);
 } else {
   module.exports = require('./index.dev');
 }
 
 /***/ }),
-/* 51 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 
-module.exports.AppContainer = __webpack_require__(48);
+module.exports.AppContainer = __webpack_require__(50);
 
 /***/ }),
-/* 52 */
+/* 54 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,React.createElement("polyline",{"points":"22 12 18 12 15 21 9 3 6 12 2 12"}));
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-activity"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 55 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("path",{"d":"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z","key":0}),React.createElement("line",{"x1":"12","y1":"9","x2":"12","y2":"13","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-alert-triangle"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 56 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("polygon",{"points":"16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76","key":1})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-compass"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 57 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("line",{"x1":"22","y1":"12","x2":"18","y2":"12","key":1}),React.createElement("line",{"x1":"6","y1":"12","x2":"2","y2":"12","key":2}),React.createElement("line",{"x1":"12","y1":"6","x2":"12","y2":"2","key":3}),React.createElement("line",{"x1":"12","y1":"22","x2":"12","y2":"18","key":4})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-crosshair"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(0);
@@ -2463,7 +2734,83 @@ Icon.default = Icon;
 
 
 /***/ }),
-/* 53 */
+/* 59 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,React.createElement("polygon",{"points":"3 11 22 2 13 21 11 13 3 11"}));
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-navigation"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 60 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("rect",{"x":"6","y":"4","width":"4","height":"16","key":0}),React.createElement("rect",{"x":"14","y":"4","width":"4","height":"16","key":1})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-pause"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 61 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,React.createElement("path",{"d":"M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"}));
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-phone-call"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 62 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("path",{"d":"M18.36 6.64a9 9 0 1 1-12.73 0","key":0}),React.createElement("line",{"x1":"12","y1":"2","x2":"12","y2":"12","key":1})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-power"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var React = __webpack_require__(0);
@@ -2482,22 +2829,79 @@ Icon.default = Icon;
 
 
 /***/ }),
-/* 54 */
+/* 64 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(142);
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("polygon",{"points":"19 20 9 12 19 4 19 20","key":0}),React.createElement("line",{"x1":"5","y1":"19","x2":"5","y2":"5","key":1})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-skip-back"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
 
 /***/ }),
-/* 55 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(143);
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("polygon",{"points":"5 4 15 12 5 20 5 4","key":0}),React.createElement("line",{"x1":"19","y1":"5","x2":"19","y2":"19","key":1})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-skip-forward"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
 
 /***/ }),
-/* 56 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = (__webpack_require__(3))(73);
+var React = __webpack_require__(0);
+
+function Icon (props) {
+    return React.createElement("svg",props,[React.createElement("polygon",{"points":"23 7 16 12 23 17 23 7","key":0}),React.createElement("rect",{"x":"1","y":"5","width":"15","height":"14","rx":"2","ry":"2","key":1})]);
+}
+
+Icon.displayName = "Icon";
+
+Icon.defaultProps = {"width":"24","height":"24","viewBox":"0 0 24 24","fill":"none","stroke":"currentColor","strokeWidth":"2","strokeLinecap":"round","strokeLinejoin":"round","className":"feather feather-video"};
+
+module.exports = Icon;
+
+Icon.default = Icon;
+
+
+/***/ }),
+/* 67 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = (__webpack_require__(4))(142);
+
+/***/ }),
+/* 68 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = (__webpack_require__(4))(143);
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = (__webpack_require__(4))(73);
 
 /***/ })
 /******/ ]);

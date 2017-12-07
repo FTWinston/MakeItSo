@@ -112,7 +112,7 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
             <Field labelText={words.shipName} labelBehaviour={true}>
                 <div className="field__contentRow">
                     <Textbox color={ButtonColor.Tertiary} text={this.state.shipName} textChanged={name => this.setState({ shipName: name })} />
-                    <IconButton color={ButtonColor.Tertiary} icon={Icon.Refresh} clicked={() => this.randomizeName()} />
+                    <IconButton color={ButtonColor.Tertiary} icon={Icon.Refresh} clicked={() => this.randomizeName()} title={words.shipNameRandom} />
                 </div>
                 <div className="description">{words.shipNameDescription}</div>
             </Field>

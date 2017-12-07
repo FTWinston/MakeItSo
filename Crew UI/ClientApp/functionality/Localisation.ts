@@ -66,8 +66,9 @@ export interface TextLocalisation {
             gameTypeHost: string;
             gameTypeHostDescription: string;
             shipName: string;
-            shipNamePlaceholder: string
+            shipNamePlaceholder: string;
             shipNameDescription: string;
+            shipNameRandom: string;
             joinAddress: string;
             joinAddressPlaceholder: string;
             joinAddressDescription: string;
@@ -86,6 +87,9 @@ export interface TextLocalisation {
             difficultyPrompt: string;
             startGame: string;
             shipNames: string[];
+        },
+        active: {
+            pause: string;
         },
         error: {
             heading: string;

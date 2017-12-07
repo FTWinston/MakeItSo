@@ -1,3 +1,5 @@
+import { TextLocalisation } from './Localisation';
+
 export enum ShipSystem {
     Helm = 1,
     Warp = 2,
@@ -19,3 +21,26 @@ export const allSystems = [
     ShipSystem.Communications,
     ShipSystem.ViewScreen,
 ];
+
+export function getSystemName(system: ShipSystem, text: TextLocalisation) {
+    switch (system) {
+        case ShipSystem.Helm:
+            return text.systemNames.helm;
+        case ShipSystem.Warp:
+            return text.systemNames.warp;
+        case ShipSystem.Weapons:
+            return text.systemNames.weapons;
+        case ShipSystem.Sensors:
+            return text.systemNames.sensors;
+        case ShipSystem.PowerManagement:
+            return text.systemNames.power;
+        case ShipSystem.DamageControl:
+            return text.systemNames.damage;
+        case ShipSystem.Communications:
+            return text.systemNames.comms;
+        case ShipSystem.ViewScreen:
+            return text.systemNames.view;
+        default:
+            var exhaustiveCheck: never = system;
+    }
+}

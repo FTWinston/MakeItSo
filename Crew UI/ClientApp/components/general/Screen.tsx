@@ -28,7 +28,7 @@ export class Screen extends React.Component<IScreenProps, {}> {
         if (this.props.pageLayout) {
             classes += ' screen--pageLayout';
         }
-
+        
         let heading;
         if (this.props.heading !== undefined) {
             heading = <h1 className="screen__heading">{this.props.heading}</h1>;
