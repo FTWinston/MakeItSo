@@ -1,7 +1,7 @@
 import { store } from '../Client';
 import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
-import { actionCreators as screenActions } from '../store/Screen';
+import { actionCreators as screenActions, ClientScreen } from '../store/Screen';
 import { TextLocalisation } from './Localisation';
 import { ShipSystem } from '../functionality';
 
@@ -75,7 +75,9 @@ export class Connection {
             case 'game+':
                 store.dispatch(crewActions.setSetupPlayer(undefined));
                 store.dispatch(screenActions.setGameActive());
-                store.dispatch(screenActions.showGame());
+                if (store.getState().screen.display !== ClientScreen.UserSettings) {
+                    store.dispatch(screenActions.showGame());
+                }
                 break;
             case 'game-':
                 store.dispatch(screenActions.setGameFinished());
@@ -83,7 +85,9 @@ export class Connection {
                 break;
             case 'pause':
                 store.dispatch(screenActions.setGamePaused());
-                store.dispatch(screenActions.showSystemSelection());
+                if (store.getState().screen.display !== ClientScreen.UserSettings) {
+                    store.dispatch(screenActions.showSystemSelection());
+                }
                 break;
             case 'already_started':
                 store.dispatch(screenActions.setGameActive());

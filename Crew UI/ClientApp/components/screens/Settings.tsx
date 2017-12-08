@@ -16,9 +16,8 @@ interface SettingsDataProps {
     screenWidth: number;
     screenHeight: number;
     
+    hasSelectedSystems: boolean;
     gameInProgress: boolean;
-    players: CrewStore.CrewPlayer[];
-    localPlayerID?: number;
 }
 
 type SettingsProps =
@@ -70,7 +69,11 @@ class Settings extends React.Component<SettingsProps, {}> {
         connection.send(`name ${this.props.userName.trim()}`);
 
         if (this.props.gameInProgress) {
-            this.props.showWaitingForGame();
+            if (this.props.hasSelectedSystems) {
+                this.props.showGame();
+            } else {
+                this.props.showWaitingForGame();
+            }
         } else {
             this.props.showSystemSelection();
         }
@@ -79,6 +82,8 @@ class Settings extends React.Component<SettingsProps, {}> {
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) => {
+    let localPlayer = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
+
     return {
         userName: state.user.userName,
         inputMode: state.user.inputMode,
@@ -89,8 +94,7 @@ const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) 
 
         gameInProgress: state.screen.gameState === ScreenStore.GameState.Active
                      || state.screen.gameState === ScreenStore.GameState.Finished,
-        players: state.crew.players,
-        localPlayerID: state.crew.localPlayerID,
+        hasSelectedSystems: localPlayer.length > 0 && localPlayer[0].selectedSystems !== 0,
     }
 };
 

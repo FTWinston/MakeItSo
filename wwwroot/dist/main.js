@@ -1790,7 +1790,12 @@ var Settings = (function (_super) {
     Settings.prototype.close = function () {
         __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("name " + this.props.userName.trim());
         if (this.props.gameInProgress) {
-            this.props.showWaitingForGame();
+            if (this.props.hasSelectedSystems) {
+                this.props.showGame();
+            }
+            else {
+                this.props.showWaitingForGame();
+            }
         }
         else {
             this.props.showSystemSelection();
@@ -1800,6 +1805,7 @@ var Settings = (function (_super) {
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
 // Selects which state properties are merged into the component's props
 var mapStateToProps = function (state) {
+    var localPlayer = state.crew.players.filter(function (p) { return p.id === state.crew.localPlayerID; });
     return {
         userName: state.user.userName,
         inputMode: state.user.inputMode,
@@ -1809,8 +1815,7 @@ var mapStateToProps = function (state) {
         screenHeight: state.user.screenHeight,
         gameInProgress: state.screen.gameState === __WEBPACK_IMPORTED_MODULE_4__store_Screen__["c" /* GameState */].Active
             || state.screen.gameState === __WEBPACK_IMPORTED_MODULE_4__store_Screen__["c" /* GameState */].Finished,
-        players: state.crew.players,
-        localPlayerID: state.crew.localPlayerID,
+        hasSelectedSystems: localPlayer.length > 0 && localPlayer[0].selectedSystems !== 0,
     };
 };
 // Wire up the React component to the Redux store
@@ -2066,7 +2071,9 @@ var Connection = (function () {
             case 'game+':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_1__store_Crew__["a" /* actionCreators */].setSetupPlayer(undefined));
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameActive());
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showGame());
+                if (__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().screen.display !== __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].UserSettings) {
+                    __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showGame());
+                }
                 break;
             case 'game-':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameFinished());
@@ -2074,7 +2081,9 @@ var Connection = (function () {
                 break;
             case 'pause':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGamePaused());
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
+                if (__WEBPACK_IMPORTED_MODULE_0__Client__["store"].getState().screen.display !== __WEBPACK_IMPORTED_MODULE_2__store_Screen__["a" /* ClientScreen */].UserSettings) {
+                    __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
+                }
                 break;
             case 'already_started':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameActive());

@@ -282,15 +282,15 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	currentConnections->insert(currentConnections->end(), info);
 #endif
 	
-	// indicate to the client that the game is currently active. They cannot do anything until it is paused, so show an appropriate "please wait" message.
+	// indicate to the client that the game is currently active
 	if (crewState == ECrewState::Active)
 	{
-		Send(conn, "already_started");
+		Send(conn, "game+");
 		return;
 	}
 	else if (crewState == ECrewState::Paused)
 	{
-		Send(conn, "already_paused");
+		Send(conn, "pause");
 	}
 
 #ifndef WEB_SERVER_TEST
