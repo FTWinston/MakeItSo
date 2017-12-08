@@ -40,6 +40,10 @@ class GameActive extends React.Component<GameActiveProps, {}> {
                     <IconButton title={this.props.text.screens.active.pause} icon={Icon.Pause} command="pause" />
                 </div>
             </div>
+
+            <div className="system">
+                TODO: show the {activeSystemName} system here.
+            </div>
         </Screen>;
     }
 

@@ -1474,7 +1474,11 @@ var GameActive = (function (_super) {
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__separator" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__commonIcons" },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { title: this.props.text.common.help, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Help }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { title: this.props.text.screens.active.pause, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Pause, command: "pause" }))));
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__general__["b" /* IconButton */], { title: this.props.text.screens.active.pause, icon: __WEBPACK_IMPORTED_MODULE_4__general__["c" /* Icon */].Pause, command: "pause" }))),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system" },
+                "TODO: show the ",
+                activeSystemName,
+                " system here."));
     };
     GameActive.prototype.renderSystemIcons = function () {
         return [

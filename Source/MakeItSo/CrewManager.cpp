@@ -197,6 +197,7 @@ void UCrewManager::PauseGame(bool state)
 	else
 	{
 		crewState = ECrewState::Active;
+		AllocateViewSystems();
 		SendAllFixed("game+");
 		SendAllCrewData();
 	}
@@ -416,18 +417,33 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 	}
 	else if (STARTS_WITH(msg, "sys+ "))
 	{
-		int32 systemFlags = ExtractInt(msg, sizeof("sys+ "));
-		ShipSystemChanged(info, info->shipSystemFlags | systemFlags);
+		int32 systemFlag = ExtractInt(msg, sizeof("sys+ "));
+		ESystem system = GetDistinctSystem(systemFlag);
+		ShipSystemChanged(info, info->shipSystemFlags | system);
 	}
 	else if (STARTS_WITH(msg, "sys- "))
 	{
-		int32 systemFlags = ExtractInt(msg, sizeof("sys- "));
-		ShipSystemChanged(info, info->shipSystemFlags & ~systemFlags);
+		int32 systemFlag = ExtractInt(msg, sizeof("sys- "));
+		ESystem system = GetDistinctSystem(systemFlag);
+		ShipSystemChanged(info, info->shipSystemFlags & ~system);
 	}
 	else if (STARTS_WITH(msg, "viewsys "))
 	{
 		int32 systemFlag = ExtractInt(msg, sizeof("viewsys "));
-		// TODO: see if no one else is viewing this system, and if so, send to all players that this player is viewing it. clear what they're currently viewing.
+		ESystem system = GetDistinctSystem(systemFlag);
+
+		// check this system is one that they have selected
+		if ((info->shipSystemFlags & system) == 0)
+			return;
+
+		// check that no one else is viewing this system
+		auto viewing = GetConnectionViewing(system);
+		if (viewing != nullptr && viewing != info)
+			return;
+
+		// mark that they're viewing this system, and tell everyone
+		info->viewingSystem = system;
+		SendAll("viewsys %i %i", info->identifier, system);
 	}
 	else if (MATCHES(msg, "+setup"))
 	{
@@ -574,7 +590,7 @@ void UCrewManager::StartGame(websocket_message *msg)
 	else
 		return;
 
-	// TODO: allocate players to "viewing" systems, go through the players in turn and give them the first unallocated system they have selected. Send the results of this to all players.
+	AllocateViewSystems();
 
 	// no need to send corresponding setup-, as game+ clears the setup player on clients
 	connectionInSetup = nullptr;
@@ -586,6 +602,35 @@ void UCrewManager::StartGame(websocket_message *msg)
 
 	SendAllFixed("game+");
 	SendAllCrewData();
+}
+
+void UCrewManager::AllocateViewSystems()
+{
+	int32 alreadyAllocated = ESystem::None;
+
+	// check what system players are currently viewing. If it's one they (still) have selected, let them keep that.
+	for (auto& connection : *currentConnections)
+	{
+		if ((connection->shipSystemFlags & connection->viewingSystem) != 0)
+			alreadyAllocated |= connection->viewingSystem;
+		else
+			connection->viewingSystem = ESystem::None;
+	}
+
+	// for every player that doesn't have a system, see if there's one they have selected that isn't already allocated
+	for (auto& connection : *currentConnections)
+	{
+		if (connection->viewingSystem == ESystem::None)
+		{
+			ESystem viewSystem = GetDistinctSystem(connection->shipSystemFlags & ~alreadyAllocated);
+			alreadyAllocated |= viewSystem;
+
+			connection->viewingSystem = viewSystem;
+		}
+
+		// regardless of if it has changed or not, tell everyone what they're now viewing
+		SendAll("viewsys %i %i", connection->identifier, connection->viewingSystem);
+	}
 }
 
 #ifndef WEB_SERVER_TEST
@@ -612,6 +657,39 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
 	info->shipSystemFlags = systemFlags;
 
 	SendAll("playersys %i %i", info->identifier, systemFlags);
+}
+
+UCrewManager::ESystem UCrewManager::GetDistinctSystem(int systemFlags)
+{
+	if ((systemFlags & ESystem::Helm) != 0)
+		return ESystem::Helm;
+	if ((systemFlags & ESystem::Warp) != 0)
+		return ESystem::Warp;
+	if ((systemFlags & ESystem::Weapons) != 0)
+		return ESystem::Weapons;
+	if ((systemFlags & ESystem::Sensors) != 0)
+		return ESystem::Sensors;
+	if ((systemFlags & ESystem::PowerManagement) != 0)
+		return ESystem::PowerManagement;
+	if ((systemFlags & ESystem::DamageControl) != 0)
+		return ESystem::DamageControl;
+	if ((systemFlags & ESystem::Communications) != 0)
+		return ESystem::Communications;
+	if ((systemFlags & ESystem::ViewScreen) != 0)
+		return ESystem::ViewScreen;
+
+	return ESystem::None;
+}
+
+ConnectionInfo *UCrewManager::GetConnectionViewing(ESystem system)
+{
+	for (auto& connection : *currentConnections)
+	{
+		if ((connection->viewingSystem & system) != 0)
+			return connection;
+	}
+
+	return nullptr;
 }
 
 void UCrewManager::SendFixed(mg_connection *conn, const char *message)

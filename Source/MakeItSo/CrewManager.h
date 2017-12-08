@@ -68,8 +68,8 @@ public:
 		ViewScreen = 64,
 		Communications = 128,
 
-		AllStations = Helm + Warp + Weapons + Sensors + PowerManagement + DamageControl + ViewScreen + Communications,
-		NoStations = 0,
+		All = Helm + Warp + Weapons + Sensors + PowerManagement + DamageControl + ViewScreen + Communications,
+		None = 0,
 	};
 
 	FString Init(AShipPlayerController *controller);
@@ -119,6 +119,9 @@ private:
 	void HandleWebsocketMessage(ConnectionInfo *info, websocket_message *msg);
 	void StartGame(websocket_message *msg);
 	void ShipSystemChanged(ConnectionInfo *info, int32 systemFlags);
+	ESystem GetDistinctSystem(int systemFlags);
+	ConnectionInfo *GetConnectionViewing(ESystem system);
+	void AllocateViewSystems();
 
 	static mg_mgr *mgr;
 	AShipPlayerController *controller;
@@ -139,12 +142,14 @@ public:
 		connection = conn;
 		identifier = id;
 		shipSystemFlags = 0;
+		viewingSystem = UCrewManager::ESystem::None;
 		hasName = false;
 	}
 
 	mg_connection *connection;
 	int32 identifier;
 	int32 shipSystemFlags;
+	UCrewManager::ESystem viewingSystem;
 	FString name;
 	bool hasName;
 };
@@ -164,6 +169,6 @@ public:
 	virtual void ResetData() { }
 protected:
 	UCrewManager* crewManager;
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::NoStations; }
+	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::None; }
 	int32 ExtractInt(websocket_message *msg, int offset) { return crewManager->ExtractInt(msg, offset); }
 };
