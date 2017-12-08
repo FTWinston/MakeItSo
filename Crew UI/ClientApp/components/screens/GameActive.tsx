@@ -5,6 +5,7 @@ import { ApplicationState }  from '../../store';
 import * as CrewStore from '../../store/User';
 import { TextLocalisation, ShipSystem, allSystems, getSystemName } from '../../functionality';
 import { IconButton, Icon, ButtonColor, Screen } from '../general';
+import * as Systems from '../systems';
 import './GameActive.scss';
 
 interface GameActiveProps {
@@ -41,9 +42,7 @@ class GameActive extends React.Component<GameActiveProps, {}> {
                 </div>
             </div>
 
-            <div className="system">
-                TODO: show the {activeSystemName} system here.
-            </div>
+            {this.renderSystem(this.props.activeSystem)}
         </Screen>;
     }
 
@@ -69,6 +68,27 @@ class GameActive extends React.Component<GameActiveProps, {}> {
         let clicked = this.props.activeSystem === system ? undefined : () => connection.send(`viewsys ${system}`);
 
         return <IconButton key={system} title={getSystemName(system, this.props.text)} icon={icon} disabled={disabled} color={color} clicked={clicked} />;
+    }
+
+    private renderSystem(system?: ShipSystem) {
+        switch (system) {
+            case ShipSystem.Helm:
+                return <Systems.Helm />;
+            case ShipSystem.Warp:
+                return <Systems.Warp />;
+            case ShipSystem.Weapons:
+                return <Systems.Weapons />;
+            case ShipSystem.Sensors:
+                return <Systems.Sensors />;
+            case ShipSystem.PowerManagement:
+                return <Systems.PowerManagement />;
+            case ShipSystem.DamageControl:
+                return <Systems.DamageControl />;
+            case ShipSystem.Communications:
+                return <Systems.Communications />;
+            case ShipSystem.ViewScreen:
+                return <Systems.ViewScreen />;
+        }
     }
 }
 
