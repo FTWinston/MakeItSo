@@ -24,10 +24,7 @@ class GameActive extends React.Component<GameActiveProps, {}> {
 
         return <Screen>
             <div className="systemHeader">
-                <div className="systemHeader__nameWrapper">
-                    <h1 className="systemHeader__name">{activeSystemName}</h1>
-                </div>
-                <div className="systemHeader__separator" />
+                <h1 className="systemHeader__name">{activeSystemName}</h1>
                 <div className="systemHeader__systemIcons systemHeader__systemIcons--fullWidth">
                     {this.renderSystemIcons()}
                 </div>

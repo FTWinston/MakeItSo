@@ -171,6 +171,45 @@ let words: TextLocalisation = {
         view: 'Viewscreen',
         comms: 'Communications',
     },
+    systems: {
+        helm: {
+            rotation: 'Rotation',
+            translation: 'Translation',
+            speed: 'Speed',
+            stop: 'Stop',
+            up: 'Up',
+            down: 'Down',
+            left: 'Left',
+            right: 'Right',
+            speedBackHalf: '-1/2',
+            speedBackQuarter: '-1/4',
+            speedQuarter: '1/4',
+            speedHalf: '1/2',
+            speedThreeQuarter: '3/4',
+            speedFull: 'Full',
+        },
+        warp: {
+
+        },
+        weapons: {
+
+        },
+        sensors: {
+
+        },
+        power: {
+
+        },
+        damage: {
+
+        },
+        comms: {
+
+        },
+        view: {
+
+        },
+    },
 };
 
 export default words;

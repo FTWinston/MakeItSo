@@ -32,7 +32,7 @@ $clientPadding: 0.5em;
     border-width: 1px;
     border-color: $textColor;
     color: $textColor;
-    background-color: $backgroundColor;
+    background-color: transparent;
     padding: 0.75em;
 
     &:not([disabled]) {
@@ -53,4 +53,16 @@ $clientPadding: 0.5em;
     }
     
     transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s;
+}
+
+@mixin portrait() {
+    @media (orientation:portrait) {
+        @content;
+    }
+}
+
+@mixin landscape() {
+    @media (orientation:landscape) {
+        @content;
+    }
 }

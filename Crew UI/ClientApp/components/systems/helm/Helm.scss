@@ -1,0 +1,52 @@
+@import '../../general/mixins';
+
+.helm--buttonInput {
+    display: flex;
+    justify-content: space-around;
+    justify-content: space-evenly;
+    align-items: center;
+    align-content: space-around;
+    align-content: space-evenly;
+    flex-wrap: wrap;
+    
+    @include portrait() {
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    & * {
+        font-size: calc(1rem + 1vw); // TODO: account for height not fitting, width not fitting in various sizes
+    }
+}
+
+.helm--buttonInput__speed {
+    padding: 1em;
+    border-color: $colorQuandry;
+}
+
+.feedbackGroup {
+    width: 14em; // TODO: this could get narrower if needed to help with width
+    position: relative;
+    border: solid $colorQuandry 2px;
+    padding: 0.5em;
+    z-index: 0;
+}
+
+.feedbackGroup__label {
+    position: absolute;
+    top: -0.5em;
+    left: 0.75em;
+    background-color: $backgroundColor;
+    padding: 0 0.1em;
+    line-height: 1em;
+    z-index: -1;
+}
+
+.feedbackGroup__background {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}

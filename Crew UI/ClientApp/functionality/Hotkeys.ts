@@ -55,7 +55,7 @@ export class Hotkeys {
         var button = Hotkeys.bindings[e.which];
         if (button === undefined) {
             if (e.which === 112) {
-                store.dispatch(actionCreators.showHotkeys(!store.getState().user.showHotkeys));
+                store.dispatch(actionCreators.showHotkeys(!store.getState().user.showingHotkeys));
                 e.preventDefault();
             }
             return;

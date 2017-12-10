@@ -8,7 +8,7 @@ import * as Screen from './screens'
 interface ScreenManagerDataProps {
     screen: ClientScreen;
     errorMessage?: string;
-    showHotkeys: boolean;
+    showingHotkeys: boolean;
 }
 
 type ScreenManagerProps = ScreenManagerDataProps
@@ -22,7 +22,7 @@ class ScreenManager extends React.Component<ScreenManagerProps, {}> {
 
     render() {
         let classes = 'client';
-        if (this.props.showHotkeys) {
+        if (this.props.showingHotkeys) {
             classes += ' client--showHotkeys';
         }
         
@@ -58,7 +58,7 @@ const mapStateToProps: (state: ApplicationState) => ScreenManagerDataProps = (st
     return {
         screen: state.screen.display,
         errorMessage: state.screen.errorMessage,
-        showHotkeys: state.user.showHotkeys,
+        showingHotkeys: state.user.showingHotkeys,
     }
 };
 

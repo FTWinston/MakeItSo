@@ -10,7 +10,7 @@ $lightBackground: #999;
   border-width: 1px;
   border-color: #ccc;
   color: #ccc;
-  background-color: #333;
+  background-color: transparent;
   padding: 0.75em;
   transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s;
   cursor: pointer;
@@ -291,7 +291,7 @@ $lightBackground: #999;
   border-width: 1px;
   border-color: #ccc;
   color: #ccc;
-  background-color: #333;
+  background-color: transparent;
   padding: 0.75em;
   transition: background-color 0.5s, color 0.5s, border-color 0.5s, border-radius 1s;
   width: 15em; }
@@ -401,6 +401,97 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.helm--buttonInput {
+  display: flex;
+  justify-content: space-around;
+  justify-content: space-evenly;
+  align-items: center;
+  align-content: space-around;
+  align-content: space-evenly;
+  flex-wrap: wrap; }
+  @media (orientation: portrait) {
+    .helm--buttonInput {
+      flex-direction: column;
+      flex-wrap: nowrap; } }
+  .helm--buttonInput * {
+    font-size: calc(1rem + 1vw); }
+
+.helm--buttonInput__speed {
+  padding: 1em;
+  border-color: #ffce9c; }
+
+.feedbackGroup {
+  width: 14em;
+  position: relative;
+  border: solid #ffce9c 2px;
+  padding: 0.5em;
+  z-index: 0; }
+
+.feedbackGroup__label {
+  position: absolute;
+  top: -0.5em;
+  left: 0.75em;
+  background-color: #333;
+  padding: 0 0.1em;
+  line-height: 1em;
+  z-index: -1; }
+
+.feedbackGroup__background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 .systemHeader {
   flex-shrink: 0;
   flex-grow: 0;
@@ -413,21 +504,16 @@ $lightBackground: #999;
   justify-content: space-between;
   align-content: center; }
 
-.systemHeader__nameWrapper {
-  display: flex;
-  justify-content: flex-start;
-  align-content: center;
-  flex-shrink: 0;
-  flex-grow: 0; }
-  .systemHeader__nameWrapper > *:not(:first-child) {
-    margin-left: 0.5em; }
-
 .systemHeader__name {
+  flex-shrink: 0;
+  flex-grow: 0;
   font-size: 2em;
   background-color: #333;
   padding: 0em 0.25em;
-  margin-left: 0.5em;
+  margin: 0 0 0 0.5em;
   align-self: stretch; }
+  .systemHeader__name > *:not(:first-child) {
+    margin-left: 0.5em; }
 
 .systemHeader__systemIcons {
   flex-grow: 1;
@@ -447,6 +533,9 @@ $lightBackground: #999;
 .systemHeader__separator {
   width: 2px;
   background-color: #333; }
+
+.system {
+  flex-grow: 1; }
 .errorMessage {
   white-space: pre-wrap;
   line-height: 2em; }

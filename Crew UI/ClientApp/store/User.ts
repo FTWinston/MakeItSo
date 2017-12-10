@@ -9,7 +9,7 @@ export interface UserState {
     inputMode: InputMode;
     localisation: Localisation;
     text: TextLocalisation;
-    showHotkeys: boolean;
+    showingHotkeys: boolean;
     screenWidth: number;
     screenHeight: number;
 }
@@ -75,7 +75,7 @@ const unloadedState: UserState = {
     inputMode: savedInputMode === null ? InputMode.Touchscreen : parseInt(savedInputMode),
     localisation: Localisations[0],
     text: Localisations[0].load(),
-    showHotkeys: false,
+    showingHotkeys: false,
     screenWidth: window.innerWidth,
     screenHeight: window.innerHeight,
 };
@@ -102,7 +102,7 @@ export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action)
         case 'SHOW_HOTKEYS':
             return {
                 ...state,
-                showHotkeys: action.show,
+                showingHotkeys: action.show,
             };
         case 'SET_SCREEN_SIZE':
             return {

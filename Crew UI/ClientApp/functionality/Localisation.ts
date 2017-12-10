@@ -105,4 +105,43 @@ export interface TextLocalisation {
         comms: string,
         view: string,
     },
+    systems: {
+        helm: {
+            rotation: string;
+            translation: string;
+            speed: string;
+            stop: string;
+            up: string;
+            down: string;
+            left: string;
+            right: string;
+            speedBackHalf: string;
+            speedBackQuarter: string;
+            speedQuarter: string;
+            speedHalf: string;
+            speedThreeQuarter: string;
+            speedFull: string;
+        },
+        warp: {
+
+        },
+        weapons: {
+
+        },
+        sensors: {
+
+        },
+        power: {
+
+        },
+        damage: {
+
+        },
+        comms: {
+
+        },
+        view: {
+
+        },
+    },
 }
