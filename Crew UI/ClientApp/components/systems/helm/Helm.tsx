@@ -3,10 +3,11 @@ import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { TextLocalisation, InputMode } from '../../../functionality';
 import { Choice, ButtonSet, HeldButton, ToggleButton, PushButton, ButtonColor }  from '../../general';
+import { HelmState as HelmBaseProps } from '../../../store/Helm';
 import { FeedbackGroup } from './FeedbackGroup';
 import './Helm.scss';
 
-interface HelmProps {
+interface HelmProps extends HelmBaseProps {
     text: TextLocalisation;
     inputMode: InputMode;
 }
@@ -27,7 +28,11 @@ class Helm extends React.Component<HelmProps, {}> {
         let words = this.props.text.systems.helm;
 
         return <div className="system helm helm--buttonInput">
-            <FeedbackGroup label={words.rotation} x={0} y={0}>
+            <FeedbackGroup
+                label={words.rotation}
+                x={this.props.yawRate / this.props.yawRateMax}
+                y={this.props.pitchRate / this.props.pitchRateMax}
+            >
                 <ButtonSet vertical={true}>
                     <ButtonSet color={ButtonColor.Secondary}>
                         <div className="spacer" />
@@ -47,7 +52,11 @@ class Helm extends React.Component<HelmProps, {}> {
                 </ButtonSet>
             </FeedbackGroup>
             
-            <FeedbackGroup label={words.translation} x={0} y={0}>
+            <FeedbackGroup
+                label={words.translation}
+                x={this.props.translationRateX / this.props.translationRateXMax}
+                y={this.props.translationRateY / this.props.translationRateYMax}
+            >
                 <ButtonSet vertical={true}>
                     <ButtonSet color={ButtonColor.Quaternary}>
                         <div className="spacer" />
@@ -102,6 +111,7 @@ class Helm extends React.Component<HelmProps, {}> {
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => HelmProps = (state) => {
     return {
+        ...state.helm,
         text: state.user.text,
         inputMode: state.user.inputMode,
     }

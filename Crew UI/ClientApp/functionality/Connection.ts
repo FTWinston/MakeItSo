@@ -2,6 +2,7 @@ import { store } from '../Client';
 import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
 import { actionCreators as screenActions, ClientScreen } from '../store/Screen';
+import { actionCreators as helmActions } from '../store/Helm';
 import { TextLocalisation } from './Localisation';
 import { ShipSystem } from '../functionality';
 
@@ -95,6 +96,47 @@ export class Connection {
             case 'already_paused':
                 store.dispatch(screenActions.setGamePaused());
                 break;
+            case 'helm manoever limits': {
+                let vals = data.split(' ');
+                let pitch = parseFloat(vals[0]);
+                let yaw = parseFloat(vals[1]);
+                let roll = parseFloat(vals[2]);
+                let translationX = parseFloat(vals[3]);
+                let translationY = parseFloat(vals[4]);
+                helmActions.setManoeveringLimits(pitch, yaw, roll, translationX, translationY);
+                break;
+            }
+            case 'helm speed limits': {
+                let vals = data.split(' ');
+                let forwardMax = parseFloat(vals[0]);
+                let revMax = parseFloat(vals[1]);
+                helmActions.setSpeedLimits(forwardMax, revMax);
+                break;
+            }
+            case 'helm orientation': {
+                let vals = data.split(' ');
+                let pitch = parseFloat(vals[0]);
+                let yaw = parseFloat(vals[1]);
+                let roll = parseFloat(vals[2]);
+                helmActions.setOrientation(pitch, yaw, roll);
+                break;
+            }
+            case 'helm rotation rates': {
+                let vals = data.split(' ');
+                let pitch = parseFloat(vals[0]);
+                let yaw = parseFloat(vals[1]);
+                let roll = parseFloat(vals[2]);
+                helmActions.setRotationRates(pitch, yaw, roll);
+                break;
+            }
+            case 'helm translation rates': {
+                let vals = data.split(' ');
+                let x = parseFloat(vals[0]);
+                let y = parseFloat(vals[1]);
+                let forward = parseFloat(vals[2]);
+                helmActions.setTranslationRates(x, y, forward);
+                break;
+            }
             default:
                 console.log(`Unexpected command: ${cmd}`);
                 break;
