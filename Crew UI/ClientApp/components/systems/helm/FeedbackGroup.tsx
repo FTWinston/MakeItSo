@@ -64,8 +64,8 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         let height = this.state.height, halfHeight = height / 2;
         ctx.clearRect(0, 0, width, height);
 
-        let x = this.props.x * halfWidth + halfWidth;
-        let y = this.props.y * halfHeight + halfHeight;
+        let x = Math.min(width, Math.max(0, this.props.x * halfWidth + halfWidth));
+        let y = Math.min(height, Math.max(0, this.props.y * halfHeight + halfHeight));
 
         // faint lines showing center
         ctx.strokeStyle= '#fff';
@@ -80,26 +80,22 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
 
         ctx.stroke();
 
-        // faint lines showing current pos
-        ctx.strokeStyle = '#0c0';
-        ctx.globalAlpha = 0.4;
+
         ctx.lineWidth = 2;
-        ctx.beginPath();
-        
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-
-        ctx.stroke();
-
-        // arrows showing the current pos
-        ctx.fillStyle = '#0c0';
-        ctx.globalAlpha = 1;
-        ctx.beginPath();
-
         let vmin = Math.min(width, height);
         let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+
+        // x-axis line and arrow
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
+        
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
         ctx.moveTo(x - breadth, 0);
         ctx.lineTo(x + breadth, 0);
         ctx.lineTo(x, depth);
@@ -107,6 +103,21 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         ctx.moveTo(x - breadth, height);
         ctx.lineTo(x + breadth, height);
         ctx.lineTo(x, height - depth);
+
+        ctx.fill();
+
+
+        // y-axis line and arrow
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = this.props.y === 0 ? '#0c0' : '#cc0';
+        
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+        
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
 
         ctx.moveTo(0, y - breadth);
         ctx.lineTo(0, y + breadth);
@@ -117,7 +128,8 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         ctx.lineTo(width - depth, y);
 
         ctx.fill();
-        
+
+
         // tick marks showing the center
         ctx.strokeStyle= '#fff';
         ctx.beginPath();

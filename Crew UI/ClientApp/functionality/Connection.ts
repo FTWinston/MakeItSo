@@ -96,7 +96,7 @@ export class Connection {
             case 'already_paused':
                 store.dispatch(screenActions.setGamePaused());
                 break;
-            case 'helm manoever limits': {
+            case 'helm_manoever_limits': {
                 let vals = data.split(' ');
                 let pitch = parseFloat(vals[0]);
                 let yaw = parseFloat(vals[1]);
@@ -106,14 +106,14 @@ export class Connection {
                 helmActions.setManoeveringLimits(pitch, yaw, roll, translationX, translationY);
                 break;
             }
-            case 'helm speed limits': {
+            case 'helm_speed_limits': {
                 let vals = data.split(' ');
                 let forwardMax = parseFloat(vals[0]);
                 let revMax = parseFloat(vals[1]);
                 helmActions.setSpeedLimits(forwardMax, revMax);
                 break;
             }
-            case 'helm orientation': {
+            case 'helm_orientation': {
                 let vals = data.split(' ');
                 let pitch = parseFloat(vals[0]);
                 let yaw = parseFloat(vals[1]);
@@ -121,7 +121,7 @@ export class Connection {
                 helmActions.setOrientation(pitch, yaw, roll);
                 break;
             }
-            case 'helm rotation rates': {
+            case 'helm_rotation_rates': {
                 let vals = data.split(' ');
                 let pitch = parseFloat(vals[0]);
                 let yaw = parseFloat(vals[1]);
@@ -129,7 +129,7 @@ export class Connection {
                 helmActions.setRotationRates(pitch, yaw, roll);
                 break;
             }
-            case 'helm translation rates': {
+            case 'helm_translation_rates': {
                 let vals = data.split(' ');
                 let x = parseFloat(vals[0]);
                 let y = parseFloat(vals[1]);

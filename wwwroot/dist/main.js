@@ -2328,8 +2328,8 @@ var FeedbackGroup = (function (_super) {
         var width = this.state.width, halfWidth = width / 2;
         var height = this.state.height, halfHeight = height / 2;
         ctx.clearRect(0, 0, width, height);
-        var x = this.props.x * halfWidth + halfWidth;
-        var y = this.props.y * halfHeight + halfHeight;
+        var x = Math.min(width, Math.max(0, this.props.x * halfWidth + halfWidth));
+        var y = Math.min(height, Math.max(0, this.props.y * halfHeight + halfHeight));
         // faint lines showing center
         ctx.strokeStyle = '#fff';
         ctx.globalAlpha = 0.2;
@@ -2340,28 +2340,34 @@ var FeedbackGroup = (function (_super) {
         ctx.moveTo(0, halfHeight);
         ctx.lineTo(width, halfHeight);
         ctx.stroke();
-        // faint lines showing current pos
-        ctx.strokeStyle = '#0c0';
-        ctx.globalAlpha = 0.4;
         ctx.lineWidth = 2;
+        var vmin = Math.min(width, height);
+        var breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+        // x-axis line and arrow
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
         ctx.beginPath();
         ctx.moveTo(x, 0);
         ctx.lineTo(x, height);
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
         ctx.stroke();
-        // arrows showing the current pos
-        ctx.fillStyle = '#0c0';
         ctx.globalAlpha = 1;
         ctx.beginPath();
-        var vmin = Math.min(width, height);
-        var breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
         ctx.moveTo(x - breadth, 0);
         ctx.lineTo(x + breadth, 0);
         ctx.lineTo(x, depth);
         ctx.moveTo(x - breadth, height);
         ctx.lineTo(x + breadth, height);
         ctx.lineTo(x, height - depth);
+        ctx.fill();
+        // y-axis line and arrow
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = this.props.y === 0 ? '#0c0' : '#cc0';
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
         ctx.moveTo(0, y - breadth);
         ctx.lineTo(0, y + breadth);
         ctx.lineTo(depth, y);
@@ -2920,7 +2926,7 @@ var Connection = (function () {
             case 'already_paused':
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGamePaused());
                 break;
-            case 'helm manoever limits': {
+            case 'helm_manoever_limits': {
                 var vals = data.split(' ');
                 var pitch = parseFloat(vals[0]);
                 var yaw = parseFloat(vals[1]);
@@ -2930,14 +2936,14 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setManoeveringLimits(pitch, yaw, roll, translationX, translationY);
                 break;
             }
-            case 'helm speed limits': {
+            case 'helm_speed_limits': {
                 var vals = data.split(' ');
                 var forwardMax = parseFloat(vals[0]);
                 var revMax = parseFloat(vals[1]);
                 __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setSpeedLimits(forwardMax, revMax);
                 break;
             }
-            case 'helm orientation': {
+            case 'helm_orientation': {
                 var vals = data.split(' ');
                 var pitch = parseFloat(vals[0]);
                 var yaw = parseFloat(vals[1]);
@@ -2945,7 +2951,7 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setOrientation(pitch, yaw, roll);
                 break;
             }
-            case 'helm rotation rates': {
+            case 'helm_rotation_rates': {
                 var vals = data.split(' ');
                 var pitch = parseFloat(vals[0]);
                 var yaw = parseFloat(vals[1]);
@@ -2953,7 +2959,7 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setRotationRates(pitch, yaw, roll);
                 break;
             }
-            case 'helm translation rates': {
+            case 'helm_translation_rates': {
                 var vals = data.split(' ');
                 var x = parseFloat(vals[0]);
                 var y = parseFloat(vals[1]);
