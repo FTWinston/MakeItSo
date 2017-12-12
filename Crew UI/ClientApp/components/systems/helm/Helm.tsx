@@ -36,17 +36,17 @@ class Helm extends React.Component<HelmProps, {}> {
                 <ButtonSet vertical={true}>
                     <ButtonSet color={ButtonColor.Secondary}>
                         <div className="spacer" />
-                        <HeldButton text={words.up} hotkey="W" />
+                        <HeldButton text={words.up} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
                         <div className="spacer" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Secondary}>
-                        <HeldButton text={words.left} hotkey="A" />
-                        <HeldButton text={words.down} hotkey="S" />
-                        <HeldButton text={words.right} hotkey="D" />
+                        <HeldButton text={words.left} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
+                        <HeldButton text={words.down} hotkey="S" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
+                        <HeldButton text={words.right} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Secondary}>
                         <div className="spacer" />
-                        <PushButton text={words.stop} hotkey="X" color={ButtonColor.Primary} />
+                        <HeldButton text={words.stop} hotkey="X" color={ButtonColor.Primary} pressCommand="+rotStop" releaseCommand="-rotStop" />
                         <div className="spacer" />
                     </ButtonSet>
                 </ButtonSet>
@@ -60,17 +60,17 @@ class Helm extends React.Component<HelmProps, {}> {
                 <ButtonSet vertical={true}>
                     <ButtonSet color={ButtonColor.Quaternary}>
                         <div className="spacer" />
-                        <HeldButton text={words.up} hotkey="I" />
+                        <HeldButton text={words.up} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
                         <div className="spacer" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Quaternary}>
-                        <HeldButton text={words.left} hotkey="J" />
-                        <HeldButton text={words.down} hotkey="K" />
-                        <HeldButton text={words.right} hotkey="L" />
+                        <HeldButton text={words.left} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
+                        <HeldButton text={words.down} hotkey="K" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
+                        <HeldButton text={words.right} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
                     </ButtonSet>
                     <ButtonSet color={ButtonColor.Quaternary}>
                         <div className="spacer" />
-                        <PushButton text={words.stop} hotkey="M" color={ButtonColor.Primary} />
+                        <HeldButton text={words.stop} hotkey="M" color={ButtonColor.Primary} pressCommand="+strafeStop" releaseCommand="-strafeStop" />
                         <div className="spacer" />
                     </ButtonSet>
                 </ButtonSet>
@@ -79,13 +79,13 @@ class Helm extends React.Component<HelmProps, {}> {
             <fieldset className="helm--buttonInput__speed">
                 <legend>{words.speed}</legend>
                 <Choice color={ButtonColor.Tertiary} allowUnselected={true}>
-                    <ToggleButton text={words.speedBackHalf} hotkey="1" />
-                    <ToggleButton text={words.speedBackQuarter} hotkey="2" />
-                    <ToggleButton text={words.stop} hotkey="3" color={ButtonColor.Primary} />
-                    <ToggleButton text={words.speedQuarter} hotkey="4" />
-                    <ToggleButton text={words.speedHalf} hotkey="5" />
-                    <ToggleButton text={words.speedThreeQuarter} hotkey="6" />
-                    <ToggleButton text={words.speedFull} hotkey="7" />
+                    <ToggleButton text={words.speedBackHalf} hotkey="1" activateCommand="speed -2" />
+                    <ToggleButton text={words.speedBackQuarter} hotkey="2" activateCommand="speed -1" />
+                    <ToggleButton text={words.stop} hotkey="3" color={ButtonColor.Primary} activateCommand="speed 0" />
+                    <ToggleButton text={words.speedQuarter} hotkey="4" activateCommand="speed 1" />
+                    <ToggleButton text={words.speedHalf} hotkey="5" activateCommand="speed 2" />
+                    <ToggleButton text={words.speedThreeQuarter} hotkey="6" activateCommand="speed 3" />
+                    <ToggleButton text={words.speedFull} hotkey="7" activateCommand="speed 4" />
                 </Choice>
             </fieldset>
         </div>;
