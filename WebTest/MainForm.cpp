@@ -12,17 +12,27 @@ UCrewManager *crewManager;
 
 void PollClient()
 {
-	auto interval = CLOCKS_PER_SEC / 4;
-	std::clock_t nextTick = std::clock() + interval;
+	auto damageTickInterval = CLOCKS_PER_SEC / 4;
+	std::clock_t nextDamageTick = std::clock() + damageTickInterval;
+
+	float fSystemTickInterval = 1.f / 20.f;
+	auto systemTickInterval = CLOCKS_PER_SEC / 20;
+	std::clock_t nextSystemTick = std::clock() + systemTickInterval;
 
 	while (formOpen)
 	{
 		crewManager->Poll();
 
-		if (std::clock() >= nextTick)
+		if (std::clock() >= nextDamageTick)
 		{
 			crewManager->ProcessSystemMessage(UCrewManager::ESystem::DamageControl, L"tick");
-			nextTick += interval;
+			nextDamageTick += damageTickInterval;
+		}
+
+		if (std::clock() >= nextSystemTick)
+		{
+			crewManager->TickSystems(fSystemTickInterval);
+			nextSystemTick += systemTickInterval;
 		}
 	}
 	delete crewManager;

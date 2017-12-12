@@ -76,6 +76,7 @@ public:
 	virtual void BeginDestroy();
 
 	void LinkController(AShipPlayerController *controller);
+	void TickSystems(float DeltaSeconds);
 	void Poll() { mg_mgr_poll(mgr, 1); }
 	void HandleEvent(mg_connection *conn, int ev, void *ev_data);
 	void SendFixed(mg_connection *conn, const char *message);
@@ -162,9 +163,10 @@ class MAKEITSO_API UCrewSystem : public UObject
 	GENERATED_BODY()
 
 public:
-	virtual void Init(UCrewManager *manager) { crewManager = manager; }
+	virtual void Init(UCrewManager *manager) { crewManager = manager; ResetData(); }
 	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) { return false; }
 	virtual bool ProcessSystemMessage(FString message) { return false; }
+	virtual void Tick(float DeltaSeconds) { }
 	virtual void SendAllData() { }
 	virtual void ResetData() { }
 protected:

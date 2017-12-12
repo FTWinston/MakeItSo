@@ -13,6 +13,7 @@
 #include <queue>
 #include <string>
 #include <map>
+#include <algorithm>
 
 #define MAKEITSO_API 
 
@@ -42,5 +43,11 @@ class FMath {
 public:
 	static int32 RandRange(int32 min, int32 max) {
 		return rand() % (max - min + 1) + min;
+	}
+	static float Min(float min, float max) {
+		return std::min(min, max);
+	}
+	static float Max(float min, float max) {
+		return std::max(min, max);
 	}
 };

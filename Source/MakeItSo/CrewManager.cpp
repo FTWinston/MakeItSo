@@ -142,10 +142,10 @@ void UCrewManager::CreateSystems()
 {
 	ADDSYSTEM(ESystem::Helm, UHelmSystem);
 	ADDSYSTEM(ESystem::Warp, UWarpSystem);
-	ADDSYSTEM(ESystem::Weapons, UWeaponSystem);
+	//ADDSYSTEM(ESystem::Weapons, UWeaponSystem);
 	ADDSYSTEM(ESystem::Sensors, USensorSystem);
 	ADDSYSTEM(ESystem::PowerManagement, UPowerSystem);
-	ADDSYSTEM(ESystem::DamageControl, UDamageControlSystem);
+	//ADDSYSTEM(ESystem::DamageControl, UDamageControlSystem);
 	ADDSYSTEM(ESystem::ViewScreen, UViewscreenSystem);
 	ADDSYSTEM(ESystem::Communications, UCommunicationSystem);
 
@@ -185,6 +185,16 @@ void UCrewManager::BeginDestroy()
 void UCrewManager::LinkController(AShipPlayerController *controller)
 {
 	this->controller = controller; // do we need to null this when the level changes?
+}
+
+void UCrewManager::TickSystems(float DeltaSeconds)
+{
+	for (auto system : systems)
+#ifndef WEB_SERVER_TEST
+		system.Value->Tick(DeltaSeconds);
+#else
+		system.second->Tick(DeltaSeconds);
+#endif
 }
 
 void UCrewManager::PauseGame(bool state)
@@ -595,7 +605,7 @@ void UCrewManager::StartGame(websocket_message *msg)
 	// no need to send corresponding setup-, as game+ clears the setup player on clients
 	connectionInSetup = nullptr;
 
-	if (!systems.empty())
+	if (systems.empty())
 		CreateSystems();
 
 	crewState = ECrewState::Active;

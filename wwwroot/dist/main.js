@@ -2920,12 +2920,6 @@ var Connection = (function () {
                     __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].showSystemSelection());
                 }
                 break;
-            case 'already_started':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGameActive());
-                break;
-            case 'already_paused':
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_2__store_Screen__["b" /* actionCreators */].setGamePaused());
-                break;
             case 'helm_manoever_limits': {
                 var vals = data.split(' ');
                 var pitch = parseFloat(vals[0]);
@@ -2933,14 +2927,14 @@ var Connection = (function () {
                 var roll = parseFloat(vals[2]);
                 var translationX = parseFloat(vals[3]);
                 var translationY = parseFloat(vals[4]);
-                __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setManoeveringLimits(pitch, yaw, roll, translationX, translationY);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setManoeveringLimits(pitch, yaw, roll, translationX, translationY));
                 break;
             }
             case 'helm_speed_limits': {
                 var vals = data.split(' ');
                 var forwardMax = parseFloat(vals[0]);
                 var revMax = parseFloat(vals[1]);
-                __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setSpeedLimits(forwardMax, revMax);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setSpeedLimits(forwardMax, revMax));
                 break;
             }
             case 'helm_orientation': {
@@ -2948,7 +2942,7 @@ var Connection = (function () {
                 var pitch = parseFloat(vals[0]);
                 var yaw = parseFloat(vals[1]);
                 var roll = parseFloat(vals[2]);
-                __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setOrientation(pitch, yaw, roll);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setOrientation(pitch, yaw, roll));
                 break;
             }
             case 'helm_rotation_rates': {
@@ -2956,7 +2950,7 @@ var Connection = (function () {
                 var pitch = parseFloat(vals[0]);
                 var yaw = parseFloat(vals[1]);
                 var roll = parseFloat(vals[2]);
-                __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setRotationRates(pitch, yaw, roll);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setRotationRates(pitch, yaw, roll));
                 break;
             }
             case 'helm_translation_rates': {
@@ -2964,7 +2958,7 @@ var Connection = (function () {
                 var x = parseFloat(vals[0]);
                 var y = parseFloat(vals[1]);
                 var forward = parseFloat(vals[2]);
-                __WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setTranslationRates(x, y, forward);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_3__store_Helm__["a" /* actionCreators */].setTranslationRates(x, y, forward));
                 break;
             }
             default:
