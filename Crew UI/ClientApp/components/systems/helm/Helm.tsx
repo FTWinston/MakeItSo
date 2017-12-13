@@ -48,11 +48,11 @@ class Helm extends React.Component<HelmProps, {}> {
                 x={this.props.translationRateX / this.props.translationRateXMax}
                 y={this.props.translationRateY / this.props.translationRateYMax}
             >
-                <HeldButton className="feedbackGroup__topMid" text={words.up} color={ButtonColor.Quaternary} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
-                <HeldButton className="feedbackGroup__botMid" text={words.down} color={ButtonColor.Quaternary} hotkey="K" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
-                <HeldButton className="feedbackGroup__midLeft" text={words.left} color={ButtonColor.Quaternary} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
-                <HeldButton className="feedbackGroup__midRight" text={words.right} color={ButtonColor.Quaternary} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
-                <HeldButton className="feedbackGroup__center" text={words.stop} color={ButtonColor.Primary} hotkey="M" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
+                <HeldButton className="feedbackGroup__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.strafeUp} color={ButtonColor.Quaternary} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
+                <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.strafeDown} color={ButtonColor.Quaternary} hotkey="K" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
+                <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.strafeLeft} color={ButtonColor.Quaternary} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
+                <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.strafeRight} color={ButtonColor.Quaternary} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
+                <HeldButton className="feedbackGroup__center" noBorder={true} icon={Icon.X} iconSize={iconSize} title={words.strafeStop} color={ButtonColor.Primary} hotkey="M" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
             </FeedbackGroup>
 
             <fieldset className="helm--buttonInput__speed">
@@ -60,7 +60,7 @@ class Helm extends React.Component<HelmProps, {}> {
                 <Choice color={ButtonColor.Tertiary} allowUnselected={true}>
                     <ToggleButton text={words.speedBackHalf} hotkey="1" activateCommand="speed -2" />
                     <ToggleButton text={words.speedBackQuarter} hotkey="2" activateCommand="speed -1" />
-                    <ToggleButton text={words.stop} hotkey="3" color={ButtonColor.Primary} activateCommand="speed 0" />
+                    <ToggleButton text={words.speedStop} hotkey="3" color={ButtonColor.Primary} activateCommand="speed 0" />
                     <ToggleButton text={words.speedQuarter} hotkey="4" activateCommand="speed 1" />
                     <ToggleButton text={words.speedHalf} hotkey="5" activateCommand="speed 2" />
                     <ToggleButton text={words.speedThreeQuarter} hotkey="6" activateCommand="speed 3" />
