@@ -40,7 +40,7 @@ class Helm extends React.Component<HelmProps, {}> {
                 <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
                 <HeldButton className="feedbackGroup__topLeft" noBorder={true} icon={Icon.RotateCCW} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="Q" pressCommand="+rollLeft" releaseCommand="-rollLeft" />
                 <HeldButton className="feedbackGroup__topRight" noBorder={true} icon={Icon.RotateCW} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="E" pressCommand="+rollRight" releaseCommand="-rollRight" />
-                <HeldButton className="feedbackGroup__center" noBorder={true} icon={Icon.X} iconSize={iconSize} title={words.rotateStop} color={ButtonColor.Primary} hotkey="X" pressCommand="+rotStop" releaseCommand="-rotStop" />
+                <HeldButton className="feedbackGroup__center" icon={Icon.X} iconSize={iconSize} title={words.rotateStop} color={ButtonColor.Primary} hotkey="X" pressCommand="+rotStop" releaseCommand="-rotStop" />
             </FeedbackGroup>
             
             <FeedbackGroup
@@ -52,7 +52,7 @@ class Helm extends React.Component<HelmProps, {}> {
                 <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.strafeDown} color={ButtonColor.Quaternary} hotkey="K" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
                 <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.strafeLeft} color={ButtonColor.Quaternary} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
                 <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.strafeRight} color={ButtonColor.Quaternary} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
-                <HeldButton className="feedbackGroup__center" noBorder={true} icon={Icon.X} iconSize={iconSize} title={words.strafeStop} color={ButtonColor.Primary} hotkey="M" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
+                <HeldButton className="feedbackGroup__center" icon={Icon.X} iconSize={iconSize} title={words.strafeStop} color={ButtonColor.Primary} hotkey="M" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
             </FeedbackGroup>
 
             <fieldset className="helm--buttonInput__speed">

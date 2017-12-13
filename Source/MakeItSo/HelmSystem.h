@@ -19,9 +19,14 @@ public:
 protected:
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Helm; }
 private:
-	float rotationAccelMax, strafeAccelMax, forwardAccelMax;
-	float pitchAccel, yawAccel, rollAccel;
-	float sideAccel, verticalAccel, forwardAccel;
+	float TowardsZero(float value, float amount);
+	float AdjustAndClamp(float value, bool decrease, bool increase, float amount, float maxValue);
+
+	float rotationAccel, strafeAccel, forwardAccelMax;
+	bool pitchDown, pitchUp, yawLeft, yawRight, rollLeft, rollRight;
+	bool strafeLeft, strafeRight, strafeUp, strafeDown;
+	bool stopRotation, stopStrafing;
+	float forwardAccel;
 
 	// TODO: these values should presumably not be stored separately here, and instead the physical ship object should be used
 	float pitch, yaw, roll;

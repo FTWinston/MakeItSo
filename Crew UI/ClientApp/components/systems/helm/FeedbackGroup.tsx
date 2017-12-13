@@ -65,7 +65,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         ctx.clearRect(0, 0, width, height);
 
         let x = Math.min(width, Math.max(0, this.props.x * halfWidth + halfWidth));
-        let y = Math.min(height, Math.max(0, this.props.y * halfHeight + halfHeight));
+        let y = Math.min(height, Math.max(0, -this.props.y * halfHeight + halfHeight));
 
         // faint lines showing center
         ctx.strokeStyle= '#fff';
