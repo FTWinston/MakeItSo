@@ -14,6 +14,7 @@ export const enum ButtonColor {
 export interface IBaseButtonProps {
     text?: string;
     icon?: Icon;
+    iconSize?: number | string;
     className?: string;
     title?: string;
     hotkey?: Hotkey;
@@ -78,7 +79,7 @@ export class Button extends React.Component<IButtonProps, {}> {
     }
 
     render(): JSX.Element {
-        let icon = this.props.icon === undefined ? undefined : renderIcon(this.props.icon);
+        let icon = this.props.icon === undefined ? undefined : renderIcon(this.props.icon, this.props.iconSize);
         let text = this.props.text === undefined ? undefined : this.props.text;
         let subtext = this.props.subtext === undefined ? undefined : <div className="button__subtext">{this.props.subtext}</div>;
 

@@ -46,49 +46,54 @@ export enum Icon {
     Communications,
 }
 
-export function renderIcon(icon: Icon) {
+export function renderIcon(icon: Icon, size: number | string = 24) {
+    let props = {
+        width: size,
+        height: size,
+    };
+
     switch (icon) {
         case Icon.Help:
-            return <Help />;
+            return <Help {...props} />;
         case Icon.Pause:
-            return <Pause />;
+            return <Pause {...props} />;
         case Icon.Refresh:
-            return <Refresh />;
+            return <Refresh {...props} />;
         case Icon.SkipBack:
-            return <SkipBack />;
+            return <SkipBack {...props} />;
         case Icon.SkipForward:
-            return <SkipForward />;
+            return <SkipForward {...props} />;
         case Icon.X:
-            return <X />;
+            return <X {...props} />;
         case Icon.ArrowUp:
-            return <ArrowUp />;
+            return <ArrowUp {...props} />;
         case Icon.ArrowDown:
-            return <ArrowDown />;
+            return <ArrowDown {...props} />;
         case Icon.ArrowLeft:
-            return <ArrowLeft />;
+            return <ArrowLeft {...props} />;
         case Icon.ArrowRight:
-            return <ArrowRight />;
+            return <ArrowRight {...props} />;
         case Icon.RotateCCW:
-            return <RotateCCW />;
+            return <RotateCCW {...props} />;
         case Icon.RotateCW:
-            return <RotateCW />;
+            return <RotateCW {...props} />;
 
         case Icon.Helm:
-            return <HelmIcon />;
+            return <HelmIcon {...props} />;
         case Icon.Warp:
-            return <WarpIcon />;
+            return <WarpIcon {...props} />;
         case Icon.Weapons:
-            return <WeaponsIcon />;
+            return <WeaponsIcon {...props} />;
         case Icon.Sensors:
-            return <SensorsIcon />;
+            return <SensorsIcon {...props} />;
         case Icon.PowerManagement:
-            return <PowerIcon />;
+            return <PowerIcon {...props} />;
         case Icon.DamageControl:
-            return <DamageIcon />;
+            return <DamageIcon {...props} />;
         case Icon.ViewScreen:
-            return <ViewScreenIcon />;
+            return <ViewScreenIcon {...props} />;
         case Icon.Communications:
-            return <CommunicationsIcon />;
+            return <CommunicationsIcon {...props} />;
         default:
             const exhaustiveCheck: never = icon;
     }

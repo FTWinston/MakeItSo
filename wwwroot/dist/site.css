@@ -138,7 +138,7 @@ $lightBackground: #999;
   opacity: 0.85; }
   .button--noBorder:not([disabled]):hover, .button--noBorder:not([disabled]):focus {
     opacity: 1; }
-  .button--noBorder:not([disabled]):active {
+  .button--noBorder:not([disabled]):active, .button--noBorder:not([disabled]).state--active {
     opacity: 1;
     color: white !important; }
 

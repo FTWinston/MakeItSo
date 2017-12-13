@@ -26,6 +26,7 @@ class Helm extends React.Component<HelmProps, {}> {
 
     private renderButtons() {
         let words = this.props.text.systems.helm;
+        let iconSize = "1.5em";
 
         return <div className="system helm helm--buttonInput">
             <FeedbackGroup
@@ -33,11 +34,13 @@ class Helm extends React.Component<HelmProps, {}> {
                 x={this.props.yawRate / this.props.yawRateMax}
                 y={this.props.pitchRate / this.props.pitchRateMax}
             >
-                <HeldButton className="feedbackGroup__topMid" icon={Icon.ArrowUp} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
-                <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} title={words.rotateDown} color={ButtonColor.Secondary} hotkey="S" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
-                <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
-                <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
-                <HeldButton className="feedbackGroup__center" icon={Icon.X} title={words.rotateStop} color={ButtonColor.Primary} hotkey="X" pressCommand="+rotStop" releaseCommand="-rotStop" />
+                <HeldButton className="feedbackGroup__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
+                <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.rotateDown} color={ButtonColor.Secondary} hotkey="S" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
+                <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
+                <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
+                <HeldButton className="feedbackGroup__topLeft" noBorder={true} icon={Icon.RotateCCW} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="Q" pressCommand="+rollLeft" releaseCommand="-rollLeft" />
+                <HeldButton className="feedbackGroup__topRight" noBorder={true} icon={Icon.RotateCW} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="E" pressCommand="+rollRight" releaseCommand="-rollRight" />
+                <HeldButton className="feedbackGroup__center" noBorder={true} icon={Icon.X} iconSize={iconSize} title={words.rotateStop} color={ButtonColor.Primary} hotkey="X" pressCommand="+rotStop" releaseCommand="-rotStop" />
             </FeedbackGroup>
             
             <FeedbackGroup

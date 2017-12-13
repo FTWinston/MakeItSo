@@ -388,7 +388,7 @@ var Button = (function (_super) {
         return classes;
     };
     Button.prototype.render = function () {
-        var icon = this.props.icon === undefined ? undefined : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__Icons__["a" /* renderIcon */])(this.props.icon);
+        var icon = this.props.icon === undefined ? undefined : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__Icons__["a" /* renderIcon */])(this.props.icon, this.props.iconSize);
         var text = this.props.text === undefined ? undefined : this.props.text;
         var subtext = this.props.subtext === undefined ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "button__subtext" }, this.props.subtext);
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("button", { className: this.determineClasses(), disabled: this.props.disabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
@@ -492,6 +492,14 @@ var ButtonSet = (function (_super) {
 /* harmony export (immutable) */ __webpack_exports__["a"] = renderIcon;
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
 
 var Help = __webpack_require__(89);
 var Pause = __webpack_require__(91);
@@ -536,48 +544,53 @@ var Icon;
     Icon[Icon["ViewScreen"] = 18] = "ViewScreen";
     Icon[Icon["Communications"] = 19] = "Communications";
 })(Icon || (Icon = {}));
-function renderIcon(icon) {
+function renderIcon(icon, size) {
+    if (size === void 0) { size = 24; }
+    var props = {
+        width: size,
+        height: size,
+    };
     switch (icon) {
         case Icon.Help:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](Help, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](Help, __assign({}, props));
         case Icon.Pause:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](Pause, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](Pause, __assign({}, props));
         case Icon.Refresh:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](Refresh, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](Refresh, __assign({}, props));
         case Icon.SkipBack:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SkipBack, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SkipBack, __assign({}, props));
         case Icon.SkipForward:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SkipForward, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SkipForward, __assign({}, props));
         case Icon.X:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](X, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](X, __assign({}, props));
         case Icon.ArrowUp:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowUp, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowUp, __assign({}, props));
         case Icon.ArrowDown:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowDown, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowDown, __assign({}, props));
         case Icon.ArrowLeft:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowLeft, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowLeft, __assign({}, props));
         case Icon.ArrowRight:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowRight, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ArrowRight, __assign({}, props));
         case Icon.RotateCCW:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](RotateCCW, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](RotateCCW, __assign({}, props));
         case Icon.RotateCW:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](RotateCW, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](RotateCW, __assign({}, props));
         case Icon.Helm:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](HelmIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](HelmIcon, __assign({}, props));
         case Icon.Warp:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](WarpIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](WarpIcon, __assign({}, props));
         case Icon.Weapons:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](WeaponsIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](WeaponsIcon, __assign({}, props));
         case Icon.Sensors:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SensorsIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](SensorsIcon, __assign({}, props));
         case Icon.PowerManagement:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](PowerIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](PowerIcon, __assign({}, props));
         case Icon.DamageControl:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](DamageIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](DamageIcon, __assign({}, props));
         case Icon.ViewScreen:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ViewScreenIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](ViewScreenIcon, __assign({}, props));
         case Icon.Communications:
-            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](CommunicationsIcon, null);
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](CommunicationsIcon, __assign({}, props));
         default:
             var exhaustiveCheck = icon;
     }
@@ -2475,13 +2488,16 @@ var Helm = (function (_super) {
     };
     Helm.prototype.renderButtons = function () {
         var words = this.props.text.systems.helm;
+        var iconSize = "1.5em";
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system helm helm--buttonInput" },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowUp, title: words.rotateUp, color: 1 /* Secondary */, hotkey: "W", pressCommand: "+pitchUp", releaseCommand: "-pitchUp" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowDown, title: words.rotateDown, color: 1 /* Secondary */, hotkey: "S", pressCommand: "+pitchDown", releaseCommand: "-pitchDown" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midLeft", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowLeft, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "A", pressCommand: "+yawLeft", releaseCommand: "-yawLeft" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midRight", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowRight, title: words.rotateRight, color: 1 /* Secondary */, hotkey: "D", pressCommand: "+yawRight", releaseCommand: "-yawRight" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__center", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].X, title: words.rotateStop, color: 0 /* Primary */, hotkey: "X", pressCommand: "+rotStop", releaseCommand: "-rotStop" })),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowUp, iconSize: iconSize, title: words.rotateUp, color: 1 /* Secondary */, hotkey: "W", pressCommand: "+pitchUp", releaseCommand: "-pitchUp" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.rotateDown, color: 1 /* Secondary */, hotkey: "S", pressCommand: "+pitchDown", releaseCommand: "-pitchDown" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midLeft", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowLeft, iconSize: iconSize, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "A", pressCommand: "+yawLeft", releaseCommand: "-yawLeft" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midRight", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowRight, iconSize: iconSize, title: words.rotateRight, color: 1 /* Secondary */, hotkey: "D", pressCommand: "+yawRight", releaseCommand: "-yawRight" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topLeft", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].RotateCCW, iconSize: iconSize, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "Q", pressCommand: "+rollLeft", releaseCommand: "-rollLeft" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topRight", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].RotateCW, iconSize: iconSize, title: words.rotateRight, color: 1 /* Secondary */, hotkey: "E", pressCommand: "+rollRight", releaseCommand: "-rollRight" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__center", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].X, iconSize: iconSize, title: words.rotateStop, color: 0 /* Primary */, hotkey: "X", pressCommand: "+rotStop", releaseCommand: "-rotStop" })),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.translation, x: this.props.translationRateX / this.props.translationRateXMax, y: this.props.translationRateY / this.props.translationRateYMax },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topMid", text: words.up, color: 3 /* Quaternary */, hotkey: "I", pressCommand: "+strafeUp", releaseCommand: "-strafeUp" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", text: words.down, color: 3 /* Quaternary */, hotkey: "K", pressCommand: "+strafeDown", releaseCommand: "-strafeDown" }),
