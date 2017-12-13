@@ -6,7 +6,7 @@ import * as UserStore from '../../store/User';
 import * as ScreenStore from '../../store/Screen';
 import * as CrewStore from '../../store/Crew';
 import { InputMode, Localisation, Localisations, TextLocalisation } from '../../functionality';
-import { ToggleButton, PushButton, ConfirmButton, IconButton, Icon, ButtonColor, Screen, Field, Choice, Textbox } from '../general';
+import { ToggleButton, PushButton, ConfirmButton, Icon, ButtonColor, Screen, Field, Choice, Textbox } from '../general';
 
 const enum GameType {
     Local,
@@ -112,7 +112,7 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
             <Field labelText={words.shipName} labelBehaviour={true}>
                 <div className="field__contentRow">
                     <Textbox color={ButtonColor.Tertiary} text={this.state.shipName} textChanged={name => this.setState({ shipName: name })} />
-                    <IconButton color={ButtonColor.Tertiary} icon={Icon.Refresh} clicked={() => this.randomizeName()} title={words.shipNameRandom} />
+                    <PushButton color={ButtonColor.Tertiary} noBorder={true} icon={Icon.Refresh} clicked={() => this.randomizeName()} title={words.shipNameRandom} />
                 </div>
                 <div className="description">{words.shipNameDescription}</div>
             </Field>

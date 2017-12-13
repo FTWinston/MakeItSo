@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { TextLocalisation, InputMode } from '../../../functionality';
-import { Choice, ButtonSet, HeldButton, ToggleButton, PushButton, ButtonColor }  from '../../general';
+import { Choice, ButtonSet, HeldButton, Icon, ToggleButton, PushButton, ButtonColor }  from '../../general';
 import { HelmState as HelmBaseProps } from '../../../store/Helm';
 import { FeedbackGroup } from './FeedbackGroup';
 import './Helm.scss';
@@ -33,23 +33,11 @@ class Helm extends React.Component<HelmProps, {}> {
                 x={this.props.yawRate / this.props.yawRateMax}
                 y={this.props.pitchRate / this.props.pitchRateMax}
             >
-                <ButtonSet vertical={true}>
-                    <ButtonSet color={ButtonColor.Secondary}>
-                        <div className="spacer" />
-                        <HeldButton text={words.up} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
-                        <div className="spacer" />
-                    </ButtonSet>
-                    <ButtonSet color={ButtonColor.Secondary}>
-                        <HeldButton text={words.left} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
-                        <HeldButton text={words.down} hotkey="S" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
-                        <HeldButton text={words.right} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
-                    </ButtonSet>
-                    <ButtonSet color={ButtonColor.Secondary}>
-                        <div className="spacer" />
-                        <HeldButton text={words.stop} hotkey="X" color={ButtonColor.Primary} pressCommand="+rotStop" releaseCommand="-rotStop" />
-                        <div className="spacer" />
-                    </ButtonSet>
-                </ButtonSet>
+                <HeldButton className="feedbackGroup__topMid" icon={Icon.ArrowUp} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
+                <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} title={words.rotateDown} color={ButtonColor.Secondary} hotkey="S" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
+                <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
+                <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
+                <HeldButton className="feedbackGroup__center" icon={Icon.X} title={words.rotateStop} color={ButtonColor.Primary} hotkey="X" pressCommand="+rotStop" releaseCommand="-rotStop" />
             </FeedbackGroup>
             
             <FeedbackGroup
@@ -57,23 +45,11 @@ class Helm extends React.Component<HelmProps, {}> {
                 x={this.props.translationRateX / this.props.translationRateXMax}
                 y={this.props.translationRateY / this.props.translationRateYMax}
             >
-                <ButtonSet vertical={true}>
-                    <ButtonSet color={ButtonColor.Quaternary}>
-                        <div className="spacer" />
-                        <HeldButton text={words.up} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
-                        <div className="spacer" />
-                    </ButtonSet>
-                    <ButtonSet color={ButtonColor.Quaternary}>
-                        <HeldButton text={words.left} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
-                        <HeldButton text={words.down} hotkey="K" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
-                        <HeldButton text={words.right} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
-                    </ButtonSet>
-                    <ButtonSet color={ButtonColor.Quaternary}>
-                        <div className="spacer" />
-                        <HeldButton text={words.stop} hotkey="M" color={ButtonColor.Primary} pressCommand="+strafeStop" releaseCommand="-strafeStop" />
-                        <div className="spacer" />
-                    </ButtonSet>
-                </ButtonSet>
+                <HeldButton className="feedbackGroup__topMid" text={words.up} color={ButtonColor.Quaternary} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
+                <HeldButton className="feedbackGroup__botMid" text={words.down} color={ButtonColor.Quaternary} hotkey="K" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
+                <HeldButton className="feedbackGroup__midLeft" text={words.left} color={ButtonColor.Quaternary} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
+                <HeldButton className="feedbackGroup__midRight" text={words.right} color={ButtonColor.Quaternary} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
+                <HeldButton className="feedbackGroup__center" text={words.stop} color={ButtonColor.Primary} hotkey="M" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
             </FeedbackGroup>
 
             <fieldset className="helm--buttonInput__speed">

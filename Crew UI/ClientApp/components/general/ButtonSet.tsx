@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ButtonColor, ConfirmButton, HeldButton, PushButton, ToggleButton } from './buttons';
-import { ICommonButtonProps } from './buttons/Button';
+import { IBaseButtonProps } from './buttons/Button';
 import { IToggleButtonProps } from './buttons/ToggleButton';
 import './ButtonSet.scss';
 
@@ -37,7 +37,7 @@ export class ButtonSet extends React.Component<IButtonSetProps, {}> {
                 return child;
 
             let childHasColor = child.props.color !== undefined;
-            let childProps: Partial<ICommonButtonProps> = {
+            let childProps: Partial<IBaseButtonProps> = {
                 disabled: this.props.disabled || child.props.disabled,
                 color: childHasColor ? child.props.color : this.props.color,
                 fullBorder: childHasColor && this.props.color !== undefined,

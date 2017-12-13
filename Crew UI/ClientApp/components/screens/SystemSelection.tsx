@@ -5,7 +5,7 @@ import { ApplicationState }  from '../../store';
 import * as CrewStore from '../../store/User';
 import * as ScreenStore from '../../store/Screen';
 import { ShipSystem, allSystems, TextLocalisation } from '../../functionality';
-import { PushButton, ToggleButton, IconButton, Icon, ButtonColor, Field, Screen } from '../general';
+import { PushButton, ToggleButton, Icon, ButtonColor, Field, Screen } from '../general';
 import './SystemSelection.scss';
 
 interface SystemSelectionDataProps {
@@ -96,7 +96,7 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
                 startActive={preselected}
             />,
             <div key="c" className="systemSelection__help">
-                <IconButton color={ButtonColor.Quandry} icon={Icon.Help} title={this.props.text.common.help} />
+                <PushButton color={ButtonColor.Quandry} noBorder={true} icon={Icon.Help} title={this.props.text.common.help} />
             </div>,
             <div key="d" className="systemSelection__who">{players}</div>
         ];

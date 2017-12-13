@@ -110,6 +110,11 @@ export interface TextLocalisation {
             rotation: string;
             translation: string;
             speed: string;
+            rotateStop: string;
+            rotateUp: string;
+            rotateDown: string;
+            rotateLeft: string;
+            rotateRight: string;
             stop: string;
             up: string;
             down: string;

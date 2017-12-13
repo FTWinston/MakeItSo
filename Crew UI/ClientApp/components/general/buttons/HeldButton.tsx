@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button, ICommonButtonProps } from './Button';
+import { Button, IBaseButtonProps } from './Button';
 import { connection } from '../../../Client';
 
-interface IHeldButtonProps extends ICommonButtonProps {
+interface IHeldButtonProps extends IBaseButtonProps {
     pressed?: () => void;
     released?: () => void;
 
@@ -24,8 +24,7 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} subtext={this.props.subtext} fullBorder={this.props.fullBorder} mouseDown={e => this.mouseDown(e)}
-                mouseUp={e => this.mouseUp(e)} color={this.props.color} disabled={this.props.disabled} title={this.props.title}>{this.props.text}</Button>;
+        return <Button {...this.props} className={classList} mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} />;
     }
     private mouseDown(e: React.MouseEvent<HTMLButtonElement>) {
         this.setState({held: true});

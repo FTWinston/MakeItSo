@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Button, ICommonButtonProps } from './Button';
+import { Button, IBaseButtonProps } from './Button';
 import { connection } from '../../../Client';
 
-interface IPushButtonProps extends ICommonButtonProps {
+interface IPushButtonProps extends IBaseButtonProps {
     clicked?: () => void;
     command?: string;
 }
@@ -21,8 +21,8 @@ export class PushButton extends React.Component<IPushButtonProps, IPushButtonSta
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button className={classList} hotkey={this.props.hotkey} mouseClick={e => this.clicked(e)} color={this.props.color} disabled={this.props.disabled} fullBorder={this.props.fullBorder}
-                mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} title={this.props.title} subtext={this.props.subtext}>{this.props.text}</Button>;
+        return <Button {...this.props} className={classList} mouseClick={e => this.clicked(e)}
+                mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} />;
     }
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {
         if (this.props.clicked !== undefined)

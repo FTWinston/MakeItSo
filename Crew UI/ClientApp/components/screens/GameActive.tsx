@@ -4,7 +4,7 @@ import { store, connection }  from '../../Client';
 import { ApplicationState }  from '../../store';
 import * as CrewStore from '../../store/User';
 import { TextLocalisation, ShipSystem, allSystems, getSystemName } from '../../functionality';
-import { IconButton, Icon, ButtonColor, Screen } from '../general';
+import { Icon, PushButton, ButtonColor, Screen } from '../general';
 import * as Systems from '../systems';
 import './GameActive.scss';
 
@@ -34,8 +34,8 @@ class GameActive extends React.Component<GameActiveProps, {}> {
                 </div>
                 <div className="systemHeader__separator" />
                 <div className="systemHeader__commonIcons">
-                    <IconButton title={this.props.text.common.help} icon={Icon.Help} />
-                    <IconButton title={this.props.text.screens.active.pause} icon={Icon.Pause} command="pause" />
+                    <PushButton title={this.props.text.common.help} noBorder={true} icon={Icon.Help} />
+                    <PushButton title={this.props.text.screens.active.pause} noBorder={true} icon={Icon.Pause} command="pause" />
                 </div>
             </div>
 
@@ -64,7 +64,7 @@ class GameActive extends React.Component<GameActiveProps, {}> {
         let disabled = (this.props.disableSystems & system) !== 0;
         let clicked = this.props.activeSystem === system ? undefined : () => connection.send(`viewsys ${system}`);
 
-        return <IconButton key={system} title={getSystemName(system, this.props.text)} icon={icon} disabled={disabled} color={color} clicked={clicked} />;
+        return <PushButton key={system} title={getSystemName(system, this.props.text)} noBorder={true} icon={icon} disabled={disabled} color={color} clicked={clicked} />;
     }
 
     private renderSystem(system?: ShipSystem) {
