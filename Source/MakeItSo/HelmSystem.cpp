@@ -107,7 +107,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	else if (STARTS_WITH(msg, "yaw "))
 	{
 		int32 iYaw = ExtractInt(msg, sizeof("yaw "));
-		float yaw = iYaw / 100;
+		float yaw = iYaw / 100.f;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputAxis(EKeys::Gamepad_LeftX, yaw);
 #endif
@@ -115,7 +115,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	else if (STARTS_WITH(msg, "pitch "))
 	{
 		int32 iPitch = ExtractInt(msg, sizeof("pitch "));
-		float pitch = iPitch / 100;
+		float pitch = iPitch / 100.f;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputAxis(EKeys::Gamepad_LeftY, pitch);
 #endif
@@ -123,7 +123,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	else if (STARTS_WITH(msg, "roll "))
 	{
 		int32 iRoll = ExtractInt(msg, sizeof("roll "));
-		float roll = iRoll / 100;
+		float roll = iRoll / 100.f;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputAxis(EKeys::Gamepad_LeftZ, roll);
 #endif
@@ -261,7 +261,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	return true;
 }
 
-#define PI 3.14159265359
+#define PI 3.14159265359f
 
 void UHelmSystem::ResetData()
 {
