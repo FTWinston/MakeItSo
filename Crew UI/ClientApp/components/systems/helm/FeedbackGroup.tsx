@@ -4,8 +4,10 @@ import { Canvas } from '../../general';
 interface FeedbackGroupProps {
     label: string;
     x: number;
-    y: number;
+    y?: number;
     z?: number;
+    xMin?: number;
+    threeByThree?: boolean;
 }
 
 interface FeedbackGroupState {
@@ -45,8 +47,13 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
     }
 
     public render() {
+        let classes = 'feedbackGroup';
+        if (this.props.threeByThree) {
+            classes += ' feedbackGroup--threeByThree';
+        }
+
         return (
-        <div className="feedbackGroup" ref={r => this.root = r}>
+        <div className={classes} ref={r => this.root = r}>
             <div className="feedbackGroup__label">{this.props.label}</div>
             <Canvas 
                 width={this.state.width}
@@ -60,12 +67,87 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
     }
 
     private drawFeedback(ctx: CanvasRenderingContext2D) {
-        let width = this.state.width, halfWidth = width / 2;
-        let height = this.state.height, halfHeight = height / 2;
-        ctx.clearRect(0, 0, width, height);
+        ctx.clearRect(0, 0, this.state.width, this.state.height);
 
-        let x = Math.min(width, Math.max(0, this.props.x * halfWidth + halfWidth));
-        let y = Math.min(height, Math.max(0, -this.props.y * halfHeight + halfHeight));
+        this.drawFeedbackX(ctx);
+        this.drawFeedbackY(ctx);
+    }
+    
+        private drawFeedbackX(ctx: CanvasRenderingContext2D) {
+            let width = this.state.width;
+            let height = this.state.height;
+            let maxVal = 1;
+            let minVal = this.props.xMin === undefined ? -1 : this.props.xMin;
+            let minPos = 0;
+            let maxPos = width;
+            let zeroPos = width * -minVal / (maxVal - minVal);
+    
+            let x;
+            if (this.props.x >= 0) {
+                x = zeroPos + (maxPos - zeroPos) * this.props.x / maxVal;
+            } else {
+                x = zeroPos - (zeroPos - minPos) * this.props.x / minVal;
+            }
+            
+            // faint lines showing center
+            ctx.strokeStyle= '#fff';
+            ctx.globalAlpha = 0.2;
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+    
+            ctx.moveTo(zeroPos, 0);
+            ctx.lineTo(zeroPos, height);
+    
+            ctx.stroke();
+    
+    
+            ctx.lineWidth = 2;
+            let vmin = Math.min(width, height);
+            let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+    
+            // axis line and arrow
+            ctx.globalAlpha = 0.4;
+            ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
+            
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, height);
+            ctx.stroke();
+    
+            ctx.globalAlpha = 1;
+            ctx.beginPath();
+            ctx.moveTo(x - breadth, 0);
+            ctx.lineTo(x + breadth, 0);
+            ctx.lineTo(x, depth);
+            
+            ctx.moveTo(x - breadth, height);
+            ctx.lineTo(x + breadth, height);
+            ctx.lineTo(x, height - depth);
+    
+            ctx.fill();
+        
+            // tick marks showing the center
+            ctx.strokeStyle= '#fff';
+            ctx.beginPath();
+    
+            ctx.moveTo(zeroPos, 0);
+            ctx.lineTo(zeroPos, depth);
+            ctx.moveTo(zeroPos, height);
+            ctx.lineTo(zeroPos, height - depth);
+    
+            ctx.stroke();
+        }
+
+    private drawFeedbackY(ctx: CanvasRenderingContext2D) {
+        if (this.props.y === undefined) {
+            return;
+        }
+
+        let width = this.state.width;
+        let height = this.state.height;
+        let zeroPos = height / 2;
+
+        let y = Math.min(height, Math.max(0, -this.props.y * zeroPos + zeroPos));
 
         // faint lines showing center
         ctx.strokeStyle= '#fff';
@@ -73,10 +155,8 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         ctx.lineWidth = 1;
         ctx.beginPath();
 
-        ctx.moveTo(halfWidth, 0);
-        ctx.lineTo(halfWidth, height);
-        ctx.moveTo(0, halfHeight);
-        ctx.lineTo(width, halfHeight);
+        ctx.moveTo(0, zeroPos);
+        ctx.lineTo(width, zeroPos);
 
         ctx.stroke();
 
@@ -85,29 +165,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         let vmin = Math.min(width, height);
         let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
 
-        // x-axis line and arrow
-        ctx.globalAlpha = 0.4;
-        ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
-        
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
-
-        ctx.globalAlpha = 1;
-        ctx.beginPath();
-        ctx.moveTo(x - breadth, 0);
-        ctx.lineTo(x + breadth, 0);
-        ctx.lineTo(x, depth);
-        
-        ctx.moveTo(x - breadth, height);
-        ctx.lineTo(x + breadth, height);
-        ctx.lineTo(x, height - depth);
-
-        ctx.fill();
-
-
-        // y-axis line and arrow
+        // axis line and arrow
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = ctx.fillStyle = this.props.y === 0 ? '#0c0' : '#cc0';
         
@@ -133,15 +191,11 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         // tick marks showing the center
         ctx.strokeStyle= '#fff';
         ctx.beginPath();
-
-        ctx.moveTo(halfWidth, 0);
-        ctx.lineTo(halfWidth, depth);
-        ctx.moveTo(halfWidth, height);
-        ctx.lineTo(halfWidth, height - depth);
-        ctx.moveTo(0, halfHeight);
-        ctx.lineTo(depth, halfHeight);
-        ctx.moveTo(width, halfHeight);
-        ctx.lineTo(width - depth, halfHeight);
+ 
+        ctx.moveTo(0, zeroPos);
+        ctx.lineTo(depth, zeroPos);
+        ctx.moveTo(width, zeroPos);
+        ctx.lineTo(width - depth, zeroPos);
 
         ctx.stroke();
     }

@@ -25,11 +25,14 @@
 }
 
 .feedbackGroup {
-    width: 14em; // TODO: this could get narrower if needed to help with width
     position: relative;
     border: solid $colorQuandry 2px;
     padding: 0.5em;
     z-index: 0;
+}
+
+.feedbackGroup--threeByThree {
+    width: 14em; // TODO: this could get narrower if needed to help with width
 
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
@@ -43,7 +46,7 @@
     background-color: $backgroundColor;
     padding: 0 0.1em;
     line-height: 1em;
-    z-index: -1;
+    z-index: 2;
 }
 
 .feedbackGroup__background {

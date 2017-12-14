@@ -2362,31 +2362,47 @@ var FeedbackGroup = (function (_super) {
     };
     FeedbackGroup.prototype.render = function () {
         var _this = this;
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "feedbackGroup", ref: function (r) { return _this.root = r; } },
+        var classes = 'feedbackGroup';
+        if (this.props.threeByThree) {
+            classes += ' feedbackGroup--threeByThree';
+        }
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (r) { return _this.root = r; } },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "feedbackGroup__label" }, this.props.label),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["g" /* Canvas */], { width: this.state.width, height: this.state.height, draw: function (ctx) { return _this.drawFeedback(ctx); }, className: "feedbackGroup__background" }),
             this.props.children));
     };
     FeedbackGroup.prototype.drawFeedback = function (ctx) {
-        var width = this.state.width, halfWidth = width / 2;
-        var height = this.state.height, halfHeight = height / 2;
-        ctx.clearRect(0, 0, width, height);
-        var x = Math.min(width, Math.max(0, this.props.x * halfWidth + halfWidth));
-        var y = Math.min(height, Math.max(0, -this.props.y * halfHeight + halfHeight));
+        ctx.clearRect(0, 0, this.state.width, this.state.height);
+        this.drawFeedbackX(ctx);
+        this.drawFeedbackY(ctx);
+    };
+    FeedbackGroup.prototype.drawFeedbackX = function (ctx) {
+        var width = this.state.width;
+        var height = this.state.height;
+        var maxVal = 1;
+        var minVal = this.props.xMin === undefined ? -1 : this.props.xMin;
+        var minPos = 0;
+        var maxPos = width;
+        var zeroPos = width * -minVal / (maxVal - minVal);
+        var x;
+        if (this.props.x >= 0) {
+            x = zeroPos + (maxPos - zeroPos) * this.props.x / maxVal;
+        }
+        else {
+            x = zeroPos - (zeroPos - minPos) * this.props.x / minVal;
+        }
         // faint lines showing center
         ctx.strokeStyle = '#fff';
         ctx.globalAlpha = 0.2;
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(halfWidth, 0);
-        ctx.lineTo(halfWidth, height);
-        ctx.moveTo(0, halfHeight);
-        ctx.lineTo(width, halfHeight);
+        ctx.moveTo(zeroPos, 0);
+        ctx.lineTo(zeroPos, height);
         ctx.stroke();
         ctx.lineWidth = 2;
         var vmin = Math.min(width, height);
         var breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
-        // x-axis line and arrow
+        // axis line and arrow
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
         ctx.beginPath();
@@ -2402,7 +2418,35 @@ var FeedbackGroup = (function (_super) {
         ctx.lineTo(x + breadth, height);
         ctx.lineTo(x, height - depth);
         ctx.fill();
-        // y-axis line and arrow
+        // tick marks showing the center
+        ctx.strokeStyle = '#fff';
+        ctx.beginPath();
+        ctx.moveTo(zeroPos, 0);
+        ctx.lineTo(zeroPos, depth);
+        ctx.moveTo(zeroPos, height);
+        ctx.lineTo(zeroPos, height - depth);
+        ctx.stroke();
+    };
+    FeedbackGroup.prototype.drawFeedbackY = function (ctx) {
+        if (this.props.y === undefined) {
+            return;
+        }
+        var width = this.state.width;
+        var height = this.state.height;
+        var zeroPos = height / 2;
+        var y = Math.min(height, Math.max(0, -this.props.y * zeroPos + zeroPos));
+        // faint lines showing center
+        ctx.strokeStyle = '#fff';
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(0, zeroPos);
+        ctx.lineTo(width, zeroPos);
+        ctx.stroke();
+        ctx.lineWidth = 2;
+        var vmin = Math.min(width, height);
+        var breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+        // axis line and arrow
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = ctx.fillStyle = this.props.y === 0 ? '#0c0' : '#cc0';
         ctx.beginPath();
@@ -2421,14 +2465,10 @@ var FeedbackGroup = (function (_super) {
         // tick marks showing the center
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
-        ctx.moveTo(halfWidth, 0);
-        ctx.lineTo(halfWidth, depth);
-        ctx.moveTo(halfWidth, height);
-        ctx.lineTo(halfWidth, height - depth);
-        ctx.moveTo(0, halfHeight);
-        ctx.lineTo(depth, halfHeight);
-        ctx.moveTo(width, halfHeight);
-        ctx.lineTo(width - depth, halfHeight);
+        ctx.moveTo(0, zeroPos);
+        ctx.lineTo(depth, zeroPos);
+        ctx.moveTo(width, zeroPos);
+        ctx.lineTo(width - depth, zeroPos);
         ctx.stroke();
     };
     return FeedbackGroup;
@@ -2490,22 +2530,21 @@ var Helm = (function (_super) {
         var words = this.props.text.systems.helm;
         var iconSize = "1.5em";
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system helm helm--buttonInput" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax, threeByThree: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowUp, iconSize: iconSize, title: words.rotateUp, color: 1 /* Secondary */, hotkey: "W", pressCommand: "+pitchUp", releaseCommand: "-pitchUp" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.rotateDown, color: 1 /* Secondary */, hotkey: "S", pressCommand: "+pitchDown", releaseCommand: "-pitchDown" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.rotateDown, color: 1 /* Secondary */, hotkey: "X", pressCommand: "+pitchDown", releaseCommand: "-pitchDown" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midLeft", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowLeft, iconSize: iconSize, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "A", pressCommand: "+yawLeft", releaseCommand: "-yawLeft" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midRight", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowRight, iconSize: iconSize, title: words.rotateRight, color: 1 /* Secondary */, hotkey: "D", pressCommand: "+yawRight", releaseCommand: "-yawRight" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topLeft", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].RotateCCW, iconSize: iconSize, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "Q", pressCommand: "+rollLeft", releaseCommand: "-rollLeft" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topRight", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].RotateCW, iconSize: iconSize, title: words.rotateRight, color: 1 /* Secondary */, hotkey: "E", pressCommand: "+rollRight", releaseCommand: "-rollRight" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__center", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].X, iconSize: iconSize, title: words.rotateStop, color: 0 /* Primary */, hotkey: "X", pressCommand: "+rotStop", releaseCommand: "-rotStop" })),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.translation, x: this.props.translationRateX / this.props.translationRateXMax, y: this.props.translationRateY / this.props.translationRateYMax },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__center", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].X, iconSize: iconSize, title: words.rotateStop, color: 0 /* Primary */, hotkey: "S", pressCommand: "+rotStop", releaseCommand: "-rotStop" })),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.strafe, x: this.props.translationRateX / this.props.translationRateXMax, y: this.props.translationRateY / this.props.translationRateYMax, threeByThree: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__topMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowUp, iconSize: iconSize, title: words.strafeUp, color: 3 /* Quaternary */, hotkey: "I", pressCommand: "+strafeUp", releaseCommand: "-strafeUp" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.strafeDown, color: 3 /* Quaternary */, hotkey: "K", pressCommand: "+strafeDown", releaseCommand: "-strafeDown" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__botMid", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.strafeDown, color: 3 /* Quaternary */, hotkey: "M", pressCommand: "+strafeDown", releaseCommand: "-strafeDown" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midLeft", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowLeft, iconSize: iconSize, title: words.strafeLeft, color: 3 /* Quaternary */, hotkey: "J", pressCommand: "+strafeLeft", releaseCommand: "-strafeLeft" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__midRight", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].ArrowRight, iconSize: iconSize, title: words.strafeRight, color: 3 /* Quaternary */, hotkey: "L", pressCommand: "+strafeRight", releaseCommand: "-strafeRight" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__center", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].X, iconSize: iconSize, title: words.strafeStop, color: 0 /* Primary */, hotkey: "M", pressCommand: "+strafeStop", releaseCommand: "-strafeStop" })),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("fieldset", { className: "helm--buttonInput__speed" },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("legend", null, words.speed),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["d" /* HeldButton */], { className: "feedbackGroup__center", icon: __WEBPACK_IMPORTED_MODULE_2__general__["c" /* Icon */].X, iconSize: iconSize, title: words.strafeStop, color: 0 /* Primary */, hotkey: "K", pressCommand: "+strafeStop", releaseCommand: "-strafeStop" })),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.speed, x: this.props.translationRateForward / this.props.translationRateForwardMax, xMin: -this.props.translationRateReverseMax / this.props.translationRateForwardMax },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["e" /* Choice */], { color: 2 /* Tertiary */, allowUnselected: true },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["f" /* ToggleButton */], { text: words.speedBackHalf, hotkey: "1", activateCommand: "speed -2" }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__general__["f" /* ToggleButton */], { text: words.speedBackQuarter, hotkey: "2", activateCommand: "speed -1" }),
@@ -3328,14 +3367,14 @@ var words = {
     systems: {
         helm: {
             rotation: 'Rotation',
-            translation: 'Translation',
-            speed: 'Speed',
+            strafe: 'Lateral / Vertical',
+            speed: 'Forward / Backward',
             rotateStop: 'Stop all rotation',
             rotateUp: 'Rotate upward',
             rotateDown: 'Rotate downward',
             rotateLeft: 'Rotate left',
             rotateRight: 'Rotate right',
-            strafeStop: 'Stop lateral movement',
+            strafeStop: 'Stop lateral & vertical movement',
             strafeUp: 'Move up',
             strafeDown: 'Move down',
             strafeLeft: 'Move left',

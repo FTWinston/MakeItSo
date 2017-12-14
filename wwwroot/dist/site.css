@@ -433,11 +433,13 @@ $lightBackground: #999;
   border-color: #ffce9c; }
 
 .feedbackGroup {
-  width: 14em;
   position: relative;
   border: solid #ffce9c 2px;
   padding: 0.5em;
-  z-index: 0;
+  z-index: 0; }
+
+.feedbackGroup--threeByThree {
+  width: 14em;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr; }
@@ -449,7 +451,7 @@ $lightBackground: #999;
   background-color: #333;
   padding: 0 0.1em;
   line-height: 1em;
-  z-index: -1; }
+  z-index: 2; }
 
 .feedbackGroup__background {
   position: absolute;

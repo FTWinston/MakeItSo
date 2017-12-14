@@ -174,14 +174,14 @@ let words: TextLocalisation = {
     systems: {
         helm: {
             rotation: 'Rotation',
-            translation: 'Translation',
-            speed: 'Speed',
+            strafe: 'Lateral / Vertical',
+            speed: 'Forward / Backward',
             rotateStop: 'Stop all rotation',
             rotateUp: 'Rotate upward',
             rotateDown: 'Rotate downward',
             rotateLeft: 'Rotate left',
             rotateRight: 'Rotate right',
-            strafeStop: 'Stop lateral movement',
+            strafeStop: 'Stop lateral & vertical movement',
             strafeUp: 'Move up',
             strafeDown: 'Move down',
             strafeLeft: 'Move left',

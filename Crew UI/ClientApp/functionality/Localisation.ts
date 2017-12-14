@@ -108,7 +108,7 @@ export interface TextLocalisation {
     systems: {
         helm: {
             rotation: string;
-            translation: string;
+            strafe: string;
             speed: string;
             rotateStop: string;
             rotateUp: string;
