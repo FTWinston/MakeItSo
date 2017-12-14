@@ -35,13 +35,13 @@ class Helm extends React.Component<HelmProps, {}> {
                 y={this.props.pitchRate / this.props.pitchRateMax}
                 threeByThree={true}
             >
-                <HeldButton className="feedbackGroup__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
-                <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.rotateDown} color={ButtonColor.Secondary} hotkey="X" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
-                <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
-                <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
-                <HeldButton className="feedbackGroup__topLeft" noBorder={true} icon={Icon.RotateCCW} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="Q" pressCommand="+rollLeft" releaseCommand="-rollLeft" />
-                <HeldButton className="feedbackGroup__topRight" noBorder={true} icon={Icon.RotateCW} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="E" pressCommand="+rollRight" releaseCommand="-rollRight" />
-                <HeldButton className="feedbackGroup__center" icon={Icon.X} iconSize={iconSize} title={words.rotateStop} color={ButtonColor.Primary} hotkey="S" pressCommand="+rotStop" releaseCommand="-rotStop" />
+                <HeldButton className="feedbackGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
+                <HeldButton className="feedbackGroup--3x3__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.rotateDown} color={ButtonColor.Secondary} hotkey="X" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
+                <HeldButton className="feedbackGroup--3x3__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="A" pressCommand="+yawLeft" releaseCommand="-yawLeft" />
+                <HeldButton className="feedbackGroup--3x3__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="D" pressCommand="+yawRight" releaseCommand="-yawRight" />
+                <HeldButton className="feedbackGroup--3x3__topLeft" noBorder={true} icon={Icon.RotateCCW} iconSize={iconSize} title={words.rotateLeft} color={ButtonColor.Secondary} hotkey="Q" pressCommand="+rollLeft" releaseCommand="-rollLeft" />
+                <HeldButton className="feedbackGroup--3x3__topRight" noBorder={true} icon={Icon.RotateCW} iconSize={iconSize} title={words.rotateRight} color={ButtonColor.Secondary} hotkey="E" pressCommand="+rollRight" releaseCommand="-rollRight" />
+                <HeldButton className="feedbackGroup--3x3__center" icon={Icon.X} iconSize={iconSize} title={words.rotateStop} color={ButtonColor.Primary} hotkey="S" pressCommand="+rotStop" releaseCommand="-rotStop" />
             </FeedbackGroup>
             
             <FeedbackGroup
@@ -50,28 +50,22 @@ class Helm extends React.Component<HelmProps, {}> {
                 y={this.props.translationRateY / this.props.translationRateYMax}
                 threeByThree={true}
             >
-                <HeldButton className="feedbackGroup__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.strafeUp} color={ButtonColor.Quaternary} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
-                <HeldButton className="feedbackGroup__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.strafeDown} color={ButtonColor.Quaternary} hotkey="M" pressCommand="+strafeDown" releaseCommand="-strafeDown" />
-                <HeldButton className="feedbackGroup__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.strafeLeft} color={ButtonColor.Quaternary} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
-                <HeldButton className="feedbackGroup__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.strafeRight} color={ButtonColor.Quaternary} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
-                <HeldButton className="feedbackGroup__center" icon={Icon.X} iconSize={iconSize} title={words.strafeStop} color={ButtonColor.Primary} hotkey="K" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
+                <HeldButton className="feedbackGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.strafeUp} color={ButtonColor.Tertiary} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
+                <HeldButton className="feedbackGroup--3x3__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.strafeDown} color={ButtonColor.Tertiary} hotkey="," pressCommand="+strafeDown" releaseCommand="-strafeDown" />
+                <HeldButton className="feedbackGroup--3x3__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.strafeLeft} color={ButtonColor.Tertiary} hotkey="J" pressCommand="+strafeLeft" releaseCommand="-strafeLeft" />
+                <HeldButton className="feedbackGroup--3x3__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.strafeRight} color={ButtonColor.Tertiary} hotkey="L" pressCommand="+strafeRight" releaseCommand="-strafeRight" />
+                <HeldButton className="feedbackGroup--3x3__center" icon={Icon.X} iconSize={iconSize} title={words.strafeStop} color={ButtonColor.Primary} hotkey="K" pressCommand="+strafeStop" releaseCommand="-strafeStop" />
             </FeedbackGroup>
-
 
             <FeedbackGroup
                 label={words.speed}
                 x={this.props.translationRateForward / this.props.translationRateForwardMax}
                 xMin={-this.props.translationRateReverseMax / this.props.translationRateForwardMax}
+                threeByOne={true}
             >
-                <Choice color={ButtonColor.Tertiary} allowUnselected={true}>
-                    <ToggleButton text={words.speedBackHalf} hotkey="1" activateCommand="speed -2" />
-                    <ToggleButton text={words.speedBackQuarter} hotkey="2" activateCommand="speed -1" />
-                    <ToggleButton text={words.speedStop} hotkey="3" color={ButtonColor.Primary} activateCommand="speed 0" />
-                    <ToggleButton text={words.speedQuarter} hotkey="4" activateCommand="speed 1" />
-                    <ToggleButton text={words.speedHalf} hotkey="5" activateCommand="speed 2" />
-                    <ToggleButton text={words.speedThreeQuarter} hotkey="6" activateCommand="speed 3" />
-                    <ToggleButton text={words.speedFull} hotkey="7" activateCommand="speed 4" />
-                </Choice>
+                <HeldButton className="feedbackGroup--3x1__left" text={words.moveBackward} color={ButtonColor.Quaternary} hotkey="control" pressCommand="+moveBackward" releaseCommand="-moveBackward" />
+                <HeldButton className="feedbackGroup--3x1__mid" text={words.speedStop} color={ButtonColor.Primary} hotkey="shift" pressCommand="+forwardBackStop" releaseCommand="-forwardBackStop" />
+                <HeldButton className="feedbackGroup--3x1__right" text={words.moveForward} color={ButtonColor.Quaternary} hotkey="space" pressCommand="+moveForward" releaseCommand="-moveForward" />
             </FeedbackGroup>
         </div>;
     }

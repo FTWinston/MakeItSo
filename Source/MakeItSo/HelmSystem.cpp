@@ -129,61 +129,53 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 		crewManager->InputAxis(EKeys::Gamepad_LeftZ, roll);
 #endif
 	}
-	else if (MATCHES(msg, "speed -2"))
+	else if (MATCHES(msg, "+moveForward"))
 	{
-		forwardAccel = forwardAccelMax / -2;
+		moveForward = true;
 #ifndef WEB_SERVER_TEST
 		// TODO: set speed usefully
 		crewManager->InputKey(EKeys::1, true);
 		crewManager->InputKey(EKeys::1, false);
 #endif
 	}
-	else if (MATCHES(msg, "speed -1"))
+	else if (MATCHES(msg, "-moveForward"))
 	{
-		forwardAccel = forwardAccelMax / -4;
+		moveForward = false;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputKey(EKeys::2, true);
 		crewManager->InputKey(EKeys::2, false);
 #endif
 	}
-	else if (MATCHES(msg, "speed 0"))
+	else if (MATCHES(msg, "+moveBackward"))
 	{
-		forwardAccel = 0;
+		moveBackward = true;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputKey(EKeys::3, true);
 		crewManager->InputKey(EKeys::3, false);
 #endif
 	}
-	else if (MATCHES(msg, "speed 1"))
+	else if (MATCHES(msg, "-moveBackward"))
 	{
-		forwardAccel = forwardAccelMax / 4;
+		moveBackward = false;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputKey(EKeys::4, true);
 		crewManager->InputKey(EKeys::4, false);
 #endif
 	}
-	else if (MATCHES(msg, "speed 2"))
+	else if (MATCHES(msg, "+forwardBackStop"))
 	{
-		forwardAccel = forwardAccelMax / 2;
+		stopForwardBack = true;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputKey(EKeys::5, true);
 		crewManager->InputKey(EKeys::5, false);
 #endif
 	}
-	else if (MATCHES(msg, "speed 3"))
+	else if (MATCHES(msg, "-forwardBackStop"))
 	{
-		forwardAccel = 3 * forwardAccelMax / 4;
+		stopForwardBack = false;
 #ifndef WEB_SERVER_TEST
 		crewManager->InputKey(EKeys::6, true);
 		crewManager->InputKey(EKeys::6, false);
-#endif
-	}
-	else if (MATCHES(msg, "speed 4"))
-	{
-		forwardAccel = forwardAccelMax;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::7, true);
-		crewManager->InputKey(EKeys::7, false);
 #endif
 	}
 	else if (MATCHES(msg, "+strafeLeft"))
@@ -268,10 +260,8 @@ void UHelmSystem::ResetData()
 {
 	rotationAccel = PI / 8; strafeAccel = 50; forwardAccelMax = 500;
 	pitchDown = pitchUp = yawLeft = yawRight = rollLeft = rollRight = false;
-	strafeLeft = strafeRight = strafeUp = strafeDown = false;
-	stopRotation = stopStrafing = false;
-
-	forwardAccel = 0;
+	moveForward = moveBackward = strafeLeft = strafeRight = strafeUp = strafeDown = false;
+	stopRotation = stopStrafing = stopForwardBack = false;
 
 	pitch = yaw = roll = 0;
 	pitchRate = yawRate = rollRate = 0;
@@ -315,9 +305,9 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	}
 	else
 	{
-		pitchRate = AdjustAndClamp(pitchRate, pitchDown, pitchUp, adjustmentAmount, pitchRateMax);
-		yawRate = AdjustAndClamp(yawRate, yawLeft, yawRight, adjustmentAmount, yawRateMax);
-		rollRate = AdjustAndClamp(rollRate, rollLeft, rollRight, adjustmentAmount, pitchRateMax);
+		pitchRate = AdjustAndClamp(pitchRate, pitchDown, pitchUp, adjustmentAmount, -pitchRateMax, pitchRateMax);
+		yawRate = AdjustAndClamp(yawRate, yawLeft, yawRight, adjustmentAmount, -yawRateMax, yawRateMax);
+		rollRate = AdjustAndClamp(rollRate, rollLeft, rollRight, adjustmentAmount, -rollRateMax, rollRateMax);
 	}
 
 	bool rotationRateChanged = oldPitchRate != pitchRate || oldYawRate != yawRate || oldRollRate != rollRate;
@@ -366,12 +356,20 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	}
 	else
 	{
-		sideMoveRate = AdjustAndClamp(sideMoveRate, strafeLeft, strafeRight, adjustmentAmount, sideMoveRateMax);
-		verticalMoveRate = AdjustAndClamp(verticalMoveRate, strafeDown, strafeUp, adjustmentAmount, verticalMoveRateMax);
+		sideMoveRate = AdjustAndClamp(sideMoveRate, strafeLeft, strafeRight, adjustmentAmount, -sideMoveRateMax, sideMoveRateMax);
+		verticalMoveRate = AdjustAndClamp(verticalMoveRate, strafeDown, strafeUp, adjustmentAmount, -verticalMoveRateMax, verticalMoveRateMax);
 	}
 
-	forwardMoveRate = FMath::Max(FMath::Min(forwardMoveRate + forwardAccel * DeltaSeconds, forwardMoveRateMax), -backwardMoveRateMax);
-
+	adjustmentAmount = forwardAccelMax * DeltaSeconds;
+	if (stopForwardBack)
+	{
+		forwardMoveRate = TowardsZero(forwardMoveRate, adjustmentAmount);
+	}
+	else
+	{
+		forwardMoveRate = AdjustAndClamp(forwardMoveRate, moveBackward, moveForward, adjustmentAmount, -backwardMoveRateMax, forwardMoveRateMax);
+	}
+	
 	bool translationRateChanged = oldSideRate != sideMoveRate || oldVerticalRate != verticalMoveRate || oldForwardRate != forwardMoveRate;
 	if (translationRateChanged)
 	{
@@ -388,7 +386,7 @@ float UHelmSystem::TowardsZero(float value, float maxAdjustment)
 		return FMath::Min(0, value + maxAdjustment);
 }
 
-float UHelmSystem::AdjustAndClamp(float value, bool decrease, bool increase, float amount, float maxValue)
+float UHelmSystem::AdjustAndClamp(float value, bool decrease, bool increase, float amount, float minValue, float maxValue)
 {
 	if (increase == decrease)
 		return value; // neither set, or both set and cancel each other out
@@ -396,5 +394,5 @@ float UHelmSystem::AdjustAndClamp(float value, bool decrease, bool increase, flo
 	if (increase)
 		return FMath::Min(value + amount, maxValue);
 	else
-		return FMath::Max(value - amount, -maxValue);
+		return FMath::Max(value - amount, minValue);
 }

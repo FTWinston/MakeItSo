@@ -120,13 +120,9 @@ export interface TextLocalisation {
             strafeDown: string;
             strafeLeft: string;
             strafeRight: string;
-            speedBackHalf: string;
-            speedBackQuarter: string;
+            moveBackward: string;
             speedStop: string;
-            speedQuarter: string;
-            speedHalf: string;
-            speedThreeQuarter: string;
-            speedFull: string;
+            moveForward: string;
         },
         warp: {
 

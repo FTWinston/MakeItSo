@@ -186,13 +186,9 @@ let words: TextLocalisation = {
             strafeDown: 'Move down',
             strafeLeft: 'Move left',
             strafeRight: 'move right',
-            speedBackHalf: '-1/2',
-            speedBackQuarter: '-1/4',
+            moveBackward: 'Back',
             speedStop: 'Stop',
-            speedQuarter: '1/4',
-            speedHalf: '1/2',
-            speedThreeQuarter: '3/4',
-            speedFull: 'Full',
+            moveForward: 'Ahead',
         },
         warp: {
 

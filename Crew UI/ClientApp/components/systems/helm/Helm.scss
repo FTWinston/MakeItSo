@@ -31,12 +31,20 @@
     z-index: 0;
 }
 
-.feedbackGroup--threeByThree {
+.feedbackGroup--3x3 {
     width: 14em; // TODO: this could get narrower if needed to help with width
 
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr;
+}
+
+.feedbackGroup--3x1 {
+    width: 14em; // TODO: this could get narrower if needed to help with width
+
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr 1.5fr;
 }
 
 .feedbackGroup__label {
@@ -58,47 +66,47 @@
     pointer-events: none;
 }
 
-.feedbackGroup__topLeft { 
+.feedbackGroup--3x3__topLeft { 
     grid-column: 1 / span 1;
     grid-row: 1 / span 1;
 }
 
-.feedbackGroup__topMid { 
+.feedbackGroup--3x3__topMid { 
     grid-column: 2 / span 1;
     grid-row: 1 / span 1;
 }
 
-.feedbackGroup__topRight { 
+.feedbackGroup--3x3__topRight { 
     grid-column: 3 / span 1;
     grid-row: 1 / span 1;
 }
 
-.feedbackGroup__midLeft { 
+.feedbackGroup--3x3__midLeft { 
     grid-column: 1 / span 1;
     grid-row: 2 / span 1;
 }
 
-.feedbackGroup__center { 
+.feedbackGroup--3x3__center { 
     grid-column: 2 / span 1;
     grid-row: 2 / span 1;
 }
 
-.feedbackGroup__midRight { 
+.feedbackGroup--3x3__midRight { 
     grid-column: 3 / span 1;
     grid-row: 2 / span 1;
 }
 
-.feedbackGroup__botLeft { 
+.feedbackGroup--3x3__botLeft { 
     grid-column: 1 / span 1;
     grid-row: 3 / span 1;
 }
 
-.feedbackGroup__botMid { 
+.feedbackGroup--3x3__botMid { 
     grid-column: 2 / span 1;
     grid-row: 3 / span 1;
 }
 
-.feedbackGroup__botRight { 
+.feedbackGroup--3x3__botRight { 
     grid-column: 3 / span 1;
     grid-row: 3 / span 1;
 }

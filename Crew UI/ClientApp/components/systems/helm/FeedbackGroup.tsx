@@ -8,6 +8,7 @@ interface FeedbackGroupProps {
     z?: number;
     xMin?: number;
     threeByThree?: boolean;
+    threeByOne?: boolean;
 }
 
 interface FeedbackGroupState {
@@ -49,7 +50,10 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
     public render() {
         let classes = 'feedbackGroup';
         if (this.props.threeByThree) {
-            classes += ' feedbackGroup--threeByThree';
+            classes += ' feedbackGroup--3x3';
+        }
+        if (this.props.threeByOne) {
+            classes += ' feedbackGroup--3x1';
         }
 
         return (
