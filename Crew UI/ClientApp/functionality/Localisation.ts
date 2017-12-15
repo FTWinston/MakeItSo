@@ -107,7 +107,6 @@ export interface TextLocalisation {
     },
     systems: {
         helm: {
-            info: string;
             heading: string;
             roll: string;
             speed: string;

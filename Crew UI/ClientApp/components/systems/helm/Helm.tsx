@@ -35,7 +35,6 @@ class Helm extends React.Component<HelmProps, {}> {
 
         return <div className="system helm helm--buttonInput">
             <FieldGroup
-                label={words.info}
                 className="fieldGroup--3x1 fieldGroup--unpadded"
             >
                 <div className="readout">

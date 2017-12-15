@@ -438,22 +438,21 @@ $lightBackground: #999;
   position: relative;
   border: solid #ffce9c 2px;
   padding: 0.5em;
-  z-index: 0; }
+  z-index: 0;
+  width: 15em;
+  box-sizing: border-box; }
 
 .fieldGroup--unpadded {
   padding-top: 0;
-  padding-bottom: 0;
-  height: 3.6em !important; }
+  padding-bottom: 0; }
 
 .fieldGroup--3x3 {
-  width: 14em;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr; }
 
 .fieldGroup--3x1 {
-  width: 14em;
-  height: 2.6em;
+  height: 3.6em;
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr 1fr 1fr; }

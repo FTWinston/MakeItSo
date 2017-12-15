@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 export interface FieldGroupProps {
-    label: string;
+    label?: string;
     className?: string;
 }
 
@@ -14,9 +14,11 @@ export class FieldGroup extends React.Component<FieldGroupProps, {}> {
             classes += ' ' + this.props.className;
         }
 
+        let label = this.props.label === undefined ? undefined : <div className="fieldGroup__label">{this.props.label}</div>;
+
         return (
         <div className={classes} ref={r => this.root = r}>
-            <div className="fieldGroup__label">{this.props.label}</div>
+            {label}
             {this.props.children}
         </div>
         );

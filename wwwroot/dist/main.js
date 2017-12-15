@@ -705,8 +705,9 @@ var FieldGroup = (function (_super) {
         if (this.props.className !== undefined) {
             classes += ' ' + this.props.className;
         }
+        var label = this.props.label === undefined ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "fieldGroup__label" }, this.props.label);
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (r) { return _this.root = r; } },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "fieldGroup__label" }, this.props.label),
+            label,
             this.props.children));
     };
     return FieldGroup;
@@ -2647,7 +2648,7 @@ var Helm = (function (_super) {
         var iconSize = "1.5em";
         var overallSpeed = this.magnitude(this.props.translationRateX, this.props.translationRateY, this.props.translationRateForward);
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system helm helm--buttonInput" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FieldGroup__["a" /* FieldGroup */], { label: words.info, className: "fieldGroup--3x1 fieldGroup--unpadded" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FieldGroup__["a" /* FieldGroup */], { className: "fieldGroup--3x1 fieldGroup--unpadded" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "readout" },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "readout--label" }, words.heading),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "readout--value" }, this.radToDeg(this.props.yaw)),
@@ -3839,7 +3840,6 @@ var words = {
     },
     systems: {
         helm: {
-            info: 'Info',
             heading: 'Heading:',
             roll: 'Roll:',
             speed: 'Speed:',

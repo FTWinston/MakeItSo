@@ -173,7 +173,6 @@ let words: TextLocalisation = {
     },
     systems: {
         helm: {
-            info: 'Info',
             heading: 'Heading:',
             roll: 'Roll:',
             speed: 'Speed:',

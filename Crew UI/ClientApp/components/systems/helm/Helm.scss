@@ -29,25 +29,24 @@
     border: solid $colorQuandry 2px;
     padding: 0.5em;
     z-index: 0;
+    
+    width: 15em; // TODO: this could get narrower if needed to help with width
+    box-sizing: border-box;
 }
 
 .fieldGroup--unpadded {
     padding-top: 0;
     padding-bottom: 0;
-    height: 3.6em !important;
 }
 
 .fieldGroup--3x3 {
-    width: 14em; // TODO: this could get narrower if needed to help with width
-
     display: grid;
     grid-template-rows: 1fr 1fr 1fr;
     grid-template-columns: 1fr 1fr 1fr;
 }
 
 .fieldGroup--3x1 {
-    width: 14em; // TODO: this could get narrower if needed to help with width
-    height: 2.6em;
+    height: 3.6em;
 
     display: grid;
     grid-template-rows: 1fr;
