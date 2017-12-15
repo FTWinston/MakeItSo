@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { TextLocalisation, InputMode } from '../../../functionality';
-import { Canvas, Choice, ButtonSet, HeldButton, Icon, ToggleButton, PushButton, ButtonColor }  from '../../general';
+import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ToggleButton, PushButton, ButtonColor }  from '../../general';
 import { HelmState as HelmBaseProps } from '../../../store/Helm';
 import { FieldGroup } from './FieldGroup';
 import { FeedbackGroup } from './FeedbackGroup';
@@ -44,7 +44,7 @@ class Helm extends React.Component<HelmProps, {}> {
                     <div className="readout__smaller">{words.roll}&nbsp;<span className="readout--value">{this.radToDeg(this.props.roll)}</span>&deg;</div>
                 </div>
 
-                <Canvas className="readout" draw={ctx => this.drawOrientation(ctx, 90, 90)} width={90} height={90} />
+                <FlexibleCanvas draw={(ctx, w, h) => this.drawOrientation(ctx, w, h)} />
 
                 <div className="readout">
                     <div className="readout--label">{words.speed}</div>
@@ -114,7 +114,7 @@ class Helm extends React.Component<HelmProps, {}> {
         ctx.clearRect(0, 0, width, height);
         ctx.translate(halfWidth, halfHeight);
         ctx.fillStyle = '#0c0';
-        orientation.draw(ctx, halfHeight * 0.6, this.props.pitch, this.props.yaw, -this.props.roll);
+        orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, -this.props.roll);
         ctx.translate(-halfWidth, -halfHeight);
     }
 

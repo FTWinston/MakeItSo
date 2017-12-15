@@ -241,6 +241,8 @@ $lightBackground: #999;
 
 .field + .field {
   margin-top: 1.5em; }
+.canvasWrapper {
+  overflow: hidden; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

@@ -1,10 +1,12 @@
 import * as React from 'react';
 
+export type drawFunc = (ctx: CanvasRenderingContext2D, width: number, height: number) => void;
+
 interface CanvasProps {
     width: number;
     height: number;
     className?: string;
-    draw: (ctx: CanvasRenderingContext2D) => void;
+    draw: drawFunc;
 }
 
 export class Canvas extends React.Component<CanvasProps, {}> {
@@ -20,11 +22,11 @@ export class Canvas extends React.Component<CanvasProps, {}> {
     }
     
     componentDidMount() {
-        this.props.draw(this.ctx);
+        this.props.draw(this.ctx, this.props.width, this.props.height);
     }
 
     componentDidUpdate() {
-        this.props.draw(this.ctx);
+        this.props.draw(this.ctx, this.props.width, this.props.height);
     }
     
     render() {
