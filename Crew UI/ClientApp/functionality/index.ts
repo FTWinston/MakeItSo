@@ -1,5 +1,5 @@
 export { Connection } from './Connection';
-export { Cube } from './cube/Cube';
+export { OrientationCube } from './cube';
 export { Hotkeys, Hotkey } from './Hotkeys';
 export { InputMode } from './InputMode';
 export { Localisation, Localisations, TextLocalisation } from './Localisation';

@@ -1,4 +1,4 @@
-import { Cube } from '../../../functionality';
+import { Cube } from './Cube';
 
 export class OrientationCube extends Cube {
     constructor() {
