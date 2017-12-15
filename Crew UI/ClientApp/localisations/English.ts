@@ -173,9 +173,15 @@ let words: TextLocalisation = {
     },
     systems: {
         helm: {
+            info: 'Info',
+            heading: 'Heading:',
+            roll: 'Roll:',
+            speed: 'Speed:',
+            mark: 'mk',
+            metresPerSecond: 'm/s',
             rotation: 'Rotation',
             strafe: 'Lateral / Vertical',
-            speed: 'Forward / Backward',
+            forwardBackward: 'Forward / Backward',
             rotateStop: 'Stop all rotation',
             rotateUp: 'Rotate upward',
             rotateDown: 'Rotate downward',

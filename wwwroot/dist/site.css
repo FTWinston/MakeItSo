@@ -432,25 +432,31 @@ $lightBackground: #999;
   padding: 1em;
   border-color: #ffce9c; }
 
-.feedbackGroup {
+.fieldGroup {
   position: relative;
   border: solid #ffce9c 2px;
   padding: 0.5em;
   z-index: 0; }
 
-.feedbackGroup--3x3 {
+.fieldGroup--unpadded {
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 3.6em !important; }
+
+.fieldGroup--3x3 {
   width: 14em;
   display: grid;
   grid-template-rows: 1fr 1fr 1fr;
   grid-template-columns: 1fr 1fr 1fr; }
 
-.feedbackGroup--3x1 {
+.fieldGroup--3x1 {
   width: 14em;
+  height: 2.6em;
   display: grid;
   grid-template-rows: 1fr;
-  grid-template-columns: 1fr 1fr 1.5fr; }
+  grid-template-columns: 1fr 1fr 1fr; }
 
-.feedbackGroup__label {
+.fieldGroup__label {
   position: absolute;
   top: -0.5em;
   left: 0.75em;
@@ -459,7 +465,7 @@ $lightBackground: #999;
   line-height: 1em;
   z-index: 2; }
 
-.feedbackGroup__background {
+.fieldGroup__background {
   position: absolute;
   top: 0;
   left: 0;
@@ -468,41 +474,59 @@ $lightBackground: #999;
   z-index: 1;
   pointer-events: none; }
 
-.feedbackGroup--3x3__topLeft {
+.fieldGroup--3x3__topLeft {
   grid-column: 1 / span 1;
   grid-row: 1 / span 1; }
 
-.feedbackGroup--3x3__topMid {
+.fieldGroup--3x3__topMid {
   grid-column: 2 / span 1;
   grid-row: 1 / span 1; }
 
-.feedbackGroup--3x3__topRight {
+.fieldGroup--3x3__topRight {
   grid-column: 3 / span 1;
   grid-row: 1 / span 1; }
 
-.feedbackGroup--3x3__midLeft {
+.fieldGroup--3x3__midLeft {
   grid-column: 1 / span 1;
   grid-row: 2 / span 1; }
 
-.feedbackGroup--3x3__center {
+.fieldGroup--3x3__center {
   grid-column: 2 / span 1;
   grid-row: 2 / span 1; }
 
-.feedbackGroup--3x3__midRight {
+.fieldGroup--3x3__midRight {
   grid-column: 3 / span 1;
   grid-row: 2 / span 1; }
 
-.feedbackGroup--3x3__botLeft {
+.fieldGroup--3x3__botLeft {
   grid-column: 1 / span 1;
   grid-row: 3 / span 1; }
 
-.feedbackGroup--3x3__botMid {
+.fieldGroup--3x3__botMid {
   grid-column: 2 / span 1;
   grid-row: 3 / span 1; }
 
-.feedbackGroup--3x3__botRight {
+.fieldGroup--3x3__botRight {
   grid-column: 3 / span 1;
   grid-row: 3 / span 1; }
+
+.readout {
+  font-size: 0.65em;
+  justify-self: center;
+  align-self: center;
+  text-align: center; }
+
+.readout__smaller {
+  font-size: 0.65em; }
+
+.readout--label {
+  font-style: italic;
+  font-size: 1em; }
+
+.readout--value {
+  font-weight: bold;
+  font-size: 1em;
+  color: #ffce9c; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

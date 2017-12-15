@@ -1,14 +1,12 @@
 import * as React from 'react';
 import { Canvas } from '../../general';
+import { FieldGroup, FieldGroupProps } from './FieldGroup';
 
-interface FeedbackGroupProps {
-    label: string;
+interface FeedbackGroupProps extends FieldGroupProps {
     x: number;
     y?: number;
     z?: number;
     xMin?: number;
-    threeByThree?: boolean;
-    threeByOne?: boolean;
 }
 
 interface FeedbackGroupState {
@@ -26,7 +24,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         };
     }
 
-    private root: HTMLDivElement | null;
+    private group: FieldGroup | null;
 
     private resizeListener?: () => void;
     componentDidMount() {
@@ -37,36 +35,29 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
     }
 
     private updateSize() {
-        if (this.root === null) {
+        if (this.group === null || this.group.root === null) {
             return;
         }
 
+        let root = this.group.root;
+
         this.setState({
-            width: this.root.offsetWidth,
-            height: this.root.offsetHeight,
+            width: root.offsetWidth,
+            height: root.offsetHeight,
         });
     }
 
     public render() {
-        let classes = 'feedbackGroup';
-        if (this.props.threeByThree) {
-            classes += ' feedbackGroup--3x3';
-        }
-        if (this.props.threeByOne) {
-            classes += ' feedbackGroup--3x1';
-        }
-
         return (
-        <div className={classes} ref={r => this.root = r}>
-            <div className="feedbackGroup__label">{this.props.label}</div>
+        <FieldGroup ref={g => this.group = g} label={this.props.label} className={this.props.className}>
             <Canvas 
                 width={this.state.width}
                 height={this.state.height}
                 draw={ctx => this.drawFeedback(ctx)}
-                className="feedbackGroup__background"
+                className="fieldGroup__background"
             />
             {this.props.children}
-        </div>
+        </FieldGroup>
         );
     }
 
@@ -76,71 +67,71 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         this.drawFeedbackX(ctx);
         this.drawFeedbackY(ctx);
     }
-    
-        private drawFeedbackX(ctx: CanvasRenderingContext2D) {
-            let width = this.state.width;
-            let height = this.state.height;
-            let maxVal = 1;
-            let minVal = this.props.xMin === undefined ? -1 : this.props.xMin;
-            let minPos = 0;
-            let maxPos = width;
-            let zeroPos = width * -minVal / (maxVal - minVal);
-    
-            let x;
-            if (this.props.x >= 0) {
-                x = zeroPos + (maxPos - zeroPos) * this.props.x / maxVal;
-            } else {
-                x = zeroPos - (zeroPos - minPos) * this.props.x / minVal;
-            }
-            
-            // faint lines showing center
-            ctx.strokeStyle= '#fff';
-            ctx.globalAlpha = 0.2;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-    
-            ctx.moveTo(zeroPos, 0);
-            ctx.lineTo(zeroPos, height);
-    
-            ctx.stroke();
-    
-    
-            ctx.lineWidth = 2;
-            let vmin = Math.min(width, height);
-            let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
-    
-            // axis line and arrow
-            ctx.globalAlpha = 0.4;
-            ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
-            
-            ctx.beginPath();
-            ctx.moveTo(x, 0);
-            ctx.lineTo(x, height);
-            ctx.stroke();
-    
-            ctx.globalAlpha = 1;
-            ctx.beginPath();
-            ctx.moveTo(x - breadth, 0);
-            ctx.lineTo(x + breadth, 0);
-            ctx.lineTo(x, depth);
-            
-            ctx.moveTo(x - breadth, height);
-            ctx.lineTo(x + breadth, height);
-            ctx.lineTo(x, height - depth);
-    
-            ctx.fill();
-        
-            // tick marks showing the center
-            ctx.strokeStyle= '#fff';
-            ctx.beginPath();
-    
-            ctx.moveTo(zeroPos, 0);
-            ctx.lineTo(zeroPos, depth);
-            ctx.moveTo(zeroPos, height);
-            ctx.lineTo(zeroPos, height - depth);
-    
-            ctx.stroke();
+
+    private drawFeedbackX(ctx: CanvasRenderingContext2D) {
+        let width = this.state.width;
+        let height = this.state.height;
+        let maxVal = 1;
+        let minVal = this.props.xMin === undefined ? -1 : this.props.xMin;
+        let minPos = 0;
+        let maxPos = width;
+        let zeroPos = width * -minVal / (maxVal - minVal);
+
+        let x;
+        if (this.props.x >= 0) {
+            x = zeroPos + (maxPos - zeroPos) * this.props.x / maxVal;
+        } else {
+            x = zeroPos - (zeroPos - minPos) * this.props.x / minVal;
         }
+        
+        // faint lines showing center
+        ctx.strokeStyle= '#fff';
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+
+        ctx.moveTo(zeroPos, 0);
+        ctx.lineTo(zeroPos, height);
+
+        ctx.stroke();
+
+
+        ctx.lineWidth = 2;
+        let vmin = Math.min(width, height);
+        let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+
+        // axis line and arrow
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
+        
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+
+        ctx.globalAlpha = 1;
+        ctx.beginPath();
+        ctx.moveTo(x - breadth, 0);
+        ctx.lineTo(x + breadth, 0);
+        ctx.lineTo(x, depth);
+        
+        ctx.moveTo(x - breadth, height);
+        ctx.lineTo(x + breadth, height);
+        ctx.lineTo(x, height - depth);
+
+        ctx.fill();
+    
+        // tick marks showing the center
+        ctx.strokeStyle= '#fff';
+        ctx.beginPath();
+
+        ctx.moveTo(zeroPos, 0);
+        ctx.lineTo(zeroPos, depth);
+        ctx.moveTo(zeroPos, height);
+        ctx.lineTo(zeroPos, height - depth);
+
+        ctx.stroke();
+    }
 
     private drawFeedbackY(ctx: CanvasRenderingContext2D) {
         if (this.props.y === undefined) {

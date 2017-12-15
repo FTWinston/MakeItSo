@@ -1,4 +1,8 @@
-﻿class CubeFace {
+import { Vector3 } from './Vector3';
+
+type matrix = [number, number, number][];
+
+export class CubeFace {
     public normal: Vector3;
     public vertices: [Vector3, Vector3, Vector3, Vector3];
     constructor(private origNormal: Vector3, private origVertices: [Vector3, Vector3, Vector3, Vector3], public drawSymbol: (ctx: CanvasRenderingContext2D) => void) { }
@@ -11,18 +15,19 @@
 
     public applyTransform(ctx: CanvasRenderingContext2D, size: number) {
         let tl = this.vertices[0], tr = this.vertices[1], br = this.vertices[2];
-        //let oldMatrix = [[-1, 1, 1], [1, 1, -1], [1, 1, 1]];
-        //let inverseOld = CubeFace.getMatrixInverse(oldMatrix);
-        let inverseOld = [[-.5, 0, .5], [.5, .5, 0], [0, -.5, .5]];
+        //let oldMatrix: matrix = [[-1, 1, 1], [1, 1, -1], [1, 1, 1]];
+        //let inverseOld: matrix = CubeFace.getMatrixInverse(oldMatrix);
+        let inverseOld: matrix = [[-.5, 0, .5], [.5, .5, 0], [0, -.5, .5]];
 
-        let newMatrix = [[tl.x, tr.x, br.x], [tl.y, tr.y, br.y]];
+        let newMatrix: matrix = [[tl.x, tr.x, br.x], [tl.y, tr.y, br.y]];
         let transform = CubeFace.matrixMultiply(newMatrix, inverseOld);
 
         ctx.transform(transform[0][0], transform[1][0], transform[0][1], transform[1][1], transform[0][2], transform[1][2]);
     }
-    private static matrixMultiply(matrixA, matrixB) {
+
+    private static matrixMultiply(matrixA: matrix, matrixB: matrix) {
         let n = 2, m = 3, p = 3;
-        let matrixC = [new Array(3), new Array(3)];
+        let matrixC: matrix = [[0, 0, 0], [0, 0, 0]];
 
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < p; j++) {
