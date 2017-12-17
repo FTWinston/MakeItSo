@@ -14,9 +14,7 @@
         flex-wrap: nowrap;
     }
 
-    & * {
-        font-size: calc(1rem + 1vw); // TODO: account for height not fitting, width not fitting in various sizes
-    }
+    font-size: calc(1em + 1vw); // TODO: account for height not fitting, width not fitting in various sizes
 }
 
 .helm--buttonInput__speed {
@@ -30,7 +28,7 @@
     padding: 0.5em;
     z-index: 0;
     
-    width: 15em; // TODO: this could get narrower if needed to help with width
+    width: 15em;
     box-sizing: border-box;
 }
 
@@ -130,11 +128,9 @@
 
 .readout--label {
     font-style: italic;
-    font-size: 1em;
 }
 
 .readout--value {
     font-weight: bold;
-    font-size: 1em;
     color: $colorQuandry;
 }

@@ -422,13 +422,12 @@ $lightBackground: #999;
   align-items: center;
   align-content: space-around;
   align-content: space-evenly;
-  flex-wrap: wrap; }
+  flex-wrap: wrap;
+  font-size: calc(1em + 1vw); }
   @media (orientation: portrait) {
     .helm--buttonInput {
       flex-direction: column;
       flex-wrap: nowrap; } }
-  .helm--buttonInput * {
-    font-size: calc(1rem + 1vw); }
 
 .helm--buttonInput__speed {
   padding: 1em;
@@ -521,12 +520,10 @@ $lightBackground: #999;
   font-size: 0.65em; }
 
 .readout--label {
-  font-style: italic;
-  font-size: 1em; }
+  font-style: italic; }
 
 .readout--value {
   font-weight: bold;
-  font-size: 1em;
   color: #ffce9c; }
 /*
 $disabledColor: #666;
@@ -627,7 +624,7 @@ body {
   user-select: none; }
 
 * {
-  font-size: 1rem;
+  font-size: 1em;
   font-family: Helvetica, Arial, sans-serif; }
 
 .client {
