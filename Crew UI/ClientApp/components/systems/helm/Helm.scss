@@ -13,8 +13,24 @@
         flex-direction: column;
         flex-wrap: nowrap;
     }
+    
+    font-size: 3vw;
+    @include landscape() {        
+        @media (max-height: 58vw) {
+            font-size: 5.1724vh; // 0.03 / 0.58 = 0.051724
 
-    font-size: calc(1em + 1vw); // TODO: account for height not fitting, width not fitting in various sizes
+            & > * {
+                min-width: 34vw; // don't go so small that 3 items fit in one row
+            }
+        }
+    }
+    @include portrait() {
+        font-size: 2.5vh;
+
+        @media (max-width: 40vh) {
+            font-size: 6.25vw; // 0.025 / 0.4 = 0.0625
+        }
+    }
 }
 
 .helm--buttonInput__speed {
