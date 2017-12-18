@@ -450,8 +450,10 @@ $lightBackground: #999;
   border: solid #ffce9c 2px;
   padding: 0.5em;
   z-index: 0;
-  width: 15em;
   box-sizing: border-box; }
+
+.fieldGroup--buttons {
+  width: 15em; }
 
 .fieldGroup--unpadded {
   padding-top: 0;

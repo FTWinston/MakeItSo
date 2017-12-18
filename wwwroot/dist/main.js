@@ -125,14 +125,14 @@ renderApp();
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(14);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["d"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["c"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(11);
 /* unused harmony reexport ButtonSet */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Canvas__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Canvas__ = __webpack_require__(12);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_2__Canvas__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Choice__ = __webpack_require__(24);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_3__Choice__["a"]; });
@@ -140,7 +140,7 @@ renderApp();
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_4__Field__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__ = __webpack_require__(26);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Icons__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Icons__ = __webpack_require__(13);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_6__Icons__["b"]; });
 /* unused harmony reexport renderIcon */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Screen__ = __webpack_require__(27);
@@ -335,7 +335,7 @@ var reducer = function (state, rawAction) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Icons__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Icons__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__buttons_scss__ = __webpack_require__(75);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__buttons_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__buttons_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -429,6 +429,46 @@ var Button = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldGroup; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+
+var FieldGroup = (function (_super) {
+    __extends(FieldGroup, _super);
+    function FieldGroup() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    FieldGroup.prototype.render = function () {
+        var _this = this;
+        var classes = 'fieldGroup';
+        if (this.props.className !== undefined) {
+            classes += ' ' + this.props.className;
+        }
+        var label = this.props.label === undefined ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "fieldGroup__label" }, this.props.label);
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (r) { return _this.root = r; } },
+            label,
+            this.props.children));
+    };
+    return FieldGroup;
+}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return Helm; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
@@ -517,14 +557,14 @@ var mapStateToProps = function (state) {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ButtonSet; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(69);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -582,7 +622,7 @@ var ButtonSet = (function (_super) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -635,7 +675,7 @@ var Canvas = (function (_super) {
 
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -749,7 +789,7 @@ function renderIcon(icon, size) {
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -764,46 +804,6 @@ function renderIcon(icon, size) {
 
 
 
-
-
-
-/***/ }),
-/* 14 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FieldGroup; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = Object.setPrototypeOf ||
-        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-        function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
-    return function (d, b) {
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
-
-var FieldGroup = (function (_super) {
-    __extends(FieldGroup, _super);
-    function FieldGroup() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    FieldGroup.prototype.render = function () {
-        var _this = this;
-        var classes = 'fieldGroup';
-        if (this.props.className !== undefined) {
-            classes += ' ' + this.props.className;
-        }
-        var label = this.props.label === undefined ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "fieldGroup__label" }, this.props.label);
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (r) { return _this.root = r; } },
-            label,
-            this.props.children));
-    };
-    return FieldGroup;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
 
 
 
@@ -1208,7 +1208,7 @@ module.exports = (__webpack_require__(4))(139);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Choice; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(70);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Choice_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -1345,7 +1345,7 @@ var Field = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FlexibleCanvas; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Canvas__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Canvas__ = __webpack_require__(12);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss__ = __webpack_require__(72);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -2606,9 +2606,9 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__general__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__ = __webpack_require__(45);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Helm__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Helm__ = __webpack_require__(10);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2635,7 +2635,7 @@ var ButtonHelm = (function (_super) {
         var iconSize = "1.5em";
         var overallSpeed = __WEBPACK_IMPORTED_MODULE_4__Helm__["b" /* Helm */].magnitude(this.props.translationRateX, this.props.translationRateY, this.props.translationRateForward);
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system helm helm--buttonInput" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__FieldGroup__["a" /* FieldGroup */], { className: "fieldGroup--3x1 fieldGroup--unpadded" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__FieldGroup__["a" /* FieldGroup */], { className: "fieldGroup--buttons fieldGroup--3x1 fieldGroup--unpadded" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "readout" },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "readout--label" }, words.heading),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "readout--value" }, __WEBPACK_IMPORTED_MODULE_4__Helm__["b" /* Helm */].radToDeg(this.props.yaw)),
@@ -2654,11 +2654,11 @@ var ButtonHelm = (function (_super) {
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "readout--value" }, overallSpeed),
                     " ",
                     words.metresPerSecond)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.forwardBackward, x: this.props.translationRateForward / this.props.translationRateForwardMax, xMin: -this.props.translationRateReverseMax / this.props.translationRateForwardMax, className: "fieldGroup--3x1" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.forwardBackward, x: this.props.translationRateForward / this.props.translationRateForwardMax, xMin: -this.props.translationRateReverseMax / this.props.translationRateForwardMax, className: "fieldGroup--buttons fieldGroup--3x1" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { text: words.moveBackward, color: 3 /* Quaternary */, hotkey: "control", pressCommand: "+moveBackward", releaseCommand: "-moveBackward" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { text: words.speedStop, color: 0 /* Primary */, hotkey: "shift", pressCommand: "+forwardBackStop", releaseCommand: "-forwardBackStop" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { text: words.moveForward, color: 3 /* Quaternary */, hotkey: "space", pressCommand: "+moveForward", releaseCommand: "-moveForward" })),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax, className: "fieldGroup--3x3" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax, className: "fieldGroup--buttons fieldGroup--3x3" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__topMid", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].ArrowUp, iconSize: iconSize, title: words.rotateUp, color: 1 /* Secondary */, hotkey: "W", pressCommand: "+pitchUp", releaseCommand: "-pitchUp" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__botMid", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.rotateDown, color: 1 /* Secondary */, hotkey: "X", pressCommand: "+pitchDown", releaseCommand: "-pitchDown" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__midLeft", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].ArrowLeft, iconSize: iconSize, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "A", pressCommand: "+yawLeft", releaseCommand: "-yawLeft" }),
@@ -2666,7 +2666,7 @@ var ButtonHelm = (function (_super) {
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__topLeft", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].RotateCCW, iconSize: iconSize, title: words.rotateLeft, color: 1 /* Secondary */, hotkey: "Q", pressCommand: "+rollLeft", releaseCommand: "-rollLeft" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__topRight", noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].RotateCW, iconSize: iconSize, title: words.rotateRight, color: 1 /* Secondary */, hotkey: "E", pressCommand: "+rollRight", releaseCommand: "-rollRight" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__center", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].X, iconSize: iconSize, title: words.rotateStop, color: 0 /* Primary */, hotkey: "S", pressCommand: "+rotStop", releaseCommand: "-rotStop" })),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.strafe, x: this.props.translationRateX / this.props.translationRateXMax, y: this.props.translationRateY / this.props.translationRateYMax, className: "fieldGroup--3x3" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.strafe, x: this.props.translationRateX / this.props.translationRateXMax, y: this.props.translationRateY / this.props.translationRateYMax, className: "fieldGroup--buttons fieldGroup--3x3" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__topMid", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].ArrowUp, iconSize: iconSize, title: words.strafeUp, color: 2 /* Tertiary */, hotkey: "I", pressCommand: "+strafeUp", releaseCommand: "-strafeUp" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__botMid", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].ArrowDown, iconSize: iconSize, title: words.strafeDown, color: 2 /* Tertiary */, hotkey: ",", pressCommand: "+strafeDown", releaseCommand: "-strafeDown" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* HeldButton */], { className: "fieldGroup--3x3__midLeft", icon: __WEBPACK_IMPORTED_MODULE_1__general__["c" /* Icon */].ArrowLeft, iconSize: iconSize, title: words.strafeLeft, color: 2 /* Tertiary */, hotkey: "J", pressCommand: "+strafeLeft", releaseCommand: "-strafeLeft" }),
@@ -2687,7 +2687,7 @@ var ButtonHelm = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__general__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(9);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2848,7 +2848,8 @@ var FeedbackGroup = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_hammerjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Helm__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Helm__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FieldGroup__ = __webpack_require__(9);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2862,38 +2863,45 @@ var __extends = (this && this.__extends) || (function () {
 
 
 
+
 var TouchHelm = (function (_super) {
     __extends(TouchHelm, _super);
     function TouchHelm() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     TouchHelm.prototype.componentDidMount = function () {
-        if (this.root === null) {
+        if (this.rot === null || this.speed === null) {
             return;
         }
-        this.hammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this.root);
-        var yaw = this.createPan('yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2);
-        var pitch = this.createPan('pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2);
-        var roll = this.createPan('roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, 20);
-        var forward = this.createPan('forward', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -2.25, 20);
-        var lateral = this.createPan('lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5);
-        var vertical = this.createPan('vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3);
+        this.rotHammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this.rot);
+        var yaw = this.createPan(this.rot, 'yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2);
+        var pitch = this.createPan(this.rot, 'pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2);
+        var roll = this.createPan(this.rot, 'roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, 20);
+        var forward = this.createPan(this.rot, 'forward', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -2.25, 20);
+        var lateral = this.createPan(this.rot, 'lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5);
+        var vertical = this.createPan(this.rot, 'vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3);
         yaw.recognizeWith(pitch);
         lateral.recognizeWith(vertical);
         var stop = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Press"]({ event: 'allStop', time: 500 });
-        this.hammer.add(stop);
-        this.hammer.on('allStop', function () {
+        this.rotHammer.add(stop);
+        this.rotHammer.on('allStop', function () {
             //document.getElementById('forward').innerText = 'stop';
         });
+        this.speedHammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this.speed);
+        forward = this.createPan(this.speed, 'forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2);
     };
     TouchHelm.prototype.render = function () {
         var _this = this;
         var words = this.props.text.systems.helm;
         var iconSize = "1.5em";
         var overallSpeed = __WEBPACK_IMPORTED_MODULE_2__Helm__["b" /* Helm */].magnitude(this.props.translationRateX, this.props.translationRateY, this.props.translationRateForward);
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system helm helm--touchInput", ref: function (r) { return _this.root = r; } });
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system helm helm--touchInput" },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FieldGroup__["a" /* FieldGroup */], null,
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { ref: function (r) { return _this.rot = r; } })),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__FieldGroup__["a" /* FieldGroup */], null,
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { ref: function (r) { return _this.speed = r; } })));
     };
-    TouchHelm.prototype.createPan = function (name, pointers, direction, eventScale, threshold) {
+    TouchHelm.prototype.createPan = function (element, name, pointers, direction, eventScale, threshold) {
         if (threshold === void 0) { threshold = undefined; }
         var params = {
             event: name,
@@ -2902,23 +2910,26 @@ var TouchHelm = (function (_super) {
             threshold: threshold,
         };
         var pan = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Pan"](params);
-        this.hammer.add(pan);
+        this.rotHammer.add(pan);
         var panAmount = 0;
-        this.hammer.on(name, direction == __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"] ?
+        this.rotHammer.on(name, direction == __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"] ?
             function (ev) {
-                //panAmount = Math.max(Math.min(ev.deltaX / width * eventScale, 1), -1);
+                panAmount = Math.max(Math.min(ev.deltaX / element.offsetWidth * eventScale, 1), -1);
+                console.log(name, panAmount);
                 //document.getElementById(name).innerText = Math.round(panAmount * 100) / 100;
             } :
             function (ev) {
-                //panAmount = Math.max(Math.min(ev.deltaY / height * eventScale, 1), -1);
+                panAmount = Math.max(Math.min(ev.deltaY / element.offsetHeight * eventScale, 1), -1);
+                console.log(name, panAmount);
                 //document.getElementById(name).innerText = Math.round(panAmount * 100) / 100;
             });
-        this.hammer.on(name + 'end', function (ev) {
+        this.rotHammer.on(name + 'end', function (ev) {
+            console.log(name + ' end');
             panAmount = 0;
             //document.getElementById(name).innerText = panAmount;
         });
-        this.hammer.on(name + 'start', function (ev) {
-            //console.log(name + ' start');
+        this.rotHammer.on(name + 'start', function (ev) {
+            console.log(name + ' start');
             //numActivePans++;
         });
         return pan;
@@ -2933,7 +2944,7 @@ var TouchHelm = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Helm__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Helm__ = __webpack_require__(10);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Helm__["a"]; });
 
 

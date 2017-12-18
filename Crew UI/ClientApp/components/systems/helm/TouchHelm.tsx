@@ -1,45 +1,57 @@
 import * as React from 'react';
 import * as Hammer from 'hammerjs';
 import { Helm, TypedHelmProps } from './Helm';
+import { FieldGroup } from './FieldGroup';
 
 export class TouchHelm extends React.Component<TypedHelmProps, {}> {
-    private root: HTMLDivElement | null;
-    private hammer: Hammer.Manager;
+    private rot: HTMLDivElement | null;
+    private speed: HTMLDivElement | null;
+    private rotHammer: Hammer.Manager;
+    private speedHammer: Hammer.Manager;
 
     componentDidMount() {
-        if (this.root === null) {
+        if (this.rot === null || this.speed === null) {
             return;
         }
-        this.hammer = new Hammer.Manager(this.root);
+        this.rotHammer = new Hammer.Manager(this.rot);
 
-        let yaw = this.createPan('yaw', 1, Hammer.DIRECTION_HORIZONTAL, 2);
-        let pitch = this.createPan('pitch', 1, Hammer.DIRECTION_VERTICAL, 2);
-        let roll = this.createPan('roll', 2, Hammer.DIRECTION_HORIZONTAL, 2.25, 20 );
-        let forward = this.createPan('forward', 2, Hammer.DIRECTION_VERTICAL, -2.25, 20);
-        let lateral = this.createPan('lateral', 3, Hammer.DIRECTION_HORIZONTAL, 5.5);
-        let vertical = this.createPan('vertical', 3, Hammer.DIRECTION_VERTICAL, -3);
+        let yaw = this.createPan(this.rot, 'yaw', 1, Hammer.DIRECTION_HORIZONTAL, 2);
+        let pitch = this.createPan(this.rot, 'pitch', 1, Hammer.DIRECTION_VERTICAL, 2);
+        let roll = this.createPan(this.rot, 'roll', 2, Hammer.DIRECTION_HORIZONTAL, 2.25, 20 );
+        let forward = this.createPan(this.rot, 'forward', 2, Hammer.DIRECTION_VERTICAL, -2.25, 20);
+        let lateral = this.createPan(this.rot, 'lateral', 3, Hammer.DIRECTION_HORIZONTAL, 5.5);
+        let vertical = this.createPan(this.rot, 'vertical', 3, Hammer.DIRECTION_VERTICAL, -3);
         
         yaw.recognizeWith(pitch);
         lateral.recognizeWith(vertical);
 
         let stop = new Hammer.Press({ event: 'allStop', time: 500 });
-        this.hammer.add(stop);
+        this.rotHammer.add(stop);
         
-        this.hammer.on('allStop', function () {
+        this.rotHammer.on('allStop', function () {
             //document.getElementById('forward').innerText = 'stop';
-        })
+        });
+
+
+        this.speedHammer = new Hammer.Manager(this.speed);
+        forward = this.createPan(this.speed, 'forward', 1, Hammer.DIRECTION_VERTICAL, 2);
     }
     render() {
         let words = this.props.text.systems.helm;
         let iconSize = "1.5em";
         let overallSpeed = Helm.magnitude(this.props.translationRateX, this.props.translationRateY, this.props.translationRateForward);
 
-        return <div className="system helm helm--touchInput" ref={r => this.root = r}>
-
+        return <div className="system helm helm--touchInput">
+            <FieldGroup>
+                <div ref={r => this.rot = r} />
+            </FieldGroup>
+            <FieldGroup>
+                <div ref={r => this.speed = r} />
+            </FieldGroup>
         </div>;
     }
     
-    private createPan(name: string, pointers: number, direction: number, eventScale: number, threshold: number | undefined = undefined) {
+    private createPan(element: HTMLDivElement, name: string, pointers: number, direction: number, eventScale: number, threshold: number | undefined = undefined) {
         var params = {
             event: name,
             pointers: pointers,
@@ -48,27 +60,30 @@ export class TouchHelm extends React.Component<TypedHelmProps, {}> {
         };
 
         let pan = new Hammer.Pan(params);
-        this.hammer.add(pan);
+        this.rotHammer.add(pan);
         
         let panAmount = 0;
-        this.hammer.on(name, direction == Hammer.DIRECTION_HORIZONTAL ?
-          (ev: Hammer.Input) => {
-            //panAmount = Math.max(Math.min(ev.deltaX / width * eventScale, 1), -1);
-            //document.getElementById(name).innerText = Math.round(panAmount * 100) / 100;
-          } :
-          (ev: Hammer.Input) => {
-            //panAmount = Math.max(Math.min(ev.deltaY / height * eventScale, 1), -1);
-            //document.getElementById(name).innerText = Math.round(panAmount * 100) / 100;
-          }
+        this.rotHammer.on(name, direction == Hammer.DIRECTION_HORIZONTAL ?
+            (ev: Hammer.Input) => {
+                panAmount = Math.max(Math.min(ev.deltaX / element.offsetWidth * eventScale, 1), -1);
+                console.log(name, panAmount);
+                //document.getElementById(name).innerText = Math.round(panAmount * 100) / 100;
+            } :
+            (ev: Hammer.Input) => {
+                panAmount = Math.max(Math.min(ev.deltaY / element.offsetHeight * eventScale, 1), -1);
+                console.log(name, panAmount);
+                //document.getElementById(name).innerText = Math.round(panAmount * 100) / 100;
+            }
         );
       
-        this.hammer.on(name + 'end', (ev: Hammer.Input) => {
-          panAmount = 0;
-          //document.getElementById(name).innerText = panAmount;
+        this.rotHammer.on(name + 'end', (ev: Hammer.Input) => {
+            console.log(name + ' end');
+            panAmount = 0;
+            //document.getElementById(name).innerText = panAmount;
         });
         
-        this.hammer.on(name + 'start', (ev: Hammer.Input) => {
-            //console.log(name + ' start');
+        this.rotHammer.on(name + 'start', (ev: Hammer.Input) => {
+            console.log(name + ' start');
             //numActivePans++;
         });
         

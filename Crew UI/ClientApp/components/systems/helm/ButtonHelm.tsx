@@ -13,7 +13,7 @@ export class ButtonHelm extends React.Component<TypedHelmProps, {}> {
 
         return <div className="system helm helm--buttonInput">
             <FieldGroup
-                className="fieldGroup--3x1 fieldGroup--unpadded"
+                className="fieldGroup--buttons fieldGroup--3x1 fieldGroup--unpadded"
             >
                 <div className="readout">
                     <div className="readout--label">{words.heading}</div>
@@ -33,7 +33,7 @@ export class ButtonHelm extends React.Component<TypedHelmProps, {}> {
                 label={words.forwardBackward}
                 x={this.props.translationRateForward / this.props.translationRateForwardMax}
                 xMin={-this.props.translationRateReverseMax / this.props.translationRateForwardMax}
-                className="fieldGroup--3x1"
+                className="fieldGroup--buttons fieldGroup--3x1"
             >
                 <HeldButton text={words.moveBackward} color={ButtonColor.Quaternary} hotkey="control" pressCommand="+moveBackward" releaseCommand="-moveBackward" />
                 <HeldButton text={words.speedStop} color={ButtonColor.Primary} hotkey="shift" pressCommand="+forwardBackStop" releaseCommand="-forwardBackStop" />
@@ -44,7 +44,7 @@ export class ButtonHelm extends React.Component<TypedHelmProps, {}> {
                 label={words.rotation}
                 x={this.props.yawRate / this.props.yawRateMax}
                 y={this.props.pitchRate / this.props.pitchRateMax}
-                className="fieldGroup--3x3"
+                className="fieldGroup--buttons fieldGroup--3x3"
             >
                 <HeldButton className="fieldGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="+pitchUp" releaseCommand="-pitchUp" />
                 <HeldButton className="fieldGroup--3x3__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.rotateDown} color={ButtonColor.Secondary} hotkey="X" pressCommand="+pitchDown" releaseCommand="-pitchDown" />
@@ -59,7 +59,7 @@ export class ButtonHelm extends React.Component<TypedHelmProps, {}> {
                 label={words.strafe}
                 x={this.props.translationRateX / this.props.translationRateXMax}
                 y={this.props.translationRateY / this.props.translationRateYMax}
-                className="fieldGroup--3x3"
+                className="fieldGroup--buttons fieldGroup--3x3"
             >
                 <HeldButton className="fieldGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.strafeUp} color={ButtonColor.Tertiary} hotkey="I" pressCommand="+strafeUp" releaseCommand="-strafeUp" />
                 <HeldButton className="fieldGroup--3x3__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.strafeDown} color={ButtonColor.Tertiary} hotkey="," pressCommand="+strafeDown" releaseCommand="-strafeDown" />
