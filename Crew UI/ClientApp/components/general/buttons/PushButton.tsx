@@ -22,7 +22,7 @@ export class PushButton extends React.Component<IPushButtonProps, IPushButtonSta
             classList += ' ' + this.props.className;
         
         return <Button {...this.props} className={classList} mouseClick={e => this.clicked(e)}
-                mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} />;
+                mouseDown={() => this.mouseDown()} mouseUp={() => this.mouseUp()} />;
     }
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {
         if (this.props.clicked !== undefined)
@@ -31,10 +31,10 @@ export class PushButton extends React.Component<IPushButtonProps, IPushButtonSta
         if (this.props.command !== undefined)
             connection.send(this.props.command);
     }
-    private mouseDown(e: React.MouseEvent<HTMLButtonElement>) {
+    private mouseDown() {
         this.setState({held: true});
     }
-    private mouseUp(e: React.MouseEvent<HTMLButtonElement>) {
+    private mouseUp() {
         this.setState({held: false});
     }
 }

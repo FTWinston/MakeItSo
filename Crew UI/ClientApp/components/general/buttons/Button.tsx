@@ -27,10 +27,10 @@ export interface IBaseButtonProps {
 
 interface IButtonProps extends IBaseButtonProps {
     buttonType?: string;
-    mouseLeave?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
-    mouseEnter?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
-    mouseDown?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
-    mouseUp?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
+    mouseLeave?: () => void;
+    mouseEnter?: () => void;
+    mouseDown?: () => void;
+    mouseUp?: () => void;
     mouseClick?: React.EventHandler<React.MouseEvent<HTMLButtonElement>>;
 }
 
@@ -87,6 +87,8 @@ export class Button extends React.Component<IButtonProps, {}> {
             onMouseDown={this.props.disabled ? undefined : this.props.mouseDown}
             onMouseUp={this.props.disabled ? undefined : this.props.mouseUp}
             onMouseLeave={this.props.disabled ? undefined : this.props.mouseLeave}
+            onTouchStart={this.props.disabled ? undefined : this.props.mouseDown}
+            onTouchEnd={this.props.disabled ? undefined : this.props.mouseUp}
             onClick={this.props.disabled ? undefined : this.props.mouseClick}
             data-hotkey={this.props.hotkey} type={this.props.buttonType}
             title={this.props.title}>
@@ -98,12 +100,12 @@ export class Button extends React.Component<IButtonProps, {}> {
 
     keyDown(e: any) {
         if (this.props.mouseDown !== undefined)
-            this.props.mouseDown(e);
+            this.props.mouseDown();
     }
 
     keyUp(e: any) {
         if (this.props.mouseUp !== undefined)
-            this.props.mouseUp(e);
+            this.props.mouseUp();
     }
 
     keyPress(e: any) {

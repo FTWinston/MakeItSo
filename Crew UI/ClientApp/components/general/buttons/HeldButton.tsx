@@ -24,9 +24,9 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
         
-        return <Button {...this.props} className={classList} mouseDown={e => this.mouseDown(e)} mouseUp={e => this.mouseUp(e)} />;
+        return <Button {...this.props} className={classList} mouseDown={() => this.mouseDown()} mouseUp={() => this.mouseUp()} />;
     }
-    private mouseDown(e: React.MouseEvent<HTMLButtonElement>) {
+    private mouseDown() {
         this.setState({held: true});
 
         if (this.props.pressed != undefined)
@@ -35,7 +35,7 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
         if (this.props.pressCommand !== undefined)
             connection.send(this.props.pressCommand);
     }
-    private mouseUp(e: React.MouseEvent<HTMLButtonElement>) {
+    private mouseUp() {
         if (!this.state.held)
             return;
 

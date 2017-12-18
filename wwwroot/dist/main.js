@@ -397,18 +397,18 @@ var Button = (function (_super) {
         var icon = this.props.icon === undefined ? undefined : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_2__Icons__["a" /* renderIcon */])(this.props.icon, this.props.iconSize);
         var text = this.props.text === undefined ? undefined : this.props.text;
         var subtext = this.props.subtext === undefined ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "button__subtext" }, this.props.subtext);
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("button", { className: this.determineClasses(), disabled: this.props.disabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("button", { className: this.determineClasses(), disabled: this.props.disabled, onMouseDown: this.props.disabled ? undefined : this.props.mouseDown, onMouseUp: this.props.disabled ? undefined : this.props.mouseUp, onMouseLeave: this.props.disabled ? undefined : this.props.mouseLeave, onTouchStart: this.props.disabled ? undefined : this.props.mouseDown, onTouchEnd: this.props.disabled ? undefined : this.props.mouseUp, onClick: this.props.disabled ? undefined : this.props.mouseClick, "data-hotkey": this.props.hotkey, type: this.props.buttonType, title: this.props.title },
             icon,
             text,
             subtext);
     };
     Button.prototype.keyDown = function (e) {
         if (this.props.mouseDown !== undefined)
-            this.props.mouseDown(e);
+            this.props.mouseDown();
     };
     Button.prototype.keyUp = function (e) {
         if (this.props.mouseUp !== undefined)
-            this.props.mouseUp(e);
+            this.props.mouseUp();
     };
     Button.prototype.keyPress = function (e) {
         if (this.props.mouseClick !== undefined)
@@ -1639,16 +1639,16 @@ var HeldButton = (function (_super) {
         var classList = this.state.held ? 'button--held state--active' : 'button--held';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], __assign({}, this.props, { className: classList, mouseDown: function (e) { return _this.mouseDown(e); }, mouseUp: function (e) { return _this.mouseUp(e); } }));
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], __assign({}, this.props, { className: classList, mouseDown: function () { return _this.mouseDown(); }, mouseUp: function () { return _this.mouseUp(); } }));
     };
-    HeldButton.prototype.mouseDown = function (e) {
+    HeldButton.prototype.mouseDown = function () {
         this.setState({ held: true });
         if (this.props.pressed != undefined)
             this.props.pressed();
         if (this.props.pressCommand !== undefined)
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send(this.props.pressCommand);
     };
-    HeldButton.prototype.mouseUp = function (e) {
+    HeldButton.prototype.mouseUp = function () {
         if (!this.state.held)
             return;
         this.setState({ held: false });
@@ -1705,7 +1705,7 @@ var PushButton = (function (_super) {
         var classList = this.state.held ? 'button--push state--active' : 'button--push';
         if (this.props.className !== undefined)
             classList += ' ' + this.props.className;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], __assign({}, this.props, { className: classList, mouseClick: function (e) { return _this.clicked(e); }, mouseDown: function (e) { return _this.mouseDown(e); }, mouseUp: function (e) { return _this.mouseUp(e); } }));
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Button__["a" /* Button */], __assign({}, this.props, { className: classList, mouseClick: function (e) { return _this.clicked(e); }, mouseDown: function () { return _this.mouseDown(); }, mouseUp: function () { return _this.mouseUp(); } }));
     };
     PushButton.prototype.clicked = function (e) {
         if (this.props.clicked !== undefined)
@@ -1713,10 +1713,10 @@ var PushButton = (function (_super) {
         if (this.props.command !== undefined)
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send(this.props.command);
     };
-    PushButton.prototype.mouseDown = function (e) {
+    PushButton.prototype.mouseDown = function () {
         this.setState({ held: true });
     };
-    PushButton.prototype.mouseUp = function (e) {
+    PushButton.prototype.mouseUp = function () {
         this.setState({ held: false });
     };
     return PushButton;
@@ -1775,8 +1775,10 @@ var ToggleButton = (function (_super) {
     };
     ToggleButton.prototype.clicked = function (e) {
         if (this.state.active) {
-            if (this.props.allowUserDeactivate === false)
+            if (this.props.allowUserDeactivate === false) {
+                e.preventDefault();
                 return; // in a choice, don't deactivate a button by clicking on it
+            }
             if (this.props.deactivated != undefined)
                 this.props.deactivated();
             if (this.props.deactivateCommand !== undefined)

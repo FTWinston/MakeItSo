@@ -41,8 +41,10 @@ export class ToggleButton extends React.Component<IToggleButtonProps, IToggleBut
     }
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {
         if (this.state.active) {
-            if (this.props.allowUserDeactivate === false)
+            if (this.props.allowUserDeactivate === false) {
+                e.preventDefault();
                 return; // in a choice, don't deactivate a button by clicking on it
+            }
 
             if (this.props.deactivated != undefined)
                this.props.deactivated();
