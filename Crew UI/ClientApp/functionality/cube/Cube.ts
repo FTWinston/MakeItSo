@@ -37,13 +37,17 @@ export class Cube {
     private static towardsCamera = new Vector3(0, 0, 1);
     
     public draw(ctx: CanvasRenderingContext2D, radius: number, pitch: number, yaw: number, roll: number) {
+        pitch = -pitch;
+        yaw = -yaw;
+        roll = -roll;
+        
         for (let face of this.faces) {
             face.reset();
 
             let dot = face.normal
                 .rotateX(pitch)
-                .rotateZ(yaw)
                 .rotateY(roll)
+                .rotateZ(yaw)
                 .dot(Cube.towardsCamera);
 
             if (dot <= 0)
@@ -54,8 +58,8 @@ export class Cube {
             let point = face.vertices[faceVertex]
                 .scale(radius)
                 .rotateX(pitch)
-                .rotateZ(yaw)
-                .rotateY(roll);
+                .rotateY(roll)
+                .rotateZ(yaw);
 
             ctx.moveTo(point.x, point.y);
 
@@ -63,8 +67,8 @@ export class Cube {
                 let point = face.vertices[faceVertex]
                     .scale(radius)
                     .rotateX(pitch)
-                    .rotateZ(yaw)
-                    .rotateY(roll);
+                    .rotateY(roll)
+                    .rotateZ(yaw);
 
                 ctx.lineTo(point.x, point.y);
             }

@@ -532,13 +532,13 @@ var Helm = (function (_super) {
         ctx.clearRect(0, 0, width, height);
         ctx.translate(halfWidth, halfHeight);
         ctx.fillStyle = '#0c0';
-        orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, -this.props.roll);
+        orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, this.props.roll);
         ctx.translate(-halfWidth, -halfHeight);
     };
     Helm.radToDeg = function (val) {
-        val = Math.round((val + Math.PI) * 180 / Math.PI);
-        if (val >= 360) {
-            val -= 360;
+        val = Math.round(val * 180 / Math.PI);
+        if (val < 0) {
+            val += 360;
         }
         return val;
     };
@@ -839,13 +839,16 @@ var Cube = (function () {
         ];
     }
     Cube.prototype.draw = function (ctx, radius, pitch, yaw, roll) {
+        pitch = -pitch;
+        yaw = -yaw;
+        roll = -roll;
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
             var face = _a[_i];
             face.reset();
             var dot = face.normal
                 .rotateX(pitch)
-                .rotateZ(yaw)
                 .rotateY(roll)
+                .rotateZ(yaw)
                 .dot(Cube.towardsCamera);
             if (dot <= 0)
                 continue; // only draw faces visible from the camera
@@ -854,15 +857,15 @@ var Cube = (function () {
             var point = face.vertices[faceVertex]
                 .scale(radius)
                 .rotateX(pitch)
-                .rotateZ(yaw)
-                .rotateY(roll);
+                .rotateY(roll)
+                .rotateZ(yaw);
             ctx.moveTo(point.x, point.y);
             for (faceVertex++; faceVertex < 4; faceVertex++) {
                 var point_1 = face.vertices[faceVertex]
                     .scale(radius)
                     .rotateX(pitch)
-                    .rotateZ(yaw)
-                    .rotateY(roll);
+                    .rotateY(roll)
+                    .rotateZ(yaw);
                 ctx.lineTo(point_1.x, point_1.y);
             }
             ctx.closePath();
