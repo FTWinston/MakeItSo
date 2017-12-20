@@ -6,6 +6,8 @@
  * 
  */
 
+struct FQuat;
+
 //UCLASS()
 class MAKEITSO_API UHelmSystem : public UCrewSystem
 {
@@ -28,7 +30,7 @@ private:
 	bool stopRotation, stopStrafing, stopForwardBack;
 
 	// TODO: these values should presumably not be stored separately here, and instead the physical ship object should be used
-	float pitch, yaw, roll;
+	FQuat orientation;
 	float pitchRate, yawRate, rollRate;
 	float pitchRateMax, yawRateMax, rollRateMax;
 

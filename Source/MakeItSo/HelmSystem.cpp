@@ -263,7 +263,8 @@ void UHelmSystem::ResetData()
 	moveForward = moveBackward = strafeLeft = strafeRight = strafeUp = strafeDown = false;
 	stopRotation = stopStrafing = stopForwardBack = false;
 
-	pitch = yaw = roll = 0;
+	orientation.W = 1;
+	orientation.X = orientation.Y = orientation.Z = 0;
 	pitchRate = yawRate = rollRate = 0;
 	pitchRateMax = yawRateMax = rollRateMax = PI / 2;
 
@@ -281,8 +282,8 @@ void UHelmSystem::SendAllData()
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_speed_limits %.4f %.4f",
 		forwardMoveRateMax, backwardMoveRateMax);
 	
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.4f %.4f %.4f",
-		pitch, yaw, roll);
+	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.4f %.4f %.4f %.4f",
+		orientation.W, orientation.X, orientation.Y, orientation.Z);
 
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
 		pitchRate, yawRate, rollRate);
@@ -316,33 +317,38 @@ void UHelmSystem::Tick(float DeltaSeconds)
 		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
 			pitchRate, yawRate, rollRate);
 	}
+	
+	// update orientation
+	bool orientationChanged = false;
 
-	// update angles
-	float oldPitch = pitch, oldYaw = yaw, oldRoll = roll;
-
-	pitch += pitchRate * DeltaSeconds;
-	if (pitch > PI)
-		pitch -= PI * 2;
-	else if (pitch < -PI)
-		pitch += PI * 2;
-
-	yaw += yawRate * DeltaSeconds;
-	if (yaw > PI)
-		yaw -= PI * 2;
-	else if (yaw < -PI)
-		yaw += PI * 2;
-
-	roll += rollRate * DeltaSeconds;
-	if (roll > PI)
-		roll -= PI * 2;
-	else if (roll < -PI)
-		roll += PI * 2;
-
-	bool rotationChanged = oldPitch != pitch || oldYaw != yaw || oldRoll != roll;
-	if (rotationChanged)
+	if (yawRate != 0.f)
 	{
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.4f %.4f %.4f",
-			pitch, yaw, roll);
+		orientationChanged = true;
+		float amount = yawRate * DeltaSeconds / 2.f;
+		FQuat rotation = FQuat(FMath::Cos(amount), 0, FMath::Sin(amount), 0);
+		orientation = orientation * rotation;
+	}
+
+	if (pitchRate != 0.f)
+	{
+		orientationChanged = true;
+		float amount = pitchRate * DeltaSeconds / 2.f;
+		FQuat rotation = FQuat(FMath::Cos(amount), 0, 0, FMath::Sin(amount));
+		orientation = orientation * rotation;
+	}
+
+	if (rollRate != 0.f)
+	{
+		orientationChanged = true;
+		float amount = rollRate * DeltaSeconds / 2.f;
+		FQuat rotation = FQuat(FMath::Cos(amount), FMath::Sin(amount), 0, 0);
+		orientation = orientation * rotation;
+	}
+	
+	if (orientationChanged)
+	{
+		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.4f %.4f %.4f %.4f",
+			orientation.W, orientation.X, orientation.Y, orientation.Z);
 	}
 
 	// update strafing and movement rates

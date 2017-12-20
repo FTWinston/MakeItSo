@@ -6,6 +6,7 @@ import { HelmState as HelmBaseProps } from '../../../store/Helm';
 import { ButtonHelm } from './ButtonHelm';
 import { TouchHelm } from './TouchHelm';
 import './Helm.scss';
+import { Quaternion } from 'ClientApp/functionality/Quaternion';
 
 interface HelmProps extends HelmBaseProps {
     text: TextLocalisation;
@@ -52,7 +53,7 @@ export class Helm extends React.Component<HelmProps, {}> {
         ctx.clearRect(0, 0, width, height);
         ctx.translate(halfWidth, halfHeight);
         ctx.fillStyle = '#0c0';
-        orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, this.props.roll);
+        orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.orientation);
         ctx.translate(-halfWidth, -halfHeight);
     }
 

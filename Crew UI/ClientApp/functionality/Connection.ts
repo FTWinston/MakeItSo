@@ -109,10 +109,11 @@ export class Connection {
             }
             case 'helm_orientation': {
                 let vals = data.split(' ');
-                let pitch = parseFloat(vals[0]);
-                let yaw = parseFloat(vals[1]);
-                let roll = parseFloat(vals[2]);
-                store.dispatch(helmActions.setOrientation(pitch, yaw, roll));
+                let w = parseFloat(vals[0]);
+                let x = parseFloat(vals[1]);
+                let y = parseFloat(vals[2]);
+                let z = parseFloat(vals[3]);
+                store.dispatch(helmActions.setOrientation(w, x, y, z));
                 break;
             }
             case 'helm_rotation_rates': {

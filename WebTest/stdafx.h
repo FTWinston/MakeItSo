@@ -13,6 +13,7 @@
 #include <queue>
 #include <string>
 #include <map>
+#include <math.h>
 #include <algorithm>
 
 #define MAKEITSO_API 
@@ -49,5 +50,27 @@ public:
 	}
 	static float Max(float min, float max) {
 		return std::max(min, max);
+	}
+
+	static float Sin(float val) { return sin(val); }
+	static float Cos(float val) { return cos(val); }
+	static float Tan(float val) { return tan(val); }
+};
+
+struct FQuat {
+public:
+	FQuat() {}
+	FQuat(float x, float y, float z, float w) { W = w; X = x; Y = y; Z = z; }
+	float W, X, Y, Z;
+
+	FQuat operator*(const FQuat& Q) const {
+		FQuat result;
+
+		result.W = this->W * Q.W - this->X * Q.X - this->Y * Q.Y - this->Z * Q.Z;
+		result.X = this->W * Q.W - this->X * Q.X - this->Y * Q.Y - this->Z * Q.Z;
+		result.Y = result.Y = this->W * Q.X + this->X * Q.W + this->Y * Q.Z - this->Z * Q.Y;
+		result.Z = this->W * Q.Y - this->X * Q.Z + this->Y * Q.W + this->Z * Q.X;
+
+		return result;
 	}
 };

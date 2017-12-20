@@ -1,5 +1,6 @@
-import { Vector3 } from './Vector3';
+import { Vector3 } from '../Vector3';
 import { CubeFace } from './CubeFace';
+import { Quaternion } from '../Quaternion';
 
 type faceDrawer = (ctx: CanvasRenderingContext2D) => void;
 
@@ -36,39 +37,30 @@ export class Cube {
 
     private static towardsCamera = new Vector3(0, 0, 1);
     
-    public draw(ctx: CanvasRenderingContext2D, radius: number, pitch: number, yaw: number, roll: number) {
-        pitch = -pitch;
-        yaw = -yaw;
-        roll = -roll;
-        
+    public draw(ctx: CanvasRenderingContext2D, radius: number, rotation: Quaternion) {
         for (let face of this.faces) {
             face.reset();
 
-            let dot = face.normal
-                .rotateX(pitch)
-                .rotateY(roll)
-                .rotateZ(yaw)
+            let dot = rotation
+                .rotate(face.normal)
                 .dot(Cube.towardsCamera);
 
             if (dot <= 0)
                 continue; // only draw faces visible from the camera
+            
             ctx.beginPath();
 
             let faceVertex = 0;
-            let point = face.vertices[faceVertex]
-                .scale(radius)
-                .rotateX(pitch)
-                .rotateY(roll)
-                .rotateZ(yaw);
+            let point = rotation
+                .rotate(face.vertices[faceVertex])
+                .scale(radius);
 
             ctx.moveTo(point.x, point.y);
 
             for (faceVertex++; faceVertex < 4; faceVertex++) {
-                let point = face.vertices[faceVertex]
-                    .scale(radius)
-                    .rotateX(pitch)
-                    .rotateY(roll)
-                    .rotateZ(yaw);
+                let point = rotation
+                    .rotate(face.vertices[faceVertex])
+                    .scale(radius);
 
                 ctx.lineTo(point.x, point.y);
             }
