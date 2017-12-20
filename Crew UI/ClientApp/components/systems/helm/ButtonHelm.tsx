@@ -17,8 +17,8 @@ export class ButtonHelm extends React.Component<TypedHelmProps, {}> {
             >
                 <div className="readout">
                     <div className="readout--label">{words.heading}</div>
-                    <span className="readout--value">{Helm.radToDeg(this.props.orientation.getYaw())}</span>&nbsp;{words.mark}&nbsp;<span className="readout--value">{Helm.radToDeg(this.props.orientation.getPitch())}</span>
-                    <div className="readout__smaller">{words.roll}&nbsp;<span className="readout--value">{Helm.radToDeg(this.props.orientation.getRoll())}</span>&deg;</div>
+                    <span className="readout--value">{Helm.clamp(this.props.yaw)}</span>&nbsp;{words.mark}&nbsp;<span className="readout--value">{Helm.clamp(this.props.pitch)}</span>
+                    <div className="readout__smaller">{words.roll}&nbsp;<span className="readout--value">{Helm.clamp(this.props.roll)}</span>&deg;</div>
                 </div>
 
                 <FlexibleCanvas draw={(ctx, w, h) => this.props.drawOrientation(ctx, w, h)} />

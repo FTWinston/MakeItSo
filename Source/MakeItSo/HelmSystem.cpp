@@ -258,7 +258,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 
 void UHelmSystem::ResetData()
 {
-	rotationAccel = PI / 8; strafeAccel = 50; forwardAccelMax = 500;
+	rotationAccel = 22.5f; strafeAccel = 50; forwardAccelMax = 500;
 	pitchDown = pitchUp = yawLeft = yawRight = rollLeft = rollRight = false;
 	moveForward = moveBackward = strafeLeft = strafeRight = strafeUp = strafeDown = false;
 	stopRotation = stopStrafing = stopForwardBack = false;
@@ -266,7 +266,9 @@ void UHelmSystem::ResetData()
 	orientation.W = 1;
 	orientation.X = orientation.Y = orientation.Z = 0;
 	pitchRate = yawRate = rollRate = 0;
-	pitchRateMax = yawRateMax = rollRateMax = PI / 2;
+	pitchRateMax = yawRateMax = rollRateMax = 90.f;
+	
+	yawRate = 5.f; // TEMP TEST
 
 	sideMoveRate = verticalMoveRate = forwardMoveRate = 0;
 	sideMoveRateMax = verticalMoveRateMax = 500;
@@ -282,8 +284,9 @@ void UHelmSystem::SendAllData()
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_speed_limits %.4f %.4f",
 		forwardMoveRateMax, backwardMoveRateMax);
 	
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.4f %.4f %.4f %.4f",
-		orientation.W, orientation.X, orientation.Y, orientation.Z);
+	FRotator rotResult = orientation.Rotator();
+	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
+		rotResult.Pitch, rotResult.Yaw, rotResult.Roll);
 
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
 		pitchRate, yawRate, rollRate);
@@ -319,36 +322,16 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	}
 	
 	// update orientation
-	bool orientationChanged = false;
+	if (yawRate != 0.f || pitchRate != 0.f || rollRate != 0.f)
+	{
+		FRotator rotDelta = FRotator(pitchRate * DeltaSeconds, yawRate * DeltaSeconds, rollRate * DeltaSeconds);
 
-	if (yawRate != 0.f)
-	{
-		orientationChanged = true;
-		float amount = yawRate * DeltaSeconds / 2.f;
-		FQuat rotation = FQuat(FMath::Cos(amount), 0, FMath::Sin(amount), 0);
-		orientation = orientation * rotation;
-	}
+		orientation = orientation * rotDelta.Quaternion();
 
-	if (pitchRate != 0.f)
-	{
-		orientationChanged = true;
-		float amount = pitchRate * DeltaSeconds / 2.f;
-		FQuat rotation = FQuat(FMath::Cos(amount), 0, 0, FMath::Sin(amount));
-		orientation = orientation * rotation;
-	}
+		FRotator rotResult = orientation.Rotator();
 
-	if (rollRate != 0.f)
-	{
-		orientationChanged = true;
-		float amount = rollRate * DeltaSeconds / 2.f;
-		FQuat rotation = FQuat(FMath::Cos(amount), FMath::Sin(amount), 0, 0);
-		orientation = orientation * rotation;
-	}
-	
-	if (orientationChanged)
-	{
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.4f %.4f %.4f %.4f",
-			orientation.W, orientation.X, orientation.Y, orientation.Z);
+		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
+			rotResult.Pitch, rotResult.Yaw, rotResult.Roll);
 	}
 
 	// update strafing and movement rates

@@ -1,11 +1,13 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-import { Quaternion } from '../functionality';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface HelmState {
-    orientation: Quaternion;
+    // navball info
+    pitch: number;
+    yaw: number;
+    roll: number;
 
     // rotation feedback info
     pitchRate: number;
@@ -48,14 +50,13 @@ interface SetSpeedLimitsAction {
 
 interface SetOrientationAction {
     type: 'SET_ORIENTATION';
-    w: number;
-    x: number;
-    y: number;
-    z: number;
+    pitch: number;
+    yaw: number;
+    roll: number;
 }
 
-interface SetRotationRatesAction {
-    type: 'SET_ROTATION_RATES';
+interface SetOrientationRatesAction {
+    type: 'SET_ORIENTATION_RATES';
     pitchRate: number;
     yawRate: number;
     rollRate: number;
@@ -70,7 +71,7 @@ interface SetTranslationRatesAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetManoeveringLimitsAction | SetSpeedLimitsAction | SetOrientationAction | SetRotationRatesAction | SetTranslationRatesAction;
+type KnownAction = SetManoeveringLimitsAction | SetSpeedLimitsAction | SetOrientationAction | SetOrientationRatesAction | SetTranslationRatesAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -90,15 +91,14 @@ export const actionCreators = {
         speedMax: speedMax,
         speedMaxReverse: speedMaxReverse,
     },
-    setOrientation: (w: number, x: number, y: number, z: number) => <SetOrientationAction>{
+    setOrientation: (pitch: number, yaw: number, roll: number) => <SetOrientationAction>{
         type: 'SET_ORIENTATION',
-        w: w,
-        x: x,
-        y: y,
-        z: z,
+        pitch: pitch,
+        yaw: yaw,
+        roll: roll,
     },
-    setRotationRates: (pitch: number, yaw: number, roll: number) => <SetRotationRatesAction>{
-        type: 'SET_ROTATION_RATES',
+    setRotationRates: (pitch: number, yaw: number, roll: number) => <SetOrientationRatesAction>{
+        type: 'SET_ORIENTATION_RATES',
         pitchRate: pitch,
         yawRate: yaw,
         rollRate: roll,
@@ -115,7 +115,9 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: HelmState = {
-    orientation: new Quaternion(0, 0, 0, 0),
+    pitch: 0,
+    yaw: 0,
+    roll: 0,
     pitchRate: 0,
     yawRate: 0,
     rollRate: 0,
@@ -152,9 +154,11 @@ export const reducer: Reducer<HelmState> = (state: HelmState, rawAction: Action)
         case 'SET_ORIENTATION':
             return {
                 ...state,
-                orientation: new Quaternion(action.w, action.x, action.y, action.z),
+                pitch: action.pitch,
+                yaw: action.yaw,
+                roll: action.roll,
             };
-        case 'SET_ROTATION_RATES':
+        case 'SET_ORIENTATION_RATES':
             return {
                 ...state,
                 pitchRate: action.pitchRate,
