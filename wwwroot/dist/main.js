@@ -909,8 +909,8 @@ var Cube = (function () {
             var face = _a[_i];
             face.reset();
             var dot = face.normal
-                .rotateX(pitch)
                 .rotateY(roll)
+                .rotateX(pitch)
                 .rotateZ(yaw)
                 .dot(Cube.towardsCamera);
             if (dot <= 0)
@@ -919,15 +919,15 @@ var Cube = (function () {
             var faceVertex = 0;
             var point = face.vertices[faceVertex]
                 .scale(radius)
-                .rotateX(pitch)
                 .rotateY(roll)
+                .rotateX(pitch)
                 .rotateZ(yaw);
             ctx.moveTo(point.x, point.y);
             for (faceVertex++; faceVertex < 4; faceVertex++) {
                 var point_1 = face.vertices[faceVertex]
                     .scale(radius)
-                    .rotateX(pitch)
                     .rotateY(roll)
+                    .rotateX(pitch)
                     .rotateZ(yaw);
                 ctx.lineTo(point_1.x, point_1.y);
             }

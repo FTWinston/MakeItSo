@@ -46,8 +46,8 @@ export class Cube {
             face.reset();
 
             let dot = face.normal
-                .rotateX(pitch)
                 .rotateY(roll)
+                .rotateX(pitch)
                 .rotateZ(yaw)
                 .dot(Cube.towardsCamera);
 
@@ -58,8 +58,8 @@ export class Cube {
             let faceVertex = 0;
             let point = face.vertices[faceVertex]
                 .scale(radius)
-                .rotateX(pitch)
                 .rotateY(roll)
+                .rotateX(pitch)
                 .rotateZ(yaw);
 
             ctx.moveTo(point.x, point.y);
@@ -67,8 +67,8 @@ export class Cube {
             for (faceVertex++; faceVertex < 4; faceVertex++) {
                 let point = face.vertices[faceVertex]
                     .scale(radius)
-                    .rotateX(pitch)
                     .rotateY(roll)
+                    .rotateX(pitch)
                     .rotateZ(yaw);
 
                 ctx.lineTo(point.x, point.y);

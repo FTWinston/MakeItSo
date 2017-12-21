@@ -324,10 +324,12 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	// update orientation
 	if (yawRate != 0.f || pitchRate != 0.f || rollRate != 0.f)
 	{
-		FRotator rotDelta = FRotator(pitchRate * DeltaSeconds, yawRate * DeltaSeconds, rollRate * DeltaSeconds);
-
-		orientation = orientation * rotDelta.Quaternion();
-
+		FQuat pitch = FRotator(pitchRate * DeltaSeconds, 0, 0).Quaternion();
+		FQuat yaw = FRotator(0, yawRate * DeltaSeconds, 0).Quaternion();
+		FQuat roll = FRotator(0, 0, rollRate * DeltaSeconds).Quaternion();
+		
+		orientation = roll * pitch * orientation * yaw;
+		
 		FRotator rotResult = orientation.Rotator();
 
 		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
