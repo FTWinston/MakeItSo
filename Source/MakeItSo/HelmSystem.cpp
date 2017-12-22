@@ -329,6 +329,7 @@ void UHelmSystem::Tick(float DeltaSeconds)
 		FQuat roll = FRotator(0, 0, rollRate * DeltaSeconds).Quaternion();
 		
 		orientation = roll * pitch * orientation * yaw;
+		orientation.Normalize();
 		
 		FRotator rotResult = orientation.Rotator();
 

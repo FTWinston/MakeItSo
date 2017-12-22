@@ -105,6 +105,16 @@ public:
 		float p = ((((-2.6051615e-07f * y2 + 2.4760495e-05f) * y2 - 0.0013888378f) * y2 + 0.041666638f) * y2 - 0.5f) * y2 + 1.0f;
 		*ScalarCos = sign * p;
 	}
+
+	static float InvSqrt(float x)
+	{
+		float xhalf = 0.5f*x;
+		int i = *(int*)&x;
+		i = 0x5f3759df - (i >> 1);
+		x = *(float*)&i;
+		x = x*(1.5f - xhalf*x*x);
+		return x;
+	}
 };
 
 struct FRotator;
@@ -124,6 +134,26 @@ public:
 		result.Z = this->Z * Q.W + this->Y * Q.X - this->X * Q.Y + this->W * Q.Z;
 
 		return result;
+	}
+
+	void Normalize()
+	{
+		const float SquareSum = X * X + Y * Y + Z * Z + W * W;
+
+		if (SquareSum >= 0.000001f)
+		{
+			const float Scale = FMath::InvSqrt(SquareSum);
+
+			X *= Scale;
+			Y *= Scale;
+			Z *= Scale;
+			W *= Scale;
+		}
+		else
+		{
+			W = 1;
+			X = Y = Z = 0;
+		}
 	}
 
 	FRotator Rotator() const;
