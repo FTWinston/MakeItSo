@@ -126,7 +126,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 		int32 iRoll = ExtractInt(msg, sizeof("roll "));
 		float roll = iRoll / 100.f;
 #ifndef WEB_SERVER_TEST
-		crewManager->InputAxis(EKeys::Gamepad_LeftZ, roll);
+		crewManager->InputAxis(EKeys::Gamepad_LeftTriggerAxis, roll); // TODO: better axis needed
 #endif
 	}
 	else if (MATCHES(msg, "+moveForward"))
@@ -134,48 +134,48 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 		moveForward = true;
 #ifndef WEB_SERVER_TEST
 		// TODO: set speed usefully
-		crewManager->InputKey(EKeys::1, true);
-		crewManager->InputKey(EKeys::1, false);
+		crewManager->InputKey(EKeys::One, true);
+		crewManager->InputKey(EKeys::One, false);
 #endif
 	}
 	else if (MATCHES(msg, "-moveForward"))
 	{
 		moveForward = false;
 #ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::2, true);
-		crewManager->InputKey(EKeys::2, false);
+		crewManager->InputKey(EKeys::Two, true);
+		crewManager->InputKey(EKeys::Two, false);
 #endif
 	}
 	else if (MATCHES(msg, "+moveBackward"))
 	{
 		moveBackward = true;
 #ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::3, true);
-		crewManager->InputKey(EKeys::3, false);
+		crewManager->InputKey(EKeys::Three, true);
+		crewManager->InputKey(EKeys::Three, false);
 #endif
 	}
 	else if (MATCHES(msg, "-moveBackward"))
 	{
 		moveBackward = false;
 #ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::4, true);
-		crewManager->InputKey(EKeys::4, false);
+		crewManager->InputKey(EKeys::Four, true);
+		crewManager->InputKey(EKeys::Four, false);
 #endif
 	}
 	else if (MATCHES(msg, "+forwardBackStop"))
 	{
 		stopForwardBack = true;
 #ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::5, true);
-		crewManager->InputKey(EKeys::5, false);
+		crewManager->InputKey(EKeys::Five, true);
+		crewManager->InputKey(EKeys::Five, false);
 #endif
 	}
 	else if (MATCHES(msg, "-forwardBackStop"))
 	{
 		stopForwardBack = false;
 #ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::6, true);
-		crewManager->InputKey(EKeys::6, false);
+		crewManager->InputKey(EKeys::Six, true);
+		crewManager->InputKey(EKeys::Six, false);
 #endif
 	}
 	else if (MATCHES(msg, "+strafeLeft"))
@@ -381,9 +381,9 @@ void UHelmSystem::Tick(float DeltaSeconds)
 float UHelmSystem::TowardsZero(float value, float maxAdjustment)
 {
 	if (value > 0)
-		return FMath::Max(0, value - maxAdjustment);
+		return FMath::Max(0.f, value - maxAdjustment);
 	else
-		return FMath::Min(0, value + maxAdjustment);
+		return FMath::Min(0.f, value + maxAdjustment);
 }
 
 float UHelmSystem::AdjustAndClamp(float value, bool decrease, bool increase, float amount, float minValue, float maxValue)

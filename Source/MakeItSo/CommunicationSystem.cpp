@@ -5,7 +5,7 @@
 #endif
 #include "CommunicationSystem.h"
 
-bool UCommunicationSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool UCommunicationSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
 	return false;
 }

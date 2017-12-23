@@ -40,9 +40,9 @@ bool UDamageControlSystem::ProcessSystemMessage(FString message)
 	{
 		CreateSnake();
 	}
-	else if (message.find(TEXT("damage ") == 0)) // FIXME: this seems to be true for any message
+	else if (STRFIND(message, TEXT("damage ")) == 0)
 	{
-		message = message.substr(7);
+		CHOPSTART(message, 7);
 
 		// TODO: parse section and amount
 		CreateDamage(EDamageSection::Section_Any, 5);
@@ -160,7 +160,7 @@ void UDamageControlSystem::AdvanceSnake()
 		return;
 
 #ifndef WEB_SERVER_TEST
-	int32 oldHead = damageSnakeCells[0];
+	int32 oldHead = snakeCells[0];
 #else
 	int32 oldHead = snakeCells.front();
 #endif

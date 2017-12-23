@@ -205,10 +205,12 @@
 #pragma comment(lib, "ws2_32.lib") /* Linking with winsock library */
 #endif
 
+#include "AllowWindowsPlatformTypes.h"
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <process.h>
+#include "HideWindowsPlatformTypes.h"
 
 #if defined(_MSC_VER) && _MSC_VER >= 1800
 #define strdup _strdup
@@ -323,7 +325,7 @@ typedef struct _stati64 cs_stat_t;
 #define MG_NET_IF MG_NET_IF_SOCKET
 #endif
 
-int rmdir(const char *dirname);
+int mg_rmdir(const char *dirname);
 unsigned int sleep(unsigned int seconds);
 
 #endif /* CS_PLATFORM == CS_P_WINDOWS */
@@ -1330,7 +1332,7 @@ int slfs_open(const unsigned char *fname, uint32_t flags);
 #define vsnprintf _vsnprintf
 #define sleep(x) Sleep((x) *1000)
 #define to64(x) _atoi64(x)
-#define rmdir _rmdir
+#define mg_rmdir _rmdir
 
 #if defined(_MSC_VER) && _MSC_VER >= 1400
 #define fseeko(x, y, z) _fseeki64((x), (y), (z))

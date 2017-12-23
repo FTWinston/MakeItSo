@@ -36,7 +36,7 @@ bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *
 		EXTRACT(msg, buffer, "wpnroll ");
 
 		// update lock, roll non-locked dice
-		for (int i = 0; i < NUM_DICE; i++)
+		for (int32 i = 0; i < NUM_DICE; i++)
 		{
 			bool locked = buffer[i] == '1';
 			lockedDice[i] = locked;
@@ -74,7 +74,7 @@ void UWeaponSystem::SendAllData()
 void UWeaponSystem::ClearDice()
 {
 	timesRolled = 0;
-	for (int i = 0; i < NUM_DICE; i++) {
+	for (int32 i = 0; i < NUM_DICE; i++) {
 		dice[i] = 0;
 		lockedDice[i] = false;
 	}
@@ -87,23 +87,23 @@ void UWeaponSystem::SendDice()
 
 	// send re-roll number
 #ifndef WEB_SERVER_TEST
-	output.Append(timesRerolled);
+	output.AppendInt(timesRolled);
 #else
 	output += std::to_wstring(timesRolled);
 #endif
 
 	// send dice values
-	for (int i = 0; i < NUM_DICE; i++)
+	for (int32 i = 0; i < NUM_DICE; i++)
 	{
 #ifndef WEB_SERVER_TEST
-		output.Append(dice[i]);
+		output.AppendInt(dice[i]);
 #else
 		output += std::to_wstring(dice[i]);
 #endif
 	}
 
 	// send lock state
-	for (int i = 0; i < NUM_DICE; i++)
+	for (int32 i = 0; i < NUM_DICE; i++)
 	{
 #ifndef WEB_SERVER_TEST
 		output.AppendChar(lockedDice[i] ? '1' : '0');

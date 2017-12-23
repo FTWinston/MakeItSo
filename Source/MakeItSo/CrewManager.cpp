@@ -47,9 +47,9 @@ UCrewManager *UCrewManager::Instance = nullptr;
 mg_mgr *UCrewManager::mgr = nullptr;
 struct mg_serve_http_opts UCrewManager::s_http_server_opts;
 
-void UCrewManager::EventReceived(mg_connection *conn, int ev, void *ev_data)
+void EventReceived(mg_connection *conn, int ev, void *ev_data)
 {
-	return Instance->HandleEvent(conn, ev, ev_data);
+	return UCrewManager::Instance->HandleEvent(conn, ev, ev_data);
 }
 
 FString UCrewManager::Init(AShipPlayerController *controller)
@@ -92,17 +92,13 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 				{
 					char szPort[16];
 					mg_conn_addr_to_str(conn, szPort, sizeof(szPort), MG_SOCK_STRINGIFY_PORT);
-
-					std::string tmpString = szPort;
-					FString tmpFString(tmpString.length(), L' ');
-					std::copy(tmpString.begin(), tmpString.end(), tmpFString.begin());
-					strPort = TEXT(":") + tmpFString;
+					strPort = TEXT(":") + FString(ANSI_TO_TCHAR(szPort));
 				}
 				else
 				{
 #ifndef WEB_SERVER_TEST
 					if (controller)
-						controller->ClientMessage(FString::Printf(TEXT("An error occurred setting up the web server: %s\n"), *FString(error)));
+						controller->ClientMessage(TEXT("An error occurred setting up the web server\n"));
 #endif
 				}
 			}
@@ -306,7 +302,11 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 
 #ifndef WEB_SERVER_TEST
 	if (controller)
-		controller->ClientMessage(FString::Printf(TEXT("Client %i connected from %s\n"), info->identifier, ANSI_TO_TCHAR(conn->remote_ip)));
+	{
+		char buf[100];
+		mg_sock_to_str(conn->sock, buf, sizeof(buf), MG_SOCK_STRINGIFY_REMOTE | MG_SOCK_STRINGIFY_IP);
+		controller->ClientMessage(FString::Printf(TEXT("Client %i connected from %s\n"), info->identifier, ANSI_TO_TCHAR(buf)));
+	}
 #endif
 
 	// if someone is in setup, tell this client
@@ -544,7 +544,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		// write all unrecognised commands to the console
 		// TODO: try this instead: printf("%.*s\n", (int)msg->size, msg->data);
 		char buffer[128];
-		EXTRACT(info, buffer, "");
+		EXTRACT(msg, buffer, "");
 		if (controller)
 			controller->ClientMessage(FString::Printf(TEXT("Unrecognised message from client %i: %s\n"), info->identifier, ANSI_TO_TCHAR(buffer)));
 #endif
@@ -605,7 +605,7 @@ void UCrewManager::StartGame(websocket_message *msg)
 	// no need to send corresponding setup-, as game+ clears the setup player on clients
 	connectionInSetup = nullptr;
 
-	if (systems.empty())
+	if (EMPTY(systems))
 		CreateSystems();
 
 	crewState = ECrewState::Active;
@@ -730,7 +730,7 @@ void UCrewManager::Send(mg_connection *conn, const char *message, ...)
 void UCrewManager::Send(mg_connection *conn, FString message)
 {
 #ifndef WEB_SERVER_TEST
-	auto nMessage = TCHAR_TO_ANSI(message);
+	auto nMessage = TCHAR_TO_ANSI(*message);
 #else
 	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
 #endif
@@ -769,7 +769,7 @@ void UCrewManager::SendAll(const char *message, ...)
 void UCrewManager::SendAll(FString message)
 {
 #ifndef WEB_SERVER_TEST
-	auto nMessage = TCHAR_TO_ANSI(message);
+	auto nMessage = TCHAR_TO_ANSI(*message);
 #else
 	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
 #endif
@@ -810,7 +810,7 @@ void UCrewManager::SendSystem(ESystem system, const char *message, ...)
 void UCrewManager::SendSystem(ESystem system, FString message)
 {
 #ifndef WEB_SERVER_TEST
-	auto nMessage = TCHAR_TO_ANSI(message);
+	auto nMessage = TCHAR_TO_ANSI(*message);
 #else
 	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
 #endif

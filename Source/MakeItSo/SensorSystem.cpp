@@ -5,7 +5,7 @@
 #endif
 #include "SensorSystem.h"
 
-bool USensorSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool USensorSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
 	return false;
 }

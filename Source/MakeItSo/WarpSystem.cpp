@@ -5,7 +5,7 @@
 #endif
 #include "WarpSystem.h"
 
-bool UWarpSystem::ReceiveCrewMessage(ConnectionInfo *info)
+bool UWarpSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
 	return false;
 }

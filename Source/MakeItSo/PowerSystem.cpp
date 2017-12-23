@@ -78,13 +78,18 @@ bool UPowerSystem::ProcessSystemMessage(FString message)
 	{
 		IncrementAuxPower();
 	}
-	else if (message.find(TEXT("addchoice ") == 0))
+	else if (STRFIND(message, TEXT("addchoice ")) == 0)
 	{
-		message = message.substr(10);
+		CHOPSTART(message, 10);
 
 #ifndef WEB_SERVER_TEST
+		TArray<FString> strValues;
+		message.ParseIntoArray(strValues, TEXT(" "), true);
 		TArray<int32> values;
-		message.ParseIntoArray(&values, TEXT(" "), true);
+
+		for (auto strValue : strValues)
+			values.Add(FCString::Atoi(*strValue));
+
 		while (values.Num() < 3)
 			values.Add(0); // ensure 3 values
 #else

@@ -1,4 +1,13 @@
+#ifndef WEB_SERVER_TEST
+#include "MakeItSo.h"
+#endif
+
 #include "Mongoose.h"
+
+#ifndef WEB_SERVER_TEST
+#include "AllowWindowsPlatformTypes.h"
+#endif
+
 #ifdef MG_MODULE_LINES
 #line 1 "mongoose/src/internal.h"
 #endif
@@ -9325,7 +9334,7 @@ static int mg_remove_directory(const struct mg_serve_http_opts *opts,
     }
   }
   closedir(dirp);
-  rmdir(dir);
+  mg_rmdir(dir);
 
   return 1;
 }
@@ -11054,6 +11063,8 @@ cleanup:
   MG_FREE(msg);
 }
 
+#pragma warning(push)
+#pragma warning( disable : 4706 )
 static unsigned char *mg_parse_dns_resource_record(
     unsigned char *data, unsigned char *end, struct mg_dns_resource_record *rr,
     int reply) {
@@ -11068,6 +11079,7 @@ static unsigned char *mg_parse_dns_resource_record(
     data += chunk_len + 1;
   }
 
+#pragma warning(pop)
   if (data > end - 5) {
     return NULL;
   }
@@ -11138,6 +11150,8 @@ int mg_parse_dns(const char *buf, int len, struct mg_dns_message *msg) {
   return 0;
 }
 
+#pragma warning(push)
+#pragma warning( disable : 4706 )
 size_t mg_dns_uncompress_name(struct mg_dns_message *msg, struct mg_str *name,
                               char *dst, int dst_len) {
   int chunk_len, num_ptrs = 0;
@@ -11191,6 +11205,7 @@ size_t mg_dns_uncompress_name(struct mg_dns_message *msg, struct mg_str *name,
   if (dst != old_dst) {
     *--dst = 0;
   }
+#pragma warning(pop)
   return dst - old_dst;
 }
 
@@ -13782,7 +13797,7 @@ int closedir(DIR *dir) {
   return res;
 }
 
-int rmdir(const char *path) {
+int mg_rmdir(const char *path) {
   return fs_spiffs_rmdir(path);
 }
 
@@ -16315,7 +16330,7 @@ const struct mg_iface_vtable mg_default_iface_vtable = MG_PIC32_IFACE_VTABLE;
 
 #ifdef _WIN32
 
-int rmdir(const char *dirname) {
+int mg_rmdir(const char *dirname) {
   return _rmdir(dirname);
 }
 
@@ -16325,3 +16340,7 @@ unsigned int sleep(unsigned int seconds) {
 }
 
 #endif /* _WIN32 */
+
+#ifndef WEB_SERVER_TEST
+#include "HideWindowsPlatformTypes.h"
+#endif

@@ -23,6 +23,7 @@ void AShipPlayerController::InitInputSystem()
 
 	InputComponent->BindAxis("HelmPitch", this, &AShipPlayerController::PitchInput);
 	InputComponent->BindAxis("HelmYaw", this, &AShipPlayerController::YawInput);
+	InputComponent->BindAxis("HelmRoll", this, &AShipPlayerController::RollInput);
 
 	// how to send a crew message, as it stands
 	//if (UCrewManager::Instance)
@@ -78,7 +79,7 @@ void AShipPlayerController::PitchInput(float Val)
 
 	FRotator rotation = pawn->GetRotationSpeed();
 
-	// Smoothly interpolate to target pitch speed ... should really be adding speed, not setting speed
+	// Smoothly interpolate to target pitch speed
 	float deltaPitch = FMath::FInterpTo(rotation.Pitch, TargetPitchSpeed, GetWorld()->GetDeltaSeconds(), 2.f) - rotation.Pitch;
 	pawn->AddRotation(FRotator(deltaPitch, 0.f, 0.f));
 }
@@ -94,16 +95,19 @@ void AShipPlayerController::YawInput(float Val)
 
 	// Smoothly interpolate to target yaw speed
 	float deltaYaw = FMath::FInterpTo(rotation.Yaw, TargetYawSpeed, GetWorld()->GetDeltaSeconds(), 2.f) - rotation.Yaw;
+	pawn->AddRotation(FRotator(0.f, deltaYaw, 0));
+}
 
-	// Is there any left/right input?
-	const bool bIsTurning = FMath::Abs(Val) > 0.2f;
+void AShipPlayerController::RollInput(float Val)
+{
+	auto pawn = Cast<AMakeItSoPawn>(GetPawn());
 
-	// If turning, yaw value is used to influence roll
-	// If not turning, roll to reverse current roll value
-	float TargetRollSpeed = bIsTurning ? (rotation.Yaw * 0.5f) : (pawn->GetActorRotation().Roll * -2.f);
+	// Target pitch speed is based in input
+	float TargetRollSpeed = Val * pawn->GetMaxTurnSpeed() * -1.f;
 
-	// Smoothly interpolate roll speed
+	FRotator rotation = pawn->GetRotationSpeed();
+
+	// Smoothly interpolate to target roll speed
 	float deltaRoll = FMath::FInterpTo(rotation.Roll, TargetRollSpeed, GetWorld()->GetDeltaSeconds(), 2.f) - rotation.Roll;
-
-	pawn->AddRotation(FRotator(0.f, deltaYaw, deltaRoll));
+	pawn->AddRotation(FRotator(0.f, 0.f, deltaRoll));
 }

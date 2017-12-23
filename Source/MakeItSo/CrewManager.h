@@ -22,21 +22,21 @@
 #define EMPTY(set) set.Num() == 0
 #define NOTEMPTY(set) set.Num() != 0
 #define APPENDINT(str, i) str.AppendInt(i)
-#define GETMIN(a, b) FMath::Min(a, b)
-#define GETMAX(a, b) FMath::Max(a, b)
+#define STRFIND(str, val) str.Find(val)
+#define CHOPSTART(str, pos) str.RemoveAt(0, pos, false);
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
 #define NOTEMPTY(set) !set.empty()
 #define APPENDINT(str, i) str += std::to_wstring(i)
-#define GETMIN(a, b) min(a, b)
-#define GETMAX(a, b) max(a, b)
+#define STRFIND(str, val) str.find(val)
+#define CHOPSTART(str, pos) str = str.substr(pos)
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
 #define MATCHES(msg, text)   msg->size == sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
 #define EXTRACT(msg, buffer, skipText) EXTRACT_WITH_OFFSET(msg, buffer, sizeof(skipText))
-#define EXTRACT_WITH_OFFSET(msg, buffer, offsetLength) snprintf(buffer, sizeof(buffer), "%.*s\0", (int32)GETMIN(sizeof(buffer) - 1, msg->size - offsetLength + 1), msg->data + offsetLength - 1)
+#define EXTRACT_WITH_OFFSET(msg, buffer, offsetLength) snprintf(buffer, sizeof(buffer), "%.*s\0", (int32)FMath::Min(sizeof(buffer) - 1, msg->size - offsetLength + 1), msg->data + offsetLength - 1)
 
 class ConnectionInfo;
 class AShipPlayerController;
@@ -96,9 +96,6 @@ public:
 		EXTRACT_WITH_OFFSET(msg, buffer, offset);
 		return atoi(buffer);
 	}
-
-	UFUNCTION(BlueprintCallable, Category = MISUtils)
-	static void EventReceived(mg_connection *conn, int ev, void *ev_data);
 	
 	static UCrewManager *Instance;
 	static struct mg_serve_http_opts s_http_server_opts;
