@@ -1,10 +1,16 @@
 // Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
 
+#ifndef WEB_SERVER_TEST
 #include "MakeItSo.h"
+#else
+#include "stdafx.h"
+#endif
+
 #include "MakeItSoPawn.h"
 
 AMakeItSoPawn::AMakeItSoPawn()
 {
+#ifndef WEB_SERVER_TEST
 	// Structure to hold one-time initialization
 	struct FConstructorStatics
 	{
@@ -34,7 +40,7 @@ AMakeItSoPawn::AMakeItSoPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false; // Don't rotate camera with controller
-
+#endif
 	// Set handling parameters
 	ThrusterAcceleration = 500.f;
 	MaxThrusterSpeed = 4000.f;
@@ -45,6 +51,7 @@ AMakeItSoPawn::AMakeItSoPawn()
 	RotationSpeed = FRotator(0.f, 0.f, 0.f);
 }
 
+#ifndef WEB_SERVER_TEST
 void AMakeItSoPawn::Tick(float DeltaSeconds)
 {
 	// apply speed limit
@@ -79,3 +86,4 @@ void AMakeItSoPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* O
 	// Set velocity to zero upon collision
 	LocalVelocity = FVector::ZeroVector;
 }
+#endif

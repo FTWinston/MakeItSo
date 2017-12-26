@@ -15,6 +15,7 @@
 #endif
 
 #include "CrewManager.h"
+#include "MakeItSoPawn.h"
 
 #include "CommunicationSystem.h"
 #include "DamageControlSystem.h"
@@ -45,11 +46,25 @@
 
 UCrewManager *UCrewManager::Instance = nullptr;
 mg_mgr *UCrewManager::mgr = nullptr;
-struct mg_serve_http_opts UCrewManager::s_http_server_opts;
+struct mg_serve_http_opts s_http_server_opts;
+char docRootPath[256];
 
 void EventReceived(mg_connection *conn, int ev, void *ev_data)
 {
 	return UCrewManager::Instance->HandleEvent(conn, ev, ev_data);
+}
+
+#ifdef WEB_SERVER_TEST
+AMakeItSoPawn *pawn = new AMakeItSoPawn();
+#endif
+
+AMakeItSoPawn* UCrewManager::GetShipPawn()
+{
+#ifdef WEB_SERVER_TEST
+	return pawn;
+#else
+	return Cast<AMakeItSoPawn>(controller->GetPawn());
+#endif
 }
 
 FString UCrewManager::Init(AShipPlayerController *controller)
@@ -92,7 +107,13 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 				{
 					char szPort[16];
 					mg_conn_addr_to_str(conn, szPort, sizeof(szPort), MG_SOCK_STRINGIFY_PORT);
+#ifdef WEB_SERVER_TEST
+					wchar_t wBuffer[128];
+					mbstowcs(wBuffer, szPort, strlen(szPort) + 1);
+					strPort = TEXT(":") + FString(wBuffer);
+#else
 					strPort = TEXT(":") + FString(ANSI_TO_TCHAR(szPort));
+#endif
 				}
 				else
 				{
@@ -110,10 +131,13 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 		}
 
 #ifdef WEB_SERVER_TEST
-		s_http_server_opts.document_root = "../wwwroot";
+		strncpy(docRootPath, "../wwwroot", sizeof(docRootPath));
 #else
-		FString rootPath = FPaths::GameDir() / TEXT("wwwroot");
-		s_http_server_opts.document_root = TCHAR_TO_ANSI(*rootPath);
+		auto tmpPath = StringCast<ANSICHAR>(*(FPaths::GameDir() / TEXT("wwwroot")));
+		strncpy(docRootPath, tmpPath.Get(), sizeof(docRootPath));
+#endif
+
+		s_http_server_opts.document_root = docRootPath;
 #endif
 	}
 

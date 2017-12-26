@@ -18,12 +18,4 @@ public:
 
 protected:
 	virtual void InitInputSystem();
-
-	void ThrustInput(float Val);
-	void ThrustInputSide(float Val);
-	void ThrustInputVertical(float Val);
-
-	void PitchInput(float Val);
-	void YawInput(float Val);
-	void RollInput(float Val);
 };

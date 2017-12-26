@@ -205,12 +205,16 @@
 #pragma comment(lib, "ws2_32.lib") /* Linking with winsock library */
 #endif
 
+#ifndef WEB_SERVER_TEST
 #include "AllowWindowsPlatformTypes.h"
+#endif
 #include <winsock2.h>
 #include <ws2tcpip.h>
 #include <windows.h>
 #include <process.h>
+#ifndef WEB_SERVER_TEST
 #include "HideWindowsPlatformTypes.h"
+#endif
 
 #if defined(_MSC_VER) && _MSC_VER >= 1800
 #define strdup _strdup

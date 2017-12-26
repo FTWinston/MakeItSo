@@ -3,6 +3,8 @@
 #else
 #include "stdafx.h"
 #endif
+
+#include "MakeItSoPawn.h"
 #include "HelmSystem.h"
 
 bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
@@ -10,100 +12,58 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	if (MATCHES(msg, "+yawLeft"))
 	{
 		yawLeft = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::A, true);
-#endif
 	}
 	else if (MATCHES(msg, "-yawLeft"))
 	{
 		yawLeft = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::A, false);
-#endif
 	}
 	else if (MATCHES(msg, "+yawRight"))
 	{
 		yawRight = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::D, true);
-#endif
 	}
 	else if (MATCHES(msg, "-yawRight"))
 	{
 		yawRight = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::D, false);
-#endif
 	}
 	else if (MATCHES(msg, "+pitchUp"))
 	{
 		pitchUp = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::S, true);
-#endif
 	}
 	else if (MATCHES(msg, "-pitchUp"))
 	{
 		pitchUp = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::S, false);
-#endif
 	}
 	else if (MATCHES(msg, "+pitchDown"))
 	{
 		pitchDown = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::W, true);
-#endif
 	}
 	else if (MATCHES(msg, "-pitchDown"))
 	{
 		pitchDown = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::W, false);
-#endif
 	}
 	else if (MATCHES(msg, "+rollLeft"))
 	{
 		rollLeft = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Q, true);
-#endif
 	}
 	else if (MATCHES(msg, "-rollLeft"))
 	{
 		rollLeft = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Q, false);
-#endif
 	}
 	else if (MATCHES(msg, "+rollRight"))
 	{
 		rollRight = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::E, true);
-#endif
 	}
 	else if (MATCHES(msg, "-rollRight"))
 	{
 		rollRight = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::E, false);
-#endif
 	}
 	else if (MATCHES(msg, "+rotStop"))
 	{
 		stopRotation = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::X, true);
-#endif
 	}
 	else if (MATCHES(msg, "-rotStop"))
 	{
 		stopRotation = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::X, false);
-#endif
 	}
 	else if (STARTS_WITH(msg, "yaw "))
 	{
@@ -132,121 +92,66 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	else if (MATCHES(msg, "+moveForward"))
 	{
 		moveForward = true;
-#ifndef WEB_SERVER_TEST
-		// TODO: set speed usefully
-		crewManager->InputKey(EKeys::One, true);
-		crewManager->InputKey(EKeys::One, false);
-#endif
 	}
 	else if (MATCHES(msg, "-moveForward"))
 	{
 		moveForward = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Two, true);
-		crewManager->InputKey(EKeys::Two, false);
-#endif
 	}
 	else if (MATCHES(msg, "+moveBackward"))
 	{
 		moveBackward = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Three, true);
-		crewManager->InputKey(EKeys::Three, false);
-#endif
 	}
 	else if (MATCHES(msg, "-moveBackward"))
 	{
 		moveBackward = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Four, true);
-		crewManager->InputKey(EKeys::Four, false);
-#endif
 	}
 	else if (MATCHES(msg, "+forwardBackStop"))
 	{
 		stopForwardBack = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Five, true);
-		crewManager->InputKey(EKeys::Five, false);
-#endif
 	}
 	else if (MATCHES(msg, "-forwardBackStop"))
 	{
 		stopForwardBack = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::Six, true);
-		crewManager->InputKey(EKeys::Six, false);
-#endif
 	}
 	else if (MATCHES(msg, "+strafeLeft"))
 	{
 		strafeLeft = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::J, true);
-#endif
 	}
 	else if (MATCHES(msg, "-strafeLeft"))
 	{
 		strafeLeft = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::J, false);
-#endif
 	}
 	else if (MATCHES(msg, "+strafeRight"))
 	{
 		strafeRight = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::L, true);
-#endif
 	}
 	else if (MATCHES(msg, "-strafeRight"))
 	{
 		strafeRight = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::L, false);
-#endif
 	}
 	else if (MATCHES(msg, "+strafeUp"))
 	{
 		strafeUp = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::I, true);
-#endif
 	}
 	else if (MATCHES(msg, "-strafeUp"))
 	{
 		strafeUp = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::I, false);
-#endif
 	}
 	else if (MATCHES(msg, "+strafeDown"))
 	{
 		strafeDown = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::K, true);
-#endif
 	}
 	else if (MATCHES(msg, "-strafeDown"))
 	{
 		strafeDown = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::K, false);
-#endif
 	}
 	else if (MATCHES(msg, "+strafeStop"))
 	{
 		stopStrafing = true;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::M, true);
-#endif
 	}
 	else if (MATCHES(msg, "-strafeStop"))
 	{
 		stopStrafing = false;
-#ifndef WEB_SERVER_TEST
-		crewManager->InputKey(EKeys::M, false);
-#endif
 	}
 	else
 		return false;
@@ -263,13 +168,8 @@ void UHelmSystem::ResetData()
 	moveForward = moveBackward = strafeLeft = strafeRight = strafeUp = strafeDown = false;
 	stopRotation = stopStrafing = stopForwardBack = false;
 
-	orientation.W = 1;
-	orientation.X = orientation.Y = orientation.Z = 0;
-	pitchRate = yawRate = rollRate = 0;
 	pitchRateMax = yawRateMax = rollRateMax = 90.f;
 	
-	yawRate = 5.f; // TEMP TEST
-
 	sideMoveRate = verticalMoveRate = forwardMoveRate = 0;
 	sideMoveRateMax = verticalMoveRateMax = 500;
 	forwardMoveRateMax = 5000; backwardMoveRateMax = 2500;
@@ -284,12 +184,14 @@ void UHelmSystem::SendAllData()
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_speed_limits %.4f %.4f",
 		forwardMoveRateMax, backwardMoveRateMax);
 	
-	FRotator rotResult = orientation.Rotator();
+	auto pawn = crewManager->GetShipPawn();
+	FRotator orientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
-		rotResult.Pitch, rotResult.Yaw, rotResult.Roll);
+		orientation.Pitch, orientation.Yaw, orientation.Roll);
 
+	auto rotationSpeed = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetRotationSpeed();
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
-		pitchRate, yawRate, rollRate);
+		rotationSpeed.Pitch, rotationSpeed.Yaw, rotationSpeed.Roll);
 
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.4f %.4f %.4f",
 		sideMoveRate, verticalMoveRate, forwardMoveRate);
@@ -297,44 +199,46 @@ void UHelmSystem::SendAllData()
 
 void UHelmSystem::Tick(float DeltaSeconds)
 {
+	auto pawn = crewManager->GetShipPawn();
+
 	// update rotation rates
-	float oldPitchRate = pitchRate, oldYawRate = yawRate, oldRollRate = rollRate;
+	auto rotationSpeed = pawn->GetRotationSpeed();
 
 	float adjustmentAmount = rotationAccel * DeltaSeconds;
+	FRotator rotationAccel;
 	if (stopRotation)
 	{
-		pitchRate = TowardsZero(pitchRate, adjustmentAmount);
-		yawRate = TowardsZero(yawRate, adjustmentAmount);
-		rollRate = TowardsZero(rollRate, adjustmentAmount);
+		rotationAccel = FRotator(
+			TowardsZero(rotationSpeed.Pitch, adjustmentAmount),
+			TowardsZero(rotationSpeed.Yaw, adjustmentAmount),
+			TowardsZero(rotationSpeed.Roll, adjustmentAmount)
+		);
 	}
 	else
 	{
-		pitchRate = AdjustAndClamp(pitchRate, pitchDown, pitchUp, adjustmentAmount, -pitchRateMax, pitchRateMax);
-		yawRate = AdjustAndClamp(yawRate, yawLeft, yawRight, adjustmentAmount, -yawRateMax, yawRateMax);
-		rollRate = AdjustAndClamp(rollRate, rollLeft, rollRight, adjustmentAmount, -rollRateMax, rollRateMax);
+		rotationAccel = FRotator(
+			AdjustAndClamp(rotationSpeed.Pitch, pitchDown, pitchUp, adjustmentAmount, -pitchRateMax, pitchRateMax),
+			AdjustAndClamp(rotationSpeed.Yaw, yawLeft, yawRight, adjustmentAmount, -yawRateMax, yawRateMax),
+			AdjustAndClamp(rotationSpeed.Roll, rollLeft, rollRight, adjustmentAmount, -rollRateMax, rollRateMax)
+		);
 	}
+	pawn->AddRotation(rotationAccel);
+	rotationSpeed = pawn->GetRotationSpeed();
 
-	bool rotationRateChanged = oldPitchRate != pitchRate || oldYawRate != yawRate || oldRollRate != rollRate;
+	bool rotationRateChanged = rotationAccel != FRotator::ZeroRotator;
 	if (rotationRateChanged)
 	{
 		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
-			pitchRate, yawRate, rollRate);
+			rotationSpeed.Pitch, rotationSpeed.Yaw, rotationSpeed.Roll);
 	}
 	
 	// update orientation
-	if (yawRate != 0.f || pitchRate != 0.f || rollRate != 0.f)
+	if (rotationSpeed != FRotator::ZeroRotator)
 	{
-		FQuat pitch = FRotator(pitchRate * DeltaSeconds, 0, 0).Quaternion();
-		FQuat yaw = FRotator(0, yawRate * DeltaSeconds, 0).Quaternion();
-		FQuat roll = FRotator(0, 0, rollRate * DeltaSeconds).Quaternion();
-		
-		orientation = roll * pitch * orientation * yaw;
-		orientation.Normalize();
-		
-		FRotator rotResult = orientation.Rotator();
+		FRotator orientation = pawn->GetActorRotation();
 
 		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
-			rotResult.Pitch, rotResult.Yaw, rotResult.Roll);
+			orientation.Pitch, orientation.Yaw, orientation.Roll);
 	}
 
 	// update strafing and movement rates

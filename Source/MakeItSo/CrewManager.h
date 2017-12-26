@@ -41,6 +41,7 @@
 class ConnectionInfo;
 class AShipPlayerController;
 class UCrewSystem;
+class AMakeItSoPawn;
 
 /**
 *
@@ -90,6 +91,7 @@ public:
 	void SendSystem(ESystem system, FString message);
 	void SendAllCrewData();
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
+	AMakeItSoPawn* GetShipPawn();
 
 	int32 ExtractInt(websocket_message *msg, int offset) {
 		char buffer[12];
@@ -98,7 +100,6 @@ public:
 	}
 	
 	static UCrewManager *Instance;
-	static struct mg_serve_http_opts s_http_server_opts;
 
 #ifndef WEB_SERVER_TEST
 	void InputKey(FKey key, bool down);

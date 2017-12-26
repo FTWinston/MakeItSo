@@ -119,6 +119,28 @@ public:
 
 struct FRotator;
 
+struct FVector {
+	FVector() {}
+	FVector(float x, float y, float z) { X = x; Y = y; Z = z; }
+	float X, Y, Z;
+
+	FVector operator+(const FVector& Q) const {
+		FVector result;
+
+		result.X = this->X + Q.X;
+		result.Y = this->Y + Q.Y;
+		result.Z = this->Z + Q.Z;
+
+		return result;
+	}
+
+	FVector operator+=(const FVector& Q) {
+		this->X += Q.X;
+		this->Y += Q.Y;
+		this->Z += Q.Z;
+	}
+};
+
 struct FQuat {
 public:
 	FQuat() {}
@@ -164,6 +186,8 @@ public:
 	FRotator() {}
 	FRotator(float pitch, float yaw, float roll) { Pitch = pitch; Yaw = yaw; Roll = roll; }
 	float Pitch, Yaw, Roll;
+
+	const static FRotator ZeroRotator;
 
 	static float ClampAxis(float Angle)
 	{
@@ -211,5 +235,27 @@ public:
 		RotationQuat.W = CR * CP*CY + SR * SP*SY;
 
 		return RotationQuat;
+	}
+
+	FRotator operator+(const FRotator& Q) const {
+		FRotator result;
+
+		result.Pitch = this->Pitch + Q.Pitch;
+		result.Yaw = this->Yaw + Q.Yaw;
+		result.Roll = this->Roll + Q.Roll;
+
+		return result;
+	}
+
+	FRotator operator+=(const FRotator& Q) {
+		this->Pitch += Q.Pitch;
+		this->Yaw += Q.Yaw;
+		this->Roll += Q.Roll;
+		return *this;
+	}
+	
+	bool operator!=(const FRotator& V) const
+	{
+		return Pitch != V.Pitch || Yaw != V.Yaw || Roll != V.Roll;
 	}
 };

@@ -30,8 +30,6 @@ private:
 	bool stopRotation, stopStrafing, stopForwardBack;
 
 	// TODO: these values should presumably not be stored separately here, and instead the physical ship object should be used
-	FQuat orientation;
-	float pitchRate, yawRate, rollRate;
 	float pitchRateMax, yawRateMax, rollRateMax;
 
 	float sideMoveRate, verticalMoveRate, forwardMoveRate;

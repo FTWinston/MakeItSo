@@ -57,6 +57,12 @@
     <ClInclude Include="..\Source\MakeItSo\WarpSystem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\MakeItSo\MakeItSoPawn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MakeItSoPawn.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\MakeItSo\CrewManager.cpp">
@@ -96,6 +102,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Shims.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MakeItSo\MakeItSoPawn.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

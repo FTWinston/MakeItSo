@@ -3,6 +3,8 @@
 #else
 #include "stdafx.h"
 #endif
+
+#include "MakeItSoPawn.h"
 #include "ViewscreenSystem.h"
 
 
