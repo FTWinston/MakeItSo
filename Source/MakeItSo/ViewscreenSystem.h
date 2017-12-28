@@ -1,4 +1,5 @@
 #include "CrewManager.h"
+#include "ViewscreenSystem.Generated.h"
 
 #pragma once
 
@@ -6,16 +7,16 @@
  * 
  */
 
-//UCLASS()
+UCLASS()
 class MAKEITSO_API UViewscreenSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
-	virtual void SendAllData();
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual void SendAllData() override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::ViewScreen; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::ViewScreen; }
 private:
 	void DetermineViewTarget(const char* targetIdentifier);
 	void DetermineTargetAngles();

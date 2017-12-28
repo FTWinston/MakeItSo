@@ -1,4 +1,5 @@
 #include "CrewManager.h"
+#include "CommunicationSystem.Generated.h"
 
 #pragma once
 
@@ -6,13 +7,13 @@
  * 
  */
 
-//UCLASS()
+UCLASS()
 class MAKEITSO_API UCommunicationSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Communications; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Communications; }
 };

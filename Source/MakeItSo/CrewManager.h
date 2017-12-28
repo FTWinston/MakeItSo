@@ -24,6 +24,7 @@
 #define APPENDINT(str, i) str.AppendInt(i)
 #define STRFIND(str, val) str.Find(val)
 #define CHOPSTART(str, pos) str.RemoveAt(0, pos, false);
+#define PAIRVALUE(pair) pair.Value
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -31,6 +32,7 @@
 #define APPENDINT(str, i) str += std::to_wstring(i)
 #define STRFIND(str, val) str.find(val)
 #define CHOPSTART(str, pos) str = str.substr(pos)
+#define PAIRVALUE(pair) pair.second
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)

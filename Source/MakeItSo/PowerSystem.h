@@ -1,4 +1,5 @@
 #include "CrewManager.h"
+#include "PowerSystem.Generated.h"
 
 #pragma once
 
@@ -6,10 +7,10 @@
  * 
  */
 
-//UCLASS()
+UCLASS()
 class MAKEITSO_API UPowerSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
 	enum EPowerSystem {
@@ -22,11 +23,11 @@ public:
 		MAX_POWER_SYSTEMS
 	};
 
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
-	virtual void SendAllData();
-	virtual bool ProcessSystemMessage(FString message);
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual void SendAllData() override;
+	virtual bool ProcessSystemMessage(FString message) override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::PowerManagement; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::PowerManagement; }
 private:
 	void IncrementAuxPower();
 	void AddCardChoice(int32 card1, int32 card2, int32 card3);

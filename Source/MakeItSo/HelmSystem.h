@@ -1,4 +1,5 @@
 #include "CrewManager.h"
+#include "HelmSystem.Generated.h"
 
 #pragma once
 
@@ -8,18 +9,18 @@
 
 struct FQuat;
 
-//UCLASS()
+UCLASS()
 class MAKEITSO_API UHelmSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-	void SendAllData();
-	void ResetData();
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
-	void Tick(float DeltaSeconds);
+	virtual void SendAllData() override;
+	virtual void ResetData() override;
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual void Tick(float DeltaSeconds) override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Helm; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Helm; }
 private:
 	float TowardsZero(float value, float amount);
 	float AdjustAndClamp(float value, bool decrease, bool increase, float amount, float minMalue, float maxValue);

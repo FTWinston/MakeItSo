@@ -63,6 +63,30 @@
     <ClInclude Include="MakeItSoPawn.Generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="CommunicationSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageControlSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HelmSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SensorSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ViewscreenSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WarpSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WeaponSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\MakeItSo\CrewManager.cpp">

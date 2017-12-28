@@ -1,4 +1,5 @@
 #include "CrewManager.h"
+#include "DamageControlSystem.Generated.h"
 
 #pragma once
 
@@ -6,10 +7,10 @@
  * 
  */
 
- //UCLASS()
+ UCLASS()
 class MAKEITSO_API UDamageControlSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
 
@@ -51,14 +52,14 @@ public:
 		MAX_DAMAGE_SECTION
 	};
 
-	void Init(UCrewManager* manager);
-	void ResetData();
+	virtual void Init(UCrewManager* manager) override;
+	virtual void ResetData() override;
 
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
-	bool ProcessSystemMessage(FString message);
-	void SendAllData();
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ProcessSystemMessage(FString message) override;
+	virtual void SendAllData() override;
 protected:
-	UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::DamageControl; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::DamageControl; }
 private:
 #define DAMAGE_GRID_WIDTH 48
 #define DAMAGE_GRID_HEIGHT 36

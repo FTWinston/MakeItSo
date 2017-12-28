@@ -138,6 +138,9 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 #endif
 
 		s_http_server_opts.document_root = docRootPath;
+
+#ifndef WEB_SERVER_TEST
+		controller->ClientMessage(FString::Printf(TEXT("Serving content from %s\n"), ANSI_TO_TCHAR(s_http_server_opts.document_root)));
 #endif
 	}
 
@@ -171,23 +174,19 @@ void UCrewManager::CreateSystems()
 
 	for (auto system : systems)
 	{
-#ifndef WEB_SERVER_TEST
-		auto s = system.Value;
-#else
-		auto s = system.second;
-#endif
+		auto s = PAIRVALUE(system);
 		s->Init(this);
+
+#ifndef WEB_SERVER_TEST
+		s->AddToRoot();
+#endif
 	}
 }
 
 void UCrewManager::ResetData()
 {
 	for (auto system : systems)
-#ifndef WEB_SERVER_TEST
-		system.Value->ResetData();
-#else
-		system.second->ResetData();
-#endif
+		PAIRVALUE(system)->ResetData();
 }
 
 void UCrewManager::BeginDestroy()
@@ -199,22 +198,23 @@ void UCrewManager::BeginDestroy()
 
 	delete currentConnections;
 
+#ifndef WEB_SERVER_TEST
+	for (auto system : systems)
+		PAIRVALUE(system)->RemoveFromRoot();
+#endif
+
 	Super::BeginDestroy();
 }
 
 void UCrewManager::LinkController(AShipPlayerController *controller)
 {
-	this->controller = controller; // do we need to null this when the level changes?
+	this->controller = controller; // do we need to null this when the level changes? It's not a UPROPERTY, so it'll go dangling
 }
 
 void UCrewManager::TickSystems(float DeltaSeconds)
 {
 	for (auto system : systems)
-#ifndef WEB_SERVER_TEST
-		system.Value->Tick(DeltaSeconds);
-#else
-		system.second->Tick(DeltaSeconds);
-#endif
+		PAIRVALUE(system)->Tick(DeltaSeconds);
 }
 
 void UCrewManager::PauseGame(bool state)
@@ -557,11 +557,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 	else
 	{
 		for (auto system : systems)
-#ifndef WEB_SERVER_TEST
-			if (system.Value->ReceiveCrewMessage(info, msg))
-#else
-			if (system.second->ReceiveCrewMessage(info, msg))
-#endif
+			if (PAIRVALUE(system)->ReceiveCrewMessage(info, msg))
 				return;
 
 #ifndef WEB_SERVER_TEST
@@ -845,11 +841,7 @@ void UCrewManager::SendSystem(ESystem system, FString message)
 void UCrewManager::SendAllCrewData()
 {
 	for (auto system : systems)
-#ifndef WEB_SERVER_TEST
-		system.Value->SendAllData();
-#else
-		system.second->SendAllData();
-#endif
+		PAIRVALUE(system)->SendAllData();
 }
 
 void UCrewManager::ProcessSystemMessage(ESystem system, const TCHAR *message)

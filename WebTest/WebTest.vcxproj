@@ -94,13 +94,21 @@
     <ClInclude Include="..\Source\MakeItSo\WarpSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\ViewscreenSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\WeaponSystem.h" />
+    <ClInclude Include="CommunicationSystem.Generated.h" />
     <ClInclude Include="CrewManager.Generated.h" />
+    <ClInclude Include="DamageControlSystem.Generated.h" />
+    <ClInclude Include="HelmSystem.Generated.h" />
     <ClInclude Include="MainForm.h">
       <FileType>CppForm</FileType>
     </ClInclude>
     <ClInclude Include="MakeItSoPawn.Generated.h" />
+    <ClInclude Include="PowerSystem.Generated.h" />
+    <ClInclude Include="SensorSystem.Generated.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="ViewscreenSystem.Generated.h" />
+    <ClInclude Include="WarpSystem.Generated.h" />
+    <ClInclude Include="WeaponSystem.Generated.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\MakeItSo\CommunicationSystem.cpp" />

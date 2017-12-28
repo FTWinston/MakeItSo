@@ -1,4 +1,5 @@
 #include "CrewManager.h"
+#include "WeaponSystem.Generated.h"
 
 #pragma once
 
@@ -16,18 +17,18 @@ class MAKEITSO_API UWeaponTarget
 	// selected?
 };
 
-//UCLASS()
+UCLASS()
 class MAKEITSO_API UWeaponSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 public:
-	virtual void Init(UCrewManager *manager);
-	virtual void ResetData();
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
-	bool ProcessSystemMessage(FString message);
-	virtual void SendAllData();
+	virtual void Init(UCrewManager *manager) override;
+	virtual void ResetData() override;
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ProcessSystemMessage(FString message) override;
+	virtual void SendAllData() override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Weapons; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Weapons; }
 private:
 	void ResetDice();
 	void ClearDice();

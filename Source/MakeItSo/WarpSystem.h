@@ -1,18 +1,19 @@
 #include "CrewManager.h"
+#include "WarpSystem.Generated.h"
 
 #pragma once
 
 /**
  * 
  */
-//UCLASS()
+UCLASS()
 class MAKEITSO_API UWarpSystem : public UCrewSystem
 {
-	//GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-	bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg);
-	virtual void SendAllData();
+	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual void SendAllData() override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::Warp; }
+	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Warp; }
 };

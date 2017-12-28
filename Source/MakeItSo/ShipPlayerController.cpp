@@ -29,5 +29,8 @@ void AShipPlayerController::PreProcessInput(const float DeltaTime, const bool bG
 	if (UCrewManager::Instance)
 	{
 		UCrewManager::Instance->Poll();
+
+		if (!bGamePaused)
+			UCrewManager::Instance->TickSystems(DeltaTime);
 	}
 }
