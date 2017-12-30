@@ -189,7 +189,7 @@ void UHelmSystem::SendAllData()
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
 		orientation.Pitch, orientation.Yaw, orientation.Roll);
 
-	auto rotationSpeed = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetRotationSpeed();
+	auto rotationSpeed = pawn == nullptr ? FRotator::ZeroRotator : pawn->RotationSpeed;
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
 		rotationSpeed.Pitch, rotationSpeed.Yaw, rotationSpeed.Roll);
 
@@ -202,38 +202,36 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	auto pawn = crewManager->GetShipPawn();
 
 	// update rotation rates
-	auto rotationSpeed = pawn->GetRotationSpeed();
+	auto prevRotationSpeed = pawn->RotationSpeed;
 
 	float adjustmentAmount = rotationAccel * DeltaSeconds;
-	FRotator rotationAccel;
+	FRotator newRotationSpeed;
 	if (stopRotation)
 	{
-		rotationAccel = FRotator(
-			TowardsZero(rotationSpeed.Pitch, adjustmentAmount),
-			TowardsZero(rotationSpeed.Yaw, adjustmentAmount),
-			TowardsZero(rotationSpeed.Roll, adjustmentAmount)
+		newRotationSpeed = FRotator(
+			TowardsZero(prevRotationSpeed.Pitch, adjustmentAmount),
+			TowardsZero(prevRotationSpeed.Yaw, adjustmentAmount),
+			TowardsZero(prevRotationSpeed.Roll, adjustmentAmount)
 		);
 	}
 	else
 	{
-		rotationAccel = FRotator(
-			AdjustAndClamp(rotationSpeed.Pitch, pitchDown, pitchUp, adjustmentAmount, -pitchRateMax, pitchRateMax),
-			AdjustAndClamp(rotationSpeed.Yaw, yawLeft, yawRight, adjustmentAmount, -yawRateMax, yawRateMax),
-			AdjustAndClamp(rotationSpeed.Roll, rollLeft, rollRight, adjustmentAmount, -rollRateMax, rollRateMax)
+		newRotationSpeed = FRotator(
+			AdjustAndClamp(prevRotationSpeed.Pitch, pitchDown, pitchUp, adjustmentAmount, -pitchRateMax, pitchRateMax),
+			AdjustAndClamp(prevRotationSpeed.Yaw, yawLeft, yawRight, adjustmentAmount, -yawRateMax, yawRateMax),
+			AdjustAndClamp(prevRotationSpeed.Roll, rollLeft, rollRight, adjustmentAmount, -rollRateMax, rollRateMax)
 		);
 	}
-	pawn->AddRotation(rotationAccel);
-	rotationSpeed = pawn->GetRotationSpeed();
+	pawn->RotationSpeed = newRotationSpeed;
 
-	bool rotationRateChanged = rotationAccel != FRotator::ZeroRotator;
-	if (rotationRateChanged)
+	if (newRotationSpeed != prevRotationSpeed)
 	{
 		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
-			rotationSpeed.Pitch, rotationSpeed.Yaw, rotationSpeed.Roll);
+			newRotationSpeed.Pitch, newRotationSpeed.Yaw, newRotationSpeed.Roll);
 	}
 	
 	// update orientation
-	if (rotationSpeed != FRotator::ZeroRotator)
+	if (prevRotationSpeed != FRotator::ZeroRotator)
 	{
 		FRotator orientation = pawn->GetActorRotation();
 

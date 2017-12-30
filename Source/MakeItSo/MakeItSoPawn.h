@@ -66,12 +66,6 @@ private:
 	FRotator actorRotation;
 #endif
 
-	/** Current translational velocity, in local coordinates */
-	FVector LocalVelocity;
-
-	/** Current rotation speed about each axis */
-	FRotator RotationSpeed;
-
 public:
 #ifndef WEB_SERVER_TEST
 	/** Returns ShipMesh subobject **/
@@ -81,13 +75,15 @@ public:
 	/** Returns Camera subobject **/
 	FORCEINLINE class UCameraComponent* GetCamera() const { return Camera; }
 #endif
-	FVector GetLocalVelocity();
-	void AddLocalVelocity(FVector diff) { LocalVelocity += diff; }
+	
+	/** Current translational velocity, in local coordinates */
+	FVector LocalVelocity;
 
-	FRotator GetRotationSpeed() { return RotationSpeed; }
+	/** Current rotation speed about each axis */
+	FRotator RotationSpeed;
+
 #ifdef WEB_SERVER_TEST
 	FRotator GetActorRotation() { return actorRotation; }
 	void AddActorLocalRotation(FRotator rotation) { actorRotation = actorRotation + rotation; }
 #endif
-	void AddRotation(FRotator value) { RotationSpeed += value; }
 };
