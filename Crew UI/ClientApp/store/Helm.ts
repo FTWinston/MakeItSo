@@ -18,10 +18,10 @@ export interface HelmState {
     rollRateMax: number;
 
     // translation feedback info
-    translationRateX: number;
-    translationRateY: number;
-    translationRateXMax: number;
-    translationRateYMax: number;
+    translationRateHorizontal: number;
+    translationRateVertical: number;
+    translationRateHorizontalMax: number;
+    translationRateVerticalMax: number;
 
     // forward/back speed info (separate from sideways motion)
     translationRateForward: number;
@@ -38,8 +38,8 @@ interface SetManoeveringLimitsAction {
     pitchRateMax: number;
     yawRateMax: number;
     rollRateMax: number;
-    translationRateXMax: number;
-    translationRateYMax: number;
+    translationRateHorizontalMax: number;
+    translationRateVerticalMax: number;
 }
 
 interface SetSpeedLimitsAction {
@@ -64,8 +64,8 @@ interface SetOrientationRatesAction {
 
 interface SetTranslationRatesAction {
     type: 'SET_TRANSLATION_RATES';
-    translationRateX: number;
-    translationRateY: number;
+    translationRateHorizontal: number;
+    translationRateVertical: number;
     translationRateForward: number;
 }
 
@@ -78,13 +78,13 @@ type KnownAction = SetManoeveringLimitsAction | SetSpeedLimitsAction | SetOrient
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    setManoeveringLimits: (pitch: number, yaw: number, roll: number, translationX: number, translationY: number) => <SetManoeveringLimitsAction>{
+    setManoeveringLimits: (pitch: number, yaw: number, roll: number, translationHorizonta: number, translationVertical: number) => <SetManoeveringLimitsAction>{
         type: 'SET_MANOEVERING_LIMITS',
         pitchRateMax: pitch,
         yawRateMax: yaw,
         rollRateMax: roll,
-        translationRateXMax: translationX,
-        translationRateYMax: translationY,
+        translationRateHorizontalMax: translationHorizonta,
+        translationRateVerticalMax: translationVertical,
     },
     setSpeedLimits: (speedMax: number, speedMaxReverse: number) => <SetSpeedLimitsAction>{
         type: 'SET_SPEED_LIMITS',
@@ -103,10 +103,10 @@ export const actionCreators = {
         yawRate: yaw,
         rollRate: roll,
     },
-    setTranslationRates: (translationRateX: number, translationRateY: number, translationRateForward: number) => <SetTranslationRatesAction>{
+    setTranslationRates: (translationRateHorizontal: number, translationRateVertical: number, translationRateForward: number) => <SetTranslationRatesAction>{
         type: 'SET_TRANSLATION_RATES',
-        translationRateX: translationRateX,
-        translationRateY: translationRateY,
+        translationRateHorizontal: translationRateHorizontal,
+        translationRateVertical: translationRateVertical,
         translationRateForward: translationRateForward,
     },
 };
@@ -124,10 +124,10 @@ const unloadedState: HelmState = {
     pitchRateMax: 1,
     yawRateMax: 1,
     rollRateMax: 1,
-    translationRateX: 0,
-    translationRateY: 0,
-    translationRateXMax: 1,
-    translationRateYMax: 1,
+    translationRateHorizontal: 0,
+    translationRateVertical: 0,
+    translationRateHorizontalMax: 1,
+    translationRateVerticalMax: 1,
     translationRateForward: 0,
     translationRateForwardMax: 1,
     translationRateReverseMax: 1,
@@ -142,8 +142,8 @@ export const reducer: Reducer<HelmState> = (state: HelmState, rawAction: Action)
                 pitchRateMax: action.pitchRateMax,
                 yawRateMax: action.yawRateMax,
                 rollRateMax: action.rollRateMax,
-                translationRateXMax: action.translationRateXMax,
-                translationRateYMax: action.translationRateYMax,
+                translationRateHorizontalMax: action.translationRateHorizontalMax,
+                translationRateVerticalMax: action.translationRateVerticalMax,
             };
         case 'SET_SPEED_LIMITS':
             return {
@@ -168,8 +168,8 @@ export const reducer: Reducer<HelmState> = (state: HelmState, rawAction: Action)
         case 'SET_TRANSLATION_RATES':
             return {
                 ...state,
-                translationRateX: action.translationRateX,
-                translationRateY: action.translationRateY,
+                translationRateHorizontal: action.translationRateHorizontal,
+                translationRateVertical: action.translationRateVertical,
                 translationRateForward: action.translationRateForward,
             };
         default:

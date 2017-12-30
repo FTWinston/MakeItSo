@@ -39,7 +39,7 @@ export class TouchHelm extends React.Component<TypedHelmProps, {}> {
     render() {
         let words = this.props.text.systems.helm;
         let iconSize = "1.5em";
-        let overallSpeed = Helm.magnitude(this.props.translationRateX, this.props.translationRateY, this.props.translationRateForward);
+        let overallSpeed = Helm.magnitude(this.props.translationRateHorizontal, this.props.translationRateVertical, this.props.translationRateForward);
 
         return <div className="system helm helm--touchInput">
             <FieldGroup>

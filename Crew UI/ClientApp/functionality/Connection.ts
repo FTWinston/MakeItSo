@@ -125,10 +125,10 @@ export class Connection {
             }
             case 'helm_translation_rates': {
                 let vals = data.split(' ');
-                let x = parseFloat(vals[0]);
-                let y = parseFloat(vals[1]);
-                let forward = parseFloat(vals[2]);
-                store.dispatch(helmActions.setTranslationRates(x, y, forward));
+                let forward = parseFloat(vals[0]);
+                let horiz = parseFloat(vals[1]);
+                let vert = parseFloat(vals[2]);
+                store.dispatch(helmActions.setTranslationRates(horiz, vert, forward));
                 break;
             }
             default:

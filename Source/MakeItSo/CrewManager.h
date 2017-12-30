@@ -100,7 +100,13 @@ public:
 		EXTRACT_WITH_OFFSET(msg, buffer, offset);
 		return atoi(buffer);
 	}
-	
+
+	float ExtractFloat(websocket_message *msg, int offset) {
+		char buffer[12];
+		EXTRACT_WITH_OFFSET(msg, buffer, offset);
+		return atof(buffer);
+	}
+
 	static UCrewManager *Instance;
 
 #ifndef WEB_SERVER_TEST
@@ -173,4 +179,5 @@ protected:
 	UCrewManager* crewManager;
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::None; }
 	int32 ExtractInt(websocket_message *msg, int offset) { return crewManager->ExtractInt(msg, offset); }
+	float ExtractFloat(websocket_message *msg, int offset) { return crewManager->ExtractFloat(msg, offset); }
 };

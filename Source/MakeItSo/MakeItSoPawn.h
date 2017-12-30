@@ -80,7 +80,7 @@ public:
 	FVector LocalVelocity;
 
 	/** Current rotation speed about each axis */
-	FRotator RotationSpeed;
+	FRotator AngularVelocity;
 
 #ifdef WEB_SERVER_TEST
 	FRotator GetActorRotation() { return actorRotation; }

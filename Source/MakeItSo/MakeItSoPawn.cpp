@@ -48,7 +48,7 @@ AMakeItSoPawn::AMakeItSoPawn()
 	MaxTurnSpeed = 50.f;
 
 	LocalVelocity = FVector(500.f, 0.f, 0.f);
-	RotationSpeed = FRotator(0.f, 0.f, 0.f);
+	AngularVelocity = FRotator(0.f, 0.f, 0.f);
 }
 
 #ifndef WEB_SERVER_TEST
@@ -69,11 +69,11 @@ void AMakeItSoPawn::Tick(float DeltaSeconds)
 
 	//GetWorld()->GetFirstPlayerController()->ClientMessage(FString::Printf(TEXT("Current speed: %f, %f, %f\n"), CurrentForwardSpeed, CurrentRightSpeed, CurrentUpSpeed));
 
-	// Move ship forwards (with sweep so we stop when we collide with things)
+	// Move ship (with sweep so we stop when we collide with things)
 	AddActorLocalOffset(LocalVelocity * DeltaSeconds, true);
 
 	// Rotate ship
-	AddActorLocalRotation(RotationSpeed * DeltaSeconds);
+	AddActorLocalRotation(AngularVelocity * DeltaSeconds);
 
 	// Call any parent class Tick implementation
 	Super::Tick(DeltaSeconds);
@@ -83,7 +83,7 @@ void AMakeItSoPawn::NotifyHit(class UPrimitiveComponent* MyComp, class AActor* O
 {
 	Super::NotifyHit(MyComp, Other, OtherComp, bSelfMoved, HitLocation, HitNormal, NormalImpulse, Hit);
 
-	// Set velocity to zero upon collision
-	LocalVelocity = FVector::ZeroVector;
+	// Reverse slowly upon collision
+	LocalVelocity = -0.05f * LocalVelocity;
 }
 #endif
