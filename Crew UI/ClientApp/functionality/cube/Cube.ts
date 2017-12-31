@@ -38,7 +38,7 @@ export class Cube {
     
     public draw(ctx: CanvasRenderingContext2D, radius: number, pitch: number, yaw: number, roll: number) {
         const deg2rad = Math.PI / 180;
-        pitch = -pitch * deg2rad;
+        pitch = pitch * deg2rad;
         yaw = -yaw * deg2rad;
         roll = -roll * deg2rad;
         

@@ -902,7 +902,7 @@ var Cube = (function () {
     }
     Cube.prototype.draw = function (ctx, radius, pitch, yaw, roll) {
         var deg2rad = Math.PI / 180;
-        pitch = -pitch * deg2rad;
+        pitch = pitch * deg2rad;
         yaw = -yaw * deg2rad;
         roll = -roll * deg2rad;
         for (var _i = 0, _a = this.faces; _i < _a.length; _i++) {
