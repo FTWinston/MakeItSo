@@ -7,6 +7,8 @@
 #include "MakeItSoPawn.h"
 #include "HelmSystem.h"
 
+const float helmSendInterval = 0.05f;
+
 bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "yawLeft "))
@@ -99,6 +101,8 @@ void UHelmSystem::ResetData()
 	pitchRateMax = yawRateMax = rollRateMax = 90.f;
 	sideMoveRateMax = verticalMoveRateMax = 500;
 	forwardMoveRateMax = 5000; backwardMoveRateMax = 2500;
+
+	nextSendSeconds = helmSendInterval;
 }
 
 void UHelmSystem::SendAllData()
@@ -111,17 +115,19 @@ void UHelmSystem::SendAllData()
 		forwardMoveRateMax, backwardMoveRateMax);
 	
 	auto pawn = crewManager->GetShipPawn();
-	FRotator orientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
+	lastSentOrientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
-		orientation.Pitch, orientation.Yaw, orientation.Roll);
+		lastSentOrientation.Pitch, lastSentOrientation.Yaw, lastSentOrientation.Roll);
 
-	auto rotationSpeed = pawn == nullptr ? FRotator::ZeroRotator : pawn->AngularVelocity;
+	lastSentAngularVelocity = pawn == nullptr ? FRotator::ZeroRotator : pawn->AngularVelocity;
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
-		rotationSpeed.Pitch, rotationSpeed.Yaw, rotationSpeed.Roll);
+		lastSentAngularVelocity.Pitch, lastSentAngularVelocity.Yaw, lastSentAngularVelocity.Roll);
 
-	auto velocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
+	lastSentVelocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
 	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.4f %.4f %.4f",
-		velocity.X, velocity.Y, velocity.Z);
+		lastSentVelocity.X, lastSentVelocity.Y, lastSentVelocity.Z);
+
+	nextSendSeconds = helmSendInterval;
 }
 
 void UHelmSystem::Tick(float DeltaSeconds)
@@ -129,75 +135,78 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	auto pawn = crewManager->GetShipPawn();
 
 	// update rotation rates
-	auto prevAngularVelocity = pawn->AngularVelocity; // TODO: save this locally, so that if something outwith teh system updates it, change is still sent
+	auto angularVelocity = pawn->AngularVelocity;
 
 	float adjustmentAmount = rotationAccel * DeltaSeconds;
-	FRotator newAngularVelocity;
 	if (stopRotation)
 	{
-		newAngularVelocity = FRotator(
-			TowardsZero(prevAngularVelocity.Pitch, adjustmentAmount),
-			TowardsZero(prevAngularVelocity.Yaw, adjustmentAmount),
-			TowardsZero(prevAngularVelocity.Roll, adjustmentAmount)
-		);
+		angularVelocity.Pitch = TowardsZero(angularVelocity.Pitch, adjustmentAmount);
+		angularVelocity.Yaw = TowardsZero(angularVelocity.Yaw, adjustmentAmount);
+		angularVelocity.Roll = TowardsZero(angularVelocity.Roll, adjustmentAmount);
 	}
 	else
 	{
-		newAngularVelocity = FRotator(
-			AdjustAndClamp(prevAngularVelocity.Pitch, pitchDown * adjustmentAmount, pitchUp * adjustmentAmount, -pitchRateMax, pitchRateMax),
-			AdjustAndClamp(prevAngularVelocity.Yaw, yawLeft * adjustmentAmount, yawRight * adjustmentAmount, -yawRateMax, yawRateMax),
-			AdjustAndClamp(prevAngularVelocity.Roll, rollLeft * adjustmentAmount, rollRight * adjustmentAmount, -rollRateMax, rollRateMax)
-		);
+		angularVelocity.Pitch = AdjustAndClamp(angularVelocity.Pitch, pitchDown * adjustmentAmount, pitchUp * adjustmentAmount, -pitchRateMax, pitchRateMax);
+		angularVelocity.Yaw = AdjustAndClamp(angularVelocity.Yaw, yawLeft * adjustmentAmount, yawRight * adjustmentAmount, -yawRateMax, yawRateMax);
+		angularVelocity.Roll = AdjustAndClamp(angularVelocity.Roll, rollLeft * adjustmentAmount, rollRight * adjustmentAmount, -rollRateMax, rollRateMax);
 	}
-	pawn->AngularVelocity = newAngularVelocity;
-
-	if (newAngularVelocity != prevAngularVelocity)
-	{
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
-			newAngularVelocity.Pitch, newAngularVelocity.Yaw, newAngularVelocity.Roll);
-	}
-	
-	// update orientation
-	if (prevAngularVelocity != FRotator::ZeroRotator)
-	{
-		FRotator orientation = pawn->GetActorRotation();
-
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
-			orientation.Pitch, orientation.Yaw, orientation.Roll);
-	}
+	pawn->AngularVelocity = angularVelocity;
 
 	// update strafing and movement rates
-	FVector prevVelocity = pawn->LocalVelocity; // TODO: save this locally, so that if something outwith teh system updates it, change is still sent
+	FVector velocity = pawn->LocalVelocity; // TODO: save this locally, so that if something outwith teh system updates it, change is still sent
 
 	adjustmentAmount = strafeAccel * DeltaSeconds;
-	FVector newVelocity = prevVelocity;
 	if (stopStrafing)
 	{
-		newVelocity.Y = TowardsZero(prevVelocity.Y, adjustmentAmount);
-		newVelocity.Z = TowardsZero(prevVelocity.Z, adjustmentAmount);
+		velocity.Y = TowardsZero(velocity.Y, adjustmentAmount);
+		velocity.Z = TowardsZero(velocity.Z, adjustmentAmount);
 	}
 	else
 	{
-		newVelocity.Y = AdjustAndClamp(prevVelocity.Y, strafeLeft * adjustmentAmount, strafeRight * adjustmentAmount, -sideMoveRateMax, sideMoveRateMax);
-		newVelocity.Z = AdjustAndClamp(prevVelocity.Z, strafeDown * adjustmentAmount, strafeUp * adjustmentAmount, -verticalMoveRateMax, verticalMoveRateMax);
+		velocity.Y = AdjustAndClamp(velocity.Y, strafeLeft * adjustmentAmount, strafeRight * adjustmentAmount, -sideMoveRateMax, sideMoveRateMax);
+		velocity.Z = AdjustAndClamp(velocity.Z, strafeDown * adjustmentAmount, strafeUp * adjustmentAmount, -verticalMoveRateMax, verticalMoveRateMax);
 	}
 
 	adjustmentAmount = forwardAccelMax * DeltaSeconds;
 	if (stopForwardBack)
 	{
-		newVelocity.X = TowardsZero(prevVelocity.X, adjustmentAmount);
+		velocity.X = TowardsZero(velocity.X, adjustmentAmount);
 	}
 	else
 	{
-		newVelocity.X = AdjustAndClamp(prevVelocity.X, moveBackward * adjustmentAmount, moveForward * adjustmentAmount, -backwardMoveRateMax, forwardMoveRateMax);
+		velocity.X = AdjustAndClamp(velocity.X, moveBackward * adjustmentAmount, moveForward * adjustmentAmount, -backwardMoveRateMax, forwardMoveRateMax);
 	}
 
-	pawn->LocalVelocity = newVelocity;
+	pawn->LocalVelocity = velocity;
 	
-	if (newVelocity != prevVelocity)
+	nextSendSeconds -= DeltaSeconds;
+	if (nextSendSeconds > 0.f)
+		return; // don't try to send data too frequently
+
+	nextSendSeconds += helmSendInterval;
+	if (nextSendSeconds < 0) // if framerate is too low, don't force it to send every frame
+		nextSendSeconds = helmSendInterval;
+
+	if (angularVelocity != lastSentAngularVelocity)
 	{
+		lastSentAngularVelocity = angularVelocity;
+		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
+			angularVelocity.Pitch, angularVelocity.Yaw, angularVelocity.Roll);
+	}
+
+	FRotator orientation = pawn->GetActorRotation();
+	if (orientation != lastSentOrientation)
+	{
+		lastSentOrientation = orientation;
+		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
+			orientation.Pitch, orientation.Yaw, orientation.Roll);
+	}
+
+	if (velocity != lastSentVelocity)
+	{
+		lastSentVelocity = velocity;
 		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
-			newVelocity.X, newVelocity.Y, newVelocity.Z);
+			velocity.X, velocity.Y, velocity.Z);
 	}
 }
 

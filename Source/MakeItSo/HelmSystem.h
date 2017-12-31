@@ -30,6 +30,10 @@ private:
 	float moveForward, moveBackward, strafeLeft, strafeRight, strafeUp, strafeDown;
 	bool stopRotation, stopStrafing, stopForwardBack;
 
+	FVector lastSentVelocity;
+	FRotator lastSentOrientation, lastSentAngularVelocity;
+	float nextSendSeconds;
+
 	// TODO: these values should presumably not be stored separately here, and instead the physical ship object should be used
 	float pitchRateMax, yawRateMax, rollRateMax;
 	float sideMoveRateMax, verticalMoveRateMax;
