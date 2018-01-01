@@ -5,6 +5,7 @@
 #include "Engine/Engine.h"
 #include "Runtime/Engine/Public/EngineGlobals.h"
 #include "ShipPlayerController.h"
+#include "GameFramework/PlayerState.h"
 #else
 #include "stdafx.h"
 #include <iostream>
@@ -508,8 +509,10 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 		char buffer[128];
 		EXTRACT(msg, buffer, "shipName ");
 
-		// TODO: set player name
-		// name = std::string(buffer);
+#ifndef WEB_SERVER_TEST
+		if (controller)
+			controller->PlayerState->SetPlayerName(FString(ANSI_TO_TCHAR(buffer)));
+#endif
 	}
 	else if (STARTS_WITH(msg, "startGame"))
 	{
