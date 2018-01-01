@@ -46,7 +46,7 @@
 #include <tchar.h>
 
 UCrewManager *UCrewManager::Instance = nullptr;
-mg_mgr *UCrewManager::mgr = nullptr;
+
 struct mg_serve_http_opts s_http_server_opts;
 char docRootPath[256];
 
@@ -71,6 +71,7 @@ AMakeItSoPawn* UCrewManager::GetShipPawn()
 FString UCrewManager::Init(AShipPlayerController *controller)
 {
 	Instance = this;
+	mgr = nullptr;
 	LinkController(controller);
 
 	crewState = ECrewState::Setup;

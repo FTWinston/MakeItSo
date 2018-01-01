@@ -130,7 +130,7 @@ private:
 	ConnectionInfo *GetConnectionViewing(ESystem system);
 	void AllocateViewSystems();
 
-	static mg_mgr *mgr;
+	mg_mgr *mgr;
 	AShipPlayerController *controller;
 	TMap<ESystem, UCrewSystem*> systems;
 
