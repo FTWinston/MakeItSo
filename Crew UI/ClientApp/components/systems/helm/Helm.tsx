@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { TextLocalisation, InputMode, OrientationCube } from '../../../functionality';
 import { HelmState as HelmBaseProps } from '../../../store/Helm';
-import { ButtonHelm } from './ButtonHelm';
+import { ButtonHelm } from './Buttons/ButtonHelm';
 import { TouchHelm } from './TouchHelm';
 import './Helm.scss';
 
@@ -19,7 +19,7 @@ export interface TypedHelmProps extends HelmBaseProps {
 
 const orientation = new OrientationCube();
 
-export class Helm extends React.Component<HelmProps, {}> {
+export class Helm extends React.PureComponent<HelmProps, {}> {
     public render() {
         switch (this.props.inputMode) {
             case InputMode.KeyboardAndMouse:

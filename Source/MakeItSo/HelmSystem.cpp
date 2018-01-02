@@ -116,11 +116,9 @@ void UHelmSystem::SendAllData()
 	
 	auto pawn = crewManager->GetShipPawn();
 	lastSentOrientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
-		lastSentOrientation.Pitch, lastSentOrientation.Yaw, lastSentOrientation.Roll);
-
 	lastSentAngularVelocity = pawn == nullptr ? FRotator::ZeroRotator : pawn->AngularVelocity;
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
+	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+		lastSentOrientation.Pitch, lastSentOrientation.Yaw, lastSentOrientation.Roll,
 		lastSentAngularVelocity.Pitch, lastSentAngularVelocity.Yaw, lastSentAngularVelocity.Roll);
 
 	lastSentVelocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
@@ -187,19 +185,14 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	if (nextSendSeconds < 0) // if framerate is too low, don't force it to send every frame
 		nextSendSeconds = helmSendInterval;
 
-	if (angularVelocity != lastSentAngularVelocity)
+	FRotator orientation = pawn->GetActorRotation();
+	if (orientation != lastSentOrientation || angularVelocity != lastSentAngularVelocity)
 	{
 		lastSentAngularVelocity = angularVelocity;
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation_rates %.4f %.4f %.4f",
-			angularVelocity.Pitch, angularVelocity.Yaw, angularVelocity.Roll);
-	}
-
-	FRotator orientation = pawn->GetActorRotation();
-	if (orientation != lastSentOrientation)
-	{
 		lastSentOrientation = orientation;
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_orientation %.2f %.2f %.2f",
-			orientation.Pitch, orientation.Yaw, orientation.Roll);
+		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+			orientation.Pitch, orientation.Yaw, orientation.Roll,
+			angularVelocity.Pitch, angularVelocity.Yaw, angularVelocity.Roll);
 	}
 
 	if (velocity != lastSentVelocity)

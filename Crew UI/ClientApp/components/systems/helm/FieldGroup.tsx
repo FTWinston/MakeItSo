@@ -5,7 +5,7 @@ export interface FieldGroupProps {
     className?: string;
 }
 
-export class FieldGroup extends React.Component<FieldGroupProps, {}> {
+export class FieldGroup extends React.PureComponent<FieldGroupProps, {}> {
     root: HTMLDivElement | null;
 
     public render() {

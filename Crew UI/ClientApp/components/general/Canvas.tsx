@@ -9,7 +9,7 @@ interface CanvasProps {
     draw: drawFunc;
 }
 
-export class Canvas extends React.Component<CanvasProps, {}> {
+export class Canvas extends React.PureComponent<CanvasProps, {}> {
     private ctx: CanvasRenderingContext2D;
 
     constructor(props: CanvasProps) {
@@ -22,13 +22,17 @@ export class Canvas extends React.Component<CanvasProps, {}> {
     }
     
     componentDidMount() {
-        this.props.draw(this.ctx, this.props.width, this.props.height);
+        this.redraw();
     }
 
     componentDidUpdate() {
-        this.props.draw(this.ctx, this.props.width, this.props.height);
+        this.redraw();
     }
     
+    redraw() {
+        this.props.draw(this.ctx, this.props.width, this.props.height);
+    }
+
     render() {
         return (
             <canvas

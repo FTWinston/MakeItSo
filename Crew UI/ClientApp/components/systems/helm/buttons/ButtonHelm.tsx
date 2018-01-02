@@ -1,32 +1,29 @@
 import * as React from 'react';
-import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ButtonColor } from '../../general';
-import { FieldGroup } from './FieldGroup';
-import { FeedbackGroup } from './FeedbackGroup';
+import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ButtonColor } from '../../../general';
+import { FieldGroup } from '../FieldGroup';
+import { FeedbackGroup } from '../FeedbackGroup';
+import { HeadingReadout } from './HeadingReadout';
+import { SpeedReadout } from './SpeedReadout';
 
-import { Helm, TypedHelmProps } from './Helm';
+import { Helm, TypedHelmProps } from '../Helm';
 
-export class ButtonHelm extends React.Component<TypedHelmProps, {}> {
+export class ButtonHelm extends React.PureComponent<TypedHelmProps, {}> {
     render() {
         let words = this.props.text.systems.helm;
         let iconSize = "1.5em";
-        let overallSpeed = Helm.magnitude(this.props.translationRateHorizontal, this.props.translationRateVertical, this.props.translationRateForward);
 
         return <div className="system helm helm--buttonInput">
             <FieldGroup
                 className="fieldGroup--buttons fieldGroup--3x1 fieldGroup--unpadded"
             >
-                <div className="readout">
-                    <div className="readout--label">{words.heading}</div>
-                    <span className="readout--value">{Helm.clamp(this.props.yaw)}</span>&nbsp;{words.mark}&nbsp;<span className="readout--value">{Helm.clamp(this.props.pitch)}</span>
-                    <div className="readout__smaller">{words.roll}&nbsp;<span className="readout--value">{Helm.clamp(this.props.roll)}</span>&deg;</div>
-                </div>
-
+                <HeadingReadout text={this.props.text} pitch={this.props.pitch} yaw={this.props.yaw} roll={this.props.roll} />
                 <FlexibleCanvas draw={(ctx, w, h) => this.props.drawOrientation(ctx, w, h)} />
-
-                <div className="readout">
-                    <div className="readout--label">{words.speed}</div>
-                    <span className="readout--value">{overallSpeed}</span> {words.metresPerSecond}
-                </div>
+                <SpeedReadout
+                    text={this.props.text}
+                    forwardSpeed={this.props.translationRateForward}
+                    horizontalSideSpeed={this.props.translationRateForward}
+                    verticalSideSpeed={this.props.translationRateForward}
+                />
             </FieldGroup>
 
             <FeedbackGroup

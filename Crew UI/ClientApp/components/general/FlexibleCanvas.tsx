@@ -12,7 +12,7 @@ interface FlexibleCanvasState {
     height: number;
 }
 
-export class FlexibleCanvas extends React.Component<FlexibleCanvasProps, FlexibleCanvasState> {
+export class FlexibleCanvas extends React.PureComponent<FlexibleCanvasProps, FlexibleCanvasState> {
     private resizeListener?: () => void;
     private wrapper: HTMLDivElement | null;
 

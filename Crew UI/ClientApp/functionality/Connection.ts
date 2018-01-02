@@ -107,20 +107,16 @@ export class Connection {
                 store.dispatch(helmActions.setSpeedLimits(forwardMax, revMax));
                 break;
             }
-            case 'helm_orientation': {
+            case 'helm_rotation': {
                 let vals = data.split(' ');
                 let pitch = parseFloat(vals[0]);
                 let yaw = parseFloat(vals[1]);
                 let roll = parseFloat(vals[2]);
+                let pitchRate = parseFloat(vals[3]);
+                let yawRate = parseFloat(vals[4]);
+                let rollRate = parseFloat(vals[5]);
                 store.dispatch(helmActions.setOrientation(pitch, yaw, roll));
-                break;
-            }
-            case 'helm_rotation_rates': {
-                let vals = data.split(' ');
-                let pitch = parseFloat(vals[0]);
-                let yaw = parseFloat(vals[1]);
-                let roll = parseFloat(vals[2]);
-                store.dispatch(helmActions.setRotationRates(pitch, yaw, roll));
+                store.dispatch(helmActions.setRotationRates(pitchRate, yawRate, rollRate));
                 break;
             }
             case 'helm_translation_rates': {

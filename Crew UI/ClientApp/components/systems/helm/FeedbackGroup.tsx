@@ -14,7 +14,7 @@ interface FeedbackGroupState {
     height: number;
 }
 
-export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackGroupState> {
+export class FeedbackGroup extends React.PureComponent<FeedbackGroupProps, FeedbackGroupState> {
     constructor(props: FeedbackGroupProps) {
         super(props);
 
@@ -25,6 +25,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
     }
 
     private group: FieldGroup | null;
+    private canvas: Canvas | null;
 
     private resizeListener?: () => void;
     componentDidMount() {
@@ -47,10 +48,26 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         });
     }
 
+    overrideProps: FeedbackGroupProps | undefined;
+    shouldComponentUpdate(nextProps: FeedbackGroupProps, nextState: FeedbackGroupState) {
+        if (this.state.width !== nextState.width || this.state.height !== nextState.height) {
+            return true;
+        }
+
+        // at this point, x, y, z or xMin must have changed, so rerender the canvas
+        if (this.canvas !== null) {
+            this.overrideProps = nextProps; // ensure nextProps are used rather than current ones, which are outdated
+            this.canvas.redraw();
+        }
+
+        return false;
+    }
+
     public render() {
         return (
         <FieldGroup ref={g => this.group = g} label={this.props.label} className={this.props.className}>
-            <Canvas 
+            <Canvas
+                ref={c => this.canvas = c}
                 width={this.state.width}
                 height={this.state.height}
                 draw={ctx => this.drawFeedback(ctx)}
@@ -62,26 +79,33 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
     }
 
     private drawFeedback(ctx: CanvasRenderingContext2D) {
+        let props = this.props;
+
+        if (this.overrideProps !== undefined) {
+            props = this.overrideProps;
+            this.overrideProps = undefined; // only use the override props once, cos after that the real props will have updated (even though we don't rerender)
+        }
+
         ctx.clearRect(0, 0, this.state.width, this.state.height);
 
-        this.drawFeedbackX(ctx);
-        this.drawFeedbackY(ctx);
+        this.drawFeedbackX(ctx, props);
+        this.drawFeedbackY(ctx, props);
     }
 
-    private drawFeedbackX(ctx: CanvasRenderingContext2D) {
+    private drawFeedbackX(ctx: CanvasRenderingContext2D, props: FeedbackGroupProps) {
         let width = this.state.width;
         let height = this.state.height;
         let maxVal = 1;
-        let minVal = this.props.xMin === undefined ? -1 : this.props.xMin;
+        let minVal = props.xMin === undefined ? -1 : props.xMin;
         let minPos = 0;
         let maxPos = width;
         let zeroPos = width * -minVal / (maxVal - minVal);
 
         let x;
-        if (this.props.x >= 0) {
-            x = zeroPos + (maxPos - zeroPos) * this.props.x / maxVal;
+        if (props.x >= 0) {
+            x = zeroPos + (maxPos - zeroPos) * props.x / maxVal;
         } else {
-            x = zeroPos - (zeroPos - minPos) * this.props.x / minVal;
+            x = zeroPos - (zeroPos - minPos) * props.x / minVal;
         }
         
         // faint lines showing center
@@ -102,7 +126,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
 
         // axis line and arrow
         ctx.globalAlpha = 0.4;
-        ctx.strokeStyle = ctx.fillStyle = this.props.x === 0 ? '#0c0' : '#cc0';
+        ctx.strokeStyle = ctx.fillStyle = props.x === 0 ? '#0c0' : '#cc0';
         
         ctx.beginPath();
         ctx.moveTo(x, 0);
@@ -133,8 +157,8 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         ctx.stroke();
     }
 
-    private drawFeedbackY(ctx: CanvasRenderingContext2D) {
-        if (this.props.y === undefined) {
+    private drawFeedbackY(ctx: CanvasRenderingContext2D, props: FeedbackGroupProps) {
+        if (props.y === undefined) {
             return;
         }
 
@@ -142,7 +166,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
         let height = this.state.height;
         let zeroPos = height / 2;
 
-        let y = Math.min(height, Math.max(0, -this.props.y * zeroPos + zeroPos));
+        let y = Math.min(height, Math.max(0, -props.y * zeroPos + zeroPos));
 
         // faint lines showing center
         ctx.strokeStyle= '#fff';
@@ -162,7 +186,7 @@ export class FeedbackGroup extends React.Component<FeedbackGroupProps, FeedbackG
 
         // axis line and arrow
         ctx.globalAlpha = 0.4;
-        ctx.strokeStyle = ctx.fillStyle = this.props.y === 0 ? '#0c0' : '#cc0';
+        ctx.strokeStyle = ctx.fillStyle = props.y === 0 ? '#0c0' : '#cc0';
         
         ctx.beginPath();
         ctx.moveTo(0, y);
