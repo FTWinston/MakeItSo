@@ -441,9 +441,32 @@ $lightBackground: #999;
     .helm--buttonInput {
       font-size: 6.25vw; } }
 
-.helm--buttonInput__speed {
-  padding: 1em;
-  border-color: #ffce9c; }
+.helm--touchInput {
+  display: grid;
+  grid-gap: 3vmin 3vmin;
+  font-size: 3vw; }
+  @media (orientation: landscape) {
+    .helm--touchInput {
+      grid-template-rows: 1fr;
+      grid-template-columns: 1fr 2fr 1fr;
+      grid-template-areas: "info rotation speed"; } }
+  @media (orientation: portrait) {
+    .helm--touchInput {
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-template-areas: "rotation rotation" "info speed"; } }
+
+.helm--touchInput__info {
+  grid-area: info;
+  height: 15em; }
+
+.helm--touchInput__rotation {
+  grid-area: rotation;
+  height: 15em; }
+
+.helm--touchInput__speed {
+  grid-area: speed;
+  height: 15em; }
 
 .fieldGroup {
   position: relative;
@@ -469,6 +492,16 @@ $lightBackground: #999;
   display: grid;
   grid-template-rows: 1fr;
   grid-template-columns: 1fr 1fr 1fr; }
+
+.fieldGroup--1x3 {
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr; }
+
+.fieldGroup--1x1 {
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr; }
 
 .fieldGroup__label {
   position: absolute;

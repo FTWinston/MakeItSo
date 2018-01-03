@@ -1,11 +1,11 @@
 import * as React from 'react';
-import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ButtonColor } from '../../../general';
-import { FieldGroup } from '../FieldGroup';
-import { FeedbackGroup } from '../FeedbackGroup';
+import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ButtonColor } from '../../general';
+import { FieldGroup } from './FieldGroup';
+import { FeedbackGroup } from './FeedbackGroup';
 import { HeadingReadout } from './HeadingReadout';
 import { SpeedReadout } from './SpeedReadout';
 
-import { Helm, TypedHelmProps } from '../Helm';
+import { Helm, TypedHelmProps } from './Helm';
 
 export class ButtonHelm extends React.PureComponent<TypedHelmProps, {}> {
     render() {

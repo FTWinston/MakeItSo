@@ -13,7 +13,7 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 {
 	if (STARTS_WITH(msg, "yawLeft "))
 	{
-		yawLeft = ExtractFloat(msg, sizeof("yawLeft "));
+		yawLeft = ExtractFloat(msg, sizeof("yawLeft ")); // TODO: these values should be clamped to -1 to 1
 	}
 	else if (STARTS_WITH(msg, "yawRight "))
 	{
@@ -122,7 +122,7 @@ void UHelmSystem::SendAllData()
 		lastSentAngularVelocity.Pitch, lastSentAngularVelocity.Yaw, lastSentAngularVelocity.Roll);
 
 	lastSentVelocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.4f %.4f %.4f",
+	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
 		lastSentVelocity.X, lastSentVelocity.Y, lastSentVelocity.Z);
 
 	nextSendSeconds = helmSendInterval;

@@ -15,7 +15,7 @@
     }
     
     font-size: 3vw;
-    @include landscape() {        
+    @include landscape() {
         @media (max-height: 58vw) {
             font-size: 5.1724vh; // 0.03 / 0.58 = 0.051724
 
@@ -33,9 +33,42 @@
     }
 }
 
-.helm--buttonInput__speed {
-    padding: 1em;
-    border-color: $colorQuandry;
+.helm--touchInput {
+    display: grid;
+
+    grid-gap: 3vmin 3vmin;
+
+    @include landscape() {
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr 2fr 1fr;
+        grid-template-areas: "info rotation speed";
+    }
+
+    @include portrait() {
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "rotation rotation"
+            "info speed";
+    }
+    
+    font-size: 3vw;
+    // TODO: portrait & landscape font-size calculations
+}
+
+.helm--touchInput__info {
+    grid-area: info;
+    height: 15em;
+}
+
+.helm--touchInput__rotation {
+    grid-area: rotation;
+    height: 15em;
+}
+
+.helm--touchInput__speed {
+    grid-area: speed;
+    height: 15em;
 }
 
 .fieldGroup {
@@ -68,6 +101,18 @@
     display: grid;
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr 1fr;
+}
+
+.fieldGroup--1x3 {
+    display: grid;
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr;
+}
+
+.fieldGroup--1x1 {
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr;
 }
 
 .fieldGroup__label {

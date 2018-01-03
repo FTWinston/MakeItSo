@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { TextLocalisation, InputMode, OrientationCube } from '../../../functionality';
 import { HelmState as HelmBaseProps } from '../../../store/Helm';
-import { ButtonHelm } from './Buttons/ButtonHelm';
+import { ButtonHelm } from './ButtonHelm';
 import { TouchHelm } from './TouchHelm';
 import './Helm.scss';
 

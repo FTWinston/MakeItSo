@@ -7,3 +7,4 @@ export { FlexibleCanvas } from './FlexibleCanvas';
 export { Icon, renderIcon } from './Icons';
 export { Screen } from './Screen';
 export { Textbox } from './Textbox';
+export { TouchArea } from './TouchArea';
