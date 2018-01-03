@@ -6,6 +6,8 @@ interface FeedbackGroupProps extends FieldGroupProps {
     x: number;
     y?: number;
     z?: number;
+    x2?: number;
+    y2?: number;
     xMin?: number;
 }
 
@@ -90,6 +92,9 @@ export class FeedbackGroup extends React.PureComponent<FeedbackGroupProps, Feedb
 
         this.drawFeedbackX(ctx, props);
         this.drawFeedbackY(ctx, props);
+
+        this.drawFeedbackX2(ctx, props);
+        this.drawFeedbackY2(ctx, props);
     }
 
     private drawFeedbackX(ctx: CanvasRenderingContext2D, props: FeedbackGroupProps) {
@@ -217,5 +222,68 @@ export class FeedbackGroup extends React.PureComponent<FeedbackGroupProps, Feedb
         ctx.lineTo(width - depth, zeroPos);
 
         ctx.stroke();
+    }
+
+    private drawFeedbackX2(ctx: CanvasRenderingContext2D, props: FeedbackGroupProps) {
+        if (props.x2 === undefined) {
+            return;
+        }
+
+        let width = this.state.width;
+        let height = this.state.height;
+        let maxVal = 1;
+        let minVal = props.xMin === undefined ? -1 : props.xMin;
+        let minPos = 0;
+        let maxPos = width;
+        let zeroPos = width * -minVal / (maxVal - minVal);
+
+        let x;
+        if (props.x >= 0) {
+            x = zeroPos + (maxPos - zeroPos) * props.x2 / maxVal;
+        } else {
+            x = zeroPos - (zeroPos - minPos) * props.x2 / minVal;
+        }
+        
+        ctx.lineWidth = 4;
+        ctx.setLineDash([6, 6]);
+        let vmin = Math.min(width, height);
+        let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+
+        // axis line
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = props.x2 === 0 ? '#0c0' : '#cc0';
+        
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
+        ctx.setLineDash([]);
+    }
+
+    private drawFeedbackY2(ctx: CanvasRenderingContext2D, props: FeedbackGroupProps) {
+        if (props.y2 === undefined) {
+            return;
+        }
+
+        let width = this.state.width;
+        let height = this.state.height;
+        let zeroPos = height / 2;
+
+        let y = Math.min(height, Math.max(0, -props.y2 * zeroPos + zeroPos));
+
+        ctx.lineWidth = 4;
+        ctx.setLineDash([6, 6]);
+        let vmin = Math.min(width, height);
+        let breadth = vmin * 0.025, depth = vmin * 0.025 * 1.412;
+
+        // axis line
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = ctx.fillStyle = props.y2 === 0 ? '#0c0' : '#cc0';
+        
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+        ctx.setLineDash([]);
     }
 }

@@ -3,6 +3,7 @@ import * as Hammer from 'hammerjs';
 import { connection } from '../../../Client';
 import { FlexibleCanvas, TouchArea } from '../../general';
 import { Helm, TypedHelmProps } from './Helm';
+import { FeedbackGroup } from './FeedbackGroup';
 import { FieldGroup } from './FieldGroup';
 import { HeadingReadout } from './HeadingReadout';
 import { SpeedReadout } from './SpeedReadout';
@@ -23,12 +24,24 @@ export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
                     verticalSideSpeed={this.props.translationRateForward}
                 />
             </FieldGroup>
-            <FieldGroup className="helm--touchInput__rotation fieldGroup--1x1">
+            <FeedbackGroup /* This needs feedback showing current touch position/range */
+                label={words.rotation}
+                x={this.props.yawRate / this.props.yawRateMax}
+                y={this.props.pitchRate / this.props.pitchRateMax}
+                x2={this.props.translationRateHorizontal / this.props.translationRateHorizontalMax}
+                y2={this.props.translationRateVertical / this.props.translationRateVerticalMax}
+                className="helm--touchInput__rotation fieldGroup--1x1"
+            >
                 <TouchArea setupTouch={(h, r) => this.setupRotation(h, r)} />
-            </FieldGroup>
-            <FieldGroup className="helm--touchInput__speed fieldGroup--1x1">
+            </FeedbackGroup>
+            <FeedbackGroup
+                label={words.forwardBackward}
+                x={this.props.translationRateForward / this.props.translationRateForwardMax}
+                xMin={-this.props.translationRateReverseMax / this.props.translationRateForwardMax}
+                className="helm--touchInput__speed fieldGroup--1x1"
+            >
                 <TouchArea setupTouch={(h, r) => this.setupSpeed(h, r)} />
-            </FieldGroup>
+            </FeedbackGroup>
         </div>;
     }
     
