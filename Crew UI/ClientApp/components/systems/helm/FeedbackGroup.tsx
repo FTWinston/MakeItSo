@@ -9,6 +9,7 @@ interface FeedbackGroupProps extends FieldGroupProps {
     x2?: number;
     y2?: number;
     xMin?: number;
+    drawExtra?: (ctx: CanvasRenderingContext2D) => void;
 }
 
 interface FeedbackGroupState {
@@ -80,6 +81,12 @@ export class FeedbackGroup extends React.PureComponent<FeedbackGroupProps, Feedb
         );
     }
 
+    public redraw() {
+        if (this.canvas !== null) {
+            this.canvas.redraw();
+        }
+    }
+
     private drawFeedback(ctx: CanvasRenderingContext2D) {
         let props = this.props;
 
@@ -95,6 +102,10 @@ export class FeedbackGroup extends React.PureComponent<FeedbackGroupProps, Feedb
 
         this.drawFeedbackX2(ctx, props);
         this.drawFeedbackY2(ctx, props);
+
+        if (this.props.drawExtra !== undefined) {
+            this.props.drawExtra(ctx);
+        }
     }
 
     private drawFeedbackX(ctx: CanvasRenderingContext2D, props: FeedbackGroupProps) {

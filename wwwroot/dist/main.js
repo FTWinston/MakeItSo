@@ -885,6 +885,11 @@ var FeedbackGroup = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["f" /* Canvas */], { ref: function (c) { return _this.canvas = c; }, width: this.state.width, height: this.state.height, draw: function (ctx) { return _this.drawFeedback(ctx); }, className: "fieldGroup__background" }),
             this.props.children));
     };
+    FeedbackGroup.prototype.redraw = function () {
+        if (this.canvas !== null) {
+            this.canvas.redraw();
+        }
+    };
     FeedbackGroup.prototype.drawFeedback = function (ctx) {
         var props = this.props;
         if (this.overrideProps !== undefined) {
@@ -896,6 +901,9 @@ var FeedbackGroup = (function (_super) {
         this.drawFeedbackY(ctx, props);
         this.drawFeedbackX2(ctx, props);
         this.drawFeedbackY2(ctx, props);
+        if (this.props.drawExtra !== undefined) {
+            this.props.drawExtra(ctx);
+        }
     };
     FeedbackGroup.prototype.drawFeedbackX = function (ctx, props) {
         var width = this.state.width;
@@ -4583,58 +4591,70 @@ var TouchArea = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     TouchArea.prototype.componentDidMount = function () {
-        this.hammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this.root);
-        this.props.setupTouch(this.hammer, this.root);
+        this.hammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this.element);
+        this.props.setupTouch(this);
     };
     TouchArea.prototype.render = function () {
         var _this = this;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "touchArea", ref: function (r) { if (r !== null) {
-                _this.root = r;
+                _this.element = r;
             } } });
     };
     TouchArea.prototype.shouldComponentUpdate = function (nextProps, nextState) {
         return false;
     };
-    TouchArea.createPan = function (hammer, element, name, pointers, direction, panned, eventScale, threshold) {
-        if (threshold === void 0) { threshold = 10; }
+    TouchArea.prototype.createPan = function (name, pointers, direction, eventScale, panned, feedback, clearFeedback) {
+        var _this = this;
         var params = {
             event: name,
             pointers: pointers,
             direction: direction,
-            threshold: threshold,
         };
         var pan = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Pan"](params);
-        hammer.add(pan);
-        hammer.on(name, direction === __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"] ?
-            function (ev) {
-                var panAmount = ev.deltaX / element.offsetWidth * eventScale; // scale
-                panAmount = Math.max(Math.min(panAmount, 1), -1); // clamp
-                panAmount = Math.round(panAmount * 100) / 100; // round
-                panned(panAmount);
-                //console.log(`${name} ${panAmount}`);
-            } :
-            function (ev) {
-                var panAmount = ev.deltaY / element.offsetHeight * eventScale; // scale
-                panAmount = Math.max(Math.min(panAmount, 1), -1); // clamp
-                panAmount = Math.round(panAmount * 100) / 100; // round
-                panned(panAmount);
-                //console.log(`${name} ${panAmount}`);
-            });
-        hammer.on(name + 'end', function (ev) {
-            console.log(name + ' end');
-            panned(0);
+        this.hammer.add(pan);
+        this.hammer.on(name, function (ev) {
+            var panAmount = direction === __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"]
+                ? ev.deltaX / _this.element.offsetWidth
+                : ev.deltaY / _this.element.offsetHeight;
+            panAmount = panAmount * eventScale; // scale, clamp & round
+            panAmount = Math.max(Math.min(panAmount, 1), -1); // clamp
+            panAmount = Math.round(panAmount * 100) / 100; // round
+            panned(panAmount);
+            if (feedback !== undefined) {
+                var parent_1 = _this.element.parentElement;
+                var cx = void 0, cy = void 0;
+                if (parent_1 === null) {
+                    cx = cy = 0;
+                }
+                else {
+                    cx = parent_1.offsetWidth / 2;
+                    cy = parent_1.offsetHeight / 2;
+                }
+                feedback(cx, cy, cx + ev.deltaX, cy + ev.deltaY);
+            }
         });
-        hammer.on(name + 'cancel', function (ev) {
-            console.log(name + ' cancel');
+        this.hammer.on(name + 'end', function (ev) {
             panned(0);
+            if (clearFeedback !== undefined) {
+                clearFeedback();
+            }
         });
-        /*
-                hammer.on(name + 'start', (ev: Hammer.Input) => {
-                    console.log(name + ' start');
-                    //numActivePans++;
-                });
-        */
+        this.hammer.on(name + 'cancel', function (ev) {
+            panned(0);
+            if (clearFeedback !== undefined) {
+                clearFeedback();
+            }
+        });
         return pan;
+    };
+    TouchArea.prototype.createPress = function (name, duration, pressed, released) {
+        var press = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Press"]({ event: name, time: duration });
+        this.hammer.add(press);
+        this.hammer.on(name, pressed);
+        if (released !== undefined) {
+            this.hammer.on(name + 'up', released);
+        }
+        return press;
     };
     return TouchArea;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -5835,40 +5855,96 @@ var TouchHelm = (function (_super) {
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__HeadingReadout__["a" /* HeadingReadout */], { text: this.props.text, pitch: this.props.pitch, yaw: this.props.yaw, roll: this.props.roll }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["d" /* FlexibleCanvas */], { draw: function (ctx, w, h) { return _this.props.drawOrientation(ctx, w, h); } }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_7__SpeedReadout__["a" /* SpeedReadout */], { text: this.props.text, forwardSpeed: this.props.translationRateForward, horizontalSideSpeed: this.props.translationRateForward, verticalSideSpeed: this.props.translationRateForward })),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__["a" /* FeedbackGroup */] /* This needs feedback showing current touch position/range */, { label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax, x2: this.props.translationRateHorizontal / this.props.translationRateHorizontalMax, y2: this.props.translationRateVertical / this.props.translationRateVerticalMax, className: "helm--touchInput__rotation fieldGroup--1x1" },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */], { setupTouch: function (h, r) { return _this.setupRotation(h, r); } })),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__["a" /* FeedbackGroup */], { label: words.forwardBackward, x: this.props.translationRateForward / this.props.translationRateForwardMax, xMin: -this.props.translationRateReverseMax / this.props.translationRateForwardMax, className: "helm--touchInput__speed fieldGroup--1x1" },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */], { setupTouch: function (h, r) { return _this.setupSpeed(h, r); } })));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__["a" /* FeedbackGroup */], { ref: function (g) { return _this.rotGroup = g; }, label: words.rotation, x: this.props.yawRate / this.props.yawRateMax, y: this.props.pitchRate / this.props.pitchRateMax, x2: this.props.translationRateHorizontal / this.props.translationRateHorizontalMax, y2: this.props.translationRateVertical / this.props.translationRateVerticalMax, drawExtra: function (ctx) { return _this.drawRotationFeedback(ctx); }, className: "helm--touchInput__rotation fieldGroup--1x1" },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */], { setupTouch: function (a) { return _this.setupRotation(a); } })),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__["a" /* FeedbackGroup */], { ref: function (g) { return _this.speedGroup = g; }, label: words.forwardBackward, x: this.props.translationRateForward / this.props.translationRateForwardMax, xMin: -this.props.translationRateReverseMax / this.props.translationRateForwardMax, className: "helm--touchInput__speed fieldGroup--1x1" },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */], { setupTouch: function (a) { return _this.setupSpeed(a); } })));
     };
-    TouchHelm.prototype.setupRotation = function (hammer, element) {
-        var yaw = __WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */].createPan(hammer, element, 'yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("yawRight " + val); }, 2);
-        var pitch = __WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */].createPan(hammer, element, 'pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("pitchUp " + -val); }, 2);
-        var roll = __WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */].createPan(hammer, element, 'roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("rollRight " + val); }, 2.25, 20);
-        var lateral = __WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */].createPan(hammer, element, 'lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeRight " + val); }, 5.5);
-        var vertical = __WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */].createPan(hammer, element, 'vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeUp " + -val); }, -3);
+    TouchHelm.prototype.setupRotation = function (area) {
+        var _this = this;
+        var yaw = area.createPan('yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("yawRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, function () { return _this.clearRotationFeedback(); });
+        var pitch = area.createPan('pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("pitchUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, function () { return _this.clearRotationFeedback(); });
+        var roll = area.createPan('roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("rollRight " + val); });
+        var lateral = area.createPan('lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, function () { return _this.clearRotationFeedback(); });
+        var vertical = area.createPan('vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, function () { return _this.clearRotationFeedback(); });
         yaw.recognizeWith(pitch);
         lateral.recognizeWith(vertical);
-        var rotStop = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Press"]({ event: 'allStop', time: 500 });
-        hammer.add(rotStop);
-        hammer.on('allStop', function () {
+        area.createPress('allStop', 500, function () {
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('+rotStop');
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('+strafeStop');
-        });
-        hammer.on('allStopup', function () {
+        }, function () {
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-rotStop');
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-strafeStop');
         });
     };
-    TouchHelm.prototype.setupSpeed = function (hammer, element) {
-        var forward = __WEBPACK_IMPORTED_MODULE_3__general__["e" /* TouchArea */].createPan(hammer, element, 'forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("moveForward " + -val); }, 2);
-        var stop = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Press"]({ event: 'allStop', time: 500 });
-        hammer.add(stop);
-        hammer.on('allStop', function () {
+    TouchHelm.prototype.setupSpeed = function (area) {
+        var _this = this;
+        var forward = area.createPan('forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("moveForward " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackSpeed(sx, sy, ex, ey, '#0cf'); }, function () { return _this.clearSpeedFeedback(); });
+        area.createPress('allStop', 500, function () {
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('+forwardBackStop');
-        });
-        hammer.on('allStopup', function () {
+        }, function () {
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-forwardBackStop');
         });
+    };
+    TouchHelm.prototype.feedbackRotation = function (startX, startY, endX, endY, color) {
+        this.rotFeedback = {
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY,
+            color: color,
+        };
+        if (this.rotGroup !== null) {
+            this.rotGroup.redraw();
+        }
+    };
+    TouchHelm.prototype.clearRotationFeedback = function () {
+        this.rotFeedback = undefined;
+        if (this.rotGroup !== null) {
+            this.rotGroup.redraw();
+        }
+    };
+    TouchHelm.prototype.drawRotationFeedback = function (ctx) {
+        if (this.rotFeedback !== undefined) {
+            this.drawFeedback(ctx, this.rotFeedback);
+        }
+    };
+    TouchHelm.prototype.feedbackSpeed = function (startX, startY, endX, endY, color) {
+        this.speedFeedback = {
+            startX: startX,
+            startY: startY,
+            endX: endX,
+            endY: endY,
+            color: color,
+        };
+        if (this.speedGroup !== null) {
+            this.speedGroup.redraw();
+        }
+    };
+    TouchHelm.prototype.clearSpeedFeedback = function () {
+        this.speedFeedback = undefined;
+        if (this.speedGroup !== null) {
+            this.speedGroup.redraw();
+        }
+    };
+    TouchHelm.prototype.drawSpeedFeedback = function (ctx) {
+        if (this.speedFeedback !== undefined) {
+            this.drawFeedback(ctx, this.speedFeedback);
+        }
+    };
+    TouchHelm.prototype.drawFeedback = function (ctx, feedback) {
+        ctx.strokeStyle = feedback.color;
+        ctx.lineWidth = 5;
+        ctx.globalAlpha = 0.3;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(feedback.startX, feedback.startY);
+        ctx.lineTo(feedback.endX, feedback.endY);
+        ctx.stroke();
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = 1;
+        ctx.lineCap = 'butt';
+        ctx.stroke();
     };
     return TouchHelm;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
