@@ -124,6 +124,8 @@ struct FVector {
 	FVector(float x, float y, float z) { X = x; Y = y; Z = z; }
 	float X, Y, Z;
 
+	const static FVector ZeroVector;
+
 	FVector operator+(const FVector& Q) const {
 		FVector result;
 
@@ -138,6 +140,18 @@ struct FVector {
 		this->X += Q.X;
 		this->Y += Q.Y;
 		this->Z += Q.Z;
+	}
+
+	bool operator==(const FVector& Q) {
+		return this->X == Q.X
+			&& this->Y == Q.Y
+			&& this->Z == Q.Z;
+	}
+
+	bool operator!=(const FVector& Q) {
+		return this->X != Q.X
+			|| this->Y != Q.Y
+			|| this->Z != Q.Z;
 	}
 };
 

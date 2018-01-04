@@ -49,6 +49,10 @@ AMakeItSoPawn::AMakeItSoPawn()
 
 	LocalVelocity = FVector(500.f, 0.f, 0.f);
 	AngularVelocity = FRotator(0.f, 0.f, 0.f);
+
+#ifdef WEB_SERVER_TEST
+	actorRotation = FRotator(0, 0, 0);
+#endif
 }
 
 #ifndef WEB_SERVER_TEST

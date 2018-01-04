@@ -33,3 +33,5 @@ FRotator FQuat::Rotator() const
 }
 
 const FRotator FRotator::ZeroRotator = FRotator(0, 0, 0);
+
+const FVector FVector::ZeroVector = FVector(0, 0, 0);
