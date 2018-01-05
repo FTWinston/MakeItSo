@@ -250,9 +250,9 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .screen {
-  width: calc(100vw - 1em);
-  min-height: calc(100vh - 1em);
-  max-height: calc(100vh - 1em);
+  width: calc(100vw - 1rem);
+  min-height: calc(100vh - 1rem);
+  max-height: calc(100vh - 1rem);
   overflow: hidden;
   display: flex;
   flex-direction: column; }
@@ -267,7 +267,7 @@ $lightBackground: #999;
   max-height: unset;
   overflow: unset;
   overflow-y: auto;
-  width: calc(100vw - 2em);
+  width: calc(100vw - 2rem);
   max-width: 800em; }
   @media (min-width: 500px) {
     .screen--pageLayout {
@@ -393,7 +393,7 @@ $lightBackground: #999;
   min-width: 25em; }
   @media (max-width: 440px) {
     .systemSelection {
-      min-width: calc(100vw - 2em); } }
+      min-width: calc(100vw - 2rem); } }
 
 .systemSelection__help, .systemSelection__group {
   justify-self: center; }
@@ -443,13 +443,18 @@ $lightBackground: #999;
 
 .helm--touchInput {
   display: grid;
-  grid-gap: 3vmin 3vmin;
+  grid-gap: 1em;
   font-size: 3vw; }
+  .helm--touchInput > * {
+    height: 15em; }
   @media (orientation: landscape) {
     .helm--touchInput {
       grid-template-rows: 1fr;
       grid-template-columns: 1fr 2fr 1fr;
       grid-template-areas: "info rotation speed"; } }
+  @media (orientation: landscape) and (max-height: 54vw) {
+    .helm--touchInput > * {
+      height: calc(100vh - 0.5rem - 0.5rem - 2.4rem - 14px); } }
   @media (orientation: portrait) {
     .helm--touchInput {
       grid-template-rows: 1fr 1fr;
@@ -457,16 +462,13 @@ $lightBackground: #999;
       grid-template-areas: "rotation rotation" "info speed"; } }
 
 .helm--touchInput__info {
-  grid-area: info;
-  height: 15em; }
+  grid-area: info; }
 
 .helm--touchInput__rotation {
-  grid-area: rotation;
-  height: 15em; }
+  grid-area: rotation; }
 
 .helm--touchInput__speed {
-  grid-area: speed;
-  height: 15em; }
+  grid-area: speed; }
 
 .fieldGroup {
   position: relative;
@@ -611,9 +613,9 @@ $lightBackground: #999;
 .systemHeader {
   flex-shrink: 0;
   flex-grow: 0;
-  height: 2em;
+  height: 2rem;
   background-color: #9f9bfd;
-  margin: 0.3em 0.2em 1em 0.2em;
+  margin: 0.3rem 0.2rem 1rem 0.2rem;
   padding: 0 0.75em;
   border-radius: 1em;
   display: flex;
@@ -680,6 +682,6 @@ body {
   justify-content: center;
   box-sizing: border-box;
   min-height: 100vh;
-  padding: 0.5em; }
+  padding: 0.5rem; }
 
 /*# sourceMappingURL=site.css.map*/

@@ -36,12 +36,22 @@
 .helm--touchInput {
     display: grid;
 
-    grid-gap: 3vmin 3vmin;
+    grid-gap: 1em;
+    
+    & > * {
+        height: 15em;
+    }
 
     @include landscape() {
         grid-template-rows: 1fr;
         grid-template-columns: 1fr 2fr 1fr;
         grid-template-areas: "info rotation speed";
+
+        @media (max-height: 54vw) {
+            & > * {
+                height: calc(100vh - #{$clientPadding} - #{$clientPadding} - #{$headerHeight} - 14px); // 14px is a heuristic, I don't know what borders it relates to
+            }
+        }
     }
 
     @include portrait() {
@@ -53,22 +63,18 @@
     }
     
     font-size: 3vw;
-    // TODO: portrait & landscape font-size calculations
 }
 
 .helm--touchInput__info {
     grid-area: info;
-    height: 15em;
 }
 
 .helm--touchInput__rotation {
     grid-area: rotation;
-    height: 15em;
 }
 
 .helm--touchInput__speed {
     grid-area: speed;
-    height: 15em;
 }
 
 .fieldGroup {
