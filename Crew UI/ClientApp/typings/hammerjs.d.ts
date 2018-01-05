@@ -18,6 +18,7 @@ declare module 'hammerjs' {
         center: { x: number, y: number };
         deltaX: number;
         deltaY: number;
+        rotation: number;
     }
 
     export class Manager {
@@ -39,6 +40,7 @@ declare module 'hammerjs' {
         constructor(options: object);
 
         recognizeWith(otherRecognizer: Recognizer): Recognizer;
+        requireFailure(otherRecognizer: Recognizer): Recognizer;
     }
 
     export class Press extends Recognizer {
@@ -47,5 +49,9 @@ declare module 'hammerjs' {
 
     export class Pan extends Recognizer {
       constructor(options?: object);
+    }
+
+    export class Rotate extends Recognizer {
+        constructor(options?: object);
     }
 }

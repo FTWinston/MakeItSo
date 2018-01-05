@@ -57,14 +57,36 @@ export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
     }
     
     private setupRotation(area: TouchArea) {
+        let stopping = false;
+
+        let startStop = () => {
+            stopping = true;
+            navigator.vibrate(30);
+            connection.send('+rotStop');
+            connection.send('+strafeStop');
+        };
+
+        let finishStop = () => {
+            if (!stopping) {
+                return;
+            }
+
+            stopping = false;
+            navigator.vibrate(30);
+            connection.send('-rotStop');
+            connection.send('-strafeStop');
+        };
+
         let yaw = area.createPan('yaw', 1, Hammer.DIRECTION_HORIZONTAL, 2,
             val => connection.send(`yawRight ${val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#0cf'),
+            finishStop,
             () => this.clearRotationFeedback());
 
         let pitch = area.createPan('pitch', 1, Hammer.DIRECTION_VERTICAL, 2,
             val => connection.send(`pitchUp ${-val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#0cf'),
+            finishStop,
             () => this.clearRotationFeedback());
             
         let roll = area.createPan('roll', 2, Hammer.DIRECTION_HORIZONTAL, 2.25,
@@ -73,36 +95,47 @@ export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
         let lateral = area.createPan('lateral', 3, Hammer.DIRECTION_HORIZONTAL, 5.5,
             val => connection.send(`strafeRight ${val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#c0f'),
+            finishStop,
             () => this.clearRotationFeedback());
 
         let vertical = area.createPan('vertical', 3, Hammer.DIRECTION_VERTICAL, -3,
             val => connection.send(`strafeUp ${-val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#c0f'),
+            finishStop,
             () => this.clearRotationFeedback());
         
         yaw.recognizeWith(pitch);
         lateral.recognizeWith(vertical);
 
-        area.createPress('allStop', 500, () => {
-            connection.send('+rotStop');
-            connection.send('+strafeStop');
-        }, () => {
-            connection.send('-rotStop');
-            connection.send('-strafeStop');
-        });
+        let stop = area.createPress('allStop', 500, startStop, finishStop);
     }
 
     private setupSpeed(area: TouchArea) {
+        let stopping = false;
+
+        let startStop = () => {
+            stopping = true;
+            navigator.vibrate(30);
+            connection.send('+forwardBackStop');
+        };
+
+        let finishStop = () => {
+            if (!stopping) {
+                return;
+            }
+
+            stopping = false;
+            navigator.vibrate(30);
+            connection.send('-forwardBackStop');
+        };
+
         let forward = area.createPan('forward', 1, Hammer.DIRECTION_VERTICAL, 2,
             val => connection.send(`moveForward ${-val}`),
             (sx, sy, ex, ey) => this.feedbackSpeed(sx, sy, ex, ey, '#0cf'),
+            finishStop,
             () => this.clearSpeedFeedback());
 
-        area.createPress('allStop', 500, () => {
-            connection.send('+forwardBackStop');
-        }, () => {
-            connection.send('-forwardBackStop');
-        });
+        let stop = area.createPress('allStop', 500, startStop, finishStop);
     }
 
     private rotGroup: FeedbackGroup | null;

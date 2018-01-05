@@ -4603,7 +4603,13 @@ var TouchArea = (function (_super) {
     TouchArea.prototype.shouldComponentUpdate = function (nextProps, nextState) {
         return false;
     };
-    TouchArea.prototype.createPan = function (name, pointers, direction, eventScale, panned, feedback, clearFeedback) {
+    TouchArea.prototype.addRecogniser = function (recogniser) {
+        this.hammer.add(recogniser);
+    };
+    TouchArea.prototype.removeRecogniser = function (recogniser) {
+        this.hammer.remove(recogniser);
+    };
+    TouchArea.prototype.createPan = function (name, pointers, direction, eventScale, panned, feedback, start, finish) {
         var _this = this;
         var params = {
             event: name,
@@ -4616,7 +4622,7 @@ var TouchArea = (function (_super) {
             var panAmount = direction === __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"]
                 ? ev.deltaX / _this.element.offsetWidth
                 : ev.deltaY / _this.element.offsetHeight;
-            panAmount = panAmount * eventScale; // scale, clamp & round
+            panAmount = panAmount * eventScale; // scale
             panAmount = Math.max(Math.min(panAmount, 1), -1); // clamp
             panAmount = Math.round(panAmount * 100) / 100; // round
             panned(panAmount);
@@ -4635,17 +4641,40 @@ var TouchArea = (function (_super) {
         });
         this.hammer.on(name + 'end', function (ev) {
             panned(0);
-            if (clearFeedback !== undefined) {
-                clearFeedback();
+            if (finish !== undefined) {
+                finish();
             }
         });
         this.hammer.on(name + 'cancel', function (ev) {
             panned(0);
-            if (clearFeedback !== undefined) {
-                clearFeedback();
+            if (finish !== undefined) {
+                finish();
             }
         });
+        if (start !== undefined) {
+            this.hammer.on(name + 'start', function (ev) { return start(); });
+        }
         return pan;
+    };
+    TouchArea.prototype.createRotate = function (name, eventScale, rotated) {
+        var params = {
+            event: name,
+        };
+        var rot = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Rotate"](params);
+        this.hammer.add(rot);
+        this.hammer.on(name, function (ev) {
+            var amount = ev.rotation * eventScale; // scale
+            amount = Math.max(Math.min(amount, 1), -1); // clamp
+            amount = Math.round(amount * 100) / 100; // round
+            rotated(amount);
+        });
+        this.hammer.on(name + 'end', function (ev) {
+            rotated(0);
+        });
+        this.hammer.on(name + 'cancel', function (ev) {
+            rotated(0);
+        });
+        return rot;
     };
     TouchArea.prototype.createPress = function (name, duration, pressed, released) {
         var press = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Press"]({ event: name, time: duration });
@@ -5862,29 +5891,49 @@ var TouchHelm = (function (_super) {
     };
     TouchHelm.prototype.setupRotation = function (area) {
         var _this = this;
-        var yaw = area.createPan('yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("yawRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, function () { return _this.clearRotationFeedback(); });
-        var pitch = area.createPan('pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("pitchUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, function () { return _this.clearRotationFeedback(); });
-        var roll = area.createPan('roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("rollRight " + val); });
-        var lateral = area.createPan('lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, function () { return _this.clearRotationFeedback(); });
-        var vertical = area.createPan('vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, function () { return _this.clearRotationFeedback(); });
-        yaw.recognizeWith(pitch);
-        lateral.recognizeWith(vertical);
-        area.createPress('allStop', 500, function () {
+        var stopping = false;
+        var startStop = function () {
+            stopping = true;
+            navigator.vibrate(30);
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('+rotStop');
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('+strafeStop');
-        }, function () {
+        };
+        var finishStop = function () {
+            if (!stopping) {
+                return;
+            }
+            stopping = false;
+            navigator.vibrate(30);
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-rotStop');
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-strafeStop');
-        });
+        };
+        var yaw = area.createPan('yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("yawRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var pitch = area.createPan('pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("pitchUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var roll = area.createPan('roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("rollRight " + val); });
+        var lateral = area.createPan('lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var vertical = area.createPan('vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        yaw.recognizeWith(pitch);
+        lateral.recognizeWith(vertical);
+        var stop = area.createPress('allStop', 500, startStop, finishStop);
     };
     TouchHelm.prototype.setupSpeed = function (area) {
         var _this = this;
-        var forward = area.createPan('forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("moveForward " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackSpeed(sx, sy, ex, ey, '#0cf'); }, function () { return _this.clearSpeedFeedback(); });
-        area.createPress('allStop', 500, function () {
+        var stopping = false;
+        var startStop = function () {
+            stopping = true;
+            navigator.vibrate(30);
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('+forwardBackStop');
-        }, function () {
+        };
+        var finishStop = function () {
+            if (!stopping) {
+                return;
+            }
+            stopping = false;
+            navigator.vibrate(30);
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-forwardBackStop');
-        });
+        };
+        var forward = area.createPan('forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("moveForward " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackSpeed(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearSpeedFeedback(); });
+        var stop = area.createPress('allStop', 500, startStop, finishStop);
     };
     TouchHelm.prototype.feedbackRotation = function (startX, startY, endX, endY, color) {
         this.rotFeedback = {

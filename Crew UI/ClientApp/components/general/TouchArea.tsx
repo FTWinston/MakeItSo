@@ -32,6 +32,14 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         return false;
     }
 
+    addRecogniser(recogniser: Hammer.Recognizer) {
+        this.hammer.add(recogniser);
+    }
+
+    removeRecogniser(recogniser: Hammer.Recognizer) {
+        this.hammer.remove(recogniser);
+    }
+
     public createPan(
         name: string,
         pointers: number,
@@ -39,7 +47,8 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         eventScale: number,
         panned: (val: number) => void,
         feedback?: (startX: number, startY: number, endX: number, endY: number) => void,
-        clearFeedback?: () => void,
+        start?: () => void,
+        finish?: () => void,
     ) {
         var params = {
             event: name,
@@ -56,7 +65,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
                 ? ev.deltaX / this.element.offsetWidth
                 : ev.deltaY / this.element.offsetHeight;
 
-            panAmount = panAmount * eventScale // scale, clamp & round
+            panAmount = panAmount * eventScale // scale
             panAmount = Math.max(Math.min(panAmount, 1), -1); // clamp
             panAmount = Math.round(panAmount * 100) / 100; // round
 
@@ -78,20 +87,55 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         this.hammer.on(name + 'end', (ev: Hammer.Input) => {
             panned(0);
 
-            if (clearFeedback !== undefined) {
-                clearFeedback();
+            if (finish !== undefined) {
+                finish();
             }
         });
 
         this.hammer.on(name + 'cancel', (ev: Hammer.Input) => {
             panned(0);
 
-            if (clearFeedback !== undefined) {
-                clearFeedback();
+            if (finish !== undefined) {
+                finish();
             }
         });
 
+        if (start !== undefined) {
+            this.hammer.on(name + 'start', (ev: Hammer.Input) => start());
+        }
+
         return pan;
+    }
+
+    public createRotate(
+        name: string,
+        eventScale: number,
+        rotated: (val: number) => void,
+    ) {
+        var params = {
+            event: name,
+        };
+
+        let rot = new Hammer.Rotate(params);
+        this.hammer.add(rot);
+
+        this.hammer.on(name,  (ev: Hammer.Input) => {
+            let amount = ev.rotation * eventScale // scale
+            amount = Math.max(Math.min(amount, 1), -1); // clamp
+            amount = Math.round(amount * 100) / 100; // round
+
+            rotated(amount);
+        });
+        
+        this.hammer.on(name + 'end', (ev: Hammer.Input) => {
+            rotated(0);
+        });
+
+        this.hammer.on(name + 'cancel', (ev: Hammer.Input) => {
+            rotated(0);
+        });
+
+        return rot;
     }
 
     public createPress(name: string, duration: number, pressed: () => void, released?: () => void) {
