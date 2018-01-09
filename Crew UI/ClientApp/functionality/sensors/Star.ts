@@ -6,7 +6,7 @@ export class Star extends SensorTarget {
         super(id, position);
     }
 
-    drawTarget(ctx: CanvasRenderingContext2D) {
+    protected drawTarget(ctx: CanvasRenderingContext2D) {
         // TODO: star texture
         ctx.fillStyle = this.color;
         ctx.beginPath();

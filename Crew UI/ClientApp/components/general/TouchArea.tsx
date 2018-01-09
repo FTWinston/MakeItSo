@@ -1,31 +1,26 @@
 import * as React from 'react';
 import * as Hammer from 'hammerjs';
+import { FlexibleCanvas } from './FlexibleCanvas';
+import { drawFunc } from './Canvas';
 
 interface TouchAreaProps {
     setupTouch: (area: TouchArea) => void;
-}
-
-interface TouchFeedback {
-    startX: number;
-    startY: number;
-    endX: number;
-    endY: number;
+    draw?: drawFunc;
 }
 
 export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
-    public feedback?: TouchFeedback;
-
-    private element: HTMLDivElement;
+    protected element: HTMLDivElement;
     private hammer: Hammer.Manager;
 
     componentDidMount() {
         this.hammer = new Hammer.Manager(this.element);
-
         this.props.setupTouch(this);
     }
 
     render() {
-        return <div className="touchArea" ref={r => { if (r !== null) { this.element = r }}} />;
+        return this.props.draw === undefined ?
+            <div className="touchArea" ref={r => { if (r !== null) { this.element = r }}} />
+        :   <FlexibleCanvas className="touchArea" draw={this.props.draw} ref={r => { if (r !== null) { this.element = r.wrapper }}} />;
     }
     
     shouldComponentUpdate(nextProps: TouchAreaProps, nextState: {}) {
@@ -38,6 +33,13 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
 
     removeRecogniser(recogniser: Hammer.Recognizer) {
         this.hammer.remove(recogniser);
+    }
+
+    private scaleClampRound(val: number, scale: number) {
+        val = val * scale // scale
+        val = Math.max(Math.min(val, 1), -1); // clamp
+        val = Math.round(val * 100) / 100; // round
+        return val;
     }
 
     public createPan(
@@ -65,11 +67,9 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
                 ? ev.deltaX / this.element.offsetWidth
                 : ev.deltaY / this.element.offsetHeight;
 
-            panAmount = panAmount * eventScale // scale
-            panAmount = Math.max(Math.min(panAmount, 1), -1); // clamp
-            panAmount = Math.round(panAmount * 100) / 100; // round
-
+            panAmount = this.scaleClampRound(panAmount, eventScale);
             panned(panAmount);
+
             if (feedback !== undefined) {
                 let parent = this.element.parentElement;
                 let cx, cy;
@@ -107,6 +107,67 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         return pan;
     }
 
+    public createPan2D(
+        name: string,
+        pointers: number,
+        eventScale: number,
+        panned: (dx: number, dy: number) => void,
+        feedback?: (startX: number, startY: number, endX: number, endY: number) => void,
+        start?: () => void,
+        finish?: () => void,
+    ) {
+        var params = {
+            event: name,
+            pointers: pointers,
+            direction: Hammer.DIRECTION_ALL,
+            //threshold: threshold,
+        };
+
+        let pan = new Hammer.Pan(params);
+        this.hammer.add(pan);
+
+        this.hammer.on(name,  (ev: Hammer.Input) => {
+            let dx = this.scaleClampRound(ev.deltaX / this.element.offsetWidth, eventScale);
+            let dy = this.scaleClampRound(ev.deltaY / this.element.offsetHeight, eventScale);
+            panned(dx, dy);
+
+            if (feedback !== undefined) {
+                let parent = this.element.parentElement;
+                let cx, cy;
+                if (parent === null) {
+                    cx = cy = 0;
+                } else {
+                    cx = parent.offsetWidth / 2;
+                    cy = parent.offsetHeight / 2;
+                }
+
+                feedback(cx, cy, cx + ev.deltaX, cy + ev.deltaY);
+            }
+        });
+        
+        this.hammer.on(name + 'end', (ev: Hammer.Input) => {
+            panned(0, 0);
+
+            if (finish !== undefined) {
+                finish();
+            }
+        });
+
+        this.hammer.on(name + 'cancel', (ev: Hammer.Input) => {
+            panned(0, 0);
+
+            if (finish !== undefined) {
+                finish();
+            }
+        });
+
+        if (start !== undefined) {
+            this.hammer.on(name + 'start', (ev: Hammer.Input) => start());
+        }
+
+        return pan;
+    }
+
     public createRotate(
         name: string,
         eventScale: number,
@@ -120,10 +181,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         this.hammer.add(rot);
 
         this.hammer.on(name,  (ev: Hammer.Input) => {
-            let amount = ev.rotation * eventScale // scale
-            amount = Math.max(Math.min(amount, 1), -1); // clamp
-            amount = Math.round(amount * 100) / 100; // round
-
+            let amount = this.scaleClampRound(ev.rotation, eventScale);
             rotated(amount);
         });
         

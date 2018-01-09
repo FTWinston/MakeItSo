@@ -6,7 +6,7 @@ export class Planet extends SensorTarget {
         super(id, position);
     }
 
-    drawTarget(ctx: CanvasRenderingContext2D) {
+    protected drawTarget(ctx: CanvasRenderingContext2D) {
         // TODO: draw orbit
 
         // TODO: planet texture

@@ -4,6 +4,8 @@ export abstract class SensorTarget {
     constructor(readonly id: number, public position: Vector3) {
     }
 
+    interpolate(interval: number) {}
+
     isOnScreen(x: number, y: number, width: number, height: number) {
         return this.position.x >= x
             && this.position.x <= x + width
@@ -11,14 +13,12 @@ export abstract class SensorTarget {
             && this.position.y <= y + height;
     }
 
-    interpolate(interval: number) {}
-
     draw(ctx: CanvasRenderingContext2D) {
         this.drawTarget(ctx);
         this.drawDepthIndicator(ctx);
     }
 
-    abstract drawTarget(ctx: CanvasRenderingContext2D): void;
+    protected abstract drawTarget(ctx: CanvasRenderingContext2D): void;
 
     protected drawDepthIndicator(ctx: CanvasRenderingContext2D) {
         ctx.strokeStyle = '#ccc';

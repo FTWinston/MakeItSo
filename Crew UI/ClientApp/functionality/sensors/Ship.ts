@@ -7,7 +7,7 @@ export class Ship extends MoveableTarget {
         super(id, position, velocity, relationship);
     }
     
-    drawTarget(ctx: CanvasRenderingContext2D) {
+    protected drawTarget(ctx: CanvasRenderingContext2D) {
         // TODO: better ship symbol, indicating direction of velocity
         ctx.beginPath();
         ctx.moveTo(this.position.x, this.position.y - 5);
