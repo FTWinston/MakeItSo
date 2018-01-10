@@ -14,6 +14,7 @@ interface FlexibleCanvasState {
 
 export class FlexibleCanvas extends React.PureComponent<FlexibleCanvasProps, FlexibleCanvasState> {
     private resizeListener?: () => void;
+    private canvas: Canvas;
     private _wrapper: HTMLDivElement;
     get wrapper() { return this._wrapper; }
 
@@ -39,13 +40,6 @@ export class FlexibleCanvas extends React.PureComponent<FlexibleCanvasProps, Fle
         }
     }
 
-    private updateSize() {
-        this.setState({
-            width: this._wrapper.offsetWidth,
-            height: this._wrapper.offsetHeight,
-        });
-    }
-
     render() {
         let classes = 'canvasWrapper';
         if (this.props.className !== undefined) {
@@ -55,11 +49,23 @@ export class FlexibleCanvas extends React.PureComponent<FlexibleCanvasProps, Fle
         return (
             <div className={classes} ref={w => { if (w !== null) { this._wrapper = w }}}>
                 <Canvas
+                    ref={c => { if (c !== null) { this.canvas = c }}}
                     width={this.state.width}
                     height={this.state.height}
                     draw={this.props.draw}
                 />
             </div>
         );
+    }
+
+    redraw() {
+        this.canvas.redraw();
+    }
+    
+    private updateSize() {
+        this.setState({
+            width: this._wrapper.offsetWidth,
+            height: this._wrapper.offsetHeight,
+        });
     }
 }

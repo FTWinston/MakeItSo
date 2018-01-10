@@ -77,28 +77,28 @@ export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
             connection.send('-strafeStop');
         };
 
-        let yaw = area.createPan('yaw', 1, Hammer.DIRECTION_HORIZONTAL, 2,
+        let yaw = area.createPan('yaw', 1, Hammer.DIRECTION_HORIZONTAL, 2, true,
             val => connection.send(`yawRight ${val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#0cf'),
             finishStop,
             () => this.clearRotationFeedback());
 
-        let pitch = area.createPan('pitch', 1, Hammer.DIRECTION_VERTICAL, 2,
+        let pitch = area.createPan('pitch', 1, Hammer.DIRECTION_VERTICAL, 2, true,
             val => connection.send(`pitchUp ${-val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#0cf'),
             finishStop,
             () => this.clearRotationFeedback());
             
-        let roll = area.createPan('roll', 2, Hammer.DIRECTION_HORIZONTAL, 2.25,
+        let roll = area.createPan('roll', 2, Hammer.DIRECTION_HORIZONTAL, 2.25, true,
             val => connection.send(`rollRight ${val}`));
 
-        let lateral = area.createPan('lateral', 3, Hammer.DIRECTION_HORIZONTAL, 5.5,
+        let lateral = area.createPan('lateral', 3, Hammer.DIRECTION_HORIZONTAL, 5.5, true,
             val => connection.send(`strafeRight ${val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#c0f'),
             finishStop,
             () => this.clearRotationFeedback());
 
-        let vertical = area.createPan('vertical', 3, Hammer.DIRECTION_VERTICAL, -3,
+        let vertical = area.createPan('vertical', 3, Hammer.DIRECTION_VERTICAL, -3, true,
             val => connection.send(`strafeUp ${-val}`),
             (sx, sy, ex, ey) => this.feedbackRotation(sx, sy, ex, ey, '#c0f'),
             finishStop,
@@ -129,7 +129,7 @@ export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
             connection.send('-forwardBackStop');
         };
 
-        let forward = area.createPan('forward', 1, Hammer.DIRECTION_VERTICAL, 2,
+        let forward = area.createPan('forward', 1, Hammer.DIRECTION_VERTICAL, 2, true,
             val => connection.send(`moveForward ${-val}`),
             (sx, sy, ex, ey) => this.feedbackSpeed(sx, sy, ex, ey, '#0cf'),
             finishStop,

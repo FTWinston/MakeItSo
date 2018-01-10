@@ -445,11 +445,11 @@ var SensorTarget = (function () {
         this.position = position;
     }
     SensorTarget.prototype.interpolate = function (interval) { };
-    SensorTarget.prototype.isOnScreen = function (x, y, width, height) {
-        return this.position.x >= x
-            && this.position.x <= x + width
-            && this.position.y >= y
-            && this.position.y <= y + height;
+    SensorTarget.prototype.isOnScreen = function (minX, minY, maxX, maxY) {
+        return this.position.x >= minX
+            && this.position.x <= maxX
+            && this.position.y >= minY
+            && this.position.y <= maxY;
     };
     SensorTarget.prototype.draw = function (ctx) {
         this.drawTarget(ctx);
@@ -777,12 +777,6 @@ var FlexibleCanvas = (function (_super) {
             window.removeEventListener('resize', this.resizeListener);
         }
     };
-    FlexibleCanvas.prototype.updateSize = function () {
-        this.setState({
-            width: this._wrapper.offsetWidth,
-            height: this._wrapper.offsetHeight,
-        });
-    };
     FlexibleCanvas.prototype.render = function () {
         var _this = this;
         var classes = 'canvasWrapper';
@@ -792,7 +786,18 @@ var FlexibleCanvas = (function (_super) {
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (w) { if (w !== null) {
                 _this._wrapper = w;
             } } },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Canvas__["a" /* Canvas */], { width: this.state.width, height: this.state.height, draw: this.props.draw })));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Canvas__["a" /* Canvas */], { ref: function (c) { if (c !== null) {
+                    _this.canvas = c;
+                } }, width: this.state.width, height: this.state.height, draw: this.props.draw })));
+    };
+    FlexibleCanvas.prototype.redraw = function () {
+        this.canvas.redraw();
+    };
+    FlexibleCanvas.prototype.updateSize = function () {
+        this.setState({
+            width: this._wrapper.offsetWidth,
+            height: this._wrapper.offsetHeight,
+        });
     };
     return FlexibleCanvas;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -942,8 +947,13 @@ var TouchArea = (function (_super) {
     function TouchArea() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
+    Object.defineProperty(TouchArea.prototype, "element", {
+        get: function () { return this._element; },
+        enumerable: true,
+        configurable: true
+    });
     TouchArea.prototype.componentDidMount = function () {
-        this.hammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this.element);
+        this.hammer = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Manager"](this._element);
         this.props.setupTouch(this);
     };
     TouchArea.prototype.render = function () {
@@ -953,11 +963,12 @@ var TouchArea = (function (_super) {
             classes += ' ' + this.props.className;
         }
         return this.props.draw === undefined ?
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (r) { if (r !== null) {
-                    _this.element = r;
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, ref: function (e) { if (e !== null) {
+                    _this._element = e;
                 } } })
-            : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas__["a" /* FlexibleCanvas */], { className: classes, draw: this.props.draw, ref: function (r) { if (r !== null) {
-                    _this.element = r.wrapper;
+            : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas__["a" /* FlexibleCanvas */], { className: classes, draw: this.props.draw, ref: function (c) { if (c !== null) {
+                    _this.canvas = c;
+                    _this._element = c.wrapper;
                 } } });
     };
     TouchArea.prototype.shouldComponentUpdate = function (nextProps, nextState) {
@@ -969,13 +980,12 @@ var TouchArea = (function (_super) {
     TouchArea.prototype.removeRecogniser = function (recogniser) {
         this.hammer.remove(recogniser);
     };
-    TouchArea.prototype.scaleClampRound = function (val, scale) {
-        val = val * scale; // scale
-        val = Math.max(Math.min(val, 1), -1); // clamp
-        val = Math.round(val * 100) / 100; // round
-        return val;
+    TouchArea.prototype.redraw = function () {
+        if (this.canvas !== undefined) {
+            this.canvas.redraw();
+        }
     };
-    TouchArea.prototype.createPan = function (name, pointers, direction, eventScale, panned, feedback, start, finish) {
+    TouchArea.prototype.createPan = function (name, pointers, direction, eventScale, clamp, panned, feedback, start, finish) {
         var _this = this;
         var params = {
             event: name,
@@ -983,15 +993,24 @@ var TouchArea = (function (_super) {
             direction: direction,
         };
         var pan = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Pan"](params);
+        var prevAmount = 0;
         this.hammer.add(pan);
         this.hammer.on(name, function (ev) {
-            var panAmount = direction === __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"]
-                ? ev.deltaX / _this.element.offsetWidth
-                : ev.deltaY / _this.element.offsetHeight;
-            panAmount = _this.scaleClampRound(panAmount, eventScale);
-            panned(panAmount);
+            if (clamp) {
+                var panAmount = direction === __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"]
+                    ? _this.scaleClampRound(ev.deltaX * eventScale, _this._element.offsetWidth)
+                    : _this.scaleClampRound(ev.deltaY * eventScale, _this._element.offsetHeight);
+                panned(panAmount);
+            }
+            else {
+                var panAmount = direction === __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"]
+                    ? ev.deltaX * eventScale
+                    : ev.deltaY * eventScale;
+                panned(panAmount - prevAmount);
+                prevAmount = panAmount;
+            }
             if (feedback !== undefined) {
-                var parent_1 = _this.element.parentElement;
+                var parent_1 = _this._element.parentElement;
                 var cx = void 0, cy = void 0;
                 if (parent_1 === null) {
                     cx = cy = 0;
@@ -1020,7 +1039,7 @@ var TouchArea = (function (_super) {
         }
         return pan;
     };
-    TouchArea.prototype.createPan2D = function (name, pointers, eventScale, panned, feedback, start, finish) {
+    TouchArea.prototype.createPan2D = function (name, pointers, eventScale, clamp, panned, feedback, start, finish) {
         var _this = this;
         var params = {
             event: name,
@@ -1029,12 +1048,22 @@ var TouchArea = (function (_super) {
         };
         var pan = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Pan"](params);
         this.hammer.add(pan);
+        var prevX = 0, prevY = 0;
         this.hammer.on(name, function (ev) {
-            var dx = _this.scaleClampRound(ev.deltaX / _this.element.offsetWidth, eventScale);
-            var dy = _this.scaleClampRound(ev.deltaY / _this.element.offsetHeight, eventScale);
-            panned(dx, dy);
+            var dx = ev.deltaX * eventScale;
+            var dy = ev.deltaY * eventScale;
+            if (clamp) {
+                dx = _this.scaleClampRound(dx, _this._element.offsetWidth);
+                dy = _this.scaleClampRound(dy, _this._element.offsetHeight);
+                panned(dx, dy);
+            }
+            else {
+                panned(dx - prevX, dy - prevY);
+                prevX = dx;
+                prevY = dy;
+            }
             if (feedback !== undefined) {
-                var parent_2 = _this.element.parentElement;
+                var parent_2 = _this._element.parentElement;
                 var cx = void 0, cy = void 0;
                 if (parent_2 === null) {
                     cx = cy = 0;
@@ -1071,7 +1100,7 @@ var TouchArea = (function (_super) {
         var rot = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Rotate"](params);
         this.hammer.add(rot);
         this.hammer.on(name, function (ev) {
-            var amount = _this.scaleClampRound(ev.rotation, eventScale);
+            var amount = _this.scaleClampRound(ev.rotation * eventScale, 1);
             rotated(amount);
         });
         this.hammer.on(name + 'end', function (ev) {
@@ -1090,6 +1119,12 @@ var TouchArea = (function (_super) {
             this.hammer.on(name + 'up', released);
         }
         return press;
+    };
+    TouchArea.prototype.scaleClampRound = function (val, maxExtent) {
+        val = val / maxExtent; // scale
+        val = Math.max(Math.min(val, 1), -1); // clamp
+        val = Math.round(val * 100) / 100; // round
+        return val;
     };
     return TouchArea;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -4813,47 +4848,71 @@ var SensorView = (function (_super) {
         };
         return _this;
     }
+    SensorView.prototype.shouldComponentUpdate = function (nextProps, nextState) {
+        this.touch.redraw();
+        return false;
+    };
     SensorView.prototype.render = function () {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__TouchArea__["a" /* TouchArea */], { className: this.props.className, draw: function (ctx, w, h) { return _this.drawSensors(ctx, w, h); }, setupTouch: function (a) { return _this.setupTouch(a); } });
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__TouchArea__["a" /* TouchArea */], { className: this.props.className, draw: function (ctx, w, h) { return _this.drawSensors(ctx, w, h); }, setupTouch: function (a) { return _this.setupTouch(a); }, ref: function (t) { if (t !== null) {
+                _this.touch = t;
+            } } });
     };
     SensorView.prototype.drawSensors = function (ctx, width, height) {
+        var halfWidth = width / 2, halfHeight = height / 2;
         ctx.clearRect(0, 0, width, height);
         ctx.save();
-        ctx.translate(width / 2, height / 2);
+        ctx.translate(halfWidth, halfHeight);
         ctx.scale(this.state.zoom, this.state.zoom);
-        ctx.translate(this.state.center.x, this.state.center.y);
-        this.drawBackground(ctx, width, height);
+        ctx.translate(-this.state.center.x, -this.state.center.y);
+        var minX = this.state.center.x - halfWidth * this.state.zoom;
+        var minY = this.state.center.y - halfHeight * this.state.zoom;
+        var maxX = minX + width * this.state.zoom, maxY = minY + height * this.state.zoom;
+        this.drawBackground(ctx, minX, minY, maxX, maxY);
         for (var _i = 0, _a = this.props.targets; _i < _a.length; _i++) {
             var target = _a[_i];
-            if (target.isOnScreen(this.state.center.x, this.state.center.y, width, height))
+            if (target.isOnScreen(minX, minY, maxX, maxY))
                 target.draw(ctx);
         }
         ctx.restore();
     };
-    SensorView.prototype.drawBackground = function (ctx, width, height) {
-        var gridSize = 25;
-        var halfWidth = width / 2, halfHeight = height / 2;
-        var startX = -Math.floor(halfWidth / gridSize) * gridSize;
-        var startY = -Math.floor(halfHeight / gridSize) * gridSize;
-        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
+    SensorView.prototype.drawBackground = function (ctx, minX, minY, maxX, maxY) {
+        var gridSize = 50;
+        var firstLineX = Math.floor(minX / gridSize) * gridSize;
+        var firstLineY = Math.floor(minY / gridSize) * gridSize;
+        ctx.lineWidth = 1 * this.state.zoom; // 1 pixel despite zoom
         ctx.strokeStyle = 'rgba(255,255,255,48)';
         ctx.beginPath();
-        for (var x = startX; x <= halfWidth; x += gridSize) {
-            ctx.moveTo(x, -halfHeight);
-            ctx.lineTo(x, halfHeight);
+        for (var x = firstLineX; x <= maxX; x += gridSize) {
+            ctx.moveTo(x, minY);
+            ctx.lineTo(x, maxY);
         }
-        for (var y = startY; y <= halfHeight; y += gridSize) {
-            ctx.moveTo(-halfWidth, y);
-            ctx.lineTo(halfWidth, y);
+        for (var y = firstLineY; y <= maxY; y += gridSize) {
+            ctx.moveTo(minX, y);
+            ctx.lineTo(maxX, y);
         }
         ctx.stroke();
     };
     SensorView.prototype.setupTouch = function (area) {
         var _this = this;
-        area.createPan2D('view', 2, 1, function (dx, dy) { return _this.pan(dx, dy); });
+        // 2-finger panning for multitouch
+        area.createPan2D('pan', 2, 1, false, function (dx, dy) { return _this.pan(-dx, -dy); });
+        // right-mouse panning for where multitouch isn't an option
+        var rightMouseDown = false;
+        area.element.addEventListener('mousedown', function (ev) { if (ev.button !== 0) {
+            rightMouseDown = true;
+        } });
+        area.element.addEventListener('mouseup', function (ev) { if (ev.button !== 0) {
+            rightMouseDown = false;
+        } });
+        area.element.addEventListener('mouseout', function () { return rightMouseDown = false; });
+        area.element.addEventListener('mousemove', function (ev) { if (rightMouseDown) {
+            _this.pan(-ev.movementX, -ev.movementY);
+        } });
+        area.createPress('zoom', 500, function () { return _this.setState({ zoom: 2 }); }, function () { return _this.setState({ zoom: 1 }); });
     };
     SensorView.prototype.pan = function (dx, dy) {
+        console.log("panning " + dx + ", " + dy);
         this.setState(function (state) {
             return {
                 center: new __WEBPACK_IMPORTED_MODULE_2__functionality__["f" /* Vector3 */](state.center.x + dx, state.center.y + dy, state.center.z),
@@ -6140,11 +6199,11 @@ var TouchHelm = (function (_super) {
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-rotStop');
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-strafeStop');
         };
-        var yaw = area.createPan('yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("yawRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearRotationFeedback(); });
-        var pitch = area.createPan('pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("pitchUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearRotationFeedback(); });
-        var roll = area.createPan('roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("rollRight " + val); });
-        var lateral = area.createPan('lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, finishStop, function () { return _this.clearRotationFeedback(); });
-        var vertical = area.createPan('vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var yaw = area.createPan('yaw', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2, true, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("yawRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var pitch = area.createPan('pitch', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, true, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("pitchUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var roll = area.createPan('roll', 2, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 2.25, true, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("rollRight " + val); });
+        var lateral = area.createPan('lateral', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_HORIZONTAL"], 5.5, true, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeRight " + val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, finishStop, function () { return _this.clearRotationFeedback(); });
+        var vertical = area.createPan('vertical', 3, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], -3, true, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("strafeUp " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackRotation(sx, sy, ex, ey, '#c0f'); }, finishStop, function () { return _this.clearRotationFeedback(); });
         yaw.recognizeWith(pitch);
         lateral.recognizeWith(vertical);
         var stop = area.createPress('allStop', 500, startStop, finishStop);
@@ -6165,7 +6224,7 @@ var TouchHelm = (function (_super) {
             navigator.vibrate(30);
             __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send('-forwardBackStop');
         };
-        var forward = area.createPan('forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("moveForward " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackSpeed(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearSpeedFeedback(); });
+        var forward = area.createPan('forward', 1, __WEBPACK_IMPORTED_MODULE_1_hammerjs__["DIRECTION_VERTICAL"], 2, true, function (val) { return __WEBPACK_IMPORTED_MODULE_2__Client__["connection"].send("moveForward " + -val); }, function (sx, sy, ex, ey) { return _this.feedbackSpeed(sx, sy, ex, ey, '#0cf'); }, finishStop, function () { return _this.clearSpeedFeedback(); });
         var stop = area.createPress('allStop', 500, startStop, finishStop);
     };
     TouchHelm.prototype.feedbackRotation = function (startX, startY, endX, endY, color) {

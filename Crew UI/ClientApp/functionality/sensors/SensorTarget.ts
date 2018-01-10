@@ -6,11 +6,11 @@ export abstract class SensorTarget {
 
     interpolate(interval: number) {}
 
-    isOnScreen(x: number, y: number, width: number, height: number) {
-        return this.position.x >= x
-            && this.position.x <= x + width
-            && this.position.y >= y
-            && this.position.y <= y + height;
+    isOnScreen(minX: number, minY: number, maxX: number, maxY: number) {
+        return this.position.x >= minX
+            && this.position.x <= maxX
+            && this.position.y >= minY
+            && this.position.y <= maxY;
     }
 
     draw(ctx: CanvasRenderingContext2D) {

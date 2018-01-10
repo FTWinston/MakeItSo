@@ -15,6 +15,8 @@ interface SensorViewState {
 }
 
 export class SensorView extends React.PureComponent<SensorViewProps, SensorViewState> {
+    private touch: TouchArea;
+
     constructor(props: SensorViewProps) {
         super(props);
 
@@ -24,57 +26,82 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         };
     }
 
+    shouldComponentUpdate(nextProps: SensorViewProps, nextState: SensorViewState) {
+        this.touch.redraw();
+        return false;
+    }
+
     render() {
-        return <TouchArea className={this.props.className} draw={(ctx, w, h) => this.drawSensors(ctx, w, h)} setupTouch={a => this.setupTouch(a)} />;
+        return <TouchArea
+            className={this.props.className}
+            draw={(ctx, w, h) => this.drawSensors(ctx, w, h)}
+            setupTouch={a => this.setupTouch(a)}
+            ref={t => { if (t !== null) { this.touch = t }}}
+        />;
     }
 
     private drawSensors(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        let halfWidth = width / 2, halfHeight = height / 2;
         ctx.clearRect(0, 0, width, height);
 
         ctx.save();
-        ctx.translate(width / 2, height / 2);
+        ctx.translate(halfWidth, halfHeight);
         ctx.scale(this.state.zoom, this.state.zoom);
-        ctx.translate(this.state.center.x, this.state.center.y);
+        ctx.translate(-this.state.center.x, -this.state.center.y);
 
-        this.drawBackground(ctx, width, height);
+        let minX = this.state.center.x - halfWidth * this.state.zoom;
+        let minY = this.state.center.y - halfHeight * this.state.zoom;
+        let maxX = minX + width * this.state.zoom, maxY = minY + height * this.state.zoom;
+
+        this.drawBackground(ctx, minX, minY, maxX, maxY);
 
         for (let target of this.props.targets) {
-            if (target.isOnScreen(this.state.center.x, this.state.center.y, width, height))
+            if (target.isOnScreen(minX, minY, maxX, maxY))
                 target.draw(ctx);
         }
 
         ctx.restore();
     }
 
-    private drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number) {
-        const gridSize = 25;
+    private drawBackground(ctx: CanvasRenderingContext2D, minX: number, minY: number, maxX: number, maxY: number) {
+        const gridSize = 50;
+        let firstLineX = Math.floor(minX / gridSize) * gridSize;
+        let firstLineY = Math.floor(minY / gridSize) * gridSize;
 
-        let halfWidth = width / 2, halfHeight = height / 2;
-        let startX = -Math.floor(halfWidth / gridSize) * gridSize;
-        let startY = -Math.floor(halfHeight / gridSize) * gridSize;
-
-        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
+        ctx.lineWidth = 1 * this.state.zoom; // 1 pixel despite zoom
         ctx.strokeStyle = 'rgba(255,255,255,48)';
         ctx.beginPath();
 
-        for (let x = startX; x <= halfWidth; x += gridSize) {
-            ctx.moveTo(x, -halfHeight);
-            ctx.lineTo(x,  halfHeight);
+        for (let x = firstLineX; x <= maxX; x += gridSize) {
+            ctx.moveTo(x, minY);
+            ctx.lineTo(x, maxY);
         }
 
-        for (let y = startY; y <= halfHeight; y += gridSize) {
-            ctx.moveTo(-halfWidth, y);
-            ctx.lineTo( halfWidth, y);
+        for (let y = firstLineY; y <= maxY; y += gridSize) {
+            ctx.moveTo(minX, y);
+            ctx.lineTo(maxX, y);
         }
 
         ctx.stroke();
     }
 
     private setupTouch(area: TouchArea) {
-        area.createPan2D('view', 2, 1, (dx, dy) => this.pan(dx, dy));
+        // 2-finger panning for multitouch
+        area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy));
+        
+        // right-mouse panning for where multitouch isn't an option
+        let rightMouseDown = false;
+        area.element.addEventListener('mousedown', ev => { if (ev.button !== 0) { rightMouseDown = true; } });
+        area.element.addEventListener('mouseup', ev => { if (ev.button !== 0) { rightMouseDown = false; } });
+        area.element.addEventListener('mouseout', () => rightMouseDown = false);
+        area.element.addEventListener('mousemove', ev => { if (rightMouseDown) { this.pan(-ev.movementX, -ev.movementY) } });
+
+        area.createPress('zoom', 500, () => this.setState({ zoom: 2 }), () => this.setState({ zoom: 1 }));
     }
 
     private pan(dx: number, dy: number) {
+        console.log(`panning ${dx}, ${dy}`);
+
         this.setState(state => { return {
             center: new Vector3(state.center.x + dx, state.center.y + dy, state.center.z),
         }});
