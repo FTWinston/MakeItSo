@@ -1111,6 +1111,22 @@ var TouchArea = (function (_super) {
         });
         return rot;
     };
+    TouchArea.prototype.createPinch = function (name, threshold, zoom, start, end) {
+        var params = {
+            event: name,
+            threshold: threshold,
+        };
+        var pinch = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Pinch"](params);
+        this.hammer.add(pinch);
+        this.hammer.on(name, function (ev) { return zoom(ev.scale); });
+        if (start !== undefined) {
+            this.hammer.on('zoomstart', function (ev) { return start(); });
+        }
+        if (end !== undefined) {
+            this.hammer.on('zoomend', function (ev) { return end(); });
+        }
+        return pinch;
+    };
     TouchArea.prototype.createPress = function (name, duration, pressed, released) {
         var press = new __WEBPACK_IMPORTED_MODULE_1_hammerjs__["Press"]({ event: name, time: duration });
         this.hammer.add(press);
@@ -4521,7 +4537,7 @@ var ScreenManager = (function (_super) {
         if (this.props.showingHotkeys) {
             classes += ' client--showHotkeys';
         }
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes }, this.renderScreen());
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, onContextMenu: function (ev) { return ev.preventDefault(); } }, this.renderScreen());
     };
     ScreenManager.prototype.renderScreen = function () {
         switch (this.props.screen) {
@@ -4547,7 +4563,7 @@ var ScreenManager = (function (_super) {
         this.props.setScreenSize(window.innerWidth, window.innerHeight);
     };
     return ScreenManager;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+}(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
 // Selects which state properties are merged into the component's props
 var mapStateToProps = function (state) {
     return {
@@ -4849,8 +4865,9 @@ var SensorView = (function (_super) {
         return _this;
     }
     SensorView.prototype.shouldComponentUpdate = function (nextProps, nextState) {
-        this.touch.redraw();
-        return false;
+        var _this = this;
+        setTimeout(function () { return _this.touch.redraw(); }, 0); // wait til state/props actually change
+        return this.props.className !== nextProps.className;
     };
     SensorView.prototype.render = function () {
         var _this = this;
@@ -4865,14 +4882,15 @@ var SensorView = (function (_super) {
         ctx.translate(halfWidth, halfHeight);
         ctx.scale(this.state.zoom, this.state.zoom);
         ctx.translate(-this.state.center.x, -this.state.center.y);
-        var minX = this.state.center.x - halfWidth * this.state.zoom;
-        var minY = this.state.center.y - halfHeight * this.state.zoom;
-        var maxX = minX + width * this.state.zoom, maxY = minY + height * this.state.zoom;
+        var minX = this.state.center.x - halfWidth / this.state.zoom;
+        var minY = this.state.center.y - halfHeight / this.state.zoom;
+        var maxX = minX + width / this.state.zoom, maxY = minY + height / this.state.zoom;
         this.drawBackground(ctx, minX, minY, maxX, maxY);
         for (var _i = 0, _a = this.props.targets; _i < _a.length; _i++) {
             var target = _a[_i];
-            if (target.isOnScreen(minX, minY, maxX, maxY))
+            if (target.isOnScreen(minX, minY, maxX, maxY)) {
                 target.draw(ctx);
+            }
         }
         ctx.restore();
     };
@@ -4880,8 +4898,8 @@ var SensorView = (function (_super) {
         var gridSize = 50;
         var firstLineX = Math.floor(minX / gridSize) * gridSize;
         var firstLineY = Math.floor(minY / gridSize) * gridSize;
-        ctx.lineWidth = 1 * this.state.zoom; // 1 pixel despite zoom
-        ctx.strokeStyle = 'rgba(255,255,255,48)';
+        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
+        ctx.strokeStyle = 'rgba(255,255,255,24)';
         ctx.beginPath();
         for (var x = firstLineX; x <= maxX; x += gridSize) {
             ctx.moveTo(x, minY);
@@ -4896,7 +4914,7 @@ var SensorView = (function (_super) {
     SensorView.prototype.setupTouch = function (area) {
         var _this = this;
         // 2-finger panning for multitouch
-        area.createPan2D('pan', 2, 1, false, function (dx, dy) { return _this.pan(-dx, -dy); });
+        var pan = area.createPan2D('pan', 2, 1, false, function (dx, dy) { return _this.pan(-dx, -dy); });
         // right-mouse panning for where multitouch isn't an option
         var rightMouseDown = false;
         area.element.addEventListener('mousedown', function (ev) { if (ev.button !== 0) {
@@ -4909,13 +4927,40 @@ var SensorView = (function (_super) {
         area.element.addEventListener('mousemove', function (ev) { if (rightMouseDown) {
             _this.pan(-ev.movementX, -ev.movementY);
         } });
-        area.createPress('zoom', 500, function () { return _this.setState({ zoom: 2 }); }, function () { return _this.setState({ zoom: 1 }); });
+        // pinch zooming
+        var prevScale = 1;
+        var zoom = area.createPinch('zoom', 0.1, function (scale) {
+            var touchZoomScale = scale / prevScale;
+            if (touchZoomScale > 0.9 && touchZoomScale < 1.1) {
+                return;
+            }
+            prevScale = scale;
+            _this.zoom(touchZoomScale);
+        }, function () { return prevScale = 1; });
+        pan.requireFailure(zoom);
+        zoom.requireFailure(pan);
+        // mouse wheel zooming
+        area.element.addEventListener('wheel', function (ev) {
+            if (ev.deltaY == 0) {
+                return;
+            }
+            ev.preventDefault();
+            _this.zoom(ev.deltaY < 0 ? 1.1 : 0.9);
+        });
     };
     SensorView.prototype.pan = function (dx, dy) {
-        console.log("panning " + dx + ", " + dy);
+        dx /= this.state.zoom;
+        dy /= this.state.zoom;
         this.setState(function (state) {
             return {
                 center: new __WEBPACK_IMPORTED_MODULE_2__functionality__["f" /* Vector3 */](state.center.x + dx, state.center.y + dy, state.center.z),
+            };
+        });
+    };
+    SensorView.prototype.zoom = function (scale) {
+        this.setState(function (state) {
+            return {
+                zoom: state.zoom * scale,
             };
         });
     };

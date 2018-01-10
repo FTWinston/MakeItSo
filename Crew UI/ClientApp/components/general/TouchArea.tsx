@@ -224,6 +224,33 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         return rot;
     }
 
+    public createPinch(
+        name: string,
+        threshold: number,
+        zoom: (scale: number) => void,
+        start?: () => void,
+        end?: () => void,
+    ) {
+        var params = {
+            event: name,
+            threshold: threshold,
+        };
+
+        let pinch = new Hammer.Pinch(params);
+        this.hammer.add(pinch);
+
+        this.hammer.on(name, (ev: Hammer.Input) => zoom(ev.scale));
+
+        if (start !== undefined) {
+            this.hammer.on('zoomstart', (ev: Hammer.Input) => start());
+        }
+        if (end !== undefined) {
+            this.hammer.on('zoomend', (ev: Hammer.Input) => end());
+        }
+
+        return pinch;
+    }
+
     public createPress(name: string, duration: number, pressed: () => void, released?: () => void) {
         let press = new Hammer.Press({ event: name, time: duration });
         this.hammer.add(press);

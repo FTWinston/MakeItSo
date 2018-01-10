@@ -27,8 +27,8 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
     }
 
     shouldComponentUpdate(nextProps: SensorViewProps, nextState: SensorViewState) {
-        this.touch.redraw();
-        return false;
+        setTimeout(() => this.touch.redraw(), 0); // wait til state/props actually change
+        return this.props.className !== nextProps.className;
     }
 
     render() {
@@ -49,15 +49,16 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         ctx.scale(this.state.zoom, this.state.zoom);
         ctx.translate(-this.state.center.x, -this.state.center.y);
 
-        let minX = this.state.center.x - halfWidth * this.state.zoom;
-        let minY = this.state.center.y - halfHeight * this.state.zoom;
-        let maxX = minX + width * this.state.zoom, maxY = minY + height * this.state.zoom;
+        let minX = this.state.center.x - halfWidth / this.state.zoom;
+        let minY = this.state.center.y - halfHeight / this.state.zoom;
+        let maxX = minX + width / this.state.zoom, maxY = minY + height / this.state.zoom;
 
         this.drawBackground(ctx, minX, minY, maxX, maxY);
 
         for (let target of this.props.targets) {
-            if (target.isOnScreen(minX, minY, maxX, maxY))
+            if (target.isOnScreen(minX, minY, maxX, maxY)) {
                 target.draw(ctx);
+            }
         }
 
         ctx.restore();
@@ -68,8 +69,8 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         let firstLineX = Math.floor(minX / gridSize) * gridSize;
         let firstLineY = Math.floor(minY / gridSize) * gridSize;
 
-        ctx.lineWidth = 1 * this.state.zoom; // 1 pixel despite zoom
-        ctx.strokeStyle = 'rgba(255,255,255,48)';
+        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
+        ctx.strokeStyle = 'rgba(255,255,255,24)';
         ctx.beginPath();
 
         for (let x = firstLineX; x <= maxX; x += gridSize) {
@@ -87,23 +88,52 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
 
     private setupTouch(area: TouchArea) {
         // 2-finger panning for multitouch
-        area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy));
+        let pan = area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy));
         
         // right-mouse panning for where multitouch isn't an option
         let rightMouseDown = false;
         area.element.addEventListener('mousedown', ev => { if (ev.button !== 0) { rightMouseDown = true; } });
         area.element.addEventListener('mouseup', ev => { if (ev.button !== 0) { rightMouseDown = false; } });
         area.element.addEventListener('mouseout', () => rightMouseDown = false);
-        area.element.addEventListener('mousemove', ev => { if (rightMouseDown) { this.pan(-ev.movementX, -ev.movementY) } });
+        area.element.addEventListener('mousemove', ev => { if (rightMouseDown) { this.pan(-ev.movementX, -ev.movementY); } });
 
-        area.createPress('zoom', 500, () => this.setState({ zoom: 2 }), () => this.setState({ zoom: 1 }));
+        // pinch zooming
+        let prevScale = 1;
+        let zoom = area.createPinch('zoom', 0.1, scale => {
+            let touchZoomScale = scale / prevScale;
+            if (touchZoomScale > 0.9 && touchZoomScale < 1.1) {
+                return;
+            }
+
+            prevScale = scale;
+            this.zoom(touchZoomScale);
+        }, () => prevScale = 1);
+
+        pan.requireFailure(zoom);
+        zoom.requireFailure(pan);
+
+        // mouse wheel zooming
+        area.element.addEventListener('wheel', ev => {
+            if (ev.deltaY == 0) {
+                return;
+            }
+            ev.preventDefault();
+            this.zoom(ev.deltaY < 0 ? 1.1 : 0.9);
+        });
     }
 
     private pan(dx: number, dy: number) {
-        console.log(`panning ${dx}, ${dy}`);
+        dx /= this.state.zoom;
+        dy /= this.state.zoom;
 
         this.setState(state => { return {
             center: new Vector3(state.center.x + dx, state.center.y + dy, state.center.z),
+        }});
+    }
+
+    private zoom(scale: number) {
+        this.setState(state => { return {
+            zoom: state.zoom * scale,
         }});
     }
 }

@@ -14,7 +14,7 @@ interface ScreenManagerDataProps {
 type ScreenManagerProps = ScreenManagerDataProps
     & typeof UserStore.actionCreators;
 
-class ScreenManager extends React.Component<ScreenManagerProps, {}> {
+class ScreenManager extends React.PureComponent<ScreenManagerProps, {}> {
     componentWillMount() {
         this.updateDimensions();
         window.addEventListener('resize', () => this.updateDimensions());
@@ -26,7 +26,7 @@ class ScreenManager extends React.Component<ScreenManagerProps, {}> {
             classes += ' client--showHotkeys';
         }
         
-        return <div className={classes}>{this.renderScreen()}</div>;
+        return <div className={classes} onContextMenu={ev => ev.preventDefault()}>{this.renderScreen()}</div>;
     }
 
     private renderScreen() {
