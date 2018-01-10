@@ -604,6 +604,9 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.weapons__targetSelect {
+  width: 95vw;
+  height: 80vh; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

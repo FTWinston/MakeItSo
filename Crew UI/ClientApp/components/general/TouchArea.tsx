@@ -6,6 +6,7 @@ import { drawFunc } from './Canvas';
 interface TouchAreaProps {
     setupTouch: (area: TouchArea) => void;
     draw?: drawFunc;
+    className?: string;
 }
 
 export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
@@ -18,9 +19,14 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
     }
 
     render() {
+        let classes = 'touchArea';
+        if (this.props.className !== undefined) {
+            classes += ' ' + this.props.className;
+        }
+
         return this.props.draw === undefined ?
-            <div className="touchArea" ref={r => { if (r !== null) { this.element = r }}} />
-        :   <FlexibleCanvas className="touchArea" draw={this.props.draw} ref={r => { if (r !== null) { this.element = r.wrapper }}} />;
+            <div className={classes} ref={r => { if (r !== null) { this.element = r }}} />
+        :   <FlexibleCanvas className={classes} draw={this.props.draw} ref={r => { if (r !== null) { this.element = r.wrapper }}} />;
     }
     
     shouldComponentUpdate(nextProps: TouchAreaProps, nextState: {}) {

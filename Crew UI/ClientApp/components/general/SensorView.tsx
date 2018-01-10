@@ -5,6 +5,7 @@ import { SensorTarget, Vector3 } from '../../functionality';
 import * as Hammer from 'hammerjs';
 
 interface SensorViewProps {
+    className?: string;
     targets: SensorTarget[];
 }
 
@@ -13,7 +14,7 @@ interface SensorViewState {
     zoom: number;
 }
 
-class SensorView extends React.Component<SensorViewProps, SensorViewState> {
+export class SensorView extends React.PureComponent<SensorViewProps, SensorViewState> {
     constructor(props: SensorViewProps) {
         super(props);
 
@@ -24,15 +25,18 @@ class SensorView extends React.Component<SensorViewProps, SensorViewState> {
     }
 
     render() {
-        return <TouchArea draw={(ctx, w, h) => this.drawSensors(ctx, w, h)} setupTouch={(a) => this.setupTouch(a)} />;
+        return <TouchArea className={this.props.className} draw={(ctx, w, h) => this.drawSensors(ctx, w, h)} setupTouch={a => this.setupTouch(a)} />;
     }
 
     private drawSensors(ctx: CanvasRenderingContext2D, width: number, height: number) {
         ctx.clearRect(0, 0, width, height);
 
         ctx.save();
+        ctx.translate(width / 2, height / 2);
         ctx.scale(this.state.zoom, this.state.zoom);
-        ctx.translate(-this.state.center.x, -this.state.center.y);
+        ctx.translate(this.state.center.x, this.state.center.y);
+
+        this.drawBackground(ctx, width, height);
 
         for (let target of this.props.targets) {
             if (target.isOnScreen(this.state.center.x, this.state.center.y, width, height))
@@ -40,6 +44,30 @@ class SensorView extends React.Component<SensorViewProps, SensorViewState> {
         }
 
         ctx.restore();
+    }
+
+    private drawBackground(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        const gridSize = 25;
+
+        let halfWidth = width / 2, halfHeight = height / 2;
+        let startX = -Math.floor(halfWidth / gridSize) * gridSize;
+        let startY = -Math.floor(halfHeight / gridSize) * gridSize;
+
+        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
+        ctx.strokeStyle = 'rgba(255,255,255,48)';
+        ctx.beginPath();
+
+        for (let x = startX; x <= halfWidth; x += gridSize) {
+            ctx.moveTo(x, -halfHeight);
+            ctx.lineTo(x,  halfHeight);
+        }
+
+        for (let y = startY; y <= halfHeight; y += gridSize) {
+            ctx.moveTo(-halfWidth, y);
+            ctx.lineTo( halfWidth, y);
+        }
+
+        ctx.stroke();
     }
 
     private setupTouch(area: TouchArea) {

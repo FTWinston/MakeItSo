@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { TextLocalisation } from '../../../functionality';
+import { SensorView } from '../../../components/general/SensorView';
 import './Weapons.scss';
 
 interface WeaponsProps {
@@ -10,8 +11,8 @@ interface WeaponsProps {
 
 class Weapons extends React.Component<WeaponsProps, {}> {
     public render() {
-        return <div className="system">
-            This is the weapons system. TODO: implement this!
+        return <div className="system weapons">
+            <SensorView className="weapons__targetSelect" targets={[]} />
         </div>;
     }
 }
