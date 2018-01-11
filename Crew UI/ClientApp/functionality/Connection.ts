@@ -3,8 +3,9 @@ import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
 import { actionCreators as screenActions, ClientScreen } from '../store/Screen';
 import { actionCreators as helmActions } from '../store/Helm';
+import { actionCreators as sensorActions } from '../store/Sensors';
 import { TextLocalisation } from './Localisation';
-import { ShipSystem } from '../functionality';
+import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '../functionality';
 
 export class Connection {
     private socket: WebSocket;
@@ -125,6 +126,11 @@ export class Connection {
                 let horiz = parseFloat(vals[1]);
                 let vert = parseFloat(vals[2]);
                 store.dispatch(helmActions.setTranslationRates(horiz, vert, forward));
+                break;
+            }
+            case 'sensor_target': {
+                let target = parseSensorTarget(data);
+                store.dispatch(sensorActions.addTarget(target));
                 break;
             }
             default:

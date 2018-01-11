@@ -1,18 +1,19 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
-import { TextLocalisation } from '../../../functionality';
+import { SensorTarget, TextLocalisation } from '../../../functionality';
 import { SensorView } from '../../../components/general/SensorView';
 import './Weapons.scss';
 
 interface WeaponsProps {
     text: TextLocalisation;
+    allTargets: SensorTarget[];
 }
 
 class Weapons extends React.Component<WeaponsProps, {}> {
     public render() {
         return <div className="system weapons">
-            <SensorView className="weapons__targetSelect" targets={[]} />
+            <SensorView className="weapons__targetSelect" targets={this.props.allTargets} />
         </div>;
     }
 }
@@ -21,6 +22,7 @@ class Weapons extends React.Component<WeaponsProps, {}> {
 const mapStateToProps: (state: ApplicationState) => WeaponsProps = (state) => {
     return {
         text: state.user.text,
+        allTargets: state.sensors.targets,
     }
 };
 

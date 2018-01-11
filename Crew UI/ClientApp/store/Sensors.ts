@@ -14,9 +14,7 @@ export interface SensorState {
 
 interface AddTargetAction {
     type: 'ADD_TARGET';
-    targetID: number;
-    targetType: number; // ??? should we just pass the object here or what?
-    position: Vector3;
+    target: SensorTarget;
 }
 
 interface MoveTargetAction {
@@ -25,25 +23,32 @@ interface MoveTargetAction {
     position: Vector3;
 }
 
+interface RemoveTargetAction {
+    type: 'REMOVE_TARGET';
+    targetID: number;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = AddTargetAction | MoveTargetAction;
+type KnownAction = AddTargetAction | MoveTargetAction | RemoveTargetAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    addTarget: (id: number, type: number, position: Vector3) => <AddTargetAction>{
+    addTarget: (target: SensorTarget) => <AddTargetAction>{
         type: 'ADD_TARGET',
-        targetID: id,
-        targetType: type,
-        position: position,
+        target: target,
     },
-    setSpeedLimits: (id: number, position: Vector3) => <MoveTargetAction>{
+    moveTarget: (id: number, position: Vector3) => <MoveTargetAction>{
         type: 'MOVE_TARGET',
         targetID: id,
         position: position,
+    },
+    removeTarget: (id: number, position: Vector3) => <RemoveTargetAction>{
+        type: 'REMOVE_TARGET',
+        targetID: id,
     },
 };
 
@@ -58,24 +63,30 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
     let action = rawAction as KnownAction;
     switch (action.type) {
         case 'ADD_TARGET': {
-            let targets = state.targets;
-            // TODO: argh, this is abstract so instantiating one needs to know what class to create for each type
-            // ...should that really be here?
-            // targets.push(new SensorTarget())
+            return {
+                ...state,
+                targets: [...state.targets, action.target],
+            };
+        }
+        case 'MOVE_TARGET': {
+            let moveAct = action;
+            let targets = state.targets.map((target, index) => {
+                if (target.id === moveAct.targetID) {
+                    return Object.assign({}, target, {
+                        position: moveAct.position,
+                    });
+                }
+                return target;
+            });
+
             return {
                 ...state,
                 targets: targets,
             };
         }
-        case 'MOVE_TARGET': {
-            let targets = state.targets.map((target, index) => {
-                if (target.id === action.targetID) {
-                    return Object.assign({}, target, {
-                        position: action.position,
-                    });
-                }
-                return target;
-            });
+        case 'REMOVE_TARGET': {
+            let remAct = action;
+            let targets = state.targets.filter(target => target.id !== remAct.targetID);
 
             return {
                 ...state,
