@@ -6,8 +6,9 @@ export class Station extends RelatableTarget {
         super(id, position, relationship);
     }
 
-    protected drawTarget(ctx: CanvasRenderingContext2D) {
+    protected drawTarget(ctx: CanvasRenderingContext2D, onePixel: number) {
         // TODO: better station symbol
-        ctx.fillRect(this.position.x - 10, this.position.y - 10, 10, 10);
+        let halfSize = onePixel * 14, size = halfSize + halfSize;
+        ctx.fillRect(this.position.x - halfSize, this.position.y - halfSize, size, size);
     }
 }

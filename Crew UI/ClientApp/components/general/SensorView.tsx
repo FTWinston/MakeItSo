@@ -49,28 +49,30 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         ctx.scale(this.state.zoom, this.state.zoom);
         ctx.translate(-this.state.center.x, -this.state.center.y);
 
+        let onePixel = 1 / this.state.zoom; // 1 pixel despite zoom
         let minX = this.state.center.x - halfWidth / this.state.zoom;
         let minY = this.state.center.y - halfHeight / this.state.zoom;
         let maxX = minX + width / this.state.zoom, maxY = minY + height / this.state.zoom;
 
-        this.drawBackground(ctx, minX, minY, maxX, maxY);
+        this.drawBackground(ctx, minX, minY, maxX, maxY, onePixel);
 
         for (let target of this.props.targets) {
             if (target.isOnScreen(minX, minY, maxX, maxY)) {
-                target.draw(ctx);
+                target.draw(ctx, onePixel);
             }
         }
 
         ctx.restore();
     }
 
-    private drawBackground(ctx: CanvasRenderingContext2D, minX: number, minY: number, maxX: number, maxY: number) {
+    private drawBackground(ctx: CanvasRenderingContext2D, minX: number, minY: number, maxX: number, maxY: number, onePixel: number) {
         const gridSize = 50;
         let firstLineX = Math.floor(minX / gridSize) * gridSize;
         let firstLineY = Math.floor(minY / gridSize) * gridSize;
 
-        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
-        ctx.strokeStyle = 'rgba(255,255,255,24)';
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = onePixel;
+        ctx.strokeStyle = '#fff';
         ctx.beginPath();
 
         for (let x = firstLineX; x <= maxX; x += gridSize) {
@@ -84,6 +86,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         }
 
         ctx.stroke();
+        ctx.globalAlpha = 1;
     }
 
     private setupTouch(area: TouchArea) {

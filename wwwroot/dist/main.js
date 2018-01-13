@@ -452,20 +452,22 @@ var SensorTarget = (function () {
             && this.position.y >= minY
             && this.position.y <= maxY;
     };
-    SensorTarget.prototype.draw = function (ctx) {
-        this.drawTarget(ctx);
-        this.drawDepthIndicator(ctx);
+    SensorTarget.prototype.draw = function (ctx, onePixel) {
+        this.drawTarget(ctx, onePixel);
+        this.drawDepthIndicator(ctx, onePixel);
     };
-    SensorTarget.prototype.drawDepthIndicator = function (ctx) {
+    SensorTarget.prototype.drawDepthIndicator = function (ctx, onePixel) {
         ctx.strokeStyle = '#ccc';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(this.position.x, this.position.y);
+        ctx.lineWidth = onePixel;
         var zScale = 1;
         var zY = this.position.y + this.position.z * zScale;
+        ctx.setLineDash([onePixel * 5, onePixel * 5]);
+        ctx.beginPath();
+        ctx.moveTo(this.position.x - onePixel * 5, zY);
         ctx.lineTo(this.position.x, zY);
-        ctx.lineTo(this.position.x - 5, zY);
+        ctx.lineTo(this.position.x, this.position.y);
         ctx.stroke();
+        ctx.setLineDash([]);
     };
     return SensorTarget;
 }());
@@ -1654,19 +1656,19 @@ var RelatableTarget = (function (_super) {
     }
     RelatableTarget.prototype.getRelationColor = function () {
         switch (this.relationship) {
-            case 0 /* Friendly */:
+            case 1 /* Friendly */:
                 return '#0c0';
-            case 1 /* Enemy */:
+            case 2 /* Enemy */:
                 return '#f33';
-            case 2 /* Unknown */:
+            case 3 /* Unknown */:
                 return '#cc0';
             default:
                 return '#06c';
         }
     };
-    RelatableTarget.prototype.draw = function (ctx) {
+    RelatableTarget.prototype.draw = function (ctx, onePixel) {
         ctx.strokeStyle = ctx.fillStyle = this.getRelationColor();
-        _super.prototype.draw.call(this, ctx);
+        _super.prototype.draw.call(this, ctx, onePixel);
     };
     return RelatableTarget;
 }(__WEBPACK_IMPORTED_MODULE_0__SensorTarget__["a" /* SensorTarget */]));
@@ -4952,24 +4954,26 @@ var SensorView = (function (_super) {
         ctx.translate(halfWidth, halfHeight);
         ctx.scale(this.state.zoom, this.state.zoom);
         ctx.translate(-this.state.center.x, -this.state.center.y);
+        var onePixel = 1 / this.state.zoom; // 1 pixel despite zoom
         var minX = this.state.center.x - halfWidth / this.state.zoom;
         var minY = this.state.center.y - halfHeight / this.state.zoom;
         var maxX = minX + width / this.state.zoom, maxY = minY + height / this.state.zoom;
-        this.drawBackground(ctx, minX, minY, maxX, maxY);
+        this.drawBackground(ctx, minX, minY, maxX, maxY, onePixel);
         for (var _i = 0, _a = this.props.targets; _i < _a.length; _i++) {
             var target = _a[_i];
             if (target.isOnScreen(minX, minY, maxX, maxY)) {
-                target.draw(ctx);
+                target.draw(ctx, onePixel);
             }
         }
         ctx.restore();
     };
-    SensorView.prototype.drawBackground = function (ctx, minX, minY, maxX, maxY) {
+    SensorView.prototype.drawBackground = function (ctx, minX, minY, maxX, maxY, onePixel) {
         var gridSize = 50;
         var firstLineX = Math.floor(minX / gridSize) * gridSize;
         var firstLineY = Math.floor(minY / gridSize) * gridSize;
-        ctx.lineWidth = 1 / this.state.zoom; // 1 pixel despite zoom
-        ctx.strokeStyle = 'rgba(255,255,255,24)';
+        ctx.globalAlpha = 0.2;
+        ctx.lineWidth = onePixel;
+        ctx.strokeStyle = '#fff';
         ctx.beginPath();
         for (var x = firstLineX; x <= maxX; x += gridSize) {
             ctx.moveTo(x, minY);
@@ -4980,6 +4984,7 @@ var SensorView = (function (_super) {
             ctx.lineTo(maxX, y);
         }
         ctx.stroke();
+        ctx.globalAlpha = 1;
     };
     SensorView.prototype.setupTouch = function (area) {
         var _this = this;
@@ -7271,11 +7276,11 @@ var MoveableTarget = (function (_super) {
         this.position.y += this.velocity.y * interval;
         this.position.z += this.velocity.z * interval;
     };
-    MoveableTarget.prototype.draw = function (ctx) {
-        this.drawVelocity(ctx);
-        _super.prototype.draw.call(this, ctx);
+    MoveableTarget.prototype.draw = function (ctx, onePixel) {
+        this.drawVelocity(ctx, onePixel);
+        _super.prototype.draw.call(this, ctx, onePixel);
     };
-    MoveableTarget.prototype.drawVelocity = function (ctx) {
+    MoveableTarget.prototype.drawVelocity = function (ctx, onePixel) {
         // TODO: draw velocity indicator
     };
     return MoveableTarget;
@@ -7309,7 +7314,11 @@ var Planet = (function (_super) {
         _this.radius = radius;
         return _this;
     }
-    Planet.prototype.drawTarget = function (ctx) {
+    Planet.prototype.isOnScreen = function (minX, minY, maxX, maxY) {
+        var radius = this.radius;
+        return _super.prototype.isOnScreen.call(this, minX - radius, minY - radius, maxX + radius, maxY + radius);
+    };
+    Planet.prototype.drawTarget = function (ctx, onePixel) {
         // TODO: draw orbit
         // TODO: planet texture
         ctx.fillStyle = this.color;
@@ -7345,12 +7354,12 @@ var Ship = (function (_super) {
     function Ship(id, position, velocity, relationship) {
         return _super.call(this, id, position, velocity, relationship) || this;
     }
-    Ship.prototype.drawTarget = function (ctx) {
+    Ship.prototype.drawTarget = function (ctx, onePixel) {
         // TODO: better ship symbol, indicating direction of velocity
         ctx.beginPath();
-        ctx.moveTo(this.position.x, this.position.y - 5);
-        ctx.lineTo(this.position.x + 3, this.position.y + 5);
-        ctx.lineTo(this.position.x - 3, this.position.y + 5);
+        ctx.moveTo(this.position.x, this.position.y - 15 * onePixel);
+        ctx.lineTo(this.position.x + 9 * onePixel, this.position.y + 15 * onePixel);
+        ctx.lineTo(this.position.x - 9 * onePixel, this.position.y + 15 * onePixel);
         ctx.fill();
     };
     return Ship;
@@ -7385,7 +7394,14 @@ var Star = (function (_super) {
         _this.damageRadius = damageRadius;
         return _this;
     }
-    Star.prototype.drawTarget = function (ctx) {
+    Star.prototype.isOnScreen = function (minX, minY, maxX, maxY) {
+        var radius = this.radius;
+        if (this.damageRadius !== undefined && this.damageRadius > radius) {
+            radius = this.damageRadius;
+        }
+        return _super.prototype.isOnScreen.call(this, minX - radius, minY - radius, maxX + radius, maxY + radius);
+    };
+    Star.prototype.drawTarget = function (ctx, onePixel) {
         // TODO: star texture
         ctx.fillStyle = this.color;
         ctx.beginPath();
@@ -7395,7 +7411,7 @@ var Star = (function (_super) {
         if (this.damageRadius !== undefined) {
             // draw "min safe distance indicator"
             ctx.strokeStyle = '#a00';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = onePixel * 2;
             ctx.beginPath();
             ctx.arc(this.position.x, this.position.y, this.damageRadius, 0, Math.PI * 2);
             ctx.stroke();
@@ -7429,9 +7445,10 @@ var Station = (function (_super) {
     function Station(id, position, relationship) {
         return _super.call(this, id, position, relationship) || this;
     }
-    Station.prototype.drawTarget = function (ctx) {
+    Station.prototype.drawTarget = function (ctx, onePixel) {
         // TODO: better station symbol
-        ctx.fillRect(this.position.x - 10, this.position.y - 10, 10, 10);
+        var halfSize = onePixel * 14, size = halfSize + halfSize;
+        ctx.fillRect(this.position.x - halfSize, this.position.y - halfSize, size, size);
     };
     return Station;
 }(__WEBPACK_IMPORTED_MODULE_0__RelatableTarget__["a" /* RelatableTarget */]));
@@ -7465,31 +7482,31 @@ var Station = (function (_super) {
 
 function parseSensorTarget(data) {
     var vals = data.split(' ');
-    var pos = new __WEBPACK_IMPORTED_MODULE_5____["d" /* Vector3 */](parseFloat(data[0]), parseFloat(data[1]), parseFloat(data[2]));
-    var id = parseInt(data[3]);
-    switch (data[4]) {
-        case 't': {
-            var color = data[5];
-            var radius = parseFloat(data[6]);
-            var damageRadius = data.length > 7 ? parseFloat(data[7]) : undefined;
+    var id = parseInt(vals[0]);
+    var pos = new __WEBPACK_IMPORTED_MODULE_5____["d" /* Vector3 */](parseFloat(vals[1]), parseFloat(vals[2]), parseFloat(vals[3]));
+    switch (vals[4]) {
+        case '*': {
+            var color = vals[5];
+            var radius = parseFloat(vals[6]);
+            var damageRadius = vals.length > 7 ? parseFloat(vals[7]) : undefined;
             return new __WEBPACK_IMPORTED_MODULE_1__Star__["a" /* Star */](id, pos, color, radius, damageRadius);
         }
-        case 'p': {
-            var color = data[5];
-            var radius = parseFloat(data[6]);
+        case 'o': {
+            var color = vals[5];
+            var radius = parseFloat(vals[6]);
             return new __WEBPACK_IMPORTED_MODULE_2__Planet__["a" /* Planet */](id, pos, color, radius);
         }
-        case 't': {
-            var rel = parseInt(data[5]);
+        case '+': {
+            var rel = parseInt(vals[5]);
             return new __WEBPACK_IMPORTED_MODULE_3__Station__["a" /* Station */](id, pos, rel);
         }
-        case 'h': {
-            var rel = parseInt(data[5]);
-            var vel = new __WEBPACK_IMPORTED_MODULE_5____["d" /* Vector3 */](parseFloat(data[6]), parseFloat(data[7]), parseFloat(data[8]));
+        case 'v': {
+            var rel = parseInt(vals[5]);
+            var vel = new __WEBPACK_IMPORTED_MODULE_5____["d" /* Vector3 */](parseFloat(vals[6]), parseFloat(vals[7]), parseFloat(vals[8]));
             return new __WEBPACK_IMPORTED_MODULE_4__Ship__["a" /* Ship */](id, pos, vel, rel);
         }
         default:
-            throw "Unexpected target type: " + data[4];
+            throw "Unexpected target type: " + vals[4];
     }
 }
 

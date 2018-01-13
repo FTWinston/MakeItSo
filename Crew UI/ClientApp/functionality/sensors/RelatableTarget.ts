@@ -2,10 +2,10 @@ import { Vector3 } from '../Vector3';
 import { SensorTarget } from './SensorTarget';
 
 export const enum Relationship {
-    Friendly,
-    Enemy,
-    Unknown,
-    Neutral,
+    Neutral = 0,
+    Friendly = 1,
+    Enemy = 2,
+    Unknown = 3,
 }
 
 export abstract class RelatableTarget extends SensorTarget {
@@ -26,8 +26,8 @@ export abstract class RelatableTarget extends SensorTarget {
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
+    draw(ctx: CanvasRenderingContext2D, onePixel: number) {
         ctx.strokeStyle = ctx.fillStyle = this.getRelationColor();
-        super.draw(ctx);
+        super.draw(ctx, onePixel);
     }
 }

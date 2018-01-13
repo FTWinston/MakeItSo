@@ -6,7 +6,13 @@ export class Planet extends SensorTarget {
         super(id, position);
     }
 
-    protected drawTarget(ctx: CanvasRenderingContext2D) {
+    isOnScreen(minX: number, minY: number, maxX: number, maxY: number) {
+        let radius = this.radius;
+
+        return super.isOnScreen(minX - radius, minY - radius, maxX + radius, maxY + radius);
+    }
+
+    protected drawTarget(ctx: CanvasRenderingContext2D, onePixel: number) {
         // TODO: draw orbit
 
         // TODO: planet texture

@@ -13,25 +13,26 @@ export abstract class SensorTarget {
             && this.position.y <= maxY;
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
-        this.drawTarget(ctx);
-        this.drawDepthIndicator(ctx);
+    draw(ctx: CanvasRenderingContext2D, onePixel: number) {
+        this.drawTarget(ctx, onePixel);
+        this.drawDepthIndicator(ctx, onePixel);
     }
 
-    protected abstract drawTarget(ctx: CanvasRenderingContext2D): void;
+    protected abstract drawTarget(ctx: CanvasRenderingContext2D, onePixel: number): void;
 
-    protected drawDepthIndicator(ctx: CanvasRenderingContext2D) {
+    protected drawDepthIndicator(ctx: CanvasRenderingContext2D, onePixel: number) {
         ctx.strokeStyle = '#ccc';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(this.position.x, this.position.y);
-        
+        ctx.lineWidth = onePixel;
         const zScale = 1;
         let zY = this.position.y + this.position.z * zScale;
+        ctx.setLineDash([onePixel * 5, onePixel * 5]);
 
+        ctx.beginPath();
+        ctx.moveTo(this.position.x - onePixel * 5, zY);
         ctx.lineTo(this.position.x, zY);
-        ctx.lineTo(this.position.x - 5, zY);
+        ctx.lineTo(this.position.x, this.position.y);
 
         ctx.stroke();
+        ctx.setLineDash([]);
     }
 }

@@ -12,12 +12,12 @@ export abstract class MoveableTarget extends RelatableTarget {
         this.position.z += this.velocity.z * interval;
     }
 
-    draw(ctx: CanvasRenderingContext2D) {
-        this.drawVelocity(ctx);
-        super.draw(ctx);
+    draw(ctx: CanvasRenderingContext2D, onePixel: number) {
+        this.drawVelocity(ctx, onePixel);
+        super.draw(ctx, onePixel);
     }
 
-    private drawVelocity(ctx: CanvasRenderingContext2D) {
+    private drawVelocity(ctx: CanvasRenderingContext2D, onePixel: number) {
         // TODO: draw velocity indicator
     }
 }

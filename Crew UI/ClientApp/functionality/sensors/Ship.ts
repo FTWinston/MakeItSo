@@ -7,12 +7,12 @@ export class Ship extends MoveableTarget {
         super(id, position, velocity, relationship);
     }
     
-    protected drawTarget(ctx: CanvasRenderingContext2D) {
+    protected drawTarget(ctx: CanvasRenderingContext2D, onePixel: number) {
         // TODO: better ship symbol, indicating direction of velocity
         ctx.beginPath();
-        ctx.moveTo(this.position.x, this.position.y - 5);
-        ctx.lineTo(this.position.x + 3, this.position.y + 5);
-        ctx.lineTo(this.position.x - 3, this.position.y + 5);
+        ctx.moveTo(this.position.x, this.position.y - 15 * onePixel);
+        ctx.lineTo(this.position.x + 9 * onePixel, this.position.y + 15 * onePixel);
+        ctx.lineTo(this.position.x - 9 * onePixel, this.position.y + 15 * onePixel);
         ctx.fill();
     }
 }
