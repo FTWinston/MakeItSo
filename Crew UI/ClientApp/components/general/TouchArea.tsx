@@ -102,6 +102,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         });
         
         this.hammer.on(name + 'end', (ev: Hammer.Input) => {
+            prevAmount = 0;
             panned(0);
 
             if (finish !== undefined) {
@@ -110,6 +111,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         });
 
         this.hammer.on(name + 'cancel', (ev: Hammer.Input) => {
+            prevAmount = 0;
             panned(0);
 
             if (finish !== undefined) {
@@ -148,7 +150,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         this.hammer.on(name,  (ev: Hammer.Input) => {
             let dx = ev.deltaX * eventScale;
             let dy = ev.deltaY * eventScale;
-
+            
             if (clamp) {
                 dx = this.scaleClampRound(dx, this._element.offsetWidth);
                 dy = this.scaleClampRound(dy, this._element.offsetHeight);
@@ -174,6 +176,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         });
         
         this.hammer.on(name + 'end', (ev: Hammer.Input) => {
+            prevX = 0; prevY = 0;
             panned(0, 0);
 
             if (finish !== undefined) {
@@ -182,6 +185,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         });
 
         this.hammer.on(name + 'cancel', (ev: Hammer.Input) => {
+            prevX = 0; prevY = 0;
             panned(0, 0);
 
             if (finish !== undefined) {

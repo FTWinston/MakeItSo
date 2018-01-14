@@ -7,23 +7,13 @@ export abstract class SensorTarget {
 
     interpolate(interval: number) {}
 
-    protected isOnScreen(screenPos: Vector2, display: CanvasBounds) {
-        return screenPos.x >= display.minX
-            && screenPos.x <= display.maxX
-            && screenPos.y >= display.minY
-            && screenPos.y <= display.maxY;
-    }
-
     draw(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, markerZ: number) {
         let screenPos = display.transform(this.position);
+        let floorPos = display.transform(new Vector3(this.position.x, this.position.y, markerZ));
 
-        if (this.isOnScreen(screenPos, display)) {
-            let floorPos = display.transform(new Vector3(this.position.x, this.position.y, markerZ));
-
-            this.drawShadow(ctx, display, floorPos);
-            this.drawIndicator(ctx, screenPos, display, floorPos);
-            this.drawTarget(ctx, screenPos, display);
-        }
+        this.drawShadow(ctx, display, floorPos);
+        this.drawIndicator(ctx, screenPos, display, floorPos);
+        this.drawTarget(ctx, screenPos, display);
     }
 
     protected abstract drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds): void;
@@ -31,20 +21,21 @@ export abstract class SensorTarget {
     protected abstract getShadowRadius(display: CanvasBounds): number;
 
     protected drawShadow(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, floorPos: Vector2) {
-        let prevFill = ctx.fillStyle;
-        ctx.globalAlpha = 0.4;
+        ctx.save();
+
+        ctx.globalAlpha = 0.5;
         ctx.fillStyle = '#000';
-        let prevFilter = (ctx as any).filter;
         (ctx as any).filter = 'blur(5px)';
 
-        // TODO: skew so that shadow fits onto the "floor" plane
+        // skew so that shadow fits onto the "floor" plane
+        ctx.translate(floorPos.x, floorPos.y);
+        ctx.scale(1, 0.4);
+
         ctx.beginPath();
-        ctx.arc(floorPos.x, floorPos.y, this.getShadowRadius(display), 0, Math.PI * 2);
+        ctx.arc(0, 0, this.getShadowRadius(display), 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = prevFill;
-        (ctx as any).filter = prevFilter;
+        ctx.restore();
     }
 
     protected drawIndicator(ctx: CanvasRenderingContext2D, targetPos: Vector2, display: CanvasBounds3D, floorPos: Vector2) {

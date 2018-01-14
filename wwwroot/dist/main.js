@@ -450,34 +450,25 @@ var SensorTarget = (function () {
         this.position = position;
     }
     SensorTarget.prototype.interpolate = function (interval) { };
-    SensorTarget.prototype.isOnScreen = function (screenPos, display) {
-        return screenPos.x >= display.minX
-            && screenPos.x <= display.maxX
-            && screenPos.y >= display.minY
-            && screenPos.y <= display.maxY;
-    };
     SensorTarget.prototype.draw = function (ctx, display, markerZ) {
         var screenPos = display.transform(this.position);
-        if (this.isOnScreen(screenPos, display)) {
-            var floorPos = display.transform(new __WEBPACK_IMPORTED_MODULE_0__math__["a" /* Vector3 */](this.position.x, this.position.y, markerZ));
-            this.drawShadow(ctx, display, floorPos);
-            this.drawIndicator(ctx, screenPos, display, floorPos);
-            this.drawTarget(ctx, screenPos, display);
-        }
+        var floorPos = display.transform(new __WEBPACK_IMPORTED_MODULE_0__math__["a" /* Vector3 */](this.position.x, this.position.y, markerZ));
+        this.drawShadow(ctx, display, floorPos);
+        this.drawIndicator(ctx, screenPos, display, floorPos);
+        this.drawTarget(ctx, screenPos, display);
     };
     SensorTarget.prototype.drawShadow = function (ctx, display, floorPos) {
-        var prevFill = ctx.fillStyle;
-        ctx.globalAlpha = 0.4;
+        ctx.save();
+        ctx.globalAlpha = 0.5;
         ctx.fillStyle = '#000';
-        var prevFilter = ctx.filter;
         ctx.filter = 'blur(5px)';
-        // TODO: skew so that shadow fits onto the "floor" plane
+        // skew so that shadow fits onto the "floor" plane
+        ctx.translate(floorPos.x, floorPos.y);
+        ctx.scale(1, 0.4);
         ctx.beginPath();
-        ctx.arc(floorPos.x, floorPos.y, this.getShadowRadius(display), 0, Math.PI * 2);
+        ctx.arc(0, 0, this.getShadowRadius(display), 0, Math.PI * 2);
         ctx.fill();
-        ctx.globalAlpha = 1;
-        ctx.fillStyle = prevFill;
-        ctx.filter = prevFilter;
+        ctx.restore();
     };
     SensorTarget.prototype.drawIndicator = function (ctx, targetPos, display, floorPos) {
         // draw a depth indicator, showing Z height against axis more clearly
@@ -1071,12 +1062,14 @@ var TouchArea = (function (_super) {
             }
         });
         this.hammer.on(name + 'end', function (ev) {
+            prevAmount = 0;
             panned(0);
             if (finish !== undefined) {
                 finish();
             }
         });
         this.hammer.on(name + 'cancel', function (ev) {
+            prevAmount = 0;
             panned(0);
             if (finish !== undefined) {
                 finish();
@@ -1124,12 +1117,16 @@ var TouchArea = (function (_super) {
             }
         });
         this.hammer.on(name + 'end', function (ev) {
+            prevX = 0;
+            prevY = 0;
             panned(0, 0);
             if (finish !== undefined) {
                 finish();
             }
         });
         this.hammer.on(name + 'cancel', function (ev) {
+            prevX = 0;
+            prevY = 0;
             panned(0, 0);
             if (finish !== undefined) {
                 finish();
@@ -1639,11 +1636,22 @@ var Vector3 = (function () {
         this.z += other.z;
         return this;
     };
+    Vector3.prototype.subtract = function (other) {
+        this.x -= other.x;
+        this.y -= other.y;
+        this.z -= other.z;
+        return this;
+    };
     Vector3.prototype.scale = function (factor) {
         this.x *= factor;
         this.y *= factor;
         this.z *= factor;
         return this;
+    };
+    Vector3.prototype.isBetween = function (min, max) {
+        return this.x >= min.x && this.x <= max.x
+            && this.y >= min.y && this.y <= max.y
+            && this.z >= min.z && this.z <= max.z;
     };
     Vector3.prototype.rotateX = function (angle) {
         var cosa = Math.cos(angle);
@@ -4982,13 +4990,13 @@ var SensorView = (function (_super) {
     function SensorView(props) {
         var _this = _super.call(this, props) || this;
         _this.state = {
-            center: props.targets.length > 0 ? props.targets[0].position : new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](0, 0, 0),
+            center: props.targets.length > 0 ? new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](props.targets[0].position.x, props.targets[0].position.y, 0) : new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](0, 0, 0),
             zoom: 1,
             xRotation: 6 * Math.PI / 16,
             yRotation: 0,
             zRotation: Math.PI / 8,
         };
-        _this.updateTransform();
+        _this.updateTransform(_this.state);
         return _this;
     }
     SensorView.prototype.shouldComponentUpdate = function (nextProps, nextState) {
@@ -4996,7 +5004,7 @@ var SensorView = (function (_super) {
         if (this.state.xRotation !== nextState.xRotation
             || this.state.yRotation !== nextState.yRotation
             || this.state.zRotation !== nextState.zRotation) {
-            this.updateTransform();
+            this.updateTransform(nextState);
         }
         if (this.props.className !== nextProps.className) {
             return true;
@@ -5013,11 +5021,10 @@ var SensorView = (function (_super) {
                 _this.touch = t;
             } } });
     };
-    SensorView.prototype.updateTransform = function () {
-        //console.log(`transform ${this.state.xRotation / Math.PI}, ${this.state.yRotation / Math.PI}, ${this.state.zRotation / Math.PI}`);
-        this.viewTransform = __WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].yRotation(this.state.yRotation)
-            .multiply(__WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].xRotation(this.state.xRotation))
-            .multiply(__WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].zRotation(this.state.zRotation));
+    SensorView.prototype.updateTransform = function (state) {
+        this.viewTransform = __WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].yRotation(state.yRotation)
+            .multiply(__WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].xRotation(state.xRotation))
+            .multiply(__WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].zRotation(state.zRotation));
     };
     SensorView.prototype.drawSensors = function (ctx, width, height) {
         var _this = this;
@@ -5026,19 +5033,6 @@ var SensorView = (function (_super) {
         ctx.save();
         ctx.translate(halfWidth, halfHeight);
         ctx.scale(this.state.zoom, this.state.zoom);
-        ctx.translate(-this.state.center.x, -this.state.center.y);
-        var display = {
-            minX: this.state.center.x - halfWidth,
-            minY: this.state.center.y - halfHeight,
-            maxX: this.state.center.x + halfWidth,
-            maxY: this.state.center.y + halfHeight,
-            onePixel: 1 / this.state.zoom,
-            transform: function (world) {
-                var transformed = _this.viewTransform.multiplyVector(world);
-                // TODO: should use Z here for sort order?
-                return new __WEBPACK_IMPORTED_MODULE_2__functionality__["i" /* Vector2 */](transformed.x, transformed.y);
-            },
-        };
         var minZ = Number.MAX_VALUE;
         for (var _i = 0, _a = this.props.targets; _i < _a.length; _i++) {
             var target = _a[_i];
@@ -5048,47 +5042,81 @@ var SensorView = (function (_super) {
             minZ = 0;
         }
         minZ -= 5;
-        this.drawBackground(ctx, display, minZ);
+        var display = {
+            minX: this.state.center.x - halfWidth,
+            minY: this.state.center.y - halfHeight,
+            maxX: this.state.center.x + halfWidth,
+            maxY: this.state.center.y + halfHeight,
+            onePixel: 1 / this.state.zoom,
+            transform: function (world) {
+                var transformed = _this.viewTransform.multiplyVector(world.clone().subtract(_this.state.center));
+                // TODO: should use Z here for sort order?
+                return new __WEBPACK_IMPORTED_MODULE_2__functionality__["i" /* Vector2 */](transformed.x, transformed.y);
+            },
+        };
+        var gridSize = 50;
+        var gridExtent = 600 / this.state.zoom;
+        var worldMin = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](Math.round((this.state.center.x - gridExtent) / gridSize) * gridSize, Math.round((this.state.center.y - gridExtent) / gridSize) * gridSize, this.state.center.z - gridExtent);
+        var worldMax = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](Math.round((this.state.center.x + gridExtent) / gridSize) * gridSize, Math.round((this.state.center.y + gridExtent) / gridSize) * gridSize, this.state.center.z + gridExtent * 2);
+        this.drawBackground(ctx, display, worldMin, worldMax, gridSize, minZ);
+        this.drawRotationMarker(ctx, display, minZ);
         for (var _b = 0, _c = this.props.targets; _b < _c.length; _b++) {
             var target = _c[_b];
-            target.draw(ctx, display, minZ);
+            if (target.position.isBetween(worldMin, worldMax)) {
+                target.draw(ctx, display, minZ);
+            }
         }
         ctx.restore();
     };
-    SensorView.prototype.drawBackground = function (ctx, display, gridZ) {
-        var gridSize = 50;
-        var firstLineX = Math.floor(display.minX / gridSize) * gridSize;
-        var firstLineY = Math.floor(display.minY / gridSize) * gridSize;
-        ctx.globalAlpha = 0.2;
+    SensorView.prototype.drawBackground = function (ctx, display, worldMin, worldMax, gridSize, gridZ) {
         ctx.lineWidth = display.onePixel;
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
         var worldPos = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](0, 0, gridZ);
         var screenPos;
         // TODO: bounds shouldn't directly come from screen size
-        for (var x = firstLineX; x <= display.maxX; x += gridSize) {
+        for (var x = worldMin.x; x <= worldMax.x; x += gridSize) {
             worldPos.x = x;
-            worldPos.y = display.minY;
+            worldPos.y = worldMin.y;
             screenPos = display.transform(worldPos);
             ctx.moveTo(screenPos.x, screenPos.y);
-            worldPos.y = display.maxY;
+            worldPos.y = worldMax.y;
             screenPos = display.transform(worldPos);
             ctx.lineTo(screenPos.x, screenPos.y);
         }
-        for (var y = firstLineY; y <= display.maxY; y += gridSize) {
+        for (var y = worldMin.y; y <= worldMax.y; y += gridSize) {
             worldPos.y = y;
-            worldPos.x = display.minX;
+            worldPos.x = worldMin.x;
             screenPos = display.transform(worldPos);
             ctx.moveTo(screenPos.x, screenPos.y);
-            worldPos.x = display.maxX;
+            worldPos.x = worldMax.x;
             screenPos = display.transform(worldPos);
             ctx.lineTo(screenPos.x, screenPos.y);
         }
         ctx.stroke();
         ctx.globalAlpha = 1;
     };
+    SensorView.prototype.drawRotationMarker = function (ctx, display, gridZ) {
+        var worldPos = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](this.state.center.x, this.state.center.y, gridZ);
+        var screenPos = display.transform(worldPos);
+        ctx.globalAlpha = 0.4;
+        ctx.strokeStyle = '#c00';
+        ctx.lineWidth = display.onePixel * 4;
+        var length = display.onePixel * 12;
+        // TODO: skew this to fit perspective
+        ctx.beginPath();
+        ctx.moveTo(screenPos.x - length, screenPos.y - length);
+        ctx.lineTo(screenPos.x + length, screenPos.y + length);
+        ctx.moveTo(screenPos.x - length, screenPos.y + length);
+        ctx.lineTo(screenPos.x + length, screenPos.y - length);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
+    };
     SensorView.prototype.setupTouch = function (area) {
         var _this = this;
+        // one-finger / left mouse rotation
+        var rotScale = 0.002;
+        var rotate = area.createPan2D('rotate', 1, 1, false, function (dx, dy) { return _this.rotate(dy * rotScale, dx * rotScale); });
         // 2-finger panning for multitouch
         var pan = area.createPan2D('pan', 2, 1, false, function (dx, dy) { return _this.pan(-dx, -dy); });
         // right-mouse panning for where multitouch isn't an option
@@ -5123,14 +5151,25 @@ var SensorView = (function (_super) {
             ev.preventDefault();
             _this.zoom(ev.deltaY < 0 ? 1.1 : 0.9);
         });
-        area.createPress('tempRotate', 250, function () { return _this.setState({ zRotation: _this.state.zRotation + Math.PI / 32 }); });
     };
-    SensorView.prototype.pan = function (dx, dy) {
-        dx /= this.state.zoom;
-        dy /= this.state.zoom;
+    SensorView.prototype.pan = function (screenDx, screenDy) {
+        screenDx /= this.state.zoom;
+        screenDy /= this.state.zoom;
+        var sinRot = Math.sin(this.state.zRotation);
+        var cosRot = Math.cos(this.state.zRotation);
+        var worldDx = screenDx * cosRot + screenDy * sinRot;
+        var worldDy = -screenDx * sinRot + screenDy * cosRot;
         this.setState(function (state) {
             return {
-                center: new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](state.center.x + dx, state.center.y + dy, state.center.z),
+                center: new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](state.center.x + worldDx, state.center.y + worldDy, state.center.z),
+            };
+        });
+    };
+    SensorView.prototype.rotate = function (dx, dz) {
+        this.setState(function (state) {
+            return {
+                //xRotation: state.xRotation + dx,
+                zRotation: state.zRotation + dz,
             };
         });
     };
@@ -7450,10 +7489,19 @@ var Vector2 = (function () {
         this.y += other.y;
         return this;
     };
+    Vector2.prototype.subtract = function (other) {
+        this.x -= other.x;
+        this.y -= other.y;
+        return this;
+    };
     Vector2.prototype.scale = function (factor) {
         this.x *= factor;
         this.y *= factor;
         return this;
+    };
+    Vector2.prototype.isBetween = function (min, max) {
+        return this.x >= min.x && this.x <= max.x
+            && this.y >= min.y && this.y <= max.y;
     };
     Vector2.prototype.rotate = function (angle) {
         var cosa = Math.cos(angle);

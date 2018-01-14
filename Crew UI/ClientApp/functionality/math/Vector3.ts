@@ -14,11 +14,24 @@ export class Vector3 implements Vector<Vector3> {
         return this;
     }
 
+    subtract(other: Vector3) {
+        this.x -= other.x;
+        this.y -= other.y;
+        this.z -= other.z;
+        return this;
+    }
+
     scale(factor: number) {
         this.x *= factor;
         this.y *= factor;
         this.z *= factor;
         return this;
+    }
+
+    isBetween(min: Vector3, max: Vector3) {
+        return this.x >= min.x && this.x <= max.x
+            && this.y >= min.y && this.y <= max.y
+            && this.z >= min.z && this.z <= max.z;
     }
 
     rotateX(angle: number) {

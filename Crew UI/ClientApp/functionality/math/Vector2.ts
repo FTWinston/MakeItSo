@@ -13,10 +13,21 @@ export class Vector2 implements Vector<Vector2> {
         return this;
     }
 
+    subtract(other: Vector2) {
+        this.x -= other.x;
+        this.y -= other.y;
+        return this;
+    }
+
     scale(factor: number) {
         this.x *= factor;
         this.y *= factor;
         return this;
+    }
+
+    isBetween(min: Vector2, max: Vector2) {
+        return this.x >= min.x && this.x <= max.x
+            && this.y >= min.y && this.y <= max.y;
     }
 
     rotate(angle: number) {
