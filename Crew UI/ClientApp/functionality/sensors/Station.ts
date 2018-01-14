@@ -1,14 +1,18 @@
-import { Vector3 } from '../Vector3';
+import { CanvasBounds } from '../CanvasBounds';
 import { RelatableTarget, Relationship } from './RelatableTarget';
+import { SensorTarget } from './SensorTarget';
+import { Vector2, Vector3 } from '../math';
 
 export class Station extends RelatableTarget {
     constructor(id: number, position: Vector3, relationship: Relationship) {
         super(id, position, relationship);
     }
 
-    protected drawTarget(ctx: CanvasRenderingContext2D, onePixel: number) {
+    protected getShadowRadius(display: CanvasBounds) { return display.onePixel * 14; }
+
+    protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds) {
         // TODO: better station symbol
-        let halfSize = onePixel * 14, size = halfSize + halfSize;
-        ctx.fillRect(this.position.x - halfSize, this.position.y - halfSize, size, size);
+        let halfSize = display.onePixel * 14, size = halfSize + halfSize;
+        ctx.fillRect(screenPos.x - halfSize, screenPos.y - halfSize, size, size);
     }
 }

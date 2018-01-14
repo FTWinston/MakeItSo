@@ -1,18 +1,22 @@
-import { Vector3 } from '../Vector3';
+import { CanvasBounds } from '../CanvasBounds';
 import { MoveableTarget } from './MoveableTarget';
 import { Relationship } from './RelatableTarget';
+import { SensorTarget } from './SensorTarget';
+import { Vector2, Vector3 } from '../math';
 
 export class Ship extends MoveableTarget {
     constructor(id: number, position: Vector3, velocity: Vector3, relationship: Relationship) {
         super(id, position, velocity, relationship);
     }
     
-    protected drawTarget(ctx: CanvasRenderingContext2D, onePixel: number) {
+    protected getShadowRadius(display: CanvasBounds) { return display.onePixel * 10; }
+
+    protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds) {
         // TODO: better ship symbol, indicating direction of velocity
         ctx.beginPath();
-        ctx.moveTo(this.position.x, this.position.y - 15 * onePixel);
-        ctx.lineTo(this.position.x + 9 * onePixel, this.position.y + 15 * onePixel);
-        ctx.lineTo(this.position.x - 9 * onePixel, this.position.y + 15 * onePixel);
+        ctx.moveTo(screenPos.x, screenPos.y - 15 * display.onePixel);
+        ctx.lineTo(screenPos.x + 9 * display.onePixel, screenPos.y + 15 * display.onePixel);
+        ctx.lineTo(screenPos.x - 9 * display.onePixel, screenPos.y + 15 * display.onePixel);
         ctx.fill();
     }
 }

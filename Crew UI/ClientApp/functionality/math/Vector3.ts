@@ -1,8 +1,17 @@
-export class Vector3 {
+import { Vector } from './Vector';
+
+export class Vector3 implements Vector<Vector3> {
     constructor(public x: number, public y: number, public z: number) { }
 
     clone() {
         return new Vector3(this.x, this.y, this.z);
+    }
+
+    add(other: Vector3) {
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
+        return this;
     }
 
     scale(factor: number) {

@@ -1,5 +1,6 @@
-import { Vector3 } from '../Vector3';
+import { CanvasBounds3D } from '../CanvasBounds';
 import { RelatableTarget, Relationship } from './RelatableTarget';
+import { Vector2, Vector3 } from '../math';
 
 export abstract class MoveableTarget extends RelatableTarget {
     constructor(id: number, position: Vector3, public velocity: Vector3, relationship: Relationship) {
@@ -10,14 +11,5 @@ export abstract class MoveableTarget extends RelatableTarget {
         this.position.x += this.velocity.x * interval;
         this.position.y += this.velocity.y * interval;
         this.position.z += this.velocity.z * interval;
-    }
-
-    draw(ctx: CanvasRenderingContext2D, onePixel: number) {
-        this.drawVelocity(ctx, onePixel);
-        super.draw(ctx, onePixel);
-    }
-
-    private drawVelocity(ctx: CanvasRenderingContext2D, onePixel: number) {
-        // TODO: draw velocity indicator
     }
 }

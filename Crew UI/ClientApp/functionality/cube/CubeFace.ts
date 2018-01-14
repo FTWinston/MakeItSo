@@ -1,4 +1,4 @@
-import { Vector3 } from '../Vector3';
+import { Vector3 } from '../math';
 
 type matrix = [number, number, number][];
 

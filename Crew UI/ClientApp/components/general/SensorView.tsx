@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TouchArea } from './TouchArea';
 import { drawFunc } from './Canvas';
-import { SensorTarget, Vector3 } from '../../functionality';
+import { CanvasBounds3D, Matrix, SensorTarget, Vector2, Vector3 } from '../../functionality';
 import * as Hammer from 'hammerjs';
 
 interface SensorViewProps {
@@ -12,10 +12,14 @@ interface SensorViewProps {
 interface SensorViewState {
     center: Vector3;
     zoom: number;
+    xRotation: number;
+    yRotation: number;
+    zRotation: number;
 }
 
 export class SensorView extends React.PureComponent<SensorViewProps, SensorViewState> {
     private touch: TouchArea;
+    private viewTransform: Matrix;
 
     constructor(props: SensorViewProps) {
         super(props);
@@ -23,12 +27,31 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         this.state = {
             center: props.targets.length > 0 ? props.targets[0].position : new Vector3(0, 0, 0),
             zoom: 1,
+            xRotation: 6 * Math.PI / 16,
+            yRotation: 0,
+            zRotation: Math.PI / 8,
         };
+
+        this.updateTransform();
     }
 
     shouldComponentUpdate(nextProps: SensorViewProps, nextState: SensorViewState) {
+        if (this.state.xRotation !== nextState.xRotation
+         || this.state.yRotation !== nextState.yRotation
+         || this.state.zRotation !== nextState.zRotation) {
+            this.updateTransform();
+        }
+
+        if (this.props.className !== nextProps.className) {
+            return true;
+        }
+
         setTimeout(() => this.touch.redraw(), 0); // wait til state/props actually change
-        return this.props.className !== nextProps.className;
+        return false;
+    }
+
+    componentDidUpdate() {
+        this.touch.redraw();
     }
 
     render() {
@@ -40,6 +63,13 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         />;
     }
 
+    private updateTransform() {
+        //console.log(`transform ${this.state.xRotation / Math.PI}, ${this.state.yRotation / Math.PI}, ${this.state.zRotation / Math.PI}`);
+        this.viewTransform = Matrix.yRotation(this.state.yRotation)
+               .multiply(Matrix.xRotation(this.state.xRotation))
+               .multiply(Matrix.zRotation(this.state.zRotation))
+    }
+
     private drawSensors(ctx: CanvasRenderingContext2D, width: number, height: number) {
         let halfWidth = width / 2, halfHeight = height / 2;
         ctx.clearRect(0, 0, width, height);
@@ -49,40 +79,74 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         ctx.scale(this.state.zoom, this.state.zoom);
         ctx.translate(-this.state.center.x, -this.state.center.y);
 
-        let onePixel = 1 / this.state.zoom; // 1 pixel despite zoom
-        let minX = this.state.center.x - halfWidth / this.state.zoom;
-        let minY = this.state.center.y - halfHeight / this.state.zoom;
-        let maxX = minX + width / this.state.zoom, maxY = minY + height / this.state.zoom;
+        let display: CanvasBounds3D = {
+            minX: this.state.center.x - halfWidth,
+            minY: this.state.center.y - halfHeight,
+            maxX: this.state.center.x + halfWidth,
+            maxY: this.state.center.y + halfHeight,
+            onePixel: 1 / this.state.zoom, // 1 pixel despite zoom
+            transform: world => {
+                let transformed = this.viewTransform.multiplyVector(world);
+                // TODO: should use Z here for sort order?
+                return new Vector2(transformed.x, transformed.y);
+            },
+        };
 
-        this.drawBackground(ctx, minX, minY, maxX, maxY, onePixel);
+        let minZ = Number.MAX_VALUE;
+        for (let target of this.props.targets) {
+            minZ = Math.min(minZ, target.position.z);
+        }
+        if (minZ === Number.MAX_VALUE) {
+            minZ = 0;
+        }
+        minZ -= 5;
+
+        this.drawBackground(ctx, display, minZ);
 
         for (let target of this.props.targets) {
-            if (target.isOnScreen(minX, minY, maxX, maxY)) {
-                target.draw(ctx, onePixel);
-            }
+            target.draw(ctx, display, minZ);
         }
 
         ctx.restore();
     }
 
-    private drawBackground(ctx: CanvasRenderingContext2D, minX: number, minY: number, maxX: number, maxY: number, onePixel: number) {
+    private drawBackground(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, gridZ: number) {
         const gridSize = 50;
-        let firstLineX = Math.floor(minX / gridSize) * gridSize;
-        let firstLineY = Math.floor(minY / gridSize) * gridSize;
+        let firstLineX = Math.floor(display.minX / gridSize) * gridSize;
+        let firstLineY = Math.floor(display.minY / gridSize) * gridSize;
 
         ctx.globalAlpha = 0.2;
-        ctx.lineWidth = onePixel;
+        ctx.lineWidth = display.onePixel;
         ctx.strokeStyle = '#fff';
         ctx.beginPath();
 
-        for (let x = firstLineX; x <= maxX; x += gridSize) {
-            ctx.moveTo(x, minY);
-            ctx.lineTo(x, maxY);
+        let worldPos = new Vector3(0, 0, gridZ);
+        let screenPos: Vector2;
+
+        // TODO: bounds shouldn't directly come from screen size
+
+        for (let x = firstLineX; x <= display.maxX; x += gridSize) {
+            worldPos.x = x;
+            
+            worldPos.y = display.minY;
+            screenPos = display.transform(worldPos);
+            ctx.moveTo(screenPos.x, screenPos.y);
+            
+            worldPos.y = display.maxY;
+            screenPos = display.transform(worldPos);
+            ctx.lineTo(screenPos.x, screenPos.y);
         }
 
-        for (let y = firstLineY; y <= maxY; y += gridSize) {
-            ctx.moveTo(minX, y);
-            ctx.lineTo(maxX, y);
+        for (let y = firstLineY; y <= display.maxY; y += gridSize) {
+            worldPos.y = y;
+            
+            worldPos.x = display.minX;
+            screenPos = display.transform(worldPos);
+            ctx.moveTo(screenPos.x, screenPos.y);
+            
+            worldPos.x = display.maxX;
+            screenPos = display.transform(worldPos);
+            ctx.lineTo(screenPos.x, screenPos.y);
         }
 
         ctx.stroke();
@@ -123,6 +187,8 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
             ev.preventDefault();
             this.zoom(ev.deltaY < 0 ? 1.1 : 0.9);
         });
+
+        area.createPress('tempRotate', 250, () => this.setState({ zRotation: this.state.zRotation + Math.PI / 32 }));
     }
 
     private pan(dx: number, dy: number) {

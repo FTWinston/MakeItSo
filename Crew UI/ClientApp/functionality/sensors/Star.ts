@@ -1,36 +1,42 @@
-import { Vector3 } from '../Vector3';
+import { CanvasBounds } from '../CanvasBounds';
 import { SensorTarget } from './SensorTarget';
+import { Vector2, Vector3 } from '../math';
 
 export class Star extends SensorTarget {
     constructor(id: number, position: Vector3, public color: string, public radius: number, public damageRadius?: number) {
         super(id, position);
     }
 
-    isOnScreen(minX: number, minY: number, maxX: number, maxY: number) {
-        let radius = this.radius;
-        if (this.damageRadius !== undefined && this.damageRadius > radius) {
-            radius = this.damageRadius;
-        }
+    isOnScreen(screenPos: Vector2, display: CanvasBounds) {
+        let radius = this.damageRadius !== undefined && this.damageRadius > this.radius
+            ? this.damageRadius : this.radius;
 
-        return super.isOnScreen(minX - radius, minY - radius, maxX + radius, maxY + radius);
+        return screenPos.x >= display.minX - radius
+            && screenPos.x <= display.maxX + radius
+            && screenPos.y >= display.minY - radius
+            && screenPos.y <= display.maxY + radius;
     }
 
-    protected drawTarget(ctx: CanvasRenderingContext2D, onePixel: number) {
+    protected getShadowRadius(display: CanvasBounds) { return this.radius * 0.85; }
+
+    protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds) {
         // TODO: star texture
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, this.radius, 0, Math.PI * 2);
+        ctx.arc(screenPos.x, screenPos.y, this.radius, 0, Math.PI * 2);
         ctx.fill();
 
         // TODO: draw coronal texture effect
 
+        /*
         if (this.damageRadius !== undefined) {
             // draw "min safe distance indicator"
             ctx.strokeStyle = '#a00';
-            ctx.lineWidth = onePixel * 2;
+            ctx.lineWidth = display.onePixel * 2;
             ctx.beginPath();
-            ctx.arc(this.position.x, this.position.y, this.damageRadius, 0, Math.PI * 2);
+            ctx.arc(screenPos.x, screenPos.y, this.damageRadius, 0, Math.PI * 2);
             ctx.stroke();
         }
+        */
     }
 }
