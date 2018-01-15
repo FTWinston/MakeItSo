@@ -450,9 +450,8 @@ var SensorTarget = (function () {
         this.position = position;
     }
     SensorTarget.prototype.interpolate = function (interval) { };
-    SensorTarget.prototype.draw = function (ctx, display, markerZ) {
-        var screenPos = display.transform(this.position);
-        var floorPos = display.transform(new __WEBPACK_IMPORTED_MODULE_0__math__["a" /* Vector3 */](this.position.x, this.position.y, markerZ));
+    SensorTarget.prototype.draw = function (ctx, display, screenPos, markerZ) {
+        var floorPos = display.transform(new __WEBPACK_IMPORTED_MODULE_0__math__["a" /* Vector3 */](this.position.x, this.position.y, markerZ)).position;
         this.drawShadow(ctx, display, floorPos);
         this.drawIndicator(ctx, screenPos, display, floorPos);
         this.drawTarget(ctx, screenPos, display);
@@ -1725,9 +1724,9 @@ var RelatableTarget = (function (_super) {
                 return '#06c';
         }
     };
-    RelatableTarget.prototype.draw = function (ctx, display, markerZ) {
+    RelatableTarget.prototype.draw = function (ctx, display, screenPos, markerZ) {
         ctx.strokeStyle = ctx.fillStyle = this.getRelationColor();
-        _super.prototype.draw.call(this, ctx, display, markerZ);
+        _super.prototype.draw.call(this, ctx, display, screenPos, markerZ);
     };
     return RelatableTarget;
 }(__WEBPACK_IMPORTED_MODULE_0__SensorTarget__["a" /* SensorTarget */]));
@@ -5049,9 +5048,11 @@ var SensorView = (function (_super) {
             maxY: this.state.center.y + halfHeight,
             onePixel: 1 / this.state.zoom,
             transform: function (world) {
-                var transformed = _this.viewTransform.multiplyVector(world.clone().subtract(_this.state.center));
-                // TODO: should use Z here for sort order?
-                return new __WEBPACK_IMPORTED_MODULE_2__functionality__["i" /* Vector2 */](transformed.x, transformed.y);
+                var screen3d = _this.viewTransform.multiplyVector(world.clone().subtract(_this.state.center));
+                return {
+                    position: new __WEBPACK_IMPORTED_MODULE_2__functionality__["i" /* Vector2 */](screen3d.x, screen3d.y),
+                    zDepth: screen3d.z,
+                };
             },
         };
         var gridSize = 50;
@@ -5060,11 +5061,20 @@ var SensorView = (function (_super) {
         var worldMax = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](Math.round((this.state.center.x + gridExtent) / gridSize) * gridSize, Math.round((this.state.center.y + gridExtent) / gridSize) * gridSize, this.state.center.z + gridExtent * 2);
         this.drawBackground(ctx, display, worldMin, worldMax, gridSize, minZ);
         this.drawRotationMarker(ctx, display, minZ);
-        for (var _b = 0, _c = this.props.targets; _b < _c.length; _b++) {
-            var target = _c[_b];
-            if (target.position.isBetween(worldMin, worldMax)) {
-                target.draw(ctx, display, minZ);
-            }
+        var drawList = this.props.targets
+            .filter(function (t) { return t.position.isBetween(worldMin, worldMax); })
+            .map(function (t) {
+            var renderPos = display.transform(t.position);
+            return {
+                target: t,
+                screenPos: renderPos.position,
+                zDepth: renderPos.zDepth,
+            };
+        });
+        drawList.sort(function (a, b) { return a.zDepth - b.zDepth; });
+        for (var _b = 0, drawList_1 = drawList; _b < drawList_1.length; _b++) {
+            var drawTarget = drawList_1[_b];
+            drawTarget.target.draw(ctx, display, drawTarget.screenPos, minZ);
         }
         ctx.restore();
     };
@@ -5074,23 +5084,22 @@ var SensorView = (function (_super) {
         ctx.beginPath();
         var worldPos = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](0, 0, gridZ);
         var screenPos;
-        // TODO: bounds shouldn't directly come from screen size
         for (var x = worldMin.x; x <= worldMax.x; x += gridSize) {
             worldPos.x = x;
             worldPos.y = worldMin.y;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.moveTo(screenPos.x, screenPos.y);
             worldPos.y = worldMax.y;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.lineTo(screenPos.x, screenPos.y);
         }
         for (var y = worldMin.y; y <= worldMax.y; y += gridSize) {
             worldPos.y = y;
             worldPos.x = worldMin.x;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.moveTo(screenPos.x, screenPos.y);
             worldPos.x = worldMax.x;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.lineTo(screenPos.x, screenPos.y);
         }
         ctx.stroke();
@@ -5098,7 +5107,7 @@ var SensorView = (function (_super) {
     };
     SensorView.prototype.drawRotationMarker = function (ctx, display, gridZ) {
         var worldPos = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](this.state.center.x, this.state.center.y, gridZ);
-        var screenPos = display.transform(worldPos);
+        var screenPos = display.transform(worldPos).position;
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = '#c00';
         ctx.lineWidth = display.onePixel * 4;

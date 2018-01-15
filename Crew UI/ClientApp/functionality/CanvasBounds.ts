@@ -1,5 +1,10 @@
 import { Vector2, Vector3 } from './math';
 
+export interface RenderCoord {
+    position: Vector2,
+    zDepth: number,
+}
+
 export interface CanvasBounds {
     minX: number;
     maxX: number;
@@ -9,5 +14,5 @@ export interface CanvasBounds {
 }
 
 export interface CanvasBounds3D extends CanvasBounds {
-    transform: (world: Vector3) => Vector2;
+    transform: (world: Vector3) => RenderCoord;
 }

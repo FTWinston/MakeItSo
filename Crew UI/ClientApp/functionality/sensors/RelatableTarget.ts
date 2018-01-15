@@ -1,6 +1,6 @@
 import { CanvasBounds3D } from '../CanvasBounds';
 import { SensorTarget } from './SensorTarget';
-import { Vector3 } from '../math';
+import { Vector2, Vector3 } from '../math';
 
 export const enum Relationship {
     Neutral = 0,
@@ -27,8 +27,8 @@ export abstract class RelatableTarget extends SensorTarget {
         }
     }
 
-    draw(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, markerZ: number) {
+    draw(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2, markerZ: number) {
         ctx.strokeStyle = ctx.fillStyle = this.getRelationColor();
-        super.draw(ctx, display, markerZ);
+        super.draw(ctx, display, screenPos, markerZ);
     }
 }

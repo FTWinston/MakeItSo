@@ -18,6 +18,12 @@ interface SensorViewState {
     zRotation: number;
 }
 
+interface TargetDrawInfo {
+    target: SensorTarget;
+    screenPos: Vector2;
+    zDepth: number;
+}
+
 export class SensorView extends React.PureComponent<SensorViewProps, SensorViewState> {
     private touch: TouchArea;
     private viewTransform: Matrix;
@@ -94,9 +100,11 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
             maxY: this.state.center.y + halfHeight,
             onePixel: 1 / this.state.zoom, // 1 pixel despite zoom
             transform: world => {
-                let transformed = this.viewTransform.multiplyVector(world.clone().subtract(this.state.center));
-                // TODO: should use Z here for sort order?
-                return new Vector2(transformed.x, transformed.y);
+                let screen3d = this.viewTransform.multiplyVector(world.clone().subtract(this.state.center));
+                return {
+                    position: new Vector2(screen3d.x, screen3d.y),
+                    zDepth: screen3d.z,
+                };
             },
         };
 
@@ -116,10 +124,21 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         this.drawBackground(ctx, display, worldMin, worldMax, gridSize, minZ);
         this.drawRotationMarker(ctx, display, minZ);
 
-        for (let target of this.props.targets) {
-            if (target.position.isBetween(worldMin, worldMax)) {
-                target.draw(ctx, display, minZ);
-            }
+        let drawList: TargetDrawInfo[] = this.props.targets
+            .filter(t => t.position.isBetween(worldMin, worldMax))
+            .map(t => {
+                let renderPos = display.transform(t.position);
+
+                return {
+                    target: t,
+                    screenPos: renderPos.position,
+                    zDepth: renderPos.zDepth,
+                };
+            });
+        drawList.sort((a, b) => a.zDepth - b.zDepth);
+
+        for (let drawTarget of drawList) {
+            drawTarget.target.draw(ctx, display, drawTarget.screenPos, minZ);
         }
 
         ctx.restore();
@@ -133,17 +152,15 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         let worldPos = new Vector3(0, 0, gridZ);
         let screenPos: Vector2;
 
-        // TODO: bounds shouldn't directly come from screen size
-
         for (let x = worldMin.x; x <= worldMax.x; x += gridSize) {
             worldPos.x = x;
             
             worldPos.y = worldMin.y;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.moveTo(screenPos.x, screenPos.y);
             
             worldPos.y = worldMax.y;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.lineTo(screenPos.x, screenPos.y);
         }
 
@@ -151,11 +168,11 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
             worldPos.y = y;
             
             worldPos.x = worldMin.x;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.moveTo(screenPos.x, screenPos.y);
             
             worldPos.x = worldMax.x;
-            screenPos = display.transform(worldPos);
+            screenPos = display.transform(worldPos).position;
             ctx.lineTo(screenPos.x, screenPos.y);
         }
 
@@ -165,7 +182,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
 
     protected drawRotationMarker(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, gridZ: number) {
         let worldPos = new Vector3(this.state.center.x, this.state.center.y, gridZ);
-        let screenPos = display.transform(worldPos);
+        let screenPos = display.transform(worldPos).position;
         
         ctx.globalAlpha = 0.4;
         ctx.strokeStyle = '#c00';

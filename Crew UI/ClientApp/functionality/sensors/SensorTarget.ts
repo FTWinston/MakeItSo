@@ -7,9 +7,8 @@ export abstract class SensorTarget {
 
     interpolate(interval: number) {}
 
-    draw(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, markerZ: number) {
-        let screenPos = display.transform(this.position);
-        let floorPos = display.transform(new Vector3(this.position.x, this.position.y, markerZ));
+    draw(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2, markerZ: number) {
+        let floorPos = display.transform(new Vector3(this.position.x, this.position.y, markerZ)).position;
 
         this.drawShadow(ctx, display, floorPos);
         this.drawIndicator(ctx, screenPos, display, floorPos);
