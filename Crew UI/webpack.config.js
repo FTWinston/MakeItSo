@@ -18,7 +18,8 @@ module.exports = (env) => {
         module: {
             rules: [
                 { test: /\.tsx?$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },
-                { test: /\.(png|jpg|jpeg|gif|svg)$/, use: 'url-loader?limit=25000' },
+                { test: /\.svg$/, use: 'url-loader?limit=25000' },
+                { test: /\.(png|jpg|jpeg|gif)$/, use: 'file-loader' },
                 { test: /\.css$/, use: ExtractTextPlugin.extract({ use: isDevBuild ? 'css-loader' : 'css-loader?minimize' }) },
                 { test: /\.scss$/, use: ExtractTextPlugin.extract({ use: isDevBuild ? ['css-loader', 'sass-loader'] : ['css-loader?minimize', 'sass-loader?minimize'] }) },
             ]
