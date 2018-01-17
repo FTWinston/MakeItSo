@@ -3,6 +3,7 @@ import { actionCreators as crewActions } from '../store/Crew';
 import { actionCreators as userActions } from '../store/User';
 import { actionCreators as screenActions, ClientScreen } from '../store/Screen';
 import { actionCreators as helmActions } from '../store/Helm';
+import { actionCreators as warpActions, JumpPathStatus } from '../store/Warp';
 import { actionCreators as sensorActions } from '../store/Sensors';
 import { TextLocalisation } from './Localisation';
 import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '../functionality';
@@ -132,6 +133,52 @@ export class Connection {
                 let target = parseSensorTarget(data);
                 store.dispatch(sensorActions.addTarget(target));
                 break;
+            }
+            case 'warp_clear': {
+                store.dispatch(warpActions.clearAll());
+            }
+            case 'warp_add_path': {
+                let vals = data.split(' ');
+                let id = parseInt(vals[0]);
+                let status = parseInt(vals[1]) as JumpPathStatus;
+
+                let points: Vector3[] = [];
+                for (let i=4; i<vals.length; i++) {
+                    points.push(new Vector3(
+                        parseFloat(vals[i-2]),
+                        parseFloat(vals[i-1]),
+                        parseFloat(vals[i])
+                    ));
+                }
+
+                store.dispatch(warpActions.addPath(id, status, points));
+            }
+            case 'warp_ext_path': {
+                let vals = data.split(' ');
+                let id = parseInt(vals[0]);
+
+                let points: Vector3[] = [];
+                for (let i=3; i<vals.length; i++) {
+                    points.push(new Vector3(
+                        parseFloat(vals[i-2]),
+                        parseFloat(vals[i-1]),
+                        parseFloat(vals[i])
+                    ));
+                }
+
+                store.dispatch(warpActions.extendPath(id, points));
+            }
+            case 'warp_upd_path': {
+                let vals = data.split(' ');
+                let id = parseInt(vals[0]);
+                let status = parseInt(vals[1]) as JumpPathStatus;
+
+                store.dispatch(warpActions.setPathStatus(id, status));
+            }
+            case 'warp_rem_path': {
+                let id = parseInt(data);
+
+                store.dispatch(warpActions.removePath(id));
             }
             default:
                 console.log(`Unexpected command: ${cmd}`);

@@ -46,7 +46,7 @@ export const actionCreators = {
         targetID: id,
         position: position,
     },
-    removeTarget: (id: number, position: Vector3) => <RemoveTargetAction>{
+    removeTarget: (id: number) => <RemoveTargetAction>{
         type: 'REMOVE_TARGET',
         targetID: id,
     },

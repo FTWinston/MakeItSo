@@ -18,7 +18,7 @@ export class Star extends Celestial {
         (ctx as any).filter = 'blur(8px)';
         ctx.fillStyle = this.color;
         ctx.beginPath();
-        ctx.arc(screenPos.x, screenPos.y, this.radius, 0, Math.PI * 2);
+        ctx.arc(screenPos.x, screenPos.y, this.radius * 1.05, 0, Math.PI * 2);
         ctx.fill();
         (ctx as any).filter = 'none';
         
