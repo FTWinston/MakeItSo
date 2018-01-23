@@ -74,9 +74,15 @@ interface StartJumpAction {
     endTime: Date;
 }
 
+interface SelectPathAction {
+    type: 'SELECT_PATH';
+    pathID: number;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = ClearPathsAction | AddPathAction | ExtendPathAction | SetPathStatusAction | RemovePathAction | SetScreenStatusAction | StartJumpAction;
+type KnownAction = ClearPathsAction | AddPathAction | ExtendPathAction | SetPathStatusAction | RemovePathAction |
+                   SetScreenStatusAction | StartJumpAction | SelectPathAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -120,6 +126,12 @@ export const actionCreators = {
             endTime: endTime,
         };
     },
+    selectPath: (pathID: number | undefined) => {
+        return <SelectPathAction> {
+            type: 'SELECT_PATH',
+            pathID: pathID,
+        };
+    }
 };
 
 // ----------------
@@ -219,6 +231,19 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                 ...state,
                 activePath: path,
                 jumpEndTime: action.endTime,
+            };
+        }
+        case 'SELECT_PATH': {
+            let selAct = action;
+            let path: JumpPath | undefined;
+            if (selAct.pathID !== undefined) {
+                let paths = state.paths.filter(p => p.id === selAct.pathID);
+                let path = paths.length > 0 ? paths[0] : undefined;
+            }
+
+            return {
+                ...state,
+                activePath: path,
             };
         }
         default:

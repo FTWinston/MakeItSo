@@ -196,7 +196,9 @@ let words: TextLocalisation = {
             moveForward: 'Ahead',
         },
         warp: {
-
+            newPath: 'Plot new path',
+            deletePath: 'Delete path',
+            startJump: 'Prepare to jump',
         },
         weapons: {
 
