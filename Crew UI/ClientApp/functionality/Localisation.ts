@@ -130,7 +130,9 @@ export interface TextLocalisation {
             moveForward: string;
         },
         warp: {
-
+            newPath: string;
+            deletePath: string;
+            startJump: string;
         },
         weapons: {
 

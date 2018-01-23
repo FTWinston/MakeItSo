@@ -1,1 +1,39 @@
 @import '../../general/mixins';
+
+.warp {
+    display: grid;
+
+    @include landscape() {
+        grid-template-rows: 1fr;
+        grid-template-columns: 3fr 2fr;
+        grid-template-areas: "map controls";
+    }
+
+    @include portrait() {
+        grid-template-rows: 2fr 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "map"
+            "controls";
+    }
+}
+
+.warp__sensorMap {
+    grid-area: map;
+}
+
+.warp__pathList, .warp__jumpEditor, .warp__jumpCountdown {
+    grid-area: controls;
+}
+
+.warp__pathList {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: stretch;
+}
+
+.warp__pathList__scroller {
+    flex-grow: 1;
+    overflow-y: scroll;
+}

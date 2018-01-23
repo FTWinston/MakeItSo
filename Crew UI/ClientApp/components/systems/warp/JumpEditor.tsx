@@ -14,7 +14,7 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, {}> {
     render() {
         let words = this.props.text.systems.warp;
 
-        return <div className="warp_jumpEditor">
+        return <div className="warp__jumpEditor">
             Input path stuff
         </div>;
     }

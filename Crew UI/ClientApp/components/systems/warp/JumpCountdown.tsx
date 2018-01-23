@@ -13,7 +13,7 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, {}> {
     render() {
         let words = this.props.text.systems.warp;
 
-        return <div className="warp_jumpCountdown">
+        return <div className="warp__jumpCountdown">
             ETA: 13 seconds
         </div>;
     }

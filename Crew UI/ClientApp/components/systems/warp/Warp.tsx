@@ -17,12 +17,12 @@ interface WarpProps extends WarpBaseProps {
 class Warp extends React.Component<WarpProps, {}> {
     public render() {
         return <div className="system warp">
-            {this.renderSidebar()}
+            {this.renderControls()}
             <SensorView className="warp__sensorMap" targets={this.props.sensorTargets} />
         </div>;
     }
 
-    private renderSidebar() {
+    private renderControls() {
         switch (this.props.status) {
             case WarpScreenStatus.Viewing:
                 return <PathList text={this.props.text} paths={this.props.paths} pathSelected={p => this.pathSelected(p)} newSelected={() => this.showEdit()} />;
