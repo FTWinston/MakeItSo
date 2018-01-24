@@ -22,6 +22,7 @@ export interface JumpPath {
     id: number;
     status: JumpPathStatus;
     points: Vector3[];
+    power: number;
 }
 
 export interface WarpState {
@@ -44,6 +45,7 @@ interface AddPathAction {
     id: number;
     status: JumpPathStatus;
     points: Vector3[];
+    power: number;
 }
 
 interface ExtendPathAction {
@@ -92,11 +94,12 @@ export const actionCreators = {
     clearAll: () => <ClearPathsAction>{
         type: 'CLEAR_PATHS',
     },
-    addPath: (id: number, status: JumpPathStatus, points: Vector3[]) => <AddPathAction>{
+    addPath: (id: number, status: JumpPathStatus, points: Vector3[], power: number) => <AddPathAction>{
         type: 'ADD_PATH',
         id: id,
         status: status,
         points: points,
+        power: power,
     },
     extendPath: (id: number, points: Vector3[]) => <ExtendPathAction>{
         type: 'EXTEND_PATH',
@@ -162,6 +165,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                     id: action.id,
                     status: action.status,
                     points: action.points,
+                    power: action.power,
                 }],
             };
         }

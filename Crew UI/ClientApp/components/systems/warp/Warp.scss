@@ -37,3 +37,8 @@
     flex-grow: 1;
     overflow-y: scroll;
 }
+
+.warpPathListItem__number, .coordinate__number, .countdown__number {
+    font-weight: bold;
+    color: $colorQuandry;
+}

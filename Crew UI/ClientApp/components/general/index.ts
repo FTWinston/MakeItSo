@@ -5,6 +5,7 @@ export { Choice } from './Choice';
 export { Field } from './Field';
 export { FlexibleCanvas } from './FlexibleCanvas';
 export { Icon, renderIcon } from './Icons';
+export { NumericTextbox } from './NumericTextbox';
 export { Screen } from './Screen';
 export { Textbox } from './Textbox';
 export { TouchArea } from './TouchArea';

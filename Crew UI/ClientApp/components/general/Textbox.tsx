@@ -6,13 +6,15 @@ interface ITextboxProps {
     color?: ButtonColor;
     text?: string;
     placeholder?: string;
+    numeric?: boolean;
     textChanged: (text: string) => void;
+    disabled?: boolean;
 }
 
 export class Textbox extends React.Component<ITextboxProps, {}> {
     static defaultProps = {
-        centered: false,
-        labelBehaviour: true,
+        numeric: false,
+        disabled: false,
     };
 
     render() {
@@ -34,10 +36,11 @@ export class Textbox extends React.Component<ITextboxProps, {}> {
         return (
             <input
                 className={classes}
-                type="text"
+                type={this.props.numeric ? 'numeric' : 'text'}
                 value={this.props.text}
                 onChange={e => this.props.textChanged(e.target.value)}
                 placeholder={this.props.placeholder}
+                disabled={this.props.disabled}
             />
         );
     }

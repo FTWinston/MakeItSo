@@ -133,6 +133,21 @@ export interface TextLocalisation {
             newPath: string;
             deletePath: string;
             startJump: string;
+            unknownPosition: string;
+            jump: string;
+            from: string;
+            to: string;
+            power: string;
+            powerDescription: string;
+            eta: string;
+            seconds: string;
+            startPos: string;
+            startPosDescription: string;
+            projectionYaw: string;
+            projectionYawDescription: string;
+            projectionPitch: string;
+            projectionPitchDescription: string;
+            calculate: string;
         },
         weapons: {
 

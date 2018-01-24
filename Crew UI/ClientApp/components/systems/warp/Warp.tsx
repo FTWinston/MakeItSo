@@ -8,7 +8,7 @@ import { JumpCountdown } from './JumpCountdown';
 import { JumpEditor } from './JumpEditor';
 import { PathList } from './PathList';
 import './Warp.scss';
-
+import { connection } from '../../../Client';
 
 interface WarpDataProps extends WarpState {
     text: TextLocalisation;
@@ -33,7 +33,13 @@ class Warp extends React.Component<WarpProps, {}> {
             case WarpScreenStatus.Jumping:
                 return <JumpCountdown text={this.props.text} path={this.props.activePath} endTime={this.props.jumpEndTime} />;
             default:
-                return <JumpEditor text={this.props.text} editPath={this.props.activePath} startPlotting={(from, yaw, pitch, power) => this.plotPath(from, yaw, pitch, power)} cancel={() => this.cancelEdit()} />;
+                return <JumpEditor
+                    text={this.props.text}
+                    editPath={this.props.activePath}
+                    startCalculating={(from, yaw, pitch, power) => this.calculatePath(from, yaw, pitch, power)}
+                    cancel={() => this.cancelEdit()}
+                    calculating={this.props.status === WarpScreenStatus.Calculating}
+                />;
         }
     }
 
@@ -51,8 +57,9 @@ class Warp extends React.Component<WarpProps, {}> {
         this.props.setScreenStatus(WarpScreenStatus.Viewing);
     }
     
-    private plotPath(from: Vector3, yaw: number, pitch: number, power: number) {
-        // TODO: tell the server, let it update state to plotting
+    private calculatePath(from: Vector3, yaw: number, pitch: number, power: number) {
+        this.props.setScreenStatus(WarpScreenStatus.Calculating);
+        connection.send(`warp_plot ${from.x} ${from.y} ${from.z} ${yaw} ${pitch} ${power}`);
     }
 }
 

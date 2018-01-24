@@ -141,9 +141,10 @@ export class Connection {
                 let vals = data.split(' ');
                 let id = parseInt(vals[0]);
                 let status = parseInt(vals[1]) as JumpPathStatus;
+                let power = parseFloat(vals[2]);
 
                 let points: Vector3[] = [];
-                for (let i=4; i<vals.length; i++) {
+                for (let i=5; i<vals.length; i++) {
                     points.push(new Vector3(
                         parseFloat(vals[i-2]),
                         parseFloat(vals[i-1]),
@@ -151,7 +152,7 @@ export class Connection {
                     ));
                 }
 
-                store.dispatch(warpActions.addPath(id, status, points));
+                store.dispatch(warpActions.addPath(id, status, points, power));
             }
             case 'warp_ext_path': {
                 let vals = data.split(' ');
