@@ -1166,6 +1166,12 @@ var SensorView = (function (_super) {
                 _this.touch = t;
             } } });
     };
+    SensorView.prototype.componentWillUnmount = function () {
+        if (this.autoRotation !== undefined) {
+            clearTimeout(this.autoRotation);
+            this.autoRotation = undefined;
+        }
+    };
     SensorView.prototype.updateTransform = function (state) {
         this.viewTransform = __WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].yRotation(state.yRotation)
             .multiply(__WEBPACK_IMPORTED_MODULE_2__functionality__["h" /* Matrix */].xRotation(state.xRotation))
@@ -1267,22 +1273,49 @@ var SensorView = (function (_super) {
         ctx.stroke();
         ctx.globalAlpha = 1;
     };
+    SensorView.prototype.interactionStarted = function () {
+        if (this.touches === 0 && this.autoRotation !== undefined) {
+            clearTimeout(this.autoRotation); // stop auto-rotation immediately
+            this.autoRotation = undefined;
+        }
+        this.touches++;
+    };
+    SensorView.prototype.interactionFinished = function () {
+        var _this = this;
+        if (this.touches < 0) {
+            return;
+        }
+        this.touches--;
+        if (this.touches === 0) {
+            this.autoRotation = setTimeout(function () { return _this.autoRotate(); }, 2000); // start auto-rotation after a delay
+        }
+    };
+    SensorView.prototype.autoRotate = function () {
+        var _this = this;
+        this.rotate(0, 0.02);
+        this.autoRotation = setTimeout(function () { return _this.autoRotate(); }, 50);
+    };
     SensorView.prototype.setupTouch = function (area) {
         var _this = this;
         // one-finger / left mouse rotation
         var rotScale = 0.002;
-        var rotate = area.createPan2D('rotate', 1, 1, false, function (dx, dy) { return _this.rotate(dy * rotScale, dx * rotScale); });
+        var rotate = area.createPan2D('rotate', 1, 1, false, function (dx, dy) { return _this.rotate(dy * rotScale, dx * rotScale); }, undefined, function () { return _this.interactionStarted(); }, function () { return _this.interactionFinished(); });
         // 2-finger panning for multitouch
-        var pan = area.createPan2D('pan', 2, 1, false, function (dx, dy) { return _this.pan(-dx, -dy); });
+        var pan = area.createPan2D('pan', 2, 1, false, function (dx, dy) { return _this.pan(-dx, -dy); }, function () { return _this.interactionStarted(); }, function () { return _this.interactionFinished(); });
         // right-mouse panning for where multitouch isn't an option
         var rightMouseDown = false;
         area.element.addEventListener('mousedown', function (ev) { if (ev.button !== 0) {
             rightMouseDown = true;
+            _this.interactionStarted();
         } });
         area.element.addEventListener('mouseup', function (ev) { if (ev.button !== 0) {
             rightMouseDown = false;
+            _this.interactionFinished();
         } });
-        area.element.addEventListener('mouseout', function () { return rightMouseDown = false; });
+        area.element.addEventListener('mouseout', function () { if (rightMouseDown) {
+            rightMouseDown = false;
+            _this.interactionFinished();
+        } });
         area.element.addEventListener('mousemove', function (ev) { if (rightMouseDown) {
             _this.pan(-ev.movementX, -ev.movementY);
         } });
@@ -1295,7 +1328,7 @@ var SensorView = (function (_super) {
             }
             prevScale = scale;
             _this.zoom(touchZoomScale);
-        }, function () { return prevScale = 1; });
+        }, function () { prevScale = 1; _this.interactionStarted(); }, function () { return _this.interactionFinished(); });
         pan.requireFailure(zoom);
         zoom.requireFailure(pan);
         // mouse wheel zooming
@@ -1304,6 +1337,8 @@ var SensorView = (function (_super) {
                 return;
             }
             ev.preventDefault();
+            _this.interactionStarted();
+            _this.interactionFinished();
             _this.zoom(ev.deltaY < 0 ? 1.1 : 0.9);
         });
     };

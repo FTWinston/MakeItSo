@@ -70,6 +70,13 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         />;
     }
 
+    componentWillUnmount() {
+        if (this.autoRotation !== undefined) { 
+            clearTimeout(this.autoRotation);
+            this.autoRotation = undefined;
+        }
+    }
+
     private updateTransform(state: SensorViewState) {
         this.viewTransform = Matrix.yRotation(state.yRotation)
                    .multiply(Matrix.xRotation(state.xRotation))
@@ -180,7 +187,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         ctx.globalAlpha = 1;
     }
 
-    protected drawRotationMarker(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, gridZ: number) {
+    private drawRotationMarker(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, gridZ: number) {
         let worldPos = new Vector3(this.state.center.x, this.state.center.y, gridZ);
         let screenPos = display.transform(worldPos).position;
         
@@ -200,19 +207,50 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         ctx.globalAlpha = 1;
     }
 
+    private touches: number;
+    private autoRotation: number | undefined;
+
+    public interactionStarted() {
+        if (this.touches === 0 && this.autoRotation !== undefined) {
+            clearTimeout(this.autoRotation); // stop auto-rotation immediately
+            this.autoRotation = undefined;
+        }
+
+        this.touches++;
+    }
+
+    public interactionFinished() {
+        if (this.touches < 0) {
+            return;
+        }
+        
+        this.touches--;
+
+        if (this.touches === 0) {
+            this.autoRotation = setTimeout(() => this.autoRotate(), 2000); // start auto-rotation after a delay
+        }
+    }
+
+    private autoRotate() {
+        this.rotate(0, 0.02);
+        this.autoRotation = setTimeout(() => this.autoRotate(), 50);
+    }
+
     private setupTouch(area: TouchArea) {
         // one-finger / left mouse rotation
         const rotScale = 0.002;
-        let rotate = area.createPan2D('rotate', 1, 1, false, (dx, dy) => this.rotate(dy * rotScale, dx * rotScale));
+        let rotate = area.createPan2D('rotate', 1, 1, false, (dx, dy) => this.rotate(dy * rotScale, dx * rotScale)
+            , undefined, () => this.interactionStarted(), () => this.interactionFinished());
 
         // 2-finger panning for multitouch
-        let pan = area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy));
+        let pan = area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy)
+            , () => this.interactionStarted(), () => this.interactionFinished());
         
         // right-mouse panning for where multitouch isn't an option
         let rightMouseDown = false;
-        area.element.addEventListener('mousedown', ev => { if (ev.button !== 0) { rightMouseDown = true; } });
-        area.element.addEventListener('mouseup', ev => { if (ev.button !== 0) { rightMouseDown = false; } });
-        area.element.addEventListener('mouseout', () => rightMouseDown = false);
+        area.element.addEventListener('mousedown', ev => { if (ev.button !== 0) { rightMouseDown = true; this.interactionStarted(); } });
+        area.element.addEventListener('mouseup', ev => { if (ev.button !== 0) { rightMouseDown = false; this.interactionFinished(); } });
+        area.element.addEventListener('mouseout', () => { if (rightMouseDown) { rightMouseDown = false; this.interactionFinished(); } });
         area.element.addEventListener('mousemove', ev => { if (rightMouseDown) { this.pan(-ev.movementX, -ev.movementY); } });
 
         // pinch zooming
@@ -225,7 +263,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
 
             prevScale = scale;
             this.zoom(touchZoomScale);
-        }, () => prevScale = 1);
+        }, () => { prevScale = 1; this.interactionStarted();}, () => this.interactionFinished());
 
         pan.requireFailure(zoom);
         zoom.requireFailure(pan);
@@ -236,6 +274,9 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
                 return;
             }
             ev.preventDefault();
+            this.interactionStarted();
+            this.interactionFinished();
+
             this.zoom(ev.deltaY < 0 ? 1.1 : 0.9);
         });
     }
