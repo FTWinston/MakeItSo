@@ -57,6 +57,10 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         return false;
     }
 
+    componentDidMount() {
+        this.autoRotate();
+    }
+
     componentDidUpdate() {
         this.touch.redraw();
     }
@@ -207,7 +211,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         ctx.globalAlpha = 1;
     }
 
-    private touches: number;
+    private touches: number = 0;
     private autoRotation: number | undefined;
 
     public interactionStarted() {
@@ -220,11 +224,9 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
     }
 
     public interactionFinished() {
-        if (this.touches < 0) {
-            return;
+        if (this.touches > 0) {
+            this.touches--;
         }
-        
-        this.touches--;
 
         if (this.touches === 0) {
             this.autoRotation = setTimeout(() => this.autoRotate(), 2000); // start auto-rotation after a delay
@@ -232,8 +234,8 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
     }
 
     private autoRotate() {
-        this.rotate(0, 0.02);
-        this.autoRotation = setTimeout(() => this.autoRotate(), 50);
+        this.rotate(0, 0.005);
+        this.autoRotation = setTimeout(() => this.autoRotate(), 30);
     }
 
     private setupTouch(area: TouchArea) {

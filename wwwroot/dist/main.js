@@ -1142,6 +1142,7 @@ var SensorView = (function (_super) {
     __extends(SensorView, _super);
     function SensorView(props) {
         var _this = _super.call(this, props) || this;
+        _this.touches = 0;
         _this.state = {
             center: props.targets.length > 0 ? new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](props.targets[0].position.x, props.targets[0].position.y, 0) : new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](0, 0, 0),
             zoom: 1,
@@ -1164,6 +1165,9 @@ var SensorView = (function (_super) {
         }
         setTimeout(function () { return _this.touch.redraw(); }, 0); // wait til state/props actually change
         return false;
+    };
+    SensorView.prototype.componentDidMount = function () {
+        this.autoRotate();
     };
     SensorView.prototype.componentDidUpdate = function () {
         this.touch.redraw();
@@ -1290,18 +1294,17 @@ var SensorView = (function (_super) {
     };
     SensorView.prototype.interactionFinished = function () {
         var _this = this;
-        if (this.touches < 0) {
-            return;
+        if (this.touches > 0) {
+            this.touches--;
         }
-        this.touches--;
         if (this.touches === 0) {
             this.autoRotation = setTimeout(function () { return _this.autoRotate(); }, 2000); // start auto-rotation after a delay
         }
     };
     SensorView.prototype.autoRotate = function () {
         var _this = this;
-        this.rotate(0, 0.02);
-        this.autoRotation = setTimeout(function () { return _this.autoRotate(); }, 50);
+        this.rotate(0, 0.005);
+        this.autoRotation = setTimeout(function () { return _this.autoRotate(); }, 30);
     };
     SensorView.prototype.setupTouch = function (area) {
         var _this = this;
