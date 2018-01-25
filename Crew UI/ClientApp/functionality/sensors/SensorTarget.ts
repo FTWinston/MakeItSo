@@ -15,11 +15,20 @@ export abstract class SensorTarget {
         this.drawTarget(ctx, screenPos, display);
     }
 
-    protected abstract drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds): void;
+    isBetween(min: Vector3, max: Vector3) {
+        return this.position.isBetween(min, max);
+    }
 
-    protected abstract getShadowRadius(display: CanvasBounds): number;
+    protected abstract drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D): void;
+
+    protected abstract getShadowRadius(display: CanvasBounds3D): number;
 
     protected drawShadow(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, floorPos: Vector2) {
+        let radius = this.getShadowRadius(display);
+        if (radius <= 0) {
+            return;
+        }
+        
         ctx.save();
 
         ctx.globalAlpha = 0.5;
@@ -31,7 +40,7 @@ export abstract class SensorTarget {
         ctx.scale(1, 0.4);
 
         ctx.beginPath();
-        ctx.arc(0, 0, this.getShadowRadius(display), 0, Math.PI * 2);
+        ctx.arc(0, 0, radius, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();

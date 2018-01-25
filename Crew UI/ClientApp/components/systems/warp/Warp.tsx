@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState }  from '../../../store';
 import { actionCreators, WarpState, WarpScreenStatus, JumpPath } from '../../../store/Warp';
 import { SensorView } from '../../../components/general/SensorView';
-import { SensorTarget, TextLocalisation, Vector3 } from '../../../functionality';
+import { SensorPath, SensorTarget, TextLocalisation, Vector3 } from '../../../functionality';
 import { JumpCountdown } from './JumpCountdown';
 import { JumpEditor } from './JumpEditor';
 import { PathList } from './PathList';
@@ -18,11 +18,14 @@ interface WarpDataProps extends WarpState {
 type WarpProps = WarpDataProps
     & typeof actionCreators;
 
-class Warp extends React.Component<WarpProps, {}> {
+class Warp extends React.PureComponent<WarpProps, {}> {
     public render() {
+        // TODO: can we do away with this extra mapping, at all? Store SensorPaths directly in the store?
+        let paths = this.props.paths.map(p => new SensorPath(p.id, p.points));
+
         return <div className="system warp">
             {this.renderControls()}
-            <SensorView className="warp__sensorMap" targets={this.props.sensorTargets} />
+            <SensorView className="warp__sensorMap" targets={[...this.props.sensorTargets, ...paths]} />
         </div>;
     }
 

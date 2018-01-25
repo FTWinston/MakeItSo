@@ -132,7 +132,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
         this.drawRotationMarker(ctx, display, minZ);
 
         let drawList: TargetDrawInfo[] = this.props.targets
-            .filter(t => t.position.isBetween(worldMin, worldMax))
+            .filter(t => t.isBetween(worldMin, worldMax))
             .map(t => {
                 let renderPos = display.transform(t.position);
 
