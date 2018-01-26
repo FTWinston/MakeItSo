@@ -2,8 +2,7 @@
 
 .screen {
     width: calc(100vw - #{$clientPadding * 2});
-    min-height: calc(100vh - #{$clientPadding * 2});
-    max-height: calc(100vh - #{$clientPadding * 2});
+    height: calc(100vh - #{$clientPadding * 2});
     overflow: hidden;
 
     display: flex;
@@ -18,8 +17,7 @@
 .screen--pageLayout {
     justify-content: flex-start;
 
-    min-height: unset;
-    max-height: unset;
+    height: unset;
     overflow: unset;
     overflow-y: auto;
 

@@ -12,13 +12,28 @@ interface JumpEditorProps {
 }
 
 interface JumpEditorState {
-    startPos: Vector3;
-    projectionYaw: number;
-    projectionPitch: number;
-    projectionPower: number;
+    startPosX: number | undefined;
+    startPosY: number | undefined;
+    startPosZ: number | undefined;
+    projectionYaw: number | undefined;
+    projectionPitch: number | undefined;
+    projectionPower: number | undefined;
 }
 
 export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorState> {
+    constructor(props: JumpEditorProps) {
+        super(props);
+
+        this.state = {
+            startPosX: 0,
+            startPosY: 0,
+            startPosZ: 0,
+            projectionYaw: 0,
+            projectionPitch: 0,
+            projectionPower: 50,
+        };
+    }
+
     render() {
         let words = this.props.text.systems.warp;
 
@@ -26,20 +41,20 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
             <Field labelText={words.startPos}>
                 <NumericTextbox
                     color={ButtonColor.Primary}
-                    number={this.state.startPos.x}
-                    numberChanged={v => this.setState(state => { return { startPos: new Vector3(v, state.startPos.y, state.startPos.z) };})}
+                    number={this.state.startPosX}
+                    numberChanged={v => this.setState({ startPosX: v })}
                     disabled={this.props.calculating}
                 />
                 <NumericTextbox
                     color={ButtonColor.Primary}
-                    number={this.state.startPos.y}
-                    numberChanged={v => this.setState(state => { return { startPos: new Vector3(state.startPos.x, v, state.startPos.z) };})}
+                    number={this.state.startPosY}
+                    numberChanged={v => this.setState({ startPosY: v })}
                     disabled={this.props.calculating}
                 />
                 <NumericTextbox
                     color={ButtonColor.Primary}
-                    number={this.state.startPos.z}
-                    numberChanged={(v: number) => this.setState(state => { return { startPos: new Vector3(state.startPos.x, state.startPos.y, v) };})}
+                    number={this.state.startPosZ}
+                    numberChanged={v => this.setState({ startPosZ: v })}
                     disabled={this.props.calculating}
                 />
                 <div className="description">{words.startPosDescription}</div>
@@ -80,10 +95,25 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
                 <PushButton
                     color={ButtonColor.Quaternary}
                     text={words.calculate}
-                    disabled={this.props.calculating}
-                    clicked={() => this.props.startCalculating(this.state.startPos, this.state.projectionYaw, this.state.projectionPitch, this.state.projectionPower)}
-                />;
+                    disabled={this.shouldBlockCalculation()}
+                    clicked={() => this.startCalculation()}
+                />
             </Field>
         </div>;
+    }
+
+    private shouldBlockCalculation() {
+        return this.props.calculating || this.state.projectionYaw === undefined
+            || this.state.projectionPitch === undefined || this.state.projectionPower === undefined
+            || this.state.startPosX === undefined || this.state.startPosY === undefined || this.state.startPosZ === undefined;
+    }
+
+    private startCalculation() {
+        if (this.shouldBlockCalculation()) {
+            return;
+        }
+
+        let startPos = new Vector3(this.state.startPosX as number, this.state.startPosY as number, this.state.startPosZ as number);
+        this.props.startCalculating(startPos, this.state.projectionYaw as number, this.state.projectionPitch as number, this.state.projectionPower as number);
     }
 }

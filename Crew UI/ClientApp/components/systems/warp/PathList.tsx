@@ -23,7 +23,7 @@ export class PathList extends React.PureComponent<PathListProps, {}> {
 
             <Field centered={true} displayAsRow={true}>
                 <PushButton
-                    disabled={this.props.selectedPath !== undefined}
+                    disabled={this.props.selectedPath === undefined}
                     color={ButtonColor.Tertiary}
                     text={words.deletePath}
                     command="deleteWarpPath"
@@ -31,8 +31,9 @@ export class PathList extends React.PureComponent<PathListProps, {}> {
                 <PushButton
                     color={ButtonColor.Secondary}
                     text={this.props.selectedPath === undefined ? words.newPath : words.startJump}
-                    command={this.props.selectedPath === undefined ? "newWarpPath" : "warpJump"}
-                />;
+                    command={this.props.selectedPath === undefined ? undefined : "warpJump"}
+                    clicked={this.props.selectedPath === undefined ? this.props.newSelected : undefined}
+                />
             </Field>
         </div>;
     }

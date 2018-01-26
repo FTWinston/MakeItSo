@@ -7,7 +7,7 @@ interface NumericTextboxProps {
     color?: ButtonColor;
     number?: number;
     placeholder?: string;
-    numberChanged: (number: number) => void;
+    numberChanged: (number: number | undefined) => void;
     disabled?: boolean;
 }
 
@@ -16,8 +16,8 @@ export class NumericTextbox extends React.Component<NumericTextboxProps, {}> {
         return (
             <Textbox
                 numeric={true}
-                text={this.props.number === undefined ? undefined : this.props.number.toString()}
-                textChanged={t => this.props.numberChanged(parseFloat(t))}
+                text={this.props.number === undefined || isNaN(this.props.number) ? '' : this.props.number.toString()}
+                textChanged={t => this.props.numberChanged(t === '' ? undefined : parseFloat(t))}
                 color={this.props.color}
                 placeholder={this.props.placeholder}
                 disabled={this.props.disabled}

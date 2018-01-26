@@ -5478,7 +5478,7 @@ var NumericTextbox = (function (_super) {
     }
     NumericTextbox.prototype.render = function () {
         var _this = this;
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Textbox__["a" /* Textbox */], { numeric: true, text: this.props.number === undefined ? undefined : this.props.number.toString(), textChanged: function (t) { return _this.props.numberChanged(parseFloat(t)); }, color: this.props.color, placeholder: this.props.placeholder, disabled: this.props.disabled }));
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Textbox__["a" /* Textbox */], { numeric: true, text: this.props.number === undefined || isNaN(this.props.number) ? '' : this.props.number.toString(), textChanged: function (t) { return _this.props.numberChanged(t === '' ? undefined : parseFloat(t)); }, color: this.props.color, placeholder: this.props.placeholder, disabled: this.props.disabled }));
     };
     return NumericTextbox;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -7157,17 +7157,26 @@ var __extends = (this && this.__extends) || (function () {
 
 var JumpEditor = (function (_super) {
     __extends(JumpEditor, _super);
-    function JumpEditor() {
-        return _super !== null && _super.apply(this, arguments) || this;
+    function JumpEditor(props) {
+        var _this = _super.call(this, props) || this;
+        _this.state = {
+            startPosX: 0,
+            startPosY: 0,
+            startPosZ: 0,
+            projectionYaw: 0,
+            projectionPitch: 0,
+            projectionPower: 50,
+        };
+        return _this;
     }
     JumpEditor.prototype.render = function () {
         var _this = this;
         var words = this.props.text.systems.warp;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "warp__jumpEditor" },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["d" /* Field */], { labelText: words.startPos },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPos.x, numberChanged: function (v) { return _this.setState(function (state) { return { startPos: new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](v, state.startPos.y, state.startPos.z) }; }); }, disabled: this.props.calculating }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPos.y, numberChanged: function (v) { return _this.setState(function (state) { return { startPos: new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](state.startPos.x, v, state.startPos.z) }; }); }, disabled: this.props.calculating }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPos.z, numberChanged: function (v) { return _this.setState(function (state) { return { startPos: new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](state.startPos.x, state.startPos.y, v) }; }); }, disabled: this.props.calculating }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosX, numberChanged: function (v) { return _this.setState({ startPosX: v }); }, disabled: this.props.calculating }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosY, numberChanged: function (v) { return _this.setState({ startPosY: v }); }, disabled: this.props.calculating }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosZ, numberChanged: function (v) { return _this.setState({ startPosZ: v }); }, disabled: this.props.calculating }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.startPosDescription)),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["d" /* Field */], { labelText: words.projectionYaw, labelBehaviour: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["e" /* NumericTextbox */], { color: 1 /* Secondary */, number: this.state.projectionYaw, numberChanged: function (v) { return _this.setState({ projectionYaw: v }); }, disabled: this.props.calculating }),
@@ -7180,8 +7189,19 @@ var JumpEditor = (function (_super) {
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.powerDescription)),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["d" /* Field */], { centered: true, displayAsRow: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.cancel(); } }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.calculate, disabled: this.props.calculating, clicked: function () { return _this.props.startCalculating(_this.state.startPos, _this.state.projectionYaw, _this.state.projectionPitch, _this.state.projectionPower); } }),
-                ";"));
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.calculate, disabled: this.shouldBlockCalculation(), clicked: function () { return _this.startCalculation(); } })));
+    };
+    JumpEditor.prototype.shouldBlockCalculation = function () {
+        return this.props.calculating || this.state.projectionYaw === undefined
+            || this.state.projectionPitch === undefined || this.state.projectionPower === undefined
+            || this.state.startPosX === undefined || this.state.startPosY === undefined || this.state.startPosZ === undefined;
+    };
+    JumpEditor.prototype.startCalculation = function () {
+        if (this.shouldBlockCalculation()) {
+            return;
+        }
+        var startPos = new __WEBPACK_IMPORTED_MODULE_2__functionality__["d" /* Vector3 */](this.state.startPosX, this.state.startPosY, this.state.startPosZ);
+        this.props.startCalculating(startPos, this.state.projectionYaw, this.state.projectionPitch, this.state.projectionPower);
     };
     return JumpEditor;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -7222,9 +7242,8 @@ var PathList = (function (_super) {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "warp__pathList" },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("ul", { className: "warp__pathList__scroller" }, this.props.paths.map(function (path) { return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__PathListItem__["a" /* PathListItem */], { key: path.id, path: path, text: _this.props.text }); })),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["d" /* Field */], { centered: true, displayAsRow: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { disabled: this.props.selectedPath !== undefined, color: 2 /* Tertiary */, text: words.deletePath, command: "deleteWarpPath" }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { color: 1 /* Secondary */, text: this.props.selectedPath === undefined ? words.newPath : words.startJump, command: this.props.selectedPath === undefined ? "newWarpPath" : "warpJump" }),
-                ";"));
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { disabled: this.props.selectedPath === undefined, color: 2 /* Tertiary */, text: words.deletePath, command: "deleteWarpPath" }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__general__["b" /* PushButton */], { color: 1 /* Secondary */, text: this.props.selectedPath === undefined ? words.newPath : words.startJump, command: this.props.selectedPath === undefined ? undefined : "warpJump", clicked: this.props.selectedPath === undefined ? this.props.newSelected : undefined })));
     };
     return PathList;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));

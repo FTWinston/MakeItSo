@@ -348,8 +348,7 @@ $lightBackground: #999;
 */
 .screen {
   width: calc(100vw - 1rem);
-  min-height: calc(100vh - 1rem);
-  max-height: calc(100vh - 1rem);
+  height: calc(100vh - 1rem);
   overflow: hidden;
   display: flex;
   flex-direction: column; }
@@ -360,8 +359,7 @@ $lightBackground: #999;
 
 .screen--pageLayout {
   justify-content: flex-start;
-  min-height: unset;
-  max-height: unset;
+  height: unset;
   overflow: unset;
   overflow-y: auto;
   width: calc(100vw - 2rem);
@@ -599,11 +597,12 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .warp {
-  display: grid; }
+  display: grid;
+  height: 100%; }
   @media (orientation: landscape) {
     .warp {
       grid-template-rows: 1fr;
-      grid-template-columns: 3fr 2fr;
+      grid-template-columns: 2fr 1fr;
       grid-template-areas: "map controls"; } }
   @media (orientation: portrait) {
     .warp {
