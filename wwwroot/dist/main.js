@@ -985,7 +985,7 @@ var FlexibleCanvas = (function (_super) {
             } } },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__Canvas__["a" /* Canvas */], { ref: function (c) { if (c !== null) {
                     _this.canvas = c;
-                } }, width: this.state.width, height: this.state.height, draw: this.props.draw })));
+                } }, width: this.state.width, height: this.state.height, draw: this.props.draw, className: 'wrappedCanvas' })));
     };
     FlexibleCanvas.prototype.redraw = function () {
         this.canvas.redraw();

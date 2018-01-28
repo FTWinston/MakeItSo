@@ -2,7 +2,6 @@
 
 .warp {
     display: grid;
-    height: 100%;
 
     @include landscape() {
         grid-template-rows: 1fr;

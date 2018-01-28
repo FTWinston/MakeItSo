@@ -1,6 +1,23 @@
 @import '../../general/mixins';
 
+.weapons {
+    display: grid;
+
+    @include landscape() {
+        grid-template-rows: 1fr;
+        grid-template-columns: 2fr 1fr;
+        grid-template-areas: "map controls";
+    }
+
+    @include portrait() {
+        grid-template-rows: 2fr 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "map"
+            "controls";
+    }
+}
+
 .weapons__targetSelect {
-    width: 95vw;
-    height: 80vh;
+    grid-area: 'map';
 }

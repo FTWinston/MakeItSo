@@ -53,6 +53,7 @@ export class FlexibleCanvas extends React.PureComponent<FlexibleCanvasProps, Fle
                     width={this.state.width}
                     height={this.state.height}
                     draw={this.props.draw}
+                    className='wrappedCanvas'
                 />
             </div>
         );

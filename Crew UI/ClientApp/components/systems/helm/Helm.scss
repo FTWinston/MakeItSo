@@ -35,23 +35,13 @@
 
 .helm--touchInput {
     display: grid;
-
     grid-gap: 1em;
+    align-items: stretch;
     
-    & > * {
-        height: 15em;
-    }
-
     @include landscape() {
         grid-template-rows: 1fr;
         grid-template-columns: 1fr 2fr 1fr;
         grid-template-areas: "info rotation speed";
-
-        @media (max-height: 54vw) {
-            & > * {
-                height: calc(100vh - #{$clientPadding} - #{$clientPadding} - #{$headerHeight} - 14px); // 14px is a heuristic, I don't know what borders it relates to
-            }
-        }
     }
 
     @include portrait() {

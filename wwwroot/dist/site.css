@@ -242,7 +242,11 @@ $lightBackground: #999;
 .field + .field {
   margin-top: 1.5em; }
 .canvasWrapper {
-  overflow: hidden; }
+  overflow: hidden;
+  position: relative; }
+
+.wrappedCanvas {
+  position: absolute; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -442,17 +446,13 @@ $lightBackground: #999;
 .helm--touchInput {
   display: grid;
   grid-gap: 1em;
+  align-items: stretch;
   font-size: 3vw; }
-  .helm--touchInput > * {
-    height: 15em; }
   @media (orientation: landscape) {
     .helm--touchInput {
       grid-template-rows: 1fr;
       grid-template-columns: 1fr 2fr 1fr;
       grid-template-areas: "info rotation speed"; } }
-  @media (orientation: landscape) and (max-height: 54vw) {
-    .helm--touchInput > * {
-      height: calc(100vh - 0.5rem - 0.5rem - 2.4rem - 14px); } }
   @media (orientation: portrait) {
     .helm--touchInput {
       grid-template-rows: 1fr 1fr;
@@ -597,8 +597,7 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .warp {
-  display: grid;
-  height: 100%; }
+  display: grid; }
   @media (orientation: landscape) {
     .warp {
       grid-template-rows: 1fr;
@@ -635,9 +634,21 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.weapons {
+  display: grid; }
+  @media (orientation: landscape) {
+    .weapons {
+      grid-template-rows: 1fr;
+      grid-template-columns: 2fr 1fr;
+      grid-template-areas: "map controls"; } }
+  @media (orientation: portrait) {
+    .weapons {
+      grid-template-rows: 2fr 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: "map" "controls"; } }
+
 .weapons__targetSelect {
-  width: 95vw;
-  height: 80vh; }
+  grid-area: 'map'; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -687,6 +698,7 @@ $lightBackground: #999;
   background-color: #333; }
 
 .system {
+  flex-basis: 0;
   flex-grow: 1; }
 .errorMessage {
   white-space: pre-wrap;
