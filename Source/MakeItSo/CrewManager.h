@@ -3,6 +3,7 @@
 #pragma once
 
 #ifndef WEB_SERVER_TEST
+#include "CoreMinimal.h"
 #include "GameFramework/PlayerInput.h"
 #endif
 #include "Mongoose.h"
@@ -46,7 +47,7 @@ class UCrewSystem;
 class AMakeItSoPawn;
 
 /**
-*
+ * 
 */
 UCLASS()
 class MAKEITSO_API UCrewManager : public UObject

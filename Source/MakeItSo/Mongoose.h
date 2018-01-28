@@ -1,3 +1,7 @@
+#ifndef WEB_SERVER_TEST
+#include "CoreMinimal.h"
+#endif
+
 #ifdef MG_MODULE_LINES
 #line 1 "mongoose/src/common.h"
 #endif
@@ -274,7 +278,7 @@ typedef uint32_t in_addr_t;
 #endif
 #define INT64_FMT "I64d"
 #define INT64_X_FMT "I64x"
-#define SIZE_T_FMT "Iu"
+#define SIZE_T_FMT "zu"
 typedef struct _stati64 cs_stat_t;
 #ifndef S_ISDIR
 #define S_ISDIR(x) (((x) &_S_IFMT) == _S_IFDIR)

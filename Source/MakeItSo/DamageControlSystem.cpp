@@ -1,9 +1,9 @@
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "DamageControlSystem.h"
 #else
 #include "stdafx.h"
-#endif
 #include "DamageControlSystem.h"
+#endif
 
 #ifndef WEB_SERVER_TEST
 #define SIZENUM(set) set.Num()

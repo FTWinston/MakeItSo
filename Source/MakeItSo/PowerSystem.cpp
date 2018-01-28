@@ -1,11 +1,10 @@
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "PowerSystem.h"
 #else
 #include "stdafx.h"
 #include <sstream>
-#endif
 #include "PowerSystem.h"
-
+#endif
 
 bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {

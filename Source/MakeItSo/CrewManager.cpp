@@ -1,13 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "CrewManager.h"
 #include "Engine/Engine.h"
 #include "Runtime/Engine/Public/EngineGlobals.h"
+#include "Runtime/Engine/Classes/Kismet/GameplayStatics.h"
+#include "Runtime/Core/Public/Misc/Paths.h"
 #include "ShipPlayerController.h"
 #include "GameFramework/PlayerState.h"
 #else
 #include "stdafx.h"
+#include "CrewManager.h"
 #include <iostream>
 #include <sstream>
 #include <iterator>
@@ -15,7 +16,6 @@
 #include <codecvt>
 #endif
 
-#include "CrewManager.h"
 #include "MakeItSoPawn.h"
 
 #include "CommunicationSystem.h"

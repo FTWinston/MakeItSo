@@ -1,7 +1,10 @@
+#pragma once
+#ifndef WEB_SERVER_TEST
+#include "CoreMinimal.h"
+#endif
+
 #include "CrewManager.h"
 #include "CommunicationSystem.Generated.h"
-
-#pragma once
 
 /**
  * 

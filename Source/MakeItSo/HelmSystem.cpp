@@ -1,11 +1,11 @@
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "HelmSystem.h"
 #else
 #include "stdafx.h"
+#include "HelmSystem.h"
 #endif
 
 #include "MakeItSoPawn.h"
-#include "HelmSystem.h"
 
 const float helmSendInterval = 0.05f;
 

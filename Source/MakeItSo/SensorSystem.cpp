@@ -1,9 +1,9 @@
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "SensorSystem.h"
 #else
 #include "stdafx.h"
-#endif
 #include "SensorSystem.h"
+#endif
 
 void USensorSystem::SendAllData()
 {

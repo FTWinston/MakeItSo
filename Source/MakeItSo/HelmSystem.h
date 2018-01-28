@@ -1,7 +1,11 @@
+#pragma once
+
+#ifndef WEB_SERVER_TEST
+#include "CoreMinimal.h"
+#endif
+
 #include "CrewManager.h"
 #include "HelmSystem.Generated.h"
-
-#pragma once
 
 /**
  * 

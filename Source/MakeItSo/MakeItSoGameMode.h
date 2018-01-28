@@ -1,10 +1,13 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+
 #pragma once
-#include "GameFramework/GameMode.h"
+
+#include "CoreMinimal.h"
+#include "GameFramework/GameModeBase.h"
 #include "MakeItSoGameMode.generated.h"
 
-UCLASS(minimalapi)
-class AMakeItSoGameMode : public AGameMode
+UCLASS(MinimalAPI)
+class AMakeItSoGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 

@@ -1,10 +1,7 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
-#ifndef __MAKEITSO_H__
-#define __MAKEITSO_H__
+#pragma once
 
-#include "EngineMinimal.h"
+#include "CoreMinimal.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogFlying, Log, All);
-
-#endif

@@ -1,10 +1,8 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #include "MakeItSo.h"
-
+#include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, MakeItSo, "MakeItSo");
 
 DEFINE_LOG_CATEGORY(LogFlying)
-
- 

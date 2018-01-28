@@ -1,21 +1,22 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 #pragma once
-#include "MakeItSoPawn.generated.h"
-
 #ifndef WEB_SERVER_TEST
+#include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #endif
 
+#include "MakeItSoPawn.generated.h"
+
 #ifdef WEB_SERVER_TEST
 class APawn { };
+class UStaticMeshComponent { };
+class USpringArmComponent { };
+class UCameraComponent { };
 #endif
-
-UCLASS(config=Game)
+UCLASS(Config=Game)
 class AMakeItSoPawn : public APawn
 {
 	GENERATED_BODY()
-
-#ifndef WEB_SERVER_TEST
 
 	/** StaticMesh component that will be the visuals for our flying pawn */
 	UPROPERTY(Category = Mesh, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -28,7 +29,6 @@ class AMakeItSoPawn : public APawn
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
-#endif
 public:
 	AMakeItSoPawn();
 #ifndef WEB_SERVER_TEST
@@ -44,22 +44,16 @@ public:
 
 private:
 
-#ifndef WEB_SERVER_TEST
 	/** How quickly forward speed changes */
-	UPROPERTY(Category = Plane, EditAnywhere)
-#endif
+	UPROPERTY(Category = Ship, EditAnywhere)
 	float ThrusterAcceleration;
 
-#ifndef WEB_SERVER_TEST
 	/** Max forward speed */
-	UPROPERTY(Category = Pitch, EditAnywhere)
-#endif
+	UPROPERTY(Category = Ship, EditAnywhere)
 	float MaxThrusterSpeed;
 
-#ifndef WEB_SERVER_TEST
 	/** How quickly pawn can steer */
-	UPROPERTY(Category = Plane, EditAnywhere)
-#endif
+	UPROPERTY(Category = Ship, EditAnywhere)
 	float MaxTurnSpeed;
 
 #ifdef WEB_SERVER_TEST

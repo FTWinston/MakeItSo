@@ -1,12 +1,11 @@
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "ViewscreenSystem.h"
 #else
 #include "stdafx.h"
+#include "ViewscreenSystem.h"
 #endif
 
 #include "MakeItSoPawn.h"
-#include "ViewscreenSystem.h"
-
 
 bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
 {

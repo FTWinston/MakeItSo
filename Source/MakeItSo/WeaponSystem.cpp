@@ -1,9 +1,9 @@
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "WeaponSystem.h"
 #else
 #include "stdafx.h"
-#endif
 #include "WeaponSystem.h"
+#endif
 
 void UWeaponSystem::Init(UCrewManager *manager)
 {

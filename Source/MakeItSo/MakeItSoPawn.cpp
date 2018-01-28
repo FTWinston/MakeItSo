@@ -1,12 +1,18 @@
-// Copyright 1998-2015 Epic Games, Inc. All Rights Reserved.
+// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
 
 #ifndef WEB_SERVER_TEST
-#include "MakeItSo.h"
+#include "MakeItSoPawn.h"
+#include "UObject/ConstructorHelpers.h"
+#include "Camera/CameraComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/InputComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Engine/World.h"
+#include "Engine/StaticMesh.h"
 #else
 #include "stdafx.h"
-#endif
-
 #include "MakeItSoPawn.h"
+#endif
 
 AMakeItSoPawn::AMakeItSoPawn()
 {
@@ -25,20 +31,20 @@ AMakeItSoPawn::AMakeItSoPawn()
 
 	// Create static mesh component
 	ShipMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlaneMesh0"));
-	ShipMesh->SetStaticMesh(ConstructorStatics.ShipMesh.Get());
+	ShipMesh->SetStaticMesh(ConstructorStatics.ShipMesh.Get());	// Set static mesh
 	RootComponent = ShipMesh;
 
 	// Create a spring arm component
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm0"));
-	SpringArm->AttachTo(RootComponent);
+	SpringArm->SetupAttachment(RootComponent);	// Attach SpringArm to RootComponent
 	SpringArm->TargetArmLength = 160.0f; // The camera follows at this distance behind the character	
 	SpringArm->SocketOffset = FVector(0.f,0.f,60.f);
-	SpringArm->bEnableCameraLag = false;
+	SpringArm->bEnableCameraLag = false;	// Do not allow camera to lag
 	SpringArm->CameraLagSpeed = 15.f;
 
 	// Create camera component 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
-	Camera->AttachTo(SpringArm, USpringArmComponent::SocketName);
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);	// Attach the camera
 	Camera->bUsePawnControlRotation = false; // Don't rotate camera with controller
 #endif
 	// Set handling parameters
@@ -62,7 +68,7 @@ void AMakeItSoPawn::Tick(float DeltaSeconds)
 	LocalVelocity = LocalVelocity.GetClampedToMaxSize(MaxThrusterSpeed);
 
 	// add drag
-	LocalVelocity -= LocalVelocity * 0.01f * DeltaSeconds;
+	//LocalVelocity -= LocalVelocity * 0.01f * DeltaSeconds;
 
 
 

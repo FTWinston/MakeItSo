@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-#include "MakeItSo.h"
 #include "ShipPlayerController.h"
 #include "CrewManager.h"
 #include "MakeItSoPawn.h"
@@ -11,7 +8,7 @@ void AShipPlayerController::InitInputSystem()
 
 	if (!UCrewManager::Instance)
 	{
-		UCrewManager::Instance = NewObject<UCrewManager>(GetTransientPackage(), NAME_None, RF_Standalone | RF_RootSet);
+		UCrewManager::Instance = NewObject<UCrewManager>(GetTransientPackage(), NAME_None, RF_Standalone | RF_MarkAsRootSet);
 		UCrewManager::Instance->Init(this);
 	}
 	else

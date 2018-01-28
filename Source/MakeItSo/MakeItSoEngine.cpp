@@ -1,4 +1,3 @@
-#include "MakeItSo.h"
 #include "MakeItSoEngine.h"
 #include "CrewManager.h"
 
