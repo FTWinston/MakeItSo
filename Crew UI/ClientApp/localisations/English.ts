@@ -177,6 +177,7 @@ let words: TextLocalisation = {
             roll: 'Roll:',
             speed: 'Speed:',
             mark: 'mk',
+            elevation: 'Elevation',
             metresPerSecond: 'm/s',
             rotation: 'Rotation',
             strafe: 'Lateral / Vertical',

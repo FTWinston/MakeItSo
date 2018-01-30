@@ -111,6 +111,7 @@ export interface TextLocalisation {
             roll: string;
             speed: string;
             mark: string;
+            elevation: string;
             metresPerSecond: string;
             rotation: string;
             strafe: string;

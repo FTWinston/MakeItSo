@@ -31,10 +31,6 @@
 #define TMap std::map
 #define FString std::wstring
 
-#define UPROPERTY() ;
-#define UPROPERTY(a) ; 
-#define UPROPERTY(a, b) ;
-#define UPROPERTY(a, b, c) ;
 #define UPROPERTY(a, b, c, d) ;
 
 #define PI		3.14159265359f
