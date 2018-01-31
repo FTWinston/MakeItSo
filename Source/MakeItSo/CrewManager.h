@@ -95,17 +95,23 @@ public:
 	void SendAllCrewData();
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
 	AMakeItSoPawn* GetShipPawn();
+	UCrewSystem* GetSystem(UCrewManager::ESystem system)
+	{
+		return *systems.Find(system);
+	}
 
-	int32 ExtractInt(websocket_message *msg, int offset) {
+	int32 ExtractInt(websocket_message *msg, int offset)
+	{
 		char buffer[12];
 		EXTRACT_WITH_OFFSET(msg, buffer, offset);
 		return atoi(buffer);
 	}
 
-	float ExtractFloat(websocket_message *msg, int offset) {
+	float ExtractFloat(websocket_message *msg, int offset)
+	{
 		char buffer[12];
 		EXTRACT_WITH_OFFSET(msg, buffer, offset);
-		return atof(buffer);
+		return (float)atof(buffer);
 	}
 
 	static UCrewManager *Instance;

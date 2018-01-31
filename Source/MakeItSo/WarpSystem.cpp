@@ -14,3 +14,13 @@ void UWarpSystem::SendAllData()
 {
 	
 }
+
+void UWarpSystem::AddCalculationStep(FVector newPoint)
+{
+
+}
+
+void UWarpSystem::FinishCalculation(FVector endPoint, bool isSafe)
+{
+
+}

@@ -18,6 +18,9 @@ class MAKEITSO_API UWarpSystem : public UCrewSystem
 public:
 	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData() override;
+	
+	void AddCalculationStep(FVector newPoint);
+	void FinishCalculation(FVector endPoint, bool isSafe);
 protected:
 	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Warp; }
 };

@@ -135,7 +135,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 #ifdef WEB_SERVER_TEST
 		strncpy(docRootPath, "../wwwroot", sizeof(docRootPath));
 #else
-		auto tmpPath = StringCast<ANSICHAR>(*(FPaths::GameDir() / TEXT("wwwroot")));
+		auto tmpPath = StringCast<ANSICHAR>(*(FPaths::ProjectDir() / TEXT("wwwroot")));
 		strncpy(docRootPath, tmpPath.Get(), sizeof(docRootPath));
 #endif
 
