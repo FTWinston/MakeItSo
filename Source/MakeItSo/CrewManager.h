@@ -94,10 +94,15 @@ public:
 	void SendSystem(ESystem system, FString message);
 	void SendAllCrewData();
 	void ProcessSystemMessage(ESystem system, const TCHAR *message);
+	AShipPlayerController* GetController() { return controller; }
 	AMakeItSoPawn* GetShipPawn();
 	UCrewSystem* GetSystem(UCrewManager::ESystem system)
 	{
+#ifndef WEB_SERVER_TEST
 		return *systems.Find(system);
+#else
+		return systems.find(system)->second;
+#endif
 	}
 
 	int32 ExtractInt(websocket_message *msg, int offset)

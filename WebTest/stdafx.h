@@ -18,9 +18,10 @@
 
 #define MAKEITSO_API 
 
-#define UCLASS() 
+#define UCLASS(...) 
 #define GENERATED_BODY() 
-#define UFUNCTION(a, b) 
+#define UFUNCTION(...) 
+#define UPROPERTY(...) 
 
 #define int32 int
 #define uint8 int
@@ -30,8 +31,6 @@
 #define TQueue std::queue
 #define TMap std::map
 #define FString std::wstring
-
-#define UPROPERTY(a, b, c, d) ;
 
 #define PI		3.14159265359f
 #define INV_PI	0.31830988618f

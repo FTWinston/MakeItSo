@@ -1,8 +1,8 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
+#ifndef WEB_SERVER_TEST
 #include "CoreMinimal.h"
+#endif
 #include "WarpJumpCalculation.generated.h"
 
 UCLASS()
@@ -24,7 +24,7 @@ private:
 	float JumpPower;
 
 	UPROPERTY(Replicated)
-	TArray<FVector> Steps;
+	TSparseArray<FVector> Steps;
 
 	UPROPERTY(Replicated)
 	int StepsRemaining;
