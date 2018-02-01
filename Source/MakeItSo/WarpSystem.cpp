@@ -37,6 +37,25 @@ bool UWarpSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	return false;
 }
 
+void UWarpSystem::AddPointToOutput(FString output, FVector point)
+{
+#ifndef WEB_SERVER_TEST
+	output += TEXT(" ");
+	output.AppendFloat(point.X);
+	output += TEXT(" ");
+	output.AppendFloat(point.Y);
+	output += TEXT(" ");
+	output.AppendFloat(point.Z);
+#else
+	output += TEXT(" ");
+	output += point.X;
+	output += TEXT(" ");
+	output += point.Y;
+	output += TEXT(" ");
+	output += point.Z;
+#endif
+}
+
 void UWarpSystem::SendAllData()
 {
 	
@@ -44,15 +63,35 @@ void UWarpSystem::SendAllData()
 
 void UWarpSystem::AddCalculationStep(FVector newPoint)
 {
-	// TODO: send warp_ext_path id x y z
+	FString output = TEXT("warp_ext_path ");
 
-	// TODO: update local calculating path
+#ifndef WEB_SERVER_TEST
+	//output.AppendInt(currentEditingJump.ID);
+#else
+	//output += currentEditingJump.ID;
+#endif
+	AddPointToOutput(output, newPoint);
+
+	SendSystem(output);
+
+	// TODO: update local calculating path??
 }
 
 void UWarpSystem::FinishCalculation(FVector endPoint, bool isSafe)
 {
-	// TODO: send warp_ext_path id x y z
-	// TODO: send warp_upd_path id status
+	AddCalculationStep(endPoint);
 
-	// where status in Calculating = 0, Invalid = 1, Plotted = 2, InRange = 3
+	FString output = TEXT("warp_upd_path ");
+
+#ifndef WEB_SERVER_TEST
+	//output.AppendInt(currentEditingJump.ID);
+	output += TEXT(" ");
+	output.AppendInt(isSafe ? 1 : 0);
+#else
+	//output += currentEditingJump.ID;
+	output += TEXT(" ");
+	output += isSafe ? 1 : 0;
+#endif
+
+	SendSystem(output);
 }

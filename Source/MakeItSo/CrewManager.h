@@ -192,4 +192,9 @@ protected:
 	virtual UCrewManager::ESystem GetSystem() { return UCrewManager::ESystem::None; }
 	int32 ExtractInt(websocket_message *msg, int offset) { return crewManager->ExtractInt(msg, offset); }
 	float ExtractFloat(websocket_message *msg, int offset) { return crewManager->ExtractFloat(msg, offset); }
+
+	void SendAllFixed(const char *message) { crewManager->SendAllFixed(message); }
+	void SendAll(FString message) { crewManager->SendAll(message); }
+	void SendSystemFixed(const char *message) { crewManager->SendSystemFixed(GetSystem(), message); }
+	void SendSystem(FString message) { crewManager->SendSystem(GetSystem(), message); }
 };

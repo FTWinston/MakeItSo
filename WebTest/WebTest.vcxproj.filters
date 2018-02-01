@@ -90,13 +90,7 @@
     <ClInclude Include="..\Source\MakeItSo\WarpJump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\MakeItSo\WarpJumpCalculation.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="WarpJump.Generated.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WarpJumpCalculation.Generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -144,9 +138,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\MakeItSo\WarpJump.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\MakeItSo\WarpJumpCalculation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

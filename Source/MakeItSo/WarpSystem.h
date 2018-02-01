@@ -23,4 +23,6 @@ public:
 	void FinishCalculation(FVector endPoint, bool isSafe);
 protected:
 	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Warp; }
+private:
+	void AddPointToOutput(FString output, FVector point);
 };

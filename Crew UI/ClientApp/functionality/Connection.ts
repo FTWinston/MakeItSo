@@ -172,7 +172,8 @@ export class Connection {
             case 'warp_upd_path': {
                 let vals = data.split(' ');
                 let id = parseInt(vals[0]);
-                let status = parseInt(vals[1]) as JumpPathStatus;
+                let safe = parseInt(vals[1]) == 1;
+                let status = safe ? JumpPathStatus.Plotted : JumpPathStatus.Invalid;
 
                 store.dispatch(warpActions.setPathStatus(id, status));
             }
