@@ -42,8 +42,8 @@ void AShipPlayerController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AShipPlayerController, currentJumpCalculation);
-	DOREPLIFETIME(AShipPlayerController, calculatedJumps);
+	DOREPLIFETIME(AShipPlayerController, currentJumpCalculation, COND_OwnerOnly);
+	DOREPLIFETIME(AShipPlayerController, calculatedJumps, COND_OwnerOnly);
 }
 
 bool AShipPlayerController::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)

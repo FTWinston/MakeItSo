@@ -24,7 +24,7 @@ private:
 	float JumpPower;
 
 	UPROPERTY(Replicated)
-	TSparseArray<FVector> Steps;
+	TArray<FVector> Steps;
 
 	UPROPERTY(Replicated)
 	int StepsRemaining;

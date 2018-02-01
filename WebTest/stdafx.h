@@ -27,6 +27,7 @@
 #define uint8 int
 
 #define TSet std::vector
+#define TArray std::vector
 #define TSparseArray std::vector
 #define TQueue std::queue
 #define TMap std::map

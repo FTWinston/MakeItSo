@@ -36,11 +36,11 @@ protected:
 	virtual void InitInputSystem();
 
 private:
-	// TODO: these properties don't want to be networked ... I don't think
-	// ach, wait. If we sync them, with a listen server they'll already be there when we try to set them up via RPC.
-	// and it is a bit awkward having them here instead of on the warp system
-	// ...so could we just synchronize these?
-	
+	// server -> client synchronisation will be fine, as values are set to only synch to the owning client
+	// Can use ReplicatedUsing to handle changes from the server. And client never needs to set these properties, I guess?
+	// BUT client *does* need to store the full path for each jump, not just the end points. Hmmph.
+	// TODO: If we sync them, with a listen server will they still fire the ReplicatedUsing event? test!
+
 	UPROPERTY(Replicated)
 	UWarpJumpCalculation *currentJumpCalculation;
 	
