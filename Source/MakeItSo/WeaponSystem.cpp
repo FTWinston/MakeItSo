@@ -5,9 +5,12 @@
 #include "WeaponSystem.h"
 #endif
 
-void UWeaponSystem::Init(UCrewManager *manager)
+#include "UIConnectionInfo.h"
+#include "CrewManager.h"
+
+void UWeaponSystem::ClientInit(UCrewManager *manager)
 {
-	UCrewSystem::Init(manager);
+	UShipSystem::ClientInit(manager);
 
 	ResetDice();
 }
@@ -23,7 +26,7 @@ void UWeaponSystem::ResetDice()
 		dice[i] = 0;
 }
 
-bool UWeaponSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
+bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "wpnroll "))
 	{

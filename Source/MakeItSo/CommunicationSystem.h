@@ -3,20 +3,16 @@
 #include "CoreMinimal.h"
 #endif
 
-#include "CrewManager.h"
+#include "ShipSystem.h"
 #include "CommunicationSystem.Generated.h"
 
-/**
- * 
- */
-
 UCLASS()
-class MAKEITSO_API UCommunicationSystem : public UCrewSystem
+class MAKEITSO_API UCommunicationSystem : public UShipSystem
 {
 	GENERATED_BODY()
 
 public:
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Communications; }
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Communications; }
 };

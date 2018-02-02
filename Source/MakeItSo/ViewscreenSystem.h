@@ -4,23 +4,19 @@
 #include "CoreMinimal.h"
 #endif
 
-#include "CrewManager.h"
+#include "ShipSystem.h"
 #include "ViewscreenSystem.Generated.h"
 
-/**
- * 
- */
-
 UCLASS()
-class MAKEITSO_API UViewscreenSystem : public UCrewSystem
+class MAKEITSO_API UViewscreenSystem : public UShipSystem
 {
 	GENERATED_BODY()
 
 public:
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData() override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::ViewScreen; }
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::ViewScreen; }
 private:
 	void DetermineViewTarget(const char* targetIdentifier);
 	void DetermineTargetAngles();

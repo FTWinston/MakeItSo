@@ -5,11 +5,13 @@
 #include "HelmSystem.h"
 #endif
 
+#include "UIConnectionInfo.h"
+#include "CrewManager.h"
 #include "MakeItSoPawn.h"
 
 const float helmSendInterval = 0.05f;
 
-bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
+bool UHelmSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "yawLeft "))
 	{
@@ -89,7 +91,9 @@ bool UHelmSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *ms
 	return true;
 }
 
+#ifdef WEB_SERVER_TEST
 #define PI 3.14159265359f
+#endif
 
 void UHelmSystem::ResetData()
 {
@@ -108,27 +112,27 @@ void UHelmSystem::ResetData()
 void UHelmSystem::SendAllData()
 {
 	// these first two don't currently change
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_manoever_limits %.4f %.4f %.4f %.4f %.4f",
+	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_manoever_limits %.4f %.4f %.4f %.4f %.4f",
 		pitchRateMax, yawRateMax, rollRateMax, sideMoveRateMax, verticalMoveRateMax);
 
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_speed_limits %.4f %.4f",
+	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_speed_limits %.4f %.4f",
 		forwardMoveRateMax, backwardMoveRateMax);
 	
 	auto pawn = crewManager->GetShipPawn();
 	lastSentOrientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
 	lastSentAngularVelocity = pawn == nullptr ? FRotator::ZeroRotator : pawn->AngularVelocity;
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
 		lastSentOrientation.Pitch, lastSentOrientation.Yaw, lastSentOrientation.Roll,
 		lastSentAngularVelocity.Pitch, lastSentAngularVelocity.Yaw, lastSentAngularVelocity.Roll);
 
 	lastSentVelocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
-	crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
+	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
 		lastSentVelocity.X, lastSentVelocity.Y, lastSentVelocity.Z);
 
 	nextSendSeconds = helmSendInterval;
 }
 
-void UHelmSystem::Tick(float DeltaSeconds)
+void UHelmSystem::FakeTickReplaceMe(float DeltaSeconds)
 {
 	auto pawn = crewManager->GetShipPawn();
 
@@ -190,7 +194,7 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	{
 		lastSentAngularVelocity = angularVelocity;
 		lastSentOrientation = orientation;
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+		crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
 			orientation.Pitch, orientation.Yaw, orientation.Roll,
 			angularVelocity.Pitch, angularVelocity.Yaw, angularVelocity.Roll);
 	}
@@ -198,7 +202,7 @@ void UHelmSystem::Tick(float DeltaSeconds)
 	if (velocity != lastSentVelocity)
 	{
 		lastSentVelocity = velocity;
-		crewManager->SendSystem(UCrewManager::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
+		crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
 			velocity.X, velocity.Y, velocity.Z);
 	}
 }

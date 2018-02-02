@@ -14,6 +14,21 @@
 #include "MakeItSoPawn.h"
 #endif
 
+#include "CommunicationSystem.h"
+#include "DamageControlSystem.h"
+#include "HelmSystem.h"
+#include "PowerSystem.h"
+#include "SensorSystem.h"
+#include "ViewscreenSystem.h"
+#include "WeaponSystem.h"
+#include "WarpSystem.h"
+
+#ifndef WEB_SERVER_TEST
+#define ADDSYSTEM(lookup, systemType, name) systems.Add(lookup, CreateDefaultSubobject<systemType>(TEXT(name)))
+#else
+#define ADDSYSTEM(lookup, systemType, name) systems.insert(std::pair<UShipSystem::ESystem, UShipSystem*>(lookup, new systemType()));
+#endif
+
 AMakeItSoPawn::AMakeItSoPawn()
 {
 #ifndef WEB_SERVER_TEST
@@ -46,7 +61,19 @@ AMakeItSoPawn::AMakeItSoPawn()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera0"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);	// Attach the camera
 	Camera->bUsePawnControlRotation = false; // Don't rotate camera with controller
+
 #endif
+
+	// Create the ship system components
+	ADDSYSTEM(UShipSystem::ESystem::Helm, UHelmSystem, "Helm0");
+	ADDSYSTEM(UShipSystem::ESystem::Warp, UWarpSystem, "Warp0");
+	ADDSYSTEM(UShipSystem::ESystem::Weapons, UWeaponSystem, "Weapons0");
+	ADDSYSTEM(UShipSystem::ESystem::PowerManagement, UPowerSystem, "Power0");
+	ADDSYSTEM(UShipSystem::ESystem::Sensors, USensorSystem, "Sensors0");
+	ADDSYSTEM(UShipSystem::ESystem::DamageControl, UDamageControlSystem, "Damage0");
+	ADDSYSTEM(UShipSystem::ESystem::Communications, UCommunicationSystem, "Comms0");
+	ADDSYSTEM(UShipSystem::ESystem::ViewScreen, UViewscreenSystem, "View0");
+
 	// Set handling parameters
 	ThrusterAcceleration = 500.f;
 	MaxThrusterSpeed = 4000.f;

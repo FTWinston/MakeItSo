@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #endif
 
-#include "CrewManager.h"
+#include "ShipSystem.h"
 #include "DamageControlSystem.Generated.h"
 
 /**
@@ -12,7 +12,7 @@
  */
 
  UCLASS()
-class MAKEITSO_API UDamageControlSystem : public UCrewSystem
+class MAKEITSO_API UDamageControlSystem : public UShipSystem
 {
 	GENERATED_BODY()
 
@@ -56,14 +56,14 @@ public:
 		MAX_DAMAGE_SECTION
 	};
 
-	virtual void Init(UCrewManager* manager) override;
+	virtual void ClientInit(UCrewManager* manager) override;
 	virtual void ResetData() override;
 
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual bool ProcessSystemMessage(FString message) override;
 	virtual void SendAllData() override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::DamageControl; }
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
 private:
 #define DAMAGE_GRID_WIDTH 48
 #define DAMAGE_GRID_HEIGHT 36

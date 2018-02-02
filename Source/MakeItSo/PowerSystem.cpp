@@ -6,7 +6,10 @@
 #include "PowerSystem.h"
 #endif
 
-bool UPowerSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
+#include "UIConnectionInfo.h"
+#include "CrewManager.h"
+
+bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "pickCard "))
 	{

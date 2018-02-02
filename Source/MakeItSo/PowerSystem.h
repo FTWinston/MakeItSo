@@ -4,15 +4,11 @@
 #include "CoreMinimal.h"
 #endif
 
-#include "CrewManager.h"
+#include "ShipSystem.h"
 #include "PowerSystem.Generated.h"
 
-/**
- * 
- */
-
 UCLASS()
-class MAKEITSO_API UPowerSystem : public UCrewSystem
+class MAKEITSO_API UPowerSystem : public UShipSystem
 {
 	GENERATED_BODY()
 
@@ -27,11 +23,11 @@ public:
 		MAX_POWER_SYSTEMS
 	};
 
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData() override;
 	virtual bool ProcessSystemMessage(FString message) override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::PowerManagement; }
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 private:
 	void IncrementAuxPower();
 	void AddCardChoice(int32 card1, int32 card2, int32 card3);

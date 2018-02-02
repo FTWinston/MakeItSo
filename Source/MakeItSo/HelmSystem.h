@@ -4,27 +4,21 @@
 #include "CoreMinimal.h"
 #endif
 
-#include "CrewManager.h"
+#include "ShipSystem.h"
 #include "HelmSystem.Generated.h"
 
-/**
- * 
- */
-
-struct FQuat;
-
 UCLASS()
-class MAKEITSO_API UHelmSystem : public UCrewSystem
+class MAKEITSO_API UHelmSystem : public UShipSystem
 {
 	GENERATED_BODY()
 
 public:
 	virtual void SendAllData() override;
 	virtual void ResetData() override;
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
-	virtual void Tick(float DeltaSeconds) override;
+	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
+	virtual void FakeTickReplaceMe(float DeltaSeconds);// override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Helm; }
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Helm; }
 private:
 	float TowardsZero(float value, float amount);
 	float AdjustAndClamp(float value, float decrease, float increase, float minMalue, float maxValue);

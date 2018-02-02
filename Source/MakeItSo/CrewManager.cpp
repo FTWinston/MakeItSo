@@ -16,16 +16,9 @@
 #include <codecvt>
 #endif
 
+#include "UIConnectionInfo.h"
 #include "MakeItSoPawn.h"
-
-#include "CommunicationSystem.h"
-#include "DamageControlSystem.h"
-#include "HelmSystem.h"
-#include "PowerSystem.h"
-#include "SensorSystem.h"
-#include "WarpSystem.h"
-#include "ViewScreenSystem.h"
-#include "WeaponSystem.h"
+#include "Mongoose.h"
 
 #ifdef WIN32
 
@@ -68,6 +61,15 @@ AMakeItSoPawn* UCrewManager::GetShipPawn()
 #endif
 }
 
+UShipSystem* UCrewManager::GetSystem(UShipSystem::ESystem system)
+{
+#ifndef WEB_SERVER_TEST
+	return *GetShipPawn()->systems.Find(system);
+#else
+	return GetShipPawn()->systems.find(system)->second;
+#endif
+}
+
 FString UCrewManager::Init(AShipPlayerController *controller)
 {
 	Instance = this;
@@ -78,7 +80,7 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
-	currentConnections = new TSet<ConnectionInfo*>();
+	currentConnections = new TSet<UIConnectionInfo*>();
 	FString strPort;
 
 	if (!mgr)
@@ -157,37 +159,18 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	return url;
 }
 
-#ifndef WEB_SERVER_TEST
-#define ADDSYSTEM(lookup, systemType) systems.Add(lookup, NewObject<systemType>())
-#else
-#define ADDSYSTEM(lookup, systemType) systems.insert(std::pair<ESystem, UCrewSystem*>(lookup, new systemType()));
-#endif
-
-void UCrewManager::CreateSystems()
+void UCrewManager::InitSystems()
 {
-	ADDSYSTEM(ESystem::Helm, UHelmSystem);
-	ADDSYSTEM(ESystem::Warp, UWarpSystem);
-	//ADDSYSTEM(ESystem::Weapons, UWeaponSystem);
-	ADDSYSTEM(ESystem::Sensors, USensorSystem);
-	ADDSYSTEM(ESystem::PowerManagement, UPowerSystem);
-	//ADDSYSTEM(ESystem::DamageControl, UDamageControlSystem);
-	ADDSYSTEM(ESystem::ViewScreen, UViewscreenSystem);
-	ADDSYSTEM(ESystem::Communications, UCommunicationSystem);
-
-	for (auto system : systems)
+	for (auto system : GetShipPawn()->systems)
 	{
 		auto s = PAIRVALUE(system);
-		s->Init(this);
-
-#ifndef WEB_SERVER_TEST
-		s->AddToRoot();
-#endif
+		s->ClientInit(this);
 	}
 }
 
 void UCrewManager::ResetData()
 {
-	for (auto system : systems)
+	for (auto system : GetShipPawn()->systems)
 		PAIRVALUE(system)->ResetData();
 }
 
@@ -200,11 +183,6 @@ void UCrewManager::BeginDestroy()
 
 	delete currentConnections;
 
-#ifndef WEB_SERVER_TEST
-	for (auto system : systems)
-		PAIRVALUE(system)->RemoveFromRoot();
-#endif
-
 	Super::BeginDestroy();
 }
 
@@ -215,8 +193,8 @@ void UCrewManager::LinkController(AShipPlayerController *controller)
 
 void UCrewManager::TickSystems(float DeltaSeconds)
 {
-	for (auto system : systems)
-		PAIRVALUE(system)->Tick(DeltaSeconds);
+	//for (auto system : systems)
+		//PAIRVALUE(system)->Tick(DeltaSeconds);
 }
 
 void UCrewManager::PauseGame(bool state)
@@ -293,7 +271,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 		return;
 	}
 
-	ConnectionInfo *info = new ConnectionInfo(conn, identifier);
+	UIConnectionInfo *info = new UIConnectionInfo(conn, identifier);
 	conn->user_data = info;
 
 	// send connection ID back to the client.
@@ -342,7 +320,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 
 void UCrewManager::EndConnection(mg_connection *conn)
 {
-	ConnectionInfo *info = (ConnectionInfo*)conn->user_data;
+	UIConnectionInfo *info = (UIConnectionInfo*)conn->user_data;
 
 #ifndef WEB_SERVER_TEST
 	if (controller)
@@ -422,7 +400,7 @@ void UCrewManager::HandleEvent(mg_connection *conn, int ev, void *ev_data)
 		SetupConnection(conn);
 		break;
 	case MG_EV_WEBSOCKET_FRAME: {
-		ConnectionInfo *info = (ConnectionInfo*)conn->user_data;
+		UIConnectionInfo *info = (UIConnectionInfo*)conn->user_data;
 		if (info)
 			HandleWebsocketMessage(info, (struct websocket_message *) ev_data);
 		break;
@@ -434,7 +412,7 @@ void UCrewManager::HandleEvent(mg_connection *conn, int ev, void *ev_data)
 	}
 }
 
-void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_message *msg)
+void UCrewManager::HandleWebsocketMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "name "))
 	{		
@@ -454,19 +432,19 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 	else if (STARTS_WITH(msg, "sys+ "))
 	{
 		int32 systemFlag = ExtractInt(msg, sizeof("sys+ "));
-		ESystem system = GetDistinctSystem(systemFlag);
+		UShipSystem::ESystem system = GetDistinctSystem(systemFlag);
 		ShipSystemChanged(info, info->shipSystemFlags | system);
 	}
 	else if (STARTS_WITH(msg, "sys- "))
 	{
 		int32 systemFlag = ExtractInt(msg, sizeof("sys- "));
-		ESystem system = GetDistinctSystem(systemFlag);
+		UShipSystem::ESystem system = GetDistinctSystem(systemFlag);
 		ShipSystemChanged(info, info->shipSystemFlags & ~system);
 	}
 	else if (STARTS_WITH(msg, "viewsys "))
 	{
 		int32 systemFlag = ExtractInt(msg, sizeof("viewsys "));
-		ESystem system = GetDistinctSystem(systemFlag);
+		UShipSystem::ESystem system = GetDistinctSystem(systemFlag);
 
 		// check this system is one that they have selected
 		if ((info->shipSystemFlags & system) == 0)
@@ -560,7 +538,7 @@ void UCrewManager::HandleWebsocketMessage(ConnectionInfo *info, websocket_messag
 	*/
 	else
 	{
-		for (auto system : systems)
+		for (auto system : GetShipPawn()->systems)
 			if (PAIRVALUE(system)->ReceiveCrewMessage(info, msg))
 				return;
 
@@ -629,8 +607,7 @@ void UCrewManager::StartGame(websocket_message *msg)
 	// no need to send corresponding setup-, as game+ clears the setup player on clients
 	connectionInSetup = nullptr;
 
-	if (EMPTY(systems))
-		CreateSystems();
+	InitSystems();
 
 	crewState = ECrewState::Active;
 
@@ -640,7 +617,7 @@ void UCrewManager::StartGame(websocket_message *msg)
 
 void UCrewManager::AllocateViewSystems()
 {
-	int32 alreadyAllocated = ESystem::None;
+	int32 alreadyAllocated = UShipSystem::ESystem::None;
 
 	// check what system players are currently viewing. If it's one they (still) have selected, let them keep that.
 	for (auto& connection : *currentConnections)
@@ -648,15 +625,15 @@ void UCrewManager::AllocateViewSystems()
 		if ((connection->shipSystemFlags & connection->viewingSystem) != 0)
 			alreadyAllocated |= connection->viewingSystem;
 		else
-			connection->viewingSystem = ESystem::None;
+			connection->viewingSystem = UShipSystem::ESystem::None;
 	}
 
 	// for every player that doesn't have a system, see if there's one they have selected that isn't already allocated
 	for (auto& connection : *currentConnections)
 	{
-		if (connection->viewingSystem == ESystem::None)
+		if (connection->viewingSystem == UShipSystem::ESystem::None)
 		{
-			ESystem viewSystem = GetDistinctSystem(connection->shipSystemFlags & ~alreadyAllocated);
+			UShipSystem::ESystem viewSystem = GetDistinctSystem(connection->shipSystemFlags & ~alreadyAllocated);
 			alreadyAllocated |= viewSystem;
 
 			connection->viewingSystem = viewSystem;
@@ -683,7 +660,7 @@ void UCrewManager::InputAxis(FKey key, float value)
 }
 #endif
 
-void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
+void UCrewManager::ShipSystemChanged(UIConnectionInfo *info, int32 systemFlags)
 {
 	if (crewState == ECrewState::Active)
 		return;
@@ -693,29 +670,29 @@ void UCrewManager::ShipSystemChanged(ConnectionInfo *info, int32 systemFlags)
 	SendAll("playersys %i %i", info->identifier, systemFlags);
 }
 
-UCrewManager::ESystem UCrewManager::GetDistinctSystem(int systemFlags)
+UShipSystem::ESystem UCrewManager::GetDistinctSystem(int systemFlags)
 {
-	if ((systemFlags & ESystem::Helm) != 0)
-		return ESystem::Helm;
-	if ((systemFlags & ESystem::Warp) != 0)
-		return ESystem::Warp;
-	if ((systemFlags & ESystem::Weapons) != 0)
-		return ESystem::Weapons;
-	if ((systemFlags & ESystem::Sensors) != 0)
-		return ESystem::Sensors;
-	if ((systemFlags & ESystem::PowerManagement) != 0)
-		return ESystem::PowerManagement;
-	if ((systemFlags & ESystem::DamageControl) != 0)
-		return ESystem::DamageControl;
-	if ((systemFlags & ESystem::Communications) != 0)
-		return ESystem::Communications;
-	if ((systemFlags & ESystem::ViewScreen) != 0)
-		return ESystem::ViewScreen;
+	if ((systemFlags & UShipSystem::ESystem::Helm) != 0)
+		return UShipSystem::ESystem::Helm;
+	if ((systemFlags & UShipSystem::ESystem::Warp) != 0)
+		return UShipSystem::ESystem::Warp;
+	if ((systemFlags & UShipSystem::ESystem::Weapons) != 0)
+		return UShipSystem::ESystem::Weapons;
+	if ((systemFlags & UShipSystem::ESystem::Sensors) != 0)
+		return UShipSystem::ESystem::Sensors;
+	if ((systemFlags & UShipSystem::ESystem::PowerManagement) != 0)
+		return UShipSystem::ESystem::PowerManagement;
+	if ((systemFlags & UShipSystem::ESystem::DamageControl) != 0)
+		return UShipSystem::ESystem::DamageControl;
+	if ((systemFlags & UShipSystem::ESystem::Communications) != 0)
+		return UShipSystem::ESystem::Communications;
+	if ((systemFlags & UShipSystem::ESystem::ViewScreen) != 0)
+		return UShipSystem::ESystem::ViewScreen;
 
-	return ESystem::None;
+	return UShipSystem::ESystem::None;
 }
 
-ConnectionInfo *UCrewManager::GetConnectionViewing(ESystem system)
+UIConnectionInfo *UCrewManager::GetConnectionViewing(UShipSystem::ESystem system)
 {
 	for (auto& connection : *currentConnections)
 	{
@@ -801,7 +778,7 @@ void UCrewManager::SendAll(FString message)
 	SendAllFixed(nMessage);
 }
 
-void UCrewManager::SendSystemFixed(ESystem system, const char *message)
+void UCrewManager::SendSystemFixed(UShipSystem::ESystem system, const char *message)
 {
 	int32 systemFlags = system;
 	int32 len = strlen(message);
@@ -813,7 +790,7 @@ void UCrewManager::SendSystemFixed(ESystem system, const char *message)
 	}
 }
 
-void UCrewManager::SendSystem(ESystem system, const char *message, ...)
+void UCrewManager::SendSystem(UShipSystem::ESystem system, const char *message, ...)
 {
 	char mem[MG_VPRINTF_BUFFER_SIZE], *buf = mem;
 	va_list ap;
@@ -831,7 +808,7 @@ void UCrewManager::SendSystem(ESystem system, const char *message, ...)
 	}
 }
 
-void UCrewManager::SendSystem(ESystem system, FString message)
+void UCrewManager::SendSystem(UShipSystem::ESystem system, FString message)
 {
 #ifndef WEB_SERVER_TEST
 	auto nMessage = TCHAR_TO_ANSI(*message);
@@ -844,16 +821,16 @@ void UCrewManager::SendSystem(ESystem system, FString message)
 
 void UCrewManager::SendAllCrewData()
 {
-	for (auto system : systems)
+	for (auto system : GetShipPawn()->systems)
 		PAIRVALUE(system)->SendAllData();
 }
 
-void UCrewManager::ProcessSystemMessage(ESystem system, const TCHAR *message)
+void UCrewManager::ProcessSystemMessage(UShipSystem::ESystem system, const TCHAR *message)
 {
 #ifndef WEB_SERVER_TEST
-	if (!systems.Contains(system))
+	if (!GetShipPawn()->systems.Contains(system))
 #else
-	if (systems.find(system) == systems.end())
+	if (GetShipPawn()->systems.find(system) == systems.end())
 #endif
 	{
 
@@ -865,7 +842,7 @@ void UCrewManager::ProcessSystemMessage(ESystem system, const TCHAR *message)
 	}
 
 #ifndef WEB_SERVER_TEST
-	if (!systems[system]->ProcessSystemMessage(message))
+	if (!GetShipPawn()->systems[system]->ProcessSystemMessage(message))
 		controller->ClientMessage(FString::Printf(TEXT("Crew system %i is unable to process system message: %s\n"), (int)system, message));
 #else
 	systems[system]->ProcessSystemMessage(message);

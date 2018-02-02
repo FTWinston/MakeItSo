@@ -4,12 +4,8 @@
 #include "CoreMinimal.h"
 #endif
 
-#include "CrewManager.h"
+#include "ShipSystem.h"
 #include "WeaponSystem.Generated.h"
-
-/**
- * 
- */
 
 class MAKEITSO_API UWeaponTarget
 {
@@ -22,17 +18,17 @@ class MAKEITSO_API UWeaponTarget
 };
 
 UCLASS()
-class MAKEITSO_API UWeaponSystem : public UCrewSystem
+class MAKEITSO_API UWeaponSystem : public UShipSystem
 {
 	GENERATED_BODY()
 public:
-	virtual void Init(UCrewManager *manager) override;
+	virtual void ClientInit(UCrewManager *manager) override;
 	virtual void ResetData() override;
-	virtual bool ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg) override;
+	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual bool ProcessSystemMessage(FString message) override;
 	virtual void SendAllData() override;
 protected:
-	virtual UCrewManager::ESystem GetSystem() override { return UCrewManager::ESystem::Weapons; }
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Weapons; }
 private:
 	void ResetDice();
 	void ClearDice();

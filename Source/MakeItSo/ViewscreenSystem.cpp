@@ -5,9 +5,11 @@
 #include "ViewscreenSystem.h"
 #endif
 
+#include "CrewManager.h"
+#include "UIConnectionInfo.h"
 #include "MakeItSoPawn.h"
 
-bool UViewscreenSystem::ReceiveCrewMessage(ConnectionInfo *info, websocket_message *msg)
+bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "viewdir "))
 	{

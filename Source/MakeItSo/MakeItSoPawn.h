@@ -5,6 +5,7 @@
 #include "GameFramework/Pawn.h"
 #endif
 
+#include "ShipSystem.h"
 #include "MakeItSoPawn.generated.h"
 
 #ifdef WEB_SERVER_TEST
@@ -42,6 +43,7 @@ public:
 	float GetMaxThrusterSpeed() { return MaxThrusterSpeed; }
 	float GetMaxTurnSpeed() { return MaxTurnSpeed; }
 
+	TMap<UShipSystem::ESystem, UShipSystem*> systems;
 private:
 
 	/** How quickly forward speed changes */

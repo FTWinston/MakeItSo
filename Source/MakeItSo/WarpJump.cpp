@@ -13,9 +13,9 @@ void UWarpJump::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetim
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
-	DOREPLIFETIME(UWarpJumpCalculation, StartOrientation);
-	DOREPLIFETIME(UWarpJumpCalculation, JumpPower);
-	DOREPLIFETIME(UWarpJumpCalculation, PositionSteps);
+	DOREPLIFETIME(UWarpJump, StartOrientation);
+	DOREPLIFETIME(UWarpJump, JumpPower);
+	DOREPLIFETIME(UWarpJump, PositionSteps);
 }
 #endif
 
