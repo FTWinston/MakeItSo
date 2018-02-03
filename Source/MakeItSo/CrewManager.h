@@ -26,6 +26,8 @@
 #define STRFIND(str, val) str.Find(val)
 #define CHOPSTART(str, pos) str.RemoveAt(0, pos, false);
 #define PAIRVALUE(pair) pair.Value
+#define ISCLIENT() (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
+#define ISSERVER() (GEngine->GetNetMode(GetWorld()) != NM_Client)
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -35,6 +37,8 @@
 #define STRFIND(str, val) str.find(val)
 #define CHOPSTART(str, pos) str = str.substr(pos)
 #define PAIRVALUE(pair) pair.second
+#define ISCLIENT() true
+#define ISSERVER() true
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
@@ -66,7 +70,6 @@ public:
 	virtual void BeginDestroy();
 
 	void LinkController(AShipPlayerController *controller);
-	void TickSystems(float DeltaSeconds);
 	void Poll() { mg_mgr_poll(mgr, 1); }
 	void HandleEvent(mg_connection *conn, int ev, void *ev_data);
 	void SendFixed(mg_connection *conn, const char *message);
@@ -79,7 +82,6 @@ public:
 	void SendSystem(UShipSystem::ESystem system, const char *message, ...);
 	void SendSystem(UShipSystem::ESystem system, FString message);
 	void SendAllCrewData();
-	void ProcessSystemMessage(UShipSystem::ESystem system, const TCHAR *message);
 	AShipPlayerController* GetController() { return controller; }
 	AMakeItSoPawn* GetShipPawn();
 	UShipSystem* GetSystem(UShipSystem::ESystem system);

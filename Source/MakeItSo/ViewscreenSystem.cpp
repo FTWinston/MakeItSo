@@ -153,7 +153,7 @@ bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_mes
 	return true;
 }
 
-void UViewscreenSystem::SendAllData()
+void UViewscreenSystem::SendAllData_Implementation()
 {
 	SendViewAngles();
 	SendViewZoomDist();

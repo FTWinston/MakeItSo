@@ -11,6 +11,11 @@
 
 const float helmSendInterval = 0.05f;
 
+UHelmSystem::UHelmSystem()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+}
+
 bool UHelmSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "yawLeft "))
@@ -109,7 +114,7 @@ void UHelmSystem::ResetData()
 	nextSendSeconds = helmSendInterval;
 }
 
-void UHelmSystem::SendAllData()
+void UHelmSystem::SendAllData_Implementation()
 {
 	// these first two don't currently change
 	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_manoever_limits %.4f %.4f %.4f %.4f %.4f",
@@ -132,14 +137,14 @@ void UHelmSystem::SendAllData()
 	nextSendSeconds = helmSendInterval;
 }
 
-void UHelmSystem::FakeTickReplaceMe(float DeltaSeconds)
+void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	auto pawn = crewManager->GetShipPawn();
 
 	// update rotation rates
 	auto angularVelocity = pawn->AngularVelocity;
 
-	float adjustmentAmount = rotationAccel * DeltaSeconds;
+	float adjustmentAmount = rotationAccel * DeltaTime;
 	if (stopRotation)
 	{
 		angularVelocity.Pitch = TowardsZero(angularVelocity.Pitch, adjustmentAmount);
@@ -155,9 +160,9 @@ void UHelmSystem::FakeTickReplaceMe(float DeltaSeconds)
 	pawn->AngularVelocity = angularVelocity;
 
 	// update strafing and movement rates
-	FVector velocity = pawn->LocalVelocity; // TODO: save this locally, so that if something outwith teh system updates it, change is still sent
+	FVector velocity = pawn->LocalVelocity; // TODO: save this locally, so that if something outwith the system updates it, change is still sent
 
-	adjustmentAmount = strafeAccel * DeltaSeconds;
+	adjustmentAmount = strafeAccel * DeltaTime;
 	if (stopStrafing)
 	{
 		velocity.Y = TowardsZero(velocity.Y, adjustmentAmount);
@@ -169,7 +174,7 @@ void UHelmSystem::FakeTickReplaceMe(float DeltaSeconds)
 		velocity.Z = AdjustAndClamp(velocity.Z, strafeDown * adjustmentAmount, strafeUp * adjustmentAmount, -verticalMoveRateMax, verticalMoveRateMax);
 	}
 
-	adjustmentAmount = forwardAccelMax * DeltaSeconds;
+	adjustmentAmount = forwardAccelMax * DeltaTime;
 	if (stopForwardBack)
 	{
 		velocity.X = TowardsZero(velocity.X, adjustmentAmount);
@@ -181,7 +186,7 @@ void UHelmSystem::FakeTickReplaceMe(float DeltaSeconds)
 
 	pawn->LocalVelocity = velocity;
 	
-	nextSendSeconds -= DeltaSeconds;
+	nextSendSeconds -= DeltaTime;
 	if (nextSendSeconds > 0.f)
 		return; // don't try to send data too frequently
 

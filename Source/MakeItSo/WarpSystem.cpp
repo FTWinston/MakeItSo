@@ -82,7 +82,7 @@ void UWarpSystem::AddPointToOutput(FString output, FVector point)
 #endif
 }
 
-void UWarpSystem::SendAllData()
+void UWarpSystem::SendAllData_Implementation()
 {
 	
 }

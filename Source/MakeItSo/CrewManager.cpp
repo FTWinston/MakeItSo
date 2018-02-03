@@ -161,11 +161,13 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 void UCrewManager::InitSystems()
 {
+	/*
 	for (auto system : GetShipPawn()->systems)
 	{
 		auto s = PAIRVALUE(system);
 		s->ClientInit(this);
 	}
+	*/
 }
 
 void UCrewManager::ResetData()
@@ -189,12 +191,6 @@ void UCrewManager::BeginDestroy()
 void UCrewManager::LinkController(AShipPlayerController *controller)
 {
 	this->controller = controller; // do we need to null this when the level changes? It's not a UPROPERTY, so it'll go dangling
-}
-
-void UCrewManager::TickSystems(float DeltaSeconds)
-{
-	//for (auto system : systems)
-		//PAIRVALUE(system)->Tick(DeltaSeconds);
 }
 
 void UCrewManager::PauseGame(bool state)
@@ -555,23 +551,20 @@ void UCrewManager::HandleWebsocketMessage(UIConnectionInfo *info, websocket_mess
 
 void UCrewManager::StartGame(websocket_message *msg)
 {
-	auto a = msg->size > sizeof("startGame local") - 1;
-	auto b = !memcmp(msg->data, "startGame local", sizeof("startGame local") - 1);
-
 	if (STARTS_WITH(msg, "startGame local"))
 	{
 		if (STARTS_WITH(msg, "startGame local exploration")) {
 			int difficulty = ExtractInt(msg, sizeof("startGame local exploration "));
 #ifndef WEB_SERVER_TEST
 			// TODO: load exploration map with specified difficulty
-			UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
+			UGameplayStatics::OpenLevel(controller, TEXT("/Game/FlyingCPP/Maps/FlyingExampleMap"));
 #endif
 		}
 		else if (STARTS_WITH(msg, "startGame local survival")) {
 			int difficulty = ExtractInt(msg, sizeof("startGame local survival "));
 #ifndef WEB_SERVER_TEST
 			// TODO: load survival map with specified difficulty
-			UGameplayStatics::OpenLevel(controller, TEXT("/Game/Flying/Maps/FlyingExampleMap"));
+			UGameplayStatics::OpenLevel(controller, TEXT("/Game/FlyingCPP/Maps/FlyingExampleMap"));
 #endif
 		}
 		else
@@ -612,7 +605,6 @@ void UCrewManager::StartGame(websocket_message *msg)
 	crewState = ECrewState::Active;
 
 	SendAllFixed("game+");
-	SendAllCrewData();
 }
 
 void UCrewManager::AllocateViewSystems()
@@ -823,28 +815,4 @@ void UCrewManager::SendAllCrewData()
 {
 	for (auto system : GetShipPawn()->systems)
 		PAIRVALUE(system)->SendAllData();
-}
-
-void UCrewManager::ProcessSystemMessage(UShipSystem::ESystem system, const TCHAR *message)
-{
-#ifndef WEB_SERVER_TEST
-	if (!GetShipPawn()->systems.Contains(system))
-#else
-	if (GetShipPawn()->systems.find(system) == systems.end())
-#endif
-	{
-
-#ifndef WEB_SERVER_TEST
-		if (controller)
-			controller->ClientMessage(FString::Printf(TEXT("Received a message for non-existant crew system %i: %s\n"), (int)system, message));
-#endif
-		return;
-	}
-
-#ifndef WEB_SERVER_TEST
-	if (!GetShipPawn()->systems[system]->ProcessSystemMessage(message))
-		controller->ClientMessage(FString::Printf(TEXT("Crew system %i is unable to process system message: %s\n"), (int)system, message));
-#else
-	systems[system]->ProcessSystemMessage(message);
-#endif
 }

@@ -22,11 +22,10 @@ class MAKEITSO_API UWeaponSystem : public UShipSystem
 {
 	GENERATED_BODY()
 public:
-	virtual void ClientInit(UCrewManager *manager) override;
+	virtual void BeginPlay() override;
 	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
-	virtual bool ProcessSystemMessage(FString message) override;
-	virtual void SendAllData() override;
+	virtual void SendAllData_Implementation() override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Weapons; }
 private:

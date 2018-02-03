@@ -8,9 +8,9 @@
 #include "UIConnectionInfo.h"
 #include "CrewManager.h"
 
-void UWeaponSystem::ClientInit(UCrewManager *manager)
+void UWeaponSystem::BeginPlay()
 {
-	UShipSystem::ClientInit(manager);
+	Super::BeginPlay();
 
 	ResetDice();
 }
@@ -67,7 +67,7 @@ bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 	return true;
 }
 
-void UWeaponSystem::SendAllData()
+void UWeaponSystem::SendAllData_Implementation()
 {
 	// TODO: send all weapon targets
 
@@ -121,9 +121,4 @@ void UWeaponSystem::SendDice()
 uint8 UWeaponSystem::Roll()
 {
 	return FMath::RandRange(1, 6);
-}
-
-bool UWeaponSystem::ProcessSystemMessage(FString message)
-{
-	return false;
 }

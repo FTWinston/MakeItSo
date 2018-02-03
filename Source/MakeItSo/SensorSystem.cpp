@@ -7,7 +7,7 @@
 
 #include "UIConnectionInfo.h"
 
-void USensorSystem::SendAllData()
+void USensorSystem::SendAllData_Implementation()
 {
 	// TODO: get sensor data from game objects
 	SendAllFixed("sensor_target 1 200 100 50 * #ffd 25 45"); // star

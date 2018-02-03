@@ -13,10 +13,11 @@ class MAKEITSO_API UHelmSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
-	virtual void SendAllData() override;
+	UHelmSystem();
+	virtual void SendAllData_Implementation() override;
 	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
-	virtual void FakeTickReplaceMe(float DeltaSeconds);// override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Helm; }
 private:

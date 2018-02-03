@@ -77,7 +77,6 @@ AMakeItSoPawn::AMakeItSoPawn()
 	// Set handling parameters
 	ThrusterAcceleration = 500.f;
 	MaxThrusterSpeed = 4000.f;
-
 	MaxTurnSpeed = 50.f;
 
 	LocalVelocity = FVector(500.f, 0.f, 0.f);
@@ -86,6 +85,13 @@ AMakeItSoPawn::AMakeItSoPawn()
 #ifdef WEB_SERVER_TEST
 	actorRotation = FRotator(0, 0, 0);
 #endif
+}
+
+void AMakeItSoPawn::Restart()
+{
+	Super::Restart();
+
+	//GetWorld()->GetFirstPlayerController()->ClientMessage(TEXT("AMakeItSoPawn::Restart"));
 }
 
 #ifndef WEB_SERVER_TEST

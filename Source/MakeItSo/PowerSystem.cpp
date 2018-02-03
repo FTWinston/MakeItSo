@@ -66,7 +66,7 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 	return true;
 }
 
-void UPowerSystem::SendAllData()
+void UPowerSystem::SendAllData_Implementation()
 {
 	SendAuxPower();
 	SendPowerLevels();
@@ -74,6 +74,7 @@ void UPowerSystem::SendAllData()
 	SendCardLibrary();
 }
 
+/*
 bool UPowerSystem::ProcessSystemMessage(FString message)
 {
 	if (message == TEXT("incaux"))
@@ -108,6 +109,7 @@ bool UPowerSystem::ProcessSystemMessage(FString message)
 
 	return true;
 }
+*/
 
 void UPowerSystem::IncrementAuxPower()
 {

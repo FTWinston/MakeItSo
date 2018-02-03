@@ -24,8 +24,7 @@ public:
 	};
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
-	virtual void SendAllData() override;
-	virtual bool ProcessSystemMessage(FString message) override;
+	virtual void SendAllData_Implementation() override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 private:

@@ -6,9 +6,9 @@
 void AShipPlayerController::InitInputSystem()
 {
 	Super::InitInputSystem();
-
-	if (GEngine == nullptr || GEngine->GetNetMode(GetWorld()) == NM_DedicatedServer)
-		return; // no crew manager on the server, please
+	
+	if (!ISCLIENT())
+		return; // only want a crew manager on clients
 
 	if (!UCrewManager::Instance)
 	{
@@ -30,8 +30,5 @@ void AShipPlayerController::PreProcessInput(const float DeltaTime, const bool bG
 	if (UCrewManager::Instance)
 	{
 		UCrewManager::Instance->Poll();
-
-		if (!bGamePaused)
-			UCrewManager::Instance->TickSystems(DeltaTime);
 	}
 }

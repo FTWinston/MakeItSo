@@ -14,7 +14,7 @@ class MAKEITSO_API UViewscreenSystem : public UShipSystem
 
 public:
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
-	virtual void SendAllData() override;
+	virtual void SendAllData_Implementation() override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::ViewScreen; }
 private:

@@ -20,18 +20,14 @@ void UShipSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	crewManager = UCrewManager::Instance;
+
+	ResetData();
+
+	SendAllData();
 }
 
-
-// Called every frame
-void UShipSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
+void UShipSystem::SendAllData_Implementation() { }
 
 void UShipSystem::SendAllFixed(const char *message) { crewManager->SendAllFixed(message); }
 

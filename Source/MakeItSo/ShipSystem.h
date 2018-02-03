@@ -31,12 +31,10 @@ public:
 		None = 0,
 	};
 
-	virtual void ClientInit(UCrewManager *manager) { crewManager = manager; ResetData(); }
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) { return false; }
-	virtual bool ProcessSystemMessage(FString message) { return false; }
 
-//	UFUNCTION(Client, Reliable)
-	virtual void SendAllData() { }
+	UFUNCTION(Client, Reliable)
+	virtual void SendAllData();
 	
 //	UFUNCTION(Client, Reliable)
 	virtual void ResetData() { }
@@ -61,7 +59,4 @@ protected:
 
 	int32 ExtractInt(websocket_message *msg, int offset);
 	float ExtractFloat(websocket_message *msg, int offset);
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

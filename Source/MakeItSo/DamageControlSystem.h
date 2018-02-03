@@ -17,7 +17,6 @@ class MAKEITSO_API UDamageControlSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
-
 	enum EDamageCell {
 		Empty = 0,
 		Wall,
@@ -55,13 +54,13 @@ public:
 		Section_Communications = 9,
 		MAX_DAMAGE_SECTION
 	};
-
-	virtual void ClientInit(UCrewManager* manager) override;
+	
+	UDamageControlSystem();
+	virtual void BeginPlay() override;
 	virtual void ResetData() override;
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
-	virtual bool ProcessSystemMessage(FString message) override;
-	virtual void SendAllData() override;
+	virtual void SendAllData_Implementation() override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
 private:

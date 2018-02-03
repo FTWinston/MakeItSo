@@ -14,6 +14,7 @@ class UStaticMeshComponent { };
 class USpringArmComponent { };
 class UCameraComponent { };
 #endif
+
 UCLASS(Config=Game)
 class AMakeItSoPawn : public APawn
 {
@@ -30,6 +31,7 @@ class AMakeItSoPawn : public APawn
 	/** Camera component that will be our viewpoint */
 	UPROPERTY(Category = Camera, VisibleDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
+
 public:
 	AMakeItSoPawn();
 #ifndef WEB_SERVER_TEST
@@ -44,6 +46,10 @@ public:
 	float GetMaxTurnSpeed() { return MaxTurnSpeed; }
 
 	TMap<UShipSystem::ESystem, UShipSystem*> systems;
+
+protected:
+	void Restart() override;
+
 private:
 
 	/** How quickly forward speed changes */
