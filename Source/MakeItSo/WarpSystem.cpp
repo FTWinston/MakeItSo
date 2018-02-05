@@ -13,34 +13,38 @@ void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UWarpSystem, currentJumpCalculation/*, COND_OwnerOnly*/);
-	DOREPLIFETIME(UWarpSystem, calculatedJumps/*, COND_OwnerOnly*/);
+	DOREPLIFETIME_CONDITION(UWarpSystem, currentJumpCalculation, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, calculatedJumps, COND_OwnerOnly);
 }
 
 bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "warp_plot "))
 	{
-		// TODO: extract relevant params, make server RPC call
 		// `warp_plot ${ from.x } ${ from.y } ${ from.z } ${ yaw } ${ pitch } ${ power }`
-#ifndef WEB_SERVER_TEST
-		//crewManager->GetController()->StartJumpCalculation(...params)
-#endif
+
+		TArray<FString> parts = SplitParts(msg, sizeof("warp_plot "));
+
+		if (parts.Num() < 6)
+			return false;
+
+		FVector startPos = FVector(FCString::Atof(*parts[0]), FCString::Atof(*parts[1]), FCString::Atof(*parts[2]));
+		FRotator direction = FRotator(FCString::Atof(*parts[4]), FCString::Atof(*parts[3]), 0);
+		float power = FCString::Atof(*parts[5]);
+		StartJumpCalculation(startPos, direction, power);
 		return true;
 	}
 	else if (STARTS_WITH(msg, "warp_delete "))
 	{
 		int32 jumpID = ExtractInt(msg, sizeof("warp_delete "));
 
-		// TODO: send delete RPC to server
+		// TODO: call server delete RPC
 		return true;
 	}
 	else if (STARTS_WITH(msg, "warp_jump "))
 	{
 		int32 jumpID = ExtractInt(msg, sizeof("warp_jump "));
-#ifndef WEB_SERVER_TEST
 		PerformWarpJump(jumpID);
-#endif
 		return true;
 	}
 
@@ -59,8 +63,6 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 	AddPointToOutput(output, newPoint);
 
 	SendSystem(output);
-
-	// TODO: update local calculating path??
 }
 
 void UWarpSystem::AddPointToOutput(FString output, FVector point)
@@ -89,7 +91,7 @@ void UWarpSystem::SendAllData_Implementation()
 
 bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)
 {
-	if (power <= 0 || power > 100)
+	if (power < 0 || power > 100)
 		return false;
 
 	return true;
@@ -129,6 +131,16 @@ void UWarpSystem::FinishJumpCalculation_Implementation(FVector endPoint, bool is
 	SendSystem(output);
 }
 */
+
+bool UWarpSystem::DeleteJump_Validate(int32 jumpID)
+{
+	return calculatedJumps.Contains(jumpID);
+}
+
+void UWarpSystem::DeleteJump_Implementation(int32 jumpID)
+{
+	calculatedJumps.Remove(jumpID);
+}
 
 bool UWarpSystem::PerformWarpJump_Validate(int32 jumpID)
 {

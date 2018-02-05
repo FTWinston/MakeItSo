@@ -1,7 +1,14 @@
 #pragma once
 
+#ifndef WEB_SERVER_TEST
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#else
+class UActorComponent {
+protected:
+	virtual void BeginPlay();
+};
+#endif
 #include "ShipSystem.generated.h"
 
 class UIConnectionInfo;
@@ -59,4 +66,10 @@ protected:
 
 	int32 ExtractInt(websocket_message *msg, int offset);
 	float ExtractFloat(websocket_message *msg, int offset);
+	TArray<FString> SplitParts(websocket_message *msg, int offset);
 };
+
+#ifdef WEB_SERVER_TEST
+enum ELevelTick {};
+class FActorComponentTickFunction { };
+#endif

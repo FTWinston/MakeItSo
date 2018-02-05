@@ -40,3 +40,5 @@ void UShipSystem::SendSystem(FString message) { crewManager->SendSystem(GetSyste
 int32 UShipSystem::ExtractInt(websocket_message *msg, int offset) { return crewManager->ExtractInt(msg, offset); }
 
 float UShipSystem::ExtractFloat(websocket_message *msg, int offset) { return crewManager->ExtractFloat(msg, offset); }
+
+TArray<FString> UShipSystem::SplitParts(websocket_message *msg, int offset) { return crewManager->SplitParts(msg, offset); }

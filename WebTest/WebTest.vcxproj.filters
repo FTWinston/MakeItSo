@@ -93,6 +93,9 @@
     <ClInclude Include="WarpJump.Generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ShipSystem.Generated.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\MakeItSo\CrewManager.cpp">

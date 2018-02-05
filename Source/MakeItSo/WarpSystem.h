@@ -24,6 +24,9 @@ protected:
 	void StartJumpCalculation(FVector startPos, FRotator direction, float power);
 
 	UFUNCTION(Server, Reliable, WithValidation)
+	void DeleteJump(int32 jumpID);
+
+	UFUNCTION(Server, Reliable, WithValidation)
 	void PerformWarpJump(int32 jumpID);
 private:
 	void AddCalculationStep(FVector newPoint);

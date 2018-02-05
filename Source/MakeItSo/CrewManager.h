@@ -100,12 +100,9 @@ public:
 		return (float)atof(buffer);
 	}
 
-	static UCrewManager *Instance;
+	TArray<FString> SplitParts(websocket_message *msg, int offset);
 
-#ifndef WEB_SERVER_TEST
-	void InputKey(FKey key, bool down);
-	void InputAxis(FKey key, float value);
-#endif
+	static UCrewManager *Instance;
 
 private:
 	void InitSystems();

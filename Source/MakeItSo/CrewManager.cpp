@@ -636,21 +636,28 @@ void UCrewManager::AllocateViewSystems()
 	}
 }
 
-#ifndef WEB_SERVER_TEST
-void UCrewManager::InputKey(FKey key, bool pressed)
+TArray<FString> UCrewManager::SplitParts(websocket_message *msg, int offset)
 {
-	controller->InputKey(key, pressed ? EInputEvent::IE_Pressed : EInputEvent::IE_Released, pressed ? 1 : 0, false);
-}
+	char buffer[128];
+	EXTRACT_WITH_OFFSET(msg, buffer, offset);
+	TArray<FString> parts;
 
-void UCrewManager::InputAxis(FKey key, float value)
-{
-	if (value > 1)
-		value = 1;
-	if (value < -1)
-		value = -1;
-	controller->InputAxis(key, value, 1, 1, true);
-}
+#ifndef WEB_SERVER_TEST
+	FString fstr = FString(ANSI_TO_TCHAR(buffer));
+	fstr.ParseIntoArray(parts, TEXT(" "));
+#else
+	// TODO: handle this
+	wchar_t wBuffer[128];
+	mbstowcs(wBuffer, buffer, strlen(buffer) + 1);
+	auto something = FString(wBuffer);
+
+	std::string text = buffer;
+	std::istringstream iss(text);
+	std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
 #endif
+
+	return parts;
+}
 
 void UCrewManager::ShipSystemChanged(UIConnectionInfo *info, int32 systemFlags)
 {
