@@ -46,13 +46,11 @@ public:
 	};
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) { return false; }
-
-#ifdef WEB_SERVER_TEST
-	virtual void SendAllData() { SendAllData_Implementation(); }
-	virtual void SendAllData_Implementation();
-#else
+	
 	UFUNCTION(Client, Reliable)
 	virtual void SendAllData();
+#ifdef WEB_SERVER_TEST
+	virtual void SendAllData_Implementation();
 #endif
 	
 //	UFUNCTION(Client, Reliable)
@@ -80,3 +78,7 @@ protected:
 	float ExtractFloat(websocket_message *msg, int offset);
 	TArray<FString> SplitParts(websocket_message *msg, int offset);
 };
+
+#ifdef WEB_SERVER_TEST
+void UShipSystem::SendAllData() { SendAllData_Implementation(); }
+#endif

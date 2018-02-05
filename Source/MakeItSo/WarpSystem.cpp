@@ -28,8 +28,6 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 		if (SIZENUM(parts) < 6)
 			return false;
 
-		std::stof(parts[0]);
-
 		FVector startPos = FVector(STOF(parts[0]), STOF(parts[1]), STOF(parts[2]));
 		FRotator direction = FRotator(STOF(parts[4]), STOF(parts[3]), 0);
 		float power = STOF(parts[5]);

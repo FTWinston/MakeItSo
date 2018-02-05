@@ -285,7 +285,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	}
 
 #ifndef WEB_SERVER_TEST
-	currentConnections->Add(info);
+	currentConnections.Add(info);
 #else
 	currentConnections.insert(currentConnections.end(), info);
 #endif
