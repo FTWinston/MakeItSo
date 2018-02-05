@@ -37,13 +37,20 @@
 #define INV_PI	0.31830988618f
 #define HALF_PI	1.57079632679f
 
+#define DOREPLIFETIME(...)
+#define DOREPLIFETIME_CONDITION(...)
+
 class UObject {};
 class APlayerController {};
+class FLifetimeProperty {};
 
 class Super
 {
 public:
 	static void BeginDestroy() {}
+	static void BeginPlay() {}
+	static void Restart() {}
+	static void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) {}
 };
 
 class FMath {

@@ -1,12 +1,12 @@
 #ifndef WEB_SERVER_TEST
 #include "WarpSystem.h"
-#include "CrewManager.h"
 #include "UnrealNetwork.h"
 #else
 #include "stdafx.h"
 #include "WarpSystem.h"
 #endif
 
+#include "CrewManager.h"
 #include "WarpJump.h"
 
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
@@ -25,12 +25,14 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 
 		TArray<FString> parts = SplitParts(msg, sizeof("warp_plot "));
 
-		if (parts.Num() < 6)
+		if (SIZENUM(parts) < 6)
 			return false;
 
-		FVector startPos = FVector(FCString::Atof(*parts[0]), FCString::Atof(*parts[1]), FCString::Atof(*parts[2]));
-		FRotator direction = FRotator(FCString::Atof(*parts[4]), FCString::Atof(*parts[3]), 0);
-		float power = FCString::Atof(*parts[5]);
+		std::stof(parts[0]);
+
+		FVector startPos = FVector(STOF(parts[0]), STOF(parts[1]), STOF(parts[2]));
+		FRotator direction = FRotator(STOF(parts[4]), STOF(parts[3]), 0);
+		float power = STOF(parts[5]);
 		StartJumpCalculation(startPos, direction, power);
 		return true;
 	}
@@ -134,17 +136,17 @@ void UWarpSystem::FinishJumpCalculation_Implementation(FVector endPoint, bool is
 
 bool UWarpSystem::DeleteJump_Validate(int32 jumpID)
 {
-	return calculatedJumps.Contains(jumpID);
+	return MAPCONTAINS(calculatedJumps, jumpID);
 }
 
 void UWarpSystem::DeleteJump_Implementation(int32 jumpID)
 {
-	calculatedJumps.Remove(jumpID);
+	MAPREMOVE(calculatedJumps, jumpID);
 }
 
 bool UWarpSystem::PerformWarpJump_Validate(int32 jumpID)
 {
-	return calculatedJumps.Contains(jumpID);
+	return MAPCONTAINS(calculatedJumps, jumpID);
 }
 
 void UWarpSystem::PerformWarpJump_Implementation(int32 jumpID)

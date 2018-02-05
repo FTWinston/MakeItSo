@@ -26,13 +26,13 @@ void PollClient()
 
 		if (std::clock() >= nextDamageTick)
 		{
-			crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, L"tick");
+			crewManager->GetSystem(UShipSystem::ESystem::DamageControl)->TickComponent(fSystemTickInterval, ELevelTick::Fake, nullptr);
 			nextDamageTick += damageTickInterval;
 		}
 
 		if (std::clock() >= nextSystemTick)
 		{
-			crewManager->TickSystems(fSystemTickInterval);
+			crewManager->GetSystem(UShipSystem::ESystem::Helm)->TickComponent(fSystemTickInterval, ELevelTick::Fake, nullptr);
 			nextSystemTick += systemTickInterval;
 		}
 	}
@@ -146,7 +146,7 @@ System::Void WebTest::MainForm::btnShieldDamage_Click(System::Object^  sender, S
 
 System::Void WebTest::MainForm::btnAuxPower_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->ProcessSystemMessage(UShipSystem::ESystem::PowerManagement, L"incaux");
+	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::PowerManagement, L"incaux");
 }
 
 System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e)
@@ -169,12 +169,12 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 	message += L" ";
 	message += std::to_wstring(card3);
 
-	crewManager->ProcessSystemMessage(UShipSystem::ESystem::PowerManagement, CHARARR(message));
+	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::PowerManagement, CHARARR(message));
 }
 
 System::Void WebTest::MainForm::btnRespawnDamage_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, L"respawn");
+	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, L"respawn");
 }
 
 System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e)
@@ -183,5 +183,5 @@ System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, Syst
 	message += std::to_wstring(rand() % 10); // section
 	message += L" ";
 	message += std::to_wstring(rand() % 5 + 1); // amount
-	crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, CHARARR(message));
+	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, CHARARR(message));
 }

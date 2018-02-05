@@ -9,7 +9,9 @@
 #include "MakeItSoPawn.generated.h"
 
 #ifdef WEB_SERVER_TEST
-class APawn { };
+class APawn {
+	virtual void Restart() {};
+};
 class UStaticMeshComponent { };
 class USpringArmComponent { };
 class UCameraComponent { };

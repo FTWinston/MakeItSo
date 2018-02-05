@@ -4,9 +4,16 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #else
+enum ELevelTick { Fake };
+class FActorComponentTickFunction { };
+class TickThing { public: bool bCanEverTick; };
 class UActorComponent {
+public:
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {}
 protected:
-	virtual void BeginPlay();
+	TickThing PrimaryComponentTick;
+	virtual void BeginPlay() {}
+	void SetIsReplicated(bool val) {}
 };
 #endif
 #include "ShipSystem.generated.h"
@@ -40,8 +47,13 @@ public:
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) { return false; }
 
+#ifdef WEB_SERVER_TEST
+	virtual void SendAllData() { SendAllData_Implementation(); }
+	virtual void SendAllData_Implementation();
+#else
 	UFUNCTION(Client, Reliable)
 	virtual void SendAllData();
+#endif
 	
 //	UFUNCTION(Client, Reliable)
 	virtual void ResetData() { }
@@ -68,8 +80,3 @@ protected:
 	float ExtractFloat(websocket_message *msg, int offset);
 	TArray<FString> SplitParts(websocket_message *msg, int offset);
 };
-
-#ifdef WEB_SERVER_TEST
-enum ELevelTick {};
-class FActorComponentTickFunction { };
-#endif

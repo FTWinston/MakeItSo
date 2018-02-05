@@ -1,4 +1,10 @@
+#ifndef WEB_SERVER_TEST
 #include "ShipSystem.h"
+#else
+#include "stdafx.h"
+#include "ShipSystem.h"
+#endif
+
 #include "CrewManager.h"
 #include "Mongoose.h"
 
@@ -11,7 +17,10 @@ UShipSystem::UShipSystem()
 	// off to improve performance if you don't need them.
 	//PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+
+#ifdef WEB_SERVER_TEST
+	BeginPlay();
+#endif
 }
 
 

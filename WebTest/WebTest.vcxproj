@@ -91,6 +91,7 @@
     <ClInclude Include="..\Source\MakeItSo\Mongoose.h" />
     <ClInclude Include="..\Source\MakeItSo\PowerSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\SensorSystem.h" />
+    <ClInclude Include="..\Source\MakeItSo\ShipSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\WarpJump.h" />
     <ClInclude Include="..\Source\MakeItSo\WarpSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\ViewscreenSystem.h" />
@@ -122,6 +123,7 @@
     <ClCompile Include="..\Source\MakeItSo\Mongoose.cpp" />
     <ClCompile Include="..\Source\MakeItSo\PowerSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\SensorSystem.cpp" />
+    <ClCompile Include="..\Source\MakeItSo\ShipSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\WarpJump.cpp" />
     <ClCompile Include="..\Source\MakeItSo\WarpSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\ViewscreenSystem.cpp" />

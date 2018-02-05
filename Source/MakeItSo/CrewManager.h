@@ -22,10 +22,15 @@
 #define EMPTY(set) set.Num() == 0
 #define NOTEMPTY(set) set.Num() != 0
 #define SIZENUM(set) set.Num()
+#define SETCONTAINS(set, key) set.Contains(key)
+#define MAPCONTAINS(set, key) set.Contains(key)
+#define SETREMOVE(set, key) set.Remove(key)
+#define MAPREMOVE(set, key) set.Remove(key)
 #define APPENDINT(str, i) str.AppendInt(i)
 #define STRFIND(str, val) str.Find(val)
 #define CHOPSTART(str, pos) str.RemoveAt(0, pos, false);
 #define PAIRVALUE(pair) pair.Value
+#define STOF(str) FCString::Atof(*str)
 #define ISCLIENT() (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
 #define ISSERVER() (GEngine->GetNetMode(GetWorld()) != NM_Client)
 #else
@@ -33,10 +38,15 @@
 #define EMPTY(set) set.empty()
 #define NOTEMPTY(set) !set.empty()
 #define SIZENUM(set) set.size()
+#define SETCONTAINS(set, key) (std::find(set.begin(), set.end(), key) != set.end())
+#define MAPCONTAINS(set, key) (set.find(key) != set.end())
+#define SETREMOVE(set, key) set.erase(std::remove(set.begin(), set.end(), key), set.end());
+#define MAPREMOVE(set, key) set.erase(key);
 #define APPENDINT(str, i) str += std::to_wstring(i)
 #define STRFIND(str, val) str.find(val)
 #define CHOPSTART(str, pos) str = str.substr(pos)
 #define PAIRVALUE(pair) pair.second
+#define STOF(str) std::stof(str)
 #define ISCLIENT() true
 #define ISSERVER() true
 #endif
@@ -126,6 +136,6 @@ private:
 	ECrewState crewState;
 	int32 nextConnectionIdentifer;
 
-	TSet<UIConnectionInfo*> *currentConnections;
+	TSet<UIConnectionInfo*> currentConnections;
 	UIConnectionInfo *connectionInSetup;
 };

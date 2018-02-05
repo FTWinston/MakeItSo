@@ -49,7 +49,7 @@ void EventReceived(mg_connection *conn, int ev, void *ev_data)
 }
 
 #ifdef WEB_SERVER_TEST
-AMakeItSoPawn *pawn = new AMakeItSoPawn();
+AMakeItSoPawn *pawn;
 #endif
 
 AMakeItSoPawn* UCrewManager::GetShipPawn()
@@ -80,7 +80,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 
 	nextConnectionIdentifer = 1;
 	connectionInSetup = nullptr;
-	currentConnections = new TSet<UIConnectionInfo*>();
 	FString strPort;
 
 	if (!mgr)
@@ -183,14 +182,16 @@ void UCrewManager::BeginDestroy()
 
 	mgr = nullptr;
 
-	delete currentConnections;
-
 	Super::BeginDestroy();
 }
 
 void UCrewManager::LinkController(AShipPlayerController *controller)
 {
 	this->controller = controller; // do we need to null this when the level changes? It's not a UPROPERTY, so it'll go dangling
+
+#ifdef WEB_SERVER_TEST
+	pawn = new AMakeItSoPawn();
+#endif
 }
 
 void UCrewManager::PauseGame(bool state)
@@ -274,7 +275,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 	Send(conn, "id %i", info->identifier);
 
 	// send all other players to this client
-	for (auto& other : *currentConnections)
+	for (auto& other : currentConnections)
 	{
 		if (other->hasName)
 		{
@@ -286,7 +287,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 #ifndef WEB_SERVER_TEST
 	currentConnections->Add(info);
 #else
-	currentConnections->insert(currentConnections->end(), info);
+	currentConnections.insert(currentConnections.end(), info);
 #endif
 	
 	// indicate to the client that the game is currently active
@@ -321,10 +322,9 @@ void UCrewManager::EndConnection(mg_connection *conn)
 #ifndef WEB_SERVER_TEST
 	if (controller)
 		controller->ClientMessage(FString::Printf(TEXT("Client %i disconnected\n"), info->identifier));
-	currentConnections->Remove(info);
-#else
-	currentConnections->erase(std::remove(currentConnections->begin(), currentConnections->end(), info), currentConnections->end());
 #endif
+
+	SETREMOVE(currentConnections, info);
 
 	// send "player quit" message to crewmates
 	SendAll("disconnect %i", info->identifier);
@@ -339,7 +339,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 
 	// if there are no connections in currentConnections with any ship system set, automatically pause the game
 	bool anySystems = false;
-	for (auto& other : *currentConnections)
+	for (auto& other : currentConnections)
 	{
 		if (other->shipSystemFlags != 0)
 		{
@@ -371,7 +371,7 @@ int32 UCrewManager::GetNewUniqueIdentifier()
 
 		// has user with this ID?
 		bool alreadyGot = false;
-		for (auto& other : *currentConnections)
+		for (auto& other : currentConnections)
 			if (other->identifier == identifier)
 			{
 				alreadyGot = true;
@@ -612,7 +612,7 @@ void UCrewManager::AllocateViewSystems()
 	int32 alreadyAllocated = UShipSystem::ESystem::None;
 
 	// check what system players are currently viewing. If it's one they (still) have selected, let them keep that.
-	for (auto& connection : *currentConnections)
+	for (auto& connection : currentConnections)
 	{
 		if ((connection->shipSystemFlags & connection->viewingSystem) != 0)
 			alreadyAllocated |= connection->viewingSystem;
@@ -621,7 +621,7 @@ void UCrewManager::AllocateViewSystems()
 	}
 
 	// for every player that doesn't have a system, see if there's one they have selected that isn't already allocated
-	for (auto& connection : *currentConnections)
+	for (auto& connection : currentConnections)
 	{
 		if (connection->viewingSystem == UShipSystem::ESystem::None)
 		{
@@ -693,7 +693,7 @@ UShipSystem::ESystem UCrewManager::GetDistinctSystem(int systemFlags)
 
 UIConnectionInfo *UCrewManager::GetConnectionViewing(UShipSystem::ESystem system)
 {
-	for (auto& connection : *currentConnections)
+	for (auto& connection : currentConnections)
 	{
 		if ((connection->viewingSystem & system) != 0)
 			return connection;
@@ -742,7 +742,7 @@ void UCrewManager::SendAllFixed(const char *message)
 {
 	int32 len = strlen(message);
 
-	for (auto& other : *currentConnections)
+	for (auto& other : currentConnections)
 	{
 		mg_send_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, message, len);
 	}
@@ -782,7 +782,7 @@ void UCrewManager::SendSystemFixed(UShipSystem::ESystem system, const char *mess
 	int32 systemFlags = system;
 	int32 len = strlen(message);
 
-	for (auto& other : *currentConnections)
+	for (auto& other : currentConnections)
 	{
 		if (other->shipSystemFlags & systemFlags)
 			mg_send_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, message, len);

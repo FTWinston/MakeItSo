@@ -20,14 +20,37 @@ public:
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Warp; }
 
+#ifdef WEB_SERVER_TEST
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;
+#endif
+
+#ifndef WEB_SERVER_TEST
 	UFUNCTION(Server, Reliable, WithValidation)
 	void StartJumpCalculation(FVector startPos, FRotator direction, float power);
+#else
+	void StartJumpCalculation(FVector startPos, FRotator direction, float power) { if (StartJumpCalculation_Validate(startPos, direction, power)) StartJumpCalculation_Implementation(startPos, direction, power); }
+	bool StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power);
+	void StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power);
+#endif
 
+#ifndef WEB_SERVER_TEST
 	UFUNCTION(Server, Reliable, WithValidation)
 	void DeleteJump(int32 jumpID);
+#else
+	void DeleteJump(int32 jumpID) { if (DeleteJump_Validate(jumpID)) DeleteJump_Implementation(jumpID); }
+	bool DeleteJump_Validate(int32 jumpID);
+	void DeleteJump_Implementation(int32 jumpID);
+#endif
 
+#ifndef WEB_SERVER_TEST
 	UFUNCTION(Server, Reliable, WithValidation)
 	void PerformWarpJump(int32 jumpID);
+#else
+	void PerformWarpJump(int32 jumpID) { if (PerformWarpJump_Validate(jumpID)) PerformWarpJump_Implementation(jumpID); }
+	bool PerformWarpJump_Validate(int32 jumpID);
+	void PerformWarpJump_Implementation(int32 jumpID);
+#endif
+
 private:
 	void AddCalculationStep(FVector newPoint);
 	void AddPointToOutput(FString output, FVector point);

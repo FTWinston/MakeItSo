@@ -96,6 +96,9 @@
     <ClInclude Include="ShipSystem.Generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\Source\MakeItSo\ShipSystem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Source\MakeItSo\CrewManager.cpp">
@@ -141,6 +144,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\MakeItSo\WarpJump.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MakeItSo\ShipSystem.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

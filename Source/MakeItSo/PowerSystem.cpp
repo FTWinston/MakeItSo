@@ -49,13 +49,12 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 	{
 		int32 cardID = ExtractInt(msg, sizeof("useCard "));
 
-#ifndef WEB_SERVER_TEST
-		if (!cardLibrary.Contains(cardID))
+		if (!SETCONTAINS(cardLibrary, cardID))
 			return true; // card not in library
+
+#ifndef WEB_SERVER_TEST
 		cardLibrary.Remove(cardID);
 #else
-		if (std::find(cardLibrary.begin(), cardLibrary.end(), cardID) == cardLibrary.end())
-			return true; // card not in library
 		cardLibrary.erase(std::remove(cardLibrary.begin(), cardLibrary.end(), cardID), cardLibrary.end());
 #endif
 		ActivatePowerCard(cardID);
