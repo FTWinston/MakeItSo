@@ -15,8 +15,10 @@ class MAKEITSO_API UWarpSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
+	UWarpSystem();
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Warp; }
 
@@ -49,16 +51,14 @@ private:
 	void AddCalculationStep(FVector newPoint);
 	void AddPointToOutput(FString output, FVector point);
 
-	// server -> client synchronisation will be fine, if we set values to only sync to the owning client
-	// Can use ReplicatedUsing to handle changes from the server. And client never needs to set these properties, I guess?
-	// BUT client *does* need to store the full path for each jump, not just the end points. Hmmph.
-	// TODO: If we sync them, with a listen server will they still fire the ReplicatedUsing event? test!
-
 	UPROPERTY(Replicated)
 	UWarpJump *currentJumpCalculation;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculatedJumps)
 	TMap<int32, UWarpJump*> calculatedJumps;
+
+	UFUNCTION()
+	void OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange);
 };
 
 #ifdef WEB_SERVER_TEST

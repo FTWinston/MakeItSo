@@ -9,6 +9,14 @@
 #include "CrewManager.h"
 #include "WarpJump.h"
 
+UWarpSystem::UWarpSystem()
+{
+	currentJumpCalculation = NULL;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 1.f;
+	PrimaryComponentTick.SetTickFunctionEnable(false);
+}
+
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -37,8 +45,7 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 	else if (STARTS_WITH(msg, "warp_delete "))
 	{
 		int32 jumpID = ExtractInt(msg, sizeof("warp_delete "));
-
-		// TODO: call server delete RPC
+		DeleteJump(jumpID);
 		return true;
 	}
 	else if (STARTS_WITH(msg, "warp_jump "))
@@ -49,6 +56,47 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 	}
 
 	return false;
+}
+
+void UWarpSystem::SendAllData_Implementation()
+{
+
+}
+
+bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)
+{
+	if (power < 0 || power > 100)
+		return false;
+
+	return true;
+}
+
+void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power)
+{
+	currentJumpCalculation = NewObject<UWarpJump>();
+	currentJumpCalculation->Initialize(startPos, direction, power);
+	PrimaryComponentTick.SetTickFunctionEnable(true);
+}
+
+void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	if (currentJumpCalculation == NULL)
+	{
+		PrimaryComponentTick.SetTickFunctionEnable(false);
+		return;
+	}
+
+	// TODO: add a new step to the current jump
+	// ... decide if we actually store a warp jump (how to tell this system it had a step added if so)
+	// or if we deconstruct one into the system instead.
+
+
+	// call JumpCalculationStep with the updated "end" point
+}
+
+void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange)
+{
+	// TODO: determine what jump has been added / removed, send on to the UI client
 }
 
 void UWarpSystem::AddCalculationStep(FVector newPoint)
@@ -82,28 +130,6 @@ void UWarpSystem::AddPointToOutput(FString output, FVector point)
 	output += TEXT(" ");
 	output += (int)point.Z;
 #endif
-}
-
-void UWarpSystem::SendAllData_Implementation()
-{
-	
-}
-
-bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)
-{
-	if (power < 0 || power > 100)
-		return false;
-
-	return true;
-}
-
-void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power)
-{
-	// TODO: create a JumpCalculation object, reference it as currentJumpCalculation
-
-	// every tick (or whatever interval), calculate another step for it
-
-	// call JumpCalculationStep with the updated "end" point
 }
 
 /*
