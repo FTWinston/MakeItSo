@@ -36,6 +36,10 @@ void UShipSystem::BeginPlay()
 	SendAllData();
 }
 
+#ifdef WEB_SERVER_TEST
+void UShipSystem::SendAllData() { SendAllData_Implementation(); }
+#endif
+
 void UShipSystem::SendAllData_Implementation() { }
 
 void UShipSystem::SendAllFixed(const char *message) { crewManager->SendAllFixed(message); }

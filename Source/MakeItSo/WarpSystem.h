@@ -60,9 +60,3 @@ private:
 	UFUNCTION()
 	void OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange);
 };
-
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::StartJumpCalculation(FVector startPos, FRotator direction, float power) { if (StartJumpCalculation_Validate(startPos, direction, power)) StartJumpCalculation_Implementation(startPos, direction, power); }
-void UWarpSystem::DeleteJump(int32 jumpID) { if (DeleteJump_Validate(jumpID)) DeleteJump_Implementation(jumpID); }
-void UWarpSystem::PerformWarpJump(int32 jumpID) { if (PerformWarpJump_Validate(jumpID)) PerformWarpJump_Implementation(jumpID); }
-#endif

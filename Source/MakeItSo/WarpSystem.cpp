@@ -63,6 +63,12 @@ void UWarpSystem::SendAllData_Implementation()
 
 }
 
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::StartJumpCalculation(FVector startPos, FRotator direction, float power) { if (StartJumpCalculation_Validate(startPos, direction, power)) StartJumpCalculation_Implementation(startPos, direction, power); }
+void UWarpSystem::DeleteJump(int32 jumpID) { if (DeleteJump_Validate(jumpID)) DeleteJump_Implementation(jumpID); }
+void UWarpSystem::PerformWarpJump(int32 jumpID) { if (PerformWarpJump_Validate(jumpID)) PerformWarpJump_Implementation(jumpID); }
+#endif
+
 bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)
 {
 	if (power < 0 || power > 100)
@@ -73,7 +79,7 @@ bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direc
 
 void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power)
 {
-	currentJumpCalculation = NewObject<UWarpJump>();
+	currentJumpCalculation = MAKENEW(UWarpJump);
 	currentJumpCalculation->Initialize(startPos, direction, power);
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 }

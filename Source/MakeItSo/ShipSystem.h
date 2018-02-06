@@ -6,7 +6,13 @@
 #else
 enum ELevelTick { Fake };
 class FActorComponentTickFunction { };
-class TickThing { public: bool bCanEverTick; };
+class TickThing
+{
+public:
+	bool bCanEverTick;
+	float TickInterval;
+	void SetTickFunctionEnable(bool val) {}
+};
 class UActorComponent {
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {}
@@ -78,7 +84,3 @@ protected:
 	float ExtractFloat(websocket_message *msg, int offset);
 	TArray<FString> SplitParts(websocket_message *msg, int offset);
 };
-
-#ifdef WEB_SERVER_TEST
-void UShipSystem::SendAllData() { SendAllData_Implementation(); }
-#endif
