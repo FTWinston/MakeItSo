@@ -65,6 +65,8 @@ public:
 		return std::max(min, max);
 	}
 
+	static float DegreesToRadians(float val) { return val * PI / 180.0f; }
+
 	static float Sin(float val) { return sin(val); }
 	static float Cos(float val) { return cos(val); }
 	static float Tan(float val) { return tan(val); }
@@ -149,6 +151,16 @@ struct FVector {
 		this->X += Q.X;
 		this->Y += Q.Y;
 		this->Z += Q.Z;
+	}
+
+	FVector operator*(const float Q) {
+		FVector result;
+
+		result.X = this->X * Q;
+		result.Y = this->Y * Q;
+		result.Z = this->Z * Q;
+
+		return result;
 	}
 
 	bool operator==(const FVector& Q) {
@@ -258,6 +270,16 @@ public:
 		RotationQuat.W = CR * CP*CY + SR * SP*SY;
 
 		return RotationQuat;
+	}
+
+	FVector Vector()
+	{
+		float CP, SP, CY, SY;
+		FMath::SinCos(&SP, &CP, FMath::DegreesToRadians(Pitch));
+		FMath::SinCos(&SY, &CY, FMath::DegreesToRadians(Yaw));
+		FVector V = FVector(CP*CY, CP*SY, SP);
+
+		return V;
 	}
 
 	FRotator operator+(const FRotator& Q) const {

@@ -11,10 +11,15 @@
 
 UWarpSystem::UWarpSystem()
 {
-	currentJumpCalculation = NULL;
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.TickInterval = 1.f;
 	PrimaryComponentTick.SetTickFunctionEnable(false);
+
+	calculationStepsRemaining = 0;
+	calculationStartPower = 0;
+	calculationCurrentVelocity = FVector::ZeroVector;
+
+	nextJumpID = 1;
 }
 
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
@@ -60,7 +65,7 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 
 void UWarpSystem::SendAllData_Implementation()
 {
-
+	// TODO: send all plotted jumps to client ... do we need a "clear all plots" command??
 }
 
 #ifdef WEB_SERVER_TEST
@@ -77,27 +82,96 @@ bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direc
 	return true;
 }
 
+#define NUM_WARP_JUMP_STEPS 50
+
 void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power)
 {
-	currentJumpCalculation = MAKENEW(UWarpJump);
-	currentJumpCalculation->Initialize(startPos, direction, power);
+#ifndef WEB_SERVER_TEST
+	calculationStepPositions.Reset(NUM_WARP_JUMP_STEPS);
+	calculationStepPositions.Add(startPos);
+#else
+	calculationStepPositions.clear();
+	calculationStepPositions.push_back(startPos);
+#endif
+
+	calculationStartPower = power;
+	calculationCurrentVelocity = direction.Vector() * power;
+	calculationStepsRemaining = NUM_WARP_JUMP_STEPS - 1;
+
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 }
 
 void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	if (currentJumpCalculation == NULL)
-	{
-		PrimaryComponentTick.SetTickFunctionEnable(false);
+	if (calculationStepsRemaining <= 0)
 		return;
+
+	FVector nextPoint = CalculateNextPosition(LASTITEM(calculationStepPositions), calculationCurrentVelocity, DeltaTime);
+
+#ifndef WEB_SERVER_TEST
+	calculationStepPositions.Add(nextPoint);
+#else
+	calculationStepPositions.insert(calculationStepPositions.end(), nextPoint);
+#endif
+
+	if (!IsSafeJumpPosition(nextPoint))
+	{
+		// jump calculation has reached an unpassable point, and must be aborted
+
+		// TODO: tell client this calculation failed
+
+		CleanupAfterCalculation();
 	}
+	else if (--calculationStepsRemaining <= 0)
+	{
+		// have safely reached the end of the jump calculation
+		auto jump = MAKENEW(UWarpJump);
+		jump->JumpPower = calculationStartPower;
+		jump->PositionSteps = calculationStepPositions; // TODO: determine if this creates a copy. if not, do so.
+#ifndef WEB_SERVER_TEST
+		calculatedJumps.Add(nextJumpID++, jump);
+#else
+		calculatedJumps.insert(std::pair<int, UWarpJump*>(nextJumpID++, jump));
+#endif
 
-	// TODO: add a new step to the current jump
-	// ... decide if we actually store a warp jump (how to tell this system it had a step added if so)
-	// or if we deconstruct one into the system instead.
+		CleanupAfterCalculation();
+	}
+}
 
+void UWarpSystem::CleanupAfterCalculation()
+{
+	PrimaryComponentTick.SetTickFunctionEnable(false);
 
-	// call JumpCalculationStep with the updated "end" point
+	calculationStepsRemaining = 0;
+	calculationStartPower = 0;
+	calculationCurrentVelocity = FVector::ZeroVector;
+
+#ifndef WEB_SERVER_TEST
+	calculationStepPositions.Reset(0);
+#else
+	calculationStepPositions.clear();
+#endif
+}
+
+FVector UWarpSystem::CalculateNextPosition(FVector position, FVector velocity, float timeStep)
+{
+	// TODO: RK4 gravity simulation. May require multiple smaller steps, I guess?
+	// https://en.wikipedia.org/wiki/Runge–Kutta_methods#Usage
+
+	return position + velocity * timeStep;
+}
+
+bool UWarpSystem::IsSafeJumpPosition(FVector position)
+{
+	// TODO: check this isn't inside a planet or star
+	return true;
+}
+
+void UWarpSystem::OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange)
+{
+	// TODO: for every step that has just been added, send them on to the client
+
+	// TODO: if this has just been wiped, tell the client after a short delay, I guess? If it failed, anyway. Hmm. Decide!
 }
 
 void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange)
@@ -110,9 +184,9 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 	FString output = TEXT("warp_ext_path ");
 
 #ifndef WEB_SERVER_TEST
-	//output.AppendInt(currentEditingJump.ID);
+	output.AppendInt(nextJumpID);
 #else
-	//output += currentEditingJump.ID;
+	output += nextJumpID;
 #endif
 	AddPointToOutput(output, newPoint);
 

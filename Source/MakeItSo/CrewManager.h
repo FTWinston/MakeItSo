@@ -33,7 +33,8 @@
 #define STOF(str) FCString::Atof(*str)
 #define ISCLIENT() (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
 #define ISSERVER() (GEngine->GetNetMode(GetWorld()) != NM_Client)
-#define MAKENEW(type) NewObject<type>();
+#define MAKENEW(type) NewObject<type>()
+#define LASTITEM(arr) arr.Top()
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -50,7 +51,8 @@
 #define STOF(str) std::stof(str)
 #define ISCLIENT() true
 #define ISSERVER() true
-#define MAKENEW(type) new type();
+#define MAKENEW(type) new type()
+#define LASTITEM(arr) arr.back()
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)

@@ -51,8 +51,25 @@ private:
 	void AddCalculationStep(FVector newPoint);
 	void AddPointToOutput(FString output, FVector point);
 
+	FVector CalculateNextPosition(FVector position, FVector velocity, float timeStep);
+	bool IsSafeJumpPosition(FVector position);
+	void CleanupAfterCalculation();
+	
 	UPROPERTY(Replicated)
-	UWarpJump *currentJumpCalculation;
+	float calculationStartPower;
+	
+	FVector calculationCurrentVelocity;
+	int calculationStepsRemaining;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculationStepPositions)
+	TArray<FVector> calculationStepPositions;
+
+	UFUNCTION()
+	void OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange);
+
+
+	int nextJumpID;
+
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculatedJumps)
 	TMap<int32, UWarpJump*> calculatedJumps;

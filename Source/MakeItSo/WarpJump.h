@@ -11,12 +11,6 @@ class MAKEITSO_API UWarpJump : public UObject
 	GENERATED_BODY()
 	
 public:
-	void Initialize(FVector startPos, FRotator startOrientation, float power);
-	void CalculateNextStep();
-
-	UPROPERTY(Replicated)
-	FRotator StartOrientation;
-	
 	UPROPERTY(Replicated)
 	float JumpPower;
 
@@ -30,7 +24,4 @@ public:
 	FVector StartPosition() { return PositionSteps.front(); }
 	FVector EndPosition() { return PositionSteps.back(); }
 #endif
-
-private:
-	int StepsRemaining;
 };
