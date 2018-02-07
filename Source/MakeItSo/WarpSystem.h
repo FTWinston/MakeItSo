@@ -16,6 +16,7 @@ class MAKEITSO_API UWarpSystem : public UShipSystem
 
 public:
 	UWarpSystem();
+	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -48,6 +49,8 @@ protected:
 #endif
 
 private:
+	void SendPath(int32 pathID, UWarpJump *path);
+	void SendPathDeletion(int32 pathID);
 	void AddCalculationStep(FVector newPoint);
 	void AddPointToOutput(FString output, FVector point);
 
@@ -55,6 +58,7 @@ private:
 	bool IsSafeJumpPosition(FVector position);
 	void CleanupAfterCalculation();
 	
+
 	UPROPERTY(Replicated)
 	float calculationStartPower;
 	

@@ -22,6 +22,18 @@ UWarpSystem::UWarpSystem()
 	nextJumpID = 1;
 }
 
+void UWarpSystem::ResetData()
+{
+	CleanupAfterCalculation();
+	nextJumpID = 1;
+
+#ifndef WEB_SERVER_TEST
+	calculatedJumps.Empty();
+#else
+	calculatedJumps.clear();
+#endif
+}
+
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -35,8 +47,7 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 {
 	if (STARTS_WITH(msg, "warp_plot "))
 	{
-		// `warp_plot ${ from.x } ${ from.y } ${ from.z } ${ yaw } ${ pitch } ${ power }`
-
+		// warp_plot fromX fromY fromZ yaw pitch power`
 		TArray<FString> parts = SplitParts(msg, sizeof("warp_plot "));
 
 		if (SIZENUM(parts) < 6)
@@ -66,7 +77,12 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 
 void UWarpSystem::SendAllData_Implementation()
 {
-	// TODO: send all plotted jumps to client ... do we need a "clear all plots" command??
+	SendSystemFixed("warp_clear");
+
+	for (auto path : calculatedJumps)
+	{
+		SendPath(PAIRKEY(path), PAIRVALUE(path));
+	}
 }
 
 #ifdef WEB_SERVER_TEST
@@ -119,7 +135,8 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	{
 		// jump calculation has reached an unpassable point, and must be aborted
 
-		// TODO: tell client this calculation failed
+		// TODO: possibly display error first, then send deletion shortly after
+		SendPathDeletion(nextJumpID);
 
 		CleanupAfterCalculation();
 	}
@@ -170,14 +187,32 @@ bool UWarpSystem::IsSafeJumpPosition(FVector position)
 
 void UWarpSystem::OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange)
 {
-	// TODO: for every step that has just been added, send them on to the client
+	int32 prevSize = beforeChange.size(), newSize = calculationStepPositions.size();
 
-	// TODO: if this has just been wiped, tell the client after a short delay, I guess? If it failed, anyway. Hmm. Decide!
+	for (auto i = prevSize; i < newSize; i++) {
+		AddCalculationStep(calculationStepPositions[i]);
+	}
 }
 
 void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange)
 {
-	// TODO: determine what jump has been added / removed, send on to the UI client
+	// send deletion of any paths that have been removed
+	for (auto path : beforeChange)
+	{
+		int32 id = PAIRKEY(path);
+
+		if (!MAPCONTAINS(calculatedJumps, id))
+			SendPathDeletion(id);
+	}
+
+	// send any paths that have been newly added
+	for (auto path : calculatedJumps)
+	{
+		int32 id = PAIRKEY(path);
+
+		if (!MAPCONTAINS(beforeChange, id))
+			SendPath(id, PAIRVALUE(path));
+	}
 }
 
 void UWarpSystem::AddCalculationStep(FVector newPoint)
@@ -190,6 +225,37 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 	output += nextJumpID;
 #endif
 	AddPointToOutput(output, newPoint);
+
+	SendSystem(output);
+}
+
+void UWarpSystem::SendPath(int32 pathID, UWarpJump *path)
+{
+	FString output = TEXT("warp_add_path ");
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(pathID);
+	output.Append(TEXT(" 1 ")); // indicate path is "safe"
+	output.AppendInt((int32)path->JumpPower);
+#else
+	output += pathID;
+	output += TEXT(" 1 "); // indicate path is "safe"
+	output += (int32)path->JumpPower;
+#endif
+
+	for (auto point : path->PositionSteps)
+		AddPointToOutput(output, point);
+
+	SendSystem(output);
+}
+
+void UWarpSystem::SendPathDeletion(int32 pathID)
+{
+	FString output = TEXT("warp_rem_path ");
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(pathID);
+#else
+	output += pathID;
+#endif
 
 	SendSystem(output);
 }
@@ -212,32 +278,6 @@ void UWarpSystem::AddPointToOutput(FString output, FVector point)
 	output += (int)point.Z;
 #endif
 }
-
-/*
-void UWarpSystem::JumpCalculationStep_Implementation(FVector newPoint)
-{
-	AddCalculationStep(newPoint);
-}
-
-void UWarpSystem::FinishJumpCalculation_Implementation(FVector endPoint, bool isSafe)
-{
-	AddCalculationStep(endPoint);
-
-	FString output = TEXT("warp_upd_path ");
-
-#ifndef WEB_SERVER_TEST
-	//output.AppendInt(currentEditingJump.ID);
-	output += TEXT(" ");
-	output.AppendInt(isSafe ? 1 : 0);
-#else
-	//output += currentEditingJump.ID;
-	output += TEXT(" ");
-	output += isSafe ? 1 : 0;
-#endif
-
-	SendSystem(output);
-}
-*/
 
 bool UWarpSystem::DeleteJump_Validate(int32 jumpID)
 {

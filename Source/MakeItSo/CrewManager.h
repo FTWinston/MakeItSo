@@ -29,6 +29,7 @@
 #define APPENDINT(str, i) str.AppendInt(i)
 #define STRFIND(str, val) str.Find(val)
 #define CHOPSTART(str, pos) str.RemoveAt(0, pos, false);
+#define PAIRKEY(pair) pair.Key
 #define PAIRVALUE(pair) pair.Value
 #define STOF(str) FCString::Atof(*str)
 #define ISCLIENT() (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
@@ -47,6 +48,7 @@
 #define APPENDINT(str, i) str += std::to_wstring(i)
 #define STRFIND(str, val) str.find(val)
 #define CHOPSTART(str, pos) str = str.substr(pos)
+#define PAIRKEY(pair) pair.first
 #define PAIRVALUE(pair) pair.second
 #define STOF(str) std::stof(str)
 #define ISCLIENT() true
