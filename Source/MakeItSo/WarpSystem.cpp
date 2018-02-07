@@ -26,7 +26,8 @@ void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifet
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(UWarpSystem, currentJumpCalculation, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, calculationStartPower, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, calculationStepPositions, COND_OwnerOnly);
 	DOREPLIFETIME_CONDITION(UWarpSystem, calculatedJumps, COND_OwnerOnly);
 }
 
@@ -127,7 +128,7 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 		// have safely reached the end of the jump calculation
 		auto jump = MAKENEW(UWarpJump);
 		jump->JumpPower = calculationStartPower;
-		jump->PositionSteps = calculationStepPositions; // TODO: determine if this creates a copy. if not, do so.
+		jump->PositionSteps = TArray<FVector>(calculationStepPositions);
 #ifndef WEB_SERVER_TEST
 		calculatedJumps.Add(nextJumpID++, jump);
 #else
