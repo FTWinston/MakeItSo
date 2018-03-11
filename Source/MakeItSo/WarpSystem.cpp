@@ -174,7 +174,7 @@ void UWarpSystem::CleanupAfterCalculation()
 FVector UWarpSystem::CalculateNextPosition(FVector position, FVector velocity, float timeStep)
 {
 	// TODO: RK4 gravity simulation. May require multiple smaller steps, I guess?
-	// https://en.wikipedia.org/wiki/Runge–Kutta_methods#Usage
+	// https://en.wikipedia.org/wiki/Runge-Kutta_methods#Usage
 
 	return position + velocity * timeStep;
 }
@@ -187,7 +187,7 @@ bool UWarpSystem::IsSafeJumpPosition(FVector position)
 
 void UWarpSystem::OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange)
 {
-	int32 prevSize = beforeChange.size(), newSize = calculationStepPositions.size();
+	int32 prevSize = SIZENUM(beforeChange), newSize = SIZENUM(calculationStepPositions);
 
 	for (auto i = prevSize; i < newSize; i++) {
 		AddCalculationStep(calculationStepPositions[i]);

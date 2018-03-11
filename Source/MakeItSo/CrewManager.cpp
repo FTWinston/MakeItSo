@@ -708,7 +708,9 @@ void UCrewManager::SendFixed(mg_connection *conn, const char *message)
 	mg_send_websocket_frame(conn, WEBSOCKET_OP_TEXT, message, len);
 }
 
+#ifdef WEB_SERVER_TEST
 #pragma unmanaged
+#endif
 void UCrewManager::Send(mg_connection *conn, const char *message, ...)
 {
 	// copied from mg_printf_websocket_frame cos we can't pas var args into that
@@ -727,7 +729,9 @@ void UCrewManager::Send(mg_connection *conn, const char *message, ...)
 		free(buf);
 	}
 }
+#ifdef WEB_SERVER_TEST
 #pragma managed
+#endif
 
 void UCrewManager::Send(mg_connection *conn, FString message)
 {
@@ -750,7 +754,9 @@ void UCrewManager::SendAllFixed(const char *message)
 	}
 }
 
+#ifdef WEB_SERVER_TEST
 #pragma unmanaged
+#endif
 void UCrewManager::SendAll(const char *message, ...)
 {
 	char mem[MG_VPRINTF_BUFFER_SIZE], *buf = mem;
@@ -768,7 +774,9 @@ void UCrewManager::SendAll(const char *message, ...)
 		free(buf);
 	}
 }
+#ifdef WEB_SERVER_TEST
 #pragma managed
+#endif
 
 void UCrewManager::SendAll(FString message)
 {
@@ -793,7 +801,9 @@ void UCrewManager::SendSystemFixed(UShipSystem::ESystem system, const char *mess
 	}
 }
 
+#ifdef WEB_SERVER_TEST
 #pragma unmanaged
+#endif
 void UCrewManager::SendSystem(UShipSystem::ESystem system, const char *message, ...)
 {
 	char mem[MG_VPRINTF_BUFFER_SIZE], *buf = mem;
@@ -811,7 +821,9 @@ void UCrewManager::SendSystem(UShipSystem::ESystem system, const char *message, 
 		free(buf);
 	}
 }
+#ifdef WEB_SERVER_TEST
 #pragma managed
+#endif
 
 void UCrewManager::SendSystem(UShipSystem::ESystem system, FString message)
 {

@@ -59,8 +59,8 @@
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
 #define MATCHES(msg, text)   msg->size == sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
-#define EXTRACT(msg, buffer, skipText) EXTRACT_WITH_OFFSET(msg, buffer, sizeof(skipText))
-#define EXTRACT_WITH_OFFSET(msg, buffer, offsetLength) snprintf(buffer, sizeof(buffer), "%.*s\0", FMath::Min((int32)sizeof(buffer) - 1, msg->size - offsetLength + 1), msg->data + offsetLength - 1)
+#define EXTRACT(msg, buffer, skipText) EXTRACT_WITH_OFFSET(msg, buffer, (int32)sizeof(skipText))
+#define EXTRACT_WITH_OFFSET(msg, buffer, offsetLength) snprintf(buffer, sizeof(buffer), "%.*s\0", FMath::Min((int32)sizeof(buffer) - 1, (int32)msg->size - offsetLength + 1), msg->data + offsetLength - 1)
 
 class UIConnectionInfo;
 class AShipPlayerController;
