@@ -7611,6 +7611,7 @@ var Connection = (function () {
             }
             case 'warp_clear': {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].clearAll());
+                break;
             }
             case 'warp_add_path': {
                 var vals = data.split(' ');
@@ -7622,6 +7623,7 @@ var Connection = (function () {
                     points.push(new __WEBPACK_IMPORTED_MODULE_6__functionality__["d" /* Vector3 */](parseFloat(vals[i - 2]), parseFloat(vals[i - 1]), parseFloat(vals[i])));
                 }
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].addPath(id, status_1, points, power));
+                break;
             }
             case 'warp_ext_path': {
                 var vals = data.split(' ');
@@ -7631,16 +7633,20 @@ var Connection = (function () {
                     points.push(new __WEBPACK_IMPORTED_MODULE_6__functionality__["d" /* Vector3 */](parseFloat(vals[i - 2]), parseFloat(vals[i - 1]), parseFloat(vals[i])));
                 }
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].extendPath(id, points));
+                break;
             }
             case 'warp_upd_path': {
                 var vals = data.split(' ');
                 var id = parseInt(vals[0]);
-                var status_2 = parseInt(vals[1]);
+                var safe = parseInt(vals[1]) == 1;
+                var status_2 = safe ? 2 /* Plotted */ : 1 /* Invalid */;
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setPathStatus(id, status_2));
+                break;
             }
             case 'warp_rem_path': {
                 var id = parseInt(data);
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].removePath(id));
+                break;
             }
             default:
                 console.log("Unexpected command: " + cmd);

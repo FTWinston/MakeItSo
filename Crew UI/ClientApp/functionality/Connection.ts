@@ -136,6 +136,7 @@ export class Connection {
             }
             case 'warp_clear': {
                 store.dispatch(warpActions.clearAll());
+                break;
             }
             case 'warp_add_path': {
                 let vals = data.split(' ');
@@ -153,6 +154,7 @@ export class Connection {
                 }
 
                 store.dispatch(warpActions.addPath(id, status, points, power));
+                break;
             }
             case 'warp_ext_path': {
                 let vals = data.split(' ');
@@ -168,6 +170,7 @@ export class Connection {
                 }
 
                 store.dispatch(warpActions.extendPath(id, points));
+                break;
             }
             case 'warp_upd_path': {
                 let vals = data.split(' ');
@@ -176,11 +179,13 @@ export class Connection {
                 let status = safe ? JumpPathStatus.Plotted : JumpPathStatus.Invalid;
 
                 store.dispatch(warpActions.setPathStatus(id, status));
+                break;
             }
             case 'warp_rem_path': {
                 let id = parseInt(data);
 
                 store.dispatch(warpActions.removePath(id));
+                break;
             }
             default:
                 console.log(`Unexpected command: ${cmd}`);
