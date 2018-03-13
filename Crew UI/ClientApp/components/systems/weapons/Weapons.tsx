@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../../../store';
-import { SensorTarget, TextLocalisation } from '../../../functionality';
-import { SensorView } from '../../../components/general/SensorView';
+import { ApplicationState } from '~/Store';
+import { SensorTarget, TextLocalisation } from '~/functionality';
+import { SensorView } from '~/components/general/SensorView';
 import './Weapons.scss';
 
 interface WeaponsProps {

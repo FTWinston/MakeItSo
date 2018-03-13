@@ -1,5 +1,5 @@
 import { Localisation } from './Localisation';
-import English from '../localisations/English';
+import English from '~/localisations/English';
 
 export interface Localisation {
     name: string;

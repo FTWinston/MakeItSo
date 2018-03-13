@@ -1,6 +1,6 @@
-import { CanvasBounds3D } from '../CanvasBounds';
+import { CanvasBounds3D } from '~/functionality';
 import { SensorTarget } from './SensorTarget';
-import { Vector2, Vector3 } from '../math';
+import { Vector2, Vector3 } from '~/functionality/math';
 
 export const enum Relationship {
     Neutral = 0,

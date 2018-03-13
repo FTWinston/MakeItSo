@@ -1,5 +1,5 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-import { ShipSystem } from '../functionality';
+import { ShipSystem } from '~/functionality';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.

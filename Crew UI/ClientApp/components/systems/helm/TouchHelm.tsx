@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as Hammer from 'hammerjs';
-import { connection } from '../../../Client';
-import { FlexibleCanvas, TouchArea } from '../../general';
+import { connection } from '~/Client';
+import { FlexibleCanvas, TouchArea } from '~/components/general';
 import { Helm, TypedHelmProps } from './Helm';
 import { FeedbackGroup } from './FeedbackGroup';
 import { FieldGroup } from './FieldGroup';

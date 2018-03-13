@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Field, NumericTextbox, PushButton, Icon, ButtonColor } from '../../general';
-import { JumpPath } from '../../../store/Warp';
-import { TextLocalisation, Vector3 } from '../../../functionality';
+import { Field, NumericTextbox, PushButton, Icon, ButtonColor } from '~/components/general';
+import { JumpPath } from '~/store/Warp';
+import { TextLocalisation, Vector3 } from '~/functionality';
 
 interface JumpEditorProps {
     text: TextLocalisation;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TouchArea } from '../TouchArea';
+import { TouchArea } from '~/components/general';
 
 export enum RotaryInputMode {
     FullCircle,

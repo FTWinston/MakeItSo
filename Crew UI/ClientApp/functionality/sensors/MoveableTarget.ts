@@ -1,6 +1,6 @@
-import { CanvasBounds3D } from '../CanvasBounds';
+import { CanvasBounds3D } from '~/functionality';
 import { RelatableTarget, Relationship } from './RelatableTarget';
-import { Vector2, Vector3 } from '../math';
+import { Vector2, Vector3 } from '~/functionality/math';
 
 export abstract class MoveableTarget extends RelatableTarget {
     constructor(id: number, position: Vector3, public velocity: Vector3, relationship: Relationship) {

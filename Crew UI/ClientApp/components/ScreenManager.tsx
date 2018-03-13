@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../store';
-import { ClientScreen } from '../store/Screen';
-import * as UserStore from '../store/User';
+import { ApplicationState } from '~/Store';
+import { ClientScreen } from '~/store/Screen';
+import * as UserStore from '~/store/User';
 import * as Screen from './screens'
 
 interface ScreenManagerDataProps {

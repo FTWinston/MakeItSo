@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Icon } from '../../general';
-import { JumpPath } from '../../../store/Warp';
-import { TextLocalisation } from '../../../functionality';
+import { Icon } from '~/components/general';
+import { JumpPath } from '~/store/Warp';
+import { TextLocalisation } from '~/functionality';
 
 interface JumpCountdownProps {
     text: TextLocalisation;

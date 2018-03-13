@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../../../store';
-import { actionCreators, WarpState, WarpScreenStatus, JumpPath } from '../../../store/Warp';
-import { SensorView } from '../../../components/general/SensorView';
-import { SensorPath, SensorTarget, TextLocalisation, Vector3 } from '../../../functionality';
+import { ApplicationState } from '~/Store';
+import { actionCreators, WarpState, WarpScreenStatus, JumpPath } from '~/store/Warp';
+import { SensorView } from '~/components/general/SensorView';
+import { SensorPath, SensorTarget, TextLocalisation, Vector3 } from '~/functionality';
 import { JumpCountdown } from './JumpCountdown';
 import { JumpEditor } from './JumpEditor';
 import { PathList } from './PathList';
 import './Warp.scss';
-import { connection } from '../../../Client';
+import { connection } from '~/Client';
 
 interface WarpDataProps extends WarpState {
     text: TextLocalisation;

@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const TsConfigPathsPlugin = require('awesome-typescript-loader').TsConfigPathsPlugin;
 const CheckerPlugin = require('awesome-typescript-loader').CheckerPlugin;
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 require('sass-loader');
@@ -14,7 +15,10 @@ module.exports = (env) => {
     return {
         entry: { 'main': './ClientApp/Client.tsx' },
         stats: { modules: false },
-        resolve: { extensions: ['.js', '.jsx', '.ts', '.tsx'] },
+        resolve: {
+            extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            plugins: [ new TsConfigPathsPlugin() ],
+        },
         module: {
             rules: [
                 { test: /\.tsx?$/, include: /ClientApp/, use: 'awesome-typescript-loader?silent=true' },

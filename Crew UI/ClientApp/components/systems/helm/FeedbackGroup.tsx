@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Canvas } from '../../general';
+import { Canvas } from '~/components/general';
 import { FieldGroup, FieldGroupProps } from './FieldGroup';
 
 interface FeedbackGroupProps extends FieldGroupProps {

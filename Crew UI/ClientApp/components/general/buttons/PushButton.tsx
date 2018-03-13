@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Button, IBaseButtonProps } from './Button';
-import { connection } from '../../../Client';
+import { connection } from '~/Client';
 
 interface IPushButtonProps extends IBaseButtonProps {
     clicked?: () => void;

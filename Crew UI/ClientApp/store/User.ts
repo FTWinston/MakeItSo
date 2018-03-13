@@ -1,5 +1,5 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-import { InputMode, Localisation, Localisations, TextLocalisation, ShipSystem } from '../functionality';
+import { InputMode, Localisation, Localisations, TextLocalisation, ShipSystem } from '~/functionality';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.

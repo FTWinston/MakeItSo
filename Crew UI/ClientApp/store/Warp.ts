@@ -1,5 +1,5 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-import { Vector3 } from '../functionality';
+import { Vector3 } from '~/functionality';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.

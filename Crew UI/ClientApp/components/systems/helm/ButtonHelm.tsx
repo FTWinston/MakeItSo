@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ButtonColor } from '../../general';
+import { Choice, ButtonSet, FlexibleCanvas, HeldButton, Icon, ButtonColor } from '~/components/general';
 import { FieldGroup } from './FieldGroup';
 import { FeedbackGroup } from './FeedbackGroup';
 import { HeadingReadout } from './HeadingReadout';

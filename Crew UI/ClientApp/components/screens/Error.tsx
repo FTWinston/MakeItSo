@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../../store';
-import { TextLocalisation } from '../../functionality';
-import { Screen } from '../general';
+import { ApplicationState } from '~/Store';
+import { TextLocalisation } from '~/functionality';
+import { Screen } from '~/components/general';
 import './Error.scss';
 
 interface ErrorProps {

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { TouchArea } from './TouchArea';
 import { drawFunc } from './Canvas';
-import { CanvasBounds3D, Matrix, SensorTarget, Vector2, Vector3 } from '../../functionality';
+import { CanvasBounds3D, Matrix, SensorTarget, Vector2, Vector3 } from '~/functionality';
 import * as Hammer from 'hammerjs';
-import { SensorState } from 'ClientApp/store/Sensors';
+import { SensorState } from '~/store/Sensors';
 
 interface SensorViewProps {
     className?: string;

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { store, connection }  from '../../Client';
-import { ApplicationState }  from '../../store';
-import * as CrewStore from '../../store/User';
-import * as ScreenStore from '../../store/Screen';
-import { ShipSystem, allSystems, TextLocalisation } from '../../functionality';
-import { PushButton, ToggleButton, Icon, ButtonColor, Field, Screen } from '../general';
+import { store, connection } from '~/Client';
+import { ApplicationState } from '~/Store';
+import * as CrewStore from '~/store/User';
+import * as ScreenStore from '~/store/Screen';
+import { ShipSystem, allSystems, TextLocalisation } from '~/functionality';
+import { PushButton, ToggleButton, Icon, ButtonColor, Field, Screen } from '~/components/general';
 import './SystemSelection.scss';
 
 interface SystemSelectionDataProps {

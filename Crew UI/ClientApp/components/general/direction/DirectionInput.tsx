@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TextLocalisation } from '../../../functionality';
+import { TextLocalisation } from '~/functionality';
 import { RotaryInput, RotaryInputMode } from './RotaryInput';
 import { LinearInput } from './LinearInput';
 

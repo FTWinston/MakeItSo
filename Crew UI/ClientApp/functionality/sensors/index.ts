@@ -9,7 +9,7 @@ import { Ship } from './Ship';
 export { SensorPath, Star, Planet, Station, Ship };
 
 import { Vector3 } from '../';
-import { Relationship } from 'ClientApp/functionality/sensors/RelatableTarget';
+import { Relationship } from '~/functionality/sensors/RelatableTarget';
 
 export function parseSensorTarget(data: string) {
     let vals = data.split(' ');

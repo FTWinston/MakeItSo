@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../../store';
-import * as UserStore from '../../store/User';
-import { TextLocalisation } from '../../functionality';
-import { Screen } from '../general';
+import { ApplicationState } from '~/Store';
+import * as UserStore from '~/store/User';
+import { TextLocalisation } from '~/functionality';
+import { Screen } from '~/components/general';
 
 interface ConnectingDataProps {
     text: TextLocalisation;

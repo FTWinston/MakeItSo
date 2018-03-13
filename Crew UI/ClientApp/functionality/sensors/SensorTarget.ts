@@ -1,5 +1,5 @@
-import { CanvasBounds, CanvasBounds3D } from '../CanvasBounds';
-import { Vector2, Vector3 } from '../math';
+import { CanvasBounds, CanvasBounds3D } from '~/functionality';
+import { Vector2, Vector3 } from '~/functionality/math';
 
 export abstract class SensorTarget {
     constructor(readonly id: number, public position: Vector3) {

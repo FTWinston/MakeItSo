@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { store, connection }  from '../../Client';
-import { ApplicationState }  from '../../store';
-import * as UserStore from '../../store/User';
-import * as ScreenStore from '../../store/Screen';
-import * as CrewStore from '../../store/Crew';
-import { InputMode, Localisation, Localisations, TextLocalisation } from '../../functionality';
-import { ToggleButton, PushButton, ButtonColor, Screen, Field, Choice, Textbox } from '../general';
+import { store, connection } from '~/Client';
+import { ApplicationState } from '~/Store';
+import * as UserStore from '~/store/User';
+import * as ScreenStore from '~/store/Screen';
+import * as CrewStore from '~/store/Crew';
+import { InputMode, Localisation, Localisations, TextLocalisation } from '~/functionality';
+import { ToggleButton, PushButton, ButtonColor, Screen, Field, Choice, Textbox } from '~/components/general';
 
 interface SettingsDataProps {
     userName: string;

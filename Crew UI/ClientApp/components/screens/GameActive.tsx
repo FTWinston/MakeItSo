@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { store, connection }  from '../../Client';
-import { ApplicationState }  from '../../store';
-import * as CrewStore from '../../store/User';
-import { TextLocalisation, ShipSystem, allSystems, getSystemName } from '../../functionality';
-import { Icon, PushButton, ButtonColor, Screen } from '../general';
+import { store, connection } from '~/Client';
+import { ApplicationState } from '~/Store';
+import * as CrewStore from '~/store/User';
+import { TextLocalisation, ShipSystem, allSystems, getSystemName } from '~/functionality';
+import { Icon, PushButton, ButtonColor, Screen } from '~/components/general';
 import * as Systems from '../systems';
 import './GameActive.scss';
 

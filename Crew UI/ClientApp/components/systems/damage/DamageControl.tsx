@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../../../store';
-import { TextLocalisation } from '../../../functionality';
+import { ApplicationState } from '~/Store';
+import { TextLocalisation } from '~/functionality';
 import './DamageControl.scss';
 
 interface DamageControlProps {

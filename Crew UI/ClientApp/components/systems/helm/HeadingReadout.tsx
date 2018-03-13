@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Helm } from './Helm';
-import { TextLocalisation } from '../../../functionality';
+import { TextLocalisation } from '~/functionality';
 
 interface HeadingProps {
     text: TextLocalisation;

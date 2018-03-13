@@ -1,7 +1,7 @@
-import { CanvasBounds3D } from '../CanvasBounds';
+import { CanvasBounds3D } from '~/functionality';
 import { RelatableTarget, Relationship } from './RelatableTarget';
 import { SensorTarget } from './SensorTarget';
-import { Vector2, Vector3 } from '../math';
+import { Vector2, Vector3 } from '~/functionality/math';
 
 export class Station extends RelatableTarget {
     constructor(id: number, position: Vector3, relationship: Relationship) {

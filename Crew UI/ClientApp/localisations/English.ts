@@ -1,4 +1,4 @@
-import { TextLocalisation } from '../functionality';
+import { TextLocalisation } from '~/functionality';
 
 let words: TextLocalisation = {
     common: {

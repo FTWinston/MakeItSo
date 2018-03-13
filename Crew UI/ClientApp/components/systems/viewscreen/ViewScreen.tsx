@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState }  from '../../../store';
-import { TextLocalisation, InputMode } from '../../../functionality';
+import { ApplicationState } from '~/Store';
+import { TextLocalisation, InputMode } from '~/functionality';
 import './ViewScreen.scss';
 
 interface ViewScreenProps {

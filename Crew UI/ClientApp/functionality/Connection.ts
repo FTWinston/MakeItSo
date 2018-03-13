@@ -1,12 +1,12 @@
-import { store } from '../Client';
-import { actionCreators as crewActions } from '../store/Crew';
-import { actionCreators as userActions } from '../store/User';
-import { actionCreators as screenActions, ClientScreen } from '../store/Screen';
-import { actionCreators as helmActions } from '../store/Helm';
-import { actionCreators as warpActions, JumpPathStatus } from '../store/Warp';
-import { actionCreators as sensorActions } from '../store/Sensors';
+import { store } from '~/Client';
+import { actionCreators as crewActions } from '~/store/Crew';
+import { actionCreators as userActions } from '~/store/User';
+import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
+import { actionCreators as helmActions } from '~/store/Helm';
+import { actionCreators as warpActions, JumpPathStatus } from '~/store/Warp';
+import { actionCreators as sensorActions } from '~/store/Sensors';
 import { TextLocalisation } from './Localisation';
-import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '../functionality';
+import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '~/functionality';
 
 export class Connection {
     private socket: WebSocket;

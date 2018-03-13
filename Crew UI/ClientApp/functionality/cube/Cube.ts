@@ -1,4 +1,4 @@
-import { Vector3 } from '../math';
+import { Vector3 } from '~/functionality/math';
 import { CubeFace } from './CubeFace';
 
 type faceDrawer = (ctx: CanvasRenderingContext2D) => void;
