@@ -71,8 +71,10 @@ private:
 	UFUNCTION()
 	void OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange);
 
+	void CalculationStepsAdded(int32 prevNumSteps);
 
-	int nextJumpID;
+
+	int32 nextJumpID;
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculatedJumps)

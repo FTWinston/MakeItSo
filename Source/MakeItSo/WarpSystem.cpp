@@ -1,6 +1,7 @@
 #ifndef WEB_SERVER_TEST
 #include "WarpSystem.h"
 #include "UnrealNetwork.h"
+#include "Engine/Engine.h"
 #else
 #include "stdafx.h"
 #include "WarpSystem.h"
@@ -111,6 +112,11 @@ void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator
 	calculationStepPositions.push_back(startPos);
 #endif
 
+	if (ISCLIENT())
+	{
+		CalculationStepsAdded(0);
+	}
+
 	calculationStartPower = power;
 	calculationCurrentVelocity = direction.Vector() * power;
 	calculationStepsRemaining = NUM_WARP_JUMP_STEPS - 1;
@@ -131,12 +137,17 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	calculationStepPositions.insert(calculationStepPositions.end(), nextPoint);
 #endif
 
+	if (ISCLIENT())
+	{// account for replication not affecting local client
+		CalculationStepsAdded(SIZENUM(calculationStepPositions) - 1);
+	}
+
 	if (!IsSafeJumpPosition(nextPoint))
 	{
 		// jump calculation has reached an unpassable point, and must be aborted
 
 		// TODO: possibly display error first, then send deletion shortly after
-		SendPathDeletion(nextJumpID);
+		SendPathDeletion(nextJumpID); // TODO: can't just call this from the server anyway!
 
 		CleanupAfterCalculation();
 	}
@@ -151,6 +162,11 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 #else
 		calculatedJumps.insert(std::pair<int, UWarpJump*>(nextJumpID++, jump));
 #endif
+
+		if (ISCLIENT())
+		{// account for replication not affecting local client
+			SendPath(nextJumpID - 1, jump);
+		}
 
 		CleanupAfterCalculation();
 	}
@@ -187,8 +203,13 @@ bool UWarpSystem::IsSafeJumpPosition(FVector position)
 
 void UWarpSystem::OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange)
 {
-	int32 prevSize = SIZENUM(beforeChange), newSize = SIZENUM(calculationStepPositions);
+	int32 prevSize = SIZENUM(beforeChange);
+	CalculationStepsAdded(prevSize);
+}
 
+void UWarpSystem::CalculationStepsAdded(int32 prevSize)
+{
+	int32 newSize = SIZENUM(calculationStepPositions);
 	for (auto i = prevSize; i < newSize; i++) {
 		AddCalculationStep(calculationStepPositions[i]);
 	}
