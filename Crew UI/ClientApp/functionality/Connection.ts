@@ -172,19 +172,19 @@ export class Connection {
                 store.dispatch(warpActions.extendPath(id, points));
                 break;
             }
-            case 'warp_upd_path': {
+            case 'warp_rem_path': {
                 let vals = data.split(' ');
                 let id = parseInt(vals[0]);
-                let safe = parseInt(vals[1]) == 1;
-                let status = safe ? JumpPathStatus.Plotted : JumpPathStatus.Invalid;
+                let displayInvalid = parseInt(vals[1]) === 1;
 
-                store.dispatch(warpActions.setPathStatus(id, status));
-                break;
-            }
-            case 'warp_rem_path': {
-                let id = parseInt(data);
-
-                store.dispatch(warpActions.removePath(id));
+                if (displayInvalid) {
+                    // mark invalid now, then remove after 2 secs
+                    store.dispatch(warpActions.setPathStatus(id, JumpPathStatus.Invalid));
+                    setTimeout(() => store.dispatch(warpActions.removePath(id)), 2000);
+                } else {
+                    // remove immediately
+                    store.dispatch(warpActions.removePath(id));
+                }
                 break;
             }
             default:

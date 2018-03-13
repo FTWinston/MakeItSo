@@ -13,7 +13,7 @@
 UWarpSystem::UWarpSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 1.f;
+	PrimaryComponentTick.TickInterval = 0.2f;
 	PrimaryComponentTick.SetTickFunctionEnable(false);
 
 	calculationStepsRemaining = 0;
@@ -145,9 +145,7 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	if (!IsSafeJumpPosition(nextPoint))
 	{
 		// jump calculation has reached an unpassable point, and must be aborted
-
-		// TODO: possibly display error first, then send deletion shortly after
-		SendPathDeletion(nextJumpID); // TODO: can't just call this from the server anyway!
+		SendPathDeletion(nextJumpID, true);
 
 		CleanupAfterCalculation();
 	}
@@ -223,7 +221,7 @@ void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeCha
 		int32 id = PAIRKEY(path);
 
 		if (!MAPCONTAINS(calculatedJumps, id))
-			SendPathDeletion(id);
+			SendPathDeletion(id, false);
 	}
 
 	// send any paths that have been newly added
@@ -269,7 +267,7 @@ void UWarpSystem::SendPath(int32 pathID, UWarpJump *path)
 	SendSystem(output);
 }
 
-void UWarpSystem::SendPathDeletion(int32 pathID)
+void UWarpSystem::SendPathDeletion(int32 pathID, bool displayInvalid)
 {
 	FString output = TEXT("warp_rem_path ");
 #ifndef WEB_SERVER_TEST
@@ -277,11 +275,12 @@ void UWarpSystem::SendPathDeletion(int32 pathID)
 #else
 	output += pathID;
 #endif
+	output += displayInvalid ? TEXT(" 1") : TEXT(" 0");
 
 	SendSystem(output);
 }
 
-void UWarpSystem::AddPointToOutput(FString output, FVector point)
+void UWarpSystem::AddPointToOutput(FString &output, FVector point)
 {
 #ifndef WEB_SERVER_TEST
 	output += TEXT(" ");

@@ -7635,17 +7635,19 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].extendPath(id, points));
                 break;
             }
-            case 'warp_upd_path': {
-                var vals = data.split(' ');
-                var id = parseInt(vals[0]);
-                var safe = parseInt(vals[1]) == 1;
-                var status_2 = safe ? 2 /* Plotted */ : 1 /* Invalid */;
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setPathStatus(id, status_2));
-                break;
-            }
             case 'warp_rem_path': {
-                var id = parseInt(data);
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].removePath(id));
+                var vals = data.split(' ');
+                var id_1 = parseInt(vals[0]);
+                var displayInvalid = parseInt(vals[1]) === 1;
+                if (displayInvalid) {
+                    // mark invalid now, then remove after 2 secs
+                    __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setPathStatus(id_1, 1 /* Invalid */));
+                    setTimeout(function () { return __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].removePath(id_1)); }, 2000);
+                }
+                else {
+                    // remove immediately
+                    __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].removePath(id_1));
+                }
                 break;
             }
             default:

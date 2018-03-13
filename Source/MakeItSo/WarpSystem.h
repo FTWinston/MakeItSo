@@ -50,9 +50,12 @@ protected:
 
 private:
 	void SendPath(int32 pathID, UWarpJump *path);
-	void SendPathDeletion(int32 pathID);
+
+	UFUNCTION(Client, Reliable)
+	void SendPathDeletion(int32 pathID, bool displayInvalid);
+
 	void AddCalculationStep(FVector newPoint);
-	void AddPointToOutput(FString output, FVector point);
+	void AddPointToOutput(FString &output, FVector point);
 
 	FVector CalculateNextPosition(FVector position, FVector velocity, float timeStep);
 	bool IsSafeJumpPosition(FVector position);
