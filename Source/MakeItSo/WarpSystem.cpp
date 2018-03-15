@@ -267,7 +267,10 @@ void UWarpSystem::SendPath(int32 pathID, UWarpJump *path)
 	SendSystem(output);
 }
 
-void UWarpSystem::SendPathDeletion(int32 pathID, bool displayInvalid)
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendPathDeletion(int32 pathID, bool displayInvalid) { SendPathDeletion_Implementation(pathID, displayInvalid); }
+#endif
+void UWarpSystem::SendPathDeletion_Implementation(int32 pathID, bool displayInvalid)
 {
 	FString output = TEXT("warp_rem_path ");
 #ifndef WEB_SERVER_TEST

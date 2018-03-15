@@ -53,6 +53,9 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void SendPathDeletion(int32 pathID, bool displayInvalid);
+#ifdef WEB_SERVER_TEST
+	void SendPathDeletion_Implementation(int32 pathID, bool displayInvalid);
+#endif
 
 	void AddCalculationStep(FVector newPoint);
 	void AddPointToOutput(FString &output, FVector point);
