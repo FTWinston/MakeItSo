@@ -241,7 +241,7 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 #ifndef WEB_SERVER_TEST
 	output.AppendInt(nextJumpID);
 #else
-	output += nextJumpID;
+	output += std::to_wstring(nextJumpID);
 #endif
 	AddPointToOutput(output, newPoint);
 
@@ -256,9 +256,9 @@ void UWarpSystem::SendPath(int32 pathID, UWarpJump *path)
 	output.Append(TEXT(" 1 ")); // indicate path is "safe"
 	output.AppendInt((int32)path->JumpPower);
 #else
-	output += pathID;
+	output += std::to_wstring(pathID);
 	output += TEXT(" 1 "); // indicate path is "safe"
-	output += (int32)path->JumpPower;
+	output += std::to_wstring((int32)path->JumpPower);
 #endif
 
 	for (auto point : path->PositionSteps)
@@ -276,7 +276,7 @@ void UWarpSystem::SendPathDeletion_Implementation(int32 pathID, bool displayInva
 #ifndef WEB_SERVER_TEST
 	output.AppendInt(pathID);
 #else
-	output += pathID;
+	output += std::to_wstring(pathID);
 #endif
 	output += displayInvalid ? TEXT(" 1") : TEXT(" 0");
 
@@ -294,11 +294,11 @@ void UWarpSystem::AddPointToOutput(FString &output, FVector point)
 	output.AppendInt((int32)point.Z);
 #else
 	output += TEXT(" ");
-	output += (int)point.X;
+	output += std::to_wstring((int)point.X);
 	output += TEXT(" ");
-	output += (int)point.Y;
+	output += std::to_wstring((int)point.Y);
 	output += TEXT(" ");
-	output += (int)point.Z;
+	output += std::to_wstring((int)point.Z);
 #endif
 }
 

@@ -646,14 +646,15 @@ TArray<FString> UCrewManager::SplitParts(websocket_message *msg, int offset)
 	FString fstr = FString(ANSI_TO_TCHAR(buffer));
 	fstr.ParseIntoArray(parts, TEXT(" "));
 #else
-	// TODO: handle this
 	wchar_t wBuffer[128];
 	mbstowcs(wBuffer, buffer, strlen(buffer) + 1);
-	auto something = FString(wBuffer);
+	auto wString = FString(wBuffer);
 
-	std::string text = buffer;
-	std::istringstream iss(text);
-	std::vector<std::string> results((std::istream_iterator<std::string>(iss)), std::istream_iterator<std::string>());
+	std::wistringstream iss(wString);
+
+	std::istream_iterator<std::wstring, wchar_t> eos;
+	std::istream_iterator<std::wstring, wchar_t> iit(iss);
+	std::copy(iit, eos, std::back_inserter(parts));
 #endif
 
 	return parts;
