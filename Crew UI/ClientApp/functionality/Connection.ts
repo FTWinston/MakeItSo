@@ -145,7 +145,7 @@ export class Connection {
                 let power = parseFloat(vals[2]);
 
                 let points: Vector3[] = [];
-                for (let i=5; i<vals.length; i++) {
+                for (let i=5; i<vals.length; i+=3) {
                     points.push(new Vector3(
                         parseFloat(vals[i-2]),
                         parseFloat(vals[i-1]),
@@ -161,7 +161,7 @@ export class Connection {
                 let id = parseInt(vals[0]);
 
                 let points: Vector3[] = [];
-                for (let i=3; i<vals.length; i++) {
+                for (let i=3; i<vals.length; i+=3) {
                     points.push(new Vector3(
                         parseFloat(vals[i-2]),
                         parseFloat(vals[i-1]),

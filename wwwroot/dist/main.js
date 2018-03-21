@@ -7907,7 +7907,7 @@ var Connection = (function () {
                 var status_1 = parseInt(vals[1]);
                 var power = parseFloat(vals[2]);
                 var points = [];
-                for (var i = 5; i < vals.length; i++) {
+                for (var i = 5; i < vals.length; i += 3) {
                     points.push(new __WEBPACK_IMPORTED_MODULE_6__functionality__["d" /* Vector3 */](parseFloat(vals[i - 2]), parseFloat(vals[i - 1]), parseFloat(vals[i])));
                 }
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].addPath(id, status_1, points, power));
@@ -7917,7 +7917,7 @@ var Connection = (function () {
                 var vals = data.split(' ');
                 var id = parseInt(vals[0]);
                 var points = [];
-                for (var i = 3; i < vals.length; i++) {
+                for (var i = 3; i < vals.length; i += 3) {
                     points.push(new __WEBPACK_IMPORTED_MODULE_6__functionality__["d" /* Vector3 */](parseFloat(vals[i - 2]), parseFloat(vals[i - 1]), parseFloat(vals[i])));
                 }
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].extendPath(id, points));
