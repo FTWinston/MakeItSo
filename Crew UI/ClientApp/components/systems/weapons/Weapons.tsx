@@ -3,18 +3,23 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { SensorTarget, TextLocalisation } from '~/functionality';
 import { SensorView } from '~/components/general/SensorView';
+import { TargetSelection } from './TargetSelection';
+import { TargetSelected } from './TargetSelected';
 import './Weapons.scss';
 
 interface WeaponsProps {
     text: TextLocalisation;
     allTargets: SensorTarget[];
+    selectedTarget?: SensorTarget;
 }
 
-class Weapons extends React.Component<WeaponsProps, {}> {
+class Weapons extends React.PureComponent<WeaponsProps, {}> {
     public render() {
-        return <div className="system weapons">
-            <SensorView className="weapons__targetSelect" targets={this.props.allTargets} />
-        </div>;
+        if (this.props.selectedTarget === undefined) {
+            return <TargetSelection text={this.props.text} allTargets={this.props.allTargets} />
+        }
+        
+        return <TargetSelected text={this.props.text} target={this.props.selectedTarget} />;
     }
 }
 

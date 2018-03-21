@@ -2,6 +2,9 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation } from '~/functionality';
+import { CardHand } from './CardHand';
+import { CardSelection } from './CardSelection';
+import { SystemList } from './SystemList';
 import './PowerManagement.scss';
 
 interface PowerManagementProps {
@@ -11,7 +14,9 @@ interface PowerManagementProps {
 class PowerManagement extends React.Component<PowerManagementProps, {}> {
     public render() {
         return <div className="system">
-            This is the power management system. TODO: implement this!
+            <SystemList text={this.props.text} />
+            <CardSelection text={this.props.text} />
+            <CardHand text={this.props.text} />
         </div>;
     }
 }
