@@ -13,27 +13,31 @@ UCrewManager *crewManager;
 
 void PollClient()
 {
-	auto damageTickInterval = CLOCKS_PER_SEC / 4;
-	std::clock_t nextDamageTick = std::clock() + damageTickInterval;
+	clock_t nextSystemTick = clock();
 
-	float fSystemTickInterval = 1.f / 20.f;
-	auto systemTickInterval = CLOCKS_PER_SEC / 20;
-	std::clock_t nextSystemTick = std::clock() + systemTickInterval;
+	std::map<UShipSystem::ESystem, clock_t> systemTicks; // all ship systems, regardless of whether they actually tick or not
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::Helm, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::Warp, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::Weapons, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::Sensors, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::PowerManagement, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::DamageControl, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::ViewScreen, nextSystemTick));
+	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::Communications, nextSystemTick));
 
 	while (formOpen)
 	{
 		crewManager->Poll();
-
-		if (std::clock() >= nextDamageTick)
+		
+		for (auto systemTick = systemTicks.begin(); systemTick != systemTicks.end(); systemTick++)
 		{
-			crewManager->GetSystem(UShipSystem::ESystem::DamageControl)->TickComponent(fSystemTickInterval, ELevelTick::Fake, nullptr);
-			nextDamageTick += damageTickInterval;
-		}
+			auto system = crewManager->GetSystem(systemTick->first);
+			if (!system->IsComponentTickEnabled() || systemTick->second > clock())
+				continue;
 
-		if (std::clock() >= nextSystemTick)
-		{
-			crewManager->GetSystem(UShipSystem::ESystem::Helm)->TickComponent(fSystemTickInterval, ELevelTick::Fake, nullptr);
-			nextSystemTick += systemTickInterval;
+			auto interval = system->GetComponentTickInterval();
+			system->TickComponent(interval, ELevelTick::Fake, nullptr);
+			systemTick->second += (std::clock_t)(interval * CLOCKS_PER_SEC);
 		}
 	}
 	delete crewManager;

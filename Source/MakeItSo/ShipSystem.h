@@ -6,18 +6,24 @@
 #else
 enum ELevelTick { Fake };
 class FActorComponentTickFunction { };
-class TickThing
+class FTickFunction
 {
 public:
 	bool bCanEverTick;
 	float TickInterval;
-	void SetTickFunctionEnable(bool val) {}
+	void SetTickFunctionEnable(bool val) { ticking = val; }
+	bool IsTickFunctionEnabled() { return ticking; }
+private:
+	bool ticking = true;
 };
+
 class UActorComponent {
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {}
+	bool IsComponentTickEnabled() { return PrimaryComponentTick.IsTickFunctionEnabled(); }
+	float GetComponentTickInterval() { return PrimaryComponentTick.TickInterval; }
 protected:
-	TickThing PrimaryComponentTick;
+	FTickFunction PrimaryComponentTick;
 	virtual void BeginPlay() {}
 	void SetIsReplicated(bool val) {}
 };
@@ -33,7 +39,7 @@ class MAKEITSO_API UShipSystem : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:	
+public:
 	UShipSystem();
 
 	enum ESystem
