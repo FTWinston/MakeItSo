@@ -777,6 +777,21 @@ void UCrewManager::SendAll(const char *message, ...)
 }
 #ifdef WEB_SERVER_TEST
 #pragma managed
+
+std::string ToNarrowString(FString wide)
+{
+	std::string narrow;
+
+	std::transform(wide.begin(), wide.end(),
+		std::back_insert_iterator<std::string>(narrow),
+		[](wchar_t wchar)
+	{
+		return static_cast<char>(wchar > 127 ? '?' : wchar);
+	});
+
+	return narrow;
+}
+
 #endif
 
 void UCrewManager::SendAll(FString message)
@@ -784,7 +799,8 @@ void UCrewManager::SendAll(FString message)
 #ifndef WEB_SERVER_TEST
 	auto nMessage = TCHAR_TO_ANSI(*message);
 #else
-	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
+	auto nStr = ToNarrowString(message);
+	auto nMessage = nStr.c_str();
 #endif
 
 	SendAllFixed(nMessage);
@@ -831,9 +847,10 @@ void UCrewManager::SendSystem(UShipSystem::ESystem system, FString message)
 #ifndef WEB_SERVER_TEST
 	auto nMessage = TCHAR_TO_ANSI(*message);
 #else
-	auto nMessage = std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(message).c_str();
+	auto nStr = ToNarrowString(message);
+	auto nMessage = nStr.c_str();
 #endif
-
+	
 	SendSystemFixed(system, nMessage);
 }
 
