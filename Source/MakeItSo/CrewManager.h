@@ -121,7 +121,6 @@ public:
 	static UCrewManager *Instance;
 
 private:
-	void InitSystems();
 	void ResetData();
 	void PauseGame(bool state);
 	static FString GetLocalIP();

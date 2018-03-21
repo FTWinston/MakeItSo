@@ -158,17 +158,6 @@ FString UCrewManager::Init(AShipPlayerController *controller)
 	return url;
 }
 
-void UCrewManager::InitSystems()
-{
-	/*
-	for (auto system : GetShipPawn()->systems)
-	{
-		auto s = PAIRVALUE(system);
-		s->ClientInit(this);
-	}
-	*/
-}
-
 void UCrewManager::ResetData()
 {
 	for (auto system : GetShipPawn()->systems)
@@ -595,16 +584,10 @@ void UCrewManager::StartGame(websocket_message *msg)
 	else
 		return;
 
-	AllocateViewSystems();
-
 	// no need to send corresponding setup-, as game+ clears the setup player on clients
 	connectionInSetup = nullptr;
 
-	InitSystems();
-
-	crewState = ECrewState::Active;
-
-	SendAllFixed("game+");
+	PauseGame(false); // unpausing the game (though it isn't paused now) does all the remaining setup we need
 }
 
 void UCrewManager::AllocateViewSystems()
