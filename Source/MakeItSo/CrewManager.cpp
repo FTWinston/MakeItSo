@@ -812,7 +812,7 @@ void UCrewManager::SendSystem(UShipSystem::ESystem system, const char *message, 
 	va_start(ap, message);
 	if ((mg_avprintf(&buf, sizeof(mem), message, ap)) > 0)
 	{
-		SendAllFixed(buf);
+		SendSystemFixed(system, buf);
 	}
 	va_end(ap);
 
