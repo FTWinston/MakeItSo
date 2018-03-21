@@ -1303,7 +1303,7 @@ var SensorView = (function (_super) {
     };
     SensorView.prototype.autoRotate = function () {
         var _this = this;
-        this.rotate(0, 0.005);
+        this.rotate(0, 0.0025);
         this.autoRotation = setTimeout(function () { return _this.autoRotate(); }, 30);
     };
     SensorView.prototype.setupTouch = function (area) {

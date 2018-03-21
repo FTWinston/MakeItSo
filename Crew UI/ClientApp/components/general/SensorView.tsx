@@ -234,7 +234,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
     }
 
     private autoRotate() {
-        this.rotate(0, 0.005);
+        this.rotate(0, 0.0025);
         this.autoRotation = setTimeout(() => this.autoRotate(), 30);
     }
 
