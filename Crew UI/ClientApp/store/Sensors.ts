@@ -60,7 +60,7 @@ const unloadedState: SensorState = {
 };
 
 export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Action) => {
-    let action = rawAction as KnownAction;
+    const action = rawAction as KnownAction;
     switch (action.type) {
         case 'ADD_TARGET': {
             return {
@@ -69,11 +69,10 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
             };
         }
         case 'MOVE_TARGET': {
-            let moveAct = action;
             let targets = state.targets.map((target, index) => {
-                if (target.id === moveAct.targetID) {
+                if (target.id === action.targetID) {
                     return Object.assign({}, target, {
-                        position: moveAct.position,
+                        position: action.position,
                     });
                 }
                 return target;
@@ -85,8 +84,7 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
             };
         }
         case 'REMOVE_TARGET': {
-            let remAct = action;
-            let targets = state.targets.filter(target => target.id !== remAct.targetID);
+            let targets = state.targets.filter(target => target.id !== action.targetID);
 
             return {
                 ...state,

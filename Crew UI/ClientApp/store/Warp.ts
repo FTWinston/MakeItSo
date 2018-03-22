@@ -146,7 +146,7 @@ const unloadedState: WarpState = {
 };
 
 export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action) => {
-    let action = rawAction as KnownAction;
+    const action = rawAction as KnownAction;
     switch (action.type) {
         case 'CLEAR_PATHS': {
             let retVal = {
@@ -170,14 +170,13 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             };
         }
         case 'EXTEND_PATH': {
-            let extAct = action;
             let paths = state.paths.map((path, index) => {
-                if (path.id === extAct.id) {
+                if (path.id === action.id) {
                     return {
                         id: path.id,
                         status: path.status,
                         power: path.power,
-                        points: [...path.points, ...extAct.points],
+                        points: [...path.points, ...action.points],
                     };
                 }
                 return path;
@@ -189,11 +188,10 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             };
         }
         case 'SET_PATH_STATUS': {
-            let setAct = action;
             let paths = state.paths.map((path, index) => {
-                if (path.id === setAct.id) {
+                if (path.id === action.id) {
                     return Object.assign({}, path, {
-                        status: setAct.status,
+                        status: action.status,
                     });
                 }
                 return path;
@@ -205,8 +203,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             };
         }
         case 'REMOVE_PATH': {
-            let remAct = action;
-            let paths = state.paths.filter(paths => paths.id !== remAct.id);
+            let paths = state.paths.filter(paths => paths.id !== action.id);
 
             let retVal = {
                 ...state,
@@ -230,8 +227,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             return retVal;
         }
         case 'START_JUMP': {
-            let jumpAct = action;
-            let paths = state.paths.filter(p => p.id === jumpAct.pathID);
+            let paths = state.paths.filter(p => p.id === action.pathID);
             let path = paths.length > 0 ? paths[0] : undefined;
 
             return {
@@ -241,10 +237,9 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             };
         }
         case 'SELECT_PATH': {
-            let selAct = action;
             let path: JumpPath | undefined;
-            if (selAct.pathID !== undefined) {
-                let paths = state.paths.filter(p => p.id === selAct.pathID);
+            if (action.pathID !== undefined) {
+                let paths = state.paths.filter(p => p.id === action.pathID);
                 let path = paths.length > 0 ? paths[0] : undefined;
             }
 

@@ -81,7 +81,7 @@ const unloadedState: UserState = {
 };
 
 export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action) => {
-    let action = rawAction as KnownAction;
+    const action = rawAction as KnownAction;
     switch (action.type) {
         case 'USER_NAME':
             return {

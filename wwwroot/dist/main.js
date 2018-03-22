@@ -742,23 +742,24 @@ var reducer = function (state, rawAction) {
                     }]) });
         }
         case 'EXTEND_PATH': {
-            var extAct_1 = action;
             var paths = state.paths.map(function (path, index) {
-                if (path.id === extAct_1.id) {
-                    return Object.assign({}, path, {
-                        points: path.points.concat([extAct_1.points]),
-                    });
+                if (path.id === action.id) {
+                    return {
+                        id: path.id,
+                        status: path.status,
+                        power: path.power,
+                        points: path.points.concat(action.points),
+                    };
                 }
                 return path;
             });
-            return __assign({}, state, { targets: paths });
+            return __assign({}, state, { paths: paths });
         }
         case 'SET_PATH_STATUS': {
-            var setAct_1 = action;
             var paths = state.paths.map(function (path, index) {
-                if (path.id === setAct_1.id) {
+                if (path.id === action.id) {
                     return Object.assign({}, path, {
-                        status: setAct_1.status,
+                        status: action.status,
                     });
                 }
                 return path;
@@ -766,8 +767,7 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { targets: paths });
         }
         case 'REMOVE_PATH': {
-            var remAct_1 = action;
-            var paths = state.paths.filter(function (paths) { return paths.id !== remAct_1.id; });
+            var paths = state.paths.filter(function (paths) { return paths.id !== action.id; });
             var retVal = __assign({}, state, { paths: paths });
             if (retVal.activePath !== undefined && retVal.activePath.id === action.id) {
                 delete retVal.activePath;
@@ -781,16 +781,14 @@ var reducer = function (state, rawAction) {
             return retVal;
         }
         case 'START_JUMP': {
-            var jumpAct_1 = action;
-            var paths = state.paths.filter(function (p) { return p.id === jumpAct_1.pathID; });
+            var paths = state.paths.filter(function (p) { return p.id === action.pathID; });
             var path = paths.length > 0 ? paths[0] : undefined;
             return __assign({}, state, { activePath: path, jumpEndTime: action.endTime });
         }
         case 'SELECT_PATH': {
-            var selAct_1 = action;
             var path = void 0;
-            if (selAct_1.pathID !== undefined) {
-                var paths = state.paths.filter(function (p) { return p.id === selAct_1.pathID; });
+            if (action.pathID !== undefined) {
+                var paths = state.paths.filter(function (p) { return p.id === action.pathID; });
                 var path_1 = paths.length > 0 ? paths[0] : undefined;
             }
             return __assign({}, state, { activePath: path });
@@ -2487,11 +2485,10 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { targets: state.targets.concat([action.target]) });
         }
         case 'MOVE_TARGET': {
-            var moveAct_1 = action;
             var targets = state.targets.map(function (target, index) {
-                if (target.id === moveAct_1.targetID) {
+                if (target.id === action.targetID) {
                     return Object.assign({}, target, {
-                        position: moveAct_1.position,
+                        position: action.position,
                     });
                 }
                 return target;
@@ -2499,8 +2496,7 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { targets: targets });
         }
         case 'REMOVE_TARGET': {
-            var remAct_1 = action;
-            var targets = state.targets.filter(function (target) { return target.id !== remAct_1.targetID; });
+            var targets = state.targets.filter(function (target) { return target.id !== action.targetID; });
             return __assign({}, state, { targets: targets });
         }
         default:
