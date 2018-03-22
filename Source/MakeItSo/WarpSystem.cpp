@@ -80,9 +80,10 @@ void UWarpSystem::SendAllData_Implementation()
 {
 	SendSystemFixed("warp_clear");
 
-	for (auto path : calculatedJumps)
+	for (auto pathInfo : calculatedJumps)
 	{
-		SendPath(PAIRKEY(path), PAIRVALUE(path));
+		auto path = PAIRVALUE(pathInfo);
+		SendPath(PAIRKEY(pathInfo), 1, path->JumpPower, path->PositionSteps);
 	}
 }
 
@@ -129,7 +130,8 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	if (calculationStepsRemaining <= 0)
 		return;
 
-	FVector nextPoint = CalculateNextPosition(LASTITEM(calculationStepPositions), calculationCurrentVelocity, DeltaTime);
+	float jumpStepTimeInterval = 0.2f;
+	FVector nextPoint = CalculateNextPosition(LASTITEM(calculationStepPositions), calculationCurrentVelocity, jumpStepTimeInterval);
 
 #ifndef WEB_SERVER_TEST
 	calculationStepPositions.Add(nextPoint);
@@ -163,7 +165,7 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 		if (ISCLIENT())
 		{// account for replication not affecting local client
-			SendPath(nextJumpID - 1, jump);
+			SendPath(nextJumpID - 1, 1, jump->JumpPower, jump->PositionSteps);
 		}
 
 		CleanupAfterCalculation();
@@ -207,6 +209,12 @@ void UWarpSystem::OnReplicated_CalculationStepPositions(TArray<FVector> beforeCh
 
 void UWarpSystem::CalculationStepsAdded(int32 prevSize)
 {
+	if (prevSize == 0)
+	{
+		SendPath(nextJumpID, 0, calculationStartPower, calculationStepPositions);
+		prevSize = 1;
+	}
+
 	int32 newSize = SIZENUM(calculationStepPositions);
 	for (auto i = prevSize; i < newSize; i++) {
 		AddCalculationStep(calculationStepPositions[i]);
@@ -225,12 +233,15 @@ void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeCha
 	}
 
 	// send any paths that have been newly added
-	for (auto path : calculatedJumps)
+	for (auto pathInfo : calculatedJumps)
 	{
-		int32 id = PAIRKEY(path);
+		int32 id = PAIRKEY(pathInfo);
 
 		if (!MAPCONTAINS(beforeChange, id))
-			SendPath(id, PAIRVALUE(path));
+		{
+			auto path = PAIRVALUE(pathInfo);
+			SendPath(id, 1, path->JumpPower, path->PositionSteps);
+		}
 	}
 }
 
@@ -248,20 +259,24 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 	SendSystem(output);
 }
 
-void UWarpSystem::SendPath(int32 pathID, UWarpJump *path)
+void UWarpSystem::SendPath(int32 pathID, int pathState, float jumpPower, TArray<FVector> positionSteps)
 {
 	FString output = TEXT("warp_add_path ");
 #ifndef WEB_SERVER_TEST
 	output.AppendInt(pathID);
-	output.Append(TEXT(" 1 ")); // indicate path is "safe"
-	output.AppendInt((int32)path->JumpPower);
+	output.Append(TEXT(" "));
+	output.AppendInt(pathState);
+	output.Append(TEXT(" "));
+	output.AppendInt((int32)jumpPower);
 #else
 	output += std::to_wstring(pathID);
-	output += TEXT(" 1 "); // indicate path is "safe"
-	output += std::to_wstring((int32)path->JumpPower);
+	output += TEXT(" ");
+	output += std::to_wstring(pathState);
+	output += TEXT(" ");
+	output += std::to_wstring((int32)jumpPower);
 #endif
 
-	for (auto point : path->PositionSteps)
+	for (auto point : positionSteps)
 		AddPointToOutput(output, point);
 
 	SendSystem(output);

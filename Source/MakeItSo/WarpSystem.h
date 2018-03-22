@@ -49,7 +49,7 @@ protected:
 #endif
 
 private:
-	void SendPath(int32 pathID, UWarpJump *path);
+	void SendPath(int32 pathID, int pathState, float jumpPower, TArray<FVector> positionSteps);
 
 	UFUNCTION(Client, Reliable)
 	void SendPathDeletion(int32 pathID, bool displayInvalid);
