@@ -24,7 +24,7 @@ void PollClient()
 	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::DamageControl, nextSystemTick));
 	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::ViewScreen, nextSystemTick));
 	systemTicks.insert(std::pair<UShipSystem::ESystem, clock_t>(UShipSystem::ESystem::Communications, nextSystemTick));
-
+	
 	while (formOpen)
 	{
 		crewManager->Poll();
@@ -32,12 +32,13 @@ void PollClient()
 		for (auto systemTick = systemTicks.begin(); systemTick != systemTicks.end(); systemTick++)
 		{
 			auto system = crewManager->GetSystem(systemTick->first);
-			if (!system->IsComponentTickEnabled() || systemTick->second > clock())
+			auto now = clock();
+			if (!system->IsComponentTickEnabled() || systemTick->second > now)
 				continue;
 
 			auto interval = system->GetComponentTickInterval();
 			system->TickComponent(interval, ELevelTick::Fake, nullptr);
-			systemTick->second += (std::clock_t)(interval * CLOCKS_PER_SEC);
+			systemTick->second = now + (std::clock_t)(interval * CLOCKS_PER_SEC);
 		}
 	}
 	delete crewManager;
