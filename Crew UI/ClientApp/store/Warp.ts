@@ -173,16 +173,19 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             let extAct = action;
             let paths = state.paths.map((path, index) => {
                 if (path.id === extAct.id) {
-                    return Object.assign({}, path, {
-                        points: [...path.points, extAct.points],
-                    });
+                    return {
+                        id: path.id,
+                        status: path.status,
+                        power: path.power,
+                        points: [...path.points, ...extAct.points],
+                    };
                 }
                 return path;
             });
-
+            
             return {
                 ...state,
-                targets: paths,
+                paths: paths,
             };
         }
         case 'SET_PATH_STATUS': {
