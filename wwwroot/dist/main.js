@@ -734,12 +734,25 @@ var reducer = function (state, rawAction) {
             return retVal;
         }
         case 'ADD_PATH': {
-            return __assign({}, state, { paths: state.paths.concat([{
-                        id: action.id,
-                        status: action.status,
-                        points: action.points,
-                        power: action.power,
-                    }]) });
+            var addingPath_1 = {
+                id: action.id,
+                status: action.status,
+                power: action.power,
+                points: action.points,
+            };
+            var pathIsNew_1 = true;
+            // if path ID already exists, overwrite. Otherwise, add.
+            var paths = state.paths.map(function (path, index) {
+                if (path.id === action.id) {
+                    pathIsNew_1 = false;
+                    return addingPath_1;
+                }
+                return path;
+            });
+            if (pathIsNew_1) {
+                paths.push(addingPath_1);
+            }
+            return __assign({}, state, { paths: paths });
         }
         case 'EXTEND_PATH': {
             var paths = state.paths.map(function (path, index) {

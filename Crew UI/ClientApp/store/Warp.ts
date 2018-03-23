@@ -159,14 +159,30 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             return retVal;
         }
         case 'ADD_PATH': {
+            let addingPath = {
+                id: action.id,
+                status: action.status,
+                power: action.power,
+                points: action.points,
+            };
+            let pathIsNew = true;
+
+            // if path ID already exists, overwrite. Otherwise, add.
+            let paths = state.paths.map((path, index) => {
+                if (path.id === action.id) {
+                    pathIsNew = false;
+                    return addingPath;
+                }
+                return path;
+            });
+
+            if (pathIsNew) {
+                paths.push(addingPath);
+            }
+
             return {
                 ...state,
-                paths: [...state.paths, {
-                    id: action.id,
-                    status: action.status,
-                    points: action.points,
-                    power: action.power,
-                }],
+                paths: paths,
             };
         }
         case 'EXTEND_PATH': {
