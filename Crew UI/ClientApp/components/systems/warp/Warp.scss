@@ -26,18 +26,6 @@
     grid-area: controls;
 }
 
-.warp__pathList {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: stretch;
-}
-
-.warp__pathList__scroller {
-    flex-grow: 1;
-    overflow-y: scroll;
-}
-
 .warpPathListItem__number, .coordinate__number, .countdown__number {
     font-weight: bold;
     color: $colorQuandry;

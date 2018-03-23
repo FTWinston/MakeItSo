@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Field, PushButton, Icon, ButtonColor } from '~/components/general';
+import { Field, Panel, PushButton, Icon, ButtonColor } from '~/components/general';
 import { JumpPath, WarpScreenStatus } from '~/store/Warp';
 import { TextLocalisation } from '~/functionality';
 import { PathListItem } from './PathListItem';
@@ -16,11 +16,7 @@ export class PathList extends React.PureComponent<PathListProps, {}> {
     render() {
         let words = this.props.text.systems.warp;
 
-        return <div className="warp__pathList">
-            <ul className="warp__pathList__scroller">
-                {this.props.paths.map(path => <PathListItem key={path.id} path={path} text={this.props.text} />)}
-            </ul>
-
+        let footerButtons = (
             <Field centered={true} displayAsRow={true}>
                 <PushButton
                     disabled={this.props.selectedPath === undefined}
@@ -35,6 +31,10 @@ export class PathList extends React.PureComponent<PathListProps, {}> {
                     clicked={this.props.selectedPath === undefined ? this.props.newSelected : undefined}
                 />
             </Field>
-        </div>;
+        );
+
+        return <Panel className="warp__pathList" footer={footerButtons} contentIsList={true}>
+            {this.props.paths.map(path => <PathListItem key={path.id} path={path} text={this.props.text} />)}
+        </Panel>;
     }
 }

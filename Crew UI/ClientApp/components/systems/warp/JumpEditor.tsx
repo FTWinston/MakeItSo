@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Field, NumericTextbox, PushButton, Icon, ButtonColor } from '~/components/general';
+import { Field, NumericTextbox, Panel, PushButton, Icon, ButtonColor } from '~/components/general';
 import { JumpPath } from '~/store/Warp';
 import { TextLocalisation, Vector3 } from '~/functionality';
 
@@ -36,8 +36,24 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
 
     render() {
         let words = this.props.text.systems.warp;
+        
+        let footerButtons = (
+            <Field centered={true} displayAsRow={true}>
+                <PushButton
+                    color={ButtonColor.Quandry}
+                    text={this.props.text.common.cancel}
+                    clicked={() => this.props.cancel()}
+                />
+                <PushButton
+                    color={ButtonColor.Quaternary}
+                    text={words.calculate}
+                    disabled={this.shouldBlockCalculation()}
+                    clicked={() => this.startCalculation()}
+                />
+            </Field>
+        );
 
-        return <div className="warp__jumpEditor">
+        return <Panel className="warp__jumpEditor" footer={footerButtons}>
             <Field labelText={words.startPos}>
                 <NumericTextbox
                     color={ButtonColor.Primary}
@@ -86,20 +102,7 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
                 />
                 <div className="description">{words.powerDescription}</div>
             </Field>
-            <Field centered={true} displayAsRow={true}>
-                <PushButton
-                    color={ButtonColor.Quandry}
-                    text={this.props.text.common.cancel}
-                    clicked={() => this.props.cancel()}
-                />
-                <PushButton
-                    color={ButtonColor.Quaternary}
-                    text={words.calculate}
-                    disabled={this.shouldBlockCalculation()}
-                    clicked={() => this.startCalculation()}
-                />
-            </Field>
-        </div>;
+        </Panel>;
     }
 
     private shouldBlockCalculation() {

@@ -24,12 +24,12 @@ class Warp extends React.PureComponent<WarpProps, {}> {
         let paths = this.props.paths.map(p => new SensorPath(p.id, p.points));
 
         return <div className="system warp">
-            {this.renderControls()}
+            {this.renderControlPanel()}
             <SensorView className="warp__sensorMap" targets={[...this.props.sensorTargets, ...paths]} />
         </div>;
     }
 
-    private renderControls() {
+    private renderControlPanel() {
         switch (this.props.status) {
             case WarpScreenStatus.Viewing:
                 return <PathList text={this.props.text} paths={this.props.paths} selectedPath={this.props.activePath} pathSelected={p => this.pathSelected(p)} newSelected={() => this.showEdit()} />;

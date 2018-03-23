@@ -350,6 +350,35 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: justify; }
+
+.panel__header {
+  flex-shrink: 0;
+  overflow: hidden; }
+
+.panel__content {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch; }
+
+.panel__content--forceScroll {
+  overflow-y: scroll; }
+
+.panel__footer {
+  overflow-y: auto; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 .screen {
   width: calc(100vw - 1rem);
   height: calc(100vh - 1rem);
@@ -614,16 +643,6 @@ $lightBackground: #999;
 
 .warp__pathList, .warp__jumpEditor, .warp__jumpCountdown {
   grid-area: controls; }
-
-.warp__pathList {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: stretch; }
-
-.warp__pathList__scroller {
-  flex-grow: 1;
-  overflow-y: scroll; }
 
 .warpPathListItem__number, .coordinate__number, .countdown__number {
   font-weight: bold;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Icon } from '~/components/general';
+import { Icon, Panel } from '~/components/general';
 import { JumpPath } from '~/store/Warp';
 import { TextLocalisation } from '~/functionality';
 
@@ -31,9 +31,9 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, JumpC
     render() {
         let words = this.props.text.systems.warp;
 
-        return <div className="warp__jumpCountdown">
+        return <Panel className="warp__jumpCountdown">
             {words.eta} <span className="countdown__number">{this.state.secondsLeft}</span> {words.seconds}
-        </div>;
+        </Panel>;
     }
     private updateTimer() {
         this.setState({

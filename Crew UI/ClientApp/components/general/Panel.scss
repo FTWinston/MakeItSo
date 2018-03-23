@@ -1,0 +1,31 @@
+@import 'mixins';
+
+.panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: justify;
+}
+
+.panel__header {
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.panel__content {
+    flex-grow: 1;
+    overflow-y: auto;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+}
+
+.panel__content--forceScroll {
+    overflow-y: scroll;
+}
+
+.panel__footer {
+    overflow-y: auto;
+}
