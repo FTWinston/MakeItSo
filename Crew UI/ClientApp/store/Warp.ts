@@ -180,9 +180,14 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                 paths.push(addingPath);
             }
 
+            let status = state.status === WarpScreenStatus.Calculating
+                ? WarpScreenStatus.Viewing
+                : state.status;
+
             return {
                 ...state,
                 paths: paths,
+                status: status,
             };
         }
         case 'EXTEND_PATH': {

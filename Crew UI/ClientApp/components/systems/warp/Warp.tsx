@@ -32,9 +32,19 @@ class Warp extends React.PureComponent<WarpProps, {}> {
     private renderControlPanel() {
         switch (this.props.status) {
             case WarpScreenStatus.Viewing:
-                return <PathList text={this.props.text} paths={this.props.paths} selectedPath={this.props.activePath} pathSelected={p => this.pathSelected(p)} newSelected={() => this.showEdit()} />;
+                return <PathList
+                    text={this.props.text}
+                    paths={this.props.paths}
+                    selectedPath={this.props.activePath}
+                    pathSelected={p => this.pathSelected(p)}
+                    newSelected={() => this.showEdit()}
+                />;
             case WarpScreenStatus.Jumping:
-                return <JumpCountdown text={this.props.text} path={this.props.activePath} endTime={this.props.jumpEndTime} />;
+                return <JumpCountdown
+                    text={this.props.text}
+                    path={this.props.activePath}
+                    endTime={this.props.jumpEndTime}
+                />;
             default:
                 return <JumpEditor
                     text={this.props.text}
@@ -56,6 +66,10 @@ class Warp extends React.PureComponent<WarpProps, {}> {
     }
 
     private cancelEdit() {
+        if (this.props.status === WarpScreenStatus.Calculating) {
+            connection.send('warp_cancel_plot');
+        }
+
         this.props.selectPath(undefined);
         this.props.setScreenStatus(WarpScreenStatus.Viewing);
     }

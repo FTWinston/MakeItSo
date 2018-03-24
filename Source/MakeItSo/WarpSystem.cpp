@@ -72,6 +72,12 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 		PerformWarpJump(jumpID);
 		return true;
 	}
+	else if (MATCHES(msg, "warp_plot_cancel"))
+	{
+		CleanupAfterCalculation();
+		SendPathDeletion(nextJumpID, false);
+		return true;
+	}
 
 	return false;
 }

@@ -755,7 +755,10 @@ var reducer = function (state, rawAction) {
             if (pathIsNew_1) {
                 paths.push(addingPath_1);
             }
-            return __assign({}, state, { paths: paths });
+            var status_1 = state.status === 2 /* Calculating */
+                ? 0 /* Viewing */
+                : state.status;
+            return __assign({}, state, { paths: paths, status: status_1 });
         }
         case 'EXTEND_PATH': {
             var paths = state.paths.map(function (path, index) {
@@ -7552,6 +7555,9 @@ var Warp = (function (_super) {
         this.props.setScreenStatus(1 /* Plotting */);
     };
     Warp.prototype.cancelEdit = function () {
+        if (this.props.status === 2 /* Calculating */) {
+            __WEBPACK_IMPORTED_MODULE_9__Client__["connection"].send('warp_cancel_plot');
+        }
         this.props.selectPath(undefined);
         this.props.setScreenStatus(0 /* Viewing */);
     };
