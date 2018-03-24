@@ -21,15 +21,19 @@ export class SensorPath extends SensorTarget {
 
     protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D) {
         ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = display.onePixel * 3;
 
         ctx.beginPath();
 
         let first = true;
+        let firstScreenPos = new Vector2(0, 0);
+        let lastScreenPos = firstScreenPos;
         for (let point of this.points) {
             let screenPos = display.transform(point).position;
+            lastScreenPos = screenPos;
 
             if (first) {
+                firstScreenPos = screenPos;
                 ctx.moveTo(screenPos.x, screenPos.y);
                 first = false;
             } else {
@@ -41,7 +45,31 @@ export class SensorPath extends SensorTarget {
 
         ctx.stroke();
 
-        // TODO: indicators to show which is start and which is end
+        this.drawStartIndicator(ctx, display, firstScreenPos);
+        this.drawEndIndicator(ctx, display, lastScreenPos);
+    }
+
+    private drawStartIndicator(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2) {
+        ctx.strokeStyle = '#0cf';
+        ctx.lineWidth = display.onePixel;
+        let radius = display.onePixel * 10;
+        ctx.beginPath();
+        ctx.arc(screenPos.x, screenPos.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+    }
+
+    private drawEndIndicator(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2) {
+        ctx.strokeStyle = '#fc0';
+        ctx.lineWidth = display.onePixel;
+        let crossSize = display.onePixel * 10;
+        ctx.beginPath();
+
+        ctx.moveTo(screenPos.x - crossSize, screenPos.y - crossSize);
+        ctx.lineTo(screenPos.x + crossSize, screenPos.y + crossSize);
+        ctx.moveTo(screenPos.x + crossSize, screenPos.y - crossSize);
+        ctx.lineTo(screenPos.x - crossSize, screenPos.y + crossSize);
+        
+        ctx.stroke();
     }
 
     protected drawIndicator(ctx: CanvasRenderingContext2D, targetPos: Vector2, display: CanvasBounds3D, floorPos: Vector2) {

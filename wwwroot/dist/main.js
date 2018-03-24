@@ -180,9 +180,9 @@ renderApp();
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_2__Hotkeys__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Localisation__ = __webpack_require__(88);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_3__Localisation__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__math__ = __webpack_require__(12);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["b"]; });
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["c"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__math__ = __webpack_require__(9);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["c"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["b"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sensors__ = __webpack_require__(101);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_5__sensors__["b"]; });
@@ -448,8 +448,24 @@ var Button = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Matrix__ = __webpack_require__(93);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_0__Matrix__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Vector2__ = __webpack_require__(94);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Vector2__["a"]; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Vector3__ = __webpack_require__(26);
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__Vector3__["a"]; });
+
+
+
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SensorTarget; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_math__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_math__ = __webpack_require__(9);
 
 var SensorTarget = (function () {
     function SensorTarget(id, position) {
@@ -508,7 +524,7 @@ var SensorTarget = (function () {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -548,7 +564,7 @@ var FieldGroup = (function (_super) {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -640,22 +656,6 @@ var mapStateToProps = function (state) {
 };
 // Wire up the React component to the Redux store
 /* harmony default export */ __webpack_exports__["a"] = (__webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1_react_redux__["connect"])(mapStateToProps, {})(Helm));
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Matrix__ = __webpack_require__(93);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__Matrix__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Vector2__ = __webpack_require__(94);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_1__Vector2__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Vector3__ = __webpack_require__(26);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__Vector3__["a"]; });
-
-
-
 
 
 /***/ }),
@@ -1724,7 +1724,7 @@ var TouchArea = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(11);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1961,7 +1961,7 @@ var FeedbackGroup = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HeadingReadout; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Helm__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Helm__ = __webpack_require__(12);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2007,7 +2007,7 @@ var HeadingReadout = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SpeedReadout; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Helm__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Helm__ = __webpack_require__(12);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2045,7 +2045,7 @@ var SpeedReadout = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Cube; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_math__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_math__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CubeFace__ = __webpack_require__(90);
 
 
@@ -2198,7 +2198,7 @@ var Vector3 = (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Celestial; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(10);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__sphere_shade_png__ = __webpack_require__(122);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__sphere_shade_png___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1__sphere_shade_png__);
 var __extends = (this && this.__extends) || (function () {
@@ -2245,7 +2245,7 @@ var Celestial = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RelatableTarget; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(10);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6689,7 +6689,7 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__HeadingReadout__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SpeedReadout__ = __webpack_require__(24);
@@ -6760,7 +6760,7 @@ var ButtonHelm = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_general__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FieldGroup__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FieldGroup__ = __webpack_require__(11);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__HeadingReadout__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SpeedReadout__ = __webpack_require__(24);
 var __extends = (this && this.__extends) || (function () {
@@ -6915,7 +6915,7 @@ var TouchHelm = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Helm__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Helm__ = __webpack_require__(12);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_0__Helm__["a"]; });
 
 
@@ -8570,7 +8570,8 @@ var Planet = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SensorPath; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality_math__ = __webpack_require__(9);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8581,6 +8582,7 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+
 
 var SensorPath = (function (_super) {
     __extends(SensorPath, _super);
@@ -8601,13 +8603,17 @@ var SensorPath = (function (_super) {
     SensorPath.prototype.getShadowRadius = function (display) { return 0; };
     SensorPath.prototype.drawTarget = function (ctx, screenPos, display) {
         ctx.strokeStyle = '#fff';
-        ctx.lineWidth = 3;
+        ctx.lineWidth = display.onePixel * 3;
         ctx.beginPath();
         var first = true;
+        var firstScreenPos = new __WEBPACK_IMPORTED_MODULE_1__functionality_math__["b" /* Vector2 */](0, 0);
+        var lastScreenPos = firstScreenPos;
         for (var _i = 0, _a = this.points; _i < _a.length; _i++) {
             var point = _a[_i];
             var screenPos_1 = display.transform(point).position;
+            lastScreenPos = screenPos_1;
             if (first) {
+                firstScreenPos = screenPos_1;
                 ctx.moveTo(screenPos_1.x, screenPos_1.y);
                 first = false;
             }
@@ -8617,7 +8623,27 @@ var SensorPath = (function (_super) {
             // TODO: should curve between these points
         }
         ctx.stroke();
-        // TODO: indicators to show which is start and which is end
+        this.drawStartIndicator(ctx, display, firstScreenPos);
+        this.drawEndIndicator(ctx, display, lastScreenPos);
+    };
+    SensorPath.prototype.drawStartIndicator = function (ctx, display, screenPos) {
+        ctx.strokeStyle = '#0cf';
+        ctx.lineWidth = display.onePixel;
+        var radius = display.onePixel * 10;
+        ctx.beginPath();
+        ctx.arc(screenPos.x, screenPos.y, radius, 0, Math.PI * 2);
+        ctx.stroke();
+    };
+    SensorPath.prototype.drawEndIndicator = function (ctx, display, screenPos) {
+        ctx.strokeStyle = '#fc0';
+        ctx.lineWidth = display.onePixel;
+        var crossSize = display.onePixel * 10;
+        ctx.beginPath();
+        ctx.moveTo(screenPos.x - crossSize, screenPos.y - crossSize);
+        ctx.lineTo(screenPos.x + crossSize, screenPos.y + crossSize);
+        ctx.moveTo(screenPos.x + crossSize, screenPos.y - crossSize);
+        ctx.lineTo(screenPos.x - crossSize, screenPos.y + crossSize);
+        ctx.stroke();
     };
     SensorPath.prototype.drawIndicator = function (ctx, targetPos, display, floorPos) {
         _super.prototype.drawIndicator.call(this, ctx, targetPos, display, floorPos);
@@ -8756,7 +8782,7 @@ var Station = (function (_super) {
 
 "use strict";
 /* harmony export (immutable) */ __webpack_exports__["a"] = parseSensorTarget;
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__SensorTarget__ = __webpack_require__(10);
 /* unused harmony reexport SensorTarget */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__SensorPath__ = __webpack_require__(97);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Star__ = __webpack_require__(99);
