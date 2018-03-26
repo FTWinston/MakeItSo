@@ -1,10 +1,16 @@
 import { CanvasBounds, CanvasBounds3D } from '~/functionality';
 import { SensorTarget } from './SensorTarget';
 import { Vector2, Vector3 } from '~/functionality/math';
-import { JumpPathStatus } from '~/store/Warp';
 
-export class SensorPath extends SensorTarget {
-    constructor(id: number, public status: JumpPathStatus, public points: Vector3[]) {
+export const enum JumpPathStatus { // matches enum in WarpSystem.h
+    Calculating = 1,
+    Invalid = 2,
+    Plotted = 3,
+    InRange = 4,
+}
+
+export class JumpPath extends SensorTarget {
+    constructor(id: number, public power: number, public status: JumpPathStatus, public points: Vector3[]) {
         super(id, points[0]);
     }
 

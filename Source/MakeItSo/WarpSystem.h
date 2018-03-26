@@ -15,7 +15,7 @@ class MAKEITSO_API UWarpSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
-	enum JumpPathStatus // matches enum in Warp.ts
+	enum JumpPathStatus // matches enum in JumpPath.ts
 	{
 		Calculating = 1,
 		Invalid = 2,

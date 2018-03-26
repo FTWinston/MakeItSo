@@ -1,28 +1,15 @@
 import { Action, Reducer, ActionCreator } from 'redux';
 import { Vector3 } from '~/functionality';
+import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
-
-export const enum JumpPathStatus { // matches enum in WarpSystem.h
-    Calculating = 1,
-    Invalid = 2,
-    Plotted = 3,
-    InRange = 4,
-}
 
 export const enum WarpScreenStatus {
     Viewing,
     Plotting,
     Calculating,
     Jumping,
-}
-
-export interface JumpPath {
-    id: number;
-    status: JumpPathStatus;
-    points: Vector3[];
-    power: number;
 }
 
 export interface WarpState {
@@ -159,12 +146,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             return retVal;
         }
         case 'ADD_PATH': {
-            let addingPath = {
-                id: action.id,
-                status: action.status,
-                power: action.power,
-                points: action.points,
-            };
+            let addingPath = new JumpPath(action.id, action.power, action.status, action.points);
             let pathIsNew = true;
 
             // if path ID already exists, overwrite. Otherwise, add.
@@ -194,12 +176,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
         case 'EXTEND_PATH': {
             let paths = state.paths.map((path, index) => {
                 if (path.id === action.id) {
-                    return {
-                        id: path.id,
-                        status: path.status,
-                        power: path.power,
-                        points: [...path.points, ...action.points],
-                    };
+                    return new JumpPath(path.id, path.power, path.status, [...path.points, ...action.points]);
                 }
                 return path;
             });

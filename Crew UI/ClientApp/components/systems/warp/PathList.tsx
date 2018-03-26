@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Field, Panel, PushButton, Icon, ButtonColor } from '~/components/general';
-import { JumpPath, WarpScreenStatus } from '~/store/Warp';
+import { WarpScreenStatus } from '~/store/Warp';
 import { TextLocalisation } from '~/functionality';
+import { JumpPath } from '~/functionality/sensors';
 import { PathListItem } from './PathListItem';
 
 interface PathListProps {
