@@ -755,7 +755,8 @@ var reducer = function (state, rawAction) {
             if (pathIsNew_1) {
                 paths.push(addingPath_1);
             }
-            var status_1 = state.status === 2 /* Calculating */
+            // when path is sent again when it finishes calculating, switch screen status
+            var status_1 = state.status === 2 /* Calculating */ && action.status !== 0 /* Calculating */
                 ? 0 /* Viewing */
                 : state.status;
             return __assign({}, state, { paths: paths, status: status_1 });
@@ -7493,9 +7494,9 @@ var PathListItem = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__JumpCountdown__ = __webpack_require__(73);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__JumpEditor__ = __webpack_require__(74);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__PathList__ = __webpack_require__(75);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Warp_scss__ = __webpack_require__(120);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Warp_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8__Warp_scss__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Client__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Client__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Warp_scss__ = __webpack_require__(120);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__Warp_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9__Warp_scss__);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7531,7 +7532,7 @@ var Warp = (function (_super) {
     }
     Warp.prototype.render = function () {
         // TODO: can we do away with this extra mapping, at all? Store SensorPaths directly in the store?
-        var paths = this.props.paths.map(function (p) { return new __WEBPACK_IMPORTED_MODULE_4__functionality__["j" /* SensorPath */](p.id, p.points); });
+        var paths = this.props.paths.map(function (p) { return new __WEBPACK_IMPORTED_MODULE_4__functionality__["j" /* SensorPath */](p.id, p.status, p.points); });
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system warp" },
             this.renderControlPanel(),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__components_general_SensorView__["a" /* SensorView */], { className: "warp__sensorMap", targets: this.props.sensorTargets.concat(paths) }));
@@ -7556,14 +7557,14 @@ var Warp = (function (_super) {
     };
     Warp.prototype.cancelEdit = function () {
         if (this.props.status === 2 /* Calculating */) {
-            __WEBPACK_IMPORTED_MODULE_9__Client__["connection"].send('warp_cancel_plot');
+            __WEBPACK_IMPORTED_MODULE_8__Client__["connection"].send('warp_cancel_plot');
         }
         this.props.selectPath(undefined);
         this.props.setScreenStatus(0 /* Viewing */);
     };
     Warp.prototype.calculatePath = function (from, yaw, pitch, power) {
         this.props.setScreenStatus(2 /* Calculating */);
-        __WEBPACK_IMPORTED_MODULE_9__Client__["connection"].send("warp_plot " + from.x + " " + from.y + " " + from.z + " " + yaw + " " + pitch + " " + power);
+        __WEBPACK_IMPORTED_MODULE_8__Client__["connection"].send("warp_plot " + from.x + " " + from.y + " " + from.z + " " + yaw + " " + pitch + " " + power);
     };
     return Warp;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -8586,8 +8587,9 @@ var __extends = (this && this.__extends) || (function () {
 
 var SensorPath = (function (_super) {
     __extends(SensorPath, _super);
-    function SensorPath(id, points) {
+    function SensorPath(id, status, points) {
         var _this = _super.call(this, id, points[0]) || this;
+        _this.status = status;
         _this.points = points;
         return _this;
     }
@@ -8602,7 +8604,20 @@ var SensorPath = (function (_super) {
     };
     SensorPath.prototype.getShadowRadius = function (display) { return 0; };
     SensorPath.prototype.drawTarget = function (ctx, screenPos, display) {
-        ctx.strokeStyle = '#fff';
+        switch (this.status) {
+            case 0 /* Calculating */:
+                ctx.setLineDash([5, 3]);
+            //break; NO BREAK SO THIS USES SAME COLOR AS InRange
+            case 3 /* InRange */:
+                ctx.strokeStyle = '#fff';
+                break;
+            case 1 /* Invalid */:
+                ctx.strokeStyle = '#f66';
+                break;
+            default:
+                ctx.strokeStyle = '#ccc';
+                break;
+        }
         ctx.lineWidth = display.onePixel * 3;
         ctx.beginPath();
         var first = true;
@@ -8623,12 +8638,15 @@ var SensorPath = (function (_super) {
             // TODO: should curve between these points
         }
         ctx.stroke();
+        ctx.setLineDash([]);
         this.drawStartIndicator(ctx, display, firstScreenPos);
-        this.drawEndIndicator(ctx, display, lastScreenPos);
+        if (this.status !== 0 /* Calculating */) {
+            this.drawEndIndicator(ctx, display, lastScreenPos);
+        }
     };
     SensorPath.prototype.drawStartIndicator = function (ctx, display, screenPos) {
         ctx.strokeStyle = '#0cf';
-        ctx.lineWidth = display.onePixel;
+        ctx.lineWidth = display.onePixel * 3;
         var radius = display.onePixel * 10;
         ctx.beginPath();
         ctx.arc(screenPos.x, screenPos.y, radius, 0, Math.PI * 2);
@@ -8636,7 +8654,7 @@ var SensorPath = (function (_super) {
     };
     SensorPath.prototype.drawEndIndicator = function (ctx, display, screenPos) {
         ctx.strokeStyle = '#fc0';
-        ctx.lineWidth = display.onePixel;
+        ctx.lineWidth = display.onePixel * 3;
         var crossSize = display.onePixel * 10;
         ctx.beginPath();
         ctx.moveTo(screenPos.x - crossSize, screenPos.y - crossSize);

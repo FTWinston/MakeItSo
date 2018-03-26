@@ -180,7 +180,8 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                 paths.push(addingPath);
             }
 
-            let status = state.status === WarpScreenStatus.Calculating
+            // when path is sent again when it finishes calculating, switch screen status
+            let status = state.status === WarpScreenStatus.Calculating && action.status !== JumpPathStatus.Calculating
                 ? WarpScreenStatus.Viewing
                 : state.status;
 

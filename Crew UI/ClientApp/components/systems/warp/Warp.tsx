@@ -7,8 +7,8 @@ import { SensorPath, SensorTarget, TextLocalisation, Vector3 } from '~/functiona
 import { JumpCountdown } from './JumpCountdown';
 import { JumpEditor } from './JumpEditor';
 import { PathList } from './PathList';
-import './Warp.scss';
 import { connection } from '~/Client';
+import './Warp.scss';
 
 interface WarpDataProps extends WarpState {
     text: TextLocalisation;
@@ -21,7 +21,7 @@ type WarpProps = WarpDataProps
 class Warp extends React.PureComponent<WarpProps, {}> {
     public render() {
         // TODO: can we do away with this extra mapping, at all? Store SensorPaths directly in the store?
-        let paths = this.props.paths.map(p => new SensorPath(p.id, p.points));
+        let paths = this.props.paths.map(p => new SensorPath(p.id, p.status, p.points));
 
         return <div className="system warp">
             {this.renderControlPanel()}

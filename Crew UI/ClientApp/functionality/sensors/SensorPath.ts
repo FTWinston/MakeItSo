@@ -1,9 +1,10 @@
 import { CanvasBounds, CanvasBounds3D } from '~/functionality';
 import { SensorTarget } from './SensorTarget';
 import { Vector2, Vector3 } from '~/functionality/math';
+import { JumpPathStatus } from '~/store/Warp';
 
 export class SensorPath extends SensorTarget {
-    constructor(id: number, public points: Vector3[]) {
+    constructor(id: number, public status: JumpPathStatus, public points: Vector3[]) {
         super(id, points[0]);
     }
 
@@ -20,7 +21,21 @@ export class SensorPath extends SensorTarget {
     protected getShadowRadius(display: CanvasBounds3D) { return 0; }
 
     protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D) {
-        ctx.strokeStyle = '#fff';
+        switch (this.status) {
+            case JumpPathStatus.Calculating:
+                ctx.setLineDash([5, 3]);
+                //break; NO BREAK SO THIS USES SAME COLOR AS InRange
+            case JumpPathStatus.InRange:
+                ctx.strokeStyle = '#fff';
+                break;
+            case JumpPathStatus.Invalid:
+                ctx.strokeStyle = '#f66';
+                break;
+            default:
+                ctx.strokeStyle = '#ccc';
+                break;
+        }
+
         ctx.lineWidth = display.onePixel * 3;
 
         ctx.beginPath();
@@ -45,13 +60,18 @@ export class SensorPath extends SensorTarget {
 
         ctx.stroke();
 
+        ctx.setLineDash([]);
+
         this.drawStartIndicator(ctx, display, firstScreenPos);
-        this.drawEndIndicator(ctx, display, lastScreenPos);
+
+        if (this.status !== JumpPathStatus.Calculating) {
+            this.drawEndIndicator(ctx, display, lastScreenPos);
+        }
     }
 
     private drawStartIndicator(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2) {
         ctx.strokeStyle = '#0cf';
-        ctx.lineWidth = display.onePixel;
+        ctx.lineWidth = display.onePixel * 3;
         let radius = display.onePixel * 10;
         ctx.beginPath();
         ctx.arc(screenPos.x, screenPos.y, radius, 0, Math.PI * 2);
@@ -60,7 +80,7 @@ export class SensorPath extends SensorTarget {
 
     private drawEndIndicator(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2) {
         ctx.strokeStyle = '#fc0';
-        ctx.lineWidth = display.onePixel;
+        ctx.lineWidth = display.onePixel * 3;
         let crossSize = display.onePixel * 10;
         ctx.beginPath();
 
