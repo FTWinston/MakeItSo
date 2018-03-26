@@ -7557,7 +7557,7 @@ var Warp = (function (_super) {
     };
     Warp.prototype.cancelEdit = function () {
         if (this.props.status === 2 /* Calculating */) {
-            __WEBPACK_IMPORTED_MODULE_8__Client__["connection"].send('warp_cancel_plot');
+            __WEBPACK_IMPORTED_MODULE_8__Client__["connection"].send('warp_plot_cancel');
         }
         this.props.selectPath(undefined);
         this.props.setScreenStatus(0 /* Viewing */);

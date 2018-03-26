@@ -67,7 +67,7 @@ class Warp extends React.PureComponent<WarpProps, {}> {
 
     private cancelEdit() {
         if (this.props.status === WarpScreenStatus.Calculating) {
-            connection.send('warp_cancel_plot');
+            connection.send('warp_plot_cancel');
         }
 
         this.props.selectPath(undefined);
