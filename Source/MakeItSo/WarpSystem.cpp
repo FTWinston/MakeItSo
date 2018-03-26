@@ -89,7 +89,7 @@ void UWarpSystem::SendAllData_Implementation()
 	for (auto pathInfo : calculatedJumps)
 	{
 		auto path = PAIRVALUE(pathInfo);
-		SendPath(PAIRKEY(pathInfo), 1, path->JumpPower, path->PositionSteps);
+		SendPath(PAIRKEY(pathInfo), JumpPathStatus::Plotted, path->JumpPower, path->PositionSteps);
 	}
 }
 
@@ -171,7 +171,7 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 		if (ISCLIENT())
 		{// account for replication not affecting local client
-			SendPath(nextJumpID - 1, 1, jump->JumpPower, jump->PositionSteps);
+			SendPath(nextJumpID - 1, JumpPathStatus::Plotted, jump->JumpPower, jump->PositionSteps);
 		}
 
 		CleanupAfterCalculation();
@@ -217,7 +217,7 @@ void UWarpSystem::CalculationStepsAdded(int32 prevSize)
 {
 	if (prevSize == 0)
 	{
-		SendPath(nextJumpID, 0, calculationStartPower, calculationStepPositions);
+		SendPath(nextJumpID, JumpPathStatus::Calculating, calculationStartPower, calculationStepPositions);
 		prevSize = 1;
 	}
 
@@ -246,7 +246,7 @@ void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeCha
 		if (!MAPCONTAINS(beforeChange, id))
 		{
 			auto path = PAIRVALUE(pathInfo);
-			SendPath(id, 1, path->JumpPower, path->PositionSteps);
+			SendPath(id, JumpPathStatus::Plotted, path->JumpPower, path->PositionSteps);
 		}
 	}
 }
@@ -265,19 +265,19 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 	SendSystem(output);
 }
 
-void UWarpSystem::SendPath(int32 pathID, int pathState, float jumpPower, TArray<FVector> positionSteps)
+void UWarpSystem::SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps)
 {
 	FString output = TEXT("warp_add_path ");
 #ifndef WEB_SERVER_TEST
 	output.AppendInt(pathID);
 	output.Append(TEXT(" "));
-	output.AppendInt(pathState);
+	output.AppendInt((int32)pathStatus);
 	output.Append(TEXT(" "));
 	output.AppendInt((int32)jumpPower);
 #else
 	output += std::to_wstring(pathID);
 	output += TEXT(" ");
-	output += std::to_wstring(pathState);
+	output += std::to_wstring((int32)pathStatus);
 	output += TEXT(" ");
 	output += std::to_wstring((int32)jumpPower);
 #endif

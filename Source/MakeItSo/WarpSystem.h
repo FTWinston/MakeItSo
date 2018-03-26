@@ -15,6 +15,14 @@ class MAKEITSO_API UWarpSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
+	enum JumpPathStatus // matches enum in Warp.ts
+	{
+		Calculating = 1,
+		Invalid = 2,
+		Plotted = 3,
+		//InRange = 4
+	};
+
 	UWarpSystem();
 	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
@@ -49,7 +57,7 @@ protected:
 #endif
 
 private:
-	void SendPath(int32 pathID, int pathState, float jumpPower, TArray<FVector> positionSteps);
+	void SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps);
 
 	UFUNCTION(Client, Reliable)
 	void SendPathDeletion(int32 pathID, bool displayInvalid);

@@ -4,11 +4,11 @@ import { Vector3 } from '~/functionality';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
-export const enum JumpPathStatus {
-    Calculating,
-    Invalid,
-    Plotted,
-    InRange,
+export const enum JumpPathStatus { // matches enum in WarpSystem.h
+    Calculating = 1,
+    Invalid = 2,
+    Plotted = 3,
+    InRange = 4,
 }
 
 export const enum WarpScreenStatus {
