@@ -239,7 +239,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             let path: JumpPath | undefined;
             if (action.pathID !== undefined) {
                 let paths = state.paths.filter(p => p.id === action.pathID);
-                let path = paths.length > 0 ? paths[0] : undefined;
+                path = paths.length > 0 ? paths[0] : undefined;
             }
 
             return {

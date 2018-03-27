@@ -1,0 +1,31 @@
+@import '../../general/mixins';
+
+.warpPathListItem {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1rem;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+}
+
+.warpPathListItem--selected {
+    background-color: $colorTertiary;
+    color: $colorHighlight;
+}
+
+.warpPathListItem__name {
+    font-weight: bold;
+}
+
+.warpPathListItem:hover .warpPathListItem__name {
+    text-decoration: underline;
+}
+
+.warpPathListItem__points {
+    display: flex;
+}
+
+.warpPathListItem__coordinates {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}

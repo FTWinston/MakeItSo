@@ -625,6 +625,35 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.warpPathListItem {
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  padding: 0.2rem 0.6rem;
+  cursor: pointer; }
+
+.warpPathListItem--selected {
+  background-color: #9f9bfd;
+  color: #e0e5f8; }
+
+.warpPathListItem__name {
+  font-weight: bold; }
+
+.warpPathListItem:hover .warpPathListItem__name {
+  text-decoration: underline; }
+
+.warpPathListItem__points {
+  display: flex; }
+
+.warpPathListItem__coordinates {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 .warp {
   display: grid; }
   @media (orientation: landscape) {

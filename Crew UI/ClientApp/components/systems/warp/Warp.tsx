@@ -54,7 +54,7 @@ class Warp extends React.PureComponent<WarpProps, {}> {
     }
 
     private pathSelected(path: JumpPath) {
-        this.props.selectPath(path.id);
+        this.props.selectPath(path === this.props.activePath ? undefined : path.id);
     }
 
     private showEdit(path?: JumpPath) {
