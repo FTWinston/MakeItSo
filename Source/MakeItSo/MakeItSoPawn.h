@@ -17,6 +17,8 @@ class USpringArmComponent { };
 class UCameraComponent { };
 #endif
 
+class UWarpJump;
+
 UCLASS(Config=Game)
 class AMakeItSoPawn : public APawn
 {
@@ -48,6 +50,9 @@ public:
 	float GetMaxTurnSpeed() { return MaxTurnSpeed; }
 
 	TMap<UShipSystem::ESystem, UShipSystem*> systems;
+
+	void StartWarpJump(UWarpJump* jump);
+	void FinishWarpJump(UWarpJump* jump);
 
 protected:
 	void Restart() override;

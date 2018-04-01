@@ -35,12 +35,19 @@ class Warp extends React.PureComponent<WarpProps, {}> {
                     selectedPath={this.props.activePath}
                     pathSelected={p => this.pathSelected(p)}
                     newSelected={() => this.showEdit()}
+                    deletePath={p => this.deletePath(p)}
+                    startJump={p => this.startJump(p)}
                 />;
+            case WarpScreenStatus.Charging:
             case WarpScreenStatus.Jumping:
                 return <JumpCountdown
                     text={this.props.text}
                     path={this.props.activePath}
                     endTime={this.props.jumpEndTime}
+                    completion={this.props.chargeCompletion}
+                    jumping={this.props.status === WarpScreenStatus.Jumping}
+                    cancel={() => this.cancelJump()}
+                    jump={() => this.performJump()}
                 />;
             default:
                 return <JumpEditor
@@ -60,6 +67,21 @@ class Warp extends React.PureComponent<WarpProps, {}> {
     private showEdit(path?: JumpPath) {
         this.props.selectPath(path === undefined ? undefined : path.id);
         this.props.setScreenStatus(WarpScreenStatus.Plotting);
+    }
+    private deletePath(path: JumpPath) {
+        connection.send(`warp_delete ${path.id}`);
+    }
+
+    private startJump(path: JumpPath) {
+        connection.send(`warp_prepare_jump ${path.id}`);
+    }
+
+    private cancelJump() {
+        connection.send('warp_jump_cancel');
+    }
+
+    private performJump() {
+        connection.send('warp_jump');
     }
 
     private cancelEdit() {

@@ -207,6 +207,8 @@ let words: TextLocalisation = {
             power: 'Power level',
             powerDescription: 'Higher power allows longer jumps, but requires longer to charge',
             eta: 'ETA:',
+            readyTime: 'Ready to Jump in:',
+            readyToJump: 'Ready to Jump',
             seconds: 'seconds',
             startPos: 'Start',
             startPosDescription: 'Location this jump will start from',

@@ -28,6 +28,10 @@ public:
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void TickCalculating(float DeltaTime);
+	void TickCharging(float DeltaTime);
+	int DetermineAndSendJumpCharge();
+	void TickJumping(float DeltaTime);
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Warp; }
 
@@ -50,13 +54,33 @@ protected:
 #endif
 
 	UFUNCTION(Server, Reliable, WithValidation)
-	void PerformWarpJump(int32 jumpID);
+	void PrepareWarpJump(int32 jumpID);
 #ifdef WEB_SERVER_TEST
-	bool PerformWarpJump_Validate(int32 jumpID);
-	void PerformWarpJump_Implementation(int32 jumpID);
+	bool PrepareWarpJump_Validate(int32 jumpID);
+	void PrepareWarpJump_Implementation(int32 jumpID);
+#endif
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void PerformWarpJump();
+#ifdef WEB_SERVER_TEST
+	bool PerformWarpJump_Validate();
+	void PerformWarpJump_Implementation();
+#endif
+
+	UFUNCTION(Server, Reliable)
+	void CancelWarpJump();
+#ifdef WEB_SERVER_TEST
+	void CancelWarpJump_Implementation();
 #endif
 
 private:
+	enum TickMode {
+		Tick_Calculating,
+		Tick_Charging,
+		Tick_Jumping,
+	};
+	TickMode tickMode;
+
 	void SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps);
 
 	UFUNCTION(Client, Reliable)
@@ -71,7 +95,6 @@ private:
 	FVector CalculateNextPosition(FVector position, FVector velocity, float timeStep);
 	bool IsSafeJumpPosition(FVector position);
 	void CleanupAfterCalculation();
-	
 
 	UPROPERTY(Replicated)
 	float calculationStartPower;
@@ -87,13 +110,19 @@ private:
 
 	void CalculationStepsAdded(int32 prevNumSteps);
 
-
 	int32 nextJumpID;
 
+	UPROPERTY(Replicated)
+	int32 activeJumpID;
+
+	UPROPERTY(Replicated)
+	int32 jumpCharge;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculatedJumps)
 	TMap<int32, UWarpJump*> calculatedJumps;
 
 	UFUNCTION()
 	void OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange);
+
+	void SendJumpInProgress();
 };

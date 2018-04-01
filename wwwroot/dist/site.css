@@ -204,7 +204,8 @@ $lightBackground: #999;
 */
 .field {
   display: flex;
-  align-items: baseline; }
+  align-items: baseline;
+  flex-shrink: 0; }
   @media (max-width: 500px) {
     .field {
       flex-direction: column;
@@ -354,7 +355,8 @@ $lightBackground: #999;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  align-items: justify; }
+  align-items: justify;
+  overflow-y: hidden; }
 
 .panel__header {
   flex-shrink: 0;
@@ -370,9 +372,26 @@ $lightBackground: #999;
 
 .panel__content--forceScroll {
   overflow-y: scroll; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.progressBar {
+  border: solid #ccc 1px;
+  background-color: #333;
+  height: 1.8em;
+  display: flex;
+  justify-content: flex-start;
+  align-self: stretch; }
 
-.panel__footer {
-  overflow-y: auto; }
+.progressBar__indicator {
+  background-color: #d09bcf;
+  color: #e0e5f8;
+  overflow: visible;
+  text-align: center;
+  transition: width 0.2s; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -676,6 +695,11 @@ $lightBackground: #999;
 .warpPathListItem__number, .coordinate__number, .countdown__number {
   font-weight: bold;
   color: #ffce9c; }
+
+.warp__jumpCountdown > .panel__content {
+  display: flex;
+  justify-content: center;
+  align-items: center; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

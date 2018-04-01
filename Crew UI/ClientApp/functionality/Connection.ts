@@ -3,7 +3,7 @@ import { actionCreators as crewActions } from '~/store/Crew';
 import { actionCreators as userActions } from '~/store/User';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
 import { actionCreators as helmActions } from '~/store/Helm';
-import { actionCreators as warpActions } from '~/store/Warp';
+import { actionCreators as warpActions, WarpScreenStatus } from '~/store/Warp';
 import { actionCreators as sensorActions } from '~/store/Sensors';
 import { TextLocalisation } from './Localisation';
 import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '~/functionality';
@@ -186,6 +186,27 @@ export class Connection {
                     // remove immediately
                     store.dispatch(warpActions.removePath(id));
                 }
+                break;
+            }
+            case 'warp_charge_jump': {
+                let vals = data.split(' ');
+                let id = parseInt(vals[0]);
+                let secsRemaining = parseInt(vals[1]);
+                let completion = parseInt(vals[2]);
+
+                store.dispatch(warpActions.chargeJump(id, secsRemaining, completion));
+                break;
+            }
+            case 'warp_cancel_jump': {
+                store.dispatch(warpActions.setScreenStatus(WarpScreenStatus.Viewing));
+                break;
+            }
+            case 'warp_jump': {
+                let vals = data.split(' ');
+                let id = parseInt(vals[0]);
+                let secsRemaining = parseInt(vals[1]);
+
+                store.dispatch(warpActions.performJump(id, secsRemaining));
                 break;
             }
             default:

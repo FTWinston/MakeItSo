@@ -141,6 +141,8 @@ export interface TextLocalisation {
             power: string;
             powerDescription: string;
             eta: string;
+            readyTime: string;
+            readyToJump: string;
             seconds: string;
             startPos: string;
             startPosDescription: string;

@@ -30,3 +30,7 @@
     font-weight: bold;
     color: $colorQuandry;
 }
+
+.warp__jumpCountdown > .panel__content {
+    @include center();
+}

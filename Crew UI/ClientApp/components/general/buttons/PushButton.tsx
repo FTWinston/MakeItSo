@@ -25,11 +25,13 @@ export class PushButton extends React.Component<IPushButtonProps, IPushButtonSta
                 mouseDown={() => this.mouseDown()} mouseUp={() => this.mouseUp()} />;
     }
     private clicked(e: React.MouseEvent<HTMLButtonElement>) {
-        if (this.props.clicked !== undefined)
+        if (this.props.clicked !== undefined) {
             this.props.clicked();
+        }
         
-        if (this.props.command !== undefined)
+        if (this.props.command !== undefined) {
             connection.send(this.props.command);
+        }
     }
     private mouseDown() {
         this.setState({held: true});

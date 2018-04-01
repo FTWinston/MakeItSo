@@ -8,7 +8,11 @@
 #endif
 
 #include "CrewManager.h"
+#include "MakeItSoPawn.h"
 #include "WarpJump.h"
+
+#define JUMP_CHARGE_GENERATED_PER_TICK 1
+#define JUMP_CHARGE_CONSUMPTION_PER_TICK 4
 
 UWarpSystem::UWarpSystem()
 {
@@ -20,13 +24,20 @@ UWarpSystem::UWarpSystem()
 	calculationStartPower = 0;
 	calculationCurrentVelocity = FVector::ZeroVector;
 
+	tickMode = TickMode::Tick_Calculating;
 	nextJumpID = 1;
+	activeJumpID = 0;
+	jumpCharge = 0;
 }
 
 void UWarpSystem::ResetData()
 {
 	CleanupAfterCalculation();
+
+	tickMode = TickMode::Tick_Calculating;
 	nextJumpID = 1;
+	activeJumpID = 0;
+	jumpCharge = 0;
 
 #ifndef WEB_SERVER_TEST
 	calculatedJumps.Empty();
@@ -48,7 +59,7 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 {
 	if (STARTS_WITH(msg, "warp_plot "))
 	{
-		// warp_plot fromX fromY fromZ yaw pitch power`
+		// warp_plot fromX fromY fromZ yaw pitch power
 		TArray<FString> parts = SplitParts(msg, sizeof("warp_plot "));
 
 		if (SIZENUM(parts) < 6)
@@ -60,25 +71,41 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 		StartJumpCalculation(startPos, direction, power);
 		return true;
 	}
-	else if (STARTS_WITH(msg, "warp_delete "))
-	{
-		int32 jumpID = ExtractInt(msg, sizeof("warp_delete "));
-		DeleteJump(jumpID);
-		return true;
-	}
-	else if (STARTS_WITH(msg, "warp_jump "))
-	{
-		int32 jumpID = ExtractInt(msg, sizeof("warp_jump "));
-		PerformWarpJump(jumpID);
-		return true;
-	}
 	else if (MATCHES(msg, "warp_plot_cancel"))
 	{
 		CleanupAfterCalculation();
 		SendPathDeletion(nextJumpID, false);
 		return true;
 	}
-
+	else if (STARTS_WITH(msg, "warp_delete "))
+	{
+		int32 jumpID = ExtractInt(msg, sizeof("warp_delete "));
+		DeleteJump(jumpID);
+		return true;
+	}
+	else if (STARTS_WITH(msg, "warp_prepare_jump "))
+	{
+		int32 jumpID = ExtractInt(msg, sizeof("warp_prepare_jump "));
+		PrepareWarpJump(jumpID);
+		return true;
+	}
+	else if (MATCHES(msg, "warp_jump_cancel"))
+	{
+		if (activeJumpID != 0)
+		{
+			CancelWarpJump();
+		}
+		return true;
+	}
+	else if (MATCHES(msg, "warp_jump"))
+	{
+		if (activeJumpID != 0)
+		{
+			PerformWarpJump();
+		}
+		return true;
+	}
+	
 	return false;
 }
 
@@ -91,12 +118,22 @@ void UWarpSystem::SendAllData_Implementation()
 		auto path = PAIRVALUE(pathInfo);
 		SendPath(PAIRKEY(pathInfo), JumpPathStatus::Plotted, path->JumpPower, path->PositionSteps);
 	}
+
+	if (activeJumpID != 0)
+	{	
+		if (tickMode == TickMode::Tick_Jumping)
+			SendJumpInProgress();
+		else if (tickMode == TickMode::Tick_Charging)
+			DetermineAndSendJumpCharge();
+	}
 }
 
 #ifdef WEB_SERVER_TEST
 void UWarpSystem::StartJumpCalculation(FVector startPos, FRotator direction, float power) { if (StartJumpCalculation_Validate(startPos, direction, power)) StartJumpCalculation_Implementation(startPos, direction, power); }
 void UWarpSystem::DeleteJump(int32 jumpID) { if (DeleteJump_Validate(jumpID)) DeleteJump_Implementation(jumpID); }
-void UWarpSystem::PerformWarpJump(int32 jumpID) { if (PerformWarpJump_Validate(jumpID)) PerformWarpJump_Implementation(jumpID); }
+void UWarpSystem::PrepareWarpJump(int32 jumpID) { if (PrepareWarpJump_Validate(jumpID)) PrepareWarpJump_Implementation(jumpID); }
+void UWarpSystem::CancelWarpJump() { CancelWarpJump_Implementation(); }
+void UWarpSystem::PerformWarpJump() { if (PerformWarpJump_Validate()) PerformWarpJump_Implementation(); }
 #endif
 
 bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)
@@ -128,10 +165,23 @@ void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator
 	calculationCurrentVelocity = direction.Vector() * power;
 	calculationStepsRemaining = NUM_WARP_JUMP_STEPS - 1;
 
+	tickMode = TickMode::Tick_Calculating;
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 }
 
 void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	switch (tickMode) {
+	case TickMode::Tick_Calculating:
+		TickCalculating(DeltaTime); break;
+	case TickMode::Tick_Charging:
+		TickCharging(DeltaTime); break;
+	case TickMode::Tick_Jumping:
+		TickJumping(DeltaTime); break;
+	}
+}
+
+void UWarpSystem::TickCalculating(float DeltaTime)
 {
 	if (calculationStepsRemaining <= 0)
 		return;
@@ -176,6 +226,72 @@ void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 
 		CleanupAfterCalculation();
 	}
+}
+
+void UWarpSystem::TickCharging(float DeltaTime)
+{
+	jumpCharge += JUMP_CHARGE_GENERATED_PER_TICK;
+	int requiredCharge = DetermineAndSendJumpCharge();
+
+	if (jumpCharge < requiredCharge)
+	{
+		return;
+	}
+
+	PrimaryComponentTick.SetTickFunctionEnable(false);
+	jumpCharge = requiredCharge;
+}
+
+int UWarpSystem::DetermineAndSendJumpCharge()
+{
+	int requiredCharge = calculatedJumps[activeJumpID]->JumpPower;
+
+	int32 chargeSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * (requiredCharge - jumpCharge) / JUMP_CHARGE_GENERATED_PER_TICK);
+
+	FString output = TEXT("warp_charge_jump ");
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(activeJumpID);
+#else
+	output += std::to_wstring(activeJumpID);
+#endif
+	output += TEXT(" ");
+
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(chargeSecsRemaining);
+#else
+	output += std::to_wstring(chargeSecsRemaining);
+#endif
+
+	output += TEXT(" ");
+
+	int32 progress = FMath::Min(100, 100 * jumpCharge / requiredCharge);
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(progress);
+#else
+	output += std::to_wstring(progress);
+#endif
+
+	SendSystem(output);
+
+	return requiredCharge;
+}
+
+void UWarpSystem::TickJumping(float DeltaTime)
+{
+	jumpCharge -= JUMP_CHARGE_CONSUMPTION_PER_TICK;
+	if (jumpCharge > 0)
+	{
+		return;
+	}
+
+	PrimaryComponentTick.SetTickFunctionEnable(false);
+	jumpCharge = 0;
+
+	SendSystemFixed("warp_cancel_jump");
+	crewManager->GetShipPawn()->FinishWarpJump(calculatedJumps[activeJumpID]);
+
+	// TODO: delete the jump that was just done
+	activeJumpID = 0;
 }
 
 void UWarpSystem::CleanupAfterCalculation()
@@ -331,14 +447,68 @@ bool UWarpSystem::DeleteJump_Validate(int32 jumpID)
 void UWarpSystem::DeleteJump_Implementation(int32 jumpID)
 {
 	MAPREMOVE(calculatedJumps, jumpID);
+
+	if (ISCLIENT())
+	{
+		SendPathDeletion(jumpID, false);
+	}
 }
 
-bool UWarpSystem::PerformWarpJump_Validate(int32 jumpID)
+bool UWarpSystem::PrepareWarpJump_Validate(int32 jumpID)
 {
 	return MAPCONTAINS(calculatedJumps, jumpID);
 }
 
-void UWarpSystem::PerformWarpJump_Implementation(int32 jumpID)
+void UWarpSystem::PrepareWarpJump_Implementation(int32 jumpID)
 {
-	// TODO: actually perform jump
+	activeJumpID = jumpID;
+	tickMode = TickMode::Tick_Charging;
+	PrimaryComponentTick.SetTickFunctionEnable(true);
+	
+	DetermineAndSendJumpCharge();
+}
+
+void UWarpSystem::CancelWarpJump_Implementation()
+{
+	activeJumpID = 0;
+	jumpCharge = 0;
+	PrimaryComponentTick.SetTickFunctionEnable(false);
+
+	SendSystemFixed("warp_cancel_jump");
+}
+
+bool UWarpSystem::PerformWarpJump_Validate()
+{
+	return activeJumpID != 0;
+}
+
+void UWarpSystem::PerformWarpJump_Implementation()
+{
+	tickMode = TickMode::Tick_Jumping;
+	PrimaryComponentTick.SetTickFunctionEnable(true);
+
+	crewManager->GetShipPawn()->StartWarpJump(calculatedJumps[activeJumpID]);
+
+	SendJumpInProgress();
+}
+
+void UWarpSystem::SendJumpInProgress()
+{
+	int32 jumpSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * jumpCharge / JUMP_CHARGE_CONSUMPTION_PER_TICK);
+
+	FString output = TEXT("warp_jump ");
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(activeJumpID);
+#else
+	output += std::to_wstring(activeJumpID);
+#endif
+	output += TEXT(" ");
+
+#ifndef WEB_SERVER_TEST
+	output.AppendInt(jumpSecsRemaining);
+#else
+	output += std::to_wstring(jumpSecsRemaining);
+#endif
+
+	SendSystem(output);
 }

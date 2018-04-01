@@ -11,25 +11,27 @@ interface PathListProps {
     selectedPath?: JumpPath;
     pathSelected: (path: JumpPath) => void;
     newSelected: () => void;
+    deletePath: (path: JumpPath) => void;
+    startJump: (path: JumpPath) => void;
 }
 
 export class PathList extends React.PureComponent<PathListProps, {}> {
     render() {
         let words = this.props.text.systems.warp;
+        const path = this.props.selectedPath;
 
         let footerButtons = (
             <Field centered={true} displayAsRow={true}>
                 <PushButton
-                    disabled={this.props.selectedPath === undefined}
+                    disabled={path === undefined}
                     color={ButtonColor.Tertiary}
                     text={words.deletePath}
-                    command="deleteWarpPath"
+                    clicked={path === undefined ? undefined : () => this.props.deletePath(path)}
                 />
                 <PushButton
                     color={ButtonColor.Secondary}
-                    text={this.props.selectedPath === undefined ? words.newPath : words.startJump}
-                    command={this.props.selectedPath === undefined ? undefined : "warpJump"}
-                    clicked={this.props.selectedPath === undefined ? this.props.newSelected : undefined}
+                    text={path === undefined ? words.newPath : words.startJump}
+                    clicked={path === undefined ? this.props.newSelected : () => this.props.startJump(path)}
                 />
             </Field>
         );

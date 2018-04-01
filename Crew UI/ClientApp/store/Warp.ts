@@ -9,6 +9,7 @@ export const enum WarpScreenStatus {
     Viewing,
     Plotting,
     Calculating,
+    Charging,
     Jumping,
 }
 
@@ -17,6 +18,7 @@ export interface WarpState {
     status: WarpScreenStatus;
     activePath?: JumpPath;
     jumpEndTime?: Date;
+    chargeCompletion: number;
 }
 
 // -----------------
@@ -57,8 +59,15 @@ interface SetScreenStatusAction {
     status: WarpScreenStatus;
 }
 
-interface StartJumpAction {
-    type: 'START_JUMP';
+interface ChargeJumpAction {
+    type: 'CHARGE_JUMP';
+    pathID: number;
+    endTime: Date;
+    completion: number;
+}
+
+interface PerformJumpAction {
+    type: 'DO_JUMP';
     pathID: number;
     endTime: Date;
 }
@@ -71,7 +80,7 @@ interface SelectPathAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = ClearPathsAction | AddPathAction | ExtendPathAction | SetPathStatusAction | RemovePathAction |
-                   SetScreenStatusAction | StartJumpAction | SelectPathAction;
+                   SetScreenStatusAction | ChargeJumpAction | PerformJumpAction | SelectPathAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -106,12 +115,23 @@ export const actionCreators = {
         type: 'SET_WARP_STATUS',
         status: status,
     },
-    jump: (pathID: number, duration: number) => {
+    chargeJump: (pathID: number, duration: number, completion: number) => {
         let endTime = new Date();
         endTime.setSeconds(endTime.getSeconds() + duration);
 
-        return <StartJumpAction> {
-            type: 'START_JUMP',
+        return <ChargeJumpAction> {
+            type: 'CHARGE_JUMP',
+            pathID: pathID,
+            endTime: endTime,
+            completion: completion,
+        };
+    },
+    performJump: (pathID: number, duration: number) => {
+        let endTime = new Date();
+        endTime.setSeconds(endTime.getSeconds() + duration);
+
+        return <PerformJumpAction> {
+            type: 'DO_JUMP',
             pathID: pathID,
             endTime: endTime,
         };
@@ -130,6 +150,7 @@ export const actionCreators = {
 const unloadedState: WarpState = {
     paths: [],
     status: WarpScreenStatus.Viewing,
+    chargeCompletion: 0,
 };
 
 export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action) => {
@@ -225,14 +246,28 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             delete retVal.activePath;
             return retVal;
         }
-        case 'START_JUMP': {
+        case 'CHARGE_JUMP': {
             let paths = state.paths.filter(p => p.id === action.pathID);
             let path = paths.length > 0 ? paths[0] : undefined;
 
             return {
                 ...state,
+                status: WarpScreenStatus.Charging,
                 activePath: path,
                 jumpEndTime: action.endTime,
+                chargeCompletion: action.completion,
+            };
+        }
+        case 'DO_JUMP': {
+            let paths = state.paths.filter(p => p.id === action.pathID);
+            let path = paths.length > 0 ? paths[0] : undefined;
+
+            return {
+                ...state,
+                status: WarpScreenStatus.Jumping,
+                activePath: path,
+                jumpEndTime: action.endTime,
+                chargeCompletion: 100,
             };
         }
         case 'SELECT_PATH': {

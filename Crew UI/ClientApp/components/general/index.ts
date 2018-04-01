@@ -7,6 +7,7 @@ export { FlexibleCanvas } from './FlexibleCanvas';
 export { Icon, renderIcon } from './Icons';
 export { NumericTextbox } from './NumericTextbox';
 export { Panel } from './Panel';
+export { ProgressBar } from './ProgressBar';
 export { Screen } from './Screen';
 export { Textbox } from './Textbox';
 export { TouchArea } from './TouchArea';

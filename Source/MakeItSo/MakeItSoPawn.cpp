@@ -22,6 +22,7 @@
 #include "ViewscreenSystem.h"
 #include "WeaponSystem.h"
 #include "WarpSystem.h"
+#include "WarpJump.h"
 
 #ifndef WEB_SERVER_TEST
 #define ADDSYSTEM(lookup, systemType, name) systems.Add(lookup, CreateDefaultSubobject<systemType>(TEXT(name)))
@@ -92,6 +93,16 @@ void AMakeItSoPawn::Restart()
 	Super::Restart();
 
 	//GetWorld()->GetFirstPlayerController()->ClientMessage(TEXT("AMakeItSoPawn::Restart"));
+}
+
+void AMakeItSoPawn::StartWarpJump(UWarpJump *jump)
+{
+	// TODO: hide ship, disable controls, show warp jumping effect
+}
+
+void AMakeItSoPawn::FinishWarpJump(UWarpJump *jump)
+{
+	// TODO: move ship, show ship, enable controls, hide warp jumping effect
 }
 
 #ifndef WEB_SERVER_TEST
