@@ -5,6 +5,7 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: justify;
+    overflow-y: hidden;
 }
 
 .panel__header {
@@ -24,8 +25,4 @@
 
 .panel__content--forceScroll {
     overflow-y: scroll;
-}
-
-.panel__footer {
-    overflow-y: auto;
 }
