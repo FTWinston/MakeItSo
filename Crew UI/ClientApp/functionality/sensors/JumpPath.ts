@@ -10,6 +10,7 @@ export const enum JumpPathStatus { // matches enum in WarpSystem.h
 }
 
 export class JumpPath extends SensorTarget {
+    public highlighted = false;
     constructor(id: number, public power: number, public status: JumpPathStatus, public points: Vector3[]) {
         super(id, points[0]);
     }
@@ -27,19 +28,24 @@ export class JumpPath extends SensorTarget {
     protected getShadowRadius(display: CanvasBounds3D) { return 0; }
 
     protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D) {
-        switch (this.status) {
-            case JumpPathStatus.Calculating:
-                ctx.setLineDash([5, 3]);
-                //break; NO BREAK SO THIS USES SAME COLOR AS InRange
-            case JumpPathStatus.InRange:
-                ctx.strokeStyle = '#fff';
-                break;
-            case JumpPathStatus.Invalid:
-                ctx.strokeStyle = '#f66';
-                break;
-            default:
-                ctx.strokeStyle = '#ccc';
-                break;
+        if (this.highlighted) {
+            ctx.strokeStyle = '#fff';
+        }
+        else {
+            switch (this.status) {
+                case JumpPathStatus.InRange:
+                    ctx.strokeStyle = '#cfc';
+                    break;
+                case JumpPathStatus.Invalid:
+                    ctx.strokeStyle = '#f66';
+                    break;
+                case JumpPathStatus.Calculating:
+                    ctx.setLineDash([5, 3]);
+                    //break; NO BREAK SO THIS USES SAME COLOR AS default
+                default:
+                    ctx.strokeStyle = '#ccc';
+                    break;
+            }
         }
 
         ctx.lineWidth = display.onePixel * 3;
@@ -68,11 +74,17 @@ export class JumpPath extends SensorTarget {
 
         ctx.setLineDash([]);
 
+        if (!this.highlighted) {
+            ctx.globalAlpha = 0.8;
+        }
+
         this.drawStartIndicator(ctx, display, firstScreenPos);
 
         if (this.status !== JumpPathStatus.Calculating) {
             this.drawEndIndicator(ctx, display, lastScreenPos);
         }
+
+        ctx.globalAlpha = 1;
     }
 
     private drawStartIndicator(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, screenPos: Vector2) {

@@ -209,6 +209,7 @@ let words: TextLocalisation = {
             eta: 'ETA:',
             readyTime: 'Ready to Jump in:',
             readyToJump: 'Ready to Jump',
+            outOfRange: 'Out of Range',
             charging: 'Charging...',
             jumpInProgress: 'Jumping...',
             seconds: 'seconds',

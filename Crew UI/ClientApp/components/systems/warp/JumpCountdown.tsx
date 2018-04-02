@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ButtonColor, Field, Icon, Panel, ProgressBar, PushButton } from '~/components/general';
 import { TextLocalisation } from '~/functionality';
-import { JumpPath } from '~/functionality/sensors';
+import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
 
 interface JumpCountdownProps {
     text: TextLocalisation;
@@ -116,8 +116,11 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, JumpC
             </Field>
         );
 
+        let text = this.props.path !== undefined && this.props.path.status === JumpPathStatus.InRange
+            ? words.readyToJump : words.outOfRange;
+        
         return <Panel className="warp__jumpCountdown warp__jumpCountdown--charged" footer={footerButtons}>
-            {words.readyToJump}
+            {text}
         </Panel>;
     }
 

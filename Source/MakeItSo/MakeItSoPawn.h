@@ -10,7 +10,9 @@
 
 #ifdef WEB_SERVER_TEST
 class APawn {
+public:
 	virtual void Restart() {};
+	FVector GetActorLocation() { return FVector::ZeroVector; }
 };
 class UStaticMeshComponent { };
 class USpringArmComponent { };

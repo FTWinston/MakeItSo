@@ -72,4 +72,10 @@ export class Vector3 implements Vector<Vector3> {
             this.x * other.y - this.y * other.x
         );
     }
+
+    static distanceSq(a: Vector3, b: Vector3) {
+        return (a.x - b.x) * (a.x - b.x)
+             + (a.y - b.y) * (a.y - b.y)
+             + (a.z - b.z) * (a.z - b.z);
+    }
 }

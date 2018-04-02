@@ -658,6 +658,21 @@ $lightBackground: #999;
   background-color: #9f9bfd;
   color: #e0e5f8; }
 
+.warpPathListItem--inRange.warpPathListItem--selected {
+  background-color: #009900; }
+
+.warpPathListItem--outOfRange.warpPathListItem--selected {
+  background-color: #990000; }
+
+.warpPathListItem--inRange:not(.warpPathListItem--selected) .warpPathListItem__name {
+  color: #00dd00; }
+
+.warpPathListItem--outOfRange:not(.warpPathListItem--selected) .warpPathListItem__name {
+  color: #ff0000; }
+
+.warpPathListItem--invalid {
+  color: #ff0000; }
+
 .warpPathListItem__name {
   font-weight: bold; }
 

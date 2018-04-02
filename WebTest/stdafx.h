@@ -180,6 +180,13 @@ struct FVector {
 			|| this->Y != Q.Y
 			|| this->Z != Q.Z;
 	}
+
+	static float DistSquared(const FVector &a, const FVector &b)
+	{
+		return (a.X - b.X) * (a.X - b.X)
+			 + (a.Y - b.Y) * (a.Y - b.Y)
+			 + (a.Z - b.Z) * (a.Z - b.Z);
+	}
 };
 
 struct FQuat {

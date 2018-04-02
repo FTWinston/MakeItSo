@@ -45,7 +45,7 @@
 #define MAPCONTAINS(set, key) (set.find(key) != set.end())
 #define SETREMOVE(set, key) set.erase(std::remove(set.begin(), set.end(), key), set.end());
 #define MAPREMOVE(set, key) set.erase(key);
-#define APPENDINT(str, i) str += std::to_wstring(i)
+#define APPENDINT(str, i) str += std::to_wstring((int32)i)
 #define STRFIND(str, val) str.find(val)
 #define CHOPSTART(str, pos) str = str.substr(pos)
 #define PAIRKEY(pair) pair.first

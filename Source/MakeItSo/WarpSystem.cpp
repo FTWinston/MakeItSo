@@ -14,17 +14,23 @@
 #define JUMP_CHARGE_GENERATED_PER_TICK 1
 #define JUMP_CHARGE_CONSUMPTION_PER_TICK 4
 
+#define JUMP_START_RANGE 100.0f
+#define JUMP_START_RANGE_SQ JUMP_START_RANGE * JUMP_START_RANGE
+
+#define LOCATION_UPDATE_THRESHOLD 5
+#define LOCATION_UPDATE_THRESHOLD_SQ LOCATION_UPDATE_THRESHOLD * LOCATION_UPDATE_THRESHOLD
+
 UWarpSystem::UWarpSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.TickInterval = 0.2f;
-	PrimaryComponentTick.SetTickFunctionEnable(false);
+	PrimaryComponentTick.SetTickFunctionEnable(true);
 
 	calculationStepsRemaining = 0;
 	calculationStartPower = 0;
 	calculationCurrentVelocity = FVector::ZeroVector;
 
-	tickMode = TickMode::Tick_Calculating;
+	jumpState = SystemJumpState::JUMP_STATE_IDLE;
 	nextJumpID = 1;
 	activeJumpID = 0;
 	jumpCharge = 0;
@@ -34,7 +40,6 @@ void UWarpSystem::ResetData()
 {
 	CleanupAfterCalculation();
 
-	tickMode = TickMode::Tick_Calculating;
 	nextJumpID = 1;
 	activeJumpID = 0;
 	jumpCharge = 0;
@@ -113,6 +118,13 @@ void UWarpSystem::SendAllData_Implementation()
 {
 	SendSystemFixed("warp_clear");
 
+	auto shipLocation = crewManager->GetShipPawn()->GetActorLocation();
+	if (FVector::DistSquared(lastSentLocation, shipLocation) > LOCATION_UPDATE_THRESHOLD_SQ)
+	{
+		SendShipLocation();
+		lastSentLocation = shipLocation;
+	}
+
 	for (auto pathInfo : calculatedJumps)
 	{
 		auto path = PAIRVALUE(pathInfo);
@@ -121,9 +133,9 @@ void UWarpSystem::SendAllData_Implementation()
 
 	if (activeJumpID != 0)
 	{	
-		if (tickMode == TickMode::Tick_Jumping)
+		if (jumpState == SystemJumpState::JUMP_STATE_JUMPING)
 			SendJumpInProgress();
-		else if (tickMode == TickMode::Tick_Charging)
+		else if (jumpState == SystemJumpState::JUMP_STATE_CHARGING)
 			DetermineAndSendJumpCharge();
 	}
 }
@@ -165,18 +177,20 @@ void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator
 	calculationCurrentVelocity = direction.Vector() * power;
 	calculationStepsRemaining = NUM_WARP_JUMP_STEPS - 1;
 
-	tickMode = TickMode::Tick_Calculating;
-	PrimaryComponentTick.SetTickFunctionEnable(true);
+	jumpState = SystemJumpState::JUMP_STATE_CALCULATING;
 }
 
 void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	switch (tickMode) {
-	case TickMode::Tick_Calculating:
+	// TODO: if ship position has changed by threshold, resend position
+	SendShipLocation();
+
+	switch (jumpState) {
+	case SystemJumpState::JUMP_STATE_CALCULATING:
 		TickCalculating(DeltaTime); break;
-	case TickMode::Tick_Charging:
+	case SystemJumpState::JUMP_STATE_CHARGING:
 		TickCharging(DeltaTime); break;
-	case TickMode::Tick_Jumping:
+	case SystemJumpState::JUMP_STATE_JUMPING:
 		TickJumping(DeltaTime); break;
 	}
 }
@@ -238,7 +252,7 @@ void UWarpSystem::TickCharging(float DeltaTime)
 		return;
 	}
 
-	PrimaryComponentTick.SetTickFunctionEnable(false);
+	jumpState = JUMP_STATE_IDLE;
 	jumpCharge = requiredCharge;
 }
 
@@ -249,27 +263,13 @@ int UWarpSystem::DetermineAndSendJumpCharge()
 	int32 chargeSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * (requiredCharge - jumpCharge) / JUMP_CHARGE_GENERATED_PER_TICK);
 
 	FString output = TEXT("warp_charge_jump ");
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(activeJumpID);
-#else
-	output += std::to_wstring(activeJumpID);
-#endif
+	APPENDINT(output, activeJumpID);
 	output += TEXT(" ");
-
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(chargeSecsRemaining);
-#else
-	output += std::to_wstring(chargeSecsRemaining);
-#endif
-
+	APPENDINT(output, chargeSecsRemaining);
 	output += TEXT(" ");
 
 	int32 progress = FMath::Min(100, 100 * jumpCharge / requiredCharge);
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(progress);
-#else
-	output += std::to_wstring(progress);
-#endif
+	APPENDINT(output, progress);
 
 	SendSystem(output);
 
@@ -284,19 +284,25 @@ void UWarpSystem::TickJumping(float DeltaTime)
 		return;
 	}
 
-	PrimaryComponentTick.SetTickFunctionEnable(false);
+	jumpState = JUMP_STATE_IDLE;
 	jumpCharge = 0;
 
 	SendSystemFixed("warp_cancel_jump");
 	crewManager->GetShipPawn()->FinishWarpJump(calculatedJumps[activeJumpID]);
 
-	// TODO: delete the jump that was just done
+	// delete the jump that was just done
+	MAPREMOVE(calculatedJumps, activeJumpID);
+	if (ISCLIENT())
+	{
+		SendPathDeletion(activeJumpID, false);
+	}
+
 	activeJumpID = 0;
 }
 
 void UWarpSystem::CleanupAfterCalculation()
 {
-	PrimaryComponentTick.SetTickFunctionEnable(false);
+	jumpState = SystemJumpState::JUMP_STATE_IDLE;
 
 	calculationStepsRemaining = 0;
 	calculationStartPower = 0;
@@ -371,11 +377,7 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 {
 	FString output = TEXT("warp_ext_path ");
 
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(nextJumpID);
-#else
-	output += std::to_wstring(nextJumpID);
-#endif
+	APPENDINT(output, nextJumpID);
 	AddPointToOutput(output, newPoint);
 
 	SendSystem(output);
@@ -384,19 +386,12 @@ void UWarpSystem::AddCalculationStep(FVector newPoint)
 void UWarpSystem::SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps)
 {
 	FString output = TEXT("warp_add_path ");
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(pathID);
-	output.Append(TEXT(" "));
-	output.AppendInt((int32)pathStatus);
-	output.Append(TEXT(" "));
-	output.AppendInt((int32)jumpPower);
-#else
-	output += std::to_wstring(pathID);
+	
+	APPENDINT(output, pathID);
 	output += TEXT(" ");
-	output += std::to_wstring((int32)pathStatus);
+	APPENDINT(output, pathStatus);
 	output += TEXT(" ");
-	output += std::to_wstring((int32)jumpPower);
-#endif
+	APPENDINT(output, jumpPower);
 
 	for (auto point : positionSteps)
 		AddPointToOutput(output, point);
@@ -410,33 +405,36 @@ void UWarpSystem::SendPathDeletion(int32 pathID, bool displayInvalid) { SendPath
 void UWarpSystem::SendPathDeletion_Implementation(int32 pathID, bool displayInvalid)
 {
 	FString output = TEXT("warp_rem_path ");
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(pathID);
-#else
-	output += std::to_wstring(pathID);
-#endif
+
+	APPENDINT(output, pathID);
 	output += displayInvalid ? TEXT(" 1") : TEXT(" 0");
 
 	SendSystem(output);
 }
 
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendShipLocation() { SendShipLocation_Implementation(); }
+#endif
+void UWarpSystem::SendShipLocation_Implementation()
+{
+	FString output = TEXT("warp_ship_position ");
+	auto loc = crewManager->GetShipPawn()->GetActorLocation();
+
+	APPENDINT(output, loc.X);
+	output += TEXT(" ");
+	APPENDINT(output, loc.Y);
+	output += TEXT(" ");
+	APPENDINT(output, loc.Z);
+}
+
 void UWarpSystem::AddPointToOutput(FString &output, FVector point)
 {
-#ifndef WEB_SERVER_TEST
 	output += TEXT(" ");
-	output.AppendInt((int32)point.X);
+	APPENDINT(output, point.X);
 	output += TEXT(" ");
-	output.AppendInt((int32)point.Y);
+	APPENDINT(output, point.Y);
 	output += TEXT(" ");
-	output.AppendInt((int32)point.Z);
-#else
-	output += TEXT(" ");
-	output += std::to_wstring((int)point.X);
-	output += TEXT(" ");
-	output += std::to_wstring((int)point.Y);
-	output += TEXT(" ");
-	output += std::to_wstring((int)point.Z);
-#endif
+	APPENDINT(output, point.Z);
 }
 
 bool UWarpSystem::DeleteJump_Validate(int32 jumpID)
@@ -462,7 +460,7 @@ bool UWarpSystem::PrepareWarpJump_Validate(int32 jumpID)
 void UWarpSystem::PrepareWarpJump_Implementation(int32 jumpID)
 {
 	activeJumpID = jumpID;
-	tickMode = TickMode::Tick_Charging;
+	jumpState = SystemJumpState::JUMP_STATE_CHARGING;
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 	
 	DetermineAndSendJumpCharge();
@@ -484,10 +482,28 @@ bool UWarpSystem::PerformWarpJump_Validate()
 
 void UWarpSystem::PerformWarpJump_Implementation()
 {
-	tickMode = TickMode::Tick_Jumping;
+	auto jump = calculatedJumps[activeJumpID];
+	auto ship = crewManager->GetShipPawn();
+
+	// check there's sufficient charge for this jump
+	if (jumpCharge < jump->JumpPower)
+	{
+		SendSystemFixed("warp_jump_failed");
+		return;
+	}
+
+	// check jump is in range
+	auto distanceFromStartSq = FVector::DistSquared(jump->StartPosition(), ship->GetActorLocation());
+	if (distanceFromStartSq > JUMP_START_RANGE_SQ)
+	{
+		SendSystemFixed("warp_jump_failed");
+		return;
+	}
+
+	jumpState = SystemJumpState::JUMP_STATE_JUMPING;
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 
-	crewManager->GetShipPawn()->StartWarpJump(calculatedJumps[activeJumpID]);
+	ship->StartWarpJump(jump);
 
 	SendJumpInProgress();
 }
@@ -497,18 +513,9 @@ void UWarpSystem::SendJumpInProgress()
 	int32 jumpSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * jumpCharge / JUMP_CHARGE_CONSUMPTION_PER_TICK);
 
 	FString output = TEXT("warp_jump ");
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(activeJumpID);
-#else
-	output += std::to_wstring(activeJumpID);
-#endif
+	APPENDINT(output, activeJumpID);
 	output += TEXT(" ");
-
-#ifndef WEB_SERVER_TEST
-	output.AppendInt(jumpSecsRemaining);
-#else
-	output += std::to_wstring(jumpSecsRemaining);
-#endif
+	APPENDINT(output, jumpSecsRemaining);
 
 	SendSystem(output);
 }

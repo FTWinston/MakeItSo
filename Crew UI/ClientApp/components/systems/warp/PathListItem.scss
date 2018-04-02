@@ -13,6 +13,26 @@
     color: $colorHighlight;
 }
 
+.warpPathListItem--inRange.warpPathListItem--selected {
+    background-color: $colorGoodDark;
+}
+
+.warpPathListItem--outOfRange.warpPathListItem--selected {
+    background-color: $colorBadDark;
+}
+
+.warpPathListItem--inRange:not(.warpPathListItem--selected) .warpPathListItem__name {
+    color: $colorGoodLight;
+}
+
+.warpPathListItem--outOfRange:not(.warpPathListItem--selected) .warpPathListItem__name {
+    color: $colorBadLight;
+}
+
+.warpPathListItem--invalid {
+    color: $colorBadLight;
+}
+
 .warpPathListItem__name {
     font-weight: bold;
 }

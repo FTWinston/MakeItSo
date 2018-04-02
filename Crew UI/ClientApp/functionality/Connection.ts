@@ -201,6 +201,19 @@ export class Connection {
                 store.dispatch(warpActions.setScreenStatus(WarpScreenStatus.Viewing));
                 break;
             }
+            case 'warp_jump_failed': {
+                // TODO: handle "jump failed" better, idk...
+                store.dispatch(warpActions.setScreenStatus(WarpScreenStatus.Charging));
+                break;
+            }
+            case 'warp_ship_pos': {
+                let vals = data.split(' ');
+                let x = parseInt(vals[0]);
+                let y = parseInt(vals[1]);
+                let z = parseInt(vals[2]);
+                store.dispatch(warpActions.setShipPosition(x, y, z));
+                break;
+            }
             case 'warp_jump': {
                 let vals = data.split(' ');
                 let id = parseInt(vals[0]);

@@ -15,29 +15,11 @@ class MAKEITSO_API UWarpSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
-	enum JumpPathStatus // matches enum in JumpPath.ts
-	{
-		Calculating = 1,
-		Invalid = 2,
-		Plotted = 3,
-		//InRange = 4
-	};
-
 	UWarpSystem();
 	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void TickCalculating(float DeltaTime);
-	void TickCharging(float DeltaTime);
-	int DetermineAndSendJumpCharge();
-	void TickJumping(float DeltaTime);
-protected:
-	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Warp; }
-
-#ifdef WEB_SERVER_TEST
-	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;
-#endif
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void StartJumpCalculation(FVector startPos, FRotator direction, float power);
@@ -73,13 +55,34 @@ protected:
 	void CancelWarpJump_Implementation();
 #endif
 
+protected:
+	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Warp; }
+
+#ifdef WEB_SERVER_TEST
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;
+#endif
+
 private:
-	enum TickMode {
-		Tick_Calculating,
-		Tick_Charging,
-		Tick_Jumping,
+	void TickCalculating(float DeltaTime);
+	void TickCharging(float DeltaTime);
+	void TickJumping(float DeltaTime);
+	int DetermineAndSendJumpCharge();
+
+	enum JumpPathStatus // matches enum in JumpPath.ts
+	{
+		Calculating = 1,
+		Invalid = 2,
+		Plotted = 3,
+		//InRange = 4
 	};
-	TickMode tickMode;
+
+	enum SystemJumpState {
+		JUMP_STATE_IDLE,
+		JUMP_STATE_CALCULATING,
+		JUMP_STATE_CHARGING,
+		JUMP_STATE_JUMPING,
+	};
+	SystemJumpState jumpState;
 
 	void SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps);
 
@@ -87,6 +90,14 @@ private:
 	void SendPathDeletion(int32 pathID, bool displayInvalid);
 #ifdef WEB_SERVER_TEST
 	void SendPathDeletion_Implementation(int32 pathID, bool displayInvalid);
+#endif
+
+	FVector lastSentLocation;
+
+	UFUNCTION(Client, Reliable)
+	void SendShipLocation();
+#ifdef WEB_SERVER_TEST
+	void SendShipLocation_Implementation();
 #endif
 
 	void AddCalculationStep(FVector newPoint);

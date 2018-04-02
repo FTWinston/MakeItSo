@@ -1,6 +1,6 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-import { Vector3 } from '~/functionality';
 import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
+import { Vector3 } from '~/functionality/math/Vector3';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -19,6 +19,8 @@ export interface WarpState {
     activePath?: JumpPath;
     jumpEndTime?: Date;
     chargeCompletion: number;
+    jumpStartEntranceRange: number;
+    shipPosition: Vector3;
 }
 
 // -----------------
@@ -59,6 +61,11 @@ interface SetScreenStatusAction {
     status: WarpScreenStatus;
 }
 
+interface SetShipPositionAction {
+    type: 'SET_SHIP_POSITION';
+    pos: Vector3;
+}
+
 interface ChargeJumpAction {
     type: 'CHARGE_JUMP';
     pathID: number;
@@ -80,7 +87,7 @@ interface SelectPathAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = ClearPathsAction | AddPathAction | ExtendPathAction | SetPathStatusAction | RemovePathAction |
-                   SetScreenStatusAction | ChargeJumpAction | PerformJumpAction | SelectPathAction;
+                   SetScreenStatusAction | SetShipPositionAction | ChargeJumpAction | PerformJumpAction | SelectPathAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -115,6 +122,10 @@ export const actionCreators = {
         type: 'SET_WARP_STATUS',
         status: status,
     },
+    setShipPosition: (x: number, y: number, z: number) => <SetShipPositionAction> {
+        type: 'SET_SHIP_POSITION',
+        pos: new Vector3(x, y, z),
+    },
     chargeJump: (pathID: number, duration: number, completion: number) => {
         let endTime = new Date();
         endTime.setSeconds(endTime.getSeconds() + duration);
@@ -136,11 +147,9 @@ export const actionCreators = {
             endTime: endTime,
         };
     },
-    selectPath: (pathID: number | undefined) => {
-        return <SelectPathAction> {
-            type: 'SELECT_PATH',
-            pathID: pathID,
-        };
+    selectPath: (pathID: number | undefined) => <SelectPathAction>{
+        type: 'SELECT_PATH',
+        pathID: pathID,
     }
 };
 
@@ -151,6 +160,8 @@ const unloadedState: WarpState = {
     paths: [],
     status: WarpScreenStatus.Viewing,
     chargeCompletion: 0,
+    jumpStartEntranceRange: 100,
+    shipPosition: new Vector3(0, 0, 0),
 };
 
 export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action) => {
@@ -167,8 +178,14 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             return retVal;
         }
         case 'ADD_PATH': {
-            let addingPath = new JumpPath(action.id, action.power, action.status, action.points);
+            // determine if path is in range of ship or not
+            let pathStatus = action.status;
+            if (pathStatus === JumpPathStatus.Plotted && isInJumpRange(state, action.points[0])) {
+                pathStatus = JumpPathStatus.InRange;
+            }
+
             let pathIsNew = true;
+            let addingPath = new JumpPath(action.id, action.power, pathStatus, action.points);
 
             // if path ID already exists, overwrite. Otherwise, add.
             let paths = state.paths.map((path, index) => {
@@ -277,10 +294,34 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                 path = paths.length > 0 ? paths[0] : undefined;
             }
 
+            if (state.activePath !== undefined) {
+                state.activePath.highlighted = false;
+            }
+            if (path !== undefined) {
+                path.highlighted = true;
+            }
+
             return {
                 ...state,
                 activePath: path,
             };
+        }
+        case 'SET_SHIP_POSITION': {
+            // update stored paths, indicating if they're in range or not
+            let paths = state.paths.map((path, index) => updatePathStatus(path, state));
+
+            let activePath = state.activePath;
+            if (activePath !== undefined) { 
+                const prev = activePath;
+                activePath = paths.filter(p => p.id === prev.id)[0];
+            }
+            
+            return {
+                ...state,
+                shipPosition: action.pos,
+                paths: paths,
+                activePath: activePath,
+            }
         }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
@@ -289,3 +330,22 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
 
     return state || unloadedState;
 };
+
+function isInJumpRange(state: WarpState, point: Vector3) {
+    let distSq = Vector3.distanceSq(state.shipPosition, point);
+    return distSq < state.jumpStartEntranceRange * state.jumpStartEntranceRange;
+}
+
+function updatePathStatus(path: JumpPath, state: WarpState) {
+    if (path.status !== JumpPathStatus.InRange && path.status !== JumpPathStatus.Plotted) {
+        return path;
+    }
+
+    let status = isInJumpRange(state, path.points[0])
+        ? JumpPathStatus.InRange : JumpPathStatus.Plotted;
+    if (path.status === status) {
+        return path;
+    }
+
+    return new JumpPath(path.id, path.power, status, path.points);
+}

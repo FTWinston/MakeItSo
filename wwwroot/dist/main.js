@@ -125,22 +125,22 @@ renderApp();
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(22);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["d"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["c"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(15);
 /* unused harmony reexport ButtonSet */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Canvas__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Canvas__ = __webpack_require__(16);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_2__Canvas__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Choice__ = __webpack_require__(41);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_3__Choice__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Field__ = __webpack_require__(42);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_4__Field__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__ = __webpack_require__(17);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Icons__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Icons__ = __webpack_require__(18);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_6__Icons__["b"]; });
 /* unused harmony reexport renderIcon */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__NumericTextbox__ = __webpack_require__(43);
@@ -151,9 +151,9 @@ renderApp();
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_9__ProgressBar__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Screen__ = __webpack_require__(46);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_10__Screen__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__Textbox__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__Textbox__ = __webpack_require__(20);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_11__Textbox__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__TouchArea__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__TouchArea__ = __webpack_require__(21);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_12__TouchArea__["a"]; });
 
 
@@ -357,7 +357,7 @@ var reducer = function (state, rawAction) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_general_Icons__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_general_Icons__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__buttons_scss__ = __webpack_require__(112);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__buttons_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__buttons_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -455,7 +455,7 @@ var Button = (function (_super) {
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_0__Matrix__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Vector2__ = __webpack_require__(96);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_1__Vector2__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Vector3__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Vector3__ = __webpack_require__(13);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_2__Vector3__["a"]; });
 
 
@@ -666,9 +666,88 @@ var mapStateToProps = function (state) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Vector3; });
+var Vector3 = (function () {
+    function Vector3(x, y, z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+    Vector3.prototype.clone = function () {
+        return new Vector3(this.x, this.y, this.z);
+    };
+    Vector3.prototype.add = function (other) {
+        this.x += other.x;
+        this.y += other.y;
+        this.z += other.z;
+        return this;
+    };
+    Vector3.prototype.subtract = function (other) {
+        this.x -= other.x;
+        this.y -= other.y;
+        this.z -= other.z;
+        return this;
+    };
+    Vector3.prototype.scale = function (factor) {
+        this.x *= factor;
+        this.y *= factor;
+        this.z *= factor;
+        return this;
+    };
+    Vector3.prototype.isBetween = function (min, max) {
+        return this.x >= min.x && this.x <= max.x
+            && this.y >= min.y && this.y <= max.y
+            && this.z >= min.z && this.z <= max.z;
+    };
+    Vector3.prototype.rotateX = function (angle) {
+        var cosa = Math.cos(angle);
+        var sina = Math.sin(angle);
+        var prevY = this.y;
+        this.y = this.y * cosa + this.z * sina;
+        this.z = this.z * cosa - prevY * sina;
+        return this;
+    };
+    Vector3.prototype.rotateY = function (angle) {
+        var cosa = Math.cos(angle);
+        var sina = Math.sin(angle);
+        var prevZ = this.z;
+        this.z = this.z * cosa + this.x * sina;
+        this.x = this.x * cosa - prevZ * sina;
+        return this;
+    };
+    Vector3.prototype.rotateZ = function (angle) {
+        var cosa = Math.cos(angle);
+        var sina = Math.sin(angle);
+        var prevX = this.x;
+        this.x = this.x * cosa + this.y * sina;
+        this.y = this.y * cosa - prevX * sina;
+        return this;
+    };
+    Vector3.prototype.dot = function (other) {
+        return this.x * other.x + this.y * other.y + this.z * other.z;
+    };
+    Vector3.prototype.cross = function (other) {
+        return new Vector3(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z, this.x * other.y - this.y * other.x);
+    };
+    Vector3.distanceSq = function (a, b) {
+        return (a.x - b.x) * (a.x - b.x)
+            + (a.y - b.y) * (a.y - b.y)
+            + (a.z - b.z) * (a.z - b.z);
+    };
+    return Vector3;
+}());
+
+
+
+/***/ }),
+/* 14 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_sensors__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality_math_Vector3__ = __webpack_require__(13);
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -677,6 +756,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
+
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -710,6 +790,10 @@ var actionCreators = {
         type: 'SET_WARP_STATUS',
         status: status,
     }); },
+    setShipPosition: function (x, y, z) { return ({
+        type: 'SET_SHIP_POSITION',
+        pos: new __WEBPACK_IMPORTED_MODULE_1__functionality_math_Vector3__["a" /* Vector3 */](x, y, z),
+    }); },
     chargeJump: function (pathID, duration, completion) {
         var endTime = new Date();
         endTime.setSeconds(endTime.getSeconds() + duration);
@@ -729,12 +813,10 @@ var actionCreators = {
             endTime: endTime,
         };
     },
-    selectPath: function (pathID) {
-        return {
-            type: 'SELECT_PATH',
-            pathID: pathID,
-        };
-    }
+    selectPath: function (pathID) { return ({
+        type: 'SELECT_PATH',
+        pathID: pathID,
+    }); }
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
@@ -742,6 +824,8 @@ var unloadedState = {
     paths: [],
     status: 0 /* Viewing */,
     chargeCompletion: 0,
+    jumpStartEntranceRange: 100,
+    shipPosition: new __WEBPACK_IMPORTED_MODULE_1__functionality_math_Vector3__["a" /* Vector3 */](0, 0, 0),
 };
 var reducer = function (state, rawAction) {
     var action = rawAction;
@@ -753,8 +837,13 @@ var reducer = function (state, rawAction) {
             return retVal;
         }
         case 'ADD_PATH': {
-            var addingPath_1 = new __WEBPACK_IMPORTED_MODULE_0__functionality_sensors__["a" /* JumpPath */](action.id, action.power, action.status, action.points);
+            // determine if path is in range of ship or not
+            var pathStatus = action.status;
+            if (pathStatus === 3 /* Plotted */ && isInJumpRange(state, action.points[0])) {
+                pathStatus = 4 /* InRange */;
+            }
             var pathIsNew_1 = true;
+            var addingPath_1 = new __WEBPACK_IMPORTED_MODULE_0__functionality_sensors__["a" /* JumpPath */](action.id, action.power, pathStatus, action.points);
             // if path ID already exists, overwrite. Otherwise, add.
             var paths = state.paths.map(function (path, index) {
                 if (path.id === action.id) {
@@ -822,7 +911,23 @@ var reducer = function (state, rawAction) {
                 var paths = state.paths.filter(function (p) { return p.id === action.pathID; });
                 path = paths.length > 0 ? paths[0] : undefined;
             }
+            if (state.activePath !== undefined) {
+                state.activePath.highlighted = false;
+            }
+            if (path !== undefined) {
+                path.highlighted = true;
+            }
             return __assign({}, state, { activePath: path });
+        }
+        case 'SET_SHIP_POSITION': {
+            // update stored paths, indicating if they're in range or not
+            var paths = state.paths.map(function (path, index) { return updatePathStatus(path, state); });
+            var activePath = state.activePath;
+            if (activePath !== undefined) {
+                var prev_1 = activePath;
+                activePath = paths.filter(function (p) { return p.id === prev_1.id; })[0];
+            }
+            return __assign({}, state, { shipPosition: action.pos, paths: paths, activePath: activePath });
         }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
@@ -830,17 +935,32 @@ var reducer = function (state, rawAction) {
     }
     return state || unloadedState;
 };
+function isInJumpRange(state, point) {
+    var distSq = __WEBPACK_IMPORTED_MODULE_1__functionality_math_Vector3__["a" /* Vector3 */].distanceSq(state.shipPosition, point);
+    return distSq < state.jumpStartEntranceRange * state.jumpStartEntranceRange;
+}
+function updatePathStatus(path, state) {
+    if (path.status !== 4 /* InRange */ && path.status !== 3 /* Plotted */) {
+        return path;
+    }
+    var status = isInJumpRange(state, path.points[0])
+        ? 4 /* InRange */ : 3 /* Plotted */;
+    if (path.status === status) {
+        return path;
+    }
+    return new __WEBPACK_IMPORTED_MODULE_0__functionality_sensors__["a" /* JumpPath */](path.id, path.power, status, path.points);
+}
 
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ButtonSet; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(105);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -898,7 +1018,7 @@ var ButtonSet = (function (_super) {
 
 
 /***/ }),
-/* 15 */
+/* 16 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -954,14 +1074,14 @@ var Canvas = (function (_super) {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FlexibleCanvas; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Canvas__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Canvas__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss__ = __webpack_require__(108);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -1031,7 +1151,7 @@ var FlexibleCanvas = (function (_super) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1145,14 +1265,14 @@ function renderIcon(icon, size) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SensorView; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TouchArea__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TouchArea__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functionality__ = __webpack_require__(4);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1416,7 +1536,7 @@ var SensorView = (function (_super) {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1474,7 +1594,7 @@ var Textbox = (function (_super) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1483,7 +1603,7 @@ var Textbox = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_hammerjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas__ = __webpack_require__(17);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -1709,7 +1829,7 @@ var TouchArea = (function (_super) {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1728,7 +1848,7 @@ var TouchArea = (function (_super) {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1966,7 +2086,7 @@ var FeedbackGroup = (function (_super) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2012,7 +2132,7 @@ var HeadingReadout = (function (_super) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2052,7 +2172,7 @@ var SpeedReadout = (function (_super) {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2127,79 +2247,6 @@ var Cube = (function () {
     };
     Cube.towardsCamera = new __WEBPACK_IMPORTED_MODULE_0__functionality_math__["a" /* Vector3 */](0, 0, 1);
     return Cube;
-}());
-
-
-
-/***/ }),
-/* 26 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Vector3; });
-var Vector3 = (function () {
-    function Vector3(x, y, z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
-    Vector3.prototype.clone = function () {
-        return new Vector3(this.x, this.y, this.z);
-    };
-    Vector3.prototype.add = function (other) {
-        this.x += other.x;
-        this.y += other.y;
-        this.z += other.z;
-        return this;
-    };
-    Vector3.prototype.subtract = function (other) {
-        this.x -= other.x;
-        this.y -= other.y;
-        this.z -= other.z;
-        return this;
-    };
-    Vector3.prototype.scale = function (factor) {
-        this.x *= factor;
-        this.y *= factor;
-        this.z *= factor;
-        return this;
-    };
-    Vector3.prototype.isBetween = function (min, max) {
-        return this.x >= min.x && this.x <= max.x
-            && this.y >= min.y && this.y <= max.y
-            && this.z >= min.z && this.z <= max.z;
-    };
-    Vector3.prototype.rotateX = function (angle) {
-        var cosa = Math.cos(angle);
-        var sina = Math.sin(angle);
-        var prevY = this.y;
-        this.y = this.y * cosa + this.z * sina;
-        this.z = this.z * cosa - prevY * sina;
-        return this;
-    };
-    Vector3.prototype.rotateY = function (angle) {
-        var cosa = Math.cos(angle);
-        var sina = Math.sin(angle);
-        var prevZ = this.z;
-        this.z = this.z * cosa + this.x * sina;
-        this.x = this.x * cosa - prevZ * sina;
-        return this;
-    };
-    Vector3.prototype.rotateZ = function (angle) {
-        var cosa = Math.cos(angle);
-        var sina = Math.sin(angle);
-        var prevX = this.x;
-        this.x = this.x * cosa + this.y * sina;
-        this.y = this.y * cosa - prevX * sina;
-        return this;
-    };
-    Vector3.prototype.dot = function (other) {
-        return this.x * other.x + this.y * other.y + this.z * other.z;
-    };
-    Vector3.prototype.cross = function (other) {
-        return new Vector3(this.y * other.z - this.z * other.y, this.z * other.x - this.x * other.z, this.x * other.y - this.y * other.x);
-    };
-    return Vector3;
 }());
 
 
@@ -5404,7 +5451,7 @@ module.exports = (__webpack_require__(5))(139);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Choice; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(106);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Choice_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -5541,7 +5588,7 @@ var Field = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return NumericTextbox; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox__ = __webpack_require__(20);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Textbox_scss__ = __webpack_require__(33);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Textbox_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Textbox_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -6803,9 +6850,9 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__ = __webpack_require__(22);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__HeadingReadout__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SpeedReadout__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__HeadingReadout__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SpeedReadout__ = __webpack_require__(25);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -6872,10 +6919,10 @@ var ButtonHelm = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_hammerjs__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_general__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FieldGroup__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__HeadingReadout__ = __webpack_require__(23);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SpeedReadout__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__HeadingReadout__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SpeedReadout__ = __webpack_require__(25);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7447,7 +7494,9 @@ var JumpCountdown = (function (_super) {
         var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.cancel(); } }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.jump, clicked: function () { return _this.props.jump(); } })));
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charged", footer: footerButtons }, words.readyToJump);
+        var text = this.props.path !== undefined && this.props.path.status === 4 /* InRange */
+            ? words.readyToJump : words.outOfRange;
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charged", footer: footerButtons }, text);
     };
     JumpCountdown.prototype.renderJumping = function () {
         var words = this.props.text.systems.warp;
@@ -7628,12 +7677,30 @@ var PathListItem = (function (_super) {
         var points = this.props.path.points;
         var from = points.length > 0 ? this.writeCoord(points[0]) : words.unknownPosition;
         var to = points.length > 1 ? this.writeCoord(points[points.length - 1]) : words.unknownPosition;
-        var classes = this.props.selected ? 'warpPathListItem warpPathListItem--selected' : 'warpPathListItem';
+        var classes = 'warpPathListItem';
+        if (this.props.selected) {
+            classes += ' warpPathListItem--selected';
+        }
+        var outOfRange;
+        switch (this.props.path.status) {
+            case 4 /* InRange */:
+                classes += ' warpPathListItem--inRange';
+                break;
+            case 3 /* Plotted */:
+                outOfRange = ': ' + words.outOfRange;
+                classes += ' warpPathListItem--outOfRange';
+                break;
+            case 2 /* Invalid */:
+                classes += ' warpPathListItem--invalid';
+                break;
+        }
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, onClickCapture: function () { return _this.props.onSelected(_this.props.path); } },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "warpPathListItem__name" },
-                words.jump,
-                " #",
-                this.props.path.id),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "warpPathListItem__name" },
+                    words.jump,
+                    " #",
+                    this.props.path.id),
+                outOfRange),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "warpPathListItem__points" },
                 words.from,
                 " ",
@@ -7668,8 +7735,8 @@ var PathListItem = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Warp__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_general_SensorView__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Warp__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_general_SensorView__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__JumpCountdown__ = __webpack_require__(75);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__JumpEditor__ = __webpack_require__(76);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__PathList__ = __webpack_require__(77);
@@ -7921,7 +7988,7 @@ var TargetSelected = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TargetSelection; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general_SensorView__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general_SensorView__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TargetList__ = __webpack_require__(83);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -8022,7 +8089,7 @@ var mapStateToProps = function (state) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Crew__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Helm__ = __webpack_require__(31);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Warp__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Warp__ = __webpack_require__(14);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__store_Sensors__ = __webpack_require__(32);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__functionality__ = __webpack_require__(4);
 
@@ -8202,6 +8269,19 @@ var Connection = (function () {
             }
             case 'warp_cancel_jump': {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setScreenStatus(0 /* Viewing */));
+                break;
+            }
+            case 'warp_jump_failed': {
+                // TODO: handle "jump failed" better, idk...
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setScreenStatus(3 /* Charging */));
+                break;
+            }
+            case 'warp_ship_pos': {
+                var vals = data.split(' ');
+                var x = parseInt(vals[0]);
+                var y = parseInt(vals[1]);
+                var z = parseInt(vals[2]);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setShipPosition(x, y, z));
                 break;
             }
             case 'warp_jump': {
@@ -8421,7 +8501,7 @@ var CubeFace = (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return OrientationCube; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(26);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8570,7 +8650,7 @@ var OrientationCube = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(26);
 /* unused harmony reexport Cube */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Orientation__ = __webpack_require__(93);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__Orientation__["a"]; });
@@ -8584,7 +8664,7 @@ var OrientationCube = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Matrix; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Vector3__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Vector3__ = __webpack_require__(13);
 
 var Matrix = (function () {
     function Matrix(elements) {
@@ -8737,6 +8817,7 @@ var JumpPath = (function (_super) {
         _this.power = power;
         _this.status = status;
         _this.points = points;
+        _this.highlighted = false;
         return _this;
     }
     JumpPath.prototype.isBetween = function (min, max) {
@@ -8750,19 +8831,24 @@ var JumpPath = (function (_super) {
     };
     JumpPath.prototype.getShadowRadius = function (display) { return 0; };
     JumpPath.prototype.drawTarget = function (ctx, screenPos, display) {
-        switch (this.status) {
-            case 1 /* Calculating */:
-                ctx.setLineDash([5, 3]);
-            //break; NO BREAK SO THIS USES SAME COLOR AS InRange
-            case 4 /* InRange */:
-                ctx.strokeStyle = '#fff';
-                break;
-            case 2 /* Invalid */:
-                ctx.strokeStyle = '#f66';
-                break;
-            default:
-                ctx.strokeStyle = '#ccc';
-                break;
+        if (this.highlighted) {
+            ctx.strokeStyle = '#fff';
+        }
+        else {
+            switch (this.status) {
+                case 4 /* InRange */:
+                    ctx.strokeStyle = '#cfc';
+                    break;
+                case 2 /* Invalid */:
+                    ctx.strokeStyle = '#f66';
+                    break;
+                case 1 /* Calculating */:
+                    ctx.setLineDash([5, 3]);
+                //break; NO BREAK SO THIS USES SAME COLOR AS default
+                default:
+                    ctx.strokeStyle = '#ccc';
+                    break;
+            }
         }
         ctx.lineWidth = display.onePixel * 3;
         ctx.beginPath();
@@ -8785,10 +8871,14 @@ var JumpPath = (function (_super) {
         }
         ctx.stroke();
         ctx.setLineDash([]);
+        if (!this.highlighted) {
+            ctx.globalAlpha = 0.8;
+        }
         this.drawStartIndicator(ctx, display, firstScreenPos);
         if (this.status !== 1 /* Calculating */) {
             this.drawEndIndicator(ctx, display, lastScreenPos);
         }
+        ctx.globalAlpha = 1;
     };
     JumpPath.prototype.drawStartIndicator = function (ctx, display, screenPos) {
         ctx.strokeStyle = '#0cf';
@@ -9216,6 +9306,7 @@ var words = {
             eta: 'ETA:',
             readyTime: 'Ready to Jump in:',
             readyToJump: 'Ready to Jump',
+            outOfRange: 'Out of Range',
             charging: 'Charging...',
             jumpInProgress: 'Jumping...',
             seconds: 'seconds',
@@ -9249,7 +9340,7 @@ var words = {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(6);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Helm__ = __webpack_require__(31);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Sensors__ = __webpack_require__(32);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Warp__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Warp__ = __webpack_require__(14);
 
 
 
