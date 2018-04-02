@@ -209,6 +209,8 @@ let words: TextLocalisation = {
             eta: 'ETA:',
             readyTime: 'Ready to Jump in:',
             readyToJump: 'Ready to Jump',
+            charging: 'Charging...',
+            jumpInProgress: 'Jumping...',
             seconds: 'seconds',
             startPos: 'Start',
             startPosDescription: 'Location this jump will start from',

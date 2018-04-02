@@ -143,6 +143,8 @@ export interface TextLocalisation {
             eta: string;
             readyTime: string;
             readyToJump: string;
+            charging: string;
+            jumpInProgress: string;
             seconds: string;
             startPos: string;
             startPosDescription: string;

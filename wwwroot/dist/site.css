@@ -360,7 +360,9 @@ $lightBackground: #999;
 
 .panel__header {
   flex-shrink: 0;
-  overflow: hidden; }
+  overflow: hidden;
+  font-size: 1.5em;
+  text-align: center; }
 
 .panel__content {
   flex-grow: 1;
@@ -391,7 +393,8 @@ $lightBackground: #999;
   color: #e0e5f8;
   overflow: visible;
   text-align: center;
-  transition: width 0.2s; }
+  transition: width 0.2s;
+  padding-top: 0.35em; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

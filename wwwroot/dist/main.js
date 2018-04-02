@@ -7432,7 +7432,7 @@ var JumpCountdown = (function (_super) {
         var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.cancel(); } }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.jump, disabled: true })));
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charging", footer: footerButtons },
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charging", footer: footerButtons, headerText: words.charging },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
                 words.readyTime,
                 " ",
@@ -7451,7 +7451,7 @@ var JumpCountdown = (function (_super) {
     };
     JumpCountdown.prototype.renderJumping = function () {
         var words = this.props.text.systems.warp;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--jumping" },
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--jumping", headerText: words.jumpInProgress },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
                 words.eta,
                 " ",
@@ -9216,6 +9216,8 @@ var words = {
             eta: 'ETA:',
             readyTime: 'Ready to Jump in:',
             readyToJump: 'Ready to Jump',
+            charging: 'Charging...',
+            jumpInProgress: 'Jumping...',
             seconds: 'seconds',
             startPos: 'Start',
             startPosDescription: 'Location this jump will start from',

@@ -92,7 +92,7 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, JumpC
             </Field>
         );
 
-        return <Panel className="warp__jumpCountdown warp__jumpCountdown--charging" footer={footerButtons}>
+        return <Panel className="warp__jumpCountdown warp__jumpCountdown--charging" footer={footerButtons} headerText={words.charging}>
             <div>{words.readyTime} <span className="countdown__number">{this.state.secondsLeft}</span> {words.seconds}</div>
             <ProgressBar value={this.props.completion} maxValue={100} />
         </Panel>;
@@ -124,7 +124,7 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, JumpC
     private renderJumping() {
         let words = this.props.text.systems.warp;
 
-        return <Panel className="warp__jumpCountdown warp__jumpCountdown--jumping">
+        return <Panel className="warp__jumpCountdown warp__jumpCountdown--jumping" headerText={words.jumpInProgress}>
             <div>{words.eta} <span className="countdown__number">{this.state.secondsLeft}</span> {words.seconds}</div>
         </Panel>;
     }
