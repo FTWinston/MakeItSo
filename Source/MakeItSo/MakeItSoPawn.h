@@ -12,7 +12,10 @@
 class APawn {
 public:
 	virtual void Restart() {};
-	FVector GetActorLocation() { return FVector::ZeroVector; }
+	FVector GetActorLocation() { return location; }
+	void SetActorLocation(FVector loc) { location = loc; }
+private:
+	FVector location = FVector::ZeroVector;
 };
 class UStaticMeshComponent { };
 class USpringArmComponent { };

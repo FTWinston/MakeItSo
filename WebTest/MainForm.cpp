@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "MainForm.h"
 #include "CrewManager.h"
+#include "MakeItSoPawn.h"
 #include "ShipSystem.h"
 #include <ctime>
 
@@ -189,4 +190,28 @@ System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, Syst
 	message += L" ";
 	message += std::to_wstring(rand() % 5 + 1); // amount
 	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, CHARARR(message));
+}
+
+System::Void WebTest::MainForm::txtPosX_TextChanged(System::Object^  sender, System::EventArgs^  e)
+{
+	auto ship = crewManager->GetShipPawn();
+
+	float x = int::Parse(txtPosX->Text);
+	ship->SetActorLocation(FVector(x, ship->LocalVelocity.Y, ship->LocalVelocity.Z));
+}
+
+System::Void WebTest::MainForm::txtPosY_TextChanged(System::Object^  sender, System::EventArgs^  e)
+{
+	auto ship = crewManager->GetShipPawn();
+
+	float y = int::Parse(txtPosY->Text);
+	ship->SetActorLocation(FVector(ship->LocalVelocity.X, y, ship->LocalVelocity.Z));
+}
+
+System::Void WebTest::MainForm::txtPosZ_TextChanged(System::Object^  sender, System::EventArgs^  e)
+{
+	auto ship = crewManager->GetShipPawn();
+
+	float z = int::Parse(txtPosZ->Text);
+	ship->SetActorLocation(FVector(ship->LocalVelocity.X, ship->LocalVelocity.Y, z));
 }

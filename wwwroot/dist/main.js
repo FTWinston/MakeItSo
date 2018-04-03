@@ -137,7 +137,7 @@ renderApp();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Choice__ = __webpack_require__(41);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_3__Choice__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Field__ = __webpack_require__(42);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_4__Field__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_4__Field__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__ = __webpack_require__(17);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_5__FlexibleCanvas__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Icons__ = __webpack_require__(18);
@@ -146,7 +146,7 @@ renderApp();
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__NumericTextbox__ = __webpack_require__(43);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return __WEBPACK_IMPORTED_MODULE_7__NumericTextbox__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__Panel__ = __webpack_require__(44);
-/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_8__Panel__["a"]; });
+/* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_8__Panel__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__ProgressBar__ = __webpack_require__(45);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_9__ProgressBar__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__Screen__ = __webpack_require__(46);
@@ -857,7 +857,7 @@ var reducer = function (state, rawAction) {
             }
             // when path is sent again when it finishes calculating, switch screen status
             var status_1 = state.status === 2 /* Calculating */ && action.status !== 1 /* Calculating */
-                ? 0 /* Viewing */
+                ? 4 /* CalculationConfirm */
                 : state.status;
             return __assign({}, state, { paths: paths, status: status_1 });
         }
@@ -879,7 +879,11 @@ var reducer = function (state, rawAction) {
                 }
                 return path;
             });
-            return __assign({}, state, { targets: paths });
+            // if we just calculated this path, it was a failure
+            var status_2 = state.status === 2 /* Calculating */ && action.status !== 1 /* Calculating */
+                ? 3 /* CalculationFailed */
+                : state.status;
+            return __assign({}, state, { paths: paths, status: status_2 });
         }
         case 'REMOVE_PATH': {
             var paths = state.paths.filter(function (paths) { return paths.id !== action.id; });
@@ -898,12 +902,12 @@ var reducer = function (state, rawAction) {
         case 'CHARGE_JUMP': {
             var paths = state.paths.filter(function (p) { return p.id === action.pathID; });
             var path = paths.length > 0 ? paths[0] : undefined;
-            return __assign({}, state, { status: 3 /* Charging */, activePath: path, jumpEndTime: action.endTime, chargeCompletion: action.completion });
+            return __assign({}, state, { status: 5 /* Charging */, activePath: path, jumpEndTime: action.endTime, chargeCompletion: action.completion });
         }
         case 'DO_JUMP': {
             var paths = state.paths.filter(function (p) { return p.id === action.pathID; });
             var path = paths.length > 0 ? paths[0] : undefined;
-            return __assign({}, state, { status: 4 /* Jumping */, activePath: path, jumpEndTime: action.endTime, chargeCompletion: 100 });
+            return __assign({}, state, { status: 6 /* Jumping */, activePath: path, jumpEndTime: action.endTime, chargeCompletion: 100 });
         }
         case 'SELECT_PATH': {
             var path = void 0;
@@ -6315,13 +6319,13 @@ var GameSetup = (function (_super) {
         var difficulty;
         var hostName;
         if (this.state.gameType === 1 /* Join */) {
-            joinAddress = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { labelText: words.joinAddress, labelBehaviour: true },
+            joinAddress = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { labelText: words.joinAddress, labelBehaviour: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["l" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.joinAddress, placeholder: words.joinAddressPlaceholder, textChanged: function (address) { return _this.setState({ joinAddress: address }); } }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.joinAddressDescription)));
         }
         else {
             if (this.state.gameType !== undefined) {
-                gameMode = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { labelText: words.gameMode },
+                gameMode = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { labelText: words.gameMode },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["m" /* Choice */], { prompt: words.gameModePrompt, color: 0 /* Primary */, vertical: choicesVertical },
                         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["n" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 2 /* Exploration */ }); }, description: words.gameModeExplorationDescription, text: words.gameModeExploration }),
                         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["n" /* ToggleButton */], { activated: function () { return _this.setState({ gameMode: 1 /* Survival */ }); }, description: words.gameModeSurvivalDescription, text: words.gameModeSurvival }),
@@ -6334,23 +6338,23 @@ var GameSetup = (function (_super) {
                     for (var i = 1; i <= 10; i++) {
                         _loop_1(i);
                     }
-                    difficulty = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { labelText: words.difficulty },
+                    difficulty = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { labelText: words.difficulty },
                         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["m" /* Choice */], { prompt: words.difficultyPrompt, color: 2 /* Tertiary */, vertical: this.props.screenWidth < 400 }, levels)));
                 }
                 if (this.state.gameType === 2 /* Host */) {
-                    hostName = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { labelText: words.serverName, labelBehaviour: true },
+                    hostName = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { labelText: words.serverName, labelBehaviour: true },
                         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["l" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.serverName, placeholder: words.serverNamePlaceholder, textChanged: function (name) { return _this.setState({ serverName: name }); } }),
                         __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.serverNameDescription)));
                 }
             }
         }
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { labelText: words.shipName, labelBehaviour: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { labelText: words.shipName, labelBehaviour: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "field__contentRow" },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["l" /* Textbox */], { color: 2 /* Tertiary */, text: this.state.shipName, textChanged: function (name) { return _this.setState({ shipName: name }); } }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { color: 2 /* Tertiary */, noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_4__components_general__["c" /* Icon */].Refresh, clicked: function () { return _this.randomizeName(); }, title: words.shipNameRandom })),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.shipNameDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { labelText: words.gameType },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { labelText: words.gameType },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["m" /* Choice */], { prompt: words.gameTypePrompt, color: 0 /* Primary */, vertical: choicesVertical },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["n" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 0 /* Local */ }); }, description: words.gameTypeLocalDescription, text: words.gameTypeLocal }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["n" /* ToggleButton */], { activated: function () { return _this.setState({ gameType: 1 /* Join */ }); }, description: words.gameTypeJoinDescription, text: words.gameTypeJoin }),
@@ -6359,7 +6363,7 @@ var GameSetup = (function (_super) {
             gameMode,
             difficulty,
             hostName,
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["o" /* ConfirmButton */], { color: 4 /* Quandry */, clicked: function () { return _this.startGame(); }, text: words.startGame, disabled: !this.decideCanStart() }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, clicked: function () { return _this.cancel(); }, text: this.props.text.common.cancel, command: "-setup" })));
     };
@@ -6504,15 +6508,15 @@ var Settings = (function (_super) {
         var hasUserName = this.props.userName.trim().length > 0;
         var inputModeVertical = this.props.screenWidth < 330;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["d" /* Field */], { labelText: words.userName, labelBehaviour: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["e" /* Field */], { labelText: words.userName, labelBehaviour: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["l" /* Textbox */], { color: 0 /* Primary */, text: this.props.userName, textChanged: function (t) { return _this.nameChanged(t); }, placeholder: words.userNamePlaceholder }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.userNameDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["d" /* Field */], { labelText: words.inputMode },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["e" /* Field */], { labelText: words.inputMode },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["m" /* Choice */], { prompt: words.inputModePrompt, color: 1 /* Secondary */, vertical: inputModeVertical },
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["n" /* ToggleButton */], { startActive: this.props.inputMode === 0 /* KeyboardAndMouse */, activated: function () { return _this.inputModeChanged(0 /* KeyboardAndMouse */); }, description: words.inputModeDescriptionKeyboard, text: words.inputModeKeyboard }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["n" /* ToggleButton */], { startActive: this.props.inputMode === 1 /* Touchscreen */, activated: function () { return _this.inputModeChanged(1 /* Touchscreen */); }, description: words.inputModeDescriptionTouch, text: words.inputModeTouch }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["n" /* ToggleButton */], { startActive: this.props.inputMode === 2 /* Gamepad */, disabled: true, activated: function () { return _this.inputModeChanged(2 /* Gamepad */); }, description: words.inputModeDescriptionGamepad, text: words.inputModeGamepad }))),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["d" /* Field */], { centered: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["e" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__components_general__["b" /* PushButton */], { color: 2 /* Tertiary */, disabled: !hasUserName, clicked: function () { return _this.close(); }, text: this.props.text.common.save })),
             "Screen size is ",
             this.props.screenWidth,
@@ -6608,7 +6612,7 @@ var SystemSelection = (function (_super) {
         }
         var settingsButton = __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { color: 2 /* Tertiary */, text: this.props.text.common.settings, clicked: function () { return _this.props.showUserSettings(); } });
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["a" /* Screen */], { heading: words.intro, pageLayout: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { centered: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { centered: true },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("p", null, suggestedGroupings.length === 0 ? undefined : words.suggestionPrompt),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemSelection" },
                     this.renderSystemControls(systemNames.helm, __WEBPACK_IMPORTED_MODULE_3__functionality__["g" /* ShipSystem */].Helm, suggestedGroupings),
@@ -6619,7 +6623,7 @@ var SystemSelection = (function (_super) {
                     this.renderSystemControls(systemNames.damage, __WEBPACK_IMPORTED_MODULE_3__functionality__["g" /* ShipSystem */].DamageControl, suggestedGroupings),
                     this.renderSystemControls(systemNames.comms, __WEBPACK_IMPORTED_MODULE_3__functionality__["g" /* ShipSystem */].Communications, suggestedGroupings),
                     this.renderSystemControls(systemNames.view, __WEBPACK_IMPORTED_MODULE_3__functionality__["g" /* ShipSystem */].ViewScreen, suggestedGroupings))),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
                 settingsButton,
                 setupButton,
                 resumeButton));
@@ -7476,10 +7480,10 @@ var JumpCountdown = (function (_super) {
     JumpCountdown.prototype.renderCharging = function () {
         var _this = this;
         var words = this.props.text.systems.warp;
-        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
+        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.cancel(); } }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.jump, disabled: true })));
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charging", footer: footerButtons, headerText: words.charging },
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charging", footer: footerButtons, headerText: words.charging },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
                 words.readyTime,
                 " ",
@@ -7491,16 +7495,16 @@ var JumpCountdown = (function (_super) {
     JumpCountdown.prototype.renderCharged = function () {
         var _this = this;
         var words = this.props.text.systems.warp;
-        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
+        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.cancel(); } }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.jump, clicked: function () { return _this.props.jump(); } })));
         var text = this.props.path !== undefined && this.props.path.status === 4 /* InRange */
             ? words.readyToJump : words.outOfRange;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charged", footer: footerButtons }, text);
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--charged", footer: footerButtons }, text);
     };
     JumpCountdown.prototype.renderJumping = function () {
         var words = this.props.text.systems.warp;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--jumping", headerText: words.jumpInProgress },
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Panel */], { className: "warp__jumpCountdown warp__jumpCountdown--jumping", headerText: words.jumpInProgress },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", null,
                 words.eta,
                 " ",
@@ -7553,10 +7557,11 @@ var JumpEditor = (function (_super) {
     __extends(JumpEditor, _super);
     function JumpEditor(props) {
         var _this = _super.call(this, props) || this;
+        var shipPos = props.getShipPos();
         _this.state = {
-            startPosX: 0,
-            startPosY: 0,
-            startPosZ: 0,
+            startPosX: shipPos.x,
+            startPosY: shipPos.y,
+            startPosZ: shipPos.z,
             projectionYaw: 0,
             projectionPitch: 0,
             projectionPower: 50,
@@ -7566,29 +7571,65 @@ var JumpEditor = (function (_super) {
     JumpEditor.prototype.render = function () {
         var _this = this;
         var words = this.props.text.systems.warp;
-        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.cancel(); } }),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: words.calculate, disabled: this.shouldBlockCalculation(), clicked: function () { return _this.startCalculation(); } })));
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__jumpEditor", footer: footerButtons },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { labelText: words.startPos },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosX, numberChanged: function (v) { return _this.setState({ startPosX: v }); }, disabled: this.props.calculating }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosY, numberChanged: function (v) { return _this.setState({ startPosY: v }); }, disabled: this.props.calculating }),
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosZ, numberChanged: function (v) { return _this.setState({ startPosZ: v }); }, disabled: this.props.calculating }),
+        var footerButtons;
+        switch (this.props.status) {
+            case 1 /* Plotting */:
+                footerButtons = this.renderPlottingButtons();
+                break;
+            case 2 /* Calculating */:
+                footerButtons = this.renderCalculatingButtons();
+                break;
+            case 4 /* CalculationConfirm */:
+                footerButtons = this.renderConfirmButtons();
+                break;
+            case 3 /* CalculationFailed */:
+                footerButtons = this.renderFailedButtons();
+                break;
+        }
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Panel */], { className: "warp__jumpEditor", footer: footerButtons },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { labelText: words.startPos },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosX, numberChanged: function (v) { return _this.setState({ startPosX: v }); }, disabled: this.props.status !== 1 /* Plotting */ }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosY, numberChanged: function (v) { return _this.setState({ startPosY: v }); }, disabled: this.props.status !== 1 /* Plotting */ }),
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 0 /* Primary */, number: this.state.startPosZ, numberChanged: function (v) { return _this.setState({ startPosZ: v }); }, disabled: this.props.status !== 1 /* Plotting */ }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.startPosDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { labelText: words.projectionYaw, labelBehaviour: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 1 /* Secondary */, number: this.state.projectionYaw, numberChanged: function (v) { return _this.setState({ projectionYaw: v }); }, disabled: this.props.calculating }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { labelText: words.projectionYaw, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 1 /* Secondary */, number: this.state.projectionYaw, numberChanged: function (v) { return _this.setState({ projectionYaw: v }); }, disabled: this.props.status !== 1 /* Plotting */ }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.projectionYawDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { labelText: words.projectionPitch, labelBehaviour: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 1 /* Secondary */, number: this.state.projectionPitch, numberChanged: function (v) { return _this.setState({ projectionPitch: v }); }, disabled: this.props.calculating }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { labelText: words.projectionPitch, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 1 /* Secondary */, number: this.state.projectionPitch, numberChanged: function (v) { return _this.setState({ projectionPitch: v }); }, disabled: this.props.status !== 1 /* Plotting */ }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.projectionPitchDescription)),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { labelText: words.power, labelBehaviour: true },
-                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 2 /* Tertiary */, number: this.state.projectionPower, numberChanged: function (v) { return _this.setState({ projectionPower: v }); }, disabled: this.props.calculating }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { labelText: words.power, labelBehaviour: true },
+                __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["f" /* NumericTextbox */], { color: 2 /* Tertiary */, number: this.state.projectionPower, numberChanged: function (v) { return _this.setState({ projectionPower: v }); }, disabled: this.props.status !== 1 /* Plotting */ }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "description" }, words.powerDescription)));
     };
+    JumpEditor.prototype.renderPlottingButtons = function () {
+        var _this = this;
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.common.cancel, clicked: function () { return _this.props.close(); } }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: this.props.text.systems.warp.calculate, disabled: this.shouldBlockCalculation(), clicked: function () { return _this.startCalculation(); } })));
+    };
+    JumpEditor.prototype.renderCalculatingButtons = function () {
+        var _this = this;
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.systems.warp.stopCalculating, clicked: function () { return _this.props.cancelCalculation(); } }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: this.props.text.systems.warp.calculating, disabled: true })));
+    };
+    JumpEditor.prototype.renderConfirmButtons = function () {
+        var _this = this;
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.systems.warp.editPath, clicked: function () { return _this.props.rejectPath(); } }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: this.props.text.systems.warp.keepPath, clicked: function () { return _this.props.close(); } })));
+    };
+    JumpEditor.prototype.renderFailedButtons = function () {
+        var _this = this;
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 4 /* Quandry */, text: this.props.text.systems.warp.editPath, clicked: function () { return _this.props.rejectPath(); } }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 3 /* Quaternary */, text: this.props.text.systems.warp.calculationFailed, disabled: true })));
+    };
     JumpEditor.prototype.shouldBlockCalculation = function () {
-        return this.props.calculating || this.state.projectionYaw === undefined
-            || this.state.projectionPitch === undefined || this.state.projectionPower === undefined
-            || this.state.startPosX === undefined || this.state.startPosY === undefined || this.state.startPosZ === undefined;
+        return this.state.projectionYaw === undefined || this.state.projectionPitch === undefined
+            || this.state.projectionPower === undefined || this.state.startPosX === undefined
+            || this.state.startPosY === undefined || this.state.startPosZ === undefined;
     };
     JumpEditor.prototype.startCalculation = function () {
         if (this.shouldBlockCalculation()) {
@@ -7634,10 +7675,10 @@ var PathList = (function (_super) {
         var _this = this;
         var words = this.props.text.systems.warp;
         var path = this.props.selectedPath;
-        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Field */], { centered: true, displayAsRow: true },
+        var footerButtons = (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Field */], { centered: true, displayAsRow: true },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { disabled: path === undefined, color: 2 /* Tertiary */, text: words.deletePath, clicked: path === undefined ? undefined : function () { return _this.props.deletePath(path); } }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["b" /* PushButton */], { color: 1 /* Secondary */, text: path === undefined ? words.newPath : words.startJump, clicked: path === undefined ? this.props.newSelected : function () { return _this.props.startJump(path); } })));
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* Panel */], { className: "warp__pathList", footer: footerButtons, contentIsList: true }, this.props.paths.map(function (path) { return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__PathListItem__["a" /* PathListItem */], { key: path.id, path: path, text: _this.props.text, selected: _this.props.selectedPath === path, onSelected: function (p) { return _this.props.pathSelected(p); } })); }));
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Panel */], { className: "warp__pathList", footer: footerButtons, contentIsList: true }, this.props.paths.map(function (path) { return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__PathListItem__["a" /* PathListItem */], { key: path.id, path: path, text: _this.props.text, selected: _this.props.selectedPath === path, onSelected: function (p) { return _this.props.pathSelected(p); } })); }));
     };
     return PathList;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -7785,11 +7826,11 @@ var Warp = (function (_super) {
         switch (this.props.status) {
             case 0 /* Viewing */:
                 return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_6__PathList__["a" /* PathList */], { text: this.props.text, paths: this.props.paths, selectedPath: this.props.activePath, pathSelected: function (p) { return _this.pathSelected(p); }, newSelected: function () { return _this.showEdit(); }, deletePath: function (p) { return _this.deletePath(p); }, startJump: function (p) { return _this.startJump(p); } });
-            case 3 /* Charging */:
-            case 4 /* Jumping */:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__JumpCountdown__["a" /* JumpCountdown */], { text: this.props.text, path: this.props.activePath, endTime: this.props.jumpEndTime, completion: this.props.chargeCompletion, jumping: this.props.status === 4 /* Jumping */, cancel: function () { return _this.cancelJump(); }, jump: function () { return _this.performJump(); } });
+            case 5 /* Charging */:
+            case 6 /* Jumping */:
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__JumpCountdown__["a" /* JumpCountdown */], { text: this.props.text, path: this.props.activePath, endTime: this.props.jumpEndTime, completion: this.props.chargeCompletion, jumping: this.props.status === 6 /* Jumping */, cancel: function () { return _this.cancelJump(); }, jump: function () { return _this.performJump(); } });
             default:
-                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__JumpEditor__["a" /* JumpEditor */], { text: this.props.text, editPath: this.props.activePath, startCalculating: function (from, yaw, pitch, power) { return _this.calculatePath(from, yaw, pitch, power); }, cancel: function () { return _this.cancelEdit(); }, calculating: this.props.status === 2 /* Calculating */ });
+                return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__JumpEditor__["a" /* JumpEditor */], { text: this.props.text, editPath: this.props.activePath, startCalculating: function (from, yaw, pitch, power) { return _this.calculatePath(from, yaw, pitch, power); }, rejectPath: function () { return _this.rejectPath(); }, close: function () { return _this.closeEdit(); }, cancelCalculation: function () { return _this.cancelCalculation(); }, status: this.props.status, getShipPos: function () { return _this.props.shipPosition; } });
         }
     };
     Warp.prototype.pathSelected = function (path) {
@@ -7811,12 +7852,17 @@ var Warp = (function (_super) {
     Warp.prototype.performJump = function () {
         __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send('warp_jump');
     };
-    Warp.prototype.cancelEdit = function () {
-        if (this.props.status === 2 /* Calculating */) {
-            __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send('warp_plot_cancel');
-        }
+    Warp.prototype.cancelCalculation = function () {
+        this.props.setScreenStatus(1 /* Plotting */);
+        __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send('warp_plot_cancel');
+    };
+    Warp.prototype.closeEdit = function () {
         this.props.selectPath(undefined);
         this.props.setScreenStatus(0 /* Viewing */);
+    };
+    Warp.prototype.rejectPath = function () {
+        __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send('warp_plot_reject');
+        this.props.setScreenStatus(1 /* Plotting */);
     };
     Warp.prototype.calculatePath = function (from, yaw, pitch, power) {
         this.props.setScreenStatus(2 /* Calculating */);
@@ -8273,7 +8319,7 @@ var Connection = (function () {
             }
             case 'warp_jump_failed': {
                 // TODO: handle "jump failed" better, idk...
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setScreenStatus(3 /* Charging */));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].setScreenStatus(5 /* Charging */));
                 break;
             }
             case 'warp_ship_pos': {
@@ -9317,6 +9363,11 @@ var words = {
             projectionPitch: 'Pitch',
             projectionPitchDescription: 'Pitch of jump direction',
             calculate: 'Calculate jump',
+            calculating: 'Calculating...',
+            stopCalculating: 'Stop calculating',
+            editPath: 'Edit path',
+            keepPath: 'Save path',
+            calculationFailed: 'Calculation failed',
         },
         weapons: {},
         sensors: {},

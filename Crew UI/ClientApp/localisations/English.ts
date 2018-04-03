@@ -220,6 +220,11 @@ let words: TextLocalisation = {
             projectionPitch: 'Pitch',
             projectionPitchDescription: 'Pitch of jump direction',
             calculate: 'Calculate jump',
+            calculating: 'Calculating...',
+            stopCalculating: 'Stop calculating',
+            editPath: 'Edit path',
+            keepPath: 'Save path',
+            calculationFailed: 'Calculation failed',
         },
         weapons: {
 

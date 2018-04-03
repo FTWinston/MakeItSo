@@ -102,6 +102,12 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 		}
 		return true;
 	}
+	else if (MATCHES(msg, "warp_plot_reject"))
+	{
+		// delete the last calculated jump
+		DeleteJump(nextJumpID - 1);
+		return true;
+	}
 	else if (MATCHES(msg, "warp_jump"))
 	{
 		if (activeJumpID != 0)
@@ -118,12 +124,7 @@ void UWarpSystem::SendAllData_Implementation()
 {
 	SendSystemFixed("warp_clear");
 
-	auto shipLocation = crewManager->GetShipPawn()->GetActorLocation();
-	if (FVector::DistSquared(lastSentLocation, shipLocation) > LOCATION_UPDATE_THRESHOLD_SQ)
-	{
-		SendShipLocation();
-		lastSentLocation = shipLocation;
-	}
+	SendShipLocation();
 
 	for (auto pathInfo : calculatedJumps)
 	{
@@ -182,8 +183,12 @@ void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator
 
 void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	// TODO: if ship position has changed by threshold, resend position
-	SendShipLocation();
+	auto shipLocation = crewManager->GetShipPawn()->GetActorLocation();
+	if (FVector::DistSquared(lastSentLocation, shipLocation) > LOCATION_UPDATE_THRESHOLD_SQ)
+	{
+		SendShipLocation();
+		lastSentLocation = shipLocation;
+	}
 
 	switch (jumpState) {
 	case SystemJumpState::JUMP_STATE_CALCULATING:
@@ -258,7 +263,7 @@ void UWarpSystem::TickCharging(float DeltaTime)
 
 int UWarpSystem::DetermineAndSendJumpCharge()
 {
-	int requiredCharge = calculatedJumps[activeJumpID]->JumpPower;
+	int32 requiredCharge = (int32)calculatedJumps[activeJumpID]->JumpPower;
 
 	int32 chargeSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * (requiredCharge - jumpCharge) / JUMP_CHARGE_GENERATED_PER_TICK);
 
@@ -417,7 +422,7 @@ void UWarpSystem::SendShipLocation() { SendShipLocation_Implementation(); }
 #endif
 void UWarpSystem::SendShipLocation_Implementation()
 {
-	FString output = TEXT("warp_ship_position ");
+	FString output = TEXT("warp_ship_pos ");
 	auto loc = crewManager->GetShipPawn()->GetActorLocation();
 
 	APPENDINT(output, loc.X);
@@ -425,6 +430,8 @@ void UWarpSystem::SendShipLocation_Implementation()
 	APPENDINT(output, loc.Y);
 	output += TEXT(" ");
 	APPENDINT(output, loc.Z);
+
+	SendSystem(output);
 }
 
 void UWarpSystem::AddPointToOutput(FString &output, FVector point)

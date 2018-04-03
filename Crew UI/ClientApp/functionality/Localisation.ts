@@ -154,6 +154,11 @@ export interface TextLocalisation {
             projectionPitch: string;
             projectionPitchDescription: string;
             calculate: string;
+            calculating: string;
+            stopCalculating: string;
+            editPath: string;
+            keepPath: string;
+            calculationFailed: string;
         },
         weapons: {
 

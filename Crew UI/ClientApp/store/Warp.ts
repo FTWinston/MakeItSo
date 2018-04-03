@@ -9,6 +9,8 @@ export const enum WarpScreenStatus {
     Viewing,
     Plotting,
     Calculating,
+    CalculationFailed,
+    CalculationConfirm,
     Charging,
     Jumping,
 }
@@ -202,7 +204,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
 
             // when path is sent again when it finishes calculating, switch screen status
             let status = state.status === WarpScreenStatus.Calculating && action.status !== JumpPathStatus.Calculating
-                ? WarpScreenStatus.Viewing
+                ? WarpScreenStatus.CalculationConfirm
                 : state.status;
 
             return {
@@ -234,9 +236,15 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                 return path;
             });
 
+            // if we just calculated this path, it was a failure
+            let status = state.status === WarpScreenStatus.Calculating && action.status !== JumpPathStatus.Calculating
+                ? WarpScreenStatus.CalculationFailed
+                : state.status;
+
             return {
                 ...state,
-                targets: paths,
+                paths: paths,
+                status: status,
             };
         }
         case 'REMOVE_PATH': {

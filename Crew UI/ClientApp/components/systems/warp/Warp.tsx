@@ -54,8 +54,11 @@ class Warp extends React.PureComponent<WarpProps, {}> {
                     text={this.props.text}
                     editPath={this.props.activePath}
                     startCalculating={(from, yaw, pitch, power) => this.calculatePath(from, yaw, pitch, power)}
-                    cancel={() => this.cancelEdit()}
-                    calculating={this.props.status === WarpScreenStatus.Calculating}
+                    rejectPath={() => this.rejectPath()}
+                    close={() => this.closeEdit()}
+                    cancelCalculation={() => this.cancelCalculation()}
+                    status={this.props.status}
+                    getShipPos={() => this.props.shipPosition}
                 />;
         }
     }
@@ -84,15 +87,21 @@ class Warp extends React.PureComponent<WarpProps, {}> {
         connection.send('warp_jump');
     }
 
-    private cancelEdit() {
-        if (this.props.status === WarpScreenStatus.Calculating) {
-            connection.send('warp_plot_cancel');
-        }
+    private cancelCalculation() {
+        this.props.setScreenStatus(WarpScreenStatus.Plotting);
+        connection.send('warp_plot_cancel');
+    }
 
+    private closeEdit() {
         this.props.selectPath(undefined);
         this.props.setScreenStatus(WarpScreenStatus.Viewing);
     }
     
+    private rejectPath() {
+        connection.send('warp_plot_reject');
+        this.props.setScreenStatus(WarpScreenStatus.Plotting);
+    }
+
     private calculatePath(from: Vector3, yaw: number, pitch: number, power: number) {
         this.props.setScreenStatus(WarpScreenStatus.Calculating);
         connection.send(`warp_plot ${from.x} ${from.y} ${from.z} ${yaw} ${pitch} ${power}`);
