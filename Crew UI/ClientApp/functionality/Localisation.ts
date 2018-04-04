@@ -159,6 +159,9 @@ export interface TextLocalisation {
             editPath: string;
             keepPath: string;
             calculationFailed: string;
+            preparingStart: string;
+            readyStart: string;
+            jumpDestStart: string;
         },
         weapons: {
 

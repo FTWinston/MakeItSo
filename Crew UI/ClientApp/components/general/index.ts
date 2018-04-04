@@ -2,6 +2,7 @@ export { ButtonColor, ConfirmButton, HeldButton, PushButton, ToggleButton } from
 export { ButtonSet } from './ButtonSet';
 export { Canvas } from './Canvas';
 export { Choice } from './Choice';
+export { Coordinate } from './Coordinate';
 export { Field } from './Field';
 export { FlexibleCanvas } from './FlexibleCanvas';
 export { Icon, renderIcon } from './Icons';

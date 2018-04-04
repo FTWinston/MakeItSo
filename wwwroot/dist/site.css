@@ -202,6 +202,15 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.coordinate__number {
+  font-weight: bold;
+  color: #ffce9c; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 .field {
   display: flex;
   align-items: baseline;
@@ -710,7 +719,7 @@ $lightBackground: #999;
 .warp__pathList, .warp__jumpEditor, .warp__jumpCountdown {
   grid-area: controls; }
 
-.warpPathListItem__number, .coordinate__number, .countdown__number {
+.warpPathListItem__number, .countdown__number {
   font-weight: bold;
   color: #ffce9c; }
 

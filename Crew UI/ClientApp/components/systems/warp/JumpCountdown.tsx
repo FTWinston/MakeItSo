@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ButtonColor, Field, Icon, Panel, ProgressBar, PushButton } from '~/components/general';
+import { ButtonColor, Coordinate, Field, Icon, Panel, ProgressBar, PushButton } from '~/components/general';
 import { TextLocalisation } from '~/functionality';
 import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
 
@@ -92,7 +92,12 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, JumpC
             </Field>
         );
 
+        let points = this.props.path === undefined ? [] : this.props.path.points;
+        let from = points.length > 0 ? <Coordinate pos={points[0]} /> : words.unknownPosition;
+        let to = points.length > 1 ? <Coordinate pos={points[points.length - 1]} /> : words.unknownPosition;
+
         return <Panel className="warp__jumpCountdown warp__jumpCountdown--charging" footer={footerButtons} headerText={words.charging}>
+            <div>{words.preparingStart} {from} {words.to} {to}...</div>
             <div>{words.readyTime} <span className="countdown__number">{this.state.secondsLeft}</span> {words.seconds}</div>
             <ProgressBar value={this.props.completion} maxValue={100} />
         </Panel>;
@@ -116,10 +121,15 @@ export class JumpCountdown extends React.PureComponent<JumpCountdownProps, JumpC
             </Field>
         );
 
+        let points = this.props.path === undefined ? [] : this.props.path.points;
+        let from = points.length > 0 ? <Coordinate pos={points[0]} /> : words.unknownPosition;
+        let to = points.length > 1 ? <Coordinate pos={points[points.length - 1]} /> : words.unknownPosition;
+
         let text = this.props.path !== undefined && this.props.path.status === JumpPathStatus.InRange
             ? words.readyToJump : words.outOfRange;
         
         return <Panel className="warp__jumpCountdown warp__jumpCountdown--charged" footer={footerButtons}>
+            <div>{words.readyStart} {from} {words.to} {to}...</div>
             {text}
         </Panel>;
     }

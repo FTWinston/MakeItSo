@@ -43,7 +43,7 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
     render() {
         let words = this.props.text.systems.warp;
 
-        let footerButtons;
+        let footerButtons, headerText;
         
         switch (this.props.status) {
             case WarpScreenStatus.Plotting:
@@ -53,6 +53,11 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
                 footerButtons = this.renderCalculatingButtons();
                 break;
             case WarpScreenStatus.CalculationConfirm:
+                let path = this.props.editPath;
+                if (path !== undefined) { 
+                    let end = path.points[path.points.length - 1];
+                    headerText = `${words.jumpDestStart} ${end.x}, ${end.y}, ${end.z}`;
+                }
                 footerButtons = this.renderConfirmButtons();
                 break;
             case WarpScreenStatus.CalculationFailed:
@@ -60,7 +65,7 @@ export class JumpEditor extends React.PureComponent<JumpEditorProps, JumpEditorS
                 break;
         }
 
-        return <Panel className="warp__jumpEditor" footer={footerButtons}>
+        return <Panel className="warp__jumpEditor" footer={footerButtons} headerText={headerText}>
             <Field labelText={words.startPos}>
                 <NumericTextbox
                     color={ButtonColor.Primary}

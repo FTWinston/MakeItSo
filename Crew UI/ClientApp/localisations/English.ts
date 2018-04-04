@@ -225,6 +225,9 @@ let words: TextLocalisation = {
             editPath: 'Edit path',
             keepPath: 'Save path',
             calculationFailed: 'Calculation failed',
+            preparingStart: 'Preparing to jump from',
+            readyStart: 'Ready to jump from',
+            jumpDestStart: 'Jump plotted to',
         },
         weapons: {
 
