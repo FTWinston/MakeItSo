@@ -2,13 +2,27 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation } from '~/functionality';
+import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './DamageControl.scss';
 
 interface DamageControlProps {
     text: TextLocalisation;
 }
 
-class DamageControl extends React.Component<DamageControlProps, {}> {
+class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
+    constructor(props: DamageControlProps) {
+        super(props);
+        
+        this.state = {
+        }
+    }
+
+    name() { return 'damage'; }
+
+    protected getHelpText() {
+        return this.props.text.systemHelp.damage;
+    }
+
     public render() {
         return <div className="system">
             This is the damage control system. TODO: implement this!
@@ -26,5 +40,7 @@ const mapStateToProps: (state: ApplicationState) => DamageControlProps = (state)
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {}
+    {},
+    null,
+    { withRef: true },
 )(DamageControl);

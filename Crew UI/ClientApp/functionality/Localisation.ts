@@ -22,6 +22,9 @@ export interface TextLocalisation {
         ready: string;
         settings: string;
         help: string;
+        optionEnable: string;
+        optionDisable: string;
+        noOptions: string;
     }
     errors: {
         unknown: string;
@@ -96,6 +99,16 @@ export interface TextLocalisation {
         },
     },
     systemNames: {
+        helm: string,
+        warp: string,
+        weapons: string,
+        sensors: string,
+        power: string,
+        damage: string,
+        comms: string,
+        view: string,
+    },
+    systemHelp: {
         helm: string,
         warp: string,
         weapons: string,

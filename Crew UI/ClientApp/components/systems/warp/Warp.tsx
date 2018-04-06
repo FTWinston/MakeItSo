@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { actionCreators, WarpState, WarpScreenStatus } from '~/store/Warp';
+import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { SensorView } from '~/components/general/SensorView';
 import { JumpPath, SensorTarget, TextLocalisation, Vector3 } from '~/functionality';
 import { JumpCountdown } from './JumpCountdown';
@@ -10,19 +11,36 @@ import { PathList } from './PathList';
 import { connection } from '~/Client';
 import './Warp.scss';
 
-interface WarpDataProps extends WarpState {
+interface WarpProps extends WarpState {
     text: TextLocalisation;
     sensorTargets: SensorTarget[];
+    selectPath: (id: number | undefined) => void;
+    setScreenStatus: (status: WarpScreenStatus) => void;
 }
 
-type WarpProps = WarpDataProps
-    & typeof actionCreators;
+interface WarpOptions {
+    autoRotate: boolean;
+}
 
-class Warp extends React.PureComponent<WarpProps, {}> {
+class Warp extends ShipSystemComponent<WarpProps, WarpOptions> implements React.Component<WarpProps> {
+    constructor(props: WarpProps) {
+        super(props);
+        
+        this.state = {
+            autoRotate: true,
+        };
+    }
+
+    name() { return 'warp'; }
+
+    protected getHelpText() {
+        return this.props.text.systemHelp.warp;
+    }
+
     public render() {
         return <div className="system warp">
             {this.renderControlPanel()}
-            <SensorView className="warp__sensorMap" targets={[...this.props.sensorTargets, ...this.props.paths]} />
+            <SensorView className="warp__sensorMap" autoRotate={this.state.autoRotate} targets={[...this.props.sensorTargets, ...this.props.paths]} />
         </div>;
     }
 
@@ -109,11 +127,13 @@ class Warp extends React.PureComponent<WarpProps, {}> {
 }
 
 // Selects which state properties are merged into the component's props
-const mapStateToProps: (state: ApplicationState) => WarpDataProps = (state) => {
+const mapStateToProps: (state: ApplicationState) => WarpProps = (state) => {
     return {
         ...state.warp,
         sensorTargets: state.sensors.targets,
         text: state.user.text,
+        selectPath: actionCreators.selectPath,
+        setScreenStatus: actionCreators.setScreenStatus,
     }
 };
 
@@ -121,4 +141,6 @@ const mapStateToProps: (state: ApplicationState) => WarpDataProps = (state) => {
 export default connect(
     mapStateToProps,
     actionCreators,
+    null,
+    { withRef: true },
 )(Warp);

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { SensorTarget, TextLocalisation } from '~/functionality';
+import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { SensorView } from '~/components/general/SensorView';
 import { TargetSelection } from './TargetSelection';
 import { TargetSelected } from './TargetSelected';
@@ -13,7 +14,20 @@ interface WeaponsProps {
     selectedTarget?: SensorTarget;
 }
 
-class Weapons extends React.PureComponent<WeaponsProps, {}> {
+class Weapons extends ShipSystemComponent<WeaponsProps, {}> {
+    constructor(props: WeaponsProps) {
+        super(props);
+        
+        this.state = {
+        }
+    }
+
+    name() { return 'weapons'; }
+
+    protected getHelpText() {
+        return this.props.text.systemHelp.weapons;
+    }
+
     public render() {
         if (this.props.selectedTarget === undefined) {
             return <TargetSelection text={this.props.text} allTargets={this.props.allTargets} />
@@ -34,5 +48,7 @@ const mapStateToProps: (state: ApplicationState) => WeaponsProps = (state) => {
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {}
+    {},
+    null,
+    { withRef: true },
 )(Weapons);

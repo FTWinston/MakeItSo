@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation, InputMode } from '~/functionality';
+import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './ViewScreen.scss';
 
 interface ViewScreenProps {
@@ -9,7 +10,20 @@ interface ViewScreenProps {
     inputMode: InputMode;
 }
 
-class ViewScreen extends React.Component<ViewScreenProps, {}> {
+class ViewScreen extends ShipSystemComponent<ViewScreenProps, {}> {
+    constructor(props: ViewScreenProps) {
+        super(props);
+        
+        this.state = {
+        }
+    }
+
+    name() { return 'view'; }
+
+    protected getHelpText() {
+        return this.props.text.systemHelp.view;
+    }
+
     public render() {
         switch (this.props.inputMode) {
             case InputMode.KeyboardAndMouse:
@@ -57,5 +71,7 @@ const mapStateToProps: (state: ApplicationState) => ViewScreenProps = (state) =>
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {}
+    {},
+    null,
+    { withRef: true },
 )(ViewScreen);

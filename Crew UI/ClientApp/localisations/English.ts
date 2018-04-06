@@ -7,6 +7,9 @@ let words: TextLocalisation = {
         ready: 'Ready',
         settings: 'Settings',
         help: 'Help',
+        optionEnable: 'Enabled',
+        optionDisable: 'Disabled',
+        noOptions: 'This system has no configurable options',
     },
     errors: {
         unknown: 'Unable to display information on this error. Sorry.',
@@ -170,6 +173,16 @@ let words: TextLocalisation = {
         damage: 'Damage Control',
         view: 'Viewscreen',
         comms: 'Communications',
+    },
+    systemHelp: {
+        helm: 'help help help',
+        warp: 'Warp help',
+        weapons: 'help help help',
+        sensors: 'help help help',
+        power: 'help help help',
+        damage: 'help help help',
+        view: 'help help help',
+        comms: 'help help help',
     },
     systems: {
         helm: {

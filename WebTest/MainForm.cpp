@@ -196,7 +196,7 @@ System::Void WebTest::MainForm::txtPosX_TextChanged(System::Object^  sender, Sys
 {
 	auto ship = crewManager->GetShipPawn();
 
-	float x = int::Parse(txtPosX->Text);
+	float x = (float)int::Parse(txtPosX->Text);
 	ship->SetActorLocation(FVector(x, ship->LocalVelocity.Y, ship->LocalVelocity.Z));
 }
 
@@ -204,7 +204,7 @@ System::Void WebTest::MainForm::txtPosY_TextChanged(System::Object^  sender, Sys
 {
 	auto ship = crewManager->GetShipPawn();
 
-	float y = int::Parse(txtPosY->Text);
+	float y = (float)int::Parse(txtPosY->Text);
 	ship->SetActorLocation(FVector(ship->LocalVelocity.X, y, ship->LocalVelocity.Z));
 }
 
@@ -212,6 +212,6 @@ System::Void WebTest::MainForm::txtPosZ_TextChanged(System::Object^  sender, Sys
 {
 	auto ship = crewManager->GetShipPawn();
 
-	float z = int::Parse(txtPosZ->Text);
+	float z = (float)int::Parse(txtPosZ->Text);
 	ship->SetActorLocation(FVector(ship->LocalVelocity.X, ship->LocalVelocity.Y, z));
 }

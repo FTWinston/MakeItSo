@@ -2,6 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation } from '~/functionality';
+import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { CardHand } from './CardHand';
 import { CardSelection } from './CardSelection';
 import { SystemList } from './SystemList';
@@ -11,7 +12,20 @@ interface PowerManagementProps {
     text: TextLocalisation;
 }
 
-class PowerManagement extends React.Component<PowerManagementProps, {}> {
+class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
+    constructor(props: PowerManagementProps) {
+        super(props);
+        
+        this.state = {
+        }
+    }
+
+    name() { return 'power'; }
+
+    protected getHelpText() {
+        return this.props.text.systemHelp.power;
+    }
+
     public render() {
         return <div className="system">
             <SystemList text={this.props.text} />
@@ -31,5 +45,7 @@ const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (stat
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {}
+    {},
+    null,
+    { withRef: true },
 )(PowerManagement);

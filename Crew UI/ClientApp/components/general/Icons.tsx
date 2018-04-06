@@ -12,6 +12,7 @@ const ArrowLeft: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/
 const ArrowRight: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/arrow-right.svg');
 const RotateCCW: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/rotate-ccw.svg');
 const RotateCW: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/rotate-cw.svg');
+const Settings: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/settings.svg');
 
 const HelmIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/navigation.svg');
 const WarpIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/compass.svg');
@@ -35,6 +36,7 @@ export enum Icon {
     ArrowRight,
     RotateCCW,
     RotateCW,
+    Settings,
 
     Helm,
     Warp,
@@ -77,6 +79,8 @@ export function renderIcon(icon: Icon, size: number | string = 24) {
             return <RotateCCW {...props} />;
         case Icon.RotateCW:
             return <RotateCW {...props} />;
+        case Icon.Settings:
+            return <Settings {...props} />;
 
         case Icon.Helm:
             return <HelmIcon {...props} />;

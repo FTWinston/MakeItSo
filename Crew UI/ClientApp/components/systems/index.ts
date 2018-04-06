@@ -6,3 +6,4 @@ export { Sensors } from './sensors';
 export { ViewScreen } from './viewscreen';
 export { Warp } from './warp';
 export { Weapons } from './weapons';
+export { BaseSystemComponent, ShipSystemComponent } from './ShipSystemComponent';
