@@ -23,6 +23,10 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
         return this.props.text.systemHelp.damage;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.damage;
+    }
+
     public render() {
         return <div className="system">
             This is the damage control system. TODO: implement this!

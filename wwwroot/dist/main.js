@@ -239,10 +239,12 @@ var ShipSystemComponent = (function (_super) {
     ShipSystemComponent.prototype.renderOptions = function () {
         var _this = this;
         var options = [];
+        var labels = this.getOptionLabels();
         var _loop_1 = function (opt) {
+            var label = labels[opt];
             var val = this_1.state[opt];
             if (typeof val === 'boolean') {
-                options.push(__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_Options__["a" /* BooleanOption */], { key: opt, name: opt, value: val, changeValue: function (v) { return _this.changeBooleanOption(opt, v); }, text: this_1.props.text }));
+                options.push(__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_Options__["a" /* BooleanOption */], { key: opt, label: label, value: val, changeValue: function (v) { return _this.changeBooleanOption(opt, v); }, text: this_1.props.text }));
             }
             else {
                 throw 'Unable to handle non-boolean options in system state';
@@ -704,6 +706,9 @@ var Helm = (function (_super) {
     Helm.prototype.name = function () { return 'helm'; };
     Helm.prototype.getHelpText = function () {
         return this.props.text.systemHelp.helm;
+    };
+    Helm.prototype.getOptionLabels = function () {
+        return this.props.text.systems.helm;
     };
     Helm.prototype.render = function () {
         var _this = this;
@@ -6357,14 +6362,18 @@ var GameActive = (function (_super) {
         var next;
         var help, options;
         var system = this.renderSystem(this.props.activeSystem);
+        var showingSystem = true;
         if (this.system !== null) {
             if (this.state.showingOptions) {
                 options = this.system.renderOptions();
+                showingSystem = false;
             }
             if (this.state.showingHelp) {
                 help = this.system.renderHelp();
+                showingSystem = false;
             }
         }
+        var wrapperClasses = showingSystem ? 'systemWrapper' : 'systemWrapper systemWrapper--hidden';
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["a" /* Screen */], null,
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader" },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("h1", { className: "systemHeader__name" }, activeSystemName),
@@ -6374,12 +6383,12 @@ var GameActive = (function (_super) {
                     next),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__separator" }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "systemHeader__commonIcons" },
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { title: this.props.text.common.help, noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_4__components_general__["c" /* Icon */].Help, clicked: function () { return _this.toggleHelp(); } }),
-                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { title: this.props.text.common.settings, noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_4__components_general__["c" /* Icon */].Settings, clicked: function () { return _this.toggleOptions(); } }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { title: this.props.text.common.help, noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_4__components_general__["c" /* Icon */].Help, color: this.state.showingHelp ? 4 /* Quandry */ : undefined, clicked: function () { return _this.toggleHelp(); } }),
+                    __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { title: this.props.text.common.settings, noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_4__components_general__["c" /* Icon */].Settings, color: this.state.showingOptions ? 4 /* Quandry */ : undefined, clicked: function () { return _this.toggleOptions(); } }),
                     __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__components_general__["b" /* PushButton */], { title: this.props.text.screens.active.pause, noBorder: true, icon: __WEBPACK_IMPORTED_MODULE_4__components_general__["c" /* Icon */].Pause, command: "pause" }))),
             options,
             help,
-            system));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: wrapperClasses }, system)));
     };
     GameActive.prototype.renderSystemIcons = function () {
         return [
@@ -7009,7 +7018,7 @@ var BooleanOption = (function (_super) {
     BooleanOption.prototype.render = function () {
         var _this = this;
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "option" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "option__name" }, this.props.name),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "option__name" }, this.props.label),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["d" /* Choice */], { color: 0 /* Primary */ },
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* ToggleButton */], { startActive: !this.props.value, activated: function () { return _this.props.changeValue(false); }, text: this.props.text.common.optionDisable }),
                 __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_general__["e" /* ToggleButton */], { startActive: this.props.value, activated: function () { return _this.props.changeValue(true); }, text: this.props.text.common.optionEnable }))));
@@ -7054,6 +7063,9 @@ var Communications = (function (_super) {
     Communications.prototype.name = function () { return 'comms'; };
     Communications.prototype.getHelpText = function () {
         return this.props.text.systemHelp.comms;
+    };
+    Communications.prototype.getOptionLabels = function () {
+        return this.props.text.systems.comms;
     };
     Communications.prototype.render = function () {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system" }, "This is the communications system. TODO: implement this!");
@@ -7115,6 +7127,9 @@ var DamageControl = (function (_super) {
     DamageControl.prototype.name = function () { return 'damage'; };
     DamageControl.prototype.getHelpText = function () {
         return this.props.text.systemHelp.damage;
+    };
+    DamageControl.prototype.getOptionLabels = function () {
+        return this.props.text.systems.damage;
     };
     DamageControl.prototype.render = function () {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system" }, "This is the damage control system. TODO: implement this!");
@@ -7523,6 +7538,9 @@ var PowerManagement = (function (_super) {
     PowerManagement.prototype.getHelpText = function () {
         return this.props.text.systemHelp.power;
     };
+    PowerManagement.prototype.getOptionLabels = function () {
+        return this.props.text.systems.power;
+    };
     PowerManagement.prototype.render = function () {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system" },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text }),
@@ -7620,6 +7638,9 @@ var Sensors = (function (_super) {
     Sensors.prototype.getHelpText = function () {
         return this.props.text.systemHelp.sensors;
     };
+    Sensors.prototype.getOptionLabels = function () {
+        return this.props.text.systems.sensors;
+    };
     Sensors.prototype.render = function () {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system" }, "This is the sensors system. TODO: implement this!");
     };
@@ -7680,6 +7701,9 @@ var ViewScreen = (function (_super) {
     ViewScreen.prototype.name = function () { return 'view'; };
     ViewScreen.prototype.getHelpText = function () {
         return this.props.text.systemHelp.view;
+    };
+    ViewScreen.prototype.getOptionLabels = function () {
+        return this.props.text.systems.view;
     };
     ViewScreen.prototype.render = function () {
         switch (this.props.inputMode) {
@@ -8174,6 +8198,9 @@ var Warp = (function (_super) {
     Warp.prototype.getHelpText = function () {
         return this.props.text.systemHelp.warp;
     };
+    Warp.prototype.getOptionLabels = function () {
+        return this.props.text.systems.warp;
+    };
     Warp.prototype.render = function () {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system warp" },
             this.renderControlPanel(),
@@ -8461,6 +8488,9 @@ var Weapons = (function (_super) {
     Weapons.prototype.name = function () { return 'weapons'; };
     Weapons.prototype.getHelpText = function () {
         return this.props.text.systemHelp.weapons;
+    };
+    Weapons.prototype.getOptionLabels = function () {
+        return this.props.text.systems.weapons;
     };
     Weapons.prototype.render = function () {
         if (this.props.selectedTarget === undefined) {
@@ -9750,6 +9780,7 @@ var words = {
             preparingStart: 'Preparing to jump from',
             readyStart: 'Ready to jump from',
             jumpDestStart: 'Jump plotted to',
+            autoRotate: 'Auto-rotate map',
         },
         weapons: {},
         sensors: {},
@@ -10174,7 +10205,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

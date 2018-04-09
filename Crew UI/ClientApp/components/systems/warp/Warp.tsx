@@ -37,6 +37,10 @@ class Warp extends ShipSystemComponent<WarpProps, WarpOptions> implements React.
         return this.props.text.systemHelp.warp;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.warp;
+    }
+
     public render() {
         return <div className="system warp">
             {this.renderControlPanel()}

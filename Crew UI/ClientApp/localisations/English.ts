@@ -241,6 +241,7 @@ let words: TextLocalisation = {
             preparingStart: 'Preparing to jump from',
             readyStart: 'Ready to jump from',
             jumpDestStart: 'Jump plotted to',
+            autoRotate: 'Auto-rotate map',
         },
         weapons: {
 

@@ -15,6 +15,7 @@ export interface BaseSystemComponent {
 export abstract class ShipSystemComponent<TProps extends SystemComponentProps, TOptions> extends React.PureComponent<TProps, TOptions> implements BaseSystemComponent { 
     abstract name(): string;
     protected abstract getHelpText(): string;
+    protected abstract getOptionLabels(): {[key: string]: string};
 
     componentWillMount() {
         this.loadOptions();
@@ -22,12 +23,14 @@ export abstract class ShipSystemComponent<TProps extends SystemComponentProps, T
 
     renderOptions() {
         let options = [];
+        let labels = this.getOptionLabels();
 
         for (const opt in this.state) {
+            let label = labels[opt];
             let val = this.state[opt];
 
             if (typeof val === 'boolean') {
-                options.push(<BooleanOption key={opt} name={opt} value={val as boolean} changeValue={v => this.changeBooleanOption(opt, v)} text={this.props.text} />)
+                options.push(<BooleanOption key={opt} label={label} value={val as boolean} changeValue={v => this.changeBooleanOption(opt, v)} text={this.props.text} />)
             }
             else {
                 throw 'Unable to handle non-boolean options in system state';

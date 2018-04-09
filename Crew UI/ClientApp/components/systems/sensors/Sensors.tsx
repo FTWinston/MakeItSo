@@ -23,6 +23,10 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
         return this.props.text.systemHelp.sensors;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.sensors;
+    }
+
     public render() {
         return <div className="system">
             This is the sensors system. TODO: implement this!

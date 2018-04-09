@@ -23,6 +23,10 @@ class Communications extends ShipSystemComponent<CommunicationsProps, {}> {
         return this.props.text.systemHelp.comms;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.comms;
+    }
+
     public render() {
         return <div className="system">
             This is the communications system. TODO: implement this!

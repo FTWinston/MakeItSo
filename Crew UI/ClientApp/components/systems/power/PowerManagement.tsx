@@ -26,6 +26,10 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
         return this.props.text.systemHelp.power;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.power;
+    }
+
     public render() {
         return <div className="system">
             <SystemList text={this.props.text} />

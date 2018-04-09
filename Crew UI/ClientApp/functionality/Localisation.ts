@@ -175,6 +175,7 @@ export interface TextLocalisation {
             preparingStart: string;
             readyStart: string;
             jumpDestStart: string;
+            autoRotate: string;
         },
         weapons: {
 

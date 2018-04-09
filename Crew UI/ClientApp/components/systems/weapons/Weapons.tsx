@@ -28,6 +28,10 @@ class Weapons extends ShipSystemComponent<WeaponsProps, {}> {
         return this.props.text.systemHelp.weapons;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.weapons;
+    }
+
     public render() {
         if (this.props.selectedTarget === undefined) {
             return <TargetSelection text={this.props.text} allTargets={this.props.allTargets} />

@@ -34,6 +34,10 @@ export class Helm extends ShipSystemComponent<HelmProps, {}> {
         return this.props.text.systemHelp.helm;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.helm;
+    }
+
     public render() {
         switch (this.props.inputMode) {
             case InputMode.KeyboardAndMouse:

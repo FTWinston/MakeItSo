@@ -24,6 +24,10 @@ class ViewScreen extends ShipSystemComponent<ViewScreenProps, {}> {
         return this.props.text.systemHelp.view;
     }
 
+    protected getOptionLabels() {
+        return this.props.text.systems.view;
+    }
+
     public render() {
         switch (this.props.inputMode) {
             case InputMode.KeyboardAndMouse:

@@ -56,13 +56,25 @@
     background-color: $backgroundColor;
 }
 
-.system, .systemHelp, .systemOptions {
+.systemWrapper, .systemHelp, .systemOptions, .system {
     flex-basis: 0;
     flex-grow: 1;
+}
+
+.systemWrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: stretch;
+    align-items: stretch;
+}
+
+.systemWrapper--hidden {
+    display: none;
 }
 
 .systemOptions {
     display: flex;
     flex-direction: column;
+    justify-content: center;
     align-items: center;
 }

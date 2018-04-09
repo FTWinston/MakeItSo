@@ -42,15 +42,21 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
         let help, options;
         let system = this.renderSystem(this.props.activeSystem);
 
+        let showingSystem = true;
+
         if (this.system !== null) {
             if (this.state.showingOptions) {
                 options = this.system.renderOptions();
+                showingSystem = false;
             }
 
             if (this.state.showingHelp) {
                 help = this.system.renderHelp()
+                showingSystem = false;
             }
         }
+
+        let wrapperClasses = showingSystem ? 'systemWrapper' : 'systemWrapper systemWrapper--hidden';
 
         return (
         <Screen>
@@ -65,11 +71,18 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
                 </div>
                 <div className="systemHeader__separator" />
                 <div className="systemHeader__commonIcons">
-                    <PushButton title={this.props.text.common.help} noBorder={true} icon={Icon.Help} clicked={() => this.toggleHelp()} />
+                    <PushButton
+                        title={this.props.text.common.help}
+                        noBorder={true}
+                        icon={Icon.Help}
+                        color={this.state.showingHelp ? ButtonColor.Quandry : undefined}
+                        clicked={() => this.toggleHelp()}
+                    />
                     <PushButton
                         title={this.props.text.common.settings}
                         noBorder={true}
                         icon={Icon.Settings}
+                        color={this.state.showingOptions ? ButtonColor.Quandry : undefined}
                         clicked={() => this.toggleOptions()}
                     />
                     <PushButton title={this.props.text.screens.active.pause} noBorder={true} icon={Icon.Pause} command="pause" />
@@ -78,7 +91,7 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
 
             {options}
             {help}
-            {system}
+            <div className={wrapperClasses}>{system}</div>
         </Screen>
         );
     }
