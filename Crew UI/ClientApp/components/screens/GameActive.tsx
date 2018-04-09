@@ -39,19 +39,10 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
         let prev;
         let next;
 
-        let help, options, optionsButton;
+        let help, options;
         let system = this.renderSystem(this.props.activeSystem);
 
         if (this.system !== null) {
-            optionsButton = (
-                <PushButton
-                    title={this.props.text.common.settings}
-                    noBorder={true}
-                    icon={Icon.Settings}
-                    clicked={() => this.toggleOptions()}
-                />
-            );
-
             if (this.state.showingOptions) {
                 options = this.system.renderOptions();
             }
@@ -75,7 +66,12 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
                 <div className="systemHeader__separator" />
                 <div className="systemHeader__commonIcons">
                     <PushButton title={this.props.text.common.help} noBorder={true} icon={Icon.Help} clicked={() => this.toggleHelp()} />
-                    {optionsButton}
+                    <PushButton
+                        title={this.props.text.common.settings}
+                        noBorder={true}
+                        icon={Icon.Settings}
+                        clicked={() => this.toggleOptions()}
+                    />
                     <PushButton title={this.props.text.screens.active.pause} noBorder={true} icon={Icon.Pause} command="pause" />
                 </div>
             </div>

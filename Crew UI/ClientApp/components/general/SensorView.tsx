@@ -54,7 +54,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
             this.updateTransform(nextState);
         }
 
-        if (this.props.className !== nextProps.className) {
+        if (this.props.className !== nextProps.className || this.props.autoRotate !== nextProps.autoRotate) {
             return true;
         }
 

@@ -1,0 +1,11 @@
+@import '../general/mixins';
+
+.option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.option__name {
+    margin-right: 2em;
+}

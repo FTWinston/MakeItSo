@@ -16,8 +16,36 @@ export abstract class ShipSystemComponent<TProps extends SystemComponentProps, T
     abstract name(): string;
     protected abstract getHelpText(): string;
 
-    protected loadOptions() {
-        let state: {[key: string]: string|boolean } = {};
+    componentWillMount() {
+        this.loadOptions();
+    }
+
+    renderOptions() {
+        let options = [];
+
+        for (const opt in this.state) {
+            let val = this.state[opt];
+
+            if (typeof val === 'boolean') {
+                options.push(<BooleanOption key={opt} name={opt} value={val as boolean} changeValue={v => this.changeBooleanOption(opt, v)} text={this.props.text} />)
+            }
+            else {
+                throw 'Unable to handle non-boolean options in system state';
+            }
+        }
+        if (options.length === 0) {
+            return <div className="systemOptions systemOptions--empty">{this.props.text.common.noOptions}</div>;
+        }
+
+        return <div className="systemOptions">{options}</div>;
+    }
+    
+    renderHelp() {
+        return <div className="systemHelp">{this.getHelpText()}</div>;
+    }
+
+    private loadOptions() {
+        let state: {[key: string]: string|boolean} = {};
 
         for (let opt in this.state) {
             let strVal = localStorage.getItem(`${this.name()} ${opt}`);
@@ -37,39 +65,15 @@ export abstract class ShipSystemComponent<TProps extends SystemComponentProps, T
         this.setState(state as Pick<TOptions, never>);
     }
 
-    protected saveOptions() {
-        for (let opt in this.state) {
-            let strVal = this.state[opt].toString();
-            localStorage.setItem(`${this.name()} ${opt}`, strVal);
-        }
-    }
-
-    renderOptions() {
-        let options = [];
-
-        for (const opt in this.state) {
-            let val = this.state[opt];
-            if (typeof val === 'boolean') {
-                options.push(<BooleanOption key={opt} name={opt} value={val as boolean} changeValue={v => this.changeBooleanOption(opt, v)} text={this.props.text} />)
-            }
-            else {
-                throw 'Unable to handle non-boolean options in system state';
-            }
-        }
-        if (options.length === 0) {
-            return <div className="systemOptions systemOptions--empty">{this.props.text.common.noOptions}</div>;
-        }
-
-        return <div className="systemOptions">{options}</div>;
-    }
-    
-    renderHelp() {
-        return <div className="systemHelp">{this.getHelpText()}</div>;
+    private saveOption(opt: string, val: any) {
+        localStorage.setItem(`${this.name()} ${opt}`, val.toString());
     }
 
     private changeBooleanOption(opt: string, val: boolean) {
-        this.setState({
-            opt: val
-        } as Pick<TOptions, never>);
+        this.saveOption(opt, val);
+
+        let newState: {[key: string]: boolean} = {};
+        newState[opt] = val;
+        this.setState(newState as Pick<TOptions, never>);
     }
 }

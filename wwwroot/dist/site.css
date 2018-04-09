@@ -465,6 +465,19 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em; }
+
+.option__name {
+  margin-right: 2em; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -796,9 +809,14 @@ $lightBackground: #999;
   width: 2px;
   background-color: #333; }
 
-.system {
+.system, .systemHelp, .systemOptions {
   flex-basis: 0;
   flex-grow: 1; }
+
+.systemOptions {
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
 .errorMessage {
   white-space: pre-wrap;
   line-height: 2em; }
