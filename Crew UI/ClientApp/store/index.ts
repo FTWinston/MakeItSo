@@ -2,6 +2,7 @@ import * as User from './User';
 import * as Crew from './Crew';
 import * as Screen from './Screen';
 import * as Helm from './Helm';
+import * as Power from './Power';
 import * as Sensors from './Sensors';
 import * as Warp from './Warp';
 
@@ -11,6 +12,7 @@ export interface ApplicationState {
     crew: Crew.CrewState;
     screen: Screen.ScreenState;
     helm: Helm.HelmState;
+    power: Power.PowerState;
     sensors: Sensors.SensorState;
     warp: Warp.WarpState;
 }
@@ -23,6 +25,7 @@ export const reducers = {
     crew: Crew.reducer,
     screen: Screen.reducer,
     helm: Helm.reducer,
+    power: Power.reducer,
     sensors: Sensors.reducer,
     warp: Warp.reducer,
 };
