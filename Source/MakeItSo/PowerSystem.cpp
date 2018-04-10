@@ -2,7 +2,6 @@
 #include "PowerSystem.h"
 #else
 #include "stdafx.h"
-#include <sstream>
 #include "PowerSystem.h"
 #endif
 
@@ -11,53 +10,21 @@
 
 bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(msg, "pickCard "))
+	if (STARTS_WITH(msg, "rotCell "))
 	{
-		int32 cardID = ExtractInt(msg, sizeof("pickCard "));
-
-		TSet<int32> cardChoice;
-#ifndef WEB_SERVER_TEST
-		if (!cardChoices.Dequeue(cardChoice))
-			return true; // no cards to choose from
-#else
-		if (cardChoices.empty())
-			return true; // no cards to choose from
-		cardChoice = cardChoices.front();
-#endif
-
-		bool cardIsInChoice = false;
-		for (auto choiceCardID : cardChoice)
-			if (choiceCardID == cardID)
-			{
-				cardIsInChoice = true;
-				break;
-			}
-
-		if (!cardIsInChoice)
-			return true; // chosen card isn't part of the current choice
-
-#ifndef WEB_SERVER_TEST
-		cardLibrary.Add(cardID);
-#else
-		cardChoices.pop();
-		cardLibrary.push_back(cardID);
-#endif
-		SendCardChoice();
-		SendCardLibrary();
+		
 	}
-	else if (STARTS_WITH(msg, "useCard "))
+	else if (STARTS_WITH(msg, "placeCell "))
 	{
-		int32 cardID = ExtractInt(msg, sizeof("useCard "));
+		
+	}
+	else if (STARTS_WITH(msg, "toggleSys "))
+	{
 
-		if (!SETCONTAINS(cardLibrary, cardID))
-			return true; // card not in library
+	}
+	else if (MATCHES(msg, "jogReactor"))
+	{
 
-#ifndef WEB_SERVER_TEST
-		cardLibrary.Remove(cardID);
-#else
-		cardLibrary.erase(std::remove(cardLibrary.begin(), cardLibrary.end(), cardID), cardLibrary.end());
-#endif
-		ActivatePowerCard(cardID);
 	}
 	else
 		return false;
@@ -67,143 +34,172 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 
 void UPowerSystem::SendAllData_Implementation()
 {
-	SendAuxPower();
-	SendPowerLevels();
-	SendCardChoice();
-	SendCardLibrary();
+	SendAllCells();
+	SendAllSystems();
+	SendAllSpares();
+	Client_SendReactorPower();
 }
 
-/*
-bool UPowerSystem::ProcessSystemMessage(FString message)
-{
-	if (message == TEXT("incaux"))
-	{
-		IncrementAuxPower();
-	}
-	else if (STRFIND(message, TEXT("addchoice ")) == 0)
-	{
-		CHOPSTART(message, 10);
 
-#ifndef WEB_SERVER_TEST
-		TArray<FString> strValues;
-		message.ParseIntoArray(strValues, TEXT(" "), true);
-		TArray<int32> values;
-
-		for (auto strValue : strValues)
-			values.Add(FCString::Atoi(*strValue));
-
-		while (values.Num() < 3)
-			values.Add(0); // ensure 3 values
-#else
-		int32 values[3] = { 0, 0, 0 };
-		std::wstringstream ss(message);
-		int temp, index = 0;
-		while (index < 3 && ss >> temp)
-			values[index++] = temp;
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendCell(uint8 cell, EPowerCellType cellType) {}
 #endif
-		AddCardChoice(values[0], values[1], values[2]);
-	}
-	else
-		return false;
-
-	return true;
-}
-*/
-
-void UPowerSystem::IncrementAuxPower()
+void UPowerSystem::SendCell_Implementation(uint8 cell, EPowerCellType cellType)
 {
-	if (auxPower >= MAX_AUX_POWER)
+	FString output = TEXT("power_cell ");
+
+	APPENDINT(output, cell);
+	output += TEXT(" ");
+	APPENDINT(output, cellType);
+
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendAllCells() {}
+#endif
+void UPowerSystem::SendAllCells_Implementation()
+{
+	FString output = TEXT("power_all_cells");
+
+	for (auto cell : cells)
+	{
+		output += TEXT(" ");
+		APPENDINT(output, cell);
+	}
+
+	SendSystem(output);
+}
+
+void UPowerSystem::OnReplicated_Cells(TArray<EPowerCellType> beforeChange)
+{
+	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
+	uint8 numCells = SIZENUM(cells);
+	if (SIZENUM(beforeChange) != numCells)
+	{
+		SendAllCells();
 		return;
+	}
 
-	auxPower++;
-	SendAuxPower();
-}
-
-void UPowerSystem::SendAuxPower()
-{
-	crewManager->SendAll("aux %i", auxPower);
-}
-
-void UPowerSystem::SendPowerLevels()
-{
-	crewManager->SendAll("levels %.0f %.0f %.0f %.0f %.0f %.0f", powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
-}
-
-#ifndef WEB_SERVER_TEST
-#define ADD(set, val) set.Add(val)
-#else
-#define ADD(set, val) set.push_back(val)
-#endif
-
-void UPowerSystem::AddCardChoice(int32 card1, int32 card2, int32 card3)
-{
-	TSet<int32> choice;
-	ADD(choice, card1);
-	ADD(choice, card2);
-	ADD(choice, card3);
-
-	bool wasEmpty;
-#ifndef WEB_SERVER_TEST
-	wasEmpty = cardChoices.IsEmpty();
-	cardChoices.Enqueue(choice);
-#else
-	wasEmpty = cardChoices.empty();
-	cardChoices.push(choice);
-#endif
-
-	if (wasEmpty)
-		SendCardChoice();
-}
-
-void UPowerSystem::SendCardChoice()
-{
-#ifndef WEB_SERVER_TEST
-	if (cardChoices.IsEmpty())
-#else
-	if (cardChoices.empty())
-#endif
-		crewManager->SendAllFixed("choice ");
-	else
+	for (uint8 i = 0; i < numCells; i++)
 	{
-#ifndef WEB_SERVER_TEST
-		TSet<int32> choiceIDs;
-		cardChoices.Peek(choiceIDs);
-#else
-		auto choiceIDs = cardChoices.front();
-#endif
-
-		auto command = CombineIDs(TEXT("choice "), choiceIDs);
-		crewManager->SendAll(command);
+		auto currentVal = cells[i];
+		if (beforeChange[i] != currentVal)
+			SendCell(i, currentVal);
 	}
 }
 
-void UPowerSystem::SendCardLibrary()
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendSystemState(EPowerSystem system, bool state) {}
+#endif
+void UPowerSystem::SendSystemState_Implementation(EPowerSystem system, bool state)
 {
-	auto command = CombineIDs(TEXT("lib "), cardLibrary);
-	crewManager->SendAll(command);
+	FString output = TEXT("power_sys ");
+
+	APPENDINT(output, system);
+	output += state ? TEXT(" 1") : TEXT(" 0");
+
+	SendSystem(output);
 }
 
-FString UPowerSystem::CombineIDs(const TCHAR *prefix, TSet<int32> IDs)
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendAllSystems() {}
+#endif
+void UPowerSystem::SendAllSystems_Implementation()
 {
-	FString output = prefix;
+	FString output = TEXT("power_all_sys");
 
-	if (NOTEMPTY(IDs))
+	for (auto system : systemsOnline)
 	{
-		bool first = true;
-		for (int32 id : IDs)
-		{
-			if (first)
-				first = false;
-			else
-				output += TEXT(" ");
-
-			APPENDINT(output, id);
-		}
+		output += system ? TEXT(" 1") : TEXT(" 0");
 	}
-	return output;
+
+	SendSystem(output);
 }
 
-void UPowerSystem::ActivatePowerCard(int32 cardID)
+void UPowerSystem::OnReplicated_SystemsOnline(TArray<bool> beforeChange)
 {
-	// ???
+	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
+	auto numSys = SIZENUM(systemsOnline);
+	if (SIZENUM(beforeChange) != numSys)
+	{
+		SendAllSystems();
+		return;
+	}
+
+	for (uint8 i = 0; i < numSys; i++)
+	{
+		auto currentVal = systemsOnline[i];
+		if (beforeChange[i] != currentVal)
+			SendSystemState((EPowerSystem)i, currentVal);
+	}
+}
+
+
+void UPowerSystem::Client_SendReactorPower()
+{
+	FString output = TEXT("power_reactor ");
+
+	APPENDINT(output, reactorPower);
+
+	SendSystem(output);
+}
+
+void UPowerSystem::OnReplicated_ReactorPower(uint8 beforeChange)
+{
+	Client_SendReactorPower();
+}
+
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendAllSpares() {}
+#endif
+void UPowerSystem::SendAllSpares_Implementation()
+{
+	FString output = TEXT("power_all_spare");
+
+	for (auto cell : spareCells)
+	{
+		output += TEXT(" ");
+		APPENDINT(output, cell);
+	}
+
+	SendSystem(output);
+}
+
+void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
+{
+	// This list is always short, and we remove particular indices and add things on the end, rather than just replacing. Safest just to send it all.
+	SendAllSpares();
+}
+
+
+UPowerSystem::EPowerCellType UPowerSystem::Rotate(EPowerCellType type)
+{
+	switch (type)
+	{
+	case EPowerCellType::Cell_NorthSouth:
+		return EPowerCellType::Cell_EastWest;
+	case EPowerCellType::Cell_EastWest:
+		return EPowerCellType::Cell_NorthSouth;
+	case EPowerCellType::Cell_NorthEast:
+		return EPowerCellType::Cell_SouthEast;
+	case EPowerCellType::Cell_SouthEast:
+		return EPowerCellType::Cell_SouthWest;
+	case EPowerCellType::Cell_SouthWest:
+		return EPowerCellType::Cell_NorthWest;
+	case EPowerCellType::Cell_NorthWest:
+		return EPowerCellType::Cell_NorthEast;
+	case EPowerCellType::Cell_NorthEastSouth:
+		return EPowerCellType::Cell_EastSouthWest;
+	case EPowerCellType::Cell_EastSouthWest:
+		return EPowerCellType::Cell_SouthWestNorth;
+	case EPowerCellType::Cell_SouthWestNorth:
+		return EPowerCellType::Cell_WestNorthEast;
+	case EPowerCellType::Cell_WestNorthEast:
+		return EPowerCellType::Cell_NorthEastSouth;
+	default:
+		return type;
+	}
 }

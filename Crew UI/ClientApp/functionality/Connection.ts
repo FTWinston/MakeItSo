@@ -4,6 +4,9 @@ import { actionCreators as userActions } from '~/store/User';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
 import { actionCreators as helmActions } from '~/store/Helm';
 import { actionCreators as warpActions, WarpScreenStatus } from '~/store/Warp';
+import { actionCreators as powerActions, PowerCellType, PowerSystem,
+    numCells as numPowerCells, numSystems as numPowerSystems, maxNumSpare as maxNumSparePowerCells
+} from '~/store/Power';
 import { actionCreators as sensorActions } from '~/store/Sensors';
 import { TextLocalisation } from './Localisation';
 import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '~/functionality';
@@ -220,6 +223,48 @@ export class Connection {
                 let secsRemaining = parseInt(vals[1]);
 
                 store.dispatch(warpActions.performJump(id, secsRemaining));
+                break;
+            }
+            case 'power_cell': {
+                let vals = data.split(' ').map(v => parseInt(v));
+                let cell = vals[0];
+                let type = vals[1] as PowerCellType;
+                store.dispatch(powerActions.setCell(cell, type));
+                break;
+            }
+            case 'power_all_cells': {
+                let types = data.split(' ').map(v => parseInt(v) as PowerCellType);
+                if (types.length !== numPowerCells) {
+                    throw `Invalid number of power cells: need ${numPowerCells}, but got ${types.length}: ${data}`;
+                }
+                store.dispatch(powerActions.setAllCells(types));
+                break;
+            }
+            case 'power_sys': {
+                let vals = data.split(' ');
+                let sys = parseInt(vals[0]) as PowerSystem;
+                let enabled = vals[1] === '1';
+                store.dispatch(powerActions.setSystemStatus(sys, enabled));
+                break;
+            }
+            case 'power_all_sys': {
+                let states = data.split(' ').map(v => v === '1');
+                if (states.length !== numPowerSystems) {
+                    throw `Invalid number of power systems: need ${numPowerSystems}, but got ${states.length}: ${data}`;
+                }
+                store.dispatch(powerActions.setAllSystems(states));
+                break;
+            }
+            case 'power_reactor': {
+                store.dispatch(powerActions.setReactorPower(parseInt(data)));
+                break;
+            }
+            case 'power_all_spare': {
+                let types = data.split(' ').map(v => parseInt(v) as PowerCellType);
+                if (types.length > maxNumSparePowerCells) {
+                    throw `Invalid number of spare power cells: maximum of ${maxNumSparePowerCells}, but got ${types.length}: ${data}`;
+                }
+                store.dispatch(powerActions.setAllSpareCells(types));
                 break;
             }
             default:

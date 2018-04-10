@@ -3,9 +3,6 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
-import { CardHand } from './CardHand';
-import { CardSelection } from './CardSelection';
-import { SystemList } from './SystemList';
 import './PowerManagement.scss';
 
 interface PowerManagementProps {
@@ -32,9 +29,7 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
 
     public render() {
         return <div className="system">
-            <SystemList text={this.props.text} />
-            <CardSelection text={this.props.text} />
-            <CardHand text={this.props.text} />
+            This is the power management system. TODO: implement this!
         </div>;
     }
 }

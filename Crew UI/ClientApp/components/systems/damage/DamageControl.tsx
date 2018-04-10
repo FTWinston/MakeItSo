@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
+import { CardHand } from './CardHand';
+import { CardSelection } from './CardSelection';
+import { SystemList } from './SystemList';
 import './DamageControl.scss';
 
 interface DamageControlProps {
@@ -17,19 +20,21 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
         }
     }
 
-    name() { return 'damage'; }
+    name() { return 'power'; }
 
     protected getHelpText() {
-        return this.props.text.systemHelp.damage;
+        return this.props.text.systemHelp.power;
     }
 
     protected getOptionLabels() {
-        return this.props.text.systems.damage;
+        return this.props.text.systems.power;
     }
 
     public render() {
         return <div className="system">
-            This is the damage control system. TODO: implement this!
+            <SystemList text={this.props.text} />
+            <CardSelection text={this.props.text} />
+            <CardHand text={this.props.text} />
         </div>;
     }
 }

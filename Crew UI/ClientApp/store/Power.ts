@@ -6,9 +6,9 @@ import { Vector3 } from '~/functionality/math/Vector3';
 // STATE - This defines the type of data maintained in the Redux store.
 
 export const enum PowerCellType {
-    Empty,
-    ExhaustPort,
+    Empty = 0,
     Broken,
+    ExhaustPort,
     NorthSouth,
     EastWest,
     NorthEast,
@@ -31,8 +31,11 @@ export const enum PowerSystem {
     Torpedoes,
     Sensors,
     DamageControl,
-    NUM_VALUES,
 }
+
+export const numSystems = 8;
+export const numCells = 210;
+export const maxNumSpare = 5;
 
 export interface PowerState {
     systemsOnline: boolean[];
@@ -56,15 +59,20 @@ interface SetCellAction {
     cellType: PowerCellType;
 }
 
-interface RotateCellAction {
-    type: 'ROT_CELL';
-    cellID: number;
+interface SetAllCellsAction {
+    type: 'SET_ALL_CELLS';
+    cellTypes: PowerCellType[];
 }
 
 interface SetSystemStateAction {
     type: 'SYSTEM_STATE';
     system: PowerSystem;
     online: boolean;
+}
+
+interface SetAllSystemStateAction {
+    type: 'SYSTEM_ALL_STATE';
+    states: boolean[];
 }
 
 interface AddSpareCellAction {
@@ -77,9 +85,15 @@ interface RemoveSpareCellAction {
     spare: number;
 }
 
+interface SetAllSpareCellsAction {
+    type: 'ALL_SPARE_CELL';
+    cellTypes: PowerCellType[];
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetReactorPowerAction | SetCellAction | RotateCellAction | SetSystemStateAction | AddSpareCellAction | RemoveSpareCellAction;
+type KnownAction = SetReactorPowerAction | SetCellAction | SetAllCellsAction | SetSystemStateAction
+    | SetAllSystemStateAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -95,14 +109,18 @@ export const actionCreators = {
         cellID: cellID,
         cellType: cellType,
     },
-    rotateCell: (cellID: number) => <RotateCellAction>{
-        type: 'ROT_CELL',
-        cellID: cellID,
+    setAllCells: (cellTypes: PowerCellType[]) => <SetAllCellsAction>{
+        type: 'SET_ALL_CELLS',
+        cellTypes: cellTypes,
     },
-    setPathStatus: (system: PowerSystem, online: boolean) => <SetSystemStateAction>{
+    setSystemStatus: (system: PowerSystem, online: boolean) => <SetSystemStateAction>{
         type: 'SYSTEM_STATE',
         system: system,
         online: online,
+    },
+    setAllSystems: (online: boolean[]) => <SetAllSystemStateAction>{
+        type: 'SYSTEM_ALL_STATE',
+        states: online,
     },
     addSpareCell: (cellType: PowerCellType) => <AddSpareCellAction>{
         type: 'ADD_SPARE_CELL',
@@ -112,16 +130,20 @@ export const actionCreators = {
         type: 'REM_SPARE_CELL',
         spare: spareNum,
     },
+    setAllSpareCells: (cellTypes: PowerCellType[]) => <SetAllSpareCellsAction>{
+        type: 'ALL_SPARE_CELL',
+        cellTypes: cellTypes,
+    },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: PowerState = {
-    systemsOnline: new Array(PowerSystem.NUM_VALUES as number),
-    cells: new Array(210),
+    systemsOnline: new Array(numSystems).fill(false),
+    cells: new Array(numCells).fill(PowerCellType.Broken),
     reactorPower: 100,
-    spareCells: new Array(5),
+    spareCells: [],
 };
 
 export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Action) => {
@@ -141,12 +163,10 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
                 cells: cells,
             }
         }
-        case 'ROT_CELL': {
-            let cells = state.cells.slice();
-            cells[action.cellID] = getRotatedCellType(cells[action.cellID]);
+        case 'SET_ALL_CELLS': {
             return {
                 ...state,
-                cells: cells,
+                cells: action.cellTypes,
             }
         }
         case 'SYSTEM_STATE': {
@@ -158,6 +178,12 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             return {
                 ...state,
                 systemsOnline: systemsOnline,
+            };
+        }
+        case 'SYSTEM_ALL_STATE': {
+            return {
+                ...state,
+                systemsOnline: action.states,
             };
         }
         case 'ADD_SPARE_CELL': {
@@ -177,6 +203,12 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
                 spareCells: spares,
             }
         }
+        case 'ALL_SPARE_CELL': {
+            return {
+                ...state,
+                spareCells: action.cellTypes,
+            }
+        }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             const exhaustiveCheck: never = action;
@@ -184,30 +216,3 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
 
     return state || unloadedState;
 };
-
-function getRotatedCellType(type: PowerCellType) {
-    switch (type) {
-        case PowerCellType.NorthSouth:
-            return PowerCellType.EastWest;
-        case PowerCellType.EastWest:
-            return PowerCellType.NorthSouth;
-        case PowerCellType.NorthEast:
-            return PowerCellType.SouthEast;
-        case PowerCellType.SouthEast:
-            return PowerCellType.SouthWest;
-        case PowerCellType.SouthWest:
-            return PowerCellType.NorthWest;
-        case PowerCellType.NorthWest:
-            return PowerCellType.NorthEast;
-        case PowerCellType.NorthEastSouth:
-            return PowerCellType.EastSouthWest;
-        case PowerCellType.EastSouthWest:
-            return PowerCellType.SouthWestNorth;
-        case PowerCellType.SouthWestNorth:
-            return PowerCellType.WestNorthEast;
-        case PowerCellType.WestNorthEast:
-            return PowerCellType.NorthEastSouth;
-        default:
-            return type;
-    }
-}
