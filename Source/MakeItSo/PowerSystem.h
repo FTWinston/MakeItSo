@@ -7,8 +7,9 @@
 #include "ShipSystem.h"
 #include "PowerSystem.Generated.h"
 
-#define DAMAGE_GRID_WIDTH 15
-#define DAMAGE_GRID_HEIGHT 15
+#define POWER_GRID_WIDTH 15
+#define POWER_GRID_HEIGHT 15
+#define POWER_GRID_SIZE POWER_GRID_WIDTH * POWER_GRID_HEIGHT
 
 UCLASS()
 class MAKEITSO_API UPowerSystem : public UShipSystem
@@ -42,13 +43,34 @@ public:
 		Power_Deflector,
 		MAX_POWER_SYSTEMS
 	};
+	
+	UPowerSystem();
+	virtual void ResetData() override;
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 
+	UFUNCTION(Server, Reliable)
+	void RotateCell(uint8 cellID);
+#ifdef WEB_SERVER_TEST
+	void RotateCell_Implementation(uint8 cellID);
+#endif
+
+	UFUNCTION(Server, Reliable)
+	void PlaceCell(uint8 cellID, uint8 spareCellNum);
+#ifdef WEB_SERVER_TEST
+	void PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum);
+#endif
+
+	UFUNCTION(Server, Reliable)
+	void ToggleSystem(EPowerSystem system);
+#ifdef WEB_SERVER_TEST
+	void ToggleSystem_Implementation(EPowerSystem system);
+#endif
+
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
-	EPowerCellType Rotate(EPowerCellType cell);
+	EPowerCellType GetRotatedCellType(EPowerCellType cell);
 
 private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ReactorPower)

@@ -8,23 +8,56 @@
 #include "UIConnectionInfo.h"
 #include "CrewManager.h"
 
+
+UPowerSystem::UPowerSystem()
+{
+#ifndef WEB_SERVER_TEST
+	cells.AddUninitialized(POWER_GRID_SIZE);
+	systemsOnline.AddUninitialized(MAX_POWER_SYSTEMS);
+#endif
+}
+
+void UPowerSystem::ResetData()
+{
+	reactorPower = 100;
+
+	for (int32 i = 0; i < POWER_GRID_SIZE; i++)
+		cells[i] = EPowerCellType::Cell_Empty;
+
+	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
+		systemsOnline[i] = true;
+
+#ifndef WEB_SERVER_TEST
+	spareCells.Empty();
+#else
+	spareCells.clear();
+#endif
+}
+
 bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(msg, "rotCell "))
+	if (STARTS_WITH(msg, "power_rotCell "))
 	{
-		
+		int32 cellID = ExtractInt(msg, sizeof("power_rotCell "));
+		if (cellID >= 0 && cellID < POWER_GRID_SIZE)
+			RotateCell(cellID);
 	}
-	else if (STARTS_WITH(msg, "placeCell "))
+	else if (STARTS_WITH(msg, "power_placeCell "))
 	{
-		
-	}
-	else if (STARTS_WITH(msg, "toggleSys "))
-	{
+		TArray<FString> parts = SplitParts(msg, sizeof("power_placeCell "));
 
+		if (SIZENUM(parts) >= 2)
+		{
+			int32 cellID = STOI(parts[0]);
+			int32 spareCellNum = STOI(parts[1]);
+			PlaceCell(cellID, spareCellNum);
+		}
 	}
-	else if (MATCHES(msg, "jogReactor"))
+	else if (STARTS_WITH(msg, "power_toggleSys "))
 	{
-
+		int32 systemID = ExtractInt(msg, sizeof("power_toggleSys "));
+		if (systemID >= 0 && systemID < MAX_POWER_SYSTEMS)
+			ToggleSystem((EPowerSystem)systemID);
 	}
 	else
 		return false;
@@ -42,7 +75,41 @@ void UPowerSystem::SendAllData_Implementation()
 
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendCell(uint8 cell, EPowerCellType cellType) {}
+void UPowerSystem::RotateCell(uint8 cellID) { RotateCell_Implementation(cellID); }
+#endif
+void UPowerSystem::RotateCell_Implementation(uint8 cellID)
+{
+	if (cellID < 0 || cellID >= POWER_GRID_SIZE)
+		return;
+
+	cells[cellID] = GetRotatedCellType(cells[cellID]);
+}
+
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::PlaceCell(uint8 cellID, uint8 spareCellNum) { PlaceCell_Implementation(cellID, spareCellNum); }
+#endif
+void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
+{
+	if (cellID < 0 || cellID >= POWER_GRID_SIZE || spareCellNum < 0 || spareCellNum >= SIZENUM(spareCells))
+		return;
+
+	cells[cellID] = spareCells[spareCellNum];
+	SETREMOVE(spareCells, spareCellNum);
+}
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::ToggleSystem(EPowerSystem system) { ToggleSystem_Implementation(system); }
+#endif
+void UPowerSystem::ToggleSystem_Implementation(EPowerSystem system)
+{
+	int32 systemID = (int32)system;
+	systemsOnline[systemID] = !systemsOnline[systemID];
+}
+
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendCell(uint8 cell, EPowerCellType cellType) { SendCell_Implementation(cell, cellType); }
 #endif
 void UPowerSystem::SendCell_Implementation(uint8 cell, EPowerCellType cellType)
 {
@@ -56,7 +123,7 @@ void UPowerSystem::SendCell_Implementation(uint8 cell, EPowerCellType cellType)
 }
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendAllCells() {}
+void UPowerSystem::SendAllCells() { SendAllCells_Implementation(); }
 #endif
 void UPowerSystem::SendAllCells_Implementation()
 {
@@ -91,7 +158,7 @@ void UPowerSystem::OnReplicated_Cells(TArray<EPowerCellType> beforeChange)
 
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendSystemState(EPowerSystem system, bool state) {}
+void UPowerSystem::SendSystemState(EPowerSystem system, bool state) { SendSystemState_Implementation(system, state); }
 #endif
 void UPowerSystem::SendSystemState_Implementation(EPowerSystem system, bool state)
 {
@@ -104,7 +171,7 @@ void UPowerSystem::SendSystemState_Implementation(EPowerSystem system, bool stat
 }
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendAllSystems() {}
+void UPowerSystem::SendAllSystems() { SendAllSystems_Implementation(); }
 #endif
 void UPowerSystem::SendAllSystems_Implementation()
 {
@@ -128,7 +195,7 @@ void UPowerSystem::OnReplicated_SystemsOnline(TArray<bool> beforeChange)
 		return;
 	}
 
-	for (uint8 i = 0; i < numSys; i++)
+	for (size_t i = 0; i < numSys; i++)
 	{
 		auto currentVal = systemsOnline[i];
 		if (beforeChange[i] != currentVal)
@@ -153,7 +220,7 @@ void UPowerSystem::OnReplicated_ReactorPower(uint8 beforeChange)
 
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendAllSpares() {}
+void UPowerSystem::SendAllSpares() { SendAllSpares_Implementation(); }
 #endif
 void UPowerSystem::SendAllSpares_Implementation()
 {
@@ -175,7 +242,7 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 }
 
 
-UPowerSystem::EPowerCellType UPowerSystem::Rotate(EPowerCellType type)
+UPowerSystem::EPowerCellType UPowerSystem::GetRotatedCellType(EPowerCellType type)
 {
 	switch (type)
 	{

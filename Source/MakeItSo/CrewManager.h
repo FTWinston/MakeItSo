@@ -32,6 +32,7 @@
 #define PAIRKEY(pair) pair.Key
 #define PAIRVALUE(pair) pair.Value
 #define STOF(str) FCString::Atof(*str)
+#define STOI(str) FCString::Atoi(*str)
 #define ISCLIENT() (GEngine->GetNetMode(GetWorld()) != NM_DedicatedServer)
 #define ISSERVER() (GEngine->GetNetMode(GetWorld()) != NM_Client)
 #define MAKENEW(type) NewObject<type>()
@@ -51,6 +52,7 @@
 #define PAIRKEY(pair) pair.first
 #define PAIRVALUE(pair) pair.second
 #define STOF(str) std::stof(str)
+#define STOI(str) std::stoi(str)
 #define ISCLIENT() true
 #define ISSERVER() true
 #define MAKENEW(type) new type()
