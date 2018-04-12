@@ -51,7 +51,7 @@ void UPowerSystem::BeginPlay()
 				if (y >= REACTOR_MIN_SERVER_Y && y <= REACTOR_MAX_SERVER_Y)
 				{
 					if (x >= REACTOR_MIN_X && x <= REACTOR_MAX_X)
-						cell.SetType(EPowerCellType::Cell_System);
+						cell.SetType(EPowerCellType::Cell_Reactor);
 					else if (y == EXHAUST_PORT_SERVER_Y && x == 0 || x == POWER_GRID_WIDTH - 1)
 						cell.SetType(EPowerCellType::Cell_ExhaustPort);
 					else
@@ -62,10 +62,10 @@ void UPowerSystem::BeginPlay()
 			}
 			
 			cell.system = this;
-			cell.westNeighbour = x > 0 ? &cells[CELLINDEX(x - 1, y)] : NULL;
-			cell.eastNeighbour = x < POWER_GRID_WIDTH - 1  ? &cells[CELLINDEX(x + 1, y)] : NULL;
-			cell.northNeighbour = y > 0 ? &cells[CELLINDEX(x, y - 1)] : NULL;
-			cell.southNeighbour = y < POWER_GRID_SERVER_HEIGHT - 1 ? &cells[CELLINDEX(x, y + 1)] : NULL;
+			cell.SetNeighbour(Dir_West, x > 0 ? &cells[CELLINDEX(x - 1, y)] : NULL);
+			cell.SetNeighbour(Dir_East, x < POWER_GRID_WIDTH - 1  ? &cells[CELLINDEX(x + 1, y)] : NULL);
+			cell.SetNeighbour(Dir_North, y > 0 ? &cells[CELLINDEX(x, y - 1)] : NULL);
+			cell.SetNeighbour(Dir_South, y < POWER_GRID_SERVER_HEIGHT - 1 ? &cells[CELLINDEX(x, y + 1)] : NULL);
 		}
 
 	Super::BeginPlay(); // calls ResetData, so done after data population
@@ -74,10 +74,12 @@ void UPowerSystem::BeginPlay()
 void UPowerSystem::ResetData()
 {
 	reactorPower = 100;
+	visitFlag = false;
 
 	for (int32 i = 0; i < POWER_GRID_SERVER_SIZE; i++)
 	{
 		auto cell = cells[i];
+		cell.visitFlag = visitFlag;
 		if (cell.GetType() > EPowerCellType::Cell_ExhaustPort) // don't clear system & exhaust port cells
 			cell.SetType(EPowerCellType::Cell_Empty);
 
@@ -148,11 +150,7 @@ void UPowerSystem::RotateCell_Implementation(uint8 cellID)
 		return;
 
 	cellID = CLIENT_TO_SERVER_ID(cellID);
-	// TODO: use actual cells
-
-	auto newType = GetRotatedCellType(cellTypes[cellID]);
-
-	cellTypes[cellID] = newType;
+	cells[cellID].RotateCellType();
 }
 
 
@@ -165,9 +163,8 @@ void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 		return;
 
 	cellID = CLIENT_TO_SERVER_ID(cellID);
-	// TODO: use actual cells
-
-	cellTypes[cellID] = spareCells[spareCellNum];
+	cells[cellID].SetType(spareCells[spareCellNum]);
+	
 	SETREMOVE(spareCells, spareCellNum);
 }
 
@@ -364,65 +361,83 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 }
 
 
-UPowerSystem::EPowerCellType UPowerSystem::GetRotatedCellType(EPowerCellType type)
+void UPowerSystem::DistributePower()
 {
-	switch (type)
-	{
-	case EPowerCellType::Cell_NorthSouth:
-		return EPowerCellType::Cell_EastWest;
-	case EPowerCellType::Cell_EastWest:
-		return EPowerCellType::Cell_NorthSouth;
-	case EPowerCellType::Cell_NorthEast:
-		return EPowerCellType::Cell_SouthEast;
-	case EPowerCellType::Cell_SouthEast:
-		return EPowerCellType::Cell_SouthWest;
-	case EPowerCellType::Cell_SouthWest:
-		return EPowerCellType::Cell_NorthWest;
-	case EPowerCellType::Cell_NorthWest:
-		return EPowerCellType::Cell_NorthEast;
-	case EPowerCellType::Cell_NorthEastSouth:
-		return EPowerCellType::Cell_EastSouthWest;
-	case EPowerCellType::Cell_EastSouthWest:
-		return EPowerCellType::Cell_SouthWestNorth;
-	case EPowerCellType::Cell_SouthWestNorth:
-		return EPowerCellType::Cell_WestNorthEast;
-	case EPowerCellType::Cell_WestNorthEast:
-		return EPowerCellType::Cell_NorthEastSouth;
-	default:
-		return type;
-	}
-}
+	TArray<PowerCell*> edgeCells;
+	TArray<PowerCell*> nextEdgeCells;
+	visitFlag = !visitFlag;
 
-UPowerSystem::EPowerDirection UPowerSystem::GetConnectedDirections(EPowerCellType type)
-{
-	switch (type)
-	{
-	case EPowerCellType::Cell_NorthSouth:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_South;
-	case EPowerCellType::Cell_EastWest:
-		return EPowerDirection::Dir_East | EPowerDirection::Dir_West;
-	case EPowerCellType::Cell_NorthEast:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_East;
-	case EPowerCellType::Cell_SouthEast:
-		return EPowerDirection::Dir_South | EPowerDirection::Dir_East;
-	case EPowerCellType::Cell_SouthWest:
-		return EPowerDirection::Dir_South | EPowerDirection::Dir_West;
-	case EPowerCellType::Cell_NorthWest:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_West;
-	case EPowerCellType::Cell_NorthEastSouth:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_South | EPowerDirection::Dir_East;
-	case EPowerCellType::Cell_EastSouthWest:
-		return EPowerDirection::Dir_South | EPowerDirection::Dir_East | EPowerDirection::Dir_West;
-	case EPowerCellType::Cell_SouthWestNorth:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_South | EPowerDirection::Dir_West;
-	case EPowerCellType::Cell_WestNorthEast:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_East | EPowerDirection::Dir_West;
-	case EPowerCellType::Cell_ExhaustPort:
-	case EPowerCellType::Cell_NorthEastSouthWest:
-		return EPowerDirection::Dir_North | EPowerDirection::Dir_South | EPowerDirection::Dir_East | EPowerDirection::Dir_West;
-	default:
-		return EPowerDirection::Dir_None;
+	// start at each reactor edge cell, apply power to unvisited connected cells.
+	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++) {
+		SETADD(edgeCells, &cells[CELLINDEX(x, REACTOR_MIN_SERVER_Y)]);
+		SETADD(edgeCells, &cells[CELLINDEX(x, REACTOR_MAX_SERVER_Y)]);
 	}
+
+	// TODO: instead of handling each path simultaneously, to get correct power multiples,
+	// probably want to start from edge edge point in turn, and run each one to completion.
+
+	while (SIZENUM(edgeCells) > 0)
+	{
+		// for each cell connected to an edge cell, increment its power, mark visited, add to next edge cell list
+		for (auto edgeCell : edgeCells)
+		{
+			if (edgeCell->GetType() == UPowerSystem::Cell_System)
+			{
+				// TODO: reached an end point, do something
+				continue;
+			}
+
+			auto north = edgeCell->GetConnection(UPowerSystem::Dir_North);
+			if (north != NULL && north->GetType() != UPowerSystem::Cell_Reactor)
+			{
+				north->AdjustPowerLevel(1);
+				if (north->visitFlag != visitFlag)
+				{
+					north->visitFlag = visitFlag;
+					SETADD(nextEdgeCells, north);
+				}
+			}
+
+			auto south = edgeCell->GetConnection(UPowerSystem::Dir_South);
+			if (south != NULL && south->GetType() != UPowerSystem::Cell_Reactor)
+			{
+				south->AdjustPowerLevel(1);
+				if (south->visitFlag != visitFlag)
+				{
+					south->visitFlag = visitFlag;
+					SETADD(nextEdgeCells, south);
+				}
+			}
+
+			auto east = edgeCell->GetConnection(UPowerSystem::Dir_East);
+			if (east != NULL && east->GetType() != UPowerSystem::Cell_Reactor)
+			{
+				east->AdjustPowerLevel(1);
+				if (east->visitFlag != visitFlag)
+				{
+					east->visitFlag = visitFlag;
+					SETADD(nextEdgeCells, east);
+				}
+			}
+
+			auto west = edgeCell->GetConnection(UPowerSystem::Dir_West);
+			if (west != NULL && west->GetType() != UPowerSystem::Cell_Reactor)
+			{
+				west->AdjustPowerLevel(1);
+				if (west->visitFlag != visitFlag)
+				{
+					west->visitFlag = visitFlag;
+					SETADD(nextEdgeCells, west);
+				}
+			}
+		}
+
+		// TODO: this needs to swap, not make them be the same reference
+		edgeCells = nextEdgeCells;
+		CLEAR(nextEdgeCells);
+	}
+
+	// TODO: when recalculating power, don't update cellPower array until we're done!
 }
 
 
@@ -447,4 +462,104 @@ void PowerCell::SetCoolantLevel(uint8 level)
 	powerLevel = 0;
 	if (cellIndex != -1)
 		system->cellPower[cellIndex] = -level;
+}
+
+void PowerCell::RotateCellType()
+{
+	UPowerSystem::EPowerCellType newType;
+
+	switch (type)
+	{
+	case UPowerSystem::Cell_NorthSouth:
+		newType = UPowerSystem::Cell_EastWest; break;
+	case UPowerSystem::Cell_EastWest:
+		newType = UPowerSystem::Cell_NorthSouth; break;
+	case UPowerSystem::Cell_NorthEast:
+		newType = UPowerSystem::Cell_SouthEast; break;
+	case UPowerSystem::Cell_SouthEast:
+		newType = UPowerSystem::Cell_SouthWest; break;
+	case UPowerSystem::Cell_SouthWest:
+		newType = UPowerSystem::Cell_NorthWest; break;
+	case UPowerSystem::Cell_NorthWest:
+		newType = UPowerSystem::Cell_NorthEast; break;
+	case UPowerSystem::Cell_NorthEastSouth:
+		newType = UPowerSystem::Cell_EastSouthWest; break;
+	case UPowerSystem::Cell_EastSouthWest:
+		newType = UPowerSystem::Cell_SouthWestNorth; break;
+	case UPowerSystem::Cell_SouthWestNorth:
+		newType = UPowerSystem::Cell_WestNorthEast; break;
+	case UPowerSystem::Cell_WestNorthEast:
+		newType = UPowerSystem::Cell_NorthEastSouth; break;
+	default:
+		return;
+	}
+
+	SetType(newType);
+}
+
+UPowerSystem::EPowerDirection PowerCell::GetConnectedDirections()
+{
+	switch (type)
+	{
+	case UPowerSystem::Cell_NorthSouth:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_South;
+	case UPowerSystem::Cell_EastWest:
+		return UPowerSystem::Dir_East | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_NorthEast:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_East;
+	case UPowerSystem::Cell_SouthEast:
+		return UPowerSystem::Dir_South | UPowerSystem::Dir_East;
+	case UPowerSystem::Cell_SouthWest:
+		return UPowerSystem::Dir_South | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_NorthWest:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_NorthEastSouth:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_South | UPowerSystem::Dir_East;
+	case UPowerSystem::Cell_EastSouthWest:
+		return UPowerSystem::Dir_South | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_SouthWestNorth:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_South | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_WestNorthEast:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_ExhaustPort:
+	case UPowerSystem::Cell_NorthEastSouthWest:
+		return UPowerSystem::Dir_North | UPowerSystem::Dir_South | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
+	default:
+		return UPowerSystem::Dir_None;
+	}
+}
+
+UPowerSystem::EPowerDirection PowerCell::GetOppositeDirection(UPowerSystem::EPowerDirection dir)
+{
+	switch (dir)
+	{
+	case UPowerSystem::Dir_North:
+		return UPowerSystem::Dir_South;
+	case UPowerSystem::Dir_South:
+		return UPowerSystem::Dir_North;
+	case UPowerSystem::Dir_East:
+		return UPowerSystem::Dir_West;
+	case UPowerSystem::Dir_West:
+		return UPowerSystem::Dir_East;
+	default:
+		return UPowerSystem::Dir_None;
+	}
+}
+
+PowerCell *PowerCell::GetConnection(UPowerSystem::EPowerDirection dir)
+{
+	// only counts as a connection if there is a neighbour, this cell is
+	// orientated to connect to it, and it's orientated to connect to this cell
+	if ((GetConnectedDirections() & dir) == 0)
+		return NULL;
+
+	auto adjacent = neighbours[dir];
+	if (adjacent == NULL)
+		return NULL;
+
+	auto opposite = GetOppositeDirection(dir);
+	if ((adjacent->GetConnectedDirections() & opposite) == 0)
+		return NULL;
+
+	return adjacent;
 }

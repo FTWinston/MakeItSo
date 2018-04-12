@@ -7,6 +7,7 @@ import { Vector3 } from '~/functionality/math/Vector3';
 
 export const enum PowerCellType {
     Empty = 0,
+    Reactor,
     System,
     ExhaustPort,
     Broken,

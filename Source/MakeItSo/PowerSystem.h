@@ -23,6 +23,7 @@ class MAKEITSO_API UPowerSystem : public UShipSystem
 public:
 	enum EPowerCellType {
 		Cell_Empty = 0,
+		Cell_Reactor,
 		Cell_System,
 		Cell_ExhaustPort,
 		Cell_Broken,
@@ -86,8 +87,7 @@ protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 
 private:
-	EPowerCellType GetRotatedCellType(EPowerCellType cell);
-	EPowerDirection GetConnectedDirections(EPowerCellType cell);
+	void DistributePower();
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ReactorPower)
 	uint8 reactorPower;
@@ -166,6 +166,8 @@ private:
 	void SendAllSpares_Implementation();
 #endif
 
+	bool visitFlag;
+
 	friend class PowerCell;
 };
 
@@ -180,6 +182,7 @@ class PowerCell
 public:
 	void SetType(UPowerSystem::EPowerCellType type);
 	void SetPowerLevel(uint8 level);
+	void AdjustPowerLevel(uint8 level) { SetPowerLevel(GetPowerLevel() + level); }
 	void SetCoolantLevel(uint8 level);
 	UPowerSystem::EPowerCellType GetType() { return type; }
 	uint8 GetPowerLevel() { return powerLevel; }
@@ -187,13 +190,26 @@ public:
 
 	UPowerSystem* system;
 	int32 cellIndex;
+	bool visitFlag;
 
-	PowerCell* northNeighbour = NULL;
-	PowerCell* southNeighbour = NULL;
-	PowerCell* eastNeighbour = NULL;
-	PowerCell* westNeighbour = NULL;
+	void SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour)
+	{
+#ifndef WEB_SERVER_TEST
+		neighbours.Add(dir, neighbour);
+#else
+		neighbours.insert(std::pair<UPowerSystem::EPowerDirection, PowerCell*>(dir, neighbour));
+#endif
+	}
+	
+	void RotateCellType();
+	PowerCell *GetConnection(UPowerSystem::EPowerDirection dir);
 private:
+	UPowerSystem::EPowerDirection GetConnectedDirections();
+	UPowerSystem::EPowerDirection GetOppositeDirection(UPowerSystem::EPowerDirection cell);
+
 	UPowerSystem::EPowerCellType type;
 	uint8 powerLevel;
 	uint8 coolantLevel;
+
+	TMap<UPowerSystem::EPowerDirection, PowerCell*> neighbours;
 };

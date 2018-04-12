@@ -44,11 +44,7 @@ void UWarpSystem::ResetData()
 	activeJumpID = 0;
 	jumpCharge = 0;
 
-#ifndef WEB_SERVER_TEST
-	calculatedJumps.Empty();
-#else
-	calculatedJumps.clear();
-#endif
+	CLEAR(calculatedJumps);
 }
 
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
@@ -163,11 +159,10 @@ void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator
 {
 #ifndef WEB_SERVER_TEST
 	calculationStepPositions.Reset(NUM_WARP_JUMP_STEPS);
-	calculationStepPositions.Add(startPos);
 #else
 	calculationStepPositions.clear();
-	calculationStepPositions.push_back(startPos);
 #endif
+	SETADD(calculationStepPositions, startPos);
 
 	if (ISCLIENT())
 	{

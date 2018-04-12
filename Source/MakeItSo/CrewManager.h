@@ -24,6 +24,7 @@
 #define SIZENUM(set) set.Num()
 #define SETCONTAINS(set, key) set.Contains(key)
 #define MAPCONTAINS(set, key) set.Contains(key)
+#define SETADD(set, val) set.Add(val)
 #define SETREMOVE(set, key) set.Remove(key)
 #define MAPREMOVE(set, key) set.Remove(key)
 #define APPENDINT(str, i) str.AppendInt(i)
@@ -37,6 +38,7 @@
 #define ISSERVER() (GEngine->GetNetMode(GetWorld()) != NM_Client)
 #define MAKENEW(type) NewObject<type>()
 #define LASTITEM(arr) arr.Top()
+#define CLEAR(map) map.Empty()
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -44,6 +46,7 @@
 #define SIZENUM(set) set.size()
 #define SETCONTAINS(set, key) (std::find(set.begin(), set.end(), key) != set.end())
 #define MAPCONTAINS(set, key) (set.find(key) != set.end())
+#define SETADD(set, val) set.push_back(val)
 #define SETREMOVE(set, key) set.erase(std::remove(set.begin(), set.end(), key), set.end());
 #define MAPREMOVE(set, key) set.erase(key);
 #define APPENDINT(str, i) str += std::to_wstring((int32)i)
@@ -57,6 +60,7 @@
 #define ISSERVER() true
 #define MAKENEW(type) new type()
 #define LASTITEM(arr) arr.back()
+#define CLEAR(map) map.clear()
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)
