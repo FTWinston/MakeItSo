@@ -8,8 +8,12 @@
 #include "PowerSystem.Generated.h"
 
 #define POWER_GRID_WIDTH 15
-#define POWER_GRID_HEIGHT 15
-#define POWER_GRID_SIZE POWER_GRID_WIDTH * POWER_GRID_HEIGHT
+#define POWER_GRID_SEND_HEIGHT 15
+#define POWER_GRID_SERVER_HEIGHT (POWER_GRID_SEND_HEIGHT + 2)
+#define POWER_GRID_SEND_SIZE POWER_GRID_WIDTH * POWER_GRID_SEND_HEIGHT
+#define POWER_GRID_SERVER_SIZE POWER_GRID_WIDTH * POWER_GRID_SERVER_HEIGHT
+
+class PowerCell;
 
 UCLASS()
 class MAKEITSO_API UPowerSystem : public UShipSystem
@@ -19,8 +23,9 @@ class MAKEITSO_API UPowerSystem : public UShipSystem
 public:
 	enum EPowerCellType {
 		Cell_Empty = 0,
-		Cell_Broken,
+		Cell_System,
 		Cell_ExhaustPort,
+		Cell_Broken,
 		Cell_NorthSouth,
 		Cell_EastWest,
 		Cell_NorthEast,
@@ -44,7 +49,16 @@ public:
 		MAX_POWER_SYSTEMS
 	};
 	
+	enum EPowerDirection {
+		Dir_None = 0,
+		Dir_North = 1,
+		Dir_South = 2,
+		Dir_East = 4,
+		Dir_West = 8,
+	};
+
 	UPowerSystem();
+	virtual void BeginPlay() override;
 	virtual void ResetData() override;
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
@@ -70,9 +84,11 @@ public:
 
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
-	EPowerCellType GetRotatedCellType(EPowerCellType cell);
 
 private:
+	EPowerCellType GetRotatedCellType(EPowerCellType cell);
+	EPowerDirection GetConnectedDirections(EPowerCellType cell);
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ReactorPower)
 	uint8 reactorPower;
 
@@ -100,21 +116,42 @@ private:
 #endif
 
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_Cells)
-	TArray<EPowerCellType> cells;
+	UPROPERTY()
+	TArray<PowerCell> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
 
-	void OnReplicated_Cells(TArray<EPowerCellType> beforeChange);
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellTypes)
+	TArray<EPowerCellType> cellTypes;
+
+	void OnReplicated_CellTypes(TArray<EPowerCellType> beforeChange);
 
 	UFUNCTION(Client, Reliable)
-	void SendCell(uint8 cell, EPowerCellType cellType);
+	void SendCellType(uint8 cell, EPowerCellType cellType);
 #ifdef WEB_SERVER_TEST
-	void SendCell_Implementation(uint8 cell, EPowerCellType cellType);
+	void SendCellType_Implementation(uint8 cell, EPowerCellType cellType);
 #endif
 
 	UFUNCTION(Client, Reliable)
-	void SendAllCells();
+	void SendAllCellTypes();
 #ifdef WEB_SERVER_TEST
-	void SendAllCells_Implementation();
+	void SendAllCellTypes_Implementation();
+#endif
+
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellPower)
+	TArray<int8> cellPower;
+
+	void OnReplicated_CellPower(TArray<int8> beforeChange);
+
+	UFUNCTION(Client, Reliable)
+	void SendCellPower(uint8 cell, int8 power);
+#ifdef WEB_SERVER_TEST
+	void SendCellPower_Implementation(uint8 cell, int8 power);
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendAllCellPower();
+#ifdef WEB_SERVER_TEST
+	void SendAllCellPower_Implementation();
 #endif
 
 
@@ -128,4 +165,35 @@ private:
 #ifdef WEB_SERVER_TEST
 	void SendAllSpares_Implementation();
 #endif
+
+	friend class PowerCell;
+};
+
+inline UPowerSystem::EPowerDirection operator|(UPowerSystem::EPowerDirection a, UPowerSystem::EPowerDirection b)
+{
+	return static_cast<UPowerSystem::EPowerDirection>(static_cast<uint8>(a) | static_cast<uint8>(b));
+}
+
+
+class PowerCell
+{
+public:
+	void SetType(UPowerSystem::EPowerCellType type);
+	void SetPowerLevel(uint8 level);
+	void SetCoolantLevel(uint8 level);
+	UPowerSystem::EPowerCellType GetType() { return type; }
+	uint8 GetPowerLevel() { return powerLevel; }
+	uint8 GetCoolantLevel() { return coolantLevel; }
+
+	UPowerSystem* system;
+	int32 cellIndex;
+
+	PowerCell* northNeighbour = NULL;
+	PowerCell* southNeighbour = NULL;
+	PowerCell* eastNeighbour = NULL;
+	PowerCell* westNeighbour = NULL;
+private:
+	UPowerSystem::EPowerCellType type;
+	uint8 powerLevel;
+	uint8 coolantLevel;
 };

@@ -7,8 +7,9 @@ import { Vector3 } from '~/functionality/math/Vector3';
 
 export const enum PowerCellType {
     Empty = 0,
-    Broken,
+    System,
     ExhaustPort,
+    Broken,
     NorthSouth,
     EastWest,
     NorthEast,
@@ -37,9 +38,14 @@ export const numSystems = 8;
 export const numCells = 210;
 export const maxNumSpare = 5;
 
+export interface PowerCell {
+    type: PowerCellType;
+    power: number;
+}
+
 export interface PowerState {
     systemsOnline: boolean[];
-    cells: PowerCellType[];
+    cells: PowerCell[];
     reactorPower: number;
     spareCells: PowerCellType[];
 }
@@ -53,15 +59,26 @@ interface SetReactorPowerAction {
     value: number;
 }
 
-interface SetCellAction {
-    type: 'SET_CELL';
+interface SetCellTypeAction {
+    type: 'SET_CELL_T';
     cellID: number;
     cellType: PowerCellType;
 }
 
-interface SetAllCellsAction {
-    type: 'SET_ALL_CELLS';
+interface SetAllCellTypesAction {
+    type: 'SET_ALL_CELLS_T';
     cellTypes: PowerCellType[];
+}
+
+interface SetCellPowerAction {
+    type: 'SET_CELL_P';
+    cellID: number;
+    cellPower: number;
+}
+
+interface SetAllCellPowerAction {
+    type: 'SET_ALL_CELLS_P';
+    cellPower: number[];
 }
 
 interface SetSystemStateAction {
@@ -92,8 +109,8 @@ interface SetAllSpareCellsAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetReactorPowerAction | SetCellAction | SetAllCellsAction | SetSystemStateAction
-    | SetAllSystemStateAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
+type KnownAction = SetReactorPowerAction | SetCellTypeAction | SetAllCellTypesAction | SetCellPowerAction | SetAllCellPowerAction
+    | SetSystemStateAction | SetAllSystemStateAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -104,14 +121,23 @@ export const actionCreators = {
         type: 'REACTOR_POWER',
         value: val,
     },
-    setCell: (cellID: number, cellType: PowerCellType) => <SetCellAction>{
-        type: 'SET_CELL',
+    setCellType: (cellID: number, cellType: PowerCellType) => <SetCellTypeAction>{
+        type: 'SET_CELL_T',
         cellID: cellID,
         cellType: cellType,
     },
-    setAllCells: (cellTypes: PowerCellType[]) => <SetAllCellsAction>{
-        type: 'SET_ALL_CELLS',
+    setAllCellTypes: (cellTypes: PowerCellType[]) => <SetAllCellTypesAction>{
+        type: 'SET_ALL_CELLS_T',
         cellTypes: cellTypes,
+    },
+    setCellPower: (cellID: number, cellPower: number) => <SetCellPowerAction>{
+        type: 'SET_CELL_P',
+        cellID: cellID,
+        cellPower: cellPower,
+    },
+    setAllCellPower: (cellPower: number[]) => <SetAllCellPowerAction>{
+        type: 'SET_ALL_CELLS_P',
+        cellPower: cellPower,
     },
     setSystemStatus: (system: PowerSystem, online: boolean) => <SetSystemStateAction>{
         type: 'SYSTEM_STATE',
@@ -139,9 +165,14 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
+let cells: PowerCell[] = [];
+for (let i=0; i<numCells; i++) {
+    cells.push({type: PowerCellType.Empty, power: 0});
+}
+
 const unloadedState: PowerState = {
     systemsOnline: new Array(numSystems).fill(false),
-    cells: new Array(numCells).fill(PowerCellType.Broken),
+    cells: cells,
     reactorPower: 100,
     spareCells: [],
 };
@@ -155,18 +186,44 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
                 reactorPower: action.value,
             };
         }
-        case 'SET_CELL': {
+        case 'SET_CELL_T': {
             let cells = state.cells.slice();
-            cells[action.cellID] = action.cellType;
+            cells[action.cellID].type = action.cellType;
+
             return {
                 ...state,
                 cells: cells,
             }
         }
-        case 'SET_ALL_CELLS': {
+        case 'SET_ALL_CELLS_T': {
+            let cells = state.cells.slice();
+            for (let i=0; i<cells.length; i++) {
+                cells[i].type = action.cellTypes[i];
+            }
+
             return {
                 ...state,
-                cells: action.cellTypes,
+                cells: cells,
+            }
+        }
+        case 'SET_CELL_P': {
+            let cells = state.cells.slice();
+            cells[action.cellID].power = action.cellPower;
+
+            return {
+                ...state,
+                cells: cells,
+            }
+        }
+        case 'SET_ALL_CELLS_P': {
+            let cells = state.cells.slice();
+            for (let i=0; i<cells.length; i++) {
+                cells[i].power = action.cellPower[i];
+            }
+
+            return {
+                ...state,
+                cells: cells,
             }
         }
         case 'SYSTEM_STATE': {

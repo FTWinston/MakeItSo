@@ -2734,14 +2734,23 @@ var actionCreators = {
         type: 'REACTOR_POWER',
         value: val,
     }); },
-    setCell: function (cellID, cellType) { return ({
-        type: 'SET_CELL',
+    setCellType: function (cellID, cellType) { return ({
+        type: 'SET_CELL_T',
         cellID: cellID,
         cellType: cellType,
     }); },
-    setAllCells: function (cellTypes) { return ({
-        type: 'SET_ALL_CELLS',
+    setAllCellTypes: function (cellTypes) { return ({
+        type: 'SET_ALL_CELLS_T',
         cellTypes: cellTypes,
+    }); },
+    setCellPower: function (cellID, cellPower) { return ({
+        type: 'SET_CELL_P',
+        cellID: cellID,
+        cellPower: cellPower,
+    }); },
+    setAllCellPower: function (cellPower) { return ({
+        type: 'SET_ALL_CELLS_P',
+        cellPower: cellPower,
     }); },
     setSystemStatus: function (system, online) { return ({
         type: 'SYSTEM_STATE',
@@ -2767,9 +2776,13 @@ var actionCreators = {
 };
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+var cells = [];
+for (var i = 0; i < numCells; i++) {
+    cells.push({ type: 0 /* Empty */, power: 0 });
+}
 var unloadedState = {
     systemsOnline: new Array(numSystems).fill(false),
-    cells: new Array(numCells).fill(1 /* Broken */),
+    cells: cells,
     reactorPower: 100,
     spareCells: [],
 };
@@ -2779,13 +2792,29 @@ var reducer = function (state, rawAction) {
         case 'REACTOR_POWER': {
             return __assign({}, state, { reactorPower: action.value });
         }
-        case 'SET_CELL': {
-            var cells = state.cells.slice();
-            cells[action.cellID] = action.cellType;
-            return __assign({}, state, { cells: cells });
+        case 'SET_CELL_T': {
+            var cells_1 = state.cells.slice();
+            cells_1[action.cellID].type = action.cellType;
+            return __assign({}, state, { cells: cells_1 });
         }
-        case 'SET_ALL_CELLS': {
-            return __assign({}, state, { cells: action.cellTypes });
+        case 'SET_ALL_CELLS_T': {
+            var cells_2 = state.cells.slice();
+            for (var i = 0; i < cells_2.length; i++) {
+                cells_2[i].type = action.cellTypes[i];
+            }
+            return __assign({}, state, { cells: cells_2 });
+        }
+        case 'SET_CELL_P': {
+            var cells_3 = state.cells.slice();
+            cells_3[action.cellID].power = action.cellPower;
+            return __assign({}, state, { cells: cells_3 });
+        }
+        case 'SET_ALL_CELLS_P': {
+            var cells_4 = state.cells.slice();
+            for (var i = 0; i < cells_4.length; i++) {
+                cells_4[i].power = action.cellPower[i];
+            }
+            return __assign({}, state, { cells: cells_4 });
         }
         case 'SYSTEM_STATE': {
             var systemID = action.system;
@@ -8846,19 +8875,34 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_4__store_Warp__["a" /* actionCreators */].performJump(id, secsRemaining));
                 break;
             }
-            case 'power_cell': {
+            case 'power_cell_t': {
                 var vals = data.split(' ').map(function (v) { return parseInt(v); });
                 var cell = vals[0];
                 var type = vals[1];
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setCell(cell, type));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setCellType(cell, type));
                 break;
             }
-            case 'power_all_cells': {
+            case 'power_all_cells_t': {
                 var types = data.split(' ').map(function (v) { return parseInt(v); });
                 if (types.length !== __WEBPACK_IMPORTED_MODULE_5__store_Power__["b" /* numCells */]) {
                     throw "Invalid number of power cells: need " + __WEBPACK_IMPORTED_MODULE_5__store_Power__["b" /* numCells */] + ", but got " + types.length + ": " + data;
                 }
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllCells(types));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllCellTypes(types));
+                break;
+            }
+            case 'power_cell_p': {
+                var vals = data.split(' ').map(function (v) { return parseInt(v); });
+                var cell = vals[0];
+                var level = vals[1];
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setCellPower(cell, level));
+                break;
+            }
+            case 'power_all_cells_p': {
+                var levels = data.split(' ').map(function (v) { return parseInt(v); });
+                if (levels.length !== __WEBPACK_IMPORTED_MODULE_5__store_Power__["b" /* numCells */]) {
+                    throw "Invalid number of power cells: need " + __WEBPACK_IMPORTED_MODULE_5__store_Power__["b" /* numCells */] + ", but got " + levels.length + ": " + data;
+                }
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllCellPower(levels));
                 break;
             }
             case 'power_sys': {

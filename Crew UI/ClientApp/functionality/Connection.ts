@@ -225,19 +225,34 @@ export class Connection {
                 store.dispatch(warpActions.performJump(id, secsRemaining));
                 break;
             }
-            case 'power_cell': {
+            case 'power_cell_t': {
                 let vals = data.split(' ').map(v => parseInt(v));
                 let cell = vals[0];
                 let type = vals[1] as PowerCellType;
-                store.dispatch(powerActions.setCell(cell, type));
+                store.dispatch(powerActions.setCellType(cell, type));
                 break;
             }
-            case 'power_all_cells': {
+            case 'power_all_cells_t': {
                 let types = data.split(' ').map(v => parseInt(v) as PowerCellType);
                 if (types.length !== numPowerCells) {
                     throw `Invalid number of power cells: need ${numPowerCells}, but got ${types.length}: ${data}`;
                 }
-                store.dispatch(powerActions.setAllCells(types));
+                store.dispatch(powerActions.setAllCellTypes(types));
+                break;
+            }
+            case 'power_cell_p': {
+                let vals = data.split(' ').map(v => parseInt(v));
+                let cell = vals[0];
+                let level = vals[1];
+                store.dispatch(powerActions.setCellPower(cell, level));
+                break;
+            }
+            case 'power_all_cells_p': {
+                let levels = data.split(' ').map(v => parseInt(v));
+                if (levels.length !== numPowerCells) {
+                    throw `Invalid number of power cells: need ${numPowerCells}, but got ${levels.length}: ${data}`;
+                }
+                store.dispatch(powerActions.setAllCellPower(levels));
                 break;
             }
             case 'power_sys': {
