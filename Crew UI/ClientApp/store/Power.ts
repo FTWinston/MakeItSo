@@ -21,7 +21,6 @@ export const enum PowerCellType {
     EastSouthWest,
     SouthWestNorth,
     WestNorthEast,
-    NorthEastSouthWest,
 }
 
 export const enum PowerSystem {

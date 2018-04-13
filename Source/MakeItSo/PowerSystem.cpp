@@ -11,6 +11,7 @@
 
 UPowerSystem::UPowerSystem()
 {
+	recalculatingCellPower = false;
 #ifndef WEB_SERVER_TEST
 	cells.Add(POWER_GRID_SIZE);
 	cellTypes.AddUninitialized(POWER_GRID_SIZE);
@@ -41,7 +42,7 @@ void UPowerSystem::BeginPlay()
 
 			if (y == 0 || y >= POWER_GRID_SEND_HEIGHT)
 			{
-				cell.cellIndex = -1;
+				cell.cellIndex = -i - 1; // a negative ID to make it clear we never send to client, but we still need these to be unique
 				cell.SetType(EPowerCellType::Cell_System);
 			}
 			else
@@ -74,16 +75,16 @@ void UPowerSystem::BeginPlay()
 void UPowerSystem::ResetData()
 {
 	reactorPower = 100;
-	visitFlag = false;
 
 	for (int32 i = 0; i < POWER_GRID_SERVER_SIZE; i++)
 	{
 		auto cell = cells[i];
-		cell.visitFlag = visitFlag;
 		if (cell.GetType() > EPowerCellType::Cell_ExhaustPort) // don't clear system & exhaust port cells
 			cell.SetType(EPowerCellType::Cell_Empty);
 
-		cell.SetPowerLevel(0);
+		cell.powerLevel = 0;
+		if (cell.cellIndex >= 0)
+			cellPower[cell.cellIndex] = 0;
 	}
 
 	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
@@ -151,6 +152,7 @@ void UPowerSystem::RotateCell_Implementation(uint8 cellID)
 
 	cellID = CLIENT_TO_SERVER_ID(cellID);
 	cells[cellID].RotateCellType();
+	DistributePower();
 }
 
 
@@ -166,6 +168,7 @@ void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 	cells[cellID].SetType(spareCells[spareCellNum]);
 	
 	SETREMOVE(spareCells, spareCellNum);
+	DistributePower();
 }
 
 #ifdef WEB_SERVER_TEST
@@ -356,112 +359,176 @@ void UPowerSystem::SendAllSpares_Implementation()
 
 void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 {
-	// This list is always short, and we remove particular indices and add things on the end, rather than just replacing. Safest just to send it all.
+	// This is a short list, and we remove particular indices and add things on the end, rather than just replacing. Safest just to send it all.
 	SendAllSpares();
 }
 
+#define ADD_CELL_TO_MAP(map, cell) MAPADD_PTR(map, cell->cellIndex, cell, int32, PowerCell*)
 
 void UPowerSystem::DistributePower()
 {
-	TArray<PowerCell*> edgeCells;
-	TArray<PowerCell*> nextEdgeCells;
-	visitFlag = !visitFlag;
-
-	// start at each reactor edge cell, apply power to unvisited connected cells.
-	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++) {
-		SETADD(edgeCells, &cells[CELLINDEX(x, REACTOR_MIN_SERVER_Y)]);
-		SETADD(edgeCells, &cells[CELLINDEX(x, REACTOR_MAX_SERVER_Y)]);
+	recalculatingCellPower = true;
+	for (auto cell : cells)
+	{
+		cell.powerLevel = 0;
+		cell.powerArrivesFrom = Dir_None;
 	}
 
-	// TODO: instead of handling each path simultaneously, to get correct power multiples,
-	// probably want to start from edge edge point in turn, and run each one to completion.
+	TMap<int32, PowerCell*> tmpCells1;
+	TMap<int32, PowerCell*> tmpCells2;
+	TMap<int32, PowerCell*> tmpCells3;
 
-	while (SIZENUM(edgeCells) > 0)
+	// use pointers here so we can swap which we are iterating on easily
+	TMap<int32, PowerCell*> *edgeCells = &tmpCells1;
+	TMap<int32, PowerCell*> *nextEdgeCells_singleOutput = &tmpCells2;
+	TMap<int32, PowerCell*> *nextEdgeCells_multipleOutput = &tmpCells3;
+
+	// add each reactor edge cell to the initial "edge" set
+	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++) {
+		auto cell = &cells[CELLINDEX(x, REACTOR_MIN_SERVER_Y)];
+		ADD_CELL_TO_MAP(edgeCells, cell);
+		
+		cell = &cells[CELLINDEX(x, REACTOR_MAX_SERVER_Y)];
+		ADD_CELL_TO_MAP(edgeCells, cell);
+	}
+	for (int32 y = REACTOR_MIN_SERVER_Y + 1; y <= REACTOR_MAX_SERVER_Y - 1; y++) {
+		auto cell = &cells[CELLINDEX(REACTOR_MIN_X, y)];
+		ADD_CELL_TO_MAP(edgeCells, cell);
+
+		cell = &cells[CELLINDEX(REACTOR_MAX_X, y)];
+		ADD_CELL_TO_MAP(edgeCells, cell);
+	}
+
+	bool handlingMultipleOutputs = false;
+	
+	// loop over all "edge" cells, calculate where they can pass power to
+	while (SIZENUM_PTR(edgeCells) > 0)
 	{
-		// for each cell connected to an edge cell, increment its power, mark visited, add to next edge cell list
-		for (auto edgeCell : edgeCells)
+		for (auto pair : *edgeCells)
 		{
+			auto edgeCell = PAIRVALUE(pair);
+
 			if (edgeCell->GetType() == UPowerSystem::Cell_System)
 			{
 				// TODO: reached an end point, do something
 				continue;
 			}
 
-			auto north = edgeCell->GetConnection(UPowerSystem::Dir_North);
-			if (north != NULL && north->GetType() != UPowerSystem::Cell_Reactor)
+			// look at each adjacent cell, see if we can output power to it
+			PowerCell *north = edgeCell->GetOutputConnection(UPowerSystem::Dir_North);
+			PowerCell *south = edgeCell->GetOutputConnection(UPowerSystem::Dir_South);
+			PowerCell *east = edgeCell->GetOutputConnection(UPowerSystem::Dir_East);
+			PowerCell *west = edgeCell->GetOutputConnection(UPowerSystem::Dir_West);
+
+			uint8 numOutputs = 0; // a connection is still an output if it has power already, but isn't if power arrived in this cell form there.
+			if (north != NULL)
+				numOutputs++;
+			if (south != NULL)
+				numOutputs++;
+			if (east != NULL)
+				numOutputs++;
+			if (west != NULL)
+				numOutputs++;
+
+			// where possible, only process cells with a single possible output, until there are no such cells left
+			if (numOutputs > 1 && !handlingMultipleOutputs)
 			{
-				north->AdjustPowerLevel(1);
-				if (north->visitFlag != visitFlag)
+				ADD_CELL_TO_MAP(nextEdgeCells_multipleOutput, edgeCell);
+				continue;
+			}
+
+			// output power reduces if we split it multiple ways
+			auto outputPower = edgeCell->powerLevel + 1 - numOutputs;
+
+			if (north != NULL)
+			{
+				north->powerLevel += outputPower;
+				north->powerArrivesFrom |= Dir_South;
+
+				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, north->cellIndex))
 				{
-					north->visitFlag = visitFlag;
-					SETADD(nextEdgeCells, north);
+					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, north);
+					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, north->cellIndex);
 				}
 			}
 
-			auto south = edgeCell->GetConnection(UPowerSystem::Dir_South);
-			if (south != NULL && south->GetType() != UPowerSystem::Cell_Reactor)
+			if (south != NULL)
 			{
-				south->AdjustPowerLevel(1);
-				if (south->visitFlag != visitFlag)
+				south->powerLevel += outputPower;
+				south->powerArrivesFrom |= Dir_North;
+
+				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, south->cellIndex))
 				{
-					south->visitFlag = visitFlag;
-					SETADD(nextEdgeCells, south);
+					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, south);
+					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, south->cellIndex);
 				}
 			}
 
-			auto east = edgeCell->GetConnection(UPowerSystem::Dir_East);
-			if (east != NULL && east->GetType() != UPowerSystem::Cell_Reactor)
+			if (east != NULL)
 			{
-				east->AdjustPowerLevel(1);
-				if (east->visitFlag != visitFlag)
+				east->powerLevel += outputPower;
+				east->powerArrivesFrom |= Dir_West;
+
+				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, east->cellIndex))
 				{
-					east->visitFlag = visitFlag;
-					SETADD(nextEdgeCells, east);
+					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, east);
+					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, east->cellIndex);
 				}
 			}
 
-			auto west = edgeCell->GetConnection(UPowerSystem::Dir_West);
-			if (west != NULL && west->GetType() != UPowerSystem::Cell_Reactor)
+			if (west != NULL)
 			{
-				west->AdjustPowerLevel(1);
-				if (west->visitFlag != visitFlag)
+				west->powerLevel += outputPower;
+				west->powerArrivesFrom |= Dir_East;
+
+				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, west->cellIndex))
 				{
-					west->visitFlag = visitFlag;
-					SETADD(nextEdgeCells, west);
+					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, west);
+					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, west->cellIndex);
 				}
 			}
 		}
 
-		// TODO: this needs to swap, not make them be the same reference
-		edgeCells = nextEdgeCells;
-		CLEAR(nextEdgeCells);
+		// if we have more edge cells that (potentially) have a single output, process those.
+		// otherwise, process those we've flagged as having multiple outputs
+		CLEAR_PTR(edgeCells);
+		auto tmp = edgeCells;
+		if (SIZENUM_PTR(nextEdgeCells_singleOutput) > 0)
+		{
+			handlingMultipleOutputs = false;
+			edgeCells = nextEdgeCells_singleOutput;
+			nextEdgeCells_singleOutput = tmp;
+		}
+		else
+		{
+			handlingMultipleOutputs = true;
+			edgeCells = nextEdgeCells_multipleOutput;
+			nextEdgeCells_multipleOutput = tmp;
+		}
 	}
 
-	// TODO: when recalculating power, don't update cellPower array until we're done!
+	// now that we've recalculated the power of every cell, pass this on
+	recalculatingCellPower = false;
+	for (auto cell : cells)
+	{
+		if (cell.cellIndex >= 0)
+		{
+			cellPower[cell.cellIndex] = cell.powerLevel;
+		}
+	}
 }
 
 
 void PowerCell::SetType(UPowerSystem::EPowerCellType type)
 {
 	this->type = type;
-	if (cellIndex != -1)
+	if (cellIndex >= 0)
 		system->cellTypes[cellIndex] = type;
 }
 
-void PowerCell::SetPowerLevel(uint8 level)
+void PowerCell::SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour)
 {
-	powerLevel = level;
-	coolantLevel = 0;
-	if (cellIndex != -1)
-		system->cellPower[cellIndex] = level;
-}
-
-void PowerCell::SetCoolantLevel(uint8 level)
-{
-	coolantLevel = level;
-	powerLevel = 0;
-	if (cellIndex != -1)
-		system->cellPower[cellIndex] = -level;
+	MAPADD(neighbours, dir, neighbour, UPowerSystem::EPowerDirection, PowerCell*);
 }
 
 void PowerCell::RotateCellType()
@@ -522,7 +589,6 @@ UPowerSystem::EPowerDirection PowerCell::GetConnectedDirections()
 	case UPowerSystem::Cell_WestNorthEast:
 		return UPowerSystem::Dir_North | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
 	case UPowerSystem::Cell_ExhaustPort:
-	case UPowerSystem::Cell_NorthEastSouthWest:
 		return UPowerSystem::Dir_North | UPowerSystem::Dir_South | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
 	default:
 		return UPowerSystem::Dir_None;
@@ -546,17 +612,26 @@ UPowerSystem::EPowerDirection PowerCell::GetOppositeDirection(UPowerSystem::EPow
 	}
 }
 
-PowerCell *PowerCell::GetConnection(UPowerSystem::EPowerDirection dir)
+PowerCell *PowerCell::GetOutputConnection(UPowerSystem::EPowerDirection dir)
 {
-	// only counts as a connection if there is a neighbour, this cell is
-	// orientated to connect to it, and it's orientated to connect to this cell
+	// doesn't count as an output connection if we get power from this direction
+	if ((powerArrivesFrom & dir) != 0)
+		return NULL;
+
+	// can't output power if this cell's shape doesn't connect in this direction
 	if ((GetConnectedDirections() & dir) == 0)
 		return NULL;
 
+	// can't output power if no adjacent neighbour in this direction
 	auto adjacent = neighbours[dir];
 	if (adjacent == NULL)
 		return NULL;
 
+	// can't output power to reactor cells, they only provide it
+	if (adjacent->GetType() == UPowerSystem::Cell_Reactor)
+		return NULL;
+
+	// can't output power if neighbour's shape doesn't connect in opposite direction
 	auto opposite = GetOppositeDirection(dir);
 	if ((adjacent->GetConnectedDirections() & opposite) == 0)
 		return NULL;

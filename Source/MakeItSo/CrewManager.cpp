@@ -273,11 +273,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 		}
 	}
 
-#ifndef WEB_SERVER_TEST
-	currentConnections.Add(info);
-#else
-	currentConnections.insert(currentConnections.end(), info);
-#endif
+	SETADD(currentConnections, info);
 	
 	// indicate to the client that the game is currently active
 	if (crewState == ECrewState::Active)

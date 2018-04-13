@@ -203,11 +203,7 @@ void UWarpSystem::TickCalculating(float DeltaTime)
 	float jumpStepTimeInterval = 0.2f;
 	FVector nextPoint = CalculateNextPosition(LASTITEM(calculationStepPositions), calculationCurrentVelocity, jumpStepTimeInterval);
 
-#ifndef WEB_SERVER_TEST
-	calculationStepPositions.Add(nextPoint);
-#else
-	calculationStepPositions.insert(calculationStepPositions.end(), nextPoint);
-#endif
+	SETADD(calculationStepPositions, nextPoint);
 
 	if (ISCLIENT())
 	{// account for replication not affecting local client
@@ -227,11 +223,8 @@ void UWarpSystem::TickCalculating(float DeltaTime)
 		auto jump = MAKENEW(UWarpJump);
 		jump->JumpPower = calculationStartPower;
 		jump->PositionSteps = TArray<FVector>(calculationStepPositions);
-#ifndef WEB_SERVER_TEST
-		calculatedJumps.Add(nextJumpID++, jump);
-#else
-		calculatedJumps.insert(std::pair<int, UWarpJump*>(nextJumpID++, jump));
-#endif
+		
+		MAPADD(calculatedJumps, nextJumpID++, jump, int32, UWarpJump*);
 
 		if (ISCLIENT())
 		{// account for replication not affecting local client

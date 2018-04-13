@@ -37,7 +37,6 @@ public:
 		Cell_EastSouthWest,
 		Cell_SouthWestNorth,
 		Cell_WestNorthEast,
-		Cell_NorthEastSouthWest,
 	};
 
 	enum EPowerSystem {
@@ -166,8 +165,7 @@ private:
 	void SendAllSpares_Implementation();
 #endif
 
-	bool visitFlag;
-
+	bool recalculatingCellPower;
 	friend class PowerCell;
 };
 
@@ -176,40 +174,33 @@ inline UPowerSystem::EPowerDirection operator|(UPowerSystem::EPowerDirection a, 
 	return static_cast<UPowerSystem::EPowerDirection>(static_cast<uint8>(a) | static_cast<uint8>(b));
 }
 
+inline UPowerSystem::EPowerDirection operator|=(UPowerSystem::EPowerDirection a, UPowerSystem::EPowerDirection b)
+{
+	return static_cast<UPowerSystem::EPowerDirection>(static_cast<uint8>(a) | static_cast<uint8>(b));
+}
+
+
 
 class PowerCell
 {
 public:
 	void SetType(UPowerSystem::EPowerCellType type);
-	void SetPowerLevel(uint8 level);
-	void AdjustPowerLevel(uint8 level) { SetPowerLevel(GetPowerLevel() + level); }
-	void SetCoolantLevel(uint8 level);
 	UPowerSystem::EPowerCellType GetType() { return type; }
-	uint8 GetPowerLevel() { return powerLevel; }
-	uint8 GetCoolantLevel() { return coolantLevel; }
 
 	UPowerSystem* system;
 	int32 cellIndex;
-	bool visitFlag;
+	uint8 powerLevel;
+	UPowerSystem::EPowerDirection powerArrivesFrom;
 
-	void SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour)
-	{
-#ifndef WEB_SERVER_TEST
-		neighbours.Add(dir, neighbour);
-#else
-		neighbours.insert(std::pair<UPowerSystem::EPowerDirection, PowerCell*>(dir, neighbour));
-#endif
-	}
+	void SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour);
 	
 	void RotateCellType();
-	PowerCell *GetConnection(UPowerSystem::EPowerDirection dir);
+	PowerCell *GetOutputConnection(UPowerSystem::EPowerDirection dir);
 private:
 	UPowerSystem::EPowerDirection GetConnectedDirections();
 	UPowerSystem::EPowerDirection GetOppositeDirection(UPowerSystem::EPowerDirection cell);
 
 	UPowerSystem::EPowerCellType type;
-	uint8 powerLevel;
-	uint8 coolantLevel;
 
 	TMap<UPowerSystem::EPowerDirection, PowerCell*> neighbours;
 };
