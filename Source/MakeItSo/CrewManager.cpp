@@ -49,7 +49,7 @@ void EventReceived(mg_connection *conn, int ev, void *ev_data)
 }
 
 #ifdef WEB_SERVER_TEST
-AMakeItSoPawn *pawn;
+AMakeItSoPawn *pawn = nullptr;
 #endif
 
 AMakeItSoPawn* UCrewManager::GetShipPawn()
@@ -180,6 +180,9 @@ void UCrewManager::LinkController(AShipPlayerController *controller)
 
 #ifdef WEB_SERVER_TEST
 	pawn = new AMakeItSoPawn();
+
+	for (auto system : pawn->systems)
+		system.second->CallBeginPlay();
 #endif
 }
 
@@ -309,7 +312,7 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		controller->ClientMessage(FString::Printf(TEXT("Client %i disconnected\n"), info->identifier));
 #endif
 
-	SETREMOVE(currentConnections, info);
+	SETREMOVEVAL(currentConnections, info);
 
 	// send "player quit" message to crewmates
 	SendAll("disconnect %i", info->identifier);

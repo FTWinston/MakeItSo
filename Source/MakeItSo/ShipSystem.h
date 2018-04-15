@@ -68,6 +68,9 @@ public:
 //	UFUNCTION(Client, Reliable)
 	virtual void ResetData() { }
 
+#ifdef WEB_SERVER_TEST
+	void CallBeginPlay() { BeginPlay(); }
+#endif
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

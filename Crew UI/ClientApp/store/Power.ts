@@ -35,10 +35,11 @@ export const enum PowerSystem {
 }
 
 export const numSystems = 8;
-export const numCells = 210;
+export const numCells = 225;
 export const maxNumSpare = 5;
 
 export interface PowerCell {
+    index: number;
     type: PowerCellType;
     power: number;
 }
@@ -167,7 +168,11 @@ export const actionCreators = {
 
 let cells: PowerCell[] = [];
 for (let i=0; i<numCells; i++) {
-    cells.push({type: PowerCellType.Empty, power: 0});
+    cells.push({
+        index: i,
+        type: PowerCellType.Empty,
+        power: 0
+    });
 }
 
 const unloadedState: PowerState = {
@@ -264,7 +269,7 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             return {
                 ...state,
                 spareCells: action.cellTypes,
-            }
+            };
         }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above

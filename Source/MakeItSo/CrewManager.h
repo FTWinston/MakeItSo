@@ -27,9 +27,10 @@
 #define MAPCONTAINS(set, key) set.Contains(key)
 #define MAPCONTAINS_PTR(set, key) set->Contains(key)
 #define SETADD(set, val) set.Add(val)
-#define MAPADD(set, key, val, keytype, valtype) set.Add(key, val);
-#define MAPADD_PTR(set, key, val, keytype, valtype) set->Add(key, val);
-#define SETREMOVE(set, key) set.Remove(key)
+#define MAPADD(set, key, val, keytype, valtype) set.Add(key, val)
+#define MAPADD_PTR(set, key, val, keytype, valtype) set->Add(key, val)
+#define SETREMOVEAT(set, pos) set.RemoveAt(pos)
+#define SETREMOVEVAL(set, key) set.Remove(key)
 #define MAPREMOVE(set, key) set.Remove(key)
 #define MAPREMOVE_PTR(set, key) set->Remove(key)
 #define APPENDINT(str, i) str.AppendInt(i)
@@ -55,11 +56,12 @@
 #define MAPCONTAINS(set, key) (set.find(key) != set.end())
 #define MAPCONTAINS_PTR(set, key) (set->find(key) != set->end())
 #define SETADD(set, val) set.push_back(val)
-#define MAPADD(set, key, val, keyType, valType) set.insert(std::pair<keyType, valType>(key, val));
-#define MAPADD_PTR(set, key, val, keyType, valType) set->insert(std::pair<keyType, valType>(key, val));
-#define SETREMOVE(set, key) set.erase(std::remove(set.begin(), set.end(), key), set.end());
-#define MAPREMOVE(set, key) set.erase(key);
-#define MAPREMOVE_PTR(set, key) set->erase(key);
+#define MAPADD(set, key, val, keyType, valType) set.insert(std::pair<keyType, valType>(key, val))
+#define MAPADD_PTR(set, key, val, keyType, valType) set->insert(std::pair<keyType, valType>(key, val))
+#define SETREMOVEAT(set, pos) set.erase(set.begin() + pos)
+#define SETREMOVEVAL(set, key) set.erase(std::remove(set.begin(), set.end(), key), set.end())
+#define MAPREMOVE(set, key) set.erase(key)
+#define MAPREMOVE_PTR(set, key) set->erase(key)
 #define APPENDINT(str, i) str += std::to_wstring((int32)i)
 #define STRFIND(str, val) str.find(val)
 #define CHOPSTART(str, pos) str = str.substr(pos)

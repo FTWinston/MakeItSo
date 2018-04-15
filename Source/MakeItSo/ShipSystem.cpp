@@ -17,6 +17,7 @@ UShipSystem::UShipSystem()
 	// off to improve performance if you don't need them.
 	//PrimaryComponentTick.bCanEverTick = true;
 
+	crewManager = UCrewManager::Instance;
 
 #ifdef WEB_SERVER_TEST
 	BeginPlay();
@@ -28,8 +29,6 @@ UShipSystem::UShipSystem()
 void UShipSystem::BeginPlay()
 {
 	Super::BeginPlay();
-
-	crewManager = UCrewManager::Instance;
 
 	ResetData();
 

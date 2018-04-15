@@ -1,0 +1,62 @@
+@import '../../general/mixins';
+
+.gridCell {
+    background-color: grey;
+    border-radius: 5%;
+    grid-column-end: auto;
+    grid-row-end: auto;
+}
+
+.gridCell--inList {
+    margin: 1em 0 1em 0;
+    width: 10vmin;
+    height: 10vmin;
+}
+.gridCell--selected {
+    outline: solid #ffcc00 2vmin;
+    border-radius: 0;
+}
+
+.gridCell--empty {
+    
+}
+.gridCell--reactor {
+    background-color: #cc6600;
+}
+.gridCell--exhaust {
+    background-color: #00bb00;
+    color: black;
+}
+.gridCell--broken {
+    color: red;
+}
+.gridCell--ns {
+
+}
+.gridCell--ew {
+
+}
+.gridCell--ne {
+
+}
+.gridCell--se {
+
+}
+.gridCell--sw {
+
+}
+.gridCell--nw {
+
+}
+.gridCell--nes {
+
+}
+.gridCell--esw {
+
+}
+.gridCell--swn {
+
+}
+.gridCell--wne {
+
+}

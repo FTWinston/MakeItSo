@@ -250,7 +250,7 @@ let words: TextLocalisation = {
 
         },
         power: {
-
+            spareCells: 'Available cells:',
         },
         damage: {
 

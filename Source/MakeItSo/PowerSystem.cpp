@@ -13,14 +13,19 @@ UPowerSystem::UPowerSystem()
 {
 	recalculatingCellPower = false;
 #ifndef WEB_SERVER_TEST
-	cells.Add(POWER_GRID_SIZE);
-	cellTypes.AddUninitialized(POWER_GRID_SIZE);
-	cellPower.AddZeroed(POWER_GRID_SIZE);
+	cells.Add(POWER_GRID_SERVER_SIZE);
+	cellTypes.AddZeroed(POWER_GRID_SEND_SIZE);
+	cellPower.AddZeroed(POWER_GRID_SEND_SIZE);
 	systemsOnline.AddZeroed(MAX_POWER_SYSTEMS);
+#else
+	cells.assign(POWER_GRID_SERVER_SIZE, nullptr);
+	cellTypes.assign(POWER_GRID_SEND_SIZE, Cell_Empty);
+	cellPower.assign(POWER_GRID_SEND_SIZE, 0);
+	systemsOnline.assign(MAX_POWER_SYSTEMS, false);
 #endif
 }
 
-#define CELLINDEX(x, y) (x + POWER_GRID_WIDTH * y)
+#define CELLINDEX(x, y) ((x) + POWER_GRID_WIDTH * (y))
 #define CLIENT_TO_SERVER_ID(cellID) (cellID + POWER_GRID_WIDTH)
 #define SERVER_TO_CLIENT_ID(cellID) (cellID - POWER_GRID_WIDTH)
 
@@ -28,7 +33,10 @@ UPowerSystem::UPowerSystem()
 #define REACTOR_MAX_X 9
 #define REACTOR_MIN_SERVER_Y 7
 #define REACTOR_MAX_SERVER_Y 9
-#define EXHAUST_PORT_SERVER_Y 8
+
+#define NUM_SPARE_CELLS 5
+
+#define REACTOR_CELL_POWER_LEVEL 20
 
 void UPowerSystem::BeginPlay()
 {
@@ -37,37 +45,49 @@ void UPowerSystem::BeginPlay()
 	for (int32 x = 0; x < POWER_GRID_WIDTH; x++)
 		for (int32 y = 0; y < POWER_GRID_SERVER_HEIGHT; y++)
 		{
+			// TODO: ensure this doesn't leak memory on deletion
+			auto cell = new PowerCell(); 
+			cell->system = this;
+
 			int32 i = CELLINDEX(x, y);
-			auto cell = cells[i];
+			cells[i] = cell;
 
 			if (y == 0 || y >= POWER_GRID_SEND_HEIGHT)
 			{
-				cell.cellIndex = -i - 1; // a negative ID to make it clear we never send to client, but we still need these to be unique
-				cell.SetType(EPowerCellType::Cell_System);
+				cell->cellIndex = -i - 1; // a negative ID to make it clear we never send to client, but we still need these to be unique
+				cell->SetType(EPowerCellType::Cell_System);
 			}
 			else
 			{
-				cell.cellIndex = SERVER_TO_CLIENT_ID(i);
+				cell->cellIndex = SERVER_TO_CLIENT_ID(i);
 
 				if (y >= REACTOR_MIN_SERVER_Y && y <= REACTOR_MAX_SERVER_Y)
 				{
 					if (x >= REACTOR_MIN_X && x <= REACTOR_MAX_X)
-						cell.SetType(EPowerCellType::Cell_Reactor);
-					else if (y == EXHAUST_PORT_SERVER_Y && x == 0 || x == POWER_GRID_WIDTH - 1)
-						cell.SetType(EPowerCellType::Cell_ExhaustPort);
+					{
+						cell->SetType(EPowerCellType::Cell_Reactor);
+						cell->powerLevel = cellPower[cell->cellIndex] = REACTOR_CELL_POWER_LEVEL;
+						
+						if (ISCLIENT())
+							SendCellPower(cell->cellIndex, cell->powerLevel);
+					}
+					else if ((y == REACTOR_MIN_SERVER_Y || y == REACTOR_MAX_SERVER_Y) && (x == 0 || x == POWER_GRID_WIDTH - 1))
+						cell->SetType(EPowerCellType::Cell_ExhaustPort);
 					else
-						cell.SetType(EPowerCellType::Cell_Empty);
+						cell->SetType(EPowerCellType::Cell_Empty);
 				}
 				else
-					cell.SetType(EPowerCellType::Cell_Empty);
+					cell->SetType(EPowerCellType::Cell_Empty);
 			}
 			
-			cell.system = this;
-			cell.SetNeighbour(Dir_West, x > 0 ? &cells[CELLINDEX(x - 1, y)] : NULL);
-			cell.SetNeighbour(Dir_East, x < POWER_GRID_WIDTH - 1  ? &cells[CELLINDEX(x + 1, y)] : NULL);
-			cell.SetNeighbour(Dir_North, y > 0 ? &cells[CELLINDEX(x, y - 1)] : NULL);
-			cell.SetNeighbour(Dir_South, y < POWER_GRID_SERVER_HEIGHT - 1 ? &cells[CELLINDEX(x, y + 1)] : NULL);
+			cell->SetNeighbour(Dir_West, x > 0 ? cells[CELLINDEX(x - 1, y)] : NULL);
+			cell->SetNeighbour(Dir_East, x < POWER_GRID_WIDTH - 1  ? cells[CELLINDEX(x + 1, y)] : NULL);
+			cell->SetNeighbour(Dir_North, y > 0 ? cells[CELLINDEX(x, y - 1)] : NULL);
+			cell->SetNeighbour(Dir_South, y < POWER_GRID_SERVER_HEIGHT - 1 ? cells[CELLINDEX(x, y + 1)] : NULL);
 		}
+
+	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
+		SETADD(spareCells, GetRandomCellType());
 
 	Super::BeginPlay(); // calls ResetData, so done after data population
 }
@@ -79,12 +99,14 @@ void UPowerSystem::ResetData()
 	for (int32 i = 0; i < POWER_GRID_SERVER_SIZE; i++)
 	{
 		auto cell = cells[i];
-		if (cell.GetType() > EPowerCellType::Cell_ExhaustPort) // don't clear system & exhaust port cells
-			cell.SetType(EPowerCellType::Cell_Empty);
+		if (cell->GetType() > EPowerCellType::Cell_ExhaustPort) // don't clear reactor, system & exhaust port cells
+		{
+			cell->SetType(EPowerCellType::Cell_Empty);
+			cell->powerLevel = 0;
 
-		cell.powerLevel = 0;
-		if (cell.cellIndex >= 0)
-			cellPower[cell.cellIndex] = 0;
+			if (cell->cellIndex >= 0)
+				cellPower[cell->cellIndex] = 0;
+		}
 	}
 
 	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
@@ -151,7 +173,8 @@ void UPowerSystem::RotateCell_Implementation(uint8 cellID)
 		return;
 
 	cellID = CLIENT_TO_SERVER_ID(cellID);
-	cells[cellID].RotateCellType();
+	cells[cellID]->RotateCellType();
+
 	DistributePower();
 }
 
@@ -165,9 +188,15 @@ void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 		return;
 
 	cellID = CLIENT_TO_SERVER_ID(cellID);
-	cells[cellID].SetType(spareCells[spareCellNum]);
+	EPowerCellType cellType = spareCells[spareCellNum];
+	cells[cellID]->SetType(cellType);
 	
-	SETREMOVE(spareCells, spareCellNum);
+	SETREMOVEAT(spareCells, spareCellNum);
+	SETADD(spareCells, GetRandomCellType());
+
+	if (ISCLIENT())
+		SendAllSpares();
+
 	DistributePower();
 }
 
@@ -370,8 +399,10 @@ void UPowerSystem::DistributePower()
 	recalculatingCellPower = true;
 	for (auto cell : cells)
 	{
-		cell.powerLevel = 0;
-		cell.powerArrivesFrom = Dir_None;
+		if (cell->GetType() != Cell_Reactor)
+			cell->powerLevel = 0;
+
+		cell->powerArrivesFrom = Dir_None;
 	}
 
 	TMap<int32, PowerCell*> tmpCells1;
@@ -385,17 +416,17 @@ void UPowerSystem::DistributePower()
 
 	// add each reactor edge cell to the initial "edge" set
 	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++) {
-		auto cell = &cells[CELLINDEX(x, REACTOR_MIN_SERVER_Y)];
+		auto cell = cells[CELLINDEX(x, REACTOR_MIN_SERVER_Y)];
 		ADD_CELL_TO_MAP(edgeCells, cell);
 		
-		cell = &cells[CELLINDEX(x, REACTOR_MAX_SERVER_Y)];
+		cell = cells[CELLINDEX(x, REACTOR_MAX_SERVER_Y)];
 		ADD_CELL_TO_MAP(edgeCells, cell);
 	}
 	for (int32 y = REACTOR_MIN_SERVER_Y + 1; y <= REACTOR_MAX_SERVER_Y - 1; y++) {
-		auto cell = &cells[CELLINDEX(REACTOR_MIN_X, y)];
+		auto cell = cells[CELLINDEX(REACTOR_MIN_X, y)];
 		ADD_CELL_TO_MAP(edgeCells, cell);
 
-		cell = &cells[CELLINDEX(REACTOR_MAX_X, y)];
+		cell = cells[CELLINDEX(REACTOR_MAX_X, y)];
 		ADD_CELL_TO_MAP(edgeCells, cell);
 	}
 
@@ -511,11 +542,25 @@ void UPowerSystem::DistributePower()
 	recalculatingCellPower = false;
 	for (auto cell : cells)
 	{
-		if (cell.cellIndex >= 0)
+		if (cell->cellIndex >= 0)
 		{
-			cellPower[cell.cellIndex] = cell.powerLevel;
+			if (ISCLIENT())
+			{
+				auto oldVal = cellPower[cell->cellIndex];
+				if (oldVal != cell->powerLevel)
+				{
+					SendCellPower(cell->cellIndex, cell->powerLevel);
+				}
+			}
+
+			cellPower[cell->cellIndex] = cell->powerLevel;
 		}
 	}
+}
+
+UPowerSystem::EPowerCellType UPowerSystem::GetRandomCellType()
+{
+	return (EPowerCellType)FMath::RandRange(Cell_NorthSouth, Cell_WestNorthEast);
 }
 
 
@@ -523,7 +568,12 @@ void PowerCell::SetType(UPowerSystem::EPowerCellType type)
 {
 	this->type = type;
 	if (cellIndex >= 0)
+	{
 		system->cellTypes[cellIndex] = type;
+
+		if (ISCLIENT())
+			system->SendCellType(cellIndex, type);
+	}
 }
 
 void PowerCell::SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour)
@@ -588,6 +638,8 @@ UPowerSystem::EPowerDirection PowerCell::GetConnectedDirections()
 		return UPowerSystem::Dir_North | UPowerSystem::Dir_South | UPowerSystem::Dir_West;
 	case UPowerSystem::Cell_WestNorthEast:
 		return UPowerSystem::Dir_North | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
+	case UPowerSystem::Cell_Reactor:
+	case UPowerSystem::Cell_System:
 	case UPowerSystem::Cell_ExhaustPort:
 		return UPowerSystem::Dir_North | UPowerSystem::Dir_South | UPowerSystem::Dir_East | UPowerSystem::Dir_West;
 	default:

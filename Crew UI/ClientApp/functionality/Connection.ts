@@ -275,7 +275,7 @@ export class Connection {
                 break;
             }
             case 'power_all_spare': {
-                let types = data.split(' ').map(v => parseInt(v) as PowerCellType);
+                let types = data.length == 0 ? [] : data.split(' ').map(v => parseInt(v) as PowerCellType);
                 if (types.length > maxNumSparePowerCells) {
                     throw `Invalid number of spare power cells: maximum of ${maxNumSparePowerCells}, but got ${types.length}: ${data}`;
                 }

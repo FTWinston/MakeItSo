@@ -1,0 +1,12 @@
+@import '../../general/mixins';
+
+.powerCellList {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-content: stretch;
+}
+
+.powerCellList__headings {
+    font-size: 1.1em;
+}

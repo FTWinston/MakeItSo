@@ -1,15 +1,23 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
+import { actionCreators, PowerCell, PowerState } from '~/store/Power';
 import { TextLocalisation } from '~/functionality';
+import { connection } from '~/Client';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
+import { PowerGrid } from './PowerGrid';
+import { CellList } from './CellList';
 import './PowerManagement.scss';
 
-interface PowerManagementProps {
+interface PowerManagementProps extends PowerState {
     text: TextLocalisation;
 }
 
-class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
+interface PowerManagementState {
+    selectedQueueCell?: number;
+}
+
+class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerManagementState> {
     constructor(props: PowerManagementProps) {
         super(props);
         
@@ -28,23 +36,57 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
     }
 
     public render() {
-        return <div className="system">
-            This is the power management system. TODO: implement this!
-        </div>;
+        return <div className="system power">
+            <PowerGrid
+                cells={this.props.cells}
+                cellClicked={cellIndex => this.gridCellClicked(cellIndex)}
+            />
+            <CellList
+                text={this.props.text}
+                cells={this.props.spareCells}
+                selectedIndex={this.state.selectedQueueCell}
+                cellClicked={cellIndex => this.spareCellClicked(cellIndex)}
+            />
+        </div>; // currently storing spare "types" only, not full cell objects. Which to go with? Converting during render is ungainly.
+    }
+
+    private gridCellClicked(cellIndex: number) {
+        // If a spare cell is selected, send place command. Otherwise, send rotate command.
+        if (this.state.selectedQueueCell === undefined) {
+            connection.send(`power_rotCell ${cellIndex}`);
+        }
+        else {
+            connection.send(`power_placeCell ${cellIndex} ${this.state.selectedQueueCell}`);
+            this.setState({
+                selectedQueueCell: undefined,
+            });
+        }
+    }
+
+    private spareCellClicked(spareCellNum: number) {
+        let selection = this.state.selectedQueueCell === spareCellNum ? undefined : spareCellNum;
+
+        this.setState({
+            selectedQueueCell: selection,
+        });
     }
 }
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (state) => {
     return {
-        text: state.user.text,
+        text: state.user.text,    
+        systemsOnline: state.power.systemsOnline,
+        cells: state.power.cells,
+        reactorPower: state.power.reactorPower,
+        spareCells: state.power.spareCells,
     }
 };
 
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {},
+    actionCreators,
     null,
     { withRef: true },
 )(PowerManagement);

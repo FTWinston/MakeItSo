@@ -40,12 +40,14 @@ public:
 	};
 
 	enum EPowerSystem {
-		Power_Engines = 0,
-		Power_Sensors,
-		Power_Weapons,
+		Power_Helm = 0,
+		Power_Warp,
 		Power_Shields,
+		Power_Comms,
+		Power_BeamWeapons,
+		Power_Torpedoes,
+		Power_Sensors,
 		Power_DamageControl,
-		Power_Deflector,
 		MAX_POWER_SYSTEMS
 	};
 	
@@ -87,6 +89,7 @@ protected:
 
 private:
 	void DistributePower();
+	EPowerCellType GetRandomCellType();
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ReactorPower)
 	uint8 reactorPower;
@@ -116,7 +119,7 @@ private:
 
 
 	UPROPERTY()
-	TArray<PowerCell> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
+	TArray<PowerCell*> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellTypes)
 	TArray<EPowerCellType> cellTypes;

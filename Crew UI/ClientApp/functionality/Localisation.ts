@@ -184,7 +184,7 @@ export interface TextLocalisation {
 
         },
         power: {
-
+            spareCells: string;
         },
         damage: {
 
