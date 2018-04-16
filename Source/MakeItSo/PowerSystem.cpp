@@ -81,7 +81,7 @@ void UPowerSystem::BeginPlay()
 			}
 			
 			cell->SetNeighbour(Dir_West, x > 0 ? cells[CELLINDEX(x - 1, y)] : NULL);
-			cell->SetNeighbour(Dir_East, x < POWER_GRID_WIDTH - 1  ? cells[CELLINDEX(x + 1, y)] : NULL);
+			cell->SetNeighbour(Dir_East, x < POWER_GRID_WIDTH - 1 ? cells[CELLINDEX(x + 1, y)] : NULL);
 			cell->SetNeighbour(Dir_North, y > 0 ? cells[CELLINDEX(x, y - 1)] : NULL);
 			cell->SetNeighbour(Dir_South, y < POWER_GRID_SERVER_HEIGHT - 1 ? cells[CELLINDEX(x, y + 1)] : NULL);
 		}
@@ -451,7 +451,7 @@ void UPowerSystem::DistributePower()
 			PowerCell *east = edgeCell->GetOutputConnection(UPowerSystem::Dir_East);
 			PowerCell *west = edgeCell->GetOutputConnection(UPowerSystem::Dir_West);
 
-			uint8 numOutputs = 0; // a connection is still an output if it has power already, but isn't if power arrived in this cell form there.
+			uint8 numOutputs = 0; // a connection is still an output if it has power already, but isn't if power arrived in this cell from there.
 			if (north != NULL)
 				numOutputs++;
 			if (south != NULL)

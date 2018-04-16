@@ -671,14 +671,10 @@ $lightBackground: #999;
 
 .gridCell--exhaust {
   background-color: #00bb00;
-  color: black;
-  background-image: url("/node_modules/feather-icons/dist/icons/plus.svg");
-  /* this isn't working */ }
+  color: black; }
 
 .gridCell--broken {
-  color: red;
-  background-image: url("/node_modules/feather-icons/dist/icons/x.svg");
-  /* this isn't working */ }
+  color: red; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

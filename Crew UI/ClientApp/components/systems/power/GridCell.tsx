@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { PowerCell, PowerCellType } from '~/store/power';
+import { PowerCell, PowerCellType, fullPowerLevel } from '~/store/power';
+import { FlexibleCanvas } from '~/components/general';
 import './GridCell.scss';
 
 interface GridCellProps {
@@ -37,36 +38,143 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
                 classes += ' gridCell--exhaust'; break;
             case PowerCellType.Broken:
                 classes += ' gridCell--broken'; break;
-            case PowerCellType.NorthSouth:
-                classes += ' gridCell--ns'; break;
-            case PowerCellType.EastWest:
-                classes += ' gridCell--ew'; break;
-            case PowerCellType.NorthEast:
-                classes += ' gridCell--ne'; break;
-            case PowerCellType.SouthEast:
-                classes += ' gridCell--se'; break;
-            case PowerCellType.SouthWest:
-                classes += ' gridCell--sw'; break;
-            case PowerCellType.NorthWest:
-                classes += ' gridCell--nw'; break;
-            case PowerCellType.NorthEastSouth:
-                classes += ' gridCell--nes'; break;
-            case PowerCellType.EastSouthWest:
-                classes += ' gridCell--esw'; break;
-            case PowerCellType.SouthWestNorth:
-                classes += ' gridCell--swn'; break;
-            case PowerCellType.WestNorthEast:
-                classes += ' gridCell--wne'; break;
         }
 
         return (
-            <div
+            <FlexibleCanvas
                 className={classes}
                 style={style}
                 onClick={this.props.clicked}
-            >
-                {this.props.cell.power}
-            </div>
+                draw={(ctx, w, h) => this.draw(ctx, w, h)}
+            />
         );
+    }
+
+    private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        ctx.clearRect(0, 0, width, height);
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = width * 0.33;
+
+        this.drawLines(ctx, width, height);
+
+        if (this.props.cell.power === 0) {
+            return;
+        }
+
+        this.setStyleForPowerLevel(ctx, width, this.props.cell.power);
+        this.drawLines(ctx, width, height);
+        ctx.globalAlpha = 1;
+    }
+
+    private drawLines(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        ctx.beginPath();
+
+        switch(this.props.cell.type) {
+            case PowerCellType.NorthSouth:
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width / 2, height);
+                break;
+            case PowerCellType.EastWest:
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                break;
+            case PowerCellType.NorthEast:
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width / 2, height / 2);
+                ctx.lineTo(width, height / 2);
+                break;
+            case PowerCellType.SouthEast:
+                ctx.moveTo(width / 2, height);
+                ctx.lineTo(width / 2, height / 2);
+                ctx.lineTo(width, height / 2);
+                break;
+            case PowerCellType.SouthWest:
+                ctx.moveTo(width / 2, height);
+                ctx.lineTo(width / 2, height / 2);
+                ctx.lineTo(0, height / 2);
+                break;
+            case PowerCellType.NorthWest:
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width / 2, height / 2);
+                ctx.lineTo(0, height / 2);
+                break;
+            case PowerCellType.NorthEastSouth:
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width / 2, height);
+                ctx.moveTo(width / 2, height / 2);
+                ctx.lineTo(width, height / 2);
+                break;
+            case PowerCellType.EastSouthWest:
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.moveTo(width / 2, height / 2);
+                ctx.lineTo(width / 2, height);
+                break;
+            case PowerCellType.SouthWestNorth:
+                ctx.moveTo(width / 2, 0);
+                ctx.lineTo(width / 2, height);
+                ctx.moveTo(width / 2, height / 2);
+                ctx.lineTo(0, height / 2);
+                break;
+            case PowerCellType.WestNorthEast:
+                ctx.moveTo(0, height / 2);
+                ctx.lineTo(width, height / 2);
+                ctx.moveTo(width / 2, height / 2);
+                ctx.lineTo(width / 2 , 0);
+                break;
+        }
+
+        ctx.stroke();
+    }
+
+    private setStyleForPowerLevel(ctx: CanvasRenderingContext2D, cellSize: number, power: number) {
+        // adjust line width / color / opacity to account for power level
+        let width = cellSize * 0.2;
+
+        if (power >= fullPowerLevel) {
+            // adjust color as line is already at full width
+            switch (power - fullPowerLevel) {
+                case 0:
+                    ctx.strokeStyle = '#00ff00'; break;
+                case 1:
+                    ctx.strokeStyle = '#44ff00'; break;
+                case 2:
+                    ctx.strokeStyle = '#88ff00'; break;
+                case 3:
+                    ctx.strokeStyle = '#ccff00'; break;
+                case 3:
+                    ctx.strokeStyle = '#ffff00'; break;
+                case 4:
+                    ctx.strokeStyle = '#ffcc00'; break;
+                case 5:
+                    ctx.strokeStyle = '#ff8800'; break;
+                case 6:
+                    ctx.strokeStyle = '#ff4400'; break;
+                case 7:
+                    ctx.strokeStyle = '#ff0000'; break;
+                case 8:
+                    ctx.strokeStyle = '#ff4444'; break;
+                case 9:
+                    ctx.strokeStyle = '#ff8888'; break;
+                case 10:
+                    ctx.strokeStyle = '#ffcccc'; break;
+                default:
+                    ctx.strokeStyle = '#ffffff'; break;
+            }
+        }
+        else {
+            // reduce width to indicate lower power
+            width *= Math.pow(0.7, fullPowerLevel - power);
+
+            // if too narrow, just get fainter instead
+            if (width < 1) {
+                ctx.globalAlpha = width;
+                width = 1;
+            }
+            
+            ctx.strokeStyle = '#00ff00';
+        }
+
+        ctx.lineWidth = width;
     }
 }

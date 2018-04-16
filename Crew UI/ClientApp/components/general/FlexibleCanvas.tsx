@@ -5,6 +5,8 @@ import './FlexibleCanvas.scss';
 interface FlexibleCanvasProps {
     className?: string;
     draw: drawFunc;
+    style?: React.CSSProperties;
+    onClick?: () => void;
 }
 
 interface FlexibleCanvasState {
@@ -47,13 +49,18 @@ export class FlexibleCanvas extends React.PureComponent<FlexibleCanvasProps, Fle
         }
 
         return (
-            <div className={classes} ref={w => { if (w !== null) { this._wrapper = w }}}>
+            <div
+                className={classes}
+                style={this.props.style}
+                ref={w => { if (w !== null) { this._wrapper = w }}}
+                onClickCapture={this.props.onClick}
+            >
                 <Canvas
                     ref={c => { if (c !== null) { this.canvas = c }}}
                     width={this.state.width}
                     height={this.state.height}
                     draw={this.props.draw}
-                    className='wrappedCanvas'
+                    className="wrappedCanvas"
                 />
             </div>
         );

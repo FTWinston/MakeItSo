@@ -37,6 +37,7 @@ export const enum PowerSystem {
 export const numSystems = 8;
 export const numCells = 225;
 export const maxNumSpare = 5;
+export const fullPowerLevel = 20;
 
 export interface PowerCell {
     index: number;
