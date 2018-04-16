@@ -137,10 +137,8 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
                 case 0:
                     ctx.strokeStyle = '#00ff00'; break;
                 case 1:
-                    ctx.strokeStyle = '#44ff00'; break;
-                case 2:
                     ctx.strokeStyle = '#88ff00'; break;
-                case 3:
+                case 2:
                     ctx.strokeStyle = '#ccff00'; break;
                 case 3:
                     ctx.strokeStyle = '#ffff00'; break;

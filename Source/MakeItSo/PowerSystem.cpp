@@ -393,6 +393,7 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 }
 
 #define ADD_CELL_TO_MAP(map, cell) MAPADD_PTR(map, cell->cellIndex, cell, int32, PowerCell*)
+#define APPLY_POWER(var, input) var = FMath::Max(var + 1, input)
 
 void UPowerSystem::DistributePower()
 {
@@ -469,11 +470,11 @@ void UPowerSystem::DistributePower()
 			}
 
 			// output power reduces if we split it multiple ways
-			auto outputPower = edgeCell->powerLevel + 1 - numOutputs;
+			auto outputPower = edgeCell->GetType() == Cell_Reactor || numOutputs == 1 ? edgeCell->powerLevel : edgeCell->powerLevel - 1;
 
 			if (north != NULL)
 			{
-				north->powerLevel += outputPower;
+				APPLY_POWER(north->powerLevel, outputPower);
 				north->powerArrivesFrom |= Dir_South;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, north->cellIndex))
@@ -485,7 +486,7 @@ void UPowerSystem::DistributePower()
 
 			if (south != NULL)
 			{
-				south->powerLevel += outputPower;
+				APPLY_POWER(south->powerLevel, outputPower);
 				south->powerArrivesFrom |= Dir_North;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, south->cellIndex))
@@ -497,7 +498,7 @@ void UPowerSystem::DistributePower()
 
 			if (east != NULL)
 			{
-				east->powerLevel += outputPower;
+				APPLY_POWER(east->powerLevel, outputPower);
 				east->powerArrivesFrom |= Dir_West;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, east->cellIndex))
@@ -509,7 +510,7 @@ void UPowerSystem::DistributePower()
 
 			if (west != NULL)
 			{
-				west->powerLevel += outputPower;
+				APPLY_POWER(west->powerLevel, outputPower);
 				west->powerArrivesFrom |= Dir_East;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, west->cellIndex))
