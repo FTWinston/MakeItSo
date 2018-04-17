@@ -669,6 +669,9 @@ $lightBackground: #999;
 .gridCell--reactor {
   background-color: #cc6600; }
 
+.gridCell--system {
+  background-color: #0099cc; }
+
 .gridCell--exhaust {
   background-color: #00bb00;
   color: black; }
@@ -686,7 +689,7 @@ $lightBackground: #999;
   background-color: black;
   display: grid;
   grid-template-columns: repeat(15, 1fr);
-  grid-template-rows: repeat(15, 1fr);
+  grid-template-rows: repeat(17, 1fr);
   grid-gap: 2px;
   justify-items: stretch;
   align-items: stretch;

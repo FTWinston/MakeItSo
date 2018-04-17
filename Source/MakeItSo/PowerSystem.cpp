@@ -15,19 +15,24 @@ UPowerSystem::UPowerSystem()
 {
 	recalculatingCellPower = false;
 #ifndef WEB_SERVER_TEST
-	cells.Add(POWER_GRID_SERVER_SIZE);
-	cellTypes.AddZeroed(POWER_GRID_SEND_SIZE);
-	cellPower.AddZeroed(POWER_GRID_SEND_SIZE);
+	cells.Add(POWER_GRID_SIZE);
+	cellTypes.AddZeroed(POWER_GRID_SIZE);
+	cellPower.AddZeroed(POWER_GRID_SIZE);
 	systemsOnline.AddZeroed(MAX_POWER_SYSTEMS);
 #else
-	cells.assign(POWER_GRID_SERVER_SIZE, nullptr);
-	cellTypes.assign(POWER_GRID_SEND_SIZE, Cell_Empty);
-	cellPower.assign(POWER_GRID_SEND_SIZE, 0);
+	cells.assign(POWER_GRID_SIZE, nullptr);
+	cellTypes.assign(POWER_GRID_SIZE, Cell_Empty);
+	cellPower.assign(POWER_GRID_SIZE, 0);
 	systemsOnline.assign(MAX_POWER_SYSTEMS, false);
 #endif
 
 	// setting up static data in the constructor is safe cos this only runs once... right?
 	CLEAR(initialCells);
+
+	INITIAL(0, Cell_System); INITIAL(1, Cell_System); INITIAL(2, Cell_System);
+	INITIAL(4, Cell_System); INITIAL(5, Cell_System); INITIAL(6, Cell_System);
+	INITIAL(8, Cell_System); INITIAL(9, Cell_System); INITIAL(10, Cell_System);
+	INITIAL(12, Cell_System); INITIAL(13, Cell_System); INITIAL(14, Cell_System);
 
 	INITIAL(17, Cell_NorthSouth); INITIAL(32, Cell_NorthSouth); INITIAL(47, Cell_NorthSouth);
 	INITIAL(62, Cell_NorthSouth); INITIAL(77, Cell_NorthEast); INITIAL(78, Cell_EastWest);
@@ -63,12 +68,13 @@ UPowerSystem::UPowerSystem()
 	INITIAL(192, Cell_NorthSouth); INITIAL(177, Cell_SouthWest); INITIAL(176, Cell_EastWest);
 	INITIAL(175, Cell_EastWest); INITIAL(174, Cell_NorthEast); INITIAL(159, Cell_NorthSouth);
 
-
+	INITIAL(240, Cell_System); INITIAL(241, Cell_System); INITIAL(242, Cell_System);
+	INITIAL(244, Cell_System); INITIAL(245, Cell_System); INITIAL(246, Cell_System);
+	INITIAL(248, Cell_System); INITIAL(249, Cell_System); INITIAL(250, Cell_System);
+	INITIAL(252, Cell_System); INITIAL(253, Cell_System); INITIAL(254, Cell_System);
 }
 
 #define CELLINDEX(x, y) ((x) + POWER_GRID_WIDTH * (y))
-#define CLIENT_TO_SERVER_ID(cellID) (cellID + POWER_GRID_WIDTH)
-#define SERVER_TO_CLIENT_ID(cellID) (cellID - POWER_GRID_WIDTH)
 
 #define REACTOR_MIN_X 5
 #define REACTOR_MAX_X 9
@@ -84,7 +90,7 @@ void UPowerSystem::BeginPlay()
 	// hook up pointers to the neighbours of each power cell, so we can easily navigate them
 	// also set up the default cell types
 	for (int32 x = 0; x < POWER_GRID_WIDTH; x++)
-		for (int32 y = 0; y < POWER_GRID_SERVER_HEIGHT; y++)
+		for (int32 y = 0; y < POWER_GRID_HEIGHT; y++)
 		{
 			// TODO: ensure this doesn't leak memory on deletion
 			auto cell = new PowerCell();
@@ -92,28 +98,7 @@ void UPowerSystem::BeginPlay()
 
 			int32 i = CELLINDEX(x, y);
 			cells[i] = cell;
-
-			if (y == 0 || y >= POWER_GRID_SEND_HEIGHT)
-			{
-				cell->cellIndex = -i - 1; // a negative ID to make it clear we never send to client, but we still need these to be unique
-				cell->SetType(EPowerCellType::Cell_System);
-			}
-			else
-			{
-				cell->cellIndex = SERVER_TO_CLIENT_ID(i);
-
-				if (MAPCONTAINS(initialCells, i))
-				{
-					cell->SetType(initialCells[i]);
-					if (cell->GetType() == Cell_Reactor)
-					{
-						cell->powerLevel = REACTOR_CELL_POWER_LEVEL;
-						cellPower[cell->cellIndex] = cell->GetPowerPower();
-					}
-				}
-				else
-					cell->SetType(EPowerCellType::Cell_Empty);
-			}
+			cell->cellIndex = i;
 
 			if (x > 0)
 			{
@@ -133,35 +118,33 @@ void UPowerSystem::BeginPlay()
 	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
 		SETADD(spareCells, GetRandomCellType());
 
-	DistributePower();
-	Super::BeginPlay(); // calls ResetData, so done after data population
+	UShipSystem::BeginPlay(); // calls ResetData, so done after data population
 }
 
 void UPowerSystem::ResetData()
 {
 	reactorPower = 100;
 
-	for (int32 i = 0; i < POWER_GRID_SERVER_SIZE; i++)
+	for (int32 i = 0; i < POWER_GRID_SIZE; i++)
 	{
 		auto cell = cells[i];
-		if (cell->GetType() > EPowerCellType::Cell_ExhaustPort) // don't clear reactor, system & exhaust port cells
+		if (MAPCONTAINS(initialCells, i))
 		{
-			cell->SetType(EPowerCellType::Cell_Empty);
-			cell->powerLevel = 0;
-
-			if (cell->cellIndex >= 0)
-				cellPower[cell->cellIndex] = 0;
+			cell->SetType(initialCells[i]);
 		}
+		else
+			cell->SetType(EPowerCellType::Cell_Empty);
+
+		cell->powerLevel = cell->GetType() == Cell_Reactor ? REACTOR_CELL_POWER_LEVEL : 0;
+		cellPower[cell->cellIndex] = cell->GetPowerPower();
 	}
+
+	DistributePower();
 
 	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
 		systemsOnline[i] = true;
 
-#ifndef WEB_SERVER_TEST
-	spareCells.Empty();
-#else
-	spareCells.clear();
-#endif
+	//CLEAR(spareCells);
 }
 
 bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
@@ -169,7 +152,7 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 	if (STARTS_WITH(msg, "power_rotCell "))
 	{
 		int32 cellID = ExtractInt(msg, sizeof("power_rotCell "));
-		if (cellID >= 0 && cellID < POWER_GRID_SEND_SIZE)
+		if (cellID >= 0 && cellID < POWER_GRID_SIZE)
 			RotateCell(cellID);
 	}
 	else if (STARTS_WITH(msg, "power_placeCell "))
@@ -180,7 +163,7 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 		{
 			int32 cellID = STOI(parts[0]);
 
-			if (cellID >= 0 && cellID < POWER_GRID_SEND_SIZE)
+			if (cellID >= 0 && cellID < POWER_GRID_SIZE)
 			{
 				int32 spareCellNum = STOI(parts[1]);
 				PlaceCell(cellID, spareCellNum);
@@ -214,10 +197,9 @@ void UPowerSystem::RotateCell(uint8 cellID) { RotateCell_Implementation(cellID);
 #endif
 void UPowerSystem::RotateCell_Implementation(uint8 cellID)
 {
-	if (cellID < 0 || cellID >= POWER_GRID_SEND_SIZE)
+	if (cellID < 0 || cellID >= POWER_GRID_SIZE)
 		return;
 
-	cellID = CLIENT_TO_SERVER_ID(cellID);
 	cells[cellID]->RotateCellType();
 
 	DistributePower();
@@ -229,12 +211,11 @@ void UPowerSystem::PlaceCell(uint8 cellID, uint8 spareCellNum) { PlaceCell_Imple
 #endif
 void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 {
-	if (cellID < 0 || cellID >= POWER_GRID_SEND_SIZE || spareCellNum < 0 || spareCellNum >= SIZENUM(spareCells))
+	if (cellID < 0 || cellID >= POWER_GRID_SIZE || spareCellNum < 0 || spareCellNum >= SIZENUM(spareCells))
 		return;
 
-	cellID = CLIENT_TO_SERVER_ID(cellID);
 	auto cell = cells[cellID];
-	if (cell->GetType() == Cell_Reactor || cell->GetType() == Cell_ExhaustPort)
+	if (cell->GetType() == Cell_System || cell->GetType() == Cell_Reactor || cell->GetType() == Cell_ExhaustPort)
 		return;
 
 	EPowerCellType cellType = spareCells[spareCellNum];

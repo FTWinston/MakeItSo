@@ -18,8 +18,12 @@
     border-radius: 0;
 }
 
-.gridCell--reactor {
+.gridCell--reactor, {
     background-color: #cc6600;
+}
+
+.gridCell--system {
+    background-color: #0099cc;
 }
 
 .gridCell--exhaust {

@@ -35,7 +35,7 @@ export const enum PowerSystem {
 }
 
 export const numSystems = 8;
-export const numCells = 225;
+export const numCells = 255;
 export const maxNumSpare = 5;
 export const fullPowerLevel = 8;
 
