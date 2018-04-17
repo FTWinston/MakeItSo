@@ -24,11 +24,11 @@
 #define UPROPERTY(...) 
 
 #define int8 short
-#define uint8 short
+#define uint8 unsigned int
 #define int16 short
-#define uint16 short
+#define uint16 unsigned short
 #define int32 int
-#define uint32 int
+#define uint32 unsigned int
 
 #define TSet std::vector
 #define TArray std::vector

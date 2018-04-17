@@ -190,9 +190,10 @@ public:
 	void SetType(UPowerSystem::EPowerCellType type);
 	UPowerSystem::EPowerCellType GetType() { return type; }
 
+	uint8 GetPowerPower();
 	UPowerSystem* system;
 	int32 cellIndex;
-	uint8 powerLevel;
+	uint16 powerLevel;
 	UPowerSystem::EPowerDirection powerArrivesFrom;
 
 	void SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour);

@@ -36,7 +36,7 @@ UPowerSystem::UPowerSystem()
 
 #define NUM_SPARE_CELLS 5
 
-#define REACTOR_CELL_POWER_LEVEL 20
+#define REACTOR_CELL_POWER_LEVEL 256
 
 void UPowerSystem::BeginPlay()
 {
@@ -66,7 +66,8 @@ void UPowerSystem::BeginPlay()
 					if (x >= REACTOR_MIN_X && x <= REACTOR_MAX_X)
 					{
 						cell->SetType(EPowerCellType::Cell_Reactor);
-						cell->powerLevel = cellPower[cell->cellIndex] = REACTOR_CELL_POWER_LEVEL;
+						cell->powerLevel = REACTOR_CELL_POWER_LEVEL;
+						cellPower[cell->cellIndex] = cell->GetPowerPower();
 						
 						if (ISCLIENT())
 							SendCellPower(cell->cellIndex, cell->powerLevel);
@@ -393,7 +394,6 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 }
 
 #define ADD_CELL_TO_MAP(map, cell) MAPADD_PTR(map, cell->cellIndex, cell, int32, PowerCell*)
-#define APPLY_POWER(var, input) var = FMath::Max(var + 1, input)
 
 void UPowerSystem::DistributePower()
 {
@@ -474,7 +474,7 @@ void UPowerSystem::DistributePower()
 
 			if (north != NULL)
 			{
-				APPLY_POWER(north->powerLevel, outputPower);
+				north->powerLevel += outputPower;
 				north->powerArrivesFrom |= Dir_South;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, north->cellIndex))
@@ -486,7 +486,7 @@ void UPowerSystem::DistributePower()
 
 			if (south != NULL)
 			{
-				APPLY_POWER(south->powerLevel, outputPower);
+				south->powerLevel += outputPower;
 				south->powerArrivesFrom |= Dir_North;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, south->cellIndex))
@@ -498,7 +498,7 @@ void UPowerSystem::DistributePower()
 
 			if (east != NULL)
 			{
-				APPLY_POWER(east->powerLevel, outputPower);
+				east->powerLevel += outputPower;
 				east->powerArrivesFrom |= Dir_West;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, east->cellIndex))
@@ -510,7 +510,7 @@ void UPowerSystem::DistributePower()
 
 			if (west != NULL)
 			{
-				APPLY_POWER(west->powerLevel, outputPower);
+				west->powerLevel += outputPower;
 				west->powerArrivesFrom |= Dir_East;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, west->cellIndex))
@@ -545,16 +545,18 @@ void UPowerSystem::DistributePower()
 	{
 		if (cell->cellIndex >= 0)
 		{
+			auto newVal = cell->GetPowerPower();
+
 			if (ISCLIENT())
 			{
 				auto oldVal = cellPower[cell->cellIndex];
-				if (oldVal != cell->powerLevel)
+				if (oldVal != newVal)
 				{
-					SendCellPower(cell->cellIndex, cell->powerLevel);
+					SendCellPower(cell->cellIndex, newVal);
 				}
 			}
 
-			cellPower[cell->cellIndex] = cell->powerLevel;
+			cellPower[cell->cellIndex] = newVal;
 		}
 	}
 }
@@ -575,6 +577,37 @@ void PowerCell::SetType(UPowerSystem::EPowerCellType type)
 		if (ISCLIENT())
 			system->SendCellType(cellIndex, type);
 	}
+}
+
+const uint8 powers[] = {
+	0,
+	(1 << 1),
+	(1 << 1) + (1 << 0),
+	(1 << 2) + (1 << 1),
+	(1 << 3) + (1 << 2),
+	(1 << 4) + (1 << 3),
+	(1 << 5) + (1 << 4),
+	(1 << 6) + (1 << 5),
+	(1 << 7) + (1 << 6),
+	(1 << 8) + (1 << 7),
+	(1 << 9) + (1 << 8),
+	(1 << 10) + (1 << 9),
+	(1 << 11) + (1 << 10),
+	(1 << 12) + (1 << 11),
+	(1 << 13) + (1 << 12),
+	(1 << 14) + (1 << 13),
+	(1 << 15) + (1 << 14),
+};
+
+uint8 PowerCell::GetPowerPower()
+{
+	// Get the "power" component of the closest power of 2 for the powerLevel
+	// e.g. for 137 or 111, the closest power of 2 is 2^7 = 128, so this will return 7
+	for (uint8 i = 16; i > 0; i--)
+		if (powerLevel > powers[i])
+			return i;
+
+	return 0;
 }
 
 void PowerCell::SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour)

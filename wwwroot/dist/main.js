@@ -861,7 +861,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 var numSystems = 8;
 var numCells = 225;
 var maxNumSpare = 5;
-var fullPowerLevel = 20;
+var fullPowerLevel = 8;
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
@@ -2585,12 +2585,9 @@ var GridCell = (function (_super) {
                     ctx.strokeStyle = '#00ff00';
                     break;
                 case 1:
-                    ctx.strokeStyle = '#44ff00';
-                    break;
-                case 2:
                     ctx.strokeStyle = '#88ff00';
                     break;
-                case 3:
+                case 2:
                     ctx.strokeStyle = '#ccff00';
                     break;
                 case 3:
@@ -10372,7 +10369,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
 var numSystems = 8;
 var numCells = 225;
 var maxNumSpare = 5;
-var fullPowerLevel = 20;
+var fullPowerLevel = 8;
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
@@ -10895,7 +10892,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";
