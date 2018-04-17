@@ -8,6 +8,8 @@
 #include "UIConnectionInfo.h"
 #include "CrewManager.h"
 
+TMap<int32, UPowerSystem::EPowerCellType> UPowerSystem::initialCells;
+#define INITIAL(num, type) MAPADD(initialCells, num, type, int32, UPowerSystem::EPowerCellType)
 
 UPowerSystem::UPowerSystem()
 {
@@ -23,6 +25,45 @@ UPowerSystem::UPowerSystem()
 	cellPower.assign(POWER_GRID_SEND_SIZE, 0);
 	systemsOnline.assign(MAX_POWER_SYSTEMS, false);
 #endif
+
+	// setting up static data in the constructor is safe cos this only runs once... right?
+	CLEAR(initialCells);
+
+	INITIAL(17, Cell_NorthSouth); INITIAL(32, Cell_NorthSouth); INITIAL(47, Cell_NorthSouth);
+	INITIAL(62, Cell_NorthSouth); INITIAL(77, Cell_NorthEast); INITIAL(78, Cell_EastWest);
+	INITIAL(79, Cell_EastWest); INITIAL(80, Cell_SouthWest); INITIAL(95, Cell_NorthSouth);
+
+	INITIAL(21, Cell_NorthSouth); INITIAL(36, Cell_NorthSouth); INITIAL(51, Cell_NorthSouth);
+	INITIAL(66, Cell_NorthSouth); INITIAL(81, Cell_NorthSouth); INITIAL(96, Cell_NorthSouth);
+
+	INITIAL(23, Cell_NorthSouth); INITIAL(38, Cell_NorthSouth); INITIAL(53, Cell_NorthSouth);
+	INITIAL(68, Cell_NorthSouth); INITIAL(83, Cell_NorthSouth); INITIAL(98, Cell_NorthSouth);
+
+	INITIAL(27, Cell_NorthSouth); INITIAL(42, Cell_NorthSouth); INITIAL(57, Cell_NorthSouth);
+	INITIAL(72, Cell_NorthSouth); INITIAL(87, Cell_NorthWest);  INITIAL(86, Cell_EastWest);
+	INITIAL(85, Cell_EastWest); INITIAL(84, Cell_SouthEast); INITIAL(99, Cell_NorthSouth);
+
+	INITIAL(105, Cell_ExhaustPort); INITIAL(119, Cell_ExhaustPort);
+	INITIAL(110, Cell_Reactor); INITIAL(111, Cell_Reactor); INITIAL(112, Cell_Reactor); INITIAL(113, Cell_Reactor); INITIAL(114, Cell_Reactor);
+	INITIAL(125, Cell_Reactor); INITIAL(126, Cell_Reactor); INITIAL(127, Cell_Reactor); INITIAL(128, Cell_Reactor); INITIAL(129, Cell_Reactor);
+	INITIAL(140, Cell_Reactor); INITIAL(141, Cell_Reactor); INITIAL(142, Cell_Reactor); INITIAL(143, Cell_Reactor); INITIAL(144, Cell_Reactor);
+	INITIAL(135, Cell_ExhaustPort); INITIAL(149, Cell_ExhaustPort);
+
+	INITIAL(227, Cell_NorthSouth); INITIAL(212, Cell_NorthSouth); INITIAL(197, Cell_NorthSouth);
+	INITIAL(182, Cell_NorthSouth); INITIAL(167, Cell_SouthEast); INITIAL(168, Cell_EastWest);
+	INITIAL(169, Cell_EastWest); INITIAL(170, Cell_NorthWest); INITIAL(155, Cell_NorthSouth);
+
+	INITIAL(231, Cell_NorthSouth); INITIAL(216, Cell_NorthSouth); INITIAL(201, Cell_NorthSouth);
+	INITIAL(186, Cell_NorthSouth); INITIAL(171, Cell_NorthSouth); INITIAL(156, Cell_NorthSouth);
+
+	INITIAL(233, Cell_NorthSouth); INITIAL(218, Cell_NorthSouth); INITIAL(203, Cell_NorthSouth);
+	INITIAL(188, Cell_NorthSouth); INITIAL(173, Cell_NorthSouth); INITIAL(158, Cell_NorthSouth);
+
+	INITIAL(237, Cell_NorthSouth); INITIAL(222, Cell_NorthSouth); INITIAL(207, Cell_NorthSouth);
+	INITIAL(192, Cell_NorthSouth); INITIAL(177, Cell_SouthWest); INITIAL(176, Cell_EastWest);
+	INITIAL(175, Cell_EastWest); INITIAL(174, Cell_NorthEast); INITIAL(159, Cell_NorthSouth);
+
+
 }
 
 #define CELLINDEX(x, y) ((x) + POWER_GRID_WIDTH * (y))
@@ -61,21 +102,14 @@ void UPowerSystem::BeginPlay()
 			{
 				cell->cellIndex = SERVER_TO_CLIENT_ID(i);
 
-				if (y >= REACTOR_MIN_SERVER_Y && y <= REACTOR_MAX_SERVER_Y)
+				if (MAPCONTAINS(initialCells, i))
 				{
-					if (x >= REACTOR_MIN_X && x <= REACTOR_MAX_X)
+					cell->SetType(initialCells[i]);
+					if (cell->GetType() == Cell_Reactor)
 					{
-						cell->SetType(EPowerCellType::Cell_Reactor);
 						cell->powerLevel = REACTOR_CELL_POWER_LEVEL;
 						cellPower[cell->cellIndex] = cell->GetPowerPower();
-
-						if (ISCLIENT())
-							SendCellPower(cell->cellIndex, cell->powerLevel);
 					}
-					else if ((y == REACTOR_MIN_SERVER_Y || y == REACTOR_MAX_SERVER_Y) && (x == 0 || x == POWER_GRID_WIDTH - 1))
-						cell->SetType(EPowerCellType::Cell_ExhaustPort);
-					else
-						cell->SetType(EPowerCellType::Cell_Empty);
 				}
 				else
 					cell->SetType(EPowerCellType::Cell_Empty);
@@ -99,6 +133,7 @@ void UPowerSystem::BeginPlay()
 	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
 		SETADD(spareCells, GetRandomCellType());
 
+	DistributePower();
 	Super::BeginPlay(); // calls ResetData, so done after data population
 }
 
@@ -198,8 +233,12 @@ void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 		return;
 
 	cellID = CLIENT_TO_SERVER_ID(cellID);
+	auto cell = cells[cellID];
+	if (cell->GetType() == Cell_Reactor || cell->GetType() == Cell_ExhaustPort)
+		return;
+
 	EPowerCellType cellType = spareCells[spareCellNum];
-	cells[cellID]->SetType(cellType);
+	cell->SetType(cellType);
 	
 	SETREMOVEAT(spareCells, spareCellNum);
 	SETADD(spareCells, GetRandomCellType());

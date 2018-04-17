@@ -170,6 +170,7 @@ private:
 
 	bool recalculatingCellPower;
 	friend class PowerCell;
+	static TMap<int32, EPowerCellType> initialCells;
 };
 
 inline UPowerSystem::EPowerDirection operator|(UPowerSystem::EPowerDirection a, UPowerSystem::EPowerDirection b)
