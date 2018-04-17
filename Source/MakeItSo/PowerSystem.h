@@ -177,11 +177,6 @@ inline UPowerSystem::EPowerDirection operator|(UPowerSystem::EPowerDirection a, 
 	return static_cast<UPowerSystem::EPowerDirection>(static_cast<uint8>(a) | static_cast<uint8>(b));
 }
 
-inline UPowerSystem::EPowerDirection operator|=(UPowerSystem::EPowerDirection a, UPowerSystem::EPowerDirection b)
-{
-	return static_cast<UPowerSystem::EPowerDirection>(static_cast<uint8>(a) | static_cast<uint8>(b));
-}
-
 
 
 class PowerCell

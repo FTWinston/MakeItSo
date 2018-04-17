@@ -46,7 +46,7 @@ void UPowerSystem::BeginPlay()
 		for (int32 y = 0; y < POWER_GRID_SERVER_HEIGHT; y++)
 		{
 			// TODO: ensure this doesn't leak memory on deletion
-			auto cell = new PowerCell(); 
+			auto cell = new PowerCell();
 			cell->system = this;
 
 			int32 i = CELLINDEX(x, y);
@@ -68,7 +68,7 @@ void UPowerSystem::BeginPlay()
 						cell->SetType(EPowerCellType::Cell_Reactor);
 						cell->powerLevel = REACTOR_CELL_POWER_LEVEL;
 						cellPower[cell->cellIndex] = cell->GetPowerPower();
-						
+
 						if (ISCLIENT())
 							SendCellPower(cell->cellIndex, cell->powerLevel);
 					}
@@ -80,11 +80,20 @@ void UPowerSystem::BeginPlay()
 				else
 					cell->SetType(EPowerCellType::Cell_Empty);
 			}
-			
-			cell->SetNeighbour(Dir_West, x > 0 ? cells[CELLINDEX(x - 1, y)] : NULL);
-			cell->SetNeighbour(Dir_East, x < POWER_GRID_WIDTH - 1 ? cells[CELLINDEX(x + 1, y)] : NULL);
-			cell->SetNeighbour(Dir_North, y > 0 ? cells[CELLINDEX(x, y - 1)] : NULL);
-			cell->SetNeighbour(Dir_South, y < POWER_GRID_SERVER_HEIGHT - 1 ? cells[CELLINDEX(x, y + 1)] : NULL);
+
+			if (x > 0)
+			{
+				auto neighbour = cells[CELLINDEX(x - 1, y)];
+				cell->SetNeighbour(Dir_West, neighbour);
+				neighbour->SetNeighbour(Dir_East, cell);
+			}
+
+			if (y > 0)
+			{
+				auto neighbour = cells[CELLINDEX(x, y - 1)];
+				cell->SetNeighbour(Dir_North, neighbour);
+				neighbour->SetNeighbour(Dir_South, cell);
+			}
 		}
 
 	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
@@ -470,12 +479,13 @@ void UPowerSystem::DistributePower()
 			}
 
 			// output power reduces if we split it multiple ways
-			auto outputPower = edgeCell->GetType() == Cell_Reactor || numOutputs == 1 ? edgeCell->powerLevel : edgeCell->powerLevel - 1;
+			auto outputPower = edgeCell->GetType() == Cell_Reactor || numOutputs == 1
+				? edgeCell->powerLevel : edgeCell->powerLevel / 2;
 
 			if (north != NULL)
 			{
 				north->powerLevel += outputPower;
-				north->powerArrivesFrom |= Dir_South;
+				north->powerArrivesFrom = north->powerArrivesFrom | Dir_South;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, north->cellIndex))
 				{
@@ -487,7 +497,7 @@ void UPowerSystem::DistributePower()
 			if (south != NULL)
 			{
 				south->powerLevel += outputPower;
-				south->powerArrivesFrom |= Dir_North;
+				south->powerArrivesFrom = south->powerArrivesFrom | Dir_North;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, south->cellIndex))
 				{
@@ -499,7 +509,7 @@ void UPowerSystem::DistributePower()
 			if (east != NULL)
 			{
 				east->powerLevel += outputPower;
-				east->powerArrivesFrom |= Dir_West;
+				east->powerArrivesFrom = east->powerArrivesFrom | Dir_West;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, east->cellIndex))
 				{
@@ -511,7 +521,7 @@ void UPowerSystem::DistributePower()
 			if (west != NULL)
 			{
 				west->powerLevel += outputPower;
-				west->powerArrivesFrom |= Dir_East;
+				west->powerArrivesFrom = west->powerArrivesFrom | Dir_East;
 
 				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, west->cellIndex))
 				{
