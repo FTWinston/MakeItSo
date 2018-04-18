@@ -859,7 +859,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 var numSystems = 8;
-var numCells = 255;
+var numCells = 121;
 var maxNumSpare = 5;
 var fullPowerLevel = 8;
 // ----------------
@@ -2499,10 +2499,7 @@ var GridCell = (function (_super) {
             case 1 /* Reactor */:
                 classes += ' gridCell--reactor';
                 break;
-            case 3 /* ExhaustPort */:
-                classes += ' gridCell--exhaust';
-                break;
-            case 4 /* Broken */:
+            case 3 /* Broken */:
                 classes += ' gridCell--broken';
                 break;
         }
@@ -2523,53 +2520,53 @@ var GridCell = (function (_super) {
     GridCell.prototype.drawLines = function (ctx, width, height) {
         ctx.beginPath();
         switch (this.props.cell.type) {
-            case 5 /* NorthSouth */:
+            case 4 /* NorthSouth */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
                 break;
-            case 6 /* EastWest */:
+            case 5 /* EastWest */:
                 ctx.moveTo(0, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 7 /* NorthEast */:
+            case 6 /* NorthEast */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 8 /* SouthEast */:
+            case 7 /* SouthEast */:
                 ctx.moveTo(width / 2, height);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 9 /* SouthWest */:
+            case 8 /* SouthWest */:
                 ctx.moveTo(width / 2, height);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(0, height / 2);
                 break;
-            case 10 /* NorthWest */:
+            case 9 /* NorthWest */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(0, height / 2);
                 break;
-            case 11 /* NorthEastSouth */:
+            case 10 /* NorthEastSouth */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
                 ctx.moveTo(width / 2, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 12 /* EastSouthWest */:
+            case 11 /* EastSouthWest */:
                 ctx.moveTo(0, height / 2);
                 ctx.lineTo(width, height / 2);
                 ctx.moveTo(width / 2, height / 2);
                 ctx.lineTo(width / 2, height);
                 break;
-            case 13 /* SouthWestNorth */:
+            case 12 /* SouthWestNorth */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
                 ctx.moveTo(width / 2, height / 2);
                 ctx.lineTo(0, height / 2);
                 break;
-            case 14 /* WestNorthEast */:
+            case 13 /* WestNorthEast */:
                 ctx.moveTo(0, height / 2);
                 ctx.lineTo(width, height / 2);
                 ctx.moveTo(width / 2, height / 2);
@@ -7958,7 +7955,7 @@ var PowerGrid = (function (_super) {
     }
     PowerGrid.prototype.render = function () {
         var _this = this;
-        var cellsWide = 15;
+        var cellsWide = 11;
         var cells = this.props.cells.map(function (cell, index) { return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__GridCell__["a" /* GridCell */], { cell: cell, key: index, row: index % cellsWide + 1, col: Math.floor(index / cellsWide) + 1, clicked: function () { return _this.props.cellClicked(cell.index); } })); });
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: 'powerGrid' }, cells);
     };
@@ -10370,7 +10367,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     return t;
 };
 var numSystems = 8;
-var numCells = 255;
+var numCells = 121;
 var maxNumSpare = 5;
 var fullPowerLevel = 8;
 // ----------------
@@ -10895,7 +10892,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

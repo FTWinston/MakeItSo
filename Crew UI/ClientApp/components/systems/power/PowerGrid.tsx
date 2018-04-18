@@ -10,7 +10,7 @@ interface PowerGridProps {
 
 export class PowerGrid extends React.PureComponent<PowerGridProps, {}> {
     render() {
-        const cellsWide = 15;
+        const cellsWide = 11;
         let cells = this.props.cells.map((cell, index) => (
             <GridCell
                 cell={cell}

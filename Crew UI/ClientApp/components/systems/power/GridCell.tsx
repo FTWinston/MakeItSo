@@ -36,8 +36,6 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
                 classes += ' gridCell--system'; break;
             case PowerCellType.Reactor:
                 classes += ' gridCell--reactor'; break;
-            case PowerCellType.ExhaustPort:
-                classes += ' gridCell--exhaust'; break;
             case PowerCellType.Broken:
                 classes += ' gridCell--broken'; break;
         }

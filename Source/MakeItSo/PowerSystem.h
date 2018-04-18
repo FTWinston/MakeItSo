@@ -7,8 +7,8 @@
 #include "ShipSystem.h"
 #include "PowerSystem.Generated.h"
 
-#define POWER_GRID_WIDTH 15
-#define POWER_GRID_HEIGHT 17
+#define POWER_GRID_WIDTH 11
+#define POWER_GRID_HEIGHT 11
 #define POWER_GRID_SIZE POWER_GRID_WIDTH * POWER_GRID_HEIGHT
 
 class PowerCell;
@@ -23,7 +23,6 @@ public:
 		Cell_Empty = 0,
 		Cell_Reactor,
 		Cell_System,
-		Cell_ExhaustPort,
 		Cell_Broken,
 		Cell_NorthSouth,
 		Cell_EastWest,
