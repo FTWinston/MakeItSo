@@ -116,10 +116,17 @@ void UPowerSystem::ResetData()
 		auto cell = cells[i];
 		if (MAPCONTAINS(initialCells, i))
 		{
-			cell->SetType(initialCells[i]);
+			EPowerCellType type = initialCells[i];
+			cell->SetType(type);
+
+			if (type != Cell_System && type != Cell_Reactor)
+				SETADD(undamagedCells, cell);
 		}
 		else
+		{
 			cell->SetType(EPowerCellType::Cell_Empty);
+			SETADD(undamagedCells, cell);
+		}
 
 		cell->powerLevel = cell->GetType() == Cell_Reactor ? REACTOR_CELL_POWER_LEVEL : 0;
 		cellPower[cell->cellIndex] = cell->GetPowerPower();
@@ -577,6 +584,60 @@ void UPowerSystem::DistributePower()
 	}
 }
 
+void UPowerSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)
+{
+	uint8 numCellsToDamage = GetDamageCellCountForDamage(newValue, prevValue);
+	int32 numUndamagedCells = SIZENUM(undamagedCells);
+	bool affectedNonEmpty = false;
+
+	for (uint8 i = FMath::Min(numCellsToDamage, numUndamagedCells); i > 0; i--)
+	{
+		PowerCell *cell = undamagedCells[FMath::RandRange(0, numUndamagedCells)];
+
+		SETREMOVEVAL(undamagedCells, cell);
+		SETADD(damagedCells, cell);
+
+		if (cell->GetType() != Cell_Empty)
+			affectedNonEmpty = true;
+
+		cell->SetType(Cell_Broken);
+		numUndamagedCells--;
+	}
+
+	if (affectedNonEmpty)
+		DistributePower();
+}
+
+void UPowerSystem::RepairSystemDamage(uint8 prevValue, uint8 newValue)
+{
+	uint8 numCellsToRepair = GetDamageCellCountForDamage(prevValue, newValue);
+	int32 numDamagedCells = SIZENUM(damagedCells);
+
+	for (uint8 i = FMath::Min(numCellsToRepair, numDamagedCells); i > 0; i--)
+	{
+		PowerCell *cell = damagedCells[FMath::RandRange(0, numDamagedCells)];
+
+		SETREMOVEVAL(damagedCells, cell);
+		SETADD(undamagedCells, cell);
+		
+		cell->SetType(Cell_Empty);
+		numDamagedCells--;
+	}
+}
+
+uint8 UPowerSystem::GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth)
+{
+	// there are only 82 free cells to distribute damage across, so 1/5 of the damage points shouldn't create damage cells when taken
+	// and we need those to be the same ones each time when restoring, so that we don't end up with discrepancies
+	uint8 numDamageCells = 0;
+
+	for (uint8 i = minHealth; i < maxHealth; i--)
+		if ((i % 5) != 1)
+			numDamageCells++;
+
+	return numDamageCells;
+}
+
 UPowerSystem::EPowerCellType UPowerSystem::GetRandomCellType()
 {
 	return (EPowerCellType)FMath::RandRange(Cell_NorthSouth, Cell_WestNorthEast);
@@ -597,28 +658,28 @@ void PowerCell::SetType(UPowerSystem::EPowerCellType type)
 
 const uint8 powers[] = {
 	0,
-	(1 << 1),
-	(1 << 1) + (1 << 0),
-	(1 << 2) + (1 << 1),
-	(1 << 3) + (1 << 2),
-	(1 << 4) + (1 << 3),
-	(1 << 5) + (1 << 4),
-	(1 << 6) + (1 << 5),
-	(1 << 7) + (1 << 6),
-	(1 << 8) + (1 << 7),
-	(1 << 9) + (1 << 8),
-	(1 << 10) + (1 << 9),
-	(1 << 11) + (1 << 10),
-	(1 << 12) + (1 << 11),
-	(1 << 13) + (1 << 12),
-	(1 << 14) + (1 << 13),
-	(1 << 15) + (1 << 14),
+	1 << 1,
+	1 << 1,
+	1 << 2,
+	1 << 3,
+	1 << 4,
+	1 << 5,
+	1 << 6,
+	1 << 7,
+	1 << 8,
+	1 << 9,
+	1 << 10,
+	1 << 11,
+	1 << 12,
+	1 << 13,
+	1 << 14,
+	1 << 15,
 };
 
 uint8 PowerCell::GetPowerPower()
 {
-	// Get the "power" component of the closest power of 2 for the powerLevel
-	// e.g. for 137 or 111, the closest power of 2 is 2^7 = 128, so this will return 7
+	// Get the "power" component of the closest power of 2 for the powerLevel, rounding down
+	// e.g. for 137, the closest power of 2 is 2^7 = 128, so this will return 7
 	for (uint8 i = 16; i > 0; i--)
 		if (powerLevel > powers[i])
 			return i;

@@ -71,11 +71,35 @@ public:
 #ifdef WEB_SERVER_TEST
 	void CallBeginPlay() { BeginPlay(); }
 #endif
+
+	UFUNCTION(Server, Reliable)
+	void TakeDamage(uint8 damageAmount);
+#ifdef WEB_SERVER_TEST
+	void TakeDamage_Implementation(uint8 damageAmount);
+#endif
+	
+	UFUNCTION(Server, Reliable)
+	void RestoreDamage(uint8 restoreAmount);
+#ifdef WEB_SERVER_TEST
+	void RestoreDamage_Implementation(uint8 damageAmount);
+#endif
+
+	UFUNCTION(Server, Reliable)
+	virtual void SetPowerLevel(uint8 newLevel);
+#ifdef WEB_SERVER_TEST
+	virtual void SetPowerLevel_Implementation(uint8 newLevel);
+#endif
+
+	uint8 GetHealthLevel() { return systemHealth; }
+	uint8 GetPowerLevel() { return systemPower; }
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	virtual UShipSystem::ESystem GetSystem() { return UShipSystem::ESystem::None; }
+	virtual void ApplySystemDamage(uint8 prevValue, uint8 newValue) {}
+	virtual void RepairSystemDamage(uint8 prevValue, uint8 newValue) {}
 
 	UCrewManager* crewManager;
 
@@ -92,4 +116,11 @@ protected:
 	int32 ExtractInt(websocket_message *msg, int offset);
 	float ExtractFloat(websocket_message *msg, int offset);
 	TArray<FString> SplitParts(websocket_message *msg, int offset);
+
+private:
+	UPROPERTY(Replicated)
+	uint8 systemHealth;
+
+	UPROPERTY(Replicated)
+	uint8 systemPower;
 };

@@ -8,10 +8,15 @@
 #include "CrewManager.h"
 #include "Mongoose.h"
 
+#define MAX_SYSTEM_HEALTH 100
+#define MIN_SYSTEM_HEALTH 0
+
 // Sets default values for this component's properties
 UShipSystem::UShipSystem()
 {
 	SetIsReplicated(true);
+
+	systemHealth = MAX_SYSTEM_HEALTH;
 
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -33,6 +38,47 @@ void UShipSystem::BeginPlay()
 	ResetData();
 
 	SendAllData();
+}
+
+#ifdef WEB_SERVER_TEST
+void UShipSystem::TakeDamage(uint8 damageAmount) { TakeDamage_Implementation(damageAmount); }
+#endif
+void UShipSystem::TakeDamage_Implementation(uint8 damageAmount)
+{
+	uint8 prevValue = systemHealth;
+	systemHealth -= damageAmount;
+
+	if (systemHealth > prevValue)
+		systemHealth = 0; // value wrapped
+
+	ApplySystemDamage(prevValue, systemHealth);
+}
+
+#ifdef WEB_SERVER_TEST
+void UShipSystem::RestoreDamage(uint8 restoreAmount) { RestoreDamage_Implementation(restoreAmount); }
+#endif
+void UShipSystem::RestoreDamage_Implementation(uint8 damageAmount)
+{
+	uint8 prevValue = systemHealth;
+	systemHealth = FMath::Max(systemHealth + damageAmount, MAX_SYSTEM_HEALTH);
+	
+	if (systemHealth < prevValue)
+		systemHealth = MAX_SYSTEM_HEALTH; // value wrapped
+
+	RepairSystemDamage(prevValue, systemHealth);
+}
+
+#define MAX_POWER_LEVEL 200
+
+#ifdef WEB_SERVER_TEST
+void UShipSystem::SetPowerLevel(uint8 newLevel) { SetPowerLevel_Implementation(newLevel); }
+#endif
+void UShipSystem::SetPowerLevel_Implementation(uint8 newLevel)
+{
+	if (newLevel > MAX_POWER_LEVEL)
+		newLevel = MAX_POWER_LEVEL;
+
+	systemPower = newLevel;
 }
 
 #ifdef WEB_SERVER_TEST

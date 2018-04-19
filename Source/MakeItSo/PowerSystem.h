@@ -84,9 +84,13 @@ public:
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 
+	virtual void ApplySystemDamage(uint8 prevValue, uint8 newValue) override;
+	virtual void RepairSystemDamage(uint8 prevValue, uint8 newValue) override;
+
 private:
 	void DistributePower();
 	EPowerCellType GetRandomCellType();
+	uint8 GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth);
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ReactorPower)
 	uint8 reactorPower;
@@ -117,6 +121,9 @@ private:
 
 	UPROPERTY()
 	TArray<PowerCell*> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
+
+	TArray<PowerCell*> damagedCells;
+	TArray<PowerCell*> undamagedCells;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellTypes)
 	TArray<EPowerCellType> cellTypes;
