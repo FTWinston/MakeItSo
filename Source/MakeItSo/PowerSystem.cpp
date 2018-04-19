@@ -18,12 +18,12 @@ UPowerSystem::UPowerSystem()
 	cells.Add(POWER_GRID_SIZE);
 	cellTypes.AddZeroed(POWER_GRID_SIZE);
 	cellPower.AddZeroed(POWER_GRID_SIZE);
-	systemsOnline.AddZeroed(MAX_POWER_SYSTEMS);
+	systemsPower.AddZeroed(MAX_POWER_SYSTEMS);
 #else
 	cells.assign(POWER_GRID_SIZE, nullptr);
 	cellTypes.assign(POWER_GRID_SIZE, Cell_Empty);
 	cellPower.assign(POWER_GRID_SIZE, 0);
-	systemsOnline.assign(MAX_POWER_SYSTEMS, false);
+	systemsPower.assign(MAX_POWER_SYSTEMS, 0);
 #endif
 
 	// setting up static data in the constructor is safe cos this only runs once... right?
@@ -80,6 +80,7 @@ void UPowerSystem::BeginPlay()
 		{
 			// TODO: ensure this doesn't leak memory on deletion
 			auto cell = new PowerCell();
+			cell->powerSystem = Power_None;
 			cell->system = this;
 
 			int32 i = CELLINDEX(x, y);
@@ -134,9 +135,6 @@ void UPowerSystem::ResetData()
 
 	DistributePower();
 
-	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
-		systemsOnline[i] = true;
-
 	//CLEAR(spareCells);
 }
 
@@ -162,12 +160,6 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 				PlaceCell(cellID, spareCellNum);
 			}
 		}
-	}
-	else if (STARTS_WITH(msg, "power_toggleSys "))
-	{
-		int32 systemID = ExtractInt(msg, sizeof("power_toggleSys "));
-		if (systemID >= 0 && systemID < MAX_POWER_SYSTEMS)
-			ToggleSystem((EPowerSystem)systemID);
 	}
 	else
 		return false;
@@ -221,15 +213,6 @@ void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 		SendAllSpares();
 
 	DistributePower();
-}
-
-#ifdef WEB_SERVER_TEST
-void UPowerSystem::ToggleSystem(EPowerSystem system) { ToggleSystem_Implementation(system); }
-#endif
-void UPowerSystem::ToggleSystem_Implementation(EPowerSystem system)
-{
-	int32 systemID = (int32)system;
-	systemsOnline[systemID] = !systemsOnline[systemID];
 }
 
 
@@ -332,14 +315,15 @@ void UPowerSystem::OnReplicated_CellPower(TArray<int8> beforeChange)
 
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendSystemState(EPowerSystem system, bool state) { SendSystemState_Implementation(system, state); }
+void UPowerSystem::SendSystemPower(EPowerSystem system, uint8 power) { SendSystemPower_Implementation(system, power); }
 #endif
-void UPowerSystem::SendSystemState_Implementation(EPowerSystem system, bool state)
+void UPowerSystem::SendSystemPower_Implementation(EPowerSystem system, uint8 power)
 {
 	FString output = TEXT("power_sys ");
 
 	APPENDINT(output, system);
-	output += state ? TEXT(" 1") : TEXT(" 0");
+	output += TEXT(" ");
+	APPENDINT(output, power);
 
 	SendSystem(output);
 }
@@ -351,29 +335,30 @@ void UPowerSystem::SendAllSystems_Implementation()
 {
 	FString output = TEXT("power_all_sys");
 
-	for (auto system : systemsOnline)
+	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
 	{
-		output += system ? TEXT(" 1") : TEXT(" 0");
+		output += TEXT(" ");
+		APPENDINT(output, systemsPower[i]);
 	}
 
 	SendSystem(output);
 }
 
-void UPowerSystem::OnReplicated_SystemsOnline(TArray<bool> beforeChange)
+void UPowerSystem::OnReplicated_SystemsPower(TArray<uint8> beforeChange)
 {
 	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
-	auto numSys = SIZENUM(systemsOnline);
+	auto numSys = SIZENUM(systemsPower);
 	if (SIZENUM(beforeChange) != numSys)
 	{
 		SendAllSystems();
 		return;
 	}
 
-	for (size_t i = 0; i < numSys; i++)
+	for (int32 i = 0; i < numSys; i++)
 	{
-		auto currentVal = systemsOnline[i];
+		auto currentVal = systemsPower[i];
 		if (beforeChange[i] != currentVal)
-			SendSystemState((EPowerSystem)i, currentVal);
+			SendSystemPower((EPowerSystem)i, currentVal);
 	}
 }
 
@@ -428,6 +413,10 @@ void UPowerSystem::DistributePower()
 		cell->powerArrivesFrom = Dir_None;
 	}
 
+	TArray<uint8> powerOutput;
+	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
+		powerOutput[i] = 0;
+
 	TMap<int32, PowerCell*> tmpCells1;
 	TMap<int32, PowerCell*> tmpCells2;
 	TMap<int32, PowerCell*> tmpCells3;
@@ -464,7 +453,11 @@ void UPowerSystem::DistributePower()
 
 			if (edgeCell->GetType() == UPowerSystem::Cell_System)
 			{
-				// TODO: reached an end point, do something
+				// reached an system endpoint, record the power against this system
+				if (edgeCell->powerSystem != Power_None)
+				{
+					powerOutput[edgeCell->powerSystem] += edgeCell->powerLevel;
+				}
 				continue;
 			}
 
@@ -581,6 +574,13 @@ void UPowerSystem::DistributePower()
 
 			cellPower[cell->cellIndex] = newVal;
 		}
+	}
+
+	// get the power passed into each system, convert that to a % to display on the client
+	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
+	{
+		systemsPower[i] = powerOutput[i]; // TODO: convert power level to % ... start with GetPowerPower and scale appropriately
+		// TODO: pass this power on to other ship systems, as appropriate
 	}
 }
 

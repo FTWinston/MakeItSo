@@ -37,6 +37,7 @@ public:
 	};
 
 	enum EPowerSystem {
+		Power_None = -1,
 		Power_Helm = 0,
 		Power_Warp,
 		Power_Shields,
@@ -75,12 +76,6 @@ public:
 	void PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum);
 #endif
 
-	UFUNCTION(Server, Reliable)
-	void ToggleSystem(EPowerSystem system);
-#ifdef WEB_SERVER_TEST
-	void ToggleSystem_Implementation(EPowerSystem system);
-#endif
-
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 
@@ -101,15 +96,15 @@ private:
 	void Client_SendReactorPower();
 
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsOnline)
-	TArray<bool> systemsOnline;
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsPower)
+	TArray<uint8> systemsPower;
 
-	void OnReplicated_SystemsOnline(TArray<bool> beforeChange);
+	void OnReplicated_SystemsPower(TArray<uint8> beforeChange);
 
 	UFUNCTION(Client, Reliable)
-	void SendSystemState(EPowerSystem system, bool state);
+	void SendSystemPower(EPowerSystem system, uint8 power);
 #ifdef WEB_SERVER_TEST
-	void SendSystemState_Implementation(EPowerSystem system, bool state);
+	void SendSystemPower_Implementation(EPowerSystem system, uint8 power);
 #endif
 
 	UFUNCTION(Client, Reliable)
@@ -195,6 +190,7 @@ public:
 	int32 cellIndex;
 	uint16 powerLevel;
 	UPowerSystem::EPowerDirection powerArrivesFrom;
+	UPowerSystem::EPowerSystem powerSystem;
 
 	void SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour);
 	
