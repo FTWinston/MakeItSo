@@ -79,6 +79,8 @@ const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (stat
         systemsOnline: state.power.systemsOnline,
         cells: state.power.cells,
         reactorPower: state.power.reactorPower,
+        heatLevel: state.power.heatLevel,
+        heatRate: state.power.heatRate,
         spareCells: state.power.spareCells,
     }
 };

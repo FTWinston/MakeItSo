@@ -10,6 +10,7 @@ export const enum PowerCellType {
     Reactor,
     System,
     Broken,
+    Radiator,
     NorthSouth,
     EastWest,
     NorthEast,
@@ -25,12 +26,12 @@ export const enum PowerCellType {
 export const enum PowerSystem {
     Helm = 0,
     Warp,
-    Shields,
-    Comms,
     BeamWeapons,
     Torpedoes,
     Sensors,
+    Shields,
     DamageControl,
+    Comms,
 }
 
 export const numSystems = 8;
@@ -48,6 +49,8 @@ export interface PowerState {
     systemsOnline: boolean[];
     cells: PowerCell[];
     reactorPower: number;
+    heatLevel: number;
+    heatRate: number;
     spareCells: PowerCellType[];
 }
 
@@ -58,6 +61,12 @@ export interface PowerState {
 interface SetReactorPowerAction {
     type: 'REACTOR_POWER';
     value: number;
+}
+
+interface SetHeatLevelAction {
+    type: 'HEAT_LEVELS';
+    value: number;
+    rate: number;
 }
 
 interface SetCellTypeAction {
@@ -110,7 +119,7 @@ interface SetAllSpareCellsAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetReactorPowerAction | SetCellTypeAction | SetAllCellTypesAction | SetCellPowerAction | SetAllCellPowerAction
+type KnownAction = SetReactorPowerAction | SetHeatLevelAction | SetCellTypeAction | SetAllCellTypesAction | SetCellPowerAction | SetAllCellPowerAction
     | SetSystemStateAction | SetAllSystemStateAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
 
 // ----------------
@@ -121,6 +130,11 @@ export const actionCreators = {
     setReactorPower: (val: number) => <SetReactorPowerAction>{
         type: 'REACTOR_POWER',
         value: val,
+    },
+    setHeatLevels: (val: number, rate: number) => <SetHeatLevelAction>{
+        type: 'HEAT_LEVELS',
+        value: val,
+        rate: rate,
     },
     setCellType: (cellID: number, cellType: PowerCellType) => <SetCellTypeAction>{
         type: 'SET_CELL_T',
@@ -179,6 +193,8 @@ const unloadedState: PowerState = {
     systemsOnline: new Array(numSystems).fill(false),
     cells: cells,
     reactorPower: 100,
+    heatLevel: 0,
+    heatRate: 0,
     spareCells: [],
 };
 
@@ -189,6 +205,13 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             return {
                 ...state,
                 reactorPower: action.value,
+            };
+        }
+        case 'HEAT_LEVELS': {
+            return {
+                ...state,
+                heatLevel: action.value,
+                heatRate: action.rate,
             };
         }
         case 'SET_CELL_T': {

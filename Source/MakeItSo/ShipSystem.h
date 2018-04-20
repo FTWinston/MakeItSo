@@ -34,6 +34,11 @@ class UIConnectionInfo;
 class UCrewManager;
 struct websocket_message;
 
+#define MAX_SYSTEM_POWER 150
+
+#define MAX_SYSTEM_HEALTH 100
+#define MIN_SYSTEM_HEALTH 0
+
 UCLASS( abstract, ClassGroup=(Systems) )
 class MAKEITSO_API UShipSystem : public UActorComponent
 {

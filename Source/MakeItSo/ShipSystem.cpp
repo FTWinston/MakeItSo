@@ -8,8 +8,6 @@
 #include "CrewManager.h"
 #include "Mongoose.h"
 
-#define MAX_SYSTEM_HEALTH 100
-#define MIN_SYSTEM_HEALTH 0
 
 // Sets default values for this component's properties
 UShipSystem::UShipSystem()
@@ -68,15 +66,13 @@ void UShipSystem::RestoreDamage_Implementation(uint8 damageAmount)
 	RepairSystemDamage(prevValue, systemHealth);
 }
 
-#define MAX_POWER_LEVEL 200
-
 #ifdef WEB_SERVER_TEST
 void UShipSystem::SetPowerLevel(uint8 newLevel) { SetPowerLevel_Implementation(newLevel); }
 #endif
 void UShipSystem::SetPowerLevel_Implementation(uint8 newLevel)
 {
-	if (newLevel > MAX_POWER_LEVEL)
-		newLevel = MAX_POWER_LEVEL;
+	if (newLevel > MAX_SYSTEM_POWER)
+		newLevel = MAX_SYSTEM_POWER;
 
 	systemPower = newLevel;
 }

@@ -13,6 +13,10 @@ TMap<int32, UPowerSystem::EPowerCellType> UPowerSystem::initialCells;
 
 UPowerSystem::UPowerSystem()
 {
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 1.0f;
+	PrimaryComponentTick.SetTickFunctionEnable(true);
+
 	recalculatingCellPower = false;
 #ifndef WEB_SERVER_TEST
 	cells.Add(POWER_GRID_SIZE);
@@ -33,11 +37,8 @@ UPowerSystem::UPowerSystem()
 	INITIAL(4, Cell_System); INITIAL(5, Cell_System); INITIAL(6, Cell_System);
 	INITIAL(8, Cell_System); INITIAL(9, Cell_System); INITIAL(10, Cell_System);
 
-	INITIAL(22, Cell_System); INITIAL(33, Cell_System); INITIAL(44, Cell_System);
-	INITIAL(66, Cell_System); INITIAL(77, Cell_System); INITIAL(88, Cell_System);
-	
-	INITIAL(32, Cell_System); INITIAL(43, Cell_System); INITIAL(54, Cell_System);
-	INITIAL(76, Cell_System); INITIAL(87, Cell_System); INITIAL(98, Cell_System);
+	INITIAL(44, Cell_System); INITIAL(55, Cell_System); INITIAL(66, Cell_System);
+	INITIAL(54, Cell_System); INITIAL(65, Cell_System); INITIAL(76, Cell_System);
 
 	INITIAL(110, Cell_System); INITIAL(111, Cell_System); INITIAL(112, Cell_System);
 	INITIAL(114, Cell_System); INITIAL(115, Cell_System); INITIAL(116, Cell_System);
@@ -47,12 +48,18 @@ UPowerSystem::UPowerSystem()
 	INITIAL(59, Cell_Reactor); INITIAL(60, Cell_Reactor); INITIAL(61, Cell_Reactor);
 	INITIAL(70, Cell_Reactor); INITIAL(71, Cell_Reactor); INITIAL(72, Cell_Reactor);
 
+	INITIAL(46, Cell_Radiator); INITIAL(47, Cell_Radiator);
+	INITIAL(68, Cell_Radiator); INITIAL(69, Cell_Radiator);
+
+	INITIAL(51, Cell_Radiator); INITIAL(52, Cell_Radiator);
+	INITIAL(73, Cell_Radiator); INITIAL(74, Cell_Radiator);
+
+	INITIAL(56, Cell_EastWest); INITIAL(57, Cell_EastWest); INITIAL(58, Cell_EastWest);
+	INITIAL(62, Cell_EastWest); INITIAL(63, Cell_EastWest); INITIAL(64, Cell_EastWest);
+
 	INITIAL(16, Cell_NorthSouth); INITIAL(27, Cell_NorthSouth); INITIAL(38, Cell_NorthSouth);
 	INITIAL(82, Cell_NorthSouth); INITIAL(93, Cell_NorthSouth); INITIAL(104, Cell_NorthSouth);
-	INITIAL(45, Cell_EastWest); INITIAL(46, Cell_EastWest); INITIAL(47, Cell_EastWest);
-	INITIAL(51, Cell_EastWest); INITIAL(52, Cell_EastWest); INITIAL(53, Cell_EastWest);
-	INITIAL(67, Cell_EastWest); INITIAL(68, Cell_EastWest); INITIAL(69, Cell_EastWest);
-	INITIAL(73, Cell_EastWest); INITIAL(74, Cell_EastWest); INITIAL(75, Cell_EastWest);
+
 	INITIAL(37, Cell_NorthSouth); INITIAL(26, Cell_SouthWest); INITIAL(25, Cell_EastWest); INITIAL(24, Cell_NorthEast); INITIAL(13, Cell_NorthSouth);
 	INITIAL(39, Cell_NorthSouth); INITIAL(28, Cell_SouthEast); INITIAL(29, Cell_EastWest); INITIAL(30, Cell_NorthWest); INITIAL(19, Cell_NorthSouth);
 
@@ -68,8 +75,6 @@ UPowerSystem::UPowerSystem()
 #define REACTOR_MAX_Y 6
 
 #define NUM_SPARE_CELLS 5
-
-#define REACTOR_CELL_POWER_LEVEL 256
 
 void UPowerSystem::BeginPlay()
 {
@@ -90,28 +95,44 @@ void UPowerSystem::BeginPlay()
 			if (x > 0)
 			{
 				auto neighbour = cells[CELLINDEX(x - 1, y)];
-				cell->SetNeighbour(Dir_West, neighbour);
-				neighbour->SetNeighbour(Dir_East, cell);
+				MAPADD(cell->neighbours, Dir_West, neighbour, UPowerSystem::EPowerDirection, PowerCell*);
+				MAPADD(neighbour->neighbours, Dir_East, cell, UPowerSystem::EPowerDirection, PowerCell*);
 			}
 
 			if (y > 0)
 			{
 				auto neighbour = cells[CELLINDEX(x, y - 1)];
-				cell->SetNeighbour(Dir_North, neighbour);
-				neighbour->SetNeighbour(Dir_South, cell);
+				MAPADD(cell->neighbours, Dir_North, neighbour, UPowerSystem::EPowerDirection, PowerCell*);
+				MAPADD(neighbour->neighbours, Dir_South, cell, UPowerSystem::EPowerDirection, PowerCell*);
 			}
 		}
 
 	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
 		SETADD(spareCells, GetRandomCellType());
 
+	// add each reactor edge cell to the set which we calculate power distribution from
+	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++)
+	{
+		auto cell = cells[CELLINDEX(x, REACTOR_MIN_Y)];
+		SETADD(powerStartCells, cell);
+
+		cell = cells[CELLINDEX(x, REACTOR_MAX_Y)];
+		SETADD(powerStartCells, cell);
+	}
+	for (int32 y = REACTOR_MIN_Y + 1; y <= REACTOR_MAX_Y - 1; y++)
+	{
+		auto cell = cells[CELLINDEX(REACTOR_MIN_X, y)];
+		SETADD(powerStartCells, cell);
+
+		cell = cells[CELLINDEX(REACTOR_MAX_X, y)];
+		SETADD(powerStartCells, cell);
+	}
+
 	UShipSystem::BeginPlay(); // calls ResetData, so done after data population
 }
 
 void UPowerSystem::ResetData()
 {
-	reactorPower = 100;
-
 	for (int32 i = 0; i < POWER_GRID_SIZE; i++)
 	{
 		auto cell = cells[i];
@@ -129,10 +150,11 @@ void UPowerSystem::ResetData()
 			SETADD(undamagedCells, cell);
 		}
 
-		cell->powerLevel = cell->GetType() == Cell_Reactor ? REACTOR_CELL_POWER_LEVEL : 0;
-		cellPower[cell->cellIndex] = cell->GetPowerPower();
+		cell->powerLevel = 0;
+		cellPower[cell->cellIndex] = 0;
 	}
 
+	overheatValue = 50;
 	DistributePower();
 
 	//CLEAR(spareCells);
@@ -161,6 +183,10 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 			}
 		}
 	}
+	else if (MATCHES(msg, "power_jog"))
+	{
+		JogReactorPowerOutput();
+	}
 	else
 		return false;
 
@@ -173,9 +199,24 @@ void UPowerSystem::SendAllData_Implementation()
 	SendAllCellPower();
 	SendAllSystems();
 	SendAllSpares();
-	Client_SendReactorPower();
+	SendOverheat();
+
+	UShipSystem::SendAllData_Implementation();
 }
 
+#define OVERHEAT_DAMAGE_CUTOFF 100
+void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	overheatValue += overheatRate;
+
+	if (ISCLIENT())
+		SendOverheat();
+
+	if (overheatValue <= OVERHEAT_DAMAGE_CUTOFF)
+		return;
+
+	TakeDamage(overheatValue - OVERHEAT_DAMAGE_CUTOFF);
+}
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::RotateCell(uint8 cellID) { RotateCell_Implementation(cellID); }
@@ -215,6 +256,28 @@ void UPowerSystem::PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum)
 	DistributePower();
 }
 
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::JogReactorPowerOutput() { JogReactorPowerOutput_Implementation(); }
+#endif
+void UPowerSystem::JogReactorPowerOutput_Implementation()
+{
+	uint8 power = GetPowerLevel();
+
+	if (power < 40)
+		SetPowerLevel(40);
+	else if (power < 60)
+		SetPowerLevel(60);
+	else if (power < 80)
+		SetPowerLevel(80);
+	else if (power < 100)
+		SetPowerLevel(100);
+	else if (power < 120)
+		SetPowerLevel(120);
+	else
+		SetPowerLevel(20);
+
+	DistributePower();
+}
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::SendCellType(uint8 cell, EPowerCellType cellType) { SendCellType_Implementation(cell, cellType); }
@@ -266,9 +329,9 @@ void UPowerSystem::OnReplicated_CellTypes(TArray<EPowerCellType> beforeChange)
 
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::SendCellPower(uint8 cell, int8 power) { SendCellPower_Implementation(cell, power); }
+void UPowerSystem::SendCellPower(uint8 cell, uint8 power) { SendCellPower_Implementation(cell, power); }
 #endif
-void UPowerSystem::SendCellPower_Implementation(uint8 cell, int8 power)
+void UPowerSystem::SendCellPower_Implementation(uint8 cell, uint8 power)
 {
 	FString output = TEXT("power_cell_p ");
 
@@ -295,7 +358,7 @@ void UPowerSystem::SendAllCellPower_Implementation()
 	SendSystem(output);
 }
 
-void UPowerSystem::OnReplicated_CellPower(TArray<int8> beforeChange)
+void UPowerSystem::OnReplicated_CellPower(TArray<uint8> beforeChange)
 {
 	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
 	uint8 numCells = SIZENUM(cellPower);
@@ -313,6 +376,30 @@ void UPowerSystem::OnReplicated_CellPower(TArray<int8> beforeChange)
 	}
 }
 
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendOverheat() { SendOverheat_Implementation(); }
+#endif
+void UPowerSystem::SendOverheat_Implementation()
+{
+	FString output = TEXT("power_heat ");
+	output += TEXT(" ");
+	APPENDINT(output, overheatValue);
+	output += TEXT(" ");
+	APPENDINT(output, overheatRate);
+	
+	SendSystem(output);
+}
+
+void UPowerSystem::OnReplicated_OverheatRate(uint8 beforeChange)
+{
+	SendOverheat();
+}
+
+void UPowerSystem::OnReplicated_OverheatValue(uint8 beforeChange)
+{
+	SendOverheat();
+}
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::SendSystemPower(EPowerSystem system, uint8 power) { SendSystemPower_Implementation(system, power); }
@@ -354,27 +441,12 @@ void UPowerSystem::OnReplicated_SystemsPower(TArray<uint8> beforeChange)
 		return;
 	}
 
-	for (int32 i = 0; i < numSys; i++)
+	for (uint32 i = 0; i < numSys; i++)
 	{
 		auto currentVal = systemsPower[i];
 		if (beforeChange[i] != currentVal)
 			SendSystemPower((EPowerSystem)i, currentVal);
 	}
-}
-
-
-void UPowerSystem::Client_SendReactorPower()
-{
-	FString output = TEXT("power_reactor ");
-
-	APPENDINT(output, reactorPower);
-
-	SendSystem(output);
-}
-
-void UPowerSystem::OnReplicated_ReactorPower(uint8 beforeChange)
-{
-	Client_SendReactorPower();
 }
 
 
@@ -400,6 +472,7 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 	SendAllSpares();
 }
 
+#define NUM_DIRS 4
 #define ADD_CELL_TO_MAP(map, cell) MAPADD_PTR(map, cell->cellIndex, cell, int32, PowerCell*)
 
 void UPowerSystem::DistributePower()
@@ -411,7 +484,11 @@ void UPowerSystem::DistributePower()
 			cell->powerLevel = 0;
 
 		cell->powerArrivesFrom = Dir_None;
+		cell->alreadyOutputPower = false;
 	}
+
+	uint8 numPoweredRadiators = 0;
+	uint8 numReactorOutputs = 0;
 
 	TArray<uint8> powerOutput;
 	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
@@ -426,23 +503,12 @@ void UPowerSystem::DistributePower()
 	TMap<int32, PowerCell*> *nextEdgeCells_singleOutput = &tmpCells2;
 	TMap<int32, PowerCell*> *nextEdgeCells_multipleOutput = &tmpCells3;
 
-	// add each reactor edge cell to the initial "edge" set
-	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++) {
-		auto cell = cells[CELLINDEX(x, REACTOR_MIN_Y)];
-		ADD_CELL_TO_MAP(edgeCells, cell);
-		
-		cell = cells[CELLINDEX(x, REACTOR_MAX_Y)];
-		ADD_CELL_TO_MAP(edgeCells, cell);
-	}
-	for (int32 y = REACTOR_MIN_Y + 1; y <= REACTOR_MAX_Y - 1; y++) {
-		auto cell = cells[CELLINDEX(REACTOR_MIN_X, y)];
+	for (auto cell : powerStartCells)
 		ADD_CELL_TO_MAP(edgeCells, cell);
 
-		cell = cells[CELLINDEX(REACTOR_MAX_X, y)];
-		ADD_CELL_TO_MAP(edgeCells, cell);
-	}
-
+	EPowerCellType hasMultipleOutputs = Cell_NorthEastSouth | Cell_EastSouthWest | Cell_SouthWestNorth | Cell_WestNorthEast;
 	bool handlingMultipleOutputs = false;
+	bool firstStep = true;
 	
 	// loop over all "edge" cells, calculate where they can pass power to
 	while (SIZENUM_PTR(edgeCells) > 0)
@@ -451,7 +517,7 @@ void UPowerSystem::DistributePower()
 		{
 			auto edgeCell = PAIRVALUE(pair);
 
-			if (edgeCell->GetType() == UPowerSystem::Cell_System)
+			if (edgeCell->GetType() == Cell_System)
 			{
 				// reached an system endpoint, record the power against this system
 				if (edgeCell->powerSystem != Power_None)
@@ -460,22 +526,51 @@ void UPowerSystem::DistributePower()
 				}
 				continue;
 			}
+			else if (edgeCell->GetType() == Cell_Reactor || edgeCell->GetType() == Cell_Radiator)
+			{
+				// process radiator/heat output
+				for (auto neighbour : edgeCell->neighbours)
+				{
+					EPowerDirection dir = PAIRKEY(neighbour);
+					if ((edgeCell->powerArrivesFrom & dir) != 0)
+						continue;
 
-			// look at each adjacent cell, see if we can output power to it
-			PowerCell *north = edgeCell->GetOutputConnection(UPowerSystem::Dir_North);
-			PowerCell *south = edgeCell->GetOutputConnection(UPowerSystem::Dir_South);
-			PowerCell *east = edgeCell->GetOutputConnection(UPowerSystem::Dir_East);
-			PowerCell *west = edgeCell->GetOutputConnection(UPowerSystem::Dir_West);
+					PowerCell *radiatorCell = PAIRVALUE(neighbour);
+					if (radiatorCell->GetType() != Cell_Radiator || radiatorCell->powerLevel > 0)
+						continue;
+
+					radiatorCell->powerLevel = 1;
+					radiatorCell->powerArrivesFrom = radiatorCell->powerArrivesFrom | GetOppositeDirection(dir);
+					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, radiatorCell);
+					numPoweredRadiators++;
+				}
+
+				if (edgeCell->GetType() == Cell_Radiator)
+					continue; // reactors also output power. Radiators don't.
+			}
+
+			EPowerDirection dirs[] = { Dir_North, Dir_South, Dir_East, Dir_West };
+			EPowerDirection oppositeDirs[] = { Dir_South, Dir_North, Dir_West, Dir_East };
+			PowerCell *outputCells[] = { nullptr, nullptr, nullptr, nullptr };
 
 			uint8 numOutputs = 0; // a connection is still an output if it has power already, but isn't if power arrived in this cell from there.
-			if (north != NULL)
-				numOutputs++;
-			if (south != NULL)
-				numOutputs++;
-			if (east != NULL)
-				numOutputs++;
-			if (west != NULL)
-				numOutputs++;
+			for (int32 i = 0; i < NUM_DIRS; i++)
+			{
+				if (edgeCell->GetType() != Cell_Radiator)
+				{
+					PowerCell *output = edgeCell->GetOutputConnection(dirs[i]);
+					if (output != nullptr)
+					{
+						// process power output
+						outputCells[i] = output;
+						numOutputs++;
+						continue;
+					}
+				}
+			}
+			
+			if (firstStep)
+				numReactorOutputs += numOutputs;
 
 			// where possible, only process cells with a single possible output, until there are no such cells left
 			if (numOutputs > 1 && !handlingMultipleOutputs)
@@ -484,55 +579,41 @@ void UPowerSystem::DistributePower()
 				continue;
 			}
 
+			edgeCell->alreadyOutputPower = true;
+
 			// output power reduces if we split it multiple ways
-			auto outputPower = edgeCell->GetType() == Cell_Reactor || numOutputs == 1
-				? edgeCell->powerLevel : edgeCell->powerLevel / 2;
+			uint8 outputPower;
+			if (edgeCell->GetType() == Cell_Reactor)
+				outputPower = GetPowerLevel();
+			else if (numOutputs == 1)
+				outputPower = edgeCell->powerLevel;
+			else
+				outputPower = edgeCell->powerLevel / 2;
 
-			if (north != NULL)
+			for (int32 i = 0; i < NUM_DIRS; i++)
 			{
-				north->powerLevel += outputPower;
-				north->powerArrivesFrom = north->powerArrivesFrom | Dir_South;
+				auto output = outputCells[i];
+				if (output == nullptr)
+					continue;
 
-				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, north->cellIndex))
+				// Golden rule for spreading power: if its a T shaped cell and hasn't already output power, can add to a cell's power. Otherwise, replace.
+				if ((output->GetType() & hasMultipleOutputs) != 0 && output->alreadyOutputPower)
 				{
-					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, north);
-					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, north->cellIndex);
+					// combine power levels nonlinearly beyond 100%
+					output->powerLevel += outputPower;
 				}
-			}
+				else if (output->powerLevel < outputPower)
+					output->powerLevel = outputPower;
+				else
+					continue; // don't update this cell, and don't progress beyond it
 
-			if (south != NULL)
-			{
-				south->powerLevel += outputPower;
-				south->powerArrivesFrom = south->powerArrivesFrom | Dir_North;
+				// just because power came from somewhere else before, doesn't mean we shouldn't overwrite it if this cell now has higher power
+				output->powerArrivesFrom = oppositeDirs[i];
 
-				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, south->cellIndex))
+				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, output->cellIndex))
 				{
-					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, south);
-					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, south->cellIndex);
-				}
-			}
-
-			if (east != NULL)
-			{
-				east->powerLevel += outputPower;
-				east->powerArrivesFrom = east->powerArrivesFrom | Dir_West;
-
-				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, east->cellIndex))
-				{
-					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, east);
-					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, east->cellIndex);
-				}
-			}
-
-			if (west != NULL)
-			{
-				west->powerLevel += outputPower;
-				west->powerArrivesFrom = west->powerArrivesFrom | Dir_East;
-
-				if (!MAPCONTAINS_PTR(nextEdgeCells_singleOutput, west->cellIndex))
-				{
-					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, west);
-					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, west->cellIndex);
+					ADD_CELL_TO_MAP(nextEdgeCells_singleOutput, output);
+					MAPREMOVE_PTR(nextEdgeCells_multipleOutput, output->cellIndex);
 				}
 			}
 		}
@@ -553,6 +634,8 @@ void UPowerSystem::DistributePower()
 			edgeCells = nextEdgeCells_multipleOutput;
 			nextEdgeCells_multipleOutput = tmp;
 		}
+
+		firstStep = false;
 	}
 
 	// now that we've recalculated the power of every cell, pass this on
@@ -561,27 +644,78 @@ void UPowerSystem::DistributePower()
 	{
 		if (cell->cellIndex >= 0)
 		{
-			auto newVal = cell->GetPowerPower();
-
 			if (ISCLIENT())
 			{
 				auto oldVal = cellPower[cell->cellIndex];
-				if (oldVal != newVal)
+				if (oldVal != cell->powerLevel)
 				{
-					SendCellPower(cell->cellIndex, newVal);
+					SendCellPower(cell->cellIndex, cell->powerLevel);
 				}
 			}
 
-			cellPower[cell->cellIndex] = newVal;
+			cellPower[cell->cellIndex] = cell->GetVisualPowerLevel();
 		}
 	}
+
+	DetermineOverheatRate(numPoweredRadiators, numReactorOutputs);
 
 	// get the power passed into each system, convert that to a % to display on the client
 	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
 	{
-		systemsPower[i] = powerOutput[i]; // TODO: convert power level to % ... start with GetPowerPower and scale appropriately
-		// TODO: pass this power on to other ship systems, as appropriate
+		systemsPower[i] = GetSystemOutputPower(powerOutput[i]);
 	}
+}
+
+void UPowerSystem::DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOutputs)
+{
+	// at 100%, you need 2 radiators for every 3 outputs, say
+	float powerRate = 0.6667f * GetPowerLevel() * numOutputs / numPoweredRadiators;
+
+	if (powerRate < 5.0f)
+		overheatRate = -10;
+	else if (powerRate < 15.0f)
+		overheatRate = -9;
+	else if (powerRate < 25.0f)
+		overheatRate = -8;
+	else if (powerRate < 35.0f)
+		overheatRate = -7;
+	else if (powerRate < 45.0f)
+		overheatRate = -6;
+	else if (powerRate < 55.0f)
+		overheatRate = -5;
+	else if (powerRate < 65.0f)
+		overheatRate = -4;
+	else if (powerRate < 75.0f)
+		overheatRate = -3;
+	else if (powerRate < 85.0f)
+		overheatRate = -2;
+	else if (powerRate < 95.0f)
+		overheatRate = -1;
+	else if (powerRate < 105.0f)
+		overheatRate = 0;
+	else if (powerRate < 115.0f)
+		overheatRate = 1;
+	else if (powerRate < 125.0f)
+		overheatRate = 2;
+	else if (powerRate < 135.0f)
+		overheatRate = 3;
+	else if (powerRate < 145.0f)
+		overheatRate = 4;
+	else if (powerRate < 155.0f)
+		overheatRate = 5;
+	else if (powerRate < 165.0f)
+		overheatRate = 6;
+	else if (powerRate < 175.0f)
+		overheatRate = 7;
+	else if (powerRate < 185.0f)
+		overheatRate = 8;
+	else if (powerRate < 195.0f)
+		overheatRate = 9;
+	else
+		overheatRate = 10;
+
+	if (ISCLIENT())
+		SendOverheat();
 }
 
 void UPowerSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)
@@ -593,7 +727,7 @@ void UPowerSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)
 	for (uint8 i = FMath::Min(numCellsToDamage, numUndamagedCells); i > 0; i--)
 	{
 		PowerCell *cell = undamagedCells[FMath::RandRange(0, numUndamagedCells)];
-
+		
 		SETREMOVEVAL(undamagedCells, cell);
 		SETADD(damagedCells, cell);
 
@@ -640,7 +774,17 @@ uint8 UPowerSystem::GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth
 
 UPowerSystem::EPowerCellType UPowerSystem::GetRandomCellType()
 {
-	return (EPowerCellType)FMath::RandRange(Cell_NorthSouth, Cell_WestNorthEast);
+	return (EPowerCellType)FMath::RandRange(Cell_Radiator, Cell_WestNorthEast);
+}
+
+uint8 UPowerSystem::GetSystemOutputPower(uint16 powerLevel)
+{
+	if (powerLevel <= 100)
+		return powerLevel;
+	
+	powerLevel = 100 + (uint8)FMath::Pow((float)powerLevel - 100, 0.8f);
+
+	return FMath::Min(200, powerLevel);
 }
 
 
@@ -675,22 +819,6 @@ const uint8 powers[] = {
 	1 << 14,
 	1 << 15,
 };
-
-uint8 PowerCell::GetPowerPower()
-{
-	// Get the "power" component of the closest power of 2 for the powerLevel, rounding down
-	// e.g. for 137, the closest power of 2 is 2^7 = 128, so this will return 7
-	for (uint8 i = 16; i > 0; i--)
-		if (powerLevel > powers[i])
-			return i;
-
-	return 0;
-}
-
-void PowerCell::SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour)
-{
-	MAPADD(neighbours, dir, neighbour, UPowerSystem::EPowerDirection, PowerCell*);
-}
 
 void PowerCell::RotateCellType()
 {
@@ -757,7 +885,7 @@ UPowerSystem::EPowerDirection PowerCell::GetConnectedDirections()
 	}
 }
 
-UPowerSystem::EPowerDirection PowerCell::GetOppositeDirection(UPowerSystem::EPowerDirection dir)
+UPowerSystem::EPowerDirection UPowerSystem::GetOppositeDirection(UPowerSystem::EPowerDirection dir)
 {
 	switch (dir)
 	{
@@ -794,9 +922,70 @@ PowerCell *PowerCell::GetOutputConnection(UPowerSystem::EPowerDirection dir)
 		return NULL;
 
 	// can't output power if neighbour's shape doesn't connect in opposite direction
-	auto opposite = GetOppositeDirection(dir);
+	auto opposite = UPowerSystem::GetOppositeDirection(dir);
 	if ((adjacent->GetConnectedDirections() & opposite) == 0)
 		return NULL;
 
 	return adjacent;
+}
+
+uint8 PowerCell::GetVisualPowerLevel()
+{
+	if (powerLevel == 0)
+		return 0;
+	if (powerLevel < 15)
+		return 1;
+	if (powerLevel < 25)
+		return 2;
+	if (powerLevel < 35)
+		return 3;
+	if (powerLevel < 45)
+		return 4;
+	if (powerLevel < 55)
+		return 5;
+	if (powerLevel < 65)
+		return 6;
+	if (powerLevel < 75)
+		return 7;
+	if (powerLevel < 85)
+		return 8;
+	if (powerLevel < 95)
+		return 9;
+	if (powerLevel < 105)
+		return 10;
+
+	if (powerLevel < 115)
+		return 11;
+	if (powerLevel < 125)
+		return 12;
+	if (powerLevel < 135)
+		return 13;
+	if (powerLevel < 145)
+		return 14;
+	if (powerLevel < 160)
+		return 15;
+	if (powerLevel < 175)
+		return 16;
+	if (powerLevel < 200)
+		return 17;
+	if (powerLevel < 225)
+		return 18;
+	if (powerLevel < 250)
+		return 19;
+	if (powerLevel < 300)
+		return 20;
+	if (powerLevel < 350)
+		return 21;
+	if (powerLevel < 400)
+		return 22;
+	if (powerLevel < 500)
+		return 23;
+	if (powerLevel < 600)
+		return 24;
+	if (powerLevel < 800)
+		return 25;
+	if (powerLevel < 1000)
+		return 26;
+
+	return 27;
 }

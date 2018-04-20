@@ -870,6 +870,11 @@ var actionCreators = {
         type: 'REACTOR_POWER',
         value: val,
     }); },
+    setHeatLevels: function (val, rate) { return ({
+        type: 'HEAT_LEVELS',
+        value: val,
+        rate: rate,
+    }); },
     setCellType: function (cellID, cellType) { return ({
         type: 'SET_CELL_T',
         cellID: cellID,
@@ -924,6 +929,8 @@ var unloadedState = {
     systemsOnline: new Array(numSystems).fill(false),
     cells: cells,
     reactorPower: 100,
+    heatLevel: 0,
+    heatRate: 0,
     spareCells: [],
 };
 var reducer = function (state, rawAction) {
@@ -931,6 +938,9 @@ var reducer = function (state, rawAction) {
     switch (action.type) {
         case 'REACTOR_POWER': {
             return __assign({}, state, { reactorPower: action.value });
+        }
+        case 'HEAT_LEVELS': {
+            return __assign({}, state, { heatLevel: action.value, heatRate: action.rate });
         }
         case 'SET_CELL_T': {
             var cells_1 = state.cells.slice();
@@ -2520,53 +2530,53 @@ var GridCell = (function (_super) {
     GridCell.prototype.drawLines = function (ctx, width, height) {
         ctx.beginPath();
         switch (this.props.cell.type) {
-            case 4 /* NorthSouth */:
+            case 5 /* NorthSouth */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
                 break;
-            case 5 /* EastWest */:
+            case 6 /* EastWest */:
                 ctx.moveTo(0, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 6 /* NorthEast */:
+            case 7 /* NorthEast */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 7 /* SouthEast */:
+            case 8 /* SouthEast */:
                 ctx.moveTo(width / 2, height);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 8 /* SouthWest */:
+            case 9 /* SouthWest */:
                 ctx.moveTo(width / 2, height);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(0, height / 2);
                 break;
-            case 9 /* NorthWest */:
+            case 10 /* NorthWest */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height / 2);
                 ctx.lineTo(0, height / 2);
                 break;
-            case 10 /* NorthEastSouth */:
+            case 11 /* NorthEastSouth */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
                 ctx.moveTo(width / 2, height / 2);
                 ctx.lineTo(width, height / 2);
                 break;
-            case 11 /* EastSouthWest */:
+            case 12 /* EastSouthWest */:
                 ctx.moveTo(0, height / 2);
                 ctx.lineTo(width, height / 2);
                 ctx.moveTo(width / 2, height / 2);
                 ctx.lineTo(width / 2, height);
                 break;
-            case 12 /* SouthWestNorth */:
+            case 13 /* SouthWestNorth */:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
                 ctx.moveTo(width / 2, height / 2);
                 ctx.lineTo(0, height / 2);
                 break;
-            case 13 /* WestNorthEast */:
+            case 14 /* WestNorthEast */:
                 ctx.moveTo(0, height / 2);
                 ctx.lineTo(width, height / 2);
                 ctx.moveTo(width / 2, height / 2);
@@ -8044,6 +8054,8 @@ var mapStateToProps = function (state) {
         systemsOnline: state.power.systemsOnline,
         cells: state.power.cells,
         reactorPower: state.power.reactorPower,
+        heatLevel: state.power.heatLevel,
+        heatRate: state.power.heatRate,
         spareCells: state.power.spareCells,
     };
 };
@@ -9239,6 +9251,11 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllSystems(states));
                 break;
             }
+            case 'power_heat': {
+                var vals = data.split(' ').map(function (v) { return parseInt(v); });
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setHeatLevels(vals[0], vals[1]));
+                break;
+            }
             case 'power_reactor': {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setReactorPower(parseInt(data)));
                 break;
@@ -10378,6 +10395,11 @@ var actionCreators = {
         type: 'REACTOR_POWER',
         value: val,
     }); },
+    setHeatLevels: function (val, rate) { return ({
+        type: 'HEAT_LEVELS',
+        value: val,
+        rate: rate,
+    }); },
     setCellType: function (cellID, cellType) { return ({
         type: 'SET_CELL_T',
         cellID: cellID,
@@ -10432,6 +10454,8 @@ var unloadedState = {
     systemsOnline: new Array(numSystems).fill(false),
     cells: cells,
     reactorPower: 100,
+    heatLevel: 0,
+    heatRate: 0,
     spareCells: [],
 };
 var reducer = function (state, rawAction) {
@@ -10439,6 +10463,9 @@ var reducer = function (state, rawAction) {
     switch (action.type) {
         case 'REACTOR_POWER': {
             return __assign({}, state, { reactorPower: action.value });
+        }
+        case 'HEAT_LEVELS': {
+            return __assign({}, state, { heatLevel: action.value, heatRate: action.rate });
         }
         case 'SET_CELL_T': {
             var cells_1 = state.cells.slice();

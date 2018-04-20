@@ -74,6 +74,9 @@ public:
 	static float Max(float min, float max) {
 		return std::max(min, max);
 	}
+	static float Pow(float num, float power) {
+		return pow(num, power);
+	}
 
 	static float DegreesToRadians(float val) { return val * PI / 180.0f; }
 

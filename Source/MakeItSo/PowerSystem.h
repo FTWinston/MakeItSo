@@ -24,6 +24,7 @@ public:
 		Cell_Reactor,
 		Cell_System,
 		Cell_Broken,
+		Cell_Radiator,
 		Cell_NorthSouth,
 		Cell_EastWest,
 		Cell_NorthEast,
@@ -40,12 +41,12 @@ public:
 		Power_None = -1,
 		Power_Helm = 0,
 		Power_Warp,
-		Power_Shields,
-		Power_Comms,
 		Power_BeamWeapons,
 		Power_Torpedoes,
 		Power_Sensors,
+		Power_Shields,
 		Power_DamageControl,
+		Power_Comms,
 		MAX_POWER_SYSTEMS
 	};
 	
@@ -63,6 +64,7 @@ public:
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(Server, Reliable)
 	void RotateCell(uint8 cellID);
@@ -76,24 +78,24 @@ public:
 	void PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum);
 #endif
 
+	static UPowerSystem::EPowerDirection GetOppositeDirection(EPowerDirection cell);
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 
 	virtual void ApplySystemDamage(uint8 prevValue, uint8 newValue) override;
 	virtual void RepairSystemDamage(uint8 prevValue, uint8 newValue) override;
 
+	UFUNCTION(Server, Reliable)
+	void JogReactorPowerOutput();
+#ifdef WEB_SERVER_TEST
+	void JogReactorPowerOutput_Implementation();
+#endif
+
 private:
 	void DistributePower();
 	EPowerCellType GetRandomCellType();
 	uint8 GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth);
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ReactorPower)
-	uint8 reactorPower;
-
-	UFUNCTION()
-	void OnReplicated_ReactorPower(uint8 beforeChange);
-
-	void Client_SendReactorPower();
+	uint8 GetSystemOutputPower(uint16 powerLevel);
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsPower)
@@ -116,7 +118,7 @@ private:
 
 	UPROPERTY()
 	TArray<PowerCell*> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
-
+	TArray<PowerCell*> powerStartCells;
 	TArray<PowerCell*> damagedCells;
 	TArray<PowerCell*> undamagedCells;
 
@@ -139,20 +141,42 @@ private:
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellPower)
-	TArray<int8> cellPower;
+	TArray<uint8> cellPower;
 
-	void OnReplicated_CellPower(TArray<int8> beforeChange);
+	void OnReplicated_CellPower(TArray<uint8> beforeChange);
 
 	UFUNCTION(Client, Reliable)
-	void SendCellPower(uint8 cell, int8 power);
+	void SendCellPower(uint8 cell, uint8 power);
 #ifdef WEB_SERVER_TEST
-	void SendCellPower_Implementation(uint8 cell, int8 power);
+	void SendCellPower_Implementation(uint8 cell, uint8 power);
 #endif
 
 	UFUNCTION(Client, Reliable)
 	void SendAllCellPower();
 #ifdef WEB_SERVER_TEST
 	void SendAllCellPower_Implementation();
+#endif
+
+
+	void DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOutputs);
+
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OverheatRate)
+	int8 overheatRate;
+
+	void OnReplicated_OverheatRate(uint8 beforeChange);
+
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OverheatValue)
+	uint8 overheatValue;
+
+	void OnReplicated_OverheatValue(uint8 beforeChange);
+
+
+	UFUNCTION(Client, Reliable)
+	void SendOverheat();
+#ifdef WEB_SERVER_TEST
+	void SendOverheat_Implementation();
 #endif
 
 
@@ -177,7 +201,10 @@ inline UPowerSystem::EPowerDirection operator|(UPowerSystem::EPowerDirection a, 
 	return static_cast<UPowerSystem::EPowerDirection>(static_cast<uint8>(a) | static_cast<uint8>(b));
 }
 
-
+inline UPowerSystem::EPowerCellType operator|(UPowerSystem::EPowerCellType a, UPowerSystem::EPowerCellType b)
+{
+	return static_cast<UPowerSystem::EPowerCellType>(static_cast<uint8>(a) | static_cast<uint8>(b));
+}
 
 class PowerCell
 {
@@ -185,22 +212,21 @@ public:
 	void SetType(UPowerSystem::EPowerCellType type);
 	UPowerSystem::EPowerCellType GetType() { return type; }
 
-	uint8 GetPowerPower();
 	UPowerSystem* system;
 	int32 cellIndex;
 	uint16 powerLevel;
 	UPowerSystem::EPowerDirection powerArrivesFrom;
 	UPowerSystem::EPowerSystem powerSystem;
 
-	void SetNeighbour(UPowerSystem::EPowerDirection dir, PowerCell *neighbour);
+	TMap<UPowerSystem::EPowerDirection, PowerCell*> neighbours;
 	
 	void RotateCellType();
 	PowerCell *GetOutputConnection(UPowerSystem::EPowerDirection dir);
+	bool alreadyOutputPower;
+
+	uint8 GetVisualPowerLevel();
 private:
 	UPowerSystem::EPowerDirection GetConnectedDirections();
-	UPowerSystem::EPowerDirection GetOppositeDirection(UPowerSystem::EPowerDirection cell);
 
 	UPowerSystem::EPowerCellType type;
-
-	TMap<UPowerSystem::EPowerDirection, PowerCell*> neighbours;
 };

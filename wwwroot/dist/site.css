@@ -673,7 +673,7 @@ $lightBackground: #999;
   background-color: #0099cc; }
 
 .gridCell--broken {
-  color: red; }
+  background-color: #ff0000; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

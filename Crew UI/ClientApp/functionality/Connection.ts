@@ -270,6 +270,11 @@ export class Connection {
                 store.dispatch(powerActions.setAllSystems(states));
                 break;
             }
+            case 'power_heat': {
+                let vals = data.split(' ').map(v => parseInt(v));
+                store.dispatch(powerActions.setHeatLevels(vals[0], vals[1]));
+                break;
+            }
             case 'power_reactor': {
                 store.dispatch(powerActions.setReactorPower(parseInt(data)));
                 break;

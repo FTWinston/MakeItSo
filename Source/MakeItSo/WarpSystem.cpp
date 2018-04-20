@@ -135,6 +135,8 @@ void UWarpSystem::SendAllData_Implementation()
 		else if (jumpState == SystemJumpState::JUMP_STATE_CHARGING)
 			DetermineAndSendJumpCharge();
 	}
+
+	UShipSystem::SendAllData_Implementation();
 }
 
 #ifdef WEB_SERVER_TEST
