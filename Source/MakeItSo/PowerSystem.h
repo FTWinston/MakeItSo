@@ -78,6 +78,8 @@ public:
 	void PlaceCell_Implementation(uint8 cellID, uint8 spareCellNum);
 #endif
 
+	virtual void SetPowerLevel_Implementation(uint8 newLevel) override;
+
 	static UPowerSystem::EPowerDirection GetOppositeDirection(EPowerDirection cell);
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
@@ -191,7 +193,6 @@ private:
 	void SendAllSpares_Implementation();
 #endif
 
-	bool recalculatingCellPower;
 	friend class PowerCell;
 	static TMap<int32, EPowerCellType> initialCells;
 };

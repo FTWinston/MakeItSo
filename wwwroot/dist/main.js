@@ -2517,6 +2517,12 @@ var GridCell = (function (_super) {
     };
     GridCell.prototype.draw = function (ctx, width, height) {
         ctx.clearRect(0, 0, width, height);
+        if (this.props.cell.type == 4 /* Radiator */) {
+            ctx.strokeStyle = this.props.cell.power === 0 ? '#aaaaaa' : '#dd3333';
+            ctx.lineWidth = width * 0.1;
+            this.drawRadiator(ctx, width, height);
+            return;
+        }
         ctx.strokeStyle = '#cccccc';
         ctx.lineWidth = width * 0.33;
         this.drawLines(ctx, width, height);
@@ -2526,6 +2532,15 @@ var GridCell = (function (_super) {
         this.setStyleForPowerLevel(ctx, width, this.props.cell.power);
         this.drawLines(ctx, width, height);
         ctx.globalAlpha = 1;
+    };
+    GridCell.prototype.drawRadiator = function (ctx, width, height) {
+        ctx.strokeRect(width / 4, height / 4, width / 2, height / 2);
+        ctx.beginPath();
+        ctx.moveTo(width * 5 / 12, height / 4);
+        ctx.lineTo(width * 5 / 12, height * 3 / 4);
+        ctx.moveTo(width * 7 / 12, height / 4);
+        ctx.lineTo(width * 7 / 12, height * 3 / 4);
+        ctx.stroke();
     };
     GridCell.prototype.drawLines = function (ctx, width, height) {
         ctx.beginPath();
@@ -10919,7 +10934,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

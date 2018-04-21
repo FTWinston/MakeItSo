@@ -68,6 +68,12 @@ public:
 	static int Max(int min, int max) {
 		return std::max(min, max);
 	}
+	static int Min(unsigned int min, unsigned int max) {
+		return std::min(min, max);
+	}
+	static int Max(unsigned int min, unsigned int max) {
+		return std::max(min, max);
+	}
 	static float Min(float min, float max) {
 		return std::min(min, max);
 	}

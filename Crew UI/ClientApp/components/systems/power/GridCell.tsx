@@ -52,6 +52,14 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
 
     private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
         ctx.clearRect(0, 0, width, height);
+        if (this.props.cell.type == PowerCellType.Radiator)
+        {
+            ctx.strokeStyle = this.props.cell.power === 0 ? '#aaaaaa' : '#dd3333';
+            ctx.lineWidth = width * 0.1;
+            this.drawRadiator(ctx, width, height);
+            return;
+        }
+
         ctx.strokeStyle = '#cccccc';
         ctx.lineWidth = width * 0.33;
 
@@ -64,6 +72,20 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
         this.setStyleForPowerLevel(ctx, width, this.props.cell.power);
         this.drawLines(ctx, width, height);
         ctx.globalAlpha = 1;
+    }
+
+    private drawRadiator(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        ctx.strokeRect(width / 4, height / 4, width / 2, height / 2);
+
+        ctx.beginPath();
+
+        ctx.moveTo(width * 5 / 12, height / 4);
+        ctx.lineTo(width * 5 / 12, height * 3 / 4);
+
+        ctx.moveTo(width * 7 / 12, height / 4);
+        ctx.lineTo(width * 7 / 12, height * 3 / 4);
+
+        ctx.stroke();
     }
 
     private drawLines(ctx: CanvasRenderingContext2D, width: number, height: number) {

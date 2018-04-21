@@ -36,7 +36,7 @@ struct websocket_message;
 
 #define MAX_SYSTEM_POWER 150
 
-#define MAX_SYSTEM_HEALTH 100
+#define MAX_SYSTEM_HEALTH (uint8)100
 #define MIN_SYSTEM_HEALTH 0
 
 UCLASS( abstract, ClassGroup=(Systems) )

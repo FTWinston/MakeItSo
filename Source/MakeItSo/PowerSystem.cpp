@@ -17,7 +17,6 @@ UPowerSystem::UPowerSystem()
 	PrimaryComponentTick.TickInterval = 1.0f;
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 
-	recalculatingCellPower = false;
 #ifndef WEB_SERVER_TEST
 	cells.Add(POWER_GRID_SIZE);
 	cellTypes.AddZeroed(POWER_GRID_SIZE);
@@ -155,7 +154,7 @@ void UPowerSystem::ResetData()
 	}
 
 	overheatValue = 50;
-	DistributePower();
+	SetPowerLevel(100);
 
 	//CLEAR(spareCells);
 }
@@ -207,15 +206,30 @@ void UPowerSystem::SendAllData_Implementation()
 #define OVERHEAT_DAMAGE_CUTOFF 100
 void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	overheatValue += overheatRate;
+	uint8 prevValue = overheatValue;
+	overheatValue = overheatValue + overheatRate;
+
+	if (overheatRate < 0)
+	{
+		if (overheatValue > prevValue)
+			overheatValue = 0;
+	}
+	else if (overheatValue < prevValue)
+		overheatValue = 250;
 
 	if (ISCLIENT())
 		SendOverheat();
 
-	if (overheatValue <= OVERHEAT_DAMAGE_CUTOFF)
-		return;
-
-	TakeDamage(overheatValue - OVERHEAT_DAMAGE_CUTOFF);
+	if (overheatValue >= 250)
+		TakeDamage(5);
+	else if (overheatValue >= 200)
+		TakeDamage(4);
+	else if (overheatValue >= 160)
+		TakeDamage(3);
+	else if (overheatValue >= 125)
+		TakeDamage(2);
+	else if (overheatValue >= OVERHEAT_DAMAGE_CUTOFF)
+		TakeDamage(1);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -276,6 +290,12 @@ void UPowerSystem::JogReactorPowerOutput_Implementation()
 	else
 		SetPowerLevel(20);
 
+	DistributePower();
+}
+
+void UPowerSystem::SetPowerLevel_Implementation(uint8 newLevel)
+{
+	UShipSystem::SetPowerLevel_Implementation(newLevel);
 	DistributePower();
 }
 
@@ -477,7 +497,6 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 
 void UPowerSystem::DistributePower()
 {
-	recalculatingCellPower = true;
 	for (auto cell : cells)
 	{
 		if (cell->GetType() != Cell_Reactor)
@@ -491,8 +510,11 @@ void UPowerSystem::DistributePower()
 	uint8 numReactorOutputs = 0;
 
 	TArray<uint8> powerOutput;
-	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
-		powerOutput[i] = 0;
+#ifndef WEB_SERVER_TEST
+	powerOutput.AddZeroed(MAX_POWER_SYSTEMS);
+#else
+	powerOutput.assign(MAX_POWER_SYSTEMS, 0);
+#endif
 
 	TMap<int32, PowerCell*> tmpCells1;
 	TMap<int32, PowerCell*> tmpCells2;
@@ -639,21 +661,22 @@ void UPowerSystem::DistributePower()
 	}
 
 	// now that we've recalculated the power of every cell, pass this on
-	recalculatingCellPower = false;
 	for (auto cell : cells)
 	{
 		if (cell->cellIndex >= 0)
 		{
+			auto newVal = cell->GetVisualPowerLevel();
+
 			if (ISCLIENT())
 			{
 				auto oldVal = cellPower[cell->cellIndex];
-				if (oldVal != cell->powerLevel)
+				if (oldVal != newVal)
 				{
-					SendCellPower(cell->cellIndex, cell->powerLevel);
+					SendCellPower(cell->cellIndex, newVal);
 				}
 			}
 
-			cellPower[cell->cellIndex] = cell->GetVisualPowerLevel();
+			cellPower[cell->cellIndex] = newVal;
 		}
 	}
 
@@ -669,6 +692,7 @@ void UPowerSystem::DistributePower()
 void UPowerSystem::DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOutputs)
 {
 	// at 100%, you need 2 radiators for every 3 outputs, say
+	// TODO: this always outputs zero, except with zero radiators, when it outputs NaN
 	float powerRate = 0.6667f * GetPowerLevel() * numOutputs / numPoweredRadiators;
 
 	if (powerRate < 5.0f)
@@ -721,12 +745,12 @@ void UPowerSystem::DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOut
 void UPowerSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)
 {
 	uint8 numCellsToDamage = GetDamageCellCountForDamage(newValue, prevValue);
-	int32 numUndamagedCells = SIZENUM(undamagedCells);
+	uint32 numUndamagedCells = SIZENUM(undamagedCells);
 	bool affectedNonEmpty = false;
 
 	for (uint8 i = FMath::Min(numCellsToDamage, numUndamagedCells); i > 0; i--)
 	{
-		PowerCell *cell = undamagedCells[FMath::RandRange(0, numUndamagedCells)];
+		PowerCell *cell = undamagedCells[FMath::RandRange(0, numUndamagedCells - 1)];
 		
 		SETREMOVEVAL(undamagedCells, cell);
 		SETADD(damagedCells, cell);
@@ -745,7 +769,7 @@ void UPowerSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)
 void UPowerSystem::RepairSystemDamage(uint8 prevValue, uint8 newValue)
 {
 	uint8 numCellsToRepair = GetDamageCellCountForDamage(prevValue, newValue);
-	int32 numDamagedCells = SIZENUM(damagedCells);
+	uint32 numDamagedCells = SIZENUM(damagedCells);
 
 	for (uint8 i = FMath::Min(numCellsToRepair, numDamagedCells); i > 0; i--)
 	{
@@ -765,7 +789,7 @@ uint8 UPowerSystem::GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth
 	// and we need those to be the same ones each time when restoring, so that we don't end up with discrepancies
 	uint8 numDamageCells = 0;
 
-	for (uint8 i = minHealth; i < maxHealth; i--)
+	for (uint8 i = minHealth; i < maxHealth; i++)
 		if ((i % 5) != 1)
 			numDamageCells++;
 
