@@ -1,6 +1,7 @@
 import { TextLocalisation } from './Localisation';
 
 export enum ShipSystem {
+    None = 0,
     Helm = 1,
     Warp = 2,
     Weapons = 4,
@@ -40,6 +41,8 @@ export function getSystemName(system: ShipSystem, text: TextLocalisation) {
             return text.systemNames.comms;
         case ShipSystem.ViewScreen:
             return text.systemNames.view;
+        case ShipSystem.None:
+            return '';
         default:
             var exhaustiveCheck: never = system;
     }

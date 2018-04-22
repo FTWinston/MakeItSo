@@ -1,6 +1,6 @@
 import { Action, Reducer, ActionCreator } from 'redux';
 import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
-import { Vector3 } from '~/functionality/math/Vector3';
+import { ShipSystem, Vector3 } from "~/functionality";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -38,11 +38,17 @@ export const numSystems = 8;
 export const numCells = 121;
 export const maxNumSpare = 5;
 export const fullPowerLevel = 8;
+const numCellColumns = 11;
 
 export interface PowerCell {
-    index: number;
     type: PowerCellType;
     power: number;
+    index: number;
+    row: number;
+    col: number;
+    rowspan?: number;
+    colspan?: number;
+    system?: PowerSystem;
 }
 
 export interface PowerState {
@@ -182,8 +188,13 @@ export const actionCreators = {
 
 let cells: PowerCell[] = [];
 for (let i=0; i<numCells; i++) {
+    let row = i % numCellColumns + 1;
+    let col = Math.floor(i / numCellColumns) + 1;
+
     cells.push({
         index: i,
+        row: row,
+        col: col,
         type: PowerCellType.Empty,
         power: 0
     });

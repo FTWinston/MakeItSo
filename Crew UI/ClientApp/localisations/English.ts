@@ -173,6 +173,7 @@ let words: TextLocalisation = {
         damage: 'Damage Control',
         view: 'Viewscreen',
         comms: 'Communications',
+        shields: 'Shields',
     },
     systemHelp: {
         helm: 'help help help',
@@ -251,6 +252,8 @@ let words: TextLocalisation = {
         },
         power: {
             spareCells: 'Available cells:',
+            reactor: 'Reactor',
+            heat: 'Heat',
         },
         damage: {
 

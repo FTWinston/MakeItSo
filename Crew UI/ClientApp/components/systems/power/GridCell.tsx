@@ -1,80 +1,146 @@
 import * as React from 'react';
-import { PowerCell, PowerCellType, fullPowerLevel } from '~/store/power';
+import { PowerCell, PowerCellType, PowerSystem, fullPowerLevel } from '~/store/power';
 import { FlexibleCanvas } from '~/components/general';
+import { ShipSystem, getSystemName, TextLocalisation } from '~/functionality';
 import './GridCell.scss';
 
 interface GridCellProps {
     cell: PowerCell;
-    row?: number;
-    col?: number;
     clicked: () => void;
     inList?: boolean;
     selected?: boolean;
+    text: TextLocalisation;
 }
 
 export class GridCell extends React.PureComponent<GridCellProps, {}> {
     render() {
-        let style = this.props.row === undefined ? undefined : {
-            gridColumnStart: this.props.row,
-            gridRowStart: this.props.col,
+        let cell = this.props.cell;
+        let style = {
+            gridColumnStart: cell.row,
+            gridRowStart: cell.col,
+            gridColumnEnd: cell.rowspan === undefined ? undefined : cell.row + cell.rowspan,
+            gridRowEnd: cell.colspan === undefined ? undefined : cell.col + cell.colspan,
         };
 
         let classes = 'gridCell';
 
-        if (this.props.inList) {
-            classes += ' gridCell--inList';
-        }
-
-        if (this.props.selected) {
-            classes += ' gridCell--selected';
-        }
-
-        switch(this.props.cell.type) {
+        switch(cell.type) {
             case PowerCellType.Empty:
-                classes += ' gridCell--empty'; break;
-            case PowerCellType.System:
-                classes += ' gridCell--system'; break;
-            case PowerCellType.Reactor:
-                classes += ' gridCell--reactor'; break;
+                classes += ' gridCell--empty';
+                break;
             case PowerCellType.Broken:
-                classes += ' gridCell--broken'; break;
+                classes += ' gridCell--broken';
+                break;
+            case PowerCellType.Reactor:
+                classes += ' gridCell--reactor';
+                return this.renderReactor(classes, style);
+            case PowerCellType.System:
+                classes += ' gridCell--system';
+                return this.renderSystem(classes, style);
+            default:
+                return (
+                    <FlexibleCanvas
+                        className={classes}
+                        style={style}
+                        onClick={this.props.clicked}
+                        draw={(ctx, w, h) => GridCell.draw(ctx, w, h, cell.type, cell.power)}
+                    />
+                );
         }
 
         return (
-            <FlexibleCanvas
+            <div
                 className={classes}
                 style={style}
                 onClick={this.props.clicked}
-                draw={(ctx, w, h) => this.draw(ctx, w, h)}
             />
         );
     }
 
-    private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
+    private renderSystem(classes: string, style: React.CSSProperties) {
+        let sysName = this.props.cell.system === undefined ? undefined : this.getSystemName(this.props.cell.system);
+
+        return (
+            <div
+                className={classes}
+                style={style}
+                onClick={this.props.clicked}
+            >
+                <span className="gridCell__sysname">{sysName}</span>
+                <span className="gridCell__power">{this.props.cell.power}</span>
+            </div>
+        );
+    }
+
+    private renderReactor(classes: string, style: React.CSSProperties) {
+        return (
+            <div
+                className={classes}
+                style={style}
+                onClick={this.props.clicked}
+            >
+                <span className="gridCell__sysname">{this.props.text.systems.power.reactor}</span>
+                <span className="gridCell__power">{this.props.cell.power}</span>
+                <span className="gridCell__heat">{0}</span>
+                <span className="gridCell__heatRate">{0}</span>
+            </div>
+        );
+    }
+
+    private getSystemName(system: PowerSystem) {
+        switch (system) {
+            case PowerSystem.Helm:
+                return this.props.text.systemNames.helm;
+            case PowerSystem.Warp:
+                return this.props.text.systemNames.warp;
+            case PowerSystem.BeamWeapons:
+                return this.props.text.systemNames.weapons + ' 1';
+            case PowerSystem.Torpedoes:
+                return this.props.text.systemNames.weapons + ' 2';
+            case PowerSystem.Sensors:
+                return this.props.text.systemNames.sensors;
+            case PowerSystem.Shields:
+                return this.props.text.systemNames.shields;
+            case PowerSystem.DamageControl:
+                return this.props.text.systemNames.damage;
+            case PowerSystem.Comms:
+                return this.props.text.systemNames.comms;
+            default:
+                let any: never = system;
+        }
+    }
+
+    public static draw(
+        ctx: CanvasRenderingContext2D,
+        width: number,
+        height: number,
+        cellType: PowerCellType,
+        power: number = 0
+    ) {
         ctx.clearRect(0, 0, width, height);
-        if (this.props.cell.type == PowerCellType.Radiator)
+        if (cellType === PowerCellType.Radiator)
         {
-            ctx.strokeStyle = this.props.cell.power === 0 ? '#aaaaaa' : '#dd3333';
+            ctx.strokeStyle = power === 0 ? '#aaaaaa' : '#dd3333';
             ctx.lineWidth = width * 0.1;
-            this.drawRadiator(ctx, width, height);
+            GridCell.drawRadiator(ctx, width, height);
             return;
         }
 
         ctx.strokeStyle = '#cccccc';
         ctx.lineWidth = width * 0.33;
 
-        this.drawLines(ctx, width, height);
+        GridCell.drawLines(ctx, width, height, cellType);
 
-        if (this.props.cell.power === 0) {
+        if (power === 0) {
             return;
         }
 
-        this.setStyleForPowerLevel(ctx, width, this.props.cell.power);
-        this.drawLines(ctx, width, height);
+        GridCell.setStyleForPowerLevel(ctx, width, power);
+        GridCell.drawLines(ctx, width, height, cellType);
         ctx.globalAlpha = 1;
     }
 
-    private drawRadiator(ctx: CanvasRenderingContext2D, width: number, height: number) {
+    private static drawRadiator(ctx: CanvasRenderingContext2D, width: number, height: number) {
         ctx.strokeRect(width / 4, height / 4, width / 2, height / 2);
 
         ctx.beginPath();
@@ -88,10 +154,10 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
         ctx.stroke();
     }
 
-    private drawLines(ctx: CanvasRenderingContext2D, width: number, height: number) {
+    private static drawLines(ctx: CanvasRenderingContext2D, width: number, height: number, cellType: PowerCellType) {
         ctx.beginPath();
 
-        switch(this.props.cell.type) {
+        switch(cellType) {
             case PowerCellType.NorthSouth:
                 ctx.moveTo(width / 2, 0);
                 ctx.lineTo(width / 2, height);
@@ -149,7 +215,7 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
         ctx.stroke();
     }
 
-    private setStyleForPowerLevel(ctx: CanvasRenderingContext2D, cellSize: number, power: number) {
+    private static setStyleForPowerLevel(ctx: CanvasRenderingContext2D, cellSize: number, power: number) {
         // adjust line width / color / opacity to account for power level
         let width = cellSize * 0.2;
 

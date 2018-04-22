@@ -653,7 +653,7 @@ $lightBackground: #999;
 */
 .gridCell {
   background-color: grey;
-  border-radius: 5%;
+  border-radius: 3px;
   grid-column-end: auto;
   grid-row-end: auto; }
 

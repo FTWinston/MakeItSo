@@ -40,6 +40,7 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
             <PowerGrid
                 cells={this.props.cells}
                 cellClicked={cellIndex => this.gridCellClicked(cellIndex)}
+                text={this.props.text}
             />
             <CellList
                 text={this.props.text}

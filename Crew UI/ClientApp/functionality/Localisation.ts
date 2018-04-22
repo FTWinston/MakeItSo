@@ -107,6 +107,7 @@ export interface TextLocalisation {
         damage: string,
         comms: string,
         view: string,
+        shields: string,
     },
     systemHelp: {
         helm: string,
@@ -185,6 +186,8 @@ export interface TextLocalisation {
         },
         power: {
             spareCells: string;
+            reactor: string;
+            heat: string;
         },
         damage: {
 

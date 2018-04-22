@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { PowerCell, PowerCellType } from '~/store/power';
+import { PowerCellType } from '~/store/power';
 import { TextLocalisation } from '~/functionality';
-import { GridCell } from './GridCell';
+import { ListCell } from './ListCell';
 import './CellList.scss';
 
 interface CellListProps {
@@ -15,17 +15,11 @@ export class CellList extends React.PureComponent<CellListProps, {}> {
     render() {
         const cellsWide = 15;
         let cells = this.props.cells.map((cellType, index) => {
-            let cell = {
-                index: index,
-                type: cellType,
-                power: 0,
-            };
 
             return (
-                <GridCell
-                    cell={cell}
+                <ListCell
+                    type={cellType}
                     key={index}
-                    inList={true}
                     selected={index === this.props.selectedIndex}
                     clicked={() => this.props.cellClicked(index)}
                 />
