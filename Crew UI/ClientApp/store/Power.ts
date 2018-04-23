@@ -34,7 +34,6 @@ export const enum PowerSystem {
     Comms,
 }
 
-export const numSystems = 8;
 export const numCells = 121;
 export const maxNumSpare = 5;
 export const fullPowerLevel = 8;
@@ -46,13 +45,20 @@ export interface PowerCell {
     index: number;
     row: number;
     col: number;
-    rowspan?: number;
+    rowspan?: number; // TODO: remove these?
     colspan?: number;
     system?: PowerSystem;
 }
 
+export interface SystemCell extends PowerCell {
+    type: PowerCellType.System;
+    rowspan: number;
+    colspan: number;
+    system: PowerSystem;
+}
+
 export interface PowerState {
-    systemsOnline: boolean[];
+    systems: SystemCell[];
     cells: PowerCell[];
     reactorPower: number;
     heatLevel: number;
@@ -97,15 +103,15 @@ interface SetAllCellPowerAction {
     cellPower: number[];
 }
 
-interface SetSystemStateAction {
-    type: 'SYSTEM_STATE';
+interface SetSystemPowerAction {
+    type: 'SYSTEM_POWER';
     system: PowerSystem;
-    online: boolean;
+    power: number;
 }
 
-interface SetAllSystemStateAction {
-    type: 'SYSTEM_ALL_STATE';
-    states: boolean[];
+interface SetAllSystemsAction {
+    type: 'SYSTEM_ALL';
+    systems: SystemCell[];
 }
 
 interface AddSpareCellAction {
@@ -126,7 +132,7 @@ interface SetAllSpareCellsAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetReactorPowerAction | SetHeatLevelAction | SetCellTypeAction | SetAllCellTypesAction | SetCellPowerAction | SetAllCellPowerAction
-    | SetSystemStateAction | SetAllSystemStateAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
+    | SetSystemPowerAction | SetAllSystemsAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -160,14 +166,14 @@ export const actionCreators = {
         type: 'SET_ALL_CELLS_P',
         cellPower: cellPower,
     },
-    setSystemStatus: (system: PowerSystem, online: boolean) => <SetSystemStateAction>{
-        type: 'SYSTEM_STATE',
+    setSystemPower: (system: PowerSystem, power: number) => <SetSystemPowerAction>{
+        type: 'SYSTEM_POWER',
         system: system,
-        online: online,
+        power: power,
     },
-    setAllSystems: (online: boolean[]) => <SetAllSystemStateAction>{
-        type: 'SYSTEM_ALL_STATE',
-        states: online,
+    setAllSystems: (systems: SystemCell[]) => <SetAllSystemsAction>{
+        type: 'SYSTEM_ALL',
+        systems: systems,
     },
     addSpareCell: (cellType: PowerCellType) => <AddSpareCellAction>{
         type: 'ADD_SPARE_CELL',
@@ -201,7 +207,7 @@ for (let i=0; i<numCells; i++) {
 }
 
 const unloadedState: PowerState = {
-    systemsOnline: new Array(numSystems).fill(false),
+    systems: [],
     cells: cells,
     reactorPower: 100,
     heatLevel: 0,
@@ -265,21 +271,21 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
                 cells: cells,
             }
         }
-        case 'SYSTEM_STATE': {
+        case 'SYSTEM_POWER': {
             let systemID: number = action.system;
 
-            let systemsOnline = state.systemsOnline.slice();
-            systemsOnline[systemID] = action.online;
+            let systems = state.systems.slice();
+            systems[systemID].power = action.power;
 
             return {
                 ...state,
-                systemsOnline: systemsOnline,
+                systems: systems,
             };
         }
-        case 'SYSTEM_ALL_STATE': {
+        case 'SYSTEM_ALL': {
             return {
                 ...state,
-                systemsOnline: action.states,
+                systems: action.systems,
             };
         }
         case 'ADD_SPARE_CELL': {

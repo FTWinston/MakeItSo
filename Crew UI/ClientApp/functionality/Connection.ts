@@ -4,8 +4,8 @@ import { actionCreators as userActions } from '~/store/User';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
 import { actionCreators as helmActions } from '~/store/Helm';
 import { actionCreators as warpActions, WarpScreenStatus } from '~/store/Warp';
-import { actionCreators as powerActions, PowerCellType, PowerSystem,
-    numCells as numPowerCells, numSystems as numPowerSystems, maxNumSpare as maxNumSparePowerCells
+import { actionCreators as powerActions, PowerCellType, PowerSystem, SystemCell,
+    numCells as numPowerCells, maxNumSpare as maxNumSparePowerCells
 } from '~/store/Power';
 import { actionCreators as sensorActions } from '~/store/Sensors';
 import { TextLocalisation } from './Localisation';
@@ -258,16 +258,27 @@ export class Connection {
             case 'power_sys': {
                 let vals = data.split(' ');
                 let sys = parseInt(vals[0]) as PowerSystem;
-                let enabled = vals[1] === '1';
-                store.dispatch(powerActions.setSystemStatus(sys, enabled));
+                let power = parseInt(vals[1]);
+                store.dispatch(powerActions.setSystemPower(sys, power));
                 break;
             }
             case 'power_all_sys': {
-                let states = data.split(' ').map(v => v === '1');
-                if (states.length !== numPowerSystems) {
-                    throw `Invalid number of power systems: need ${numPowerSystems}, but got ${states.length}: ${data}`;
+                let values = data.split(' ');
+                let systems: SystemCell[] = [];
+                let sysNum = 0;
+                for (let i=5; i<values.length; i+=6) {
+                    systems.push({
+                        system: parseInt(values[i-5]) as PowerSystem,
+                        col: parseInt(values[i-4]),
+                        row: parseInt(values[i-3]),
+                        colspan: parseInt(values[i-2]),
+                        rowspan: parseInt(values[i-1]),
+                        power: parseInt(values[i]),
+                        type: PowerCellType.System,
+                        index: sysNum++,
+                    });
                 }
-                store.dispatch(powerActions.setAllSystems(states));
+                store.dispatch(powerActions.setAllSystems(systems));
                 break;
             }
             case 'power_heat': {

@@ -12,6 +12,7 @@
 #define POWER_GRID_SIZE POWER_GRID_WIDTH * POWER_GRID_HEIGHT
 
 class PowerCell;
+class PowerSystem;
 
 UCLASS()
 class MAKEITSO_API UPowerSystem : public UShipSystem
@@ -97,7 +98,6 @@ private:
 	void DistributePower();
 	EPowerCellType GetRandomCellType();
 	uint8 GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth);
-	uint8 GetSystemOutputPower(uint16 powerLevel);
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsPower)
@@ -123,6 +123,9 @@ private:
 	TArray<PowerCell*> powerStartCells;
 	TArray<PowerCell*> damagedCells;
 	TArray<PowerCell*> undamagedCells;
+
+	UPROPERTY()
+	TArray<PowerSystem*> systems;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellTypes)
 	TArray<EPowerCellType> cellTypes;
@@ -194,6 +197,7 @@ private:
 #endif
 
 	friend class PowerCell;
+	friend class PowerSystem;
 	static TMap<int32, EPowerCellType> initialCells;
 };
 
@@ -214,7 +218,7 @@ public:
 	UPowerSystem::EPowerCellType GetType() { return type; }
 
 	UPowerSystem* system;
-	int32 cellIndex;
+	uint16 cellIndex;
 	uint16 powerLevel;
 	UPowerSystem::EPowerDirection powerArrivesFrom;
 	UPowerSystem::EPowerSystem powerSystem;
@@ -230,4 +234,28 @@ private:
 	UPowerSystem::EPowerDirection GetConnectedDirections();
 
 	UPowerSystem::EPowerCellType type;
+};
+
+class PowerSystem
+{
+public:
+	PowerSystem(uint8 index, uint8 x, uint8 y, uint8 w, uint8 h, UPowerSystem::EPowerSystem system, TArray<PowerCell*> allCells)
+	{
+		this->system = system;
+		sysIndex = index;
+		this->x = x; this->y = y;
+		width = w; height = h;
+
+		LinkCells(allCells);
+	}
+
+	uint8 sysIndex;
+	uint8 x, y, width, height;
+	UPowerSystem::EPowerSystem system;
+
+	uint16 GetPowerLevel();
+
+private:
+	void LinkCells(TArray<PowerCell*> allCells);
+	TArray<PowerCell*> cells;
 };

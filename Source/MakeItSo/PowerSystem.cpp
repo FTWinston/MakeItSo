@@ -127,6 +127,18 @@ void UPowerSystem::BeginPlay()
 		SETADD(powerStartCells, cell);
 	}
 
+	// create system objects to store & display system info on
+	SETADD(systems, new PowerSystem(0, 0, 0, 3, 1, Power_Helm, cells));
+	SETADD(systems, new PowerSystem(1, 4, 0, 3, 1, Power_Warp, cells));
+	SETADD(systems, new PowerSystem(2, 8, 0, 3, 1, Power_BeamWeapons, cells));
+
+	SETADD(systems, new PowerSystem(3, 0, 2, 1, 3, Power_Shields, cells));
+	SETADD(systems, new PowerSystem(4, 10, 6, 1, 3, Power_Sensors, cells));
+
+	SETADD(systems, new PowerSystem(5, 0, 10, 3, 1, Power_Comms, cells));
+	SETADD(systems, new PowerSystem(6, 4, 10, 3, 1, Power_DamageControl, cells));
+	SETADD(systems, new PowerSystem(7, 8, 10, 3, 1, Power_Torpedoes, cells));
+
 	UShipSystem::BeginPlay(); // calls ResetData, so done after data population
 }
 
@@ -442,8 +454,22 @@ void UPowerSystem::SendAllSystems_Implementation()
 {
 	FString output = TEXT("power_all_sys");
 
+	// TODO: send additional values here ... need system cell objects with width / height
 	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
 	{
+		// really need access to each system object, but we don't have it on the client! Err...
+		
+		output += TEXT(" ");
+		APPENDINT(output, Power_None); // TODO: send system ID
+		output += TEXT(" ");
+		APPENDINT(output, 0); // TODO: send column
+		output += TEXT(" ");
+		APPENDINT(output, 0); // TODO: send row
+		output += TEXT(" ");
+		APPENDINT(output, 3); // TODO: send width
+		output += TEXT(" ");
+		APPENDINT(output, 1); // TODO: send height
+
 		output += TEXT(" ");
 		APPENDINT(output, systemsPower[i]);
 	}
@@ -509,13 +535,6 @@ void UPowerSystem::DistributePower()
 	uint8 numPoweredRadiators = 0;
 	uint8 numReactorOutputs = 0;
 
-	TArray<uint8> powerOutput;
-#ifndef WEB_SERVER_TEST
-	powerOutput.AddZeroed(MAX_POWER_SYSTEMS);
-#else
-	powerOutput.assign(MAX_POWER_SYSTEMS, 0);
-#endif
-
 	TMap<int32, PowerCell*> tmpCells1;
 	TMap<int32, PowerCell*> tmpCells2;
 	TMap<int32, PowerCell*> tmpCells3;
@@ -541,11 +560,7 @@ void UPowerSystem::DistributePower()
 
 			if (edgeCell->GetType() == Cell_System)
 			{
-				// reached an system endpoint, record the power against this system
-				if (edgeCell->powerSystem != Power_None)
-				{
-					powerOutput[edgeCell->powerSystem] += edgeCell->powerLevel;
-				}
+				// reached an system endpoint, don't let power flow any further
 				continue;
 			}
 			else if (edgeCell->GetType() == Cell_Reactor || edgeCell->GetType() == Cell_Radiator)
@@ -682,11 +697,9 @@ void UPowerSystem::DistributePower()
 
 	DetermineOverheatRate(numPoweredRadiators, numReactorOutputs);
 
-	// get the power passed into each system, convert that to a % to display on the client
-	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
-	{
-		systemsPower[i] = GetSystemOutputPower(powerOutput[i]);
-	}
+	// update the list of power being passed into each system
+	for (auto system : systems)
+		systemsPower[system->sysIndex] = system->GetPowerLevel();
 }
 
 void UPowerSystem::DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOutputs)
@@ -799,16 +812,6 @@ uint8 UPowerSystem::GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth
 UPowerSystem::EPowerCellType UPowerSystem::GetRandomCellType()
 {
 	return (EPowerCellType)FMath::RandRange(Cell_Radiator, Cell_WestNorthEast);
-}
-
-uint8 UPowerSystem::GetSystemOutputPower(uint16 powerLevel)
-{
-	if (powerLevel <= 100)
-		return powerLevel;
-	
-	powerLevel = 100 + (uint8)FMath::Pow((float)powerLevel - 100, 0.8f);
-
-	return FMath::Min(200, powerLevel);
 }
 
 
@@ -1012,4 +1015,26 @@ uint8 PowerCell::GetVisualPowerLevel()
 		return 26;
 
 	return 27;
+}
+
+void PowerSystem::LinkCells(TArray<PowerCell*> allCells)
+{
+	for (auto x = this->x + this->width - 1; x >= this->x; x--)
+		for (auto y = this->y + this->height - 1; y >= this->y; y--)
+			SETADD(cells, allCells[CELLINDEX(x, y)]);
+}
+
+uint16 PowerSystem::GetPowerLevel()
+{
+	uint16 power = 0;
+	for (auto cell : cells)
+		power += cell->powerLevel;
+
+	if (power <= 100)
+		return power;
+
+	// scale power non-linearly beyond 100%
+	power = 100 + (uint8)FMath::Pow((float)power - 100, 0.8f);
+
+	return FMath::Min(200, power);
 }
