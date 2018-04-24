@@ -13,7 +13,7 @@ interface PowerGridProps {
 export class PowerGrid extends React.PureComponent<PowerGridProps, {}> {
     render() {
         let cells = this.props.cells
-        .filter(cell => cell.type !== PowerCellType.System && cell.type !== PowerCellType.Reactor)
+        .filter(cell => (cell.type !== PowerCellType.System && cell.type !== PowerCellType.Reactor) || cell.system !== undefined)
         .map((cell, index) => (
             <GridCell
                 cell={cell}

@@ -667,10 +667,39 @@ $lightBackground: #999;
   border-radius: 0; }
 
 .gridCell--reactor {
-  background-color: #cc6600; }
+  background-color: #cc6600;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center; }
 
 .gridCell--system {
-  background-color: #0099cc; }
+  background-color: #0099cc;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center; }
+  .gridCell--system.gridCell--rotated {
+    flex-direction: column; }
+    .gridCell--system.gridCell--rotated .gridCell__sysname {
+      transform: rotate(90deg);
+      transform-origin: center; }
+
+.gridCell__sysname {
+  flex-basis: 2px; }
+
+.gridCell__power {
+  flex-basis: 1px;
+  font-size: 1.5em; }
+
+.gridCell__power::after {
+  content: '%'; }
+
+.gridCell__heat::before {
+  content: 'heat: '; }
+
+.gridCell__heatRate::before {
+  content: 'rate: '; }
 
 .gridCell--broken {
   background-color: #ff0000; }

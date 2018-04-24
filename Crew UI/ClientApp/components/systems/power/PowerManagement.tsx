@@ -77,7 +77,7 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
 const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (state) => {
     return {
         text: state.user.text,    
-        systemsOnline: state.power.systemsOnline,
+        systems: state.power.systems,
         cells: state.power.cells,
         reactorPower: state.power.reactorPower,
         heatLevel: state.power.heatLevel,

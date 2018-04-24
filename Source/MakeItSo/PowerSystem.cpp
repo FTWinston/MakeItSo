@@ -79,12 +79,11 @@ void UPowerSystem::BeginPlay()
 {
 	// hook up pointers to the neighbours of each power cell, so we can easily navigate them
 	// also set up the default cell types
-	for (int32 x = 0; x < POWER_GRID_WIDTH; x++)
-		for (int32 y = 0; y < POWER_GRID_HEIGHT; y++)
+	for (int32 y = 0; y < POWER_GRID_HEIGHT; y++)
+		for (int32 x = 0; x < POWER_GRID_WIDTH; x++)
 		{
 			// TODO: ensure this doesn't leak memory on deletion
 			auto cell = new PowerCell();
-			cell->powerSystem = Power_None;
 			cell->system = this;
 
 			int32 i = CELLINDEX(x, y);
@@ -128,16 +127,27 @@ void UPowerSystem::BeginPlay()
 	}
 
 	// create system objects to store & display system info on
-	SETADD(systems, new PowerSystem(0, 0, 0, 3, 1, Power_Helm, cells));
-	SETADD(systems, new PowerSystem(1, 4, 0, 3, 1, Power_Warp, cells));
-	SETADD(systems, new PowerSystem(2, 8, 0, 3, 1, Power_BeamWeapons, cells));
+	SETADD(systems, new PowerSystemOutput(0, 0, 0, 3, 1, Power_Helm, cells));
+	SETADD(systems, new PowerSystemOutput(1, 4, 0, 3, 1, Power_Warp, cells));
+	SETADD(systems, new PowerSystemOutput(2, 8, 0, 3, 1, Power_BeamWeapons, cells));
 
-	SETADD(systems, new PowerSystem(3, 0, 2, 1, 3, Power_Shields, cells));
-	SETADD(systems, new PowerSystem(4, 10, 6, 1, 3, Power_Sensors, cells));
+	SETADD(systems, new PowerSystemOutput(3, 0, 4, 1, 3, Power_Shields, cells));
+	SETADD(systems, new PowerSystemOutput(4, 10, 4, 1, 3, Power_Sensors, cells));
 
-	SETADD(systems, new PowerSystem(5, 0, 10, 3, 1, Power_Comms, cells));
-	SETADD(systems, new PowerSystem(6, 4, 10, 3, 1, Power_DamageControl, cells));
-	SETADD(systems, new PowerSystem(7, 8, 10, 3, 1, Power_Torpedoes, cells));
+	SETADD(systems, new PowerSystemOutput(5, 0, 10, 3, 1, Power_Comms, cells));
+	SETADD(systems, new PowerSystemOutput(6, 4, 10, 3, 1, Power_DamageControl, cells));
+	SETADD(systems, new PowerSystemOutput(7, 8, 10, 3, 1, Power_Torpedoes, cells));
+
+	SETADD(systemLayout, Power_Reactor);
+	SETADD(systemLayout, CELLINDEX(REACTOR_MIN_X, REACTOR_MIN_Y));
+	SETADD(systemLayout, CELLINDEX(REACTOR_MAX_X, REACTOR_MAX_Y));
+
+	for (auto system : systems)
+	{
+		SETADD(systemLayout, system->system);
+		SETADD(systemLayout, system->firstCell);
+		SETADD(systemLayout, system->lastCell);
+	}
 
 	UShipSystem::BeginPlay(); // calls ResetData, so done after data population
 }
@@ -453,28 +463,20 @@ void UPowerSystem::SendAllSystems() { SendAllSystems_Implementation(); }
 void UPowerSystem::SendAllSystems_Implementation()
 {
 	FString output = TEXT("power_all_sys");
-
-	// TODO: send additional values here ... need system cell objects with width / height
-	for (int32 i = 0; i < MAX_POWER_SYSTEMS; i++)
+	
+	// send system id, first cell and last cell for each system, so the client can display them in the right place
+	for (auto val : systemLayout)
 	{
-		// really need access to each system object, but we don't have it on the client! Err...
-		
 		output += TEXT(" ");
-		APPENDINT(output, Power_None); // TODO: send system ID
-		output += TEXT(" ");
-		APPENDINT(output, 0); // TODO: send column
-		output += TEXT(" ");
-		APPENDINT(output, 0); // TODO: send row
-		output += TEXT(" ");
-		APPENDINT(output, 3); // TODO: send width
-		output += TEXT(" ");
-		APPENDINT(output, 1); // TODO: send height
-
-		output += TEXT(" ");
-		APPENDINT(output, systemsPower[i]);
+		APPENDINT(output, val);
 	}
 
 	SendSystem(output);
+}
+
+void UPowerSystem::OnReplicated_SystemLayout(TArray<uint8> beforeChange)
+{
+	SendAllSystems();
 }
 
 void UPowerSystem::OnReplicated_SystemsPower(TArray<uint8> beforeChange)
@@ -1017,14 +1019,30 @@ uint8 PowerCell::GetVisualPowerLevel()
 	return 27;
 }
 
-void PowerSystem::LinkCells(TArray<PowerCell*> allCells)
+PowerSystemOutput::PowerSystemOutput(uint8 index, uint8 minX, uint8 minY, uint8 width, uint8 height, UPowerSystem::EPowerSystem system, TArray<PowerCell*> allCells)
 {
-	for (auto x = this->x + this->width - 1; x >= this->x; x--)
-		for (auto y = this->y + this->height - 1; y >= this->y; y--)
-			SETADD(cells, allCells[CELLINDEX(x, y)]);
+	this->system = system;
+	sysIndex = index;
+
+	firstCell = CELLINDEX(minX, minY);
+
+	uint8 cellIndex;
+	uint8 maxX = minX + width;
+	uint8 maxY = minY + height;
+
+	for (auto y = minY; y < maxY; y++)
+		for (auto x = minX; x < maxX; x++)
+		{
+			cellIndex = CELLINDEX(x, y);
+			auto cell = allCells[cellIndex];
+			if (cell->GetType() == UPowerSystem::Cell_System)
+				SETADD(cells, cell);
+		}
+
+	lastCell = cellIndex;
 }
 
-uint16 PowerSystem::GetPowerLevel()
+uint16 PowerSystemOutput::GetPowerLevel()
 {
 	uint16 power = 0;
 	for (auto cell : cells)

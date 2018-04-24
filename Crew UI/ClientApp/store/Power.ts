@@ -24,7 +24,8 @@ export const enum PowerCellType {
 }
 
 export const enum PowerSystem {
-    Helm = 0,
+    Reactor = 0,
+    Helm,
     Warp,
     BeamWeapons,
     Torpedoes,
@@ -36,7 +37,7 @@ export const enum PowerSystem {
 
 export const numCells = 121;
 export const maxNumSpare = 5;
-export const fullPowerLevel = 8;
+export const fullPowerLevel = 10;
 const numCellColumns = 11;
 
 export interface PowerCell {
@@ -45,16 +46,22 @@ export interface PowerCell {
     index: number;
     row: number;
     col: number;
-    rowspan?: number; // TODO: remove these?
-    colspan?: number;
+    endRow?: number; // TODO: remove these?
+    endCol?: number;
     system?: PowerSystem;
 }
 
 export interface SystemCell extends PowerCell {
     type: PowerCellType.System;
-    rowspan: number;
-    colspan: number;
+    endRow: number; // TODO: remove these?
+    endCol: number;
     system: PowerSystem;
+}
+
+export interface SystemCellLayout {
+    system: PowerSystem;
+    start: number;
+    end: number;
 }
 
 export interface PowerState {
@@ -111,7 +118,7 @@ interface SetSystemPowerAction {
 
 interface SetAllSystemsAction {
     type: 'SYSTEM_ALL';
-    systems: SystemCell[];
+    systems: SystemCellLayout[];
 }
 
 interface AddSpareCellAction {
@@ -171,7 +178,7 @@ export const actionCreators = {
         system: system,
         power: power,
     },
-    setAllSystems: (systems: SystemCell[]) => <SetAllSystemsAction>{
+    setAllSystems: (systems: SystemCellLayout[]) => <SetAllSystemsAction>{
         type: 'SYSTEM_ALL',
         systems: systems,
     },
@@ -194,13 +201,10 @@ export const actionCreators = {
 
 let cells: PowerCell[] = [];
 for (let i=0; i<numCells; i++) {
-    let row = i % numCellColumns + 1;
-    let col = Math.floor(i / numCellColumns) + 1;
-
     cells.push({
         index: i,
-        row: row,
-        col: col,
+        row: cellIndexToRow(i),
+        col: cellIndexToCol(i),
         type: PowerCellType.Empty,
         power: 0
     });
@@ -283,9 +287,18 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             };
         }
         case 'SYSTEM_ALL': {
+            let cells = state.cells.slice();
+
+            for (let system of action.systems) {
+                let startCell = cells[system.start];
+                startCell.system = system.system;
+                startCell.endCol = cellIndexToCol(system.end) + 1;
+                startCell.endRow = cellIndexToRow(system.end) + 1;
+            }
+
             return {
                 ...state,
-                systems: action.systems,
+                cells: cells,
             };
         }
         case 'ADD_SPARE_CELL': {
@@ -318,3 +331,11 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
 
     return state || unloadedState;
 };
+
+function cellIndexToCol(cellIndex: number) {
+    return cellIndex % numCellColumns + 1;
+}
+
+function cellIndexToRow(cellIndex: number) {
+    return Math.floor(cellIndex / numCellColumns) + 1;
+}

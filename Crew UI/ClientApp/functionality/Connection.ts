@@ -4,7 +4,7 @@ import { actionCreators as userActions } from '~/store/User';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
 import { actionCreators as helmActions } from '~/store/Helm';
 import { actionCreators as warpActions, WarpScreenStatus } from '~/store/Warp';
-import { actionCreators as powerActions, PowerCellType, PowerSystem, SystemCell,
+import { actionCreators as powerActions, PowerCellType, PowerSystem, SystemCellLayout,
     numCells as numPowerCells, maxNumSpare as maxNumSparePowerCells
 } from '~/store/Power';
 import { actionCreators as sensorActions } from '~/store/Sensors';
@@ -264,18 +264,13 @@ export class Connection {
             }
             case 'power_all_sys': {
                 let values = data.split(' ');
-                let systems: SystemCell[] = [];
+                let systems: SystemCellLayout[] = [];
                 let sysNum = 0;
-                for (let i=5; i<values.length; i+=6) {
+                for (let i=2; i<values.length; i+=3) {
                     systems.push({
-                        system: parseInt(values[i-5]) as PowerSystem,
-                        col: parseInt(values[i-4]),
-                        row: parseInt(values[i-3]),
-                        colspan: parseInt(values[i-2]),
-                        rowspan: parseInt(values[i-1]),
-                        power: parseInt(values[i]),
-                        type: PowerCellType.System,
-                        index: sysNum++,
+                        system: parseInt(values[i-2]) as PowerSystem,
+                        start: parseInt(values[i-1]),
+                        end: parseInt(values[i]),
                     });
                 }
                 store.dispatch(powerActions.setAllSystems(systems));

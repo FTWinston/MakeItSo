@@ -12,7 +12,7 @@
 #define POWER_GRID_SIZE POWER_GRID_WIDTH * POWER_GRID_HEIGHT
 
 class PowerCell;
-class PowerSystem;
+class PowerSystemOutput;
 
 UCLASS()
 class MAKEITSO_API UPowerSystem : public UShipSystem
@@ -40,7 +40,8 @@ public:
 
 	enum EPowerSystem {
 		Power_None = -1,
-		Power_Helm = 0,
+		Power_Reactor = 0,
+		Power_Helm,
 		Power_Warp,
 		Power_BeamWeapons,
 		Power_Torpedoes,
@@ -100,24 +101,6 @@ private:
 	uint8 GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth);
 
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsPower)
-	TArray<uint8> systemsPower;
-
-	void OnReplicated_SystemsPower(TArray<uint8> beforeChange);
-
-	UFUNCTION(Client, Reliable)
-	void SendSystemPower(EPowerSystem system, uint8 power);
-#ifdef WEB_SERVER_TEST
-	void SendSystemPower_Implementation(EPowerSystem system, uint8 power);
-#endif
-
-	UFUNCTION(Client, Reliable)
-	void SendAllSystems();
-#ifdef WEB_SERVER_TEST
-	void SendAllSystems_Implementation();
-#endif
-
-
 	UPROPERTY()
 	TArray<PowerCell*> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
 	TArray<PowerCell*> powerStartCells;
@@ -125,7 +108,7 @@ private:
 	TArray<PowerCell*> undamagedCells;
 
 	UPROPERTY()
-	TArray<PowerSystem*> systems;
+	TArray<PowerSystemOutput*> systems;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellTypes)
 	TArray<EPowerCellType> cellTypes;
@@ -160,6 +143,29 @@ private:
 	void SendAllCellPower();
 #ifdef WEB_SERVER_TEST
 	void SendAllCellPower_Implementation();
+#endif
+
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemLayout)
+	TArray<uint8> systemLayout;
+
+	void OnReplicated_SystemLayout(TArray<uint8> beforeChange);
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsPower)
+	TArray<uint8> systemsPower;
+
+	void OnReplicated_SystemsPower(TArray<uint8> beforeChange);
+
+	UFUNCTION(Client, Reliable)
+	void SendSystemPower(EPowerSystem system, uint8 power);
+#ifdef WEB_SERVER_TEST
+	void SendSystemPower_Implementation(EPowerSystem system, uint8 power);
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendAllSystems();
+#ifdef WEB_SERVER_TEST
+	void SendAllSystems_Implementation();
 #endif
 
 
@@ -221,7 +227,6 @@ public:
 	uint16 cellIndex;
 	uint16 powerLevel;
 	UPowerSystem::EPowerDirection powerArrivesFrom;
-	UPowerSystem::EPowerSystem powerSystem;
 
 	TMap<UPowerSystem::EPowerDirection, PowerCell*> neighbours;
 	
@@ -236,26 +241,16 @@ private:
 	UPowerSystem::EPowerCellType type;
 };
 
-class PowerSystem
+class PowerSystemOutput
 {
 public:
-	PowerSystem(uint8 index, uint8 x, uint8 y, uint8 w, uint8 h, UPowerSystem::EPowerSystem system, TArray<PowerCell*> allCells)
-	{
-		this->system = system;
-		sysIndex = index;
-		this->x = x; this->y = y;
-		width = w; height = h;
+	PowerSystemOutput(uint8 index, uint8 x, uint8 y, uint8 w, uint8 h, UPowerSystem::EPowerSystem system, TArray<PowerCell*> allCells);
 
-		LinkCells(allCells);
-	}
-
-	uint8 sysIndex;
-	uint8 x, y, width, height;
+	uint8 sysIndex, firstCell, lastCell;
 	UPowerSystem::EPowerSystem system;
 
 	uint16 GetPowerLevel();
 
 private:
-	void LinkCells(TArray<PowerCell*> allCells);
 	TArray<PowerCell*> cells;
 };

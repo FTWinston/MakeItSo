@@ -15,14 +15,20 @@ interface GridCellProps {
 export class GridCell extends React.PureComponent<GridCellProps, {}> {
     render() {
         let cell = this.props.cell;
-        let style = {
-            gridColumnStart: cell.row,
-            gridRowStart: cell.col,
-            gridColumnEnd: cell.rowspan === undefined ? undefined : cell.row + cell.rowspan,
-            gridRowEnd: cell.colspan === undefined ? undefined : cell.col + cell.colspan,
+        let style: React.CSSProperties = {
+            gridColumnStart: cell.col,
+            gridRowStart: cell.row,
         };
 
         let classes = 'gridCell';
+
+        if (cell.endRow !== undefined && cell.endCol !== undefined) {
+            style.gridColumnEnd = cell.endCol;
+            style.gridRowEnd = cell.endRow;
+            if (cell.endRow - cell.row > cell.endCol - cell.col) {
+                classes += ' gridCell--rotated';
+            }
+        }
 
         switch(cell.type) {
             case PowerCellType.Empty:
@@ -89,6 +95,8 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
 
     private getSystemName(system: PowerSystem) {
         switch (system) {
+            case PowerSystem.Reactor:
+                return this.props.text.systems.power.reactor;
             case PowerSystem.Helm:
                 return this.props.text.systemNames.helm;
             case PowerSystem.Warp:

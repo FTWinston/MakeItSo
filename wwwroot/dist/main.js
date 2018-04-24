@@ -844,12 +844,11 @@ var Vector3 = (function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return numSystems; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return numCells; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return maxNumSpare; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return maxNumSpare; });
 /* unused harmony export fullPowerLevel */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return reducer; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return reducer; });
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -858,10 +857,9 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-var numSystems = 8;
 var numCells = 121;
 var maxNumSpare = 5;
-var fullPowerLevel = 8;
+var fullPowerLevel = 10;
 var numCellColumns = 11;
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -894,14 +892,14 @@ var actionCreators = {
         type: 'SET_ALL_CELLS_P',
         cellPower: cellPower,
     }); },
-    setSystemStatus: function (system, online) { return ({
-        type: 'SYSTEM_STATE',
+    setSystemPower: function (system, power) { return ({
+        type: 'SYSTEM_POWER',
         system: system,
-        online: online,
+        power: power,
     }); },
-    setAllSystems: function (online) { return ({
-        type: 'SYSTEM_ALL_STATE',
-        states: online,
+    setAllSystems: function (systems) { return ({
+        type: 'SYSTEM_ALL',
+        systems: systems,
     }); },
     addSpareCell: function (cellType) { return ({
         type: 'ADD_SPARE_CELL',
@@ -920,18 +918,16 @@ var actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 var cells = [];
 for (var i = 0; i < numCells; i++) {
-    var row = i % numCellColumns + 1;
-    var col = Math.floor(i / numCellColumns) + 1;
     cells.push({
         index: i,
-        row: row,
-        col: col,
+        row: cellIndexToRow(i),
+        col: cellIndexToCol(i),
         type: 0 /* Empty */,
         power: 0
     });
 }
 var unloadedState = {
-    systemsOnline: new Array(numSystems).fill(false),
+    systems: [],
     cells: cells,
     reactorPower: 100,
     heatLevel: 0,
@@ -971,14 +967,22 @@ var reducer = function (state, rawAction) {
             }
             return __assign({}, state, { cells: cells_4 });
         }
-        case 'SYSTEM_STATE': {
+        case 'SYSTEM_POWER': {
             var systemID = action.system;
-            var systemsOnline = state.systemsOnline.slice();
-            systemsOnline[systemID] = action.online;
-            return __assign({}, state, { systemsOnline: systemsOnline });
+            var systems = state.systems.slice();
+            systems[systemID].power = action.power;
+            return __assign({}, state, { systems: systems });
         }
-        case 'SYSTEM_ALL_STATE': {
-            return __assign({}, state, { systemsOnline: action.states });
+        case 'SYSTEM_ALL': {
+            var cells_5 = state.cells.slice();
+            for (var _i = 0, _a = action.systems; _i < _a.length; _i++) {
+                var system = _a[_i];
+                var startCell = cells_5[system.start];
+                startCell.system = system.system;
+                startCell.endCol = cellIndexToCol(system.end) + 1;
+                startCell.endRow = cellIndexToRow(system.end) + 1;
+            }
+            return __assign({}, state, { cells: cells_5 });
         }
         case 'ADD_SPARE_CELL': {
             var spares = state.spareCells.slice();
@@ -998,6 +1002,12 @@ var reducer = function (state, rawAction) {
     }
     return state || unloadedState;
 };
+function cellIndexToCol(cellIndex) {
+    return cellIndex % numCellColumns + 1;
+}
+function cellIndexToRow(cellIndex) {
+    return Math.floor(cellIndex / numCellColumns) + 1;
+}
 
 
 /***/ }),
@@ -2494,12 +2504,17 @@ var GridCell = (function (_super) {
     GridCell.prototype.render = function () {
         var cell = this.props.cell;
         var style = {
-            gridColumnStart: cell.row,
-            gridRowStart: cell.col,
-            gridColumnEnd: cell.rowspan === undefined ? undefined : cell.row + cell.rowspan,
-            gridRowEnd: cell.colspan === undefined ? undefined : cell.col + cell.colspan,
+            gridColumnStart: cell.col,
+            gridRowStart: cell.row,
         };
         var classes = 'gridCell';
+        if (cell.endRow !== undefined && cell.endCol !== undefined) {
+            style.gridColumnEnd = cell.endCol;
+            style.gridRowEnd = cell.endRow;
+            if (cell.endRow - cell.row > cell.endCol - cell.col) {
+                classes += ' gridCell--rotated';
+            }
+        }
         switch (cell.type) {
             case 0 /* Empty */:
                 classes += ' gridCell--empty';
@@ -2533,21 +2548,23 @@ var GridCell = (function (_super) {
     };
     GridCell.prototype.getSystemName = function (system) {
         switch (system) {
-            case 0 /* Helm */:
+            case 0 /* Reactor */:
+                return this.props.text.systems.power.reactor;
+            case 1 /* Helm */:
                 return this.props.text.systemNames.helm;
-            case 1 /* Warp */:
+            case 2 /* Warp */:
                 return this.props.text.systemNames.warp;
-            case 2 /* BeamWeapons */:
+            case 3 /* BeamWeapons */:
                 return this.props.text.systemNames.weapons + ' 1';
-            case 3 /* Torpedoes */:
+            case 4 /* Torpedoes */:
                 return this.props.text.systemNames.weapons + ' 2';
-            case 4 /* Sensors */:
+            case 5 /* Sensors */:
                 return this.props.text.systemNames.sensors;
-            case 5 /* Shields */:
+            case 6 /* Shields */:
                 return this.props.text.systemNames.shields;
-            case 6 /* DamageControl */:
+            case 7 /* DamageControl */:
                 return this.props.text.systemNames.damage;
-            case 7 /* Comms */:
+            case 8 /* Comms */:
                 return this.props.text.systemNames.comms;
             default:
                 var any = system;
@@ -8056,7 +8073,7 @@ var PowerGrid = (function (_super) {
     PowerGrid.prototype.render = function () {
         var _this = this;
         var cells = this.props.cells
-            .filter(function (cell) { return cell.type !== 2 /* System */ && cell.type !== 1 /* Reactor */; })
+            .filter(function (cell) { return (cell.type !== 2 /* System */ && cell.type !== 1 /* Reactor */) || cell.system !== undefined; })
             .map(function (cell, index) { return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__GridCell__["a" /* GridCell */], { cell: cell, key: cell.index, clicked: function () { return _this.props.cellClicked(cell.index); }, text: _this.props.text })); });
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: 'powerGrid' }, cells);
     };
@@ -8142,7 +8159,7 @@ var PowerManagement = (function (_super) {
 var mapStateToProps = function (state) {
     return {
         text: state.user.text,
-        systemsOnline: state.power.systemsOnline,
+        systems: state.power.systems,
         cells: state.power.cells,
         reactorPower: state.power.reactorPower,
         heatLevel: state.power.heatLevel,
@@ -9330,16 +9347,22 @@ var Connection = (function () {
             case 'power_sys': {
                 var vals = data.split(' ');
                 var sys = parseInt(vals[0]);
-                var enabled = vals[1] === '1';
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setSystemStatus(sys, enabled));
+                var power = parseInt(vals[1]);
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setSystemPower(sys, power));
                 break;
             }
             case 'power_all_sys': {
-                var states = data.split(' ').map(function (v) { return v === '1'; });
-                if (states.length !== __WEBPACK_IMPORTED_MODULE_5__store_Power__["c" /* numSystems */]) {
-                    throw "Invalid number of power systems: need " + __WEBPACK_IMPORTED_MODULE_5__store_Power__["c" /* numSystems */] + ", but got " + states.length + ": " + data;
+                var values = data.split(' ');
+                var systems = [];
+                var sysNum = 0;
+                for (var i = 2; i < values.length; i += 3) {
+                    systems.push({
+                        system: parseInt(values[i - 2]),
+                        start: parseInt(values[i - 1]),
+                        end: parseInt(values[i]),
+                    });
                 }
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllSystems(states));
+                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllSystems(systems));
                 break;
             }
             case 'power_heat': {
@@ -9353,8 +9376,8 @@ var Connection = (function () {
             }
             case 'power_all_spare': {
                 var types = data.length == 0 ? [] : data.split(' ').map(function (v) { return parseInt(v); });
-                if (types.length > __WEBPACK_IMPORTED_MODULE_5__store_Power__["d" /* maxNumSpare */]) {
-                    throw "Invalid number of spare power cells: maximum of " + __WEBPACK_IMPORTED_MODULE_5__store_Power__["d" /* maxNumSpare */] + ", but got " + types.length + ": " + data;
+                if (types.length > __WEBPACK_IMPORTED_MODULE_5__store_Power__["c" /* maxNumSpare */]) {
+                    throw "Invalid number of spare power cells: maximum of " + __WEBPACK_IMPORTED_MODULE_5__store_Power__["c" /* maxNumSpare */] + ", but got " + types.length + ": " + data;
                 }
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllSpareCells(types));
                 break;
@@ -10455,7 +10478,7 @@ var reducers = {
     crew: __WEBPACK_IMPORTED_MODULE_1__Crew__["b" /* reducer */],
     screen: __WEBPACK_IMPORTED_MODULE_2__Screen__["d" /* reducer */],
     helm: __WEBPACK_IMPORTED_MODULE_3__Helm__["b" /* reducer */],
-    power: __WEBPACK_IMPORTED_MODULE_4__Power__["e" /* reducer */],
+    power: __WEBPACK_IMPORTED_MODULE_4__Power__["d" /* reducer */],
     sensors: __WEBPACK_IMPORTED_MODULE_5__Sensors__["b" /* reducer */],
     warp: __WEBPACK_IMPORTED_MODULE_6__Warp__["b" /* reducer */],
 };
@@ -10466,7 +10489,6 @@ var reducers = {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* unused harmony export numSystems */
 /* unused harmony export numCells */
 /* unused harmony export maxNumSpare */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return fullPowerLevel; });
@@ -10480,10 +10502,9 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-var numSystems = 8;
 var numCells = 121;
 var maxNumSpare = 5;
-var fullPowerLevel = 8;
+var fullPowerLevel = 10;
 var numCellColumns = 11;
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -10516,14 +10537,14 @@ var actionCreators = {
         type: 'SET_ALL_CELLS_P',
         cellPower: cellPower,
     }); },
-    setSystemStatus: function (system, online) { return ({
-        type: 'SYSTEM_STATE',
+    setSystemPower: function (system, power) { return ({
+        type: 'SYSTEM_POWER',
         system: system,
-        online: online,
+        power: power,
     }); },
-    setAllSystems: function (online) { return ({
-        type: 'SYSTEM_ALL_STATE',
-        states: online,
+    setAllSystems: function (systems) { return ({
+        type: 'SYSTEM_ALL',
+        systems: systems,
     }); },
     addSpareCell: function (cellType) { return ({
         type: 'ADD_SPARE_CELL',
@@ -10542,18 +10563,16 @@ var actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 var cells = [];
 for (var i = 0; i < numCells; i++) {
-    var row = i % numCellColumns + 1;
-    var col = Math.floor(i / numCellColumns) + 1;
     cells.push({
         index: i,
-        row: row,
-        col: col,
+        row: cellIndexToRow(i),
+        col: cellIndexToCol(i),
         type: 0 /* Empty */,
         power: 0
     });
 }
 var unloadedState = {
-    systemsOnline: new Array(numSystems).fill(false),
+    systems: [],
     cells: cells,
     reactorPower: 100,
     heatLevel: 0,
@@ -10593,14 +10612,22 @@ var reducer = function (state, rawAction) {
             }
             return __assign({}, state, { cells: cells_4 });
         }
-        case 'SYSTEM_STATE': {
+        case 'SYSTEM_POWER': {
             var systemID = action.system;
-            var systemsOnline = state.systemsOnline.slice();
-            systemsOnline[systemID] = action.online;
-            return __assign({}, state, { systemsOnline: systemsOnline });
+            var systems = state.systems.slice();
+            systems[systemID].power = action.power;
+            return __assign({}, state, { systems: systems });
         }
-        case 'SYSTEM_ALL_STATE': {
-            return __assign({}, state, { systemsOnline: action.states });
+        case 'SYSTEM_ALL': {
+            var cells_5 = state.cells.slice();
+            for (var _i = 0, _a = action.systems; _i < _a.length; _i++) {
+                var system = _a[_i];
+                var startCell = cells_5[system.start];
+                startCell.system = system.system;
+                startCell.endCol = cellIndexToCol(system.end) + 1;
+                startCell.endRow = cellIndexToRow(system.end) + 1;
+            }
+            return __assign({}, state, { cells: cells_5 });
         }
         case 'ADD_SPARE_CELL': {
             var spares = state.spareCells.slice();
@@ -10620,6 +10647,12 @@ var reducer = function (state, rawAction) {
     }
     return state || unloadedState;
 };
+function cellIndexToCol(cellIndex) {
+    return cellIndex % numCellColumns + 1;
+}
+function cellIndexToRow(cellIndex) {
+    return Math.floor(cellIndex / numCellColumns) + 1;
+}
 
 
 /***/ }),
