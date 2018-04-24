@@ -425,7 +425,6 @@ void UPowerSystem::SendOverheat() { SendOverheat_Implementation(); }
 void UPowerSystem::SendOverheat_Implementation()
 {
 	FString output = TEXT("power_heat ");
-	output += TEXT(" ");
 	APPENDINT(output, overheatValue);
 	output += TEXT(" ");
 	APPENDINT(output, overheatRate);

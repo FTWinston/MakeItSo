@@ -22,14 +22,6 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
 
         let classes = 'gridCell';
 
-        if (cell.endRow !== undefined && cell.endCol !== undefined) {
-            style.gridColumnEnd = cell.endCol;
-            style.gridRowEnd = cell.endRow;
-            if (cell.endRow - cell.row > cell.endCol - cell.col) {
-                classes += ' gridCell--rotated';
-            }
-        }
-
         switch(cell.type) {
             case PowerCellType.Empty:
                 classes += ' gridCell--empty';
@@ -37,12 +29,6 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
             case PowerCellType.Broken:
                 classes += ' gridCell--broken';
                 break;
-            case PowerCellType.Reactor:
-                classes += ' gridCell--reactor';
-                return this.renderReactor(classes, style);
-            case PowerCellType.System:
-                classes += ' gridCell--system';
-                return this.renderSystem(classes, style);
             default:
                 return (
                     <FlexibleCanvas
@@ -54,68 +40,7 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
                 );
         }
 
-        return (
-            <div
-                className={classes}
-                style={style}
-                onClick={this.props.clicked}
-            />
-        );
-    }
-
-    private renderSystem(classes: string, style: React.CSSProperties) {
-        let sysName = this.props.cell.system === undefined ? undefined : this.getSystemName(this.props.cell.system);
-
-        return (
-            <div
-                className={classes}
-                style={style}
-                onClick={this.props.clicked}
-            >
-                <span className="gridCell__sysname">{sysName}</span>
-                <span className="gridCell__power">{this.props.cell.power}</span>
-            </div>
-        );
-    }
-
-    private renderReactor(classes: string, style: React.CSSProperties) {
-        return (
-            <div
-                className={classes}
-                style={style}
-                onClick={this.props.clicked}
-            >
-                <span className="gridCell__sysname">{this.props.text.systems.power.reactor}</span>
-                <span className="gridCell__power">{this.props.cell.power}</span>
-                <span className="gridCell__heat">{0}</span>
-                <span className="gridCell__heatRate">{0}</span>
-            </div>
-        );
-    }
-
-    private getSystemName(system: PowerSystem) {
-        switch (system) {
-            case PowerSystem.Reactor:
-                return this.props.text.systems.power.reactor;
-            case PowerSystem.Helm:
-                return this.props.text.systemNames.helm;
-            case PowerSystem.Warp:
-                return this.props.text.systemNames.warp;
-            case PowerSystem.BeamWeapons:
-                return this.props.text.systemNames.weapons + ' 1';
-            case PowerSystem.Torpedoes:
-                return this.props.text.systemNames.weapons + ' 2';
-            case PowerSystem.Sensors:
-                return this.props.text.systemNames.sensors;
-            case PowerSystem.Shields:
-                return this.props.text.systemNames.shields;
-            case PowerSystem.DamageControl:
-                return this.props.text.systemNames.damage;
-            case PowerSystem.Comms:
-                return this.props.text.systemNames.comms;
-            default:
-                let any: never = system;
-        }
+        return <div className={classes} style={style} onClick={this.props.clicked} />;
     }
 
     public static draw(

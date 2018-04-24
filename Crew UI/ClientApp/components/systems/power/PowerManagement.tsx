@@ -40,6 +40,9 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
             <PowerGrid
                 cells={this.props.cells}
                 cellClicked={cellIndex => this.gridCellClicked(cellIndex)}
+                reactorClicked={() => this.reactorClicked()}
+                heatLevel={this.props.heatLevel}
+                heatRate={this.props.heatRate}
                 text={this.props.text}
             />
             <CellList
@@ -70,6 +73,10 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
         this.setState({
             selectedQueueCell: selection,
         });
+    }
+
+    private reactorClicked() {
+        connection.send('power_jog');
     }
 }
 
