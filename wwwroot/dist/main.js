@@ -975,14 +975,16 @@ var reducer = function (state, rawAction) {
         }
         case 'SYSTEM_ALL': {
             var cells_5 = state.cells.slice();
+            var systems = [];
             for (var _i = 0, _a = action.systems; _i < _a.length; _i++) {
                 var system = _a[_i];
                 var startCell = cells_5[system.start];
                 startCell.system = system.system;
                 startCell.endCol = cellIndexToCol(system.end) + 1;
                 startCell.endRow = cellIndexToRow(system.end) + 1;
+                systems[system.system] = startCell;
             }
-            return __assign({}, state, { cells: cells_5 });
+            return __assign({}, state, { cells: cells_5, systems: systems });
         }
         case 'ADD_SPARE_CELL': {
             var spares = state.spareCells.slice();
@@ -10707,14 +10709,16 @@ var reducer = function (state, rawAction) {
         }
         case 'SYSTEM_ALL': {
             var cells_5 = state.cells.slice();
+            var systems = [];
             for (var _i = 0, _a = action.systems; _i < _a.length; _i++) {
                 var system = _a[_i];
                 var startCell = cells_5[system.start];
                 startCell.system = system.system;
                 startCell.endCol = cellIndexToCol(system.end) + 1;
                 startCell.endRow = cellIndexToRow(system.end) + 1;
+                systems[system.system] = startCell;
             }
-            return __assign({}, state, { cells: cells_5 });
+            return __assign({}, state, { cells: cells_5, systems: systems });
         }
         case 'ADD_SPARE_CELL': {
             var spares = state.spareCells.slice();
@@ -11141,7 +11145,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

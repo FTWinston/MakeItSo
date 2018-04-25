@@ -17,8 +17,10 @@ UDamageControlSystem::UDamageControlSystem()
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 
 #ifndef WEB_SERVER_TEST
+	systemOrder.AddZeroed(MAX_DAMAGE_SYSTEMS);
 	damageLevels.AddZeroed(MAX_DAMAGE_SYSTEMS);
 #else
+	systemOrder.assign(MAX_DAMAGE_SYSTEMS, 0);
 	damageLevels.assign(MAX_DAMAGE_SYSTEMS, 0);
 #endif
 }

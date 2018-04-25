@@ -698,9 +698,19 @@ void UPowerSystem::DistributePower()
 
 	DetermineOverheatRate(numPoweredRadiators, numReactorOutputs);
 
-	// update the list of power being passed into each system
+	// update the list of power being passed into each system, and the actual systems themselves
 	for (auto system : systems)
-		systemsPower[system->sysIndex] = system->GetPowerLevel();
+	{
+		auto power = system->GetPowerLevel();
+		systemsPower[system->sysIndex] = power;
+
+		if (ISCLIENT())
+			SendSystemPower(system->system, power);
+
+		auto shipSystem = LookupSystem(system->system);
+		if (shipSystem != nullptr)
+			shipSystem->SetPowerLevel(power);
+	}
 }
 
 void UPowerSystem::DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOutputs)
@@ -927,6 +937,31 @@ UPowerSystem::EPowerDirection UPowerSystem::GetOppositeDirection(UPowerSystem::E
 		return UPowerSystem::Dir_East;
 	default:
 		return UPowerSystem::Dir_None;
+	}
+}
+
+UShipSystem *UPowerSystem::LookupSystem(EPowerSystem system)
+{
+	switch (system)
+	{
+	case Power_Helm:
+		return crewManager->GetSystem(UShipSystem::ESystem::Helm);
+	case Power_Warp:
+		return crewManager->GetSystem(UShipSystem::ESystem::Warp);
+	case Power_BeamWeapons:
+		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
+//	case Power_Torpedoes:
+//		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
+	case Power_Sensors:
+		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);
+//	case Power_Shields:
+//		return ???;
+	case Power_DamageControl:
+		return crewManager->GetSystem(UShipSystem::ESystem::DamageControl);
+	case Power_Comms:
+		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
+	default:
+		return nullptr;
 	}
 }
 

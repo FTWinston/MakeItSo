@@ -51,13 +51,6 @@ export interface PowerCell {
     system?: PowerSystem;
 }
 
-export interface SystemCell extends PowerCell {
-    type: PowerCellType.System;
-    endRow: number; // TODO: remove these?
-    endCol: number;
-    system: PowerSystem;
-}
-
 export interface SystemCellLayout {
     system: PowerSystem;
     start: number;
@@ -65,7 +58,7 @@ export interface SystemCellLayout {
 }
 
 export interface PowerState {
-    systems: SystemCell[];
+    systems: PowerCell[];
     cells: PowerCell[];
     reactorPower: number;
     heatLevel: number;
@@ -288,17 +281,21 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
         }
         case 'SYSTEM_ALL': {
             let cells = state.cells.slice();
+            let systems: PowerCell[] = [];
 
             for (let system of action.systems) {
                 let startCell = cells[system.start];
                 startCell.system = system.system;
                 startCell.endCol = cellIndexToCol(system.end) + 1;
                 startCell.endRow = cellIndexToRow(system.end) + 1;
+
+                systems[system.system] = startCell;
             }
 
             return {
                 ...state,
                 cells: cells,
+                systems: systems,
             };
         }
         case 'ADD_SPARE_CELL': {

@@ -202,6 +202,9 @@ private:
 	void SendAllSpares_Implementation();
 #endif
 
+
+	UShipSystem *LookupSystem(EPowerSystem system);
+
 	friend class PowerCell;
 	friend class PowerSystem;
 	static TMap<int32, EPowerCellType> initialCells;
