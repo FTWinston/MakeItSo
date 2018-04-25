@@ -46,6 +46,7 @@
 #define LASTITEM(arr) arr.Top()
 #define CLEAR(map) map.Empty()
 #define CLEAR_PTR(map) map->Empty()
+#define QUEUE_IS_EMPTY(queue) queue.IsEmpty()
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -75,6 +76,7 @@
 #define LASTITEM(arr) arr.back()
 #define CLEAR(map) map.clear()
 #define CLEAR_PTR(map) map->clear()
+#define QUEUE_IS_EMPTY(queue) queue.empty()
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)

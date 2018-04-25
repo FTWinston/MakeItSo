@@ -11,8 +11,6 @@
  * 
  */
 
-#define MAX_AUX_POWER 5
-
  UCLASS()
 class MAKEITSO_API UDamageControlSystem : public UShipSystem
 {
@@ -20,30 +18,78 @@ class MAKEITSO_API UDamageControlSystem : public UShipSystem
 
 public:
 	enum EDamageSystem {
-		Damage_Engines = 0,
+		Damage_Power = 0,
+		Damage_Helm,
+		Damage_Warp,
+		Damage_BeamWeapons,
+		Damage_Torpedoes,
 		Damage_Sensors,
-		Damage_Weapons,
 		Damage_Shields,
-		Damage_DamageControl,
-		Damage_Deflector,
+		Damage_Comms,
 		MAX_DAMAGE_SYSTEMS
 	};
+
+	UDamageControlSystem();
+	virtual void ResetData() override;
+
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
+	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
 private:
-	void IncrementAuxPower();
-	void AddCardChoice(int32 card1, int32 card2, int32 card3);
+	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
 
-	int32 auxPower;
-	float powerLevels[MAX_DAMAGE_SYSTEMS];
-	void SendAuxPower();
-	void SendPowerLevels();
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_DamageLevels)
+	TArray<uint8> damageLevels;
+	void OnReplicated_DamageLevels(TArray<uint8> beforeChange);
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemOrder)
+	TArray<uint8> systemOrder;
+	void OnReplicated_SystemOrder(TArray<uint8> beforeChange);
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardHand)
+	TArray<uint8> cardHand;
+	void OnReplicated_CardHand(TArray<uint8> beforeChange);
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardChoice)
+	TArray<uint8> cardChoice;
+	void OnReplicated_CardChoice(TArray<uint8> beforeChange);
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ChoiceQueueSize)
+	uint8 choiceQueueSize;
+	void OnReplicated_ChoiceQueueSize(uint8 beforeChange);
+
+	UPROPERTY()
+	TQueue<TArray<uint8>> choiceQueue;
+
+	void SendSystemOrder();
+	void SendAllDamageLevels();
+	void SendDamageLevel(EDamageSystem system, uint8 damageLevel);
 	void SendCardChoice();
-	void SendCardLibrary();
-	void ActivatePowerCard(int32 cardID);
-	FString CombineIDs(const TCHAR *prefix, TSet<int32> cardIDs);
-	TQueue<TSet<int32>> cardChoices;
-	TSet<int32> cardLibrary;
+	void SendQueueSize();
+	void SendWholeHand();
+	void SendAddCardToHand(uint8 cardID);
+	void SendRemoveCardFromHand(uint8 handPosition);
+
+	UFUNCTION(Server, Reliable)
+	void ChooseCard(uint8 cardPosition);
+#ifdef WEB_SERVER_TEST
+	void ChooseCard_Implementation(uint8 cardPosition);
+#endif
+
+	UFUNCTION(Server, Reliable)
+	void ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSystemPos);
+#ifdef WEB_SERVER_TEST
+	void ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystemPos);
+#endif
+
+	UShipSystem *LookupSystem(EDamageSystem system);
+	uint8 PickRandomCard();
+	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
+
+	UPROPERTY()
+	uint16 choiceGeneratedAmount;
 };

@@ -9,55 +9,63 @@
 #include "CrewManager.h"
 #include "UIConnectionInfo.h"
 
+
+UDamageControlSystem::UDamageControlSystem()
+{
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 1.0f;
+	PrimaryComponentTick.SetTickFunctionEnable(true);
+
+#ifndef WEB_SERVER_TEST
+	damageLevels.AddZeroed(MAX_DAMAGE_SYSTEMS);
+#else
+	damageLevels.assign(MAX_DAMAGE_SYSTEMS, 0);
+#endif
+}
+
+void UDamageControlSystem::ResetData()
+{
+	for (auto i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
+	{
+		damageLevels[i] = 0;
+		systemOrder[i] = i;
+	}
+
+	CLEAR(cardChoice);
+	CLEAR(cardHand);
+
+#ifndef WEB_SERVER_TEST
+	choiceQueue.Empty();
+#else
+	while (!QUEUE_IS_EMPTY(choiceQueue))
+		choiceQueue.pop();
+#endif
+
+	choiceQueueSize = 0;
+	choiceGeneratedAmount = 0;
+}
+
 bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(msg, "pickCard "))
+	if (STARTS_WITH(msg, "dmg_pickCard "))
 	{
-		int32 cardID = ExtractInt(msg, sizeof("pickCard "));
-
-		TSet<int32> cardChoice;
-#ifndef WEB_SERVER_TEST
-		if (!cardChoices.Dequeue(cardChoice))
-			return true; // no cards to choose from
-#else
-		if (cardChoices.empty())
-			return true; // no cards to choose from
-		cardChoice = cardChoices.front();
-#endif
-
-		bool cardIsInChoice = false;
-		for (auto choiceCardID : cardChoice)
-			if (choiceCardID == cardID)
-			{
-				cardIsInChoice = true;
-				break;
-			}
-
-		if (!cardIsInChoice)
-			return true; // chosen card isn't part of the current choice
-
-#ifndef WEB_SERVER_TEST
-		cardLibrary.Add(cardID);
-#else
-		cardChoices.pop();
-		cardLibrary.push_back(cardID);
-#endif
-		SendCardChoice();
-		SendCardLibrary();
+		uint8 cardNum = ExtractInt(msg, sizeof("dmg_pickCard "));
+		ChooseCard(cardNum);
 	}
-	else if (STARTS_WITH(msg, "useCard "))
+	else if (STARTS_WITH(msg, "dmg_useCard "))
 	{
-		int32 cardID = ExtractInt(msg, sizeof("useCard "));
+		int32 cardID = ExtractInt(msg, sizeof("dmg_useCard "));
 
-		if (!SETCONTAINS(cardLibrary, cardID))
-			return true; // card not in library
+		TArray<FString> parts = SplitParts(msg, sizeof("dmg_useCard "));
 
-#ifndef WEB_SERVER_TEST
-		cardLibrary.Remove(cardID);
-#else
-		cardLibrary.erase(std::remove(cardLibrary.begin(), cardLibrary.end(), cardID), cardLibrary.end());
-#endif
-		ActivatePowerCard(cardID);
+		if (SIZENUM(parts) >= 3)
+		{
+			uint8 cellID = STOI(parts[0]);
+			uint8 handPosition = STOI(parts[1]);
+			EDamageSystem targetSystem = (EDamageSystem)STOI(parts[2]);
+
+			ActivateCard(cardID, handPosition, targetSystem);
+		}
 	}
 	else
 		return false;
@@ -67,86 +75,190 @@ bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_
 
 void UDamageControlSystem::SendAllData_Implementation()
 {
-	SendAuxPower();
-	SendPowerLevels();
+	SendSystemOrder();
+	SendAllDamageLevels();
 	SendCardChoice();
-	SendCardLibrary();
+	SendWholeHand();
 }
 
-void UDamageControlSystem::IncrementAuxPower()
+void UDamageControlSystem::SendSystemOrder()
 {
-	if (auxPower >= MAX_AUX_POWER)
-		return;
-
-	auxPower++;
-	SendAuxPower();
+	auto command = CombineIDs(TEXT("dmg_order "), systemOrder);
+	crewManager->SendAll(command);
 }
 
-void UDamageControlSystem::SendAuxPower()
+void UDamageControlSystem::SendAllDamageLevels()
 {
-	crewManager->SendAll("aux %i", auxPower);
-}
-
-void UDamageControlSystem::SendPowerLevels()
-{
-	crewManager->SendAll("levels %.0f %.0f %.0f %.0f %.0f %.0f", powerLevels[0], powerLevels[1], powerLevels[2], powerLevels[3], powerLevels[4], powerLevels[5]);
-}
-
-#ifndef WEB_SERVER_TEST
-#define ADD(set, val) set.Add(val)
-#else
-#define ADD(set, val) set.push_back(val)
-#endif
-
-void UDamageControlSystem::AddCardChoice(int32 card1, int32 card2, int32 card3)
-{
-	TSet<int32> choice;
-	ADD(choice, card1);
-	ADD(choice, card2);
-	ADD(choice, card3);
-
-	bool wasEmpty;
-#ifndef WEB_SERVER_TEST
-	wasEmpty = cardChoices.IsEmpty();
-	cardChoices.Enqueue(choice);
-#else
-	wasEmpty = cardChoices.empty();
-	cardChoices.push(choice);
-#endif
-
-	if (wasEmpty)
-		SendCardChoice();
+	auto command = CombineIDs(TEXT("dmg_levels "), damageLevels);
+	crewManager->SendAll(command);
 }
 
 void UDamageControlSystem::SendCardChoice()
 {
-#ifndef WEB_SERVER_TEST
-	if (cardChoices.IsEmpty())
-#else
-	if (cardChoices.empty())
-#endif
-		crewManager->SendAllFixed("choice ");
-	else
-	{
-#ifndef WEB_SERVER_TEST
-		TSet<int32> choiceIDs;
-		cardChoices.Peek(choiceIDs);
-#else
-		auto choiceIDs = cardChoices.front();
-#endif
-
-		auto command = CombineIDs(TEXT("choice "), choiceIDs);
-		crewManager->SendAll(command);
-	}
+	auto command = CombineIDs(TEXT("dmg_choice "), cardChoice);
+	SendSystem(command);
 }
 
-void UDamageControlSystem::SendCardLibrary()
+void UDamageControlSystem::SendQueueSize()
 {
-	auto command = CombineIDs(TEXT("lib "), cardLibrary);
+	FString output = TEXT("dmg_queue ");
+	APPENDINT(output, choiceQueueSize);
+	SendSystem(output);
+}
+
+void UDamageControlSystem::SendWholeHand()
+{
+	auto command = CombineIDs(TEXT("dmg_hand "), cardHand);
 	crewManager->SendAll(command);
 }
 
-FString UDamageControlSystem::CombineIDs(const TCHAR *prefix, TSet<int32> IDs)
+void UDamageControlSystem::SendDamageLevel(EDamageSystem system, uint8 damageLevel)
+{
+	FString output = TEXT("dmg_level ");
+	APPENDINT(output, system);
+	output += TEXT(" ");
+	APPENDINT(output, damageLevel);
+
+	SendSystem(output);
+}
+
+void UDamageControlSystem::SendAddCardToHand(uint8 cardID)
+{
+	FString output = TEXT("dmg_add ");
+	APPENDINT(output, cardID);
+
+	SendSystem(output);
+}
+
+void UDamageControlSystem::SendRemoveCardFromHand(uint8 handPosition)
+{
+	FString output = TEXT("dmg_rem ");
+	APPENDINT(output, handPosition);
+
+	SendSystem(output);
+}
+
+
+void UDamageControlSystem::OnReplicated_DamageLevels(TArray<uint8> beforeChange)
+{
+	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
+	auto numSys = SIZENUM(damageLevels);
+	if (SIZENUM(beforeChange) != numSys)
+	{
+		SendAllDamageLevels();
+		return;
+	}
+
+	for (uint32 i = 0; i < numSys; i++)
+	{
+		auto currentVal = damageLevels[i];
+		if (beforeChange[i] != currentVal)
+			SendDamageLevel((EDamageSystem)i, currentVal);
+	}
+}
+
+void UDamageControlSystem::OnReplicated_SystemOrder(TArray<uint8> beforeChange)
+{
+	SendSystemOrder();
+}
+
+void UDamageControlSystem::OnReplicated_ChoiceQueueSize(uint8 beforeChange)
+{
+	SendQueueSize();
+}
+
+
+void UDamageControlSystem::OnReplicated_CardHand(TArray<uint8> beforeChange)
+{
+	auto oldSize = SIZENUM(beforeChange), newSize = SIZENUM(damageLevels);
+
+	if (newSize == oldSize + 1)
+	{
+		// one card added ... if any differ except the last card, resend whole hand
+		for (uint8 i = 0; i < oldSize; i++)
+			if (beforeChange[i] != cardHand[i])
+			{
+				SendWholeHand();
+				return;
+			}
+
+		// send the addition of the one new card
+		SendAddCardToHand(cardHand[oldSize]);
+	}
+	else if (oldSize == newSize + 1)
+	{
+		// one card removed ... if any differ except the card that was removed, resend whole hand
+		auto offset = 0;
+		uint8 removedPos;
+
+		for (uint8 i = 0; i < newSize; i++)
+			if (beforeChange[i + offset] != cardHand[i])
+			{
+				if (offset > 0)
+				{
+					// have already passed one difference, so resend all
+					SendWholeHand();
+					return;
+				}
+
+				removedPos = i;
+				offset = 1;
+			}
+
+		if (offset == 0)
+			removedPos = newSize;
+
+		SendRemoveCardFromHand(removedPos);
+	}
+	else
+	{
+		SendWholeHand();
+	}
+}
+
+void UDamageControlSystem::OnReplicated_CardChoice(TArray<uint8> beforeChange)
+{
+	SendCardChoice();
+}
+
+#define CHOICE_GENERATION_ENERGY_AMOUNT 500
+
+void UDamageControlSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	choiceGeneratedAmount += GetPowerLevel();
+
+	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
+		return;
+
+	choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
+	AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
+}
+
+void UDamageControlSystem::AddCardChoice(uint8 card1, uint8 card2, uint8 card3)
+{
+	TArray<uint8> newChoice;
+	SETADD(newChoice, card1);
+	SETADD(newChoice, card2);
+	SETADD(newChoice, card3);
+
+	bool alreadyShowingChoice = NOTEMPTY(cardChoice);
+
+	if (alreadyShowingChoice)
+	{
+#ifndef WEB_SERVER_TEST
+		choiceQueue.Enqueue(newChoice);
+#else
+		choiceQueue.push(newChoice);
+#endif
+		choiceQueueSize = SIZENUM(choiceQueue);
+	}
+	else
+	{
+		cardChoice = newChoice;
+	}
+}
+
+FString UDamageControlSystem::CombineIDs(const TCHAR *prefix, TArray<uint8> IDs)
 {
 	FString output = prefix;
 
@@ -166,7 +278,109 @@ FString UDamageControlSystem::CombineIDs(const TCHAR *prefix, TSet<int32> IDs)
 	return output;
 }
 
-void UDamageControlSystem::ActivatePowerCard(int32 cardID)
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::ChooseCard(uint8 cardPosition) { ChooseCard_Implementation(cardPosition); }
+#endif
+
+void UDamageControlSystem::ChooseCard_Implementation(uint8 cardPosition)
 {
-	// ???
+	if (cardPosition >= SIZENUM(cardChoice))
+		return;
+
+	uint8 chosenCardID = cardChoice[cardPosition];
+	SETADD(cardHand, chosenCardID);
+
+	if (QUEUE_IS_EMPTY(choiceQueue))
+	{
+		CLEAR(cardChoice);
+		return;
+	}
+
+#ifndef WEB_SERVER_TEST
+	cardChoices.Dequeue(cardChoice);
+#else
+	cardChoice = choiceQueue.front();
+	choiceQueue.pop();
+#endif
+
+	choiceQueueSize = SIZENUM(choiceQueue);
+}
+
+UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
+{
+	switch (system)
+	{
+	case Damage_Power:
+		return crewManager->GetSystem(UShipSystem::ESystem::PowerManagement);
+	case Damage_Helm:
+		return crewManager->GetSystem(UShipSystem::ESystem::Helm);
+	case Damage_Warp:
+		return crewManager->GetSystem(UShipSystem::ESystem::Warp);
+	case Damage_BeamWeapons:
+		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
+//	case Damage_Torpedoes:
+//		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
+	case Damage_Sensors:
+		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);
+//	case Damage_Shields:
+//		return ???;
+	case Damage_Comms:
+		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
+	default:
+		return nullptr;
+	}
+}
+
+// TODO: implement more cards
+enum EDamageCard
+{
+	Card_RepairSmall,
+	Card_RepairMed,
+	Card_RepairLarge,
+	NUM_DAMAGE_CARDS,
+};
+
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSystemPos) { ActivateCard_Implementation(cardID, handPosition, targetSystemPos); }
+#endif
+
+void UDamageControlSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystemPos)
+{
+	if (targetSystemPos >= MAX_DAMAGE_SYSTEMS || cardHand[handPosition] != cardID)
+		return;
+
+	EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
+	UShipSystem *targetSystem = LookupSystem(damageSystem);
+
+	switch ((EDamageCard)cardID)
+	{
+	case Card_RepairSmall:
+	{
+		if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+			return;
+		targetSystem->RestoreDamage(15);
+		break;
+	}
+	case Card_RepairMed:
+		if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+			return;
+		targetSystem->RestoreDamage(35);
+		break;
+	case Card_RepairLarge:
+		if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+			return;
+		targetSystem->RestoreDamage(75);
+		break;
+	default:
+		return;
+	}
+	
+	// only remove card from hand if we play it successfully
+	SETREMOVEAT(cardHand, handPosition);
+}
+
+uint8 UDamageControlSystem::PickRandomCard()
+{
+	// TODO: probably want to make some cards rarer than others
+	return FMath::RandRange(0, NUM_DAMAGE_CARDS - 1);
 }
