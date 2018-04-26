@@ -4,35 +4,40 @@ import { FlexibleCanvas } from '~/components/general';
 import { ShipSystem, getSystemName, TextLocalisation } from '~/functionality';
 
 interface SystemCellProps {
-    cell: PowerCell;
+    col: number;
+    row: number;
+    endCol?: number;
+    endRow?: number;
+    system: PowerSystem
+    power: number;
+
     text: TextLocalisation;
 }
 
 export class SystemCell extends React.PureComponent<SystemCellProps, {}> {
     render() {
-        let cell = this.props.cell;
         let style: React.CSSProperties = {
-            gridColumnStart: cell.col,
-            gridRowStart: cell.row,
+            gridColumnStart: this.props.col,
+            gridRowStart: this.props.row,
         };
 
         let classes = 'gridCell gridCell--system';
 
-        if (cell.endRow !== undefined && cell.endCol !== undefined) {
-            style.gridColumnEnd = cell.endCol;
-            style.gridRowEnd = cell.endRow;
+        if (this.props.endRow !== undefined && this.props.endCol !== undefined) {
+            style.gridColumnEnd = this.props.endCol;
+            style.gridRowEnd = this.props.endRow;
             
-            if (cell.endRow - cell.row > cell.endCol - cell.col) {
+            if (this.props.endRow - this.props.row > this.props.endCol - this.props.col) {
                 classes += ' gridCell--rotated';
             }
         }
 
-        let sysName = this.props.cell.system === undefined ? undefined : this.getSystemName(this.props.cell.system);
+        let sysName = this.props.system === undefined ? undefined : this.getSystemName(this.props.system);
 
         return (
             <div className={classes} style={style}>
                 <span className="gridCell__sysname">{sysName}</span>
-                <span className="gridCell__power">{this.props.cell.power}</span>
+                <span className="gridCell__power">{this.props.power}</span>
             </div>
         );
     }

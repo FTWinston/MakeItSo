@@ -4,32 +4,35 @@ import { FlexibleCanvas } from '~/components/general';
 import { ShipSystem, getSystemName, TextLocalisation } from '~/functionality';
 
 interface ReactorCellProps {
-    cell: PowerCell;
-    clicked: () => void;
+    col: number;
+    row: number;
+    endCol?: number;
+    endRow?: number;
+    power: number;
     heatLevel: number;
     heatRate: number;
     text: TextLocalisation;
+    clicked: () => void;
 }
 
 export class ReactorCell extends React.PureComponent<ReactorCellProps, {}> {
     render() {
-        let cell = this.props.cell;
         let style: React.CSSProperties = {
-            gridColumnStart: cell.col,
-            gridRowStart: cell.row,
+            gridColumnStart: this.props.col,
+            gridRowStart: this.props.row,
         };
 
         let classes = 'gridCell gridCell--reactor';
 
-        if (cell.endRow !== undefined && cell.endCol !== undefined) {
-            style.gridColumnEnd = cell.endCol;
-            style.gridRowEnd = cell.endRow;
+        if (this.props.endRow !== undefined && this.props.endCol !== undefined) {
+            style.gridColumnEnd = this.props.endCol;
+            style.gridRowEnd = this.props.endRow;
         }
 
         return (
             <div className={classes} style={style} onClick={this.props.clicked}>
                 <span className="gridCell__sysname">{this.props.text.systems.power.reactor}</span>
-                <span className="gridCell__power">{this.props.cell.power}</span>
+                <span className="gridCell__power">{this.props.power}</span>
                 <span className="gridCell__heat">{this.props.heatLevel}</span>
                 <span className="gridCell__heatRate">{this.props.heatRate} / s</span>
             </div>

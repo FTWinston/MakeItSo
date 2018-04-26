@@ -21,12 +21,10 @@ UPowerSystem::UPowerSystem()
 	cells.Add(POWER_GRID_SIZE);
 	cellTypes.AddZeroed(POWER_GRID_SIZE);
 	cellPower.AddZeroed(POWER_GRID_SIZE);
-	systemsPower.AddZeroed(MAX_POWER_SYSTEMS);
 #else
 	cells.assign(POWER_GRID_SIZE, nullptr);
 	cellTypes.assign(POWER_GRID_SIZE, Cell_Empty);
 	cellPower.assign(POWER_GRID_SIZE, 0);
-	systemsPower.assign(MAX_POWER_SYSTEMS, 0);
 #endif
 
 	// setting up static data in the constructor is safe cos this only runs once... right?
@@ -107,24 +105,6 @@ void UPowerSystem::BeginPlay()
 
 	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
 		SETADD(spareCells, GetRandomCellType());
-
-	// add each reactor edge cell to the set which we calculate power distribution from
-	for (int32 x = REACTOR_MIN_X; x <= REACTOR_MAX_X; x++)
-	{
-		auto cell = cells[CELLINDEX(x, REACTOR_MIN_Y)];
-		SETADD(powerStartCells, cell);
-
-		cell = cells[CELLINDEX(x, REACTOR_MAX_Y)];
-		SETADD(powerStartCells, cell);
-	}
-	for (int32 y = REACTOR_MIN_Y + 1; y <= REACTOR_MAX_Y - 1; y++)
-	{
-		auto cell = cells[CELLINDEX(REACTOR_MIN_X, y)];
-		SETADD(powerStartCells, cell);
-
-		cell = cells[CELLINDEX(REACTOR_MAX_X, y)];
-		SETADD(powerStartCells, cell);
-	}
 
 	// create system objects to store & display system info on
 	SETADD(systems, new PowerSystemOutput(0, 0, 0, 3, 1, Power_Helm, cells));
@@ -442,19 +422,6 @@ void UPowerSystem::OnReplicated_OverheatValue(uint8 beforeChange)
 	SendOverheat();
 }
 
-#ifdef WEB_SERVER_TEST
-void UPowerSystem::SendSystemPower(EPowerSystem system, uint8 power) { SendSystemPower_Implementation(system, power); }
-#endif
-void UPowerSystem::SendSystemPower_Implementation(EPowerSystem system, uint8 power)
-{
-	FString output = TEXT("power_sys ");
-
-	APPENDINT(output, system);
-	output += TEXT(" ");
-	APPENDINT(output, power);
-
-	SendSystem(output);
-}
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::SendAllSystems() { SendAllSystems_Implementation(); }
@@ -476,24 +443,6 @@ void UPowerSystem::SendAllSystems_Implementation()
 void UPowerSystem::OnReplicated_SystemLayout(TArray<uint8> beforeChange)
 {
 	SendAllSystems();
-}
-
-void UPowerSystem::OnReplicated_SystemsPower(TArray<uint8> beforeChange)
-{
-	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
-	auto numSys = SIZENUM(systemsPower);
-	if (SIZENUM(beforeChange) != numSys)
-	{
-		SendAllSystems();
-		return;
-	}
-
-	for (uint32 i = 0; i < numSys; i++)
-	{
-		auto currentVal = systemsPower[i];
-		if (beforeChange[i] != currentVal)
-			SendSystemPower((EPowerSystem)i, currentVal);
-	}
 }
 
 
@@ -522,6 +471,18 @@ void UPowerSystem::OnReplicated_SpareCells(TArray<EPowerCellType> beforeChange)
 #define NUM_DIRS 4
 #define ADD_CELL_TO_MAP(map, cell) MAPADD_PTR(map, cell->cellIndex, cell, int32, PowerCell*)
 
+#define UPDATE_CELL_POWER(cell, newVal) { \
+	if (ISCLIENT()) \
+	{ \
+		auto oldVal = cellPower[cell->cellIndex]; \
+		if (oldVal != newVal) \
+		{ \
+			SendCellPower(cell->cellIndex, newVal); \
+		} \
+	} \
+	cellPower[cell->cellIndex] = newVal; \
+}
+
 void UPowerSystem::DistributePower()
 {
 	for (auto cell : cells)
@@ -545,8 +506,11 @@ void UPowerSystem::DistributePower()
 	TMap<int32, PowerCell*> *nextEdgeCells_singleOutput = &tmpCells2;
 	TMap<int32, PowerCell*> *nextEdgeCells_multipleOutput = &tmpCells3;
 
-	for (auto cell : powerStartCells)
+	for (auto cell : systems[Power_Reactor]->cells)
+	{
+		cell->powerLevel = GetPowerLevel();
 		ADD_CELL_TO_MAP(edgeCells, cell);
+	}
 
 	EPowerCellType hasMultipleOutputs = Cell_NorthEastSouth | Cell_EastSouthWest | Cell_SouthWestNorth | Cell_WestNorthEast;
 	bool handlingMultipleOutputs = false;
@@ -610,8 +574,10 @@ void UPowerSystem::DistributePower()
 			if (firstStep)
 				numReactorOutputs += numOutputs;
 
-			// where possible, only process cells with a single possible output, until there are no such cells left
-			if (numOutputs > 1 && !handlingMultipleOutputs)
+			// where possible, only process non-reactor cells with a single possible output, until there are no such cells left
+			bool splitOutput = edgeCell->GetType() != Power_Reactor && numOutputs > 1;
+
+			if (splitOutput && !handlingMultipleOutputs)
 			{
 				ADD_CELL_TO_MAP(nextEdgeCells_multipleOutput, edgeCell);
 				continue;
@@ -621,12 +587,10 @@ void UPowerSystem::DistributePower()
 
 			// output power reduces if we split it multiple ways
 			uint8 outputPower;
-			if (edgeCell->GetType() == Cell_Reactor)
-				outputPower = GetPowerLevel();
-			else if (numOutputs == 1)
-				outputPower = edgeCell->powerLevel;
-			else
+			if (splitOutput)
 				outputPower = edgeCell->powerLevel / 2;
+			else
+				outputPower = edgeCell->powerLevel;
 
 			for (int32 i = 0; i < NUM_DIRS; i++)
 			{
@@ -676,41 +640,32 @@ void UPowerSystem::DistributePower()
 		firstStep = false;
 	}
 
-	// now that we've recalculated the power of every cell, pass this on
-	for (auto cell : cells)
-	{
-		if (cell->cellIndex >= 0)
-		{
-			auto newVal = cell->GetVisualPowerLevel();
-
-			if (ISCLIENT())
-			{
-				auto oldVal = cellPower[cell->cellIndex];
-				if (oldVal != newVal)
-				{
-					SendCellPower(cell->cellIndex, newVal);
-				}
-			}
-
-			cellPower[cell->cellIndex] = newVal;
-		}
-	}
-
-	DetermineOverheatRate(numPoweredRadiators, numReactorOutputs);
-
 	// update the list of power being passed into each system, and the actual systems themselves
 	for (auto system : systems)
 	{
 		auto power = system->GetPowerLevel();
-		systemsPower[system->sysIndex] = power;
-
-		if (ISCLIENT())
-			SendSystemPower(system->system, power);
+		
+		for (auto cell : system->cells)
+		{
+			UPDATE_CELL_POWER(cell, power);
+		}
 
 		auto shipSystem = LookupSystem(system->system);
 		if (shipSystem != nullptr)
 			shipSystem->SetPowerLevel(power);
 	}
+
+	// now that we've recalculated the power of every cell, pass this on
+	for (auto cell : cells)
+	{
+		if (cell->GetType() == Cell_System || cell->GetType() == Cell_Reactor)
+			continue;
+
+		auto power = cell->GetVisualPowerLevel();
+		UPDATE_CELL_POWER(cell, power);
+	}
+
+	DetermineOverheatRate(numPoweredRadiators, numReactorOutputs);
 }
 
 void UPowerSystem::DetermineOverheatRate(uint8 numPoweredRadiators, uint8 numOutputs)
@@ -1061,16 +1016,18 @@ PowerSystemOutput::PowerSystemOutput(uint8 index, uint8 minX, uint8 minY, uint8 
 	firstCell = CELLINDEX(minX, minY);
 
 	uint8 cellIndex;
-	uint8 maxX = minX + width;
-	uint8 maxY = minY + height;
+	uint8 maxX = minX + width - 1;
+	uint8 maxY = minY + height - 1;
 
-	for (auto y = minY; y < maxY; y++)
-		for (auto x = minX; x < maxX; x++)
+	for (auto y = minY; y <= maxY; y++)
+		for (auto x = minX; x <= maxX; x++)
 		{
+			if ((x != minX && x != maxX) && (y != minY && y != maxY))
+				continue;
+
 			cellIndex = CELLINDEX(x, y);
 			auto cell = allCells[cellIndex];
-			if (cell->GetType() == UPowerSystem::Cell_System)
-				SETADD(cells, cell);
+			SETADD(cells, cell);
 		}
 
 	lastCell = cellIndex;

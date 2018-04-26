@@ -255,13 +255,6 @@ export class Connection {
                 store.dispatch(powerActions.setAllCellPower(levels));
                 break;
             }
-            case 'power_sys': {
-                let vals = data.split(' ');
-                let sys = parseInt(vals[0]) as PowerSystem;
-                let power = parseInt(vals[1]);
-                store.dispatch(powerActions.setSystemPower(sys, power));
-                break;
-            }
             case 'power_all_sys': {
                 let values = data.split(' ');
                 let systems: SystemCellLayout[] = [];

@@ -58,7 +58,6 @@ export interface SystemCellLayout {
 }
 
 export interface PowerState {
-    systems: PowerCell[];
     cells: PowerCell[];
     reactorPower: number;
     heatLevel: number;
@@ -103,12 +102,6 @@ interface SetAllCellPowerAction {
     cellPower: number[];
 }
 
-interface SetSystemPowerAction {
-    type: 'SYSTEM_POWER';
-    system: PowerSystem;
-    power: number;
-}
-
 interface SetAllSystemsAction {
     type: 'SYSTEM_ALL';
     systems: SystemCellLayout[];
@@ -132,7 +125,7 @@ interface SetAllSpareCellsAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetReactorPowerAction | SetHeatLevelAction | SetCellTypeAction | SetAllCellTypesAction | SetCellPowerAction | SetAllCellPowerAction
-    | SetSystemPowerAction | SetAllSystemsAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
+    | SetAllSystemsAction | AddSpareCellAction | RemoveSpareCellAction | SetAllSpareCellsAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -165,11 +158,6 @@ export const actionCreators = {
     setAllCellPower: (cellPower: number[]) => <SetAllCellPowerAction>{
         type: 'SET_ALL_CELLS_P',
         cellPower: cellPower,
-    },
-    setSystemPower: (system: PowerSystem, power: number) => <SetSystemPowerAction>{
-        type: 'SYSTEM_POWER',
-        system: system,
-        power: power,
     },
     setAllSystems: (systems: SystemCellLayout[]) => <SetAllSystemsAction>{
         type: 'SYSTEM_ALL',
@@ -204,7 +192,6 @@ for (let i=0; i<numCells; i++) {
 }
 
 const unloadedState: PowerState = {
-    systems: [],
     cells: cells,
     reactorPower: 100,
     heatLevel: 0,
@@ -268,34 +255,19 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
                 cells: cells,
             }
         }
-        case 'SYSTEM_POWER': {
-            let systemID: number = action.system;
-
-            let systems = state.systems.slice();
-            systems[systemID].power = action.power;
-
-            return {
-                ...state,
-                systems: systems,
-            };
-        }
         case 'SYSTEM_ALL': {
             let cells = state.cells.slice();
-            let systems: PowerCell[] = [];
 
             for (let system of action.systems) {
                 let startCell = cells[system.start];
                 startCell.system = system.system;
                 startCell.endCol = cellIndexToCol(system.end) + 1;
                 startCell.endRow = cellIndexToRow(system.end) + 1;
-
-                systems[system.system] = startCell;
             }
 
             return {
                 ...state,
                 cells: cells,
-                systems: systems,
             };
         }
         case 'ADD_SPARE_CELL': {

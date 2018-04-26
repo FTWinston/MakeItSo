@@ -5,7 +5,10 @@ import { ShipSystem, getSystemName, TextLocalisation } from '~/functionality';
 import './GridCell.scss';
 
 interface GridCellProps {
-    cell: PowerCell;
+    row: number;
+    col: number;
+    type: PowerCellType;
+    power: number;
     clicked: () => void;
     inList?: boolean;
     selected?: boolean;
@@ -14,15 +17,14 @@ interface GridCellProps {
 
 export class GridCell extends React.PureComponent<GridCellProps, {}> {
     render() {
-        let cell = this.props.cell;
         let style: React.CSSProperties = {
-            gridColumnStart: cell.col,
-            gridRowStart: cell.row,
+            gridColumnStart: this.props.col,
+            gridRowStart: this.props.row,
         };
 
         let classes = 'gridCell';
 
-        switch(cell.type) {
+        switch(this.props.type) {
             case PowerCellType.Empty:
                 classes += ' gridCell--empty';
                 break;
@@ -35,7 +37,7 @@ export class GridCell extends React.PureComponent<GridCellProps, {}> {
                         className={classes}
                         style={style}
                         onClick={this.props.clicked}
-                        draw={(ctx, w, h) => GridCell.draw(ctx, w, h, cell.type, cell.power)}
+                        draw={(ctx, w, h) => GridCell.draw(ctx, w, h, this.props.type, this.props.power)}
                     />
                 );
         }

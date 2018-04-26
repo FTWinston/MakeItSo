@@ -103,7 +103,6 @@ private:
 
 	UPROPERTY()
 	TArray<PowerCell*> cells; // the cell objects exist only on the server, and "two dumb arrays" are networked to the client
-	TArray<PowerCell*> powerStartCells;
 	TArray<PowerCell*> damagedCells;
 	TArray<PowerCell*> undamagedCells;
 
@@ -145,22 +144,10 @@ private:
 	void SendAllCellPower_Implementation();
 #endif
 
-
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemLayout)
 	TArray<uint8> systemLayout;
 
 	void OnReplicated_SystemLayout(TArray<uint8> beforeChange);
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemsPower)
-	TArray<uint8> systemsPower;
-
-	void OnReplicated_SystemsPower(TArray<uint8> beforeChange);
-
-	UFUNCTION(Client, Reliable)
-	void SendSystemPower(EPowerSystem system, uint8 power);
-#ifdef WEB_SERVER_TEST
-	void SendSystemPower_Implementation(EPowerSystem system, uint8 power);
-#endif
 
 	UFUNCTION(Client, Reliable)
 	void SendAllSystems();
@@ -254,6 +241,5 @@ public:
 
 	uint16 GetPowerLevel();
 
-private:
 	TArray<PowerCell*> cells;
 };

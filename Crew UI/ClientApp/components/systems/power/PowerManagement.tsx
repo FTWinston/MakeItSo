@@ -83,8 +83,7 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (state) => {
     return {
-        text: state.user.text,    
-        systems: state.power.systems,
+        text: state.user.text,
         cells: state.power.cells,
         reactorPower: state.power.reactorPower,
         heatLevel: state.power.heatLevel,

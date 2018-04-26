@@ -892,11 +892,6 @@ var actionCreators = {
         type: 'SET_ALL_CELLS_P',
         cellPower: cellPower,
     }); },
-    setSystemPower: function (system, power) { return ({
-        type: 'SYSTEM_POWER',
-        system: system,
-        power: power,
-    }); },
     setAllSystems: function (systems) { return ({
         type: 'SYSTEM_ALL',
         systems: systems,
@@ -927,7 +922,6 @@ for (var i = 0; i < numCells; i++) {
     });
 }
 var unloadedState = {
-    systems: [],
     cells: cells,
     reactorPower: 100,
     heatLevel: 0,
@@ -967,24 +961,16 @@ var reducer = function (state, rawAction) {
             }
             return __assign({}, state, { cells: cells_4 });
         }
-        case 'SYSTEM_POWER': {
-            var systemID = action.system;
-            var systems = state.systems.slice();
-            systems[systemID].power = action.power;
-            return __assign({}, state, { systems: systems });
-        }
         case 'SYSTEM_ALL': {
             var cells_5 = state.cells.slice();
-            var systems = [];
             for (var _i = 0, _a = action.systems; _i < _a.length; _i++) {
                 var system = _a[_i];
                 var startCell = cells_5[system.start];
                 startCell.system = system.system;
                 startCell.endCol = cellIndexToCol(system.end) + 1;
                 startCell.endRow = cellIndexToRow(system.end) + 1;
-                systems[system.system] = startCell;
             }
-            return __assign({}, state, { cells: cells_5, systems: systems });
+            return __assign({}, state, { cells: cells_5 });
         }
         case 'ADD_SPARE_CELL': {
             var spares = state.spareCells.slice();
@@ -2504,13 +2490,13 @@ var GridCell = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     GridCell.prototype.render = function () {
-        var cell = this.props.cell;
+        var _this = this;
         var style = {
-            gridColumnStart: cell.col,
-            gridRowStart: cell.row,
+            gridColumnStart: this.props.col,
+            gridRowStart: this.props.row,
         };
         var classes = 'gridCell';
-        switch (cell.type) {
+        switch (this.props.type) {
             case 0 /* Empty */:
                 classes += ' gridCell--empty';
                 break;
@@ -2518,7 +2504,7 @@ var GridCell = (function (_super) {
                 classes += ' gridCell--broken';
                 break;
             default:
-                return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__components_general__["k" /* FlexibleCanvas */], { className: classes, style: style, onClick: this.props.clicked, draw: function (ctx, w, h) { return GridCell.draw(ctx, w, h, cell.type, cell.power); } }));
+                return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__components_general__["k" /* FlexibleCanvas */], { className: classes, style: style, onClick: this.props.clicked, draw: function (ctx, w, h) { return GridCell.draw(ctx, w, h, _this.props.type, _this.props.power); } }));
         }
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, style: style, onClick: this.props.clicked });
     };
@@ -8037,13 +8023,13 @@ var PowerGrid = (function (_super) {
         var _this = this;
         if (cell.system !== undefined) {
             if (cell.type === 1 /* Reactor */) {
-                return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__ReactorCell__["a" /* ReactorCell */], { cell: cell, key: cell.index, clicked: this.props.reactorClicked, heatLevel: this.props.heatLevel, heatRate: this.props.heatRate, text: this.props.text }));
+                return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_2__ReactorCell__["a" /* ReactorCell */], { col: cell.col, row: cell.row, endCol: cell.endCol, endRow: cell.endRow, power: cell.power, key: cell.index, clicked: this.props.reactorClicked, heatLevel: this.props.heatLevel, heatRate: this.props.heatRate, text: this.props.text }));
             }
             if (cell.type === 2 /* System */) {
-                return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__SystemCell__["a" /* SystemCell */], { cell: cell, key: cell.index, text: this.props.text }));
+                return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__SystemCell__["a" /* SystemCell */], { col: cell.col, row: cell.row, endCol: cell.endCol, endRow: cell.endRow, power: cell.power, system: cell.system, key: cell.index, text: this.props.text }));
             }
         }
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__GridCell__["a" /* GridCell */], { cell: cell, key: cell.index, clicked: function () { return _this.props.cellClicked(cell.index); }, text: this.props.text }));
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__GridCell__["a" /* GridCell */], { row: cell.row, col: cell.col, type: cell.type, power: cell.power, key: cell.index, clicked: function () { return _this.props.cellClicked(cell.index); }, text: this.props.text }));
     };
     return PowerGrid;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
@@ -8130,7 +8116,6 @@ var PowerManagement = (function (_super) {
 var mapStateToProps = function (state) {
     return {
         text: state.user.text,
-        systems: state.power.systems,
         cells: state.power.cells,
         reactorPower: state.power.reactorPower,
         heatLevel: state.power.heatLevel,
@@ -8167,19 +8152,18 @@ var ReactorCell = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     ReactorCell.prototype.render = function () {
-        var cell = this.props.cell;
         var style = {
-            gridColumnStart: cell.col,
-            gridRowStart: cell.row,
+            gridColumnStart: this.props.col,
+            gridRowStart: this.props.row,
         };
         var classes = 'gridCell gridCell--reactor';
-        if (cell.endRow !== undefined && cell.endCol !== undefined) {
-            style.gridColumnEnd = cell.endCol;
-            style.gridRowEnd = cell.endRow;
+        if (this.props.endRow !== undefined && this.props.endCol !== undefined) {
+            style.gridColumnEnd = this.props.endCol;
+            style.gridRowEnd = this.props.endRow;
         }
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, style: style, onClick: this.props.clicked },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__sysname" }, this.props.text.systems.power.reactor),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__power" }, this.props.cell.power),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__power" }, this.props.power),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__heat" }, this.props.heatLevel),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__heatRate" },
                 this.props.heatRate,
@@ -8215,23 +8199,22 @@ var SystemCell = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     SystemCell.prototype.render = function () {
-        var cell = this.props.cell;
         var style = {
-            gridColumnStart: cell.col,
-            gridRowStart: cell.row,
+            gridColumnStart: this.props.col,
+            gridRowStart: this.props.row,
         };
         var classes = 'gridCell gridCell--system';
-        if (cell.endRow !== undefined && cell.endCol !== undefined) {
-            style.gridColumnEnd = cell.endCol;
-            style.gridRowEnd = cell.endRow;
-            if (cell.endRow - cell.row > cell.endCol - cell.col) {
+        if (this.props.endRow !== undefined && this.props.endCol !== undefined) {
+            style.gridColumnEnd = this.props.endCol;
+            style.gridRowEnd = this.props.endRow;
+            if (this.props.endRow - this.props.row > this.props.endCol - this.props.col) {
                 classes += ' gridCell--rotated';
             }
         }
-        var sysName = this.props.cell.system === undefined ? undefined : this.getSystemName(this.props.cell.system);
+        var sysName = this.props.system === undefined ? undefined : this.getSystemName(this.props.system);
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, style: style },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__sysname" }, sysName),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__power" }, this.props.cell.power)));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("span", { className: "gridCell__power" }, this.props.power)));
     };
     SystemCell.prototype.getSystemName = function (system) {
         switch (system) {
@@ -9433,13 +9416,6 @@ var Connection = (function () {
                 __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setAllCellPower(levels));
                 break;
             }
-            case 'power_sys': {
-                var vals = data.split(' ');
-                var sys = parseInt(vals[0]);
-                var power = parseInt(vals[1]);
-                __WEBPACK_IMPORTED_MODULE_0__Client__["store"].dispatch(__WEBPACK_IMPORTED_MODULE_5__store_Power__["a" /* actionCreators */].setSystemPower(sys, power));
-                break;
-            }
             case 'power_all_sys': {
                 var values = data.split(' ');
                 var systems = [];
@@ -10626,11 +10602,6 @@ var actionCreators = {
         type: 'SET_ALL_CELLS_P',
         cellPower: cellPower,
     }); },
-    setSystemPower: function (system, power) { return ({
-        type: 'SYSTEM_POWER',
-        system: system,
-        power: power,
-    }); },
     setAllSystems: function (systems) { return ({
         type: 'SYSTEM_ALL',
         systems: systems,
@@ -10661,7 +10632,6 @@ for (var i = 0; i < numCells; i++) {
     });
 }
 var unloadedState = {
-    systems: [],
     cells: cells,
     reactorPower: 100,
     heatLevel: 0,
@@ -10701,24 +10671,16 @@ var reducer = function (state, rawAction) {
             }
             return __assign({}, state, { cells: cells_4 });
         }
-        case 'SYSTEM_POWER': {
-            var systemID = action.system;
-            var systems = state.systems.slice();
-            systems[systemID].power = action.power;
-            return __assign({}, state, { systems: systems });
-        }
         case 'SYSTEM_ALL': {
             var cells_5 = state.cells.slice();
-            var systems = [];
             for (var _i = 0, _a = action.systems; _i < _a.length; _i++) {
                 var system = _a[_i];
                 var startCell = cells_5[system.start];
                 startCell.system = system.system;
                 startCell.endCol = cellIndexToCol(system.end) + 1;
                 startCell.endRow = cellIndexToRow(system.end) + 1;
-                systems[system.system] = startCell;
             }
-            return __assign({}, state, { cells: cells_5, systems: systems });
+            return __assign({}, state, { cells: cells_5 });
         }
         case 'ADD_SPARE_CELL': {
             var spares = state.spareCells.slice();
@@ -11145,7 +11107,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

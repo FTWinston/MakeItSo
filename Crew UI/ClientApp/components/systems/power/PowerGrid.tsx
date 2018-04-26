@@ -29,7 +29,11 @@ export class PowerGrid extends React.PureComponent<PowerGridProps, {}> {
             if (cell.type === PowerCellType.Reactor) {
                 return (
                     <ReactorCell
-                        cell={cell}
+                        col={cell.col}
+                        row={cell.row}
+                        endCol={cell.endCol}
+                        endRow={cell.endRow}
+                        power={cell.power}
                         key={cell.index}
                         clicked={this.props.reactorClicked}
                         heatLevel={this.props.heatLevel}
@@ -41,7 +45,12 @@ export class PowerGrid extends React.PureComponent<PowerGridProps, {}> {
             if (cell.type === PowerCellType.System) {
                 return (
                     <SystemCell
-                        cell={cell}
+                        col={cell.col}
+                        row={cell.row}
+                        endCol={cell.endCol}
+                        endRow={cell.endRow}
+                        power={cell.power}
+                        system={cell.system}
                         key={cell.index}
                         text={this.props.text}
                     />
@@ -51,7 +60,10 @@ export class PowerGrid extends React.PureComponent<PowerGridProps, {}> {
 
         return (
             <GridCell
-                cell={cell}
+                row={cell.row}
+                col={cell.col}
+                type={cell.type}
+                power={cell.power}
                 key={cell.index}
                 clicked={() => this.props.cellClicked(cell.index)}
                 text={this.props.text}
