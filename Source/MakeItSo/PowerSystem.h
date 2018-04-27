@@ -239,7 +239,16 @@ public:
 	uint8 sysIndex, firstCell, lastCell;
 	UPowerSystem::EPowerSystem system;
 
-	uint16 GetPowerLevel();
+	virtual uint16 GetPowerLevel();
 
 	TArray<PowerCell*> cells;
+};
+
+class PowerReactor : public PowerSystemOutput
+{
+public:
+	PowerReactor(uint8 index, uint8 x, uint8 y, uint8 w, uint8 h, TArray<PowerCell*> allCells, UPowerSystem *system);
+	uint16 GetPowerLevel() override;
+private:
+	UPowerSystem * powerSystem;
 };

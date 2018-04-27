@@ -66,11 +66,6 @@ UPowerSystem::UPowerSystem()
 
 #define CELLINDEX(x, y) ((x) + POWER_GRID_WIDTH * (y))
 
-#define REACTOR_MIN_X 4
-#define REACTOR_MAX_X 6
-#define REACTOR_MIN_Y 4
-#define REACTOR_MAX_Y 6
-
 #define NUM_SPARE_CELLS 5
 
 void UPowerSystem::BeginPlay()
@@ -107,20 +102,18 @@ void UPowerSystem::BeginPlay()
 		SETADD(spareCells, GetRandomCellType());
 
 	// create system objects to store & display system info on
-	SETADD(systems, new PowerSystemOutput(0, 0, 0, 3, 1, Power_Helm, cells));
-	SETADD(systems, new PowerSystemOutput(1, 4, 0, 3, 1, Power_Warp, cells));
-	SETADD(systems, new PowerSystemOutput(2, 8, 0, 3, 1, Power_BeamWeapons, cells));
+	SETADD(systems, new PowerReactor(0, 4, 4, 3, 3, cells, this));
 
-	SETADD(systems, new PowerSystemOutput(3, 0, 4, 1, 3, Power_Shields, cells));
-	SETADD(systems, new PowerSystemOutput(4, 10, 4, 1, 3, Power_Sensors, cells));
+	SETADD(systems, new PowerSystemOutput(1, 0, 0, 3, 1, Power_Helm, cells));
+	SETADD(systems, new PowerSystemOutput(2, 4, 0, 3, 1, Power_Warp, cells));
+	SETADD(systems, new PowerSystemOutput(3, 8, 0, 3, 1, Power_BeamWeapons, cells));
 
-	SETADD(systems, new PowerSystemOutput(5, 0, 10, 3, 1, Power_Comms, cells));
-	SETADD(systems, new PowerSystemOutput(6, 4, 10, 3, 1, Power_DamageControl, cells));
-	SETADD(systems, new PowerSystemOutput(7, 8, 10, 3, 1, Power_Torpedoes, cells));
+	SETADD(systems, new PowerSystemOutput(4, 0, 4, 1, 3, Power_Shields, cells));
+	SETADD(systems, new PowerSystemOutput(5, 10, 4, 1, 3, Power_Sensors, cells));
 
-	SETADD(systemLayout, Power_Reactor);
-	SETADD(systemLayout, CELLINDEX(REACTOR_MIN_X, REACTOR_MIN_Y));
-	SETADD(systemLayout, CELLINDEX(REACTOR_MAX_X, REACTOR_MAX_Y));
+	SETADD(systems, new PowerSystemOutput(6, 0, 10, 3, 1, Power_Comms, cells));
+	SETADD(systems, new PowerSystemOutput(7, 4, 10, 3, 1, Power_DamageControl, cells));
+	SETADD(systems, new PowerSystemOutput(8, 8, 10, 3, 1, Power_Torpedoes, cells));
 
 	for (auto system : systems)
 	{
@@ -221,7 +214,7 @@ void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	if (ISCLIENT())
 		SendOverheat();
-
+	
 	if (overheatValue >= 250)
 		TakeDamage(5);
 	else if (overheatValue >= 200)
@@ -487,9 +480,7 @@ void UPowerSystem::DistributePower()
 {
 	for (auto cell : cells)
 	{
-		if (cell->GetType() != Cell_Reactor)
-			cell->powerLevel = 0;
-
+		cell->powerLevel = 0;
 		cell->powerArrivesFrom = Dir_None;
 		cell->alreadyOutputPower = false;
 	}
@@ -506,9 +497,11 @@ void UPowerSystem::DistributePower()
 	TMap<int32, PowerCell*> *nextEdgeCells_singleOutput = &tmpCells2;
 	TMap<int32, PowerCell*> *nextEdgeCells_multipleOutput = &tmpCells3;
 
-	for (auto cell : systems[Power_Reactor]->cells)
+	auto reactor = systems[Power_Reactor];
+	auto reactorPower = reactor->GetPowerLevel();
+	for (auto cell : reactor->cells)
 	{
-		cell->powerLevel = GetPowerLevel();
+		cell->powerLevel = reactorPower;
 		ADD_CELL_TO_MAP(edgeCells, cell);
 	}
 
@@ -575,7 +568,7 @@ void UPowerSystem::DistributePower()
 				numReactorOutputs += numOutputs;
 
 			// where possible, only process non-reactor cells with a single possible output, until there are no such cells left
-			bool splitOutput = edgeCell->GetType() != Power_Reactor && numOutputs > 1;
+			bool splitOutput = edgeCell->GetType() != Cell_Reactor && numOutputs > 1;
 
 			if (splitOutput && !handlingMultipleOutputs)
 			{
@@ -1046,4 +1039,15 @@ uint16 PowerSystemOutput::GetPowerLevel()
 	power = 100 + (uint8)FMath::Pow((float)power - 100, 0.8f);
 
 	return FMath::Min(200, power);
+}
+
+PowerReactor::PowerReactor(uint8 index, uint8 x, uint8 y, uint8 w, uint8 h, TArray<PowerCell*> allCells, UPowerSystem *system)
+ : PowerSystemOutput(index, x, y, w, h, UPowerSystem::Power_Reactor, allCells)
+{
+	powerSystem = system;
+}
+
+uint16 PowerReactor::GetPowerLevel()
+{
+	return powerSystem->GetPowerLevel();
 }
