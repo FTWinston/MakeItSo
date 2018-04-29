@@ -56,13 +56,11 @@ bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_
 	}
 	else if (STARTS_WITH(msg, "dmg_useCard "))
 	{
-		int32 cardID = ExtractInt(msg, sizeof("dmg_useCard "));
-
 		TArray<FString> parts = SplitParts(msg, sizeof("dmg_useCard "));
 
 		if (SIZENUM(parts) >= 3)
 		{
-			uint8 cellID = STOI(parts[0]);
+			uint8 cardID = STOI(parts[0]);
 			uint8 handPosition = STOI(parts[1]);
 			EDamageSystem targetSystem = (EDamageSystem)STOI(parts[2]);
 
@@ -86,13 +84,13 @@ void UDamageControlSystem::SendAllData_Implementation()
 void UDamageControlSystem::SendSystemOrder()
 {
 	auto command = CombineIDs(TEXT("dmg_order "), systemOrder);
-	crewManager->SendAll(command);
+	SendSystem(command);
 }
 
 void UDamageControlSystem::SendAllDamageLevels()
 {
 	auto command = CombineIDs(TEXT("dmg_levels "), damageLevels);
-	crewManager->SendAll(command);
+	SendSystem(command);
 }
 
 void UDamageControlSystem::SendCardChoice()
@@ -111,7 +109,7 @@ void UDamageControlSystem::SendQueueSize()
 void UDamageControlSystem::SendWholeHand()
 {
 	auto command = CombineIDs(TEXT("dmg_hand "), cardHand);
-	crewManager->SendAll(command);
+	SendSystem(command);
 }
 
 void UDamageControlSystem::SendDamageLevel(EDamageSystem system, uint8 damageLevel)
@@ -342,6 +340,17 @@ enum EDamageCard
 	NUM_DAMAGE_CARDS,
 };
 
+bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
+{
+	UShipSystem *targetSystem = LookupSystem(system);
+	if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+		return false;
+
+	targetSystem->RestoreDamage(amount);
+	damageLevels[system] = targetSystem->GetHealthLevel();
+	return true;
+}
+
 #ifdef WEB_SERVER_TEST
 void UDamageControlSystem::ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSystemPos) { ActivateCard_Implementation(cardID, handPosition, targetSystemPos); }
 #endif
@@ -352,26 +361,23 @@ void UDamageControlSystem::ActivateCard_Implementation(uint8 cardID, uint8 handP
 		return;
 
 	EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
-	UShipSystem *targetSystem = LookupSystem(damageSystem);
 
 	switch ((EDamageCard)cardID)
 	{
 	case Card_RepairSmall:
 	{
-		if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+		if (!RestoreDamage(damageSystem, 15))
 			return;
-		targetSystem->RestoreDamage(15);
 		break;
 	}
 	case Card_RepairMed:
-		if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+
+		if (!RestoreDamage(damageSystem, 35))
 			return;
-		targetSystem->RestoreDamage(35);
 		break;
 	case Card_RepairLarge:
-		if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+		if (!RestoreDamage(damageSystem, 75))
 			return;
-		targetSystem->RestoreDamage(75);
 		break;
 	default:
 		return;

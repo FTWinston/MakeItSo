@@ -1,6 +1,7 @@
 import * as User from './User';
 import * as Crew from './Crew';
 import * as Screen from './Screen';
+import * as Damage from './Damage';
 import * as Helm from './Helm';
 import * as Power from './Power';
 import * as Sensors from './Sensors';
@@ -11,6 +12,7 @@ export interface ApplicationState {
     user: User.UserState;
     crew: Crew.CrewState;
     screen: Screen.ScreenState;
+    damage: Damage.DamageState;
     helm: Helm.HelmState;
     power: Power.PowerState;
     sensors: Sensors.SensorState;
@@ -24,6 +26,7 @@ export const reducers = {
     user: User.reducer,
     crew: Crew.reducer,
     screen: Screen.reducer,
+    damage: Damage.reducer,
     helm: Helm.reducer,
     power: Power.reducer,
     sensors: Sensors.reducer,

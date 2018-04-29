@@ -92,4 +92,6 @@ private:
 
 	UPROPERTY()
 	uint16 choiceGeneratedAmount;
+
+	bool RestoreDamage(EDamageSystem system, uint8 amount);
 };

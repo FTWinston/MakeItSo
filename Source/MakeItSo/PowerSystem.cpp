@@ -98,7 +98,8 @@ void UPowerSystem::BeginPlay()
 			}
 		}
 
-	for (int32 i = 0; i < NUM_SPARE_CELLS; i++)
+	SETADD(spareCells, Cell_Radiator);
+	for (int32 i = 1; i < NUM_SPARE_CELLS; i++)
 		SETADD(spareCells, GetRandomCellType());
 
 	// create system objects to store & display system info on
@@ -770,7 +771,11 @@ uint8 UPowerSystem::GetDamageCellCountForDamage(uint8 minHealth, uint8 maxHealth
 
 UPowerSystem::EPowerCellType UPowerSystem::GetRandomCellType()
 {
-	return (EPowerCellType)FMath::RandRange(Cell_Radiator, Cell_WestNorthEast);
+	// 1 in 6 odds of getting a radiator, make them more likely
+	if (FMath::RandRange(0, 5) == 0)
+		return Cell_Radiator;
+
+	return (EPowerCellType)FMath::RandRange(Cell_NorthSouth, Cell_WestNorthEast);
 }
 
 
