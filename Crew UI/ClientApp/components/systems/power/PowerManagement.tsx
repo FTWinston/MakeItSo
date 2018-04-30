@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
-import { actionCreators, PowerCell, PowerState } from '~/store/Power';
+import { PowerCell, PowerState } from '~/store/Power';
 import { TextLocalisation } from '~/functionality';
 import { connection } from '~/Client';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
@@ -95,7 +95,7 @@ const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (stat
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    actionCreators,
+    {},
     null,
     { withRef: true },
 )(PowerManagement);

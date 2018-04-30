@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { DamageCardInfo, DamageCardRarity, getDamageCardInfo } from '~/store/Damage';
+import './CardDisplay.scss';
 
 interface CardDisplayProps {
     text: TextLocalisation;
     cardID: number;
-    clicked: () => void;
+    selected: boolean;
+    clicked?: () => void;
 }
 
 export class CardDisplay extends React.Component<CardDisplayProps, {}> {
@@ -20,21 +22,32 @@ export class CardDisplay extends React.Component<CardDisplayProps, {}> {
             };
         }
 
-        let classes = 'damageCard';
+        let cardClasses = 'damageCard', wrapperClasses = 'damageCardWrapper';
         switch (card.rarity) {
             case DamageCardRarity.Common:
-                classes += ' damageCard--common'; break;
+                cardClasses += ' damageCard--common'; break;
             case DamageCardRarity.Rare:
-                classes += ' damageCard--rare'; break;
+                cardClasses += ' damageCard--rare'; break;
             case DamageCardRarity.Epic:
-                classes += ' damageCard--epic'; break;
+                cardClasses += ' damageCard--epic'; break;
+        }
+
+        if (this.props.selected) {
+            cardClasses += ' damageCard--selected';
+            wrapperClasses += ' damageCardWrapper--selected';
         }
         
+        if (this.props.clicked === undefined) {
+            cardClasses += ' damageCard--cantSelect';
+        }
+
         return (
-        <div className={classes} onClick={() => this.props.clicked()}>
-            <div className="damageCard__name">{card.name}</div>
-            <div className="damageCard__rarity" />
-            <div className="damageCard__desc">{card.desc}</div>
+        <div className={wrapperClasses}>
+            <div className={cardClasses} onClick={this.props.clicked}>
+                <div className="damageCard__name">{card.name}</div>
+                <div className="damageCard__rarity" />
+                <div className="damageCard__desc">{card.desc}</div>
+            </div>
         </div>
         );
     }

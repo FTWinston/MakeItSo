@@ -1,1 +1,35 @@
 @import '../../general/mixins';
+
+.damageControl {
+    display: grid;
+    grid-gap: 1em;
+    
+    @include landscape() {
+        grid-template-rows: 1fr 2fr;
+        grid-template-columns: 2fr 3fr;
+        grid-template-areas:
+            "systems selection"
+            "systems hand";
+    }
+
+    @include portrait() {
+        grid-template-rows: 2fr 2fr 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "systems"
+            "hand"
+            "selection";
+    }
+}
+
+.damageSystemList {
+    grid-area: systems;
+}
+
+.damageCardChoice {
+    grid-area: selection;
+}
+
+.damageCardHand {
+    grid-area: hand;
+}

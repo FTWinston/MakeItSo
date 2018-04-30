@@ -1,5 +1,66 @@
 @import '../../general/mixins';
 
-.cardDisplay {
-    
+.damageCardWrapper {
+    overflow: hidden;
+    width: 11em;
+}
+
+.damageCardWrapper:last-child {
+    overflow: visible;
+    width: unset;
+}
+
+.damageCardWrapper--selected {
+    overflow: visible;
+}
+
+.damageCard {
+    width: 10em;
+    min-width: 10em;
+    height: 15em;
+    border-radius: 0.5em;
+    border: solid $colorSecondary 1px;
+    background-color: #442200;
+    padding: 0.25em 0.1em 0 0.1em;
+
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.damageCard--selected {
+    flex-shrink: 0;
+    border-color: $colorHighlight;
+    background-color: #884400;
+}
+
+.damageCard--cantSelect {
+    cursor: not-allowed;
+}
+
+.damageCard__name {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.damageCard__desc {
+    align-self: stretch;
+}
+
+.damageCard__rarity::after {
+    content: 'o';
+}
+
+.damageCard--common .damageCard__rarity {
+    color: $colorTertiary;
+}
+
+.damageCard--rare .damageCard__rarity {
+    color: #00ccff;
+}
+
+.damageCard--epic .damageCard__rarity {
+    color: #cc66ff;   
 }

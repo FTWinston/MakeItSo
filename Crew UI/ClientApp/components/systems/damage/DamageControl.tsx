@@ -6,26 +6,16 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { CardHand } from './CardHand';
 import { CardSelection } from './CardSelection';
 import { SystemList } from './SystemList';
-import { DamageSystemType, DamageState, DamageSystem } from "~/store/Damage";
-import { connection } from "~/Client";
+import { DamageSystemType, DamageState, DamageSystem, actionCreators, maxHandSize } from '~/store/Damage';
+import { connection } from '~/Client';
 import './DamageControl.scss';
 
 interface DamageControlProps extends DamageState {
     text: TextLocalisation;
+    selectCard: (handPos?: number) => void;
 }
 
-interface DamageControlState {
-    selectedHandPos?: number;
-}
-
-class DamageControl extends ShipSystemComponent<DamageControlProps, DamageControlState> {
-    constructor(props: DamageControlProps) {
-        super(props);
-        
-        this.state = {
-        };
-    }
-
+class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     name() { return 'power'; }
 
     protected getHelpText() {
@@ -37,7 +27,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, DamageContro
     }
 
     public render() {
-        return <div className="system">
+        return <div className="system damageControl">
             <SystemList
                 text={this.props.text}
                 systems={this.props.systems}
@@ -48,30 +38,27 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, DamageContro
                 cardIDs={this.props.choiceCardIDs}
                 queueSize={this.props.queueSize}
                 cardSelected={num => this.pickCard(num)}
+                canSelect={this.props.handCardIDs.length < maxHandSize}
             />
             <CardHand
                 text={this.props.text}
                 cardIDs={this.props.handCardIDs}
                 cardSelected={num => this.selectCard(num)}
+                selectedHandPos={this.props.selectedHandPos}
             />
         </div>;
     }
 
     private selectCard(handPos: number) {
-        this.setState({
-            selectedHandPos: handPos === this.state.selectedHandPos ? undefined : handPos,
-        });
+        this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
     }
 
     private selectSystem(system: DamageSystem) {
-        if (this.state.selectedHandPos === undefined) {
+        if (this.props.selectedHandPos === undefined) {
             return; // do nothing if no card selected
         }
 
-        // TODO: if a card is removed from the hand, need to decrement selectedHandPos ... or if its the ID, set it to null
-        // as such, this ought to be in the store rather than component status
-
-        this.playCard(this.props.handCardIDs[this.state.selectedHandPos], this.state.selectedHandPos, system.type);
+        this.playCard(this.props.handCardIDs[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
     }
 
     private pickCard(cardNum: number) {
@@ -91,13 +78,15 @@ const mapStateToProps: (state: ApplicationState) => DamageControlProps = (state)
         choiceCardIDs: state.damage.choiceCardIDs,
         queueSize: state.damage.queueSize,
         handCardIDs: state.damage.handCardIDs,
+        selectedHandPos: state.damage.selectedHandPos,
+        selectCard: actionCreators.selectCard,
     }
 };
 
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {},
+    actionCreators,
     null,
     { withRef: true },
 )(DamageControl);

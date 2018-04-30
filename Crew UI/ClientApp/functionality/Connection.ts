@@ -289,39 +289,42 @@ export class Connection {
             }
             case 'dmg_order': {
                 let order = data.split(' ').map(str => parseInt(str));
-                damageActions.sortSystems(order);
+                store.dispatch(damageActions.sortSystems(order));
                 break;
             }
             case 'dmg_levels': {
                 let levels = data.split(' ').map(str => parseInt(str));
-                damageActions.setAllDamage(levels);
+                store.dispatch(damageActions.setAllDamage(levels));
                 break;
             }
             case 'dmg_level': {
                 let parts = data.split(' ').map(str => parseInt(str));
-                damageActions.setDamage(parts[0] as DamageSystemType, parts[1]);
+                store.dispatch(damageActions.setDamage(parts[0] as DamageSystemType, parts[1]));
                 break;
             };
             case 'dmg_choice': {
-                let cardIDs = data.split(' ').map(str => parseInt(str));
-                if (cardIDs.length === 3) {
-                    damageActions.setChoice(cardIDs as [number, number, number]);
-                }
+                let cardIDs = data.length === 0 ? [] : data.split(' ').map(str => parseInt(str));
+                store.dispatch(damageActions.setChoice(cardIDs));
                 break;
             }
             case 'dmg_queue': {
                 let size = parseInt(data);
-                damageActions.setQueueSize(size);
+                store.dispatch(damageActions.setQueueSize(size));
+                break;
+            }
+            case 'dmg_hand': {
+                let cardIDs = data.length === 0 ? [] :data.split(' ').map(str => parseInt(str));
+                store.dispatch(damageActions.setHand(cardIDs));
                 break;
             }
             case 'dmg_add': {
                 let cardID = parseInt(data);
-                damageActions.addCardToHand(cardID);
+                store.dispatch(damageActions.addCardToHand(cardID));
                 break;
             }
             case 'dmg_rem': {
                 let pos = parseInt(data);
-                damageActions.removeCardFromHand(pos);
+                store.dispatch(damageActions.removeCardFromHand(pos));
                 break;
             }
             default:

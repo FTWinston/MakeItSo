@@ -1,0 +1,19 @@
+@import '../../general/mixins';
+
+.damageCardChoice {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.damageCardChoice__queueSize {
+    border-radius: 2em;
+    font-weight: bold;
+    font-size: 2em;
+    background-color: $colorPrimary;
+    color: $backgroundColor;
+    align-self: flex-start;
+    padding: 0.1em;
+    margin-right: 1em;
+}

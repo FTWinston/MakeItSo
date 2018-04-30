@@ -79,6 +79,7 @@ void UDamageControlSystem::SendAllData_Implementation()
 	SendAllDamageLevels();
 	SendCardChoice();
 	SendWholeHand();
+	SendQueueSize();
 }
 
 void UDamageControlSystem::SendSystemOrder()
@@ -259,7 +260,13 @@ void UDamageControlSystem::AddCardChoice(uint8 card1, uint8 card2, uint8 card3)
 	else
 	{
 		cardChoice = newChoice;
+
+		if (ISCLIENT())
+			SendCardChoice();
 	}
+
+	if (ISCLIENT())
+		SendQueueSize();
 }
 
 FString UDamageControlSystem::CombineIDs(const TCHAR *prefix, TArray<uint8> IDs)
@@ -282,21 +289,29 @@ FString UDamageControlSystem::CombineIDs(const TCHAR *prefix, TArray<uint8> IDs)
 	return output;
 }
 
+#define MAX_HAND_SIZE 8
+
 #ifdef WEB_SERVER_TEST
 void UDamageControlSystem::ChooseCard(uint8 cardPosition) { ChooseCard_Implementation(cardPosition); }
 #endif
 
 void UDamageControlSystem::ChooseCard_Implementation(uint8 cardPosition)
 {
-	if (cardPosition >= SIZENUM(cardChoice))
+	if (cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
 		return;
 
 	uint8 chosenCardID = cardChoice[cardPosition];
 	SETADD(cardHand, chosenCardID);
 
+	if (ISCLIENT())
+		SendAddCardToHand(chosenCardID);
+
 	if (QUEUE_IS_EMPTY(choiceQueue))
 	{
 		CLEAR(cardChoice);
+
+		if (ISCLIENT())
+			SendCardChoice();
 		return;
 	}
 
@@ -308,6 +323,12 @@ void UDamageControlSystem::ChooseCard_Implementation(uint8 cardPosition)
 #endif
 
 	choiceQueueSize = SIZENUM(choiceQueue);
+
+	if (ISCLIENT())
+	{
+		SendCardChoice();
+		SendQueueSize();
+	}
 }
 
 UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
@@ -389,6 +410,9 @@ void UDamageControlSystem::ActivateCard_Implementation(uint8 cardID, uint8 handP
 	
 	// only remove card from hand if we play it successfully
 	SETREMOVEAT(cardHand, handPosition);
+
+	if (ISCLIENT())
+		SendRemoveCardFromHand(handPosition);
 }
 
 uint8 UDamageControlSystem::PickRandomCard()

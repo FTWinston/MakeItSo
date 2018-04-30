@@ -17,6 +17,8 @@ export const enum DamageSystemType {
 
 const numDamageSystems = DamageSystemType.Comms as number;
 
+export const maxHandSize = 8;
+
 export const enum DamageCardRarity {
     Common,
     Rare,
@@ -39,6 +41,7 @@ export interface DamageState {
     choiceCardIDs: number[];
     handCardIDs: number[];
     queueSize: number;
+    selectedHandPos?: number;
 }
 
 // -----------------
@@ -66,6 +69,11 @@ interface SetChoiceAction {
     cardIDs: [number, number, number];
 }
 
+interface SetHandAction {
+    type: 'HAND';
+    cardIDs: number[];
+}
+
 interface SetQueueAction {
     type: 'QUEUE';
     size: number;
@@ -81,9 +89,15 @@ interface RemoveCardAction {
     handPos: number;
 }
 
+interface SelectCardAction {
+    type: 'SEL_CARD';
+    handPos?: number;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SortSystemsAction | SetAllDamageAction | SetDamageAction | SetChoiceAction | SetQueueAction | AddCardAction | RemoveCardAction;
+type KnownAction = SortSystemsAction | SetAllDamageAction | SetDamageAction | SetChoiceAction | SetHandAction
+    | SetQueueAction | AddCardAction | RemoveCardAction | SelectCardAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -103,8 +117,12 @@ export const actionCreators = {
         system: system,
         damage: damage,
     },
-    setChoice: (cardIDs: [number, number, number]) => <SetChoiceAction>{
+    setChoice: (cardIDs: number[]) => <SetChoiceAction>{
         type: 'CHOICE',
+        cardIDs: cardIDs,
+    },
+    setHand: (cardIDs: number[]) => <SetHandAction>{
+        type: 'HAND',
         cardIDs: cardIDs,
     },
     setQueueSize: (size: number) => <SetQueueAction>{
@@ -119,6 +137,10 @@ export const actionCreators = {
         type: 'REM_CARD',
         handPos: handPos,
     },
+    selectCard: (handPos?: number) => <SelectCardAction>{
+        type: 'SEL_CARD',
+        handPos: handPos,
+    }
 };
 
 // ----------------
@@ -181,7 +203,13 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
         case 'CHOICE': {
             return {
                 ...state,
-                choiceCardIDs: action.cardIDs.slice(),
+                choiceCardIDs: action.cardIDs,
+            };
+        }
+        case 'HAND': {
+            return {
+                ...state,
+                handCardIDs: action.cardIDs,
             };
         }
         case 'QUEUE': {
@@ -200,12 +228,29 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             };
         }
         case 'REM_CARD': {
+            let selectedHandPos = state.selectedHandPos;
+            if (selectedHandPos !== undefined) {
+                if (action.handPos === selectedHandPos) {
+                    selectedHandPos = undefined;
+                }
+                else if (action.handPos < selectedHandPos) {
+                    selectedHandPos--;
+                }
+            }
+
             let hand = state.handCardIDs.slice().splice(action.handPos, 1);
 
             return {
                 ...state,
                 handCardIDs: hand,
+                selectedHandPos: selectedHandPos,
             };
+        }
+        case 'SEL_CARD': {
+            return {
+                ...state,
+                selectedHandPos: action.handPos,
+            }
         }
         default:
             // The following line guarantees that every action in the KnownAction union has been covered by a case above

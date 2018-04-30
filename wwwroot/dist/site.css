@@ -484,6 +484,152 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
+.damageCardWrapper {
+  overflow: hidden;
+  width: 11em; }
+
+.damageCardWrapper:last-child {
+  overflow: visible;
+  width: unset; }
+
+.damageCardWrapper--selected {
+  overflow: visible; }
+
+.damageCard {
+  width: 10em;
+  min-width: 10em;
+  height: 15em;
+  border-radius: 0.5em;
+  border: solid #d09bcf 1px;
+  background-color: #442200;
+  padding: 0.25em 0.1em 0 0.1em;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center; }
+
+.damageCard--selected {
+  flex-shrink: 0;
+  border-color: #e0e5f8;
+  background-color: #884400; }
+
+.damageCard--cantSelect {
+  cursor: not-allowed; }
+
+.damageCard__name {
+  font-weight: bold;
+  font-size: 1.1em; }
+
+.damageCard__desc {
+  align-self: stretch; }
+
+.damageCard__rarity::after {
+  content: 'o'; }
+
+.damageCard--common .damageCard__rarity {
+  color: #9f9bfd; }
+
+.damageCard--rare .damageCard__rarity {
+  color: #00ccff; }
+
+.damageCard--epic .damageCard__rarity {
+  color: #cc66ff; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.damageCardHand {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.damageCardChoice {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center; }
+
+.damageCardChoice__queueSize {
+  border-radius: 2em;
+  font-weight: bold;
+  font-size: 2em;
+  background-color: #ff7d01;
+  color: #333;
+  align-self: flex-start;
+  padding: 0.1em;
+  margin-right: 1em; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.damageSystemList {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr; }
+
+.damageSystem {
+  border-radius: 1em;
+  background-color: #9f9bfd;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+  @media (orientation: landscape) {
+    .damageSystem {
+      font-size: 2vw; } }
+  @media (orientation: portrait) {
+    .damageSystem {
+      font-size: 3vw; } }
+
+.damageSystem__damage {
+  font-weight: bold;
+  font-size: 1.5em; }
+
+.damageSystem__damage::after {
+  content: '%';
+  font-weight: normal; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.damageControl {
+  display: grid;
+  grid-gap: 1em; }
+  @media (orientation: landscape) {
+    .damageControl {
+      grid-template-rows: 1fr 2fr;
+      grid-template-columns: 2fr 3fr;
+      grid-template-areas: "systems selection" "systems hand"; } }
+  @media (orientation: portrait) {
+    .damageControl {
+      grid-template-rows: 2fr 2fr 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: "systems" "hand" "selection"; } }
+
+.damageSystemList {
+  grid-area: systems; }
+
+.damageCardChoice {
+  grid-area: selection; }
+
+.damageCardHand {
+  grid-area: hand; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { DamageSystem, DamageSystemType } from "~/store/Damage";
+import './SystemList.scss';
 
 interface SystemListProps {
     text: TextLocalisation;

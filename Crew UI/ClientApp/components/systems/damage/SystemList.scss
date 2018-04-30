@@ -1,0 +1,37 @@
+@import '../../general/mixins';
+
+.damageSystemList {
+    display: grid;
+    grid-gap: 1em;
+    
+    grid-template-rows: 1fr 1fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.damageSystem {
+    border-radius: 1em;
+    background-color: $colorTertiary;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    @include landscape() {
+        font-size: 2vw;
+    }
+
+    @include portrait() {
+        font-size: 3vw;
+    }
+}
+
+.damageSystem__damage {
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.damageSystem__damage::after {
+    content: '%';
+    font-weight: normal;
+}
