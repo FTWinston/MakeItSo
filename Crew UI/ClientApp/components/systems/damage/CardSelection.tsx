@@ -1,17 +1,33 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { DamageCard } from "~/store/Damage";
+import { CardDisplay } from "./CardDisplay";
 
 interface CardSelectionProps {
     text: TextLocalisation;
     cards: DamageCard[];
     queueSize: number;
+    cardSelected: (number: number) => void;
 }
 
 export class CardSelection extends React.Component<CardSelectionProps, {}> {
     public render() {
-        return <div>
-        </div>;
-        // TODO: implement
+        let queueSize = this.props.queueSize <= 0 ? undefined : <div className="damageCardChoice__queueSize">{this.props.queueSize}</div>;
+
+        return (
+        <div className="damageCardChoice">
+            {this.props.cards.map((card, index) => this.renderCard(card, index))}
+            {queueSize}
+        </div>
+        );
+    }
+
+    private renderCard(card: DamageCard, index: number) {
+        return <CardDisplay
+            card={card}
+            key={index}
+            clicked={() => this.props.cardSelected(index)}
+            text={this.props.text}
+        />;
     }
 }

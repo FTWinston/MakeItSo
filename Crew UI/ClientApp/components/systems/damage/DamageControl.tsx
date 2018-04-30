@@ -6,12 +6,17 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { CardHand } from './CardHand';
 import { CardSelection } from './CardSelection';
 import { SystemList } from './SystemList';
-import { DamageSystemType, DamageState } from "~/store/Damage";
+import { DamageSystemType, DamageState, DamageCard } from "~/store/Damage";
 import { connection } from "~/Client";
 import './DamageControl.scss';
 
 interface DamageControlProps extends DamageState {
     text: TextLocalisation;
+}
+
+interface DamageControlState {
+    selectedCard: DamageCard;
+    selectedCardHandPos: number;
 }
 
 class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
@@ -34,10 +39,31 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
 
     public render() {
         return <div className="system">
-            <SystemList text={this.props.text} systems={this.props.systems} />
-            <CardSelection text={this.props.text} cards={this.props.choice} queueSize={this.props.queueSize} />
-            <CardHand text={this.props.text} cards={this.props.hand} />
+            <SystemList
+                text={this.props.text}
+                systems={this.props.systems}
+                systemSelected={num => this.selectSystem(num)}
+            />
+            <CardSelection
+                text={this.props.text}
+                cards={this.props.choice}
+                queueSize={this.props.queueSize}
+                cardSelected={num => this.pickCard(num)}
+            />
+            <CardHand
+                text={this.props.text}
+                cards={this.props.hand}
+                cardSelected={num => this.selectCard(num)}
+            />
         </div>;
+    }
+
+    private selectCard(handPos: number) {
+        // TODO set state
+    }
+
+    private selectSystem(sysNum: number) {
+        // TODO: set state or maybe call playCard
     }
 
     private pickCard(cardNum: number) {

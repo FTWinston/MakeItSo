@@ -222,9 +222,13 @@ void UDamageControlSystem::OnReplicated_CardChoice(TArray<uint8> beforeChange)
 }
 
 #define CHOICE_GENERATION_ENERGY_AMOUNT 500
+#define MAX_CHOICE_QUEUE_SIZE 10
 
 void UDamageControlSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
+		return;
+
 	choiceGeneratedAmount += GetPowerLevel();
 
 	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
