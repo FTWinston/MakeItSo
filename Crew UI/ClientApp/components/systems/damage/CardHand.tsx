@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { DamageCard } from "~/store/Damage";
 import { CardDisplay } from "~/components/systems/damage/CardDisplay";
 
 interface CardHandProps {
     text: TextLocalisation;
-    cards: DamageCard[];
+    cardIDs: number[];
     cardSelected: (cardPos: number) => void;
 }
 
@@ -13,14 +12,14 @@ export class CardHand extends React.Component<CardHandProps, {}> {
     public render() {
         return (
         <div className="damageCardHand">
-            {this.props.cards.map((card, index) => this.renderCard(card, index))}
+            {this.props.cardIDs.map((cardID, index) => this.renderCard(cardID, index))}
         </div>
         );
     }
 
-    private renderCard(card: DamageCard, index: number) {
+    private renderCard(cardID: number, index: number) {
         return <CardDisplay
-            card={card}
+            cardID={cardID}
             key={index}
             clicked={() => this.props.cardSelected(index)}
             text={this.props.text}

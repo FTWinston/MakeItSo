@@ -6,7 +6,7 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { CardHand } from './CardHand';
 import { CardSelection } from './CardSelection';
 import { SystemList } from './SystemList';
-import { DamageSystemType, DamageState, DamageCard } from "~/store/Damage";
+import { DamageSystemType, DamageState, DamageSystem } from "~/store/Damage";
 import { connection } from "~/Client";
 import './DamageControl.scss';
 
@@ -15,16 +15,15 @@ interface DamageControlProps extends DamageState {
 }
 
 interface DamageControlState {
-    selectedCard: DamageCard;
-    selectedCardHandPos: number;
+    selectedHandPos?: number;
 }
 
-class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
+class DamageControl extends ShipSystemComponent<DamageControlProps, DamageControlState> {
     constructor(props: DamageControlProps) {
         super(props);
         
         this.state = {
-        }
+        };
     }
 
     name() { return 'power'; }
@@ -42,28 +41,37 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
             <SystemList
                 text={this.props.text}
                 systems={this.props.systems}
-                systemSelected={num => this.selectSystem(num)}
+                systemSelected={sys => this.selectSystem(sys)}
             />
             <CardSelection
                 text={this.props.text}
-                cards={this.props.choice}
+                cardIDs={this.props.choiceCardIDs}
                 queueSize={this.props.queueSize}
                 cardSelected={num => this.pickCard(num)}
             />
             <CardHand
                 text={this.props.text}
-                cards={this.props.hand}
+                cardIDs={this.props.handCardIDs}
                 cardSelected={num => this.selectCard(num)}
             />
         </div>;
     }
 
     private selectCard(handPos: number) {
-        // TODO set state
+        this.setState({
+            selectedHandPos: handPos === this.state.selectedHandPos ? undefined : handPos,
+        });
     }
 
-    private selectSystem(sysNum: number) {
-        // TODO: set state or maybe call playCard
+    private selectSystem(system: DamageSystem) {
+        if (this.state.selectedHandPos === undefined) {
+            return; // do nothing if no card selected
+        }
+
+        // TODO: if a card is removed from the hand, need to decrement selectedHandPos ... or if its the ID, set it to null
+        // as such, this ought to be in the store rather than component status
+
+        this.playCard(this.props.handCardIDs[this.state.selectedHandPos], this.state.selectedHandPos, system.type);
     }
 
     private pickCard(cardNum: number) {
@@ -80,9 +88,9 @@ const mapStateToProps: (state: ApplicationState) => DamageControlProps = (state)
     return {
         text: state.user.text,
         systems: state.damage.systems,
-        choice: state.damage.choice,
+        choiceCardIDs: state.damage.choiceCardIDs,
         queueSize: state.damage.queueSize,
-        hand: state.damage.hand,
+        handCardIDs: state.damage.handCardIDs,
     }
 };
 

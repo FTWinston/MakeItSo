@@ -1,5 +1,5 @@
 import { Action, Reducer, ActionCreator } from 'redux';
-import { ShipSystem } from "~/functionality";
+import { ShipSystem, TextLocalisation } from "~/functionality";
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -17,7 +17,7 @@ export const enum DamageSystemType {
 
 const numDamageSystems = DamageSystemType.Comms as number;
 
-export const enum PowerCardRarity {
+export const enum DamageCardRarity {
     Common,
     Rare,
     Epic,
@@ -28,16 +28,16 @@ export interface DamageSystem {
     damage: number;
 }
 
-export interface DamageCard {
+export interface DamageCardInfo {
     name: string;
     desc: string;
-    rarity: PowerCardRarity;
+    rarity: DamageCardRarity;
 }
 
 export interface DamageState {
     systems: DamageSystem[];
-    choice: DamageCard[];
-    hand: DamageCard[];
+    choiceCardIDs: number[];
+    handCardIDs: number[];
     queueSize: number;
 }
 
@@ -135,8 +135,8 @@ const unloadedState: DamageState = {
         { type: DamageSystemType.Shields, damage: 0, },
         { type: DamageSystemType.Comms, damage: 0, },
     ],
-    choice: [],
-    hand: [],
+    choiceCardIDs: [],
+    handCardIDs: [],
     queueSize: 0,
 };
 
@@ -181,7 +181,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
         case 'CHOICE': {
             return {
                 ...state,
-                choice: action.cardIDs.map(id => allDamageCards[id]),
+                choiceCardIDs: action.cardIDs.slice(),
             };
         }
         case 'QUEUE': {
@@ -191,20 +191,20 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             };
         }
         case 'ADD_CARD': {
-            let hand = state.hand.slice();
-            hand.push(allDamageCards[action.cardID]);
+            let hand = state.handCardIDs.slice();
+            hand.push(action.cardID);
 
             return {
                 ...state,
-                hand: hand,
+                handCardIDs: hand,
             };
         }
         case 'REM_CARD': {
-            let hand = state.hand.slice().splice(action.handPos, 1);
+            let hand = state.handCardIDs.slice().splice(action.handPos, 1);
 
             return {
                 ...state,
-                hand: hand,
+                handCardIDs: hand,
             };
         }
         default:
@@ -215,20 +215,27 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
     return state || unloadedState;
 };
 
-const allDamageCards: DamageCard[] = [
-    {
-        name: 'Minor fix',
-        desc: 'Restore a small amount of damage to one system',
-        rarity: PowerCardRarity.Common,
-    },
-    {
-        name: 'Moderate fix',
-        desc: 'Restore a moderate amount of damage to one system',
-        rarity: PowerCardRarity.Rare,
-    },
-    {
-        name: 'Major fix',
-        desc: 'Restore a large amount of damage to one system',
-        rarity: PowerCardRarity.Epic,
-    },
-];
+export function getDamageCardInfo(id: number, text: TextLocalisation): DamageCardInfo | null {
+    switch (id) {
+        case 0:
+            return {
+                name: text.systems.damage.minorFix,
+                desc: text.systems.damage.minorFixDesc,
+                rarity: DamageCardRarity.Common,
+            };
+        case 1:
+            return {
+                name: text.systems.damage.moderateFix,
+                desc: text.systems.damage.moderateFixDesc,
+                rarity: DamageCardRarity.Rare,
+            };
+        case 2:
+            return {
+                name: text.systems.damage.majorFix,
+                desc: text.systems.damage.majorFixDesc,
+                rarity: DamageCardRarity.Epic,
+            };
+        default:
+            return null;
+    }
+}

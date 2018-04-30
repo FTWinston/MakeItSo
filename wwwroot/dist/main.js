@@ -83,14 +83,14 @@ module.exports = (__webpack_require__(6))(140);
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__buttons__ = __webpack_require__(25);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "p", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["d"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "n", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["c"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["a"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_0__buttons__["b"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(18);
 /* unused harmony reexport ButtonSet */
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Canvas__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Canvas__ = __webpack_require__(19);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "m", function() { return __WEBPACK_IMPORTED_MODULE_2__Canvas__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Choice__ = __webpack_require__(46);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_3__Choice__["a"]; });
@@ -98,9 +98,9 @@ module.exports = (__webpack_require__(6))(140);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_4__Coordinate__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Field__ = __webpack_require__(48);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return __WEBPACK_IMPORTED_MODULE_5__Field__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__FlexibleCanvas__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__FlexibleCanvas__ = __webpack_require__(20);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "k", function() { return __WEBPACK_IMPORTED_MODULE_6__FlexibleCanvas__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Icons__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Icons__ = __webpack_require__(21);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return __WEBPACK_IMPORTED_MODULE_7__Icons__["b"]; });
 /* unused harmony reexport renderIcon */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__NumericTextbox__ = __webpack_require__(49);
@@ -111,9 +111,9 @@ module.exports = (__webpack_require__(6))(140);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "j", function() { return __WEBPACK_IMPORTED_MODULE_10__ProgressBar__["a"]; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__Screen__ = __webpack_require__(52);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_11__Screen__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__Textbox__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__Textbox__ = __webpack_require__(23);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "o", function() { return __WEBPACK_IMPORTED_MODULE_12__Textbox__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__TouchArea__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__TouchArea__ = __webpack_require__(24);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "l", function() { return __WEBPACK_IMPORTED_MODULE_13__TouchArea__["a"]; });
 
 
@@ -190,7 +190,7 @@ renderApp();
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "h", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["c"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "i", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["b"]; });
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return __WEBPACK_IMPORTED_MODULE_4__math__["a"]; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sensors__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__sensors__ = __webpack_require__(34);
 /* unused harmony reexport JumpPath */
 /* unused harmony reexport SensorTarget */
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return __WEBPACK_IMPORTED_MODULE_5__sensors__["b"]; });
@@ -446,7 +446,7 @@ var reducer = function (state, rawAction) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality__ = __webpack_require__(4);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_general_Icons__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__components_general_Icons__ = __webpack_require__(21);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__buttons_scss__ = __webpack_require__(126);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__buttons_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3__buttons_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -844,6 +844,145 @@ var Vector3 = (function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return reducer; });
+/* harmony export (immutable) */ __webpack_exports__["b"] = getDamageCardInfo;
+var __assign = (this && this.__assign) || Object.assign || function(t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+        s = arguments[i];
+        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+            t[p] = s[p];
+    }
+    return t;
+};
+var numDamageSystems = 7 /* Comms */;
+// ----------------
+// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
+// They don't directly mutate state, but they can have external side-effects (such as loading data).
+var actionCreators = {
+    sortSystems: function (order) { return ({
+        type: 'SORT_SYSTEMS',
+        order: order,
+    }); },
+    setAllDamage: function (damage) { return ({
+        type: 'DAMAGE_SYSTEMS',
+        damage: damage,
+    }); },
+    setDamage: function (system, damage) { return ({
+        type: 'DAMAGE_SYSTEM',
+        system: system,
+        damage: damage,
+    }); },
+    setChoice: function (cardIDs) { return ({
+        type: 'CHOICE',
+        cardIDs: cardIDs,
+    }); },
+    setQueueSize: function (size) { return ({
+        type: 'QUEUE',
+        size: size,
+    }); },
+    addCardToHand: function (cardID) { return ({
+        type: 'ADD_CARD',
+        cardID: cardID,
+    }); },
+    removeCardFromHand: function (handPos) { return ({
+        type: 'REM_CARD',
+        handPos: handPos,
+    }); },
+};
+// ----------------
+// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
+var unloadedState = {
+    systems: [
+        { type: 0 /* Power */, damage: 0, },
+        { type: 1 /* Helm */, damage: 0, },
+        { type: 2 /* Warp */, damage: 0, },
+        { type: 3 /* BeamWeapons */, damage: 0, },
+        { type: 4 /* Torpedoes */, damage: 0, },
+        { type: 5 /* Sensors */, damage: 0, },
+        { type: 6 /* Shields */, damage: 0, },
+        { type: 7 /* Comms */, damage: 0, },
+    ],
+    choiceCardIDs: [],
+    handCardIDs: [],
+    queueSize: 0,
+};
+var reducer = function (state, rawAction) {
+    var action = rawAction;
+    switch (action.type) {
+        case 'SORT_SYSTEMS': {
+            var systems = action.order.map(function (val, index) {
+                var type = val;
+                return state.systems.filter(function (s) { return s.type === type; })[0];
+            });
+            return __assign({}, state, { systems: systems });
+        }
+        case 'DAMAGE_SYSTEMS': {
+            var systems_1 = state.systems.slice();
+            action.damage.map(function (val, index) {
+                var type = index;
+                systems_1.filter(function (s) { return s.type === type; })[0].damage = val;
+            });
+            return __assign({}, state, { systems: systems_1 });
+        }
+        case 'DAMAGE_SYSTEM': {
+            var systems = state.systems.slice();
+            var system = systems.filter(function (s) { return s.type === action.system; })[0];
+            system.damage = action.damage;
+            return __assign({}, state, { systems: systems });
+        }
+        case 'CHOICE': {
+            return __assign({}, state, { choiceCardIDs: action.cardIDs.slice() });
+        }
+        case 'QUEUE': {
+            return __assign({}, state, { queueSize: action.size });
+        }
+        case 'ADD_CARD': {
+            var hand = state.handCardIDs.slice();
+            hand.push(action.cardID);
+            return __assign({}, state, { handCardIDs: hand });
+        }
+        case 'REM_CARD': {
+            var hand = state.handCardIDs.slice().splice(action.handPos, 1);
+            return __assign({}, state, { handCardIDs: hand });
+        }
+        default:
+            // The following line guarantees that every action in the KnownAction union has been covered by a case above
+            var exhaustiveCheck = action;
+    }
+    return state || unloadedState;
+};
+function getDamageCardInfo(id, text) {
+    switch (id) {
+        case 0:
+            return {
+                name: text.systems.damage.minorFix,
+                desc: text.systems.damage.minorFixDesc,
+                rarity: 0 /* Common */,
+            };
+        case 1:
+            return {
+                name: text.systems.damage.moderateFix,
+                desc: text.systems.damage.moderateFixDesc,
+                rarity: 1 /* Rare */,
+            };
+        case 2:
+            return {
+                name: text.systems.damage.majorFix,
+                desc: text.systems.damage.majorFixDesc,
+                rarity: 2 /* Epic */,
+            };
+        default:
+            return null;
+    }
+}
+
+
+/***/ }),
+/* 16 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return numCells; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return maxNumSpare; });
 /* unused harmony export fullPowerLevel */
@@ -999,13 +1138,13 @@ function cellIndexToRow(cellIndex) {
 
 
 /***/ }),
-/* 16 */
+/* 17 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_sensors__ = __webpack_require__(33);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__functionality_sensors__ = __webpack_require__(34);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__functionality_math_Vector3__ = __webpack_require__(14);
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -1216,14 +1355,14 @@ function updatePathStatus(path, state) {
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ButtonSet; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(24);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__buttons__ = __webpack_require__(25);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__ = __webpack_require__(118);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__ButtonSet_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -1281,7 +1420,7 @@ var ButtonSet = (function (_super) {
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1337,14 +1476,14 @@ var Canvas = (function (_super) {
 
 
 /***/ }),
-/* 19 */
+/* 20 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return FlexibleCanvas; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Canvas__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Canvas__ = __webpack_require__(19);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss__ = __webpack_require__(122);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -1414,7 +1553,7 @@ var FlexibleCanvas = (function (_super) {
 
 
 /***/ }),
-/* 20 */
+/* 21 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1532,14 +1671,14 @@ function renderIcon(icon, size) {
 
 
 /***/ }),
-/* 21 */
+/* 22 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SensorView; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TouchArea__ = __webpack_require__(23);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__TouchArea__ = __webpack_require__(24);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__functionality__ = __webpack_require__(4);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -1823,7 +1962,7 @@ var SensorView = (function (_super) {
 
 
 /***/ }),
-/* 22 */
+/* 23 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1881,7 +2020,7 @@ var Textbox = (function (_super) {
 
 
 /***/ }),
-/* 23 */
+/* 24 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -1890,7 +2029,7 @@ var Textbox = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs__ = __webpack_require__(39);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_hammerjs__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FlexibleCanvas__ = __webpack_require__(20);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2116,7 +2255,7 @@ var TouchArea = (function (_super) {
 
 
 /***/ }),
-/* 24 */
+/* 25 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2135,13 +2274,14 @@ var TouchArea = (function (_super) {
 
 
 /***/ }),
-/* 25 */
+/* 26 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CardDisplay; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Damage__ = __webpack_require__(15);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -2153,6 +2293,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 
+
 var CardDisplay = (function (_super) {
     __extends(CardDisplay, _super);
     function CardDisplay() {
@@ -2160,7 +2301,30 @@ var CardDisplay = (function (_super) {
     }
     CardDisplay.prototype.render = function () {
         var _this = this;
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCard", onClick: function () { return _this.props.clicked(); } }, "..."));
+        var card = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__store_Damage__["b" /* getDamageCardInfo */])(this.props.cardID, this.props.text);
+        if (card === null) {
+            card = {
+                name: '???',
+                desc: "Card ID " + this.props.cardID + " not recognised",
+                rarity: 0 /* Common */,
+            };
+        }
+        var classes = 'damageCard';
+        switch (card.rarity) {
+            case 0 /* Common */:
+                classes += ' damageCard--common';
+                break;
+            case 1 /* Rare */:
+                classes += ' damageCard--rare';
+                break;
+            case 2 /* Epic */:
+                classes += ' damageCard--epic';
+                break;
+        }
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes, onClick: function () { return _this.props.clicked(); } },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCard__name" }, card.name),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCard__rarity" }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCard__desc" }, card.desc)));
     };
     return CardDisplay;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -2168,7 +2332,7 @@ var CardDisplay = (function (_super) {
 
 
 /***/ }),
-/* 26 */
+/* 27 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2406,7 +2570,7 @@ var FeedbackGroup = (function (_super) {
 
 
 /***/ }),
-/* 27 */
+/* 28 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2452,7 +2616,7 @@ var HeadingReadout = (function (_super) {
 
 
 /***/ }),
-/* 28 */
+/* 29 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2492,7 +2656,7 @@ var SpeedReadout = (function (_super) {
 
 
 /***/ }),
-/* 29 */
+/* 30 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2689,7 +2853,7 @@ var GridCell = (function (_super) {
 
 
 /***/ }),
-/* 30 */
+/* 31 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2769,7 +2933,7 @@ var Cube = (function () {
 
 
 /***/ }),
-/* 31 */
+/* 32 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2816,7 +2980,7 @@ var Celestial = (function (_super) {
 
 
 /***/ }),
-/* 32 */
+/* 33 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2862,7 +3026,7 @@ var RelatableTarget = (function (_super) {
 
 
 /***/ }),
-/* 33 */
+/* 34 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -2921,7 +3085,7 @@ function parseSensorTarget(data) {
 
 
 /***/ }),
-/* 34 */
+/* 35 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -3000,137 +3164,6 @@ var reducer = function (state, action) {
     }
     return state || unloadedState;
 };
-
-
-/***/ }),
-/* 35 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return reducer; });
-var __assign = (this && this.__assign) || Object.assign || function(t) {
-    for (var s, i = 1, n = arguments.length; i < n; i++) {
-        s = arguments[i];
-        for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-            t[p] = s[p];
-    }
-    return t;
-};
-var numDamageSystems = 7 /* Comms */;
-// ----------------
-// ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
-// They don't directly mutate state, but they can have external side-effects (such as loading data).
-var actionCreators = {
-    sortSystems: function (order) { return ({
-        type: 'SORT_SYSTEMS',
-        order: order,
-    }); },
-    setAllDamage: function (damage) { return ({
-        type: 'DAMAGE_SYSTEMS',
-        damage: damage,
-    }); },
-    setDamage: function (system, damage) { return ({
-        type: 'DAMAGE_SYSTEM',
-        system: system,
-        damage: damage,
-    }); },
-    setChoice: function (cardIDs) { return ({
-        type: 'CHOICE',
-        cardIDs: cardIDs,
-    }); },
-    setQueueSize: function (size) { return ({
-        type: 'QUEUE',
-        size: size,
-    }); },
-    addCardToHand: function (cardID) { return ({
-        type: 'ADD_CARD',
-        cardID: cardID,
-    }); },
-    removeCardFromHand: function (handPos) { return ({
-        type: 'REM_CARD',
-        handPos: handPos,
-    }); },
-};
-// ----------------
-// REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
-var unloadedState = {
-    systems: [
-        { type: 0 /* Power */, damage: 0, },
-        { type: 1 /* Helm */, damage: 0, },
-        { type: 2 /* Warp */, damage: 0, },
-        { type: 3 /* BeamWeapons */, damage: 0, },
-        { type: 4 /* Torpedoes */, damage: 0, },
-        { type: 5 /* Sensors */, damage: 0, },
-        { type: 6 /* Shields */, damage: 0, },
-        { type: 7 /* Comms */, damage: 0, },
-    ],
-    choice: [],
-    hand: [],
-    queueSize: 0,
-};
-var reducer = function (state, rawAction) {
-    var action = rawAction;
-    switch (action.type) {
-        case 'SORT_SYSTEMS': {
-            var systems = action.order.map(function (val, index) {
-                var type = val;
-                return state.systems.filter(function (s) { return s.type === type; })[0];
-            });
-            return __assign({}, state, { systems: systems });
-        }
-        case 'DAMAGE_SYSTEMS': {
-            var systems_1 = state.systems.slice();
-            action.damage.map(function (val, index) {
-                var type = index;
-                systems_1.filter(function (s) { return s.type === type; })[0].damage = val;
-            });
-            return __assign({}, state, { systems: systems_1 });
-        }
-        case 'DAMAGE_SYSTEM': {
-            var systems = state.systems.slice();
-            var system = systems.filter(function (s) { return s.type === action.system; })[0];
-            system.damage = action.damage;
-            return __assign({}, state, { systems: systems });
-        }
-        case 'CHOICE': {
-            return __assign({}, state, { choice: action.cardIDs.map(function (id) { return allDamageCards[id]; }) });
-        }
-        case 'QUEUE': {
-            return __assign({}, state, { queueSize: action.size });
-        }
-        case 'ADD_CARD': {
-            var hand = state.hand.slice();
-            hand.push(allDamageCards[action.cardID]);
-            return __assign({}, state, { hand: hand });
-        }
-        case 'REM_CARD': {
-            var hand = state.hand.slice().splice(action.handPos, 1);
-            return __assign({}, state, { hand: hand });
-        }
-        default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            var exhaustiveCheck = action;
-    }
-    return state || unloadedState;
-};
-var allDamageCards = [
-    {
-        name: 'Minor fix',
-        desc: 'Restore a small amount of damage to one system',
-        rarity: 0 /* Common */,
-    },
-    {
-        name: 'Moderate fix',
-        desc: 'Restore a moderate amount of damage to one system',
-        rarity: 1 /* Rare */,
-    },
-    {
-        name: 'Major fix',
-        desc: 'Restore a large amount of damage to one system',
-        rarity: 2 /* Epic */,
-    },
-];
 
 
 /***/ }),
@@ -6099,7 +6132,7 @@ module.exports = (__webpack_require__(6))(139);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Choice; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__ButtonSet__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss__ = __webpack_require__(119);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Choice_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Choice_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -6280,7 +6313,7 @@ var Field = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return NumericTextbox; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox__ = __webpack_require__(22);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Textbox__ = __webpack_require__(23);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Textbox_scss__ = __webpack_require__(38);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Textbox_scss___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2__Textbox_scss__);
 var __extends = (this && this.__extends) || (function () {
@@ -7620,7 +7653,7 @@ var mapStateToProps = function (state) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CardHand; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__ = __webpack_require__(26);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7640,11 +7673,11 @@ var CardHand = (function (_super) {
     }
     CardHand.prototype.render = function () {
         var _this = this;
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardHand" }, this.props.cards.map(function (card, index) { return _this.renderCard(card, index); })));
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardHand" }, this.props.cardIDs.map(function (cardID, index) { return _this.renderCard(cardID, index); })));
     };
-    CardHand.prototype.renderCard = function (card, index) {
+    CardHand.prototype.renderCard = function (cardID, index) {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__["a" /* CardDisplay */], { card: card, key: index, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__["a" /* CardDisplay */], { cardID: cardID, key: index, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
     };
     return CardHand;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -7659,7 +7692,7 @@ var CardHand = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return CardSelection; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CardDisplay__ = __webpack_require__(25);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__CardDisplay__ = __webpack_require__(26);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7681,12 +7714,12 @@ var CardSelection = (function (_super) {
         var _this = this;
         var queueSize = this.props.queueSize <= 0 ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardChoice__queueSize" }, this.props.queueSize);
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardChoice" },
-            this.props.cards.map(function (card, index) { return _this.renderCard(card, index); }),
+            this.props.cardIDs.map(function (card, index) { return _this.renderCard(card, index); }),
             queueSize));
     };
-    CardSelection.prototype.renderCard = function (card, index) {
+    CardSelection.prototype.renderCard = function (cardID, index) {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__CardDisplay__["a" /* CardDisplay */], { card: card, key: index, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__CardDisplay__["a" /* CardDisplay */], { cardID: cardID, key: index, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
     };
     return CardSelection;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -7743,15 +7776,22 @@ var DamageControl = (function (_super) {
     DamageControl.prototype.render = function () {
         var _this = this;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text, systems: this.props.systems, systemSelected: function (num) { return _this.selectSystem(num); } }),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__CardSelection__["a" /* CardSelection */], { text: this.props.text, cards: this.props.choice, queueSize: this.props.queueSize, cardSelected: function (num) { return _this.pickCard(num); } }),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__CardHand__["a" /* CardHand */], { text: this.props.text, cards: this.props.hand, cardSelected: function (num) { return _this.selectCard(num); } }));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text, systems: this.props.systems, systemSelected: function (sys) { return _this.selectSystem(sys); } }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__CardSelection__["a" /* CardSelection */], { text: this.props.text, cardIDs: this.props.choiceCardIDs, queueSize: this.props.queueSize, cardSelected: function (num) { return _this.pickCard(num); } }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__CardHand__["a" /* CardHand */], { text: this.props.text, cardIDs: this.props.handCardIDs, cardSelected: function (num) { return _this.selectCard(num); } }));
     };
     DamageControl.prototype.selectCard = function (handPos) {
-        // TODO set state
+        this.setState({
+            selectedHandPos: handPos === this.state.selectedHandPos ? undefined : handPos,
+        });
     };
-    DamageControl.prototype.selectSystem = function (sysNum) {
-        // TODO: set state or maybe call playCard
+    DamageControl.prototype.selectSystem = function (system) {
+        if (this.state.selectedHandPos === undefined) {
+            return; // do nothing if no card selected
+        }
+        // TODO: if a card is removed from the hand, need to decrement selectedHandPos ... or if its the ID, set it to null
+        // as such, this ought to be in the store rather than component status
+        this.playCard(this.props.handCardIDs[this.state.selectedHandPos], this.state.selectedHandPos, system.type);
     };
     DamageControl.prototype.pickCard = function (cardNum) {
         __WEBPACK_IMPORTED_MODULE_6__Client__["connection"].send("dmg_pickCard " + cardNum);
@@ -7766,9 +7806,9 @@ var mapStateToProps = function (state) {
     return {
         text: state.user.text,
         systems: state.damage.systems,
-        choice: state.damage.choice,
+        choiceCardIDs: state.damage.choiceCardIDs,
         queueSize: state.damage.queueSize,
-        hand: state.damage.hand,
+        handCardIDs: state.damage.handCardIDs,
     };
 };
 // Wire up the React component to the Redux store
@@ -7805,7 +7845,31 @@ var SystemList = (function (_super) {
     };
     SystemList.prototype.renderSystem = function (system, index) {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystemList__system", key: index, onClick: function () { return _this.props.systemSelected(index); } });
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem", key: index, onClick: function () { return _this.props.systemSelected(system); } },
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem__name" }, this.getSystemName(system.type)),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem__damage" }, system.damage)));
+    };
+    SystemList.prototype.getSystemName = function (system) {
+        switch (system) {
+            case 0 /* Power */:
+                return this.props.text.systemNames.power;
+            case 1 /* Helm */:
+                return this.props.text.systemNames.helm;
+            case 2 /* Warp */:
+                return this.props.text.systemNames.warp;
+            case 3 /* BeamWeapons */:
+                return this.props.text.systemNames.weapons + ' 1';
+            case 4 /* Torpedoes */:
+                return this.props.text.systemNames.weapons + ' 2';
+            case 5 /* Sensors */:
+                return this.props.text.systemNames.sensors;
+            case 6 /* Shields */:
+                return this.props.text.systemNames.shields;
+            case 7 /* Comms */:
+                return this.props.text.systemNames.comms;
+            default:
+                return '';
+        }
     };
     return SystemList;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -7832,9 +7896,9 @@ var SystemList = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__FieldGroup__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__ = __webpack_require__(26);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__HeadingReadout__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SpeedReadout__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__FeedbackGroup__ = __webpack_require__(27);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__HeadingReadout__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__SpeedReadout__ = __webpack_require__(29);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -7901,10 +7965,10 @@ var ButtonHelm = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_hammerjs___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_1_hammerjs__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Client__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_general__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__ = __webpack_require__(26);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__FeedbackGroup__ = __webpack_require__(27);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__FieldGroup__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__HeadingReadout__ = __webpack_require__(27);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SpeedReadout__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__HeadingReadout__ = __webpack_require__(28);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__SpeedReadout__ = __webpack_require__(29);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8149,7 +8213,7 @@ var CellList = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GridCell__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__GridCell__ = __webpack_require__(30);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -8189,7 +8253,7 @@ var ListCell = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return PowerGrid; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GridCell__ = __webpack_require__(29);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__GridCell__ = __webpack_require__(30);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__ReactorCell__ = __webpack_require__(80);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__SystemCell__ = __webpack_require__(81);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__PowerGrid_scss__ = __webpack_require__(136);
@@ -8246,7 +8310,7 @@ var PowerGrid = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Power__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Power__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Client__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_systems_ShipSystemComponent__ = __webpack_require__(5);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__PowerGrid__ = __webpack_require__(78);
@@ -9001,9 +9065,9 @@ var PathListItem = (function (_super) {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1_react_redux__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Warp__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Warp__ = __webpack_require__(17);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__components_systems_ShipSystemComponent__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_general_SensorView__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__components_general_SensorView__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__JumpCountdown__ = __webpack_require__(87);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__JumpEditor__ = __webpack_require__(88);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__PathList__ = __webpack_require__(89);
@@ -9272,7 +9336,7 @@ var TargetSelected = (function (_super) {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TargetSelection; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_react___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_react__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general_SensorView__ = __webpack_require__(21);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__components_general_SensorView__ = __webpack_require__(22);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__TargetList__ = __webpack_require__(95);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -9381,12 +9445,12 @@ var mapStateToProps = function (state) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Connection; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Client__ = __webpack_require__(3);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Crew__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__store_Crew__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__store_Screen__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__store_Helm__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Warp__ = __webpack_require__(16);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__store_Power__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__store_Damage__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__store_Warp__ = __webpack_require__(17);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__store_Power__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__store_Damage__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__store_Sensors__ = __webpack_require__(37);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__functionality__ = __webpack_require__(4);
 
@@ -9903,7 +9967,7 @@ var CubeFace = (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return OrientationCube; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(31);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10052,7 +10116,7 @@ var OrientationCube = (function (_super) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(30);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Cube__ = __webpack_require__(31);
 /* unused harmony reexport Cube */
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Orientation__ = __webpack_require__(105);
 /* harmony reexport (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return __WEBPACK_IMPORTED_MODULE_1__Orientation__["a"]; });
@@ -10328,7 +10392,7 @@ var JumpPath = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MoveableTarget; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RelatableTarget__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RelatableTarget__ = __webpack_require__(33);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10363,7 +10427,7 @@ var MoveableTarget = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Planet; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Celestial__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Celestial__ = __webpack_require__(32);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10428,7 +10492,7 @@ var Ship = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Star; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Celestial__ = __webpack_require__(31);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Celestial__ = __webpack_require__(32);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10467,7 +10531,7 @@ var Star = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return Station; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RelatableTarget__ = __webpack_require__(32);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__RelatableTarget__ = __webpack_require__(33);
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -10750,7 +10814,14 @@ var words = {
             reactor: 'Reactor',
             heat: 'Heat',
         },
-        damage: {},
+        damage: {
+            minorFix: 'Minor fix',
+            minorFixDesc: 'Restore a small amount of damage to one system',
+            moderateFix: 'Moderate fix',
+            moderateFixDesc: 'Restore a moderate amount of damage to one system',
+            majorFix: 'Major fix',
+            majorFixDesc: 'Restore a large amount of damage to one system',
+        },
         comms: {},
         view: {},
     },
@@ -10765,13 +10836,13 @@ var words = {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return reducers; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__User__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(34);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Crew__ = __webpack_require__(35);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__Screen__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Damage__ = __webpack_require__(35);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Damage__ = __webpack_require__(15);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__Helm__ = __webpack_require__(36);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Power__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__Power__ = __webpack_require__(16);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__Sensors__ = __webpack_require__(37);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Warp__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__Warp__ = __webpack_require__(17);
 
 
 
@@ -10787,7 +10858,7 @@ var reducers = {
     user: __WEBPACK_IMPORTED_MODULE_0__User__["b" /* reducer */],
     crew: __WEBPACK_IMPORTED_MODULE_1__Crew__["b" /* reducer */],
     screen: __WEBPACK_IMPORTED_MODULE_2__Screen__["d" /* reducer */],
-    damage: __WEBPACK_IMPORTED_MODULE_3__Damage__["b" /* reducer */],
+    damage: __WEBPACK_IMPORTED_MODULE_3__Damage__["c" /* reducer */],
     helm: __WEBPACK_IMPORTED_MODULE_4__Helm__["b" /* reducer */],
     power: __WEBPACK_IMPORTED_MODULE_5__Power__["d" /* reducer */],
     sensors: __WEBPACK_IMPORTED_MODULE_6__Sensors__["b" /* reducer */],
@@ -11353,7 +11424,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

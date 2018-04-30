@@ -256,7 +256,12 @@ let words: TextLocalisation = {
             heat: 'Heat',
         },
         damage: {
-
+            minorFix: 'Minor fix',
+            minorFixDesc: 'Restore a small amount of damage to one system',
+            moderateFix: 'Moderate fix',
+            moderateFixDesc: 'Restore a moderate amount of damage to one system',
+            majorFix: 'Major fix',
+            majorFixDesc: 'Restore a large amount of damage to one system',
         },
         comms: {
 

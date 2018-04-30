@@ -190,7 +190,12 @@ export interface TextLocalisation {
             heat: string;
         },
         damage: {
-
+            minorFix: string;
+            minorFixDesc: string;
+            moderateFix: string;
+            moderateFixDesc: string;
+            majorFix: string;
+            majorFixDesc: string;
         },
         comms: {
 
