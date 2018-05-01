@@ -5,7 +5,8 @@ import { ShipSystem, TextLocalisation } from "~/functionality";
 // STATE - This defines the type of data maintained in the Redux store.
 
 export const enum DamageSystemType {
-    Power = 0,
+    Empty = 0,
+    Power,
     Helm,
     Warp,
     BeamWeapons,
@@ -161,6 +162,7 @@ const unloadedState: DamageState = {
         { type: DamageSystemType.Helm, damage: 0, },
         { type: DamageSystemType.Warp, damage: 0, },
         { type: DamageSystemType.BeamWeapons, damage: 0, },
+        { type: DamageSystemType.Empty, damage: 0, },
         { type: DamageSystemType.Torpedoes, damage: 0, },
         { type: DamageSystemType.Sensors, damage: 0, },
         { type: DamageSystemType.Shields, damage: 0, },

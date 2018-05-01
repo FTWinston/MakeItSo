@@ -35,6 +35,10 @@ export class SystemList extends React.Component<SystemListProps, {}> {
     }
 
     private renderSystem(system: DamageSystem, index: number) {
+        if (system.type === DamageSystemType.Empty) {
+            return <div/>;
+        }
+
         return (
         <div
             className="damageSystem"

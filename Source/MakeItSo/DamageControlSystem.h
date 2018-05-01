@@ -18,7 +18,8 @@ class MAKEITSO_API UDamageControlSystem : public UShipSystem
 
 public:
 	enum EDamageSystem : uint8 {
-		Damage_Power = 0,
+		Damage_Empty = 0,
+		Damage_Power,
 		Damage_Helm,
 		Damage_Warp,
 		Damage_BeamWeapons,
