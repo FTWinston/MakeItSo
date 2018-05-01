@@ -17,7 +17,7 @@ class MAKEITSO_API UDamageControlSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
-	enum EDamageSystem {
+	enum EDamageSystem : uint8 {
 		Damage_Power = 0,
 		Damage_Helm,
 		Damage_Warp,
@@ -94,4 +94,8 @@ private:
 	uint16 choiceGeneratedAmount;
 
 	bool RestoreDamage(EDamageSystem system, uint8 amount);
+	bool DealDamage(EDamageSystem system, uint8 amount);
+	void SetHealth(EDamageSystem system, uint8 newValue);
+	void GetRowCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3);
+	void GetColCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3);
 };

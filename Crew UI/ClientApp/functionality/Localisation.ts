@@ -196,6 +196,20 @@ export interface TextLocalisation {
             moderateFixDesc: string;
             majorFix: string;
             majorFixDesc: string;
+            swapLeft: string;
+            swapLeftDesc: string;
+            swapRight: string;
+            swapRightDesc: string;
+            swapUp: string;
+            swapUpDesc: string;
+            swapDown: string;
+            swapDownDesc: string;
+            distributeRow: string;
+            distributeRowDesc: string;
+            repairRowSmall: string;
+            repairRowSmallDesc: string;
+            divertCol: string;
+            divertColDesc: string;
         },
         comms: {
 

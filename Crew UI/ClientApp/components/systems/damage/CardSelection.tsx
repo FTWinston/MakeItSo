@@ -2,10 +2,11 @@ import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { CardDisplay } from "./CardDisplay";
 import './CardSelection.scss';
+import { DamageCard } from "~/store/Damage";
 
 interface CardSelectionProps {
     text: TextLocalisation;
-    cardIDs: number[];
+    cards: DamageCard[];
     queueSize: number;
     canSelect: boolean;
     cardSelected: (number: number) => void;
@@ -18,14 +19,14 @@ export class CardSelection extends React.Component<CardSelectionProps, {}> {
         return (
         <div className="damageCardChoice">
             {queueSize}
-            {this.props.cardIDs.map((card, index) => this.renderCard(card, index))}
+            {this.props.cards.map((card, index) => this.renderCard(card, index))}
         </div>
         );
     }
 
-    private renderCard(cardID: number, index: number) {
+    private renderCard(card: DamageCard, index: number) {
         return <CardDisplay
-            cardID={cardID}
+            card={card}
             selected={false}
             key={index}
             clicked={this.props.canSelect ? () => this.props.cardSelected(index) : undefined}

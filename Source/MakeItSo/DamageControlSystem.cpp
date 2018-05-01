@@ -362,6 +362,13 @@ enum EDamageCard
 	Card_RepairSmall,
 	Card_RepairMed,
 	Card_RepairLarge,
+	Card_SwapLeft,
+	Card_SwapRight,
+	Card_SwapUp,
+	Card_SwapDown,
+	Card_DistributeRow,
+	Card_RepairRowSmall,
+	Card_DivertCol,
 	NUM_DAMAGE_CARDS,
 };
 
@@ -372,8 +379,89 @@ bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 		return false;
 
 	targetSystem->RestoreDamage(amount);
-	damageLevels[system] = targetSystem->GetHealthLevel();
+	auto newValue = targetSystem->GetHealthLevel();
+	damageLevels[system] = newValue;
+
+	if (ISCLIENT())
+		SendDamageLevel(system, newValue);
+
 	return true;
+}
+
+bool UDamageControlSystem::DealDamage(EDamageSystem system, uint8 amount)
+{
+	UShipSystem *targetSystem = LookupSystem(system);
+	if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
+		return false;
+
+	targetSystem->TakeDamage(amount);
+	auto newValue = targetSystem->GetHealthLevel();
+	damageLevels[system] = newValue;
+
+	if (ISCLIENT())
+		SendDamageLevel(system, newValue);
+
+	return true;
+}
+
+void UDamageControlSystem::SetHealth(EDamageSystem system, uint8 newValue)
+{
+	UShipSystem *targetSystem = LookupSystem(system);
+	if (targetSystem == nullptr)
+		return;
+	
+	uint8 existingHealth = targetSystem->GetHealthLevel();
+	if (existingHealth > newValue)
+		targetSystem->TakeDamage(existingHealth - newValue);
+	else if (existingHealth < newValue)
+		targetSystem->RestoreDamage(newValue - existingHealth);
+
+	if (ISCLIENT())
+		SendDamageLevel(system, newValue);
+}
+
+void UDamageControlSystem::GetRowCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3)
+{
+	if (testPos < 3)
+	{
+		outPos1 = 0;
+		outPos2 = 1;
+		outPos3 = 2;
+	}
+	else if (testPos < 6)
+	{
+		outPos1 = 3;
+		outPos2 = 4;
+		outPos3 = 5;
+	}
+	else
+	{
+		outPos1 = 6;
+		outPos2 = 7;
+		outPos3 = 8;
+	}
+}
+
+void UDamageControlSystem::GetColCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3)
+{
+	if (testPos == 0 || testPos == 3 || testPos == 6)
+	{
+		outPos1 = 0;
+		outPos2 = 3;
+		outPos3 = 6;
+	}
+	else if (testPos == 1 || testPos == 4 || testPos == 7)
+	{
+		outPos1 = 1;
+		outPos2 = 4;
+		outPos3 = 7;
+	}
+	else
+	{
+		outPos1 = 2;
+		outPos2 = 5;
+		outPos3 = 8;
+	}
 }
 
 #ifdef WEB_SERVER_TEST
@@ -385,25 +473,160 @@ void UDamageControlSystem::ActivateCard_Implementation(uint8 cardID, uint8 handP
 	if (targetSystemPos >= MAX_DAMAGE_SYSTEMS || cardHand[handPosition] != cardID)
 		return;
 
-	EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
-
 	switch ((EDamageCard)cardID)
 	{
 	case Card_RepairSmall:
 	{
+		EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
 		if (!RestoreDamage(damageSystem, 15))
 			return;
 		break;
 	}
 	case Card_RepairMed:
-
+	{
+		EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
 		if (!RestoreDamage(damageSystem, 35))
 			return;
 		break;
+	}
 	case Card_RepairLarge:
+	{
+		EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
 		if (!RestoreDamage(damageSystem, 75))
 			return;
 		break;
+	}
+	case Card_SwapLeft:
+	{
+		uint8 pos1, pos2, pos3;
+		GetRowCells(targetSystemPos, pos1, pos2, pos3);
+			
+		uint8 tmp = systemOrder[pos1];
+		systemOrder[pos1] = systemOrder[pos2];
+		systemOrder[pos2] = systemOrder[pos3];
+		systemOrder[pos3] = tmp;
+
+		if (ISCLIENT())
+			SendSystemOrder();
+		break;
+	}
+	case Card_SwapRight:
+	{
+		uint8 pos1, pos2, pos3;
+		GetRowCells(targetSystemPos, pos3, pos2, pos1);
+
+		uint8 tmp = systemOrder[pos1];
+		systemOrder[pos1] = systemOrder[pos2];
+		systemOrder[pos2] = systemOrder[pos3];
+		systemOrder[pos3] = tmp;
+
+		if (ISCLIENT())
+			SendSystemOrder();
+		break;
+	}
+	case Card_SwapUp:
+	{
+		uint8 pos1, pos2, pos3;
+		GetColCells(targetSystemPos, pos1, pos2, pos3);
+
+		uint8 tmp = systemOrder[pos1];
+		systemOrder[pos1] = systemOrder[pos2];
+		systemOrder[pos2] = systemOrder[pos3];
+		systemOrder[pos3] = tmp;
+
+		if (ISCLIENT())
+			SendSystemOrder();
+		break;
+	}
+	case Card_SwapDown:
+	{
+		uint8 pos1, pos2, pos3;
+		GetColCells(targetSystemPos, pos3, pos2, pos1);
+
+		uint8 tmp = systemOrder[pos1];
+		systemOrder[pos1] = systemOrder[pos2];
+		systemOrder[pos2] = systemOrder[pos3];
+		systemOrder[pos3] = tmp;
+
+		if (ISCLIENT())
+			SendSystemOrder();
+		break;
+	}
+	case Card_DistributeRow:
+	{
+		uint8 pos1, pos2, pos3;
+		GetRowCells(targetSystemPos, pos1, pos2, pos3);
+
+		EDamageSystem sys1 = (EDamageSystem)systemOrder[pos1];
+		EDamageSystem sys2 = (EDamageSystem)systemOrder[pos2];
+		EDamageSystem sys3 = (EDamageSystem)systemOrder[pos3];
+
+		auto shipSys1 = LookupSystem(sys1);
+		auto shipSys2 = LookupSystem(sys2);
+		auto shipSys3 = LookupSystem(sys3);
+
+		uint8 numSys = 0;
+		uint16 totalHealth = 0;
+
+		if (shipSys1 != nullptr)
+		{
+			totalHealth += shipSys1->GetHealthLevel();
+			numSys++;
+		}
+		if (shipSys2 != nullptr)
+		{
+			totalHealth += shipSys2->GetHealthLevel();
+			numSys++;
+		}
+		if (shipSys3 != nullptr)
+		{
+			totalHealth += shipSys3->GetHealthLevel();
+			numSys++;
+		}
+
+		uint8 averageHealth = totalHealth / numSys; // we'll lose a couple of points in rounding here, that's ok
+		if (averageHealth == MAX_SYSTEM_HEALTH)
+			return;
+
+		SetHealth(sys1, averageHealth);
+		SetHealth(sys2, averageHealth);
+		SetHealth(sys3, averageHealth);
+		break;
+	}
+	case Card_RepairRowSmall:
+	{
+		uint8 pos1, pos2, pos3;
+		GetRowCells(targetSystemPos, pos1, pos2, pos3);
+
+		EDamageSystem sys1 = (EDamageSystem)systemOrder[pos1];
+		EDamageSystem sys2 = (EDamageSystem)systemOrder[pos2];
+		EDamageSystem sys3 = (EDamageSystem)systemOrder[pos3];
+
+		if (!RestoreDamage(sys1, 15) && !RestoreDamage(sys2, 15) && !RestoreDamage(sys3, 15))
+			return;
+
+		break;
+	}
+	case Card_DivertCol:
+	{
+		uint8 pos1, pos2, pos3;
+		GetColCells(targetSystemPos, pos1, pos2, pos3);
+
+		EDamageSystem col1 = (EDamageSystem)systemOrder[pos1];
+		EDamageSystem col2 = (EDamageSystem)systemOrder[pos2];
+		EDamageSystem col3 = (EDamageSystem)systemOrder[pos3];
+
+		EDamageSystem healSystem = (EDamageSystem)systemOrder[targetSystemPos];
+		EDamageSystem damage1 = col1 != healSystem ? col1 : col2;
+		EDamageSystem damage2 = col2 != healSystem && col2 != damage1 ? col2 : col3;
+
+		if (!RestoreDamage(healSystem, 50))
+			return;
+
+		DealDamage(damage1, 25);
+		DealDamage(damage2, 25);
+		break;
+	}
 	default:
 		return;
 	}

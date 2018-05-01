@@ -1,19 +1,37 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { DamageSystem, DamageSystemType } from "~/store/Damage";
+import { DamageSystem, DamageSystemType, DamageTargetingMode } from "~/store/Damage";
 import './SystemList.scss';
 
 interface SystemListProps {
     text: TextLocalisation;
     systems: DamageSystem[];
+    targetingMode?: DamageTargetingMode;
     systemSelected: (system: DamageSystem) => void;
 }
 
 export class SystemList extends React.Component<SystemListProps, {}> {
     public render() {
-        return <div className="damageSystemList">
+        let classes = 'damageSystemList';
+        switch (this.props.targetingMode) {
+            case DamageTargetingMode.SingleCard:
+                classes += ' damageSystemList--targetSingle'; break;
+            case DamageTargetingMode.Row:
+                classes += ' damageSystemList--targetRow'; break;
+            case DamageTargetingMode.Column:
+                classes += ' damageSystemList--targetColumn'; break;
+            case DamageTargetingMode.Adjacent:
+                classes += ' damageSystemList--targetAdjacent'; break;
+            case DamageTargetingMode.All:
+                classes += ' damageSystemList--targetAll'; break;
+        }
+        // TODO: use this targeting mode info to determine which systems to highlight when hovering etc
+
+        return (
+        <div className={classes}>
             {this.props.systems.map((system, index) => this.renderSystem(system, index))}
         </div>
+        );
     }
 
     private renderSystem(system: DamageSystem, index: number) {

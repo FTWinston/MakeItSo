@@ -6,7 +6,7 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { CardHand } from './CardHand';
 import { CardSelection } from './CardSelection';
 import { SystemList } from './SystemList';
-import { DamageSystemType, DamageState, DamageSystem, actionCreators, maxHandSize } from '~/store/Damage';
+import { DamageSystemType, DamageState, DamageSystem, actionCreators, maxHandSize, getDamageCardInfo } from '~/store/Damage';
 import { connection } from '~/Client';
 import './DamageControl.scss';
 
@@ -27,22 +27,28 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     }
 
     public render() {
+        let selectedCard = this.props.selectedHandPos === undefined
+            ? null
+            : getDamageCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
+        let targetingMode = selectedCard === null ? undefined : selectedCard.targetingMode;
+
         return <div className="system damageControl">
             <SystemList
                 text={this.props.text}
                 systems={this.props.systems}
                 systemSelected={sys => this.selectSystem(sys)}
+                targetingMode={targetingMode}
             />
             <CardSelection
                 text={this.props.text}
-                cardIDs={this.props.choiceCardIDs}
+                cards={this.props.choiceCards}
                 queueSize={this.props.queueSize}
                 cardSelected={num => this.pickCard(num)}
-                canSelect={this.props.handCardIDs.length < maxHandSize}
+                canSelect={this.props.handCards.length < maxHandSize}
             />
             <CardHand
                 text={this.props.text}
-                cardIDs={this.props.handCardIDs}
+                cards={this.props.handCards}
                 cardSelected={num => this.selectCard(num)}
                 selectedHandPos={this.props.selectedHandPos}
             />
@@ -58,7 +64,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
             return; // do nothing if no card selected
         }
 
-        this.playCard(this.props.handCardIDs[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
+        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
     }
 
     private pickCard(cardNum: number) {
@@ -75,9 +81,9 @@ const mapStateToProps: (state: ApplicationState) => DamageControlProps = (state)
     return {
         text: state.user.text,
         systems: state.damage.systems,
-        choiceCardIDs: state.damage.choiceCardIDs,
+        choiceCards: state.damage.choiceCards,
         queueSize: state.damage.queueSize,
-        handCardIDs: state.damage.handCardIDs,
+        handCards: state.damage.handCards,
         selectedHandPos: state.damage.selectedHandPos,
         selectCard: actionCreators.selectCard,
     }

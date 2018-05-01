@@ -620,10 +620,10 @@ var SensorTarget = (function () {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return maxHandSize; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return maxHandSize; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return actionCreators; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return reducer; });
-/* harmony export (immutable) */ __webpack_exports__["c"] = getDamageCardInfo;
+/* harmony export (immutable) */ __webpack_exports__["b"] = getDamageCardInfo;
 var __assign = (this && this.__assign) || Object.assign || function(t) {
     for (var s, i = 1, n = arguments.length; i < n; i++) {
         s = arguments[i];
@@ -689,8 +689,8 @@ var unloadedState = {
         { type: 6 /* Shields */, damage: 0, },
         { type: 7 /* Comms */, damage: 0, },
     ],
-    choiceCardIDs: [],
-    handCardIDs: [],
+    choiceCards: [],
+    handCards: [],
     queueSize: 0,
 };
 var reducer = function (state, rawAction) {
@@ -727,7 +727,7 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { queueSize: action.size });
         }
         case 'ADD_CARD': {
-            var hand = state.handCardIDs.slice();
+            var hand = state.handCards.slice();
             hand.push(action.cardID);
             return __assign({}, state, { handCardIDs: hand });
         }
@@ -741,7 +741,7 @@ var reducer = function (state, rawAction) {
                     selectedHandPos--;
                 }
             }
-            var hand = state.handCardIDs.slice().splice(action.handPos, 1);
+            var hand = state.handCards.slice().splice(action.handPos, 1);
             return __assign({}, state, { handCardIDs: hand, selectedHandPos: selectedHandPos });
         }
         case 'SEL_CARD': {
@@ -753,25 +753,77 @@ var reducer = function (state, rawAction) {
     }
     return state || unloadedState;
 };
-function getDamageCardInfo(id, text) {
-    switch (id) {
-        case 0:
+function getDamageCardInfo(card, text) {
+    switch (card) {
+        case 0 /* RepairSmall */:
             return {
                 name: text.systems.damage.minorFix,
                 desc: text.systems.damage.minorFixDesc,
                 rarity: 0 /* Common */,
+                targetingMode: 0 /* SingleCard */,
             };
-        case 1:
+        case 1 /* RepairMed */:
             return {
                 name: text.systems.damage.moderateFix,
                 desc: text.systems.damage.moderateFixDesc,
                 rarity: 1 /* Rare */,
+                targetingMode: 0 /* SingleCard */,
             };
-        case 2:
+        case 2 /* RepairLarge */:
             return {
                 name: text.systems.damage.majorFix,
                 desc: text.systems.damage.majorFixDesc,
                 rarity: 2 /* Epic */,
+                targetingMode: 0 /* SingleCard */,
+            };
+        case 3 /* SwapLeft */:
+            return {
+                name: text.systems.damage.swapLeft,
+                desc: text.systems.damage.swapLeftDesc,
+                rarity: 0 /* Common */,
+                targetingMode: 2 /* Row */,
+            };
+        case 4 /* SwapRight */:
+            return {
+                name: text.systems.damage.swapRight,
+                desc: text.systems.damage.swapRightDesc,
+                rarity: 0 /* Common */,
+                targetingMode: 2 /* Row */,
+            };
+        case 5 /* SwapUp */:
+            return {
+                name: text.systems.damage.swapUp,
+                desc: text.systems.damage.swapUpDesc,
+                rarity: 0 /* Common */,
+                targetingMode: 2 /* Row */,
+            };
+        case 6 /* SwapDown */:
+            return {
+                name: text.systems.damage.swapDown,
+                desc: text.systems.damage.swapDownDesc,
+                rarity: 0 /* Common */,
+                targetingMode: 2 /* Row */,
+            };
+        case 7 /* DistributeRow */:
+            return {
+                name: text.systems.damage.distributeRow,
+                desc: text.systems.damage.distributeRowDesc,
+                rarity: 1 /* Rare */,
+                targetingMode: 2 /* Row */,
+            };
+        case 7 /* DistributeRow */:
+            return {
+                name: text.systems.damage.repairRowSmall,
+                desc: text.systems.damage.repairRowSmallDesc,
+                rarity: 0 /* Common */,
+                targetingMode: 2 /* Row */,
+            };
+        case 9 /* DivertCol */:
+            return {
+                name: text.systems.damage.divertCol,
+                desc: text.systems.damage.divertColDesc,
+                rarity: 1 /* Rare */,
+                targetingMode: 1 /* Column */,
             };
         default:
             return null;
@@ -2169,12 +2221,13 @@ var CardDisplay = (function (_super) {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     CardDisplay.prototype.render = function () {
-        var card = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__store_Damage__["c" /* getDamageCardInfo */])(this.props.cardID, this.props.text);
+        var card = __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_1__store_Damage__["b" /* getDamageCardInfo */])(this.props.card, this.props.text);
         if (card === null) {
             card = {
                 name: '???',
-                desc: "Card ID " + this.props.cardID + " not recognised",
+                desc: "Card ID " + this.props.card + " not recognised",
                 rarity: 0 /* Common */,
+                targetingMode: 0 /* SingleCard */,
             };
         }
         var cardClasses = 'damageCard', wrapperClasses = 'damageCardWrapper';
@@ -7711,11 +7764,11 @@ var CardHand = (function (_super) {
     }
     CardHand.prototype.render = function () {
         var _this = this;
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardHand" }, this.props.cardIDs.map(function (cardID, index) { return _this.renderCard(cardID, index); })));
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardHand" }, this.props.cards.map(function (card, index) { return _this.renderCard(card, index); })));
     };
-    CardHand.prototype.renderCard = function (cardID, index) {
+    CardHand.prototype.renderCard = function (card, index) {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__["a" /* CardDisplay */], { cardID: cardID, key: index, selected: index === this.props.selectedHandPos, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__["a" /* CardDisplay */], { card: card, key: index, selected: index === this.props.selectedHandPos, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
     };
     return CardHand;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -7756,11 +7809,11 @@ var CardSelection = (function (_super) {
         var queueSize = this.props.queueSize <= 0 ? undefined : __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardChoice__queueSize" }, this.props.queueSize);
         return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageCardChoice" },
             queueSize,
-            this.props.cardIDs.map(function (card, index) { return _this.renderCard(card, index); })));
+            this.props.cards.map(function (card, index) { return _this.renderCard(card, index); })));
     };
-    CardSelection.prototype.renderCard = function (cardID, index) {
+    CardSelection.prototype.renderCard = function (card, index) {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__CardDisplay__["a" /* CardDisplay */], { cardID: cardID, selected: false, key: index, clicked: this.props.canSelect ? function () { return _this.props.cardSelected(index); } : undefined, text: this.props.text });
+        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__CardDisplay__["a" /* CardDisplay */], { card: card, selected: false, key: index, clicked: this.props.canSelect ? function () { return _this.props.cardSelected(index); } : undefined, text: this.props.text });
     };
     return CardSelection;
 }(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
@@ -7816,10 +7869,14 @@ var DamageControl = (function (_super) {
     };
     DamageControl.prototype.render = function () {
         var _this = this;
+        var selectedCard = this.props.selectedHandPos === undefined
+            ? null
+            : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__store_Damage__["b" /* getDamageCardInfo */])(this.props.handCards[this.props.selectedHandPos], this.props.text);
+        var targetingMode = selectedCard === null ? undefined : selectedCard.targetingMode;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system damageControl" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text, systems: this.props.systems, systemSelected: function (sys) { return _this.selectSystem(sys); } }),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__CardSelection__["a" /* CardSelection */], { text: this.props.text, cardIDs: this.props.choiceCardIDs, queueSize: this.props.queueSize, cardSelected: function (num) { return _this.pickCard(num); }, canSelect: this.props.handCardIDs.length < __WEBPACK_IMPORTED_MODULE_6__store_Damage__["b" /* maxHandSize */] }),
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__CardHand__["a" /* CardHand */], { text: this.props.text, cardIDs: this.props.handCardIDs, cardSelected: function (num) { return _this.selectCard(num); }, selectedHandPos: this.props.selectedHandPos }));
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text, systems: this.props.systems, systemSelected: function (sys) { return _this.selectSystem(sys); }, targetingMode: targetingMode }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__CardSelection__["a" /* CardSelection */], { text: this.props.text, cards: this.props.choiceCards, queueSize: this.props.queueSize, cardSelected: function (num) { return _this.pickCard(num); }, canSelect: this.props.handCards.length < __WEBPACK_IMPORTED_MODULE_6__store_Damage__["c" /* maxHandSize */] }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__CardHand__["a" /* CardHand */], { text: this.props.text, cards: this.props.handCards, cardSelected: function (num) { return _this.selectCard(num); }, selectedHandPos: this.props.selectedHandPos }));
     };
     DamageControl.prototype.selectCard = function (handPos) {
         this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
@@ -7828,7 +7885,7 @@ var DamageControl = (function (_super) {
         if (this.props.selectedHandPos === undefined) {
             return; // do nothing if no card selected
         }
-        this.playCard(this.props.handCardIDs[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
+        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
     };
     DamageControl.prototype.pickCard = function (cardNum) {
         __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send("dmg_pickCard " + cardNum);
@@ -7843,9 +7900,9 @@ var mapStateToProps = function (state) {
     return {
         text: state.user.text,
         systems: state.damage.systems,
-        choiceCardIDs: state.damage.choiceCardIDs,
+        choiceCards: state.damage.choiceCards,
         queueSize: state.damage.queueSize,
-        handCardIDs: state.damage.handCardIDs,
+        handCards: state.damage.handCards,
         selectedHandPos: state.damage.selectedHandPos,
         selectCard: __WEBPACK_IMPORTED_MODULE_6__store_Damage__["a" /* actionCreators */].selectCard,
     };
@@ -7883,7 +7940,26 @@ var SystemList = (function (_super) {
     }
     SystemList.prototype.render = function () {
         var _this = this;
-        return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystemList" }, this.props.systems.map(function (system, index) { return _this.renderSystem(system, index); }));
+        var classes = 'damageSystemList';
+        switch (this.props.targetingMode) {
+            case 0 /* SingleCard */:
+                classes += ' damageSystemList--targetSingle';
+                break;
+            case 2 /* Row */:
+                classes += ' damageSystemList--targetRow';
+                break;
+            case 1 /* Column */:
+                classes += ' damageSystemList--targetColumn';
+                break;
+            case 3 /* Adjacent */:
+                classes += ' damageSystemList--targetAdjacent';
+                break;
+            case 4 /* All */:
+                classes += ' damageSystemList--targetAll';
+                break;
+        }
+        // TODO: use this targeting mode info to determine which systems to highlight when hovering etc
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: classes }, this.props.systems.map(function (system, index) { return _this.renderSystem(system, index); })));
     };
     SystemList.prototype.renderSystem = function (system, index) {
         var _this = this;
@@ -10864,6 +10940,20 @@ var words = {
             moderateFixDesc: 'Restore a moderate amount of damage to one system',
             majorFix: 'Major fix',
             majorFixDesc: 'Restore a large amount of damage to one system',
+            swapLeft: 'Swap left',
+            swapLeftDesc: 'Move all the systems in the targeted row left one place',
+            swapRight: 'Swap right',
+            swapRightDesc: 'Move all the systems in the targeted row right one place',
+            swapUp: 'Swap up',
+            swapUpDesc: 'Move all the systems in the targeted column up one place',
+            swapDown: 'Swap down',
+            swapDownDesc: 'Move all the systems in the targeted column down one place',
+            distributeRow: 'Distribute row',
+            distributeRowDesc: 'Evenly distributes the damage taken by all systems in this row',
+            repairRowSmall: 'Repair row',
+            repairRowSmallDesc: 'Repairs a small amount of damage to all systems in this row',
+            divertCol: 'Divert column',
+            divertColDesc: 'Heal up to 50 damage from target system, deal 25 damage to the other systems in the same column',
         },
         comms: {},
         view: {},
@@ -11491,7 +11581,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

@@ -25,6 +25,14 @@ export const enum DamageCardRarity {
     Epic,
 }
 
+export const enum DamageTargetingMode {
+    SingleCard,
+    Column,
+    Row,
+    Adjacent,
+    All,
+}
+
 export interface DamageSystem {
     type: DamageSystemType;
     damage: number;
@@ -34,12 +42,13 @@ export interface DamageCardInfo {
     name: string;
     desc: string;
     rarity: DamageCardRarity;
+    targetingMode: DamageTargetingMode;
 }
 
 export interface DamageState {
     systems: DamageSystem[];
-    choiceCardIDs: number[];
-    handCardIDs: number[];
+    choiceCards: DamageCard[];
+    handCards: DamageCard[];
     queueSize: number;
     selectedHandPos?: number;
 }
@@ -157,8 +166,8 @@ const unloadedState: DamageState = {
         { type: DamageSystemType.Shields, damage: 0, },
         { type: DamageSystemType.Comms, damage: 0, },
     ],
-    choiceCardIDs: [],
-    handCardIDs: [],
+    choiceCards: [],
+    handCards: [],
     queueSize: 0,
 };
 
@@ -219,7 +228,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             };
         }
         case 'ADD_CARD': {
-            let hand = state.handCardIDs.slice();
+            let hand = state.handCards.slice();
             hand.push(action.cardID);
 
             return {
@@ -238,7 +247,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
                 }
             }
 
-            let hand = state.handCardIDs.slice().splice(action.handPos, 1);
+            let hand = state.handCards.slice().splice(action.handPos, 1);
 
             return {
                 ...state,
@@ -260,25 +269,90 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
     return state || unloadedState;
 };
 
-export function getDamageCardInfo(id: number, text: TextLocalisation): DamageCardInfo | null {
-    switch (id) {
-        case 0:
+export const enum DamageCard {
+    RepairSmall = 0,
+    RepairMed,
+    RepairLarge,
+    SwapLeft,
+    SwapRight,
+    SwapUp,
+    SwapDown,
+    DistributeRow,
+    RepairRowSmall,
+    DivertCol,
+}
+
+export function getDamageCardInfo(card: DamageCard, text: TextLocalisation): DamageCardInfo | null {
+    switch (card) {
+        case DamageCard.RepairSmall:
             return {
                 name: text.systems.damage.minorFix,
                 desc: text.systems.damage.minorFixDesc,
                 rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.SingleCard,
             };
-        case 1:
+        case DamageCard.RepairMed:
             return {
                 name: text.systems.damage.moderateFix,
                 desc: text.systems.damage.moderateFixDesc,
                 rarity: DamageCardRarity.Rare,
+                targetingMode: DamageTargetingMode.SingleCard,
             };
-        case 2:
+        case DamageCard.RepairLarge:
             return {
                 name: text.systems.damage.majorFix,
                 desc: text.systems.damage.majorFixDesc,
                 rarity: DamageCardRarity.Epic,
+                targetingMode: DamageTargetingMode.SingleCard,
+            };
+        case DamageCard.SwapLeft:
+            return {
+                name: text.systems.damage.swapLeft,
+                desc: text.systems.damage.swapLeftDesc,
+                rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.Row,
+            };
+        case DamageCard.SwapRight:
+            return {
+                name: text.systems.damage.swapRight,
+                desc: text.systems.damage.swapRightDesc,
+                rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.Row,
+            };
+        case DamageCard.SwapUp:
+            return {
+                name: text.systems.damage.swapUp,
+                desc: text.systems.damage.swapUpDesc,
+                rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.Row,
+            };
+        case DamageCard.SwapDown:
+            return {
+                name: text.systems.damage.swapDown,
+                desc: text.systems.damage.swapDownDesc,
+                rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.Row,
+            };
+        case DamageCard.DistributeRow:
+            return {
+                name: text.systems.damage.distributeRow,
+                desc: text.systems.damage.distributeRowDesc,
+                rarity: DamageCardRarity.Rare,
+                targetingMode: DamageTargetingMode.Row,
+            };
+        case DamageCard.DistributeRow:
+            return {
+                name: text.systems.damage.repairRowSmall,
+                desc: text.systems.damage.repairRowSmallDesc,
+                rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.Row,
+            };
+        case DamageCard.DivertCol:
+            return {
+                name: text.systems.damage.divertCol,
+                desc: text.systems.damage.divertColDesc,
+                rarity: DamageCardRarity.Rare,
+                targetingMode: DamageTargetingMode.Column,
             };
         default:
             return null;

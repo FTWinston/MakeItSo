@@ -1,24 +1,25 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { DamageCardInfo, DamageCardRarity, getDamageCardInfo } from '~/store/Damage';
+import { DamageCardInfo, DamageCardRarity, getDamageCardInfo, DamageTargetingMode, DamageCard } from '~/store/Damage';
 import './CardDisplay.scss';
 
 interface CardDisplayProps {
     text: TextLocalisation;
-    cardID: number;
+    card: DamageCard;
     selected: boolean;
     clicked?: () => void;
 }
 
 export class CardDisplay extends React.Component<CardDisplayProps, {}> {
     public render() {
-        let card = getDamageCardInfo(this.props.cardID, this.props.text);
+        let card = getDamageCardInfo(this.props.card, this.props.text);
 
         if (card === null) {
             card = {
                 name: '???',
-                desc: `Card ID ${this.props.cardID} not recognised`,
+                desc: `Card ID ${this.props.card} not recognised`,
                 rarity: DamageCardRarity.Common,
+                targetingMode: DamageTargetingMode.SingleCard,
             };
         }
 
