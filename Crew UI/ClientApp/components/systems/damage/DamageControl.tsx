@@ -36,7 +36,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
             <SystemList
                 text={this.props.text}
                 systems={this.props.systems}
-                systemSelected={sys => this.selectSystem(sys)}
+                systemSelected={num => this.selectSystem(num)}
                 targetingMode={targetingMode}
             />
             <CardSelection
@@ -59,20 +59,20 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
         this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
     }
 
-    private selectSystem(system: DamageSystem) {
+    private selectSystem(systemPos: number) {
         if (this.props.selectedHandPos === undefined) {
             return; // do nothing if no card selected
         }
 
-        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
+        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, systemPos);
     }
 
     private pickCard(cardNum: number) {
         connection.send(`dmg_pickCard ${cardNum}`);
     }
 
-    private playCard(cardID: number, handPos: number, targetSystem: DamageSystemType) {
-        connection.send(`dmg_useCard ${cardID} ${handPos} ${targetSystem}`);
+    private playCard(cardID: number, handPos: number, targetSystemPos: number) {
+        connection.send(`dmg_useCard ${cardID} ${handPos} ${targetSystemPos}`);
     }
 }
 

@@ -567,7 +567,9 @@ $lightBackground: #999;
   color: #333;
   align-self: flex-start;
   padding: 0.1em;
-  margin-right: 1em; }
+  margin-right: 1em;
+  text-align: center;
+  width: 1.1em; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -614,7 +616,7 @@ $lightBackground: #999;
   @media (orientation: landscape) {
     .damageControl {
       grid-template-rows: 1fr 2fr;
-      grid-template-columns: 2fr 3fr;
+      grid-template-columns: 3fr 4fr;
       grid-template-areas: "systems selection" "systems hand"; } }
   @media (orientation: portrait) {
     .damageControl {

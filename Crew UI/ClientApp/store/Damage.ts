@@ -76,7 +76,7 @@ interface SetDamageAction {
 
 interface SetChoiceAction {
     type: 'CHOICE';
-    cardIDs: [number, number, number];
+    cardIDs: number[];
 }
 
 interface SetHandAction {
@@ -189,7 +189,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
         }
         case 'DAMAGE_SYSTEMS': {
             let systems = state.systems.slice();
-
+            
             action.damage.map((val, index) => {
                 let type = index as DamageSystemType;
                 systems.filter(s => s.type === type)[0].damage = val;
@@ -214,13 +214,13 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
         case 'CHOICE': {
             return {
                 ...state,
-                choiceCardIDs: action.cardIDs,
+                choiceCards: action.cardIDs,
             };
         }
         case 'HAND': {
             return {
                 ...state,
-                handCardIDs: action.cardIDs,
+                handCards: action.cardIDs,
             };
         }
         case 'QUEUE': {
@@ -235,7 +235,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
 
             return {
                 ...state,
-                handCardIDs: hand,
+                handCards: hand,
             };
         }
         case 'REM_CARD': {
@@ -249,11 +249,12 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
                 }
             }
 
-            let hand = state.handCards.slice().splice(action.handPos, 1);
+            let hand = state.handCards.slice();
+            hand.splice(action.handPos, 1);
 
             return {
                 ...state,
-                handCardIDs: hand,
+                handCards: hand,
                 selectedHandPos: selectedHandPos,
             };
         }
@@ -342,7 +343,7 @@ export function getDamageCardInfo(card: DamageCard, text: TextLocalisation): Dam
                 rarity: DamageCardRarity.Rare,
                 targetingMode: DamageTargetingMode.Row,
             };
-        case DamageCard.DistributeRow:
+        case DamageCard.RepairRowSmall:
             return {
                 name: text.systems.damage.repairRowSmall,
                 desc: text.systems.damage.repairRowSmallDesc,

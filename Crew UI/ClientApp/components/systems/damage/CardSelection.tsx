@@ -12,7 +12,7 @@ interface CardSelectionProps {
     cardSelected: (number: number) => void;
 }
 
-export class CardSelection extends React.Component<CardSelectionProps, {}> {
+export class CardSelection extends React.PureComponent<CardSelectionProps, {}> {
     public render() {
         let queueSize = this.props.queueSize <= 0 ? undefined : <div className="damageCardChoice__queueSize">{this.props.queueSize}</div>;
 

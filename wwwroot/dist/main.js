@@ -632,7 +632,7 @@ var __assign = (this && this.__assign) || Object.assign || function(t) {
     }
     return t;
 };
-var numDamageSystems = 7 /* Comms */;
+var numDamageSystems = 8 /* Comms */;
 var maxHandSize = 8;
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -680,14 +680,15 @@ var actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 var unloadedState = {
     systems: [
-        { type: 0 /* Power */, damage: 0, },
-        { type: 1 /* Helm */, damage: 0, },
-        { type: 2 /* Warp */, damage: 0, },
-        { type: 3 /* BeamWeapons */, damage: 0, },
-        { type: 4 /* Torpedoes */, damage: 0, },
-        { type: 5 /* Sensors */, damage: 0, },
-        { type: 6 /* Shields */, damage: 0, },
-        { type: 7 /* Comms */, damage: 0, },
+        { type: 1 /* Power */, damage: 0, },
+        { type: 2 /* Helm */, damage: 0, },
+        { type: 3 /* Warp */, damage: 0, },
+        { type: 4 /* BeamWeapons */, damage: 0, },
+        { type: 0 /* Empty */, damage: 0, },
+        { type: 5 /* Torpedoes */, damage: 0, },
+        { type: 6 /* Sensors */, damage: 0, },
+        { type: 7 /* Shields */, damage: 0, },
+        { type: 8 /* Comms */, damage: 0, },
     ],
     choiceCards: [],
     handCards: [],
@@ -718,10 +719,10 @@ var reducer = function (state, rawAction) {
             return __assign({}, state, { systems: systems });
         }
         case 'CHOICE': {
-            return __assign({}, state, { choiceCardIDs: action.cardIDs });
+            return __assign({}, state, { choiceCards: action.cardIDs });
         }
         case 'HAND': {
-            return __assign({}, state, { handCardIDs: action.cardIDs });
+            return __assign({}, state, { handCards: action.cardIDs });
         }
         case 'QUEUE': {
             return __assign({}, state, { queueSize: action.size });
@@ -729,7 +730,7 @@ var reducer = function (state, rawAction) {
         case 'ADD_CARD': {
             var hand = state.handCards.slice();
             hand.push(action.cardID);
-            return __assign({}, state, { handCardIDs: hand });
+            return __assign({}, state, { handCards: hand });
         }
         case 'REM_CARD': {
             var selectedHandPos = state.selectedHandPos;
@@ -741,8 +742,9 @@ var reducer = function (state, rawAction) {
                     selectedHandPos--;
                 }
             }
-            var hand = state.handCards.slice().splice(action.handPos, 1);
-            return __assign({}, state, { handCardIDs: hand, selectedHandPos: selectedHandPos });
+            var hand = state.handCards.slice();
+            hand.splice(action.handPos, 1);
+            return __assign({}, state, { handCards: hand, selectedHandPos: selectedHandPos });
         }
         case 'SEL_CARD': {
             return __assign({}, state, { selectedHandPos: action.handPos });
@@ -811,7 +813,7 @@ function getDamageCardInfo(card, text) {
                 rarity: 1 /* Rare */,
                 targetingMode: 2 /* Row */,
             };
-        case 7 /* DistributeRow */:
+        case 8 /* RepairRowSmall */:
             return {
                 name: text.systems.damage.repairRowSmall,
                 desc: text.systems.damage.repairRowSmallDesc,
@@ -7771,7 +7773,7 @@ var CardHand = (function (_super) {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__components_systems_damage_CardDisplay__["a" /* CardDisplay */], { card: card, key: index, selected: index === this.props.selectedHandPos, clicked: function () { return _this.props.cardSelected(index); }, text: this.props.text });
     };
     return CardHand;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+}(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
 
 
 
@@ -7816,7 +7818,7 @@ var CardSelection = (function (_super) {
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_1__CardDisplay__["a" /* CardDisplay */], { card: card, selected: false, key: index, clicked: this.props.canSelect ? function () { return _this.props.cardSelected(index); } : undefined, text: this.props.text });
     };
     return CardSelection;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+}(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
 
 
 
@@ -7874,24 +7876,24 @@ var DamageControl = (function (_super) {
             : __webpack_require__.i(__WEBPACK_IMPORTED_MODULE_6__store_Damage__["b" /* getDamageCardInfo */])(this.props.handCards[this.props.selectedHandPos], this.props.text);
         var targetingMode = selectedCard === null ? undefined : selectedCard.targetingMode;
         return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "system damageControl" },
-            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text, systems: this.props.systems, systemSelected: function (sys) { return _this.selectSystem(sys); }, targetingMode: targetingMode }),
+            __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_5__SystemList__["a" /* SystemList */], { text: this.props.text, systems: this.props.systems, systemSelected: function (num) { return _this.selectSystem(num); }, targetingMode: targetingMode }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_4__CardSelection__["a" /* CardSelection */], { text: this.props.text, cards: this.props.choiceCards, queueSize: this.props.queueSize, cardSelected: function (num) { return _this.pickCard(num); }, canSelect: this.props.handCards.length < __WEBPACK_IMPORTED_MODULE_6__store_Damage__["c" /* maxHandSize */] }),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"](__WEBPACK_IMPORTED_MODULE_3__CardHand__["a" /* CardHand */], { text: this.props.text, cards: this.props.handCards, cardSelected: function (num) { return _this.selectCard(num); }, selectedHandPos: this.props.selectedHandPos }));
     };
     DamageControl.prototype.selectCard = function (handPos) {
         this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
     };
-    DamageControl.prototype.selectSystem = function (system) {
+    DamageControl.prototype.selectSystem = function (systemPos) {
         if (this.props.selectedHandPos === undefined) {
             return; // do nothing if no card selected
         }
-        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, system.type);
+        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, systemPos);
     };
     DamageControl.prototype.pickCard = function (cardNum) {
         __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send("dmg_pickCard " + cardNum);
     };
-    DamageControl.prototype.playCard = function (cardID, handPos, targetSystem) {
-        __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send("dmg_useCard " + cardID + " " + handPos + " " + targetSystem);
+    DamageControl.prototype.playCard = function (cardID, handPos, targetSystemPos) {
+        __WEBPACK_IMPORTED_MODULE_7__Client__["connection"].send("dmg_useCard " + cardID + " " + handPos + " " + targetSystemPos);
     };
     return DamageControl;
 }(__WEBPACK_IMPORTED_MODULE_2__components_systems_ShipSystemComponent__["a" /* ShipSystemComponent */]));
@@ -7963,34 +7965,37 @@ var SystemList = (function (_super) {
     };
     SystemList.prototype.renderSystem = function (system, index) {
         var _this = this;
-        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem", key: index, onClick: function () { return _this.props.systemSelected(system); } },
+        if (system.type === 0 /* Empty */) {
+            return __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { key: index });
+        }
+        return (__WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem", key: index, onClick: function () { return _this.props.systemSelected(index); } },
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem__name" }, this.getSystemName(system.type)),
             __WEBPACK_IMPORTED_MODULE_0_react__["createElement"]("div", { className: "damageSystem__damage" }, system.damage)));
     };
     SystemList.prototype.getSystemName = function (system) {
         switch (system) {
-            case 0 /* Power */:
+            case 1 /* Power */:
                 return this.props.text.systemNames.power;
-            case 1 /* Helm */:
+            case 2 /* Helm */:
                 return this.props.text.systemNames.helm;
-            case 2 /* Warp */:
+            case 3 /* Warp */:
                 return this.props.text.systemNames.warp;
-            case 3 /* BeamWeapons */:
+            case 4 /* BeamWeapons */:
                 return this.props.text.systemNames.weapons + ' 1';
-            case 4 /* Torpedoes */:
+            case 5 /* Torpedoes */:
                 return this.props.text.systemNames.weapons + ' 2';
-            case 5 /* Sensors */:
+            case 6 /* Sensors */:
                 return this.props.text.systemNames.sensors;
-            case 6 /* Shields */:
+            case 7 /* Shields */:
                 return this.props.text.systemNames.shields;
-            case 7 /* Comms */:
+            case 8 /* Comms */:
                 return this.props.text.systemNames.comms;
             default:
                 return '';
         }
     };
     return SystemList;
-}(__WEBPACK_IMPORTED_MODULE_0_react__["Component"]));
+}(__WEBPACK_IMPORTED_MODULE_0_react__["PureComponent"]));
 
 
 
@@ -11581,7 +11586,7 @@ Icon.default = Icon;
 var React = __webpack_require__(0);
 
 function Icon (props) {
-    return React.createElement("svg",props,[React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":0}),React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
+    return React.createElement("svg",props,[React.createElement("path",{"d":"M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3","key":0}),React.createElement("circle",{"cx":"12","cy":"12","r":"10","key":1}),React.createElement("line",{"x1":"12","y1":"17","x2":"12","y2":"17","key":2})]);
 }
 
 Icon.displayName = "Icon";

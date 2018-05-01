@@ -6,7 +6,7 @@
     
     @include landscape() {
         grid-template-rows: 1fr 2fr;
-        grid-template-columns: 2fr 3fr;
+        grid-template-columns: 3fr 4fr;
         grid-template-areas:
             "systems selection"
             "systems hand";

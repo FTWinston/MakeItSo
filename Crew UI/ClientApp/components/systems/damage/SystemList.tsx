@@ -7,10 +7,10 @@ interface SystemListProps {
     text: TextLocalisation;
     systems: DamageSystem[];
     targetingMode?: DamageTargetingMode;
-    systemSelected: (system: DamageSystem) => void;
+    systemSelected: (systemPos: number) => void;
 }
 
-export class SystemList extends React.Component<SystemListProps, {}> {
+export class SystemList extends React.PureComponent<SystemListProps, {}> {
     public render() {
         let classes = 'damageSystemList';
         switch (this.props.targetingMode) {
@@ -36,14 +36,14 @@ export class SystemList extends React.Component<SystemListProps, {}> {
 
     private renderSystem(system: DamageSystem, index: number) {
         if (system.type === DamageSystemType.Empty) {
-            return <div/>;
+            return <div key={index} />;
         }
 
         return (
         <div
             className="damageSystem"
             key={index}
-            onClick={() => this.props.systemSelected(system)}
+            onClick={() => this.props.systemSelected(index)}
         >
             <div className="damageSystem__name">{this.getSystemName(system.type)}</div>
             <div className="damageSystem__damage">{system.damage}</div>

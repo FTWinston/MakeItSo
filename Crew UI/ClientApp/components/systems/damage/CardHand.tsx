@@ -11,7 +11,7 @@ interface CardHandProps {
     cardSelected: (cardPos: number) => void;
 }
 
-export class CardHand extends React.Component<CardHandProps, {}> {
+export class CardHand extends React.PureComponent<CardHandProps, {}> {
     public render() {
         return (
         <div className="damageCardHand">

@@ -28,11 +28,18 @@ UDamageControlSystem::UDamageControlSystem()
 void UDamageControlSystem::ResetData()
 {
 	for (auto i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
-	{
 		damageLevels[i] = 0;
-		systemOrder[i] = i;
-	}
 
+	systemOrder[0] = Damage_Power;
+	systemOrder[1] = Damage_Helm;
+	systemOrder[2] = Damage_Warp;
+	systemOrder[3] = Damage_BeamWeapons;
+	systemOrder[4] = Damage_Empty;
+	systemOrder[5] = Damage_Torpedoes;
+	systemOrder[6] = Damage_Sensors;
+	systemOrder[7] = Damage_Shields;
+	systemOrder[8] = Damage_Comms;
+	
 	CLEAR(cardChoice);
 	CLEAR(cardHand);
 
@@ -62,9 +69,9 @@ bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_
 		{
 			uint8 cardID = STOI(parts[0]);
 			uint8 handPosition = STOI(parts[1]);
-			EDamageSystem targetSystem = (EDamageSystem)STOI(parts[2]);
+			uint8 targetSystemPos = (EDamageSystem)STOI(parts[2]);
 
-			ActivateCard(cardID, handPosition, targetSystem);
+			ActivateCard(cardID, handPosition, targetSystemPos);
 		}
 	}
 	else
@@ -223,7 +230,7 @@ void UDamageControlSystem::OnReplicated_CardChoice(TArray<uint8> beforeChange)
 }
 
 #define CHOICE_GENERATION_ENERGY_AMOUNT 500
-#define MAX_CHOICE_QUEUE_SIZE 10
+#define MAX_CHOICE_QUEUE_SIZE 8
 
 void UDamageControlSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
