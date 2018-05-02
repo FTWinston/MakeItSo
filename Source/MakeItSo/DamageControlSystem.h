@@ -66,14 +66,54 @@ private:
 	UPROPERTY()
 	TQueue<TArray<uint8>> choiceQueue;
 
+
+	UFUNCTION(Client, Reliable)
 	void SendSystemOrder();
+#ifdef WEB_SERVER_TEST
+	void SendSystemOrder_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendAllDamageLevels();
+#ifdef WEB_SERVER_TEST
+	void SendAllDamageLevels_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendDamageLevel(EDamageSystem system, uint8 damageLevel);
+#ifdef WEB_SERVER_TEST
+	void SendDamageLevel_Implementation(EDamageSystem system, uint8 damageLevel);
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendCardChoice();
+#ifdef WEB_SERVER_TEST
+	void SendCardChoice_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendQueueSize();
+#ifdef WEB_SERVER_TEST
+	void SendQueueSize_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendWholeHand();
+#ifdef WEB_SERVER_TEST
+	void SendWholeHand_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendAddCardToHand(uint8 cardID);
+#ifdef WEB_SERVER_TEST
+	void SendAddCardToHand_Implementation(uint8 cardID);
+#endif
+
+	UFUNCTION(Client, Reliable)
 	void SendRemoveCardFromHand(uint8 handPosition);
+#ifdef WEB_SERVER_TEST
+	void SendRemoveCardFromHand_Implementation(uint8 handPosition);
+#endif
 
 	UFUNCTION(Server, Reliable)
 	void ChooseCard(uint8 cardPosition);

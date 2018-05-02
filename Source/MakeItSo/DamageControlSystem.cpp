@@ -89,38 +89,56 @@ void UDamageControlSystem::SendAllData_Implementation()
 	SendQueueSize();
 }
 
-void UDamageControlSystem::SendSystemOrder()
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendSystemOrder() { SendSystemOrder_Implementation(); }
+#endif
+void UDamageControlSystem::SendSystemOrder_Implementation()
 {
 	auto command = CombineIDs(TEXT("dmg_order "), systemOrder);
 	SendSystem(command);
 }
 
-void UDamageControlSystem::SendAllDamageLevels()
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendAllDamageLevels() { SendAllDamageLevels_Implementation(); }
+#endif
+void UDamageControlSystem::SendAllDamageLevels_Implementation()
 {
 	auto command = CombineIDs(TEXT("dmg_levels "), damageLevels);
 	SendSystem(command);
 }
 
-void UDamageControlSystem::SendCardChoice()
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendCardChoice() { SendCardChoice_Implementation(); }
+#endif
+void UDamageControlSystem::SendCardChoice_Implementation()
 {
 	auto command = CombineIDs(TEXT("dmg_choice "), cardChoice);
 	SendSystem(command);
 }
 
-void UDamageControlSystem::SendQueueSize()
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendQueueSize() { SendQueueSize_Implementation(); }
+#endif
+void UDamageControlSystem::SendQueueSize_Implementation()
 {
 	FString output = TEXT("dmg_queue ");
 	APPENDINT(output, choiceQueueSize);
 	SendSystem(output);
 }
 
-void UDamageControlSystem::SendWholeHand()
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendWholeHand() { SendWholeHand_Implementation(); }
+#endif
+void UDamageControlSystem::SendWholeHand_Implementation()
 {
 	auto command = CombineIDs(TEXT("dmg_hand "), cardHand);
 	SendSystem(command);
 }
 
-void UDamageControlSystem::SendDamageLevel(EDamageSystem system, uint8 damageLevel)
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendDamageLevel(EDamageSystem system, uint8 damageLevel) { SendDamageLevel_Implementation(system, damageLevel); }
+#endif
+void UDamageControlSystem::SendDamageLevel_Implementation(EDamageSystem system, uint8 damageLevel)
 {
 	FString output = TEXT("dmg_level ");
 	APPENDINT(output, system);
@@ -130,7 +148,10 @@ void UDamageControlSystem::SendDamageLevel(EDamageSystem system, uint8 damageLev
 	SendSystem(output);
 }
 
-void UDamageControlSystem::SendAddCardToHand(uint8 cardID)
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendAddCardToHand(uint8 cardID) { SendAddCardToHand_Implementation(cardID); }
+#endif
+void UDamageControlSystem::SendAddCardToHand_Implementation(uint8 cardID)
 {
 	FString output = TEXT("dmg_add ");
 	APPENDINT(output, cardID);
@@ -138,7 +159,10 @@ void UDamageControlSystem::SendAddCardToHand(uint8 cardID)
 	SendSystem(output);
 }
 
-void UDamageControlSystem::SendRemoveCardFromHand(uint8 handPosition)
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendRemoveCardFromHand(uint8 handPosition) { SendRemoveCardFromHand_Implementation(handPosition); }
+#endif
+void UDamageControlSystem::SendRemoveCardFromHand_Implementation(uint8 handPosition)
 {
 	FString output = TEXT("dmg_rem ");
 	APPENDINT(output, handPosition);
