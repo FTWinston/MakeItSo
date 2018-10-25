@@ -1,6 +1,6 @@
 @import '../../general/mixins';
 
-.damageSystemList {
+.powerSystemList {
     display: grid;
     grid-gap: 1em;
     
@@ -8,7 +8,7 @@
     grid-template-columns: 1fr 1fr 1fr;
 }
 
-.damageSystem {
+.powerSystem {
     border-radius: 1em;
     background-color: $colorTertiary;
     color: white;
@@ -26,12 +26,12 @@
     }
 }
 
-.damageSystem__damage {
+.powerSystem__power {
     font-weight: bold;
     font-size: 1.5em;
 }
 
-.damageSystem__damage::after {
+.powerSystem__power::after {
     content: '%';
     font-weight: normal;
 }

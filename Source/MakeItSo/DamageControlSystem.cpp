@@ -71,7 +71,6 @@ bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_
 			uint8 handPosition = STOI(parts[1]);
 			uint8 targetSystemPos = (EDamageSystem)STOI(parts[2]);
 
-			ActivateCard(cardID, handPosition, targetSystemPos);
 		}
 	}
 	else
@@ -87,6 +86,23 @@ void UDamageControlSystem::SendAllData_Implementation()
 	SendCardChoice();
 	SendWholeHand();
 	SendQueueSize();
+}
+
+#define CHOICE_GENERATION_ENERGY_AMOUNT 500
+#define MAX_CHOICE_QUEUE_SIZE 8
+
+void UDamageControlSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
+		return;
+
+	choiceGeneratedAmount += GetPowerLevel();
+
+	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
+		return;
+
+	choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
+	AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
 }
 
 #ifdef WEB_SERVER_TEST
@@ -253,23 +269,6 @@ void UDamageControlSystem::OnReplicated_CardChoice(TArray<uint8> beforeChange)
 	SendCardChoice();
 }
 
-#define CHOICE_GENERATION_ENERGY_AMOUNT 500
-#define MAX_CHOICE_QUEUE_SIZE 8
-
-void UDamageControlSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
-		return;
-
-	choiceGeneratedAmount += GetPowerLevel();
-
-	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
-		return;
-
-	choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
-	AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
-}
-
 void UDamageControlSystem::AddCardChoice(uint8 card1, uint8 card2, uint8 card3)
 {
 	TArray<uint8> newChoice;
@@ -387,21 +386,6 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 	}
 }
 
-// TODO: implement more cards
-enum EDamageCard
-{
-	Card_RepairSmall,
-	Card_RepairMed,
-	Card_RepairLarge,
-	Card_SwapLeft,
-	Card_SwapRight,
-	Card_SwapUp,
-	Card_SwapDown,
-	Card_DistributeRow,
-	Card_RepairRowSmall,
-	Card_DivertCol,
-	NUM_DAMAGE_CARDS,
-};
 
 bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 {
@@ -495,182 +479,8 @@ void UDamageControlSystem::GetColCells(uint8 testPos, uint8 &outPos1, uint8 &out
 	}
 }
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSystemPos) { ActivateCard_Implementation(cardID, handPosition, targetSystemPos); }
-#endif
-
-void UDamageControlSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystemPos)
-{
-	if (targetSystemPos >= MAX_DAMAGE_SYSTEMS || cardHand[handPosition] != cardID)
-		return;
-
-	switch ((EDamageCard)cardID)
-	{
-	case Card_RepairSmall:
-	{
-		EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
-		if (!RestoreDamage(damageSystem, 15))
-			return;
-		break;
-	}
-	case Card_RepairMed:
-	{
-		EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
-		if (!RestoreDamage(damageSystem, 35))
-			return;
-		break;
-	}
-	case Card_RepairLarge:
-	{
-		EDamageSystem damageSystem = (EDamageSystem)systemOrder[targetSystemPos];
-		if (!RestoreDamage(damageSystem, 75))
-			return;
-		break;
-	}
-	case Card_SwapLeft:
-	{
-		uint8 pos1, pos2, pos3;
-		GetRowCells(targetSystemPos, pos1, pos2, pos3);
-			
-		uint8 tmp = systemOrder[pos1];
-		systemOrder[pos1] = systemOrder[pos2];
-		systemOrder[pos2] = systemOrder[pos3];
-		systemOrder[pos3] = tmp;
-
-		if (ISCLIENT())
-			SendSystemOrder();
-		break;
-	}
-	case Card_SwapRight:
-	{
-		uint8 pos1, pos2, pos3;
-		GetRowCells(targetSystemPos, pos3, pos2, pos1);
-
-		uint8 tmp = systemOrder[pos1];
-		systemOrder[pos1] = systemOrder[pos2];
-		systemOrder[pos2] = systemOrder[pos3];
-		systemOrder[pos3] = tmp;
-
-		if (ISCLIENT())
-			SendSystemOrder();
-		break;
-	}
-	case Card_SwapUp:
-	{
-		uint8 pos1, pos2, pos3;
-		GetColCells(targetSystemPos, pos1, pos2, pos3);
-
-		uint8 tmp = systemOrder[pos1];
-		systemOrder[pos1] = systemOrder[pos2];
-		systemOrder[pos2] = systemOrder[pos3];
-		systemOrder[pos3] = tmp;
-
-		if (ISCLIENT())
-			SendSystemOrder();
-		break;
-	}
-	case Card_SwapDown:
-	{
-		uint8 pos1, pos2, pos3;
-		GetColCells(targetSystemPos, pos3, pos2, pos1);
-
-		uint8 tmp = systemOrder[pos1];
-		systemOrder[pos1] = systemOrder[pos2];
-		systemOrder[pos2] = systemOrder[pos3];
-		systemOrder[pos3] = tmp;
-
-		if (ISCLIENT())
-			SendSystemOrder();
-		break;
-	}
-	case Card_DistributeRow:
-	{
-		uint8 pos1, pos2, pos3;
-		GetRowCells(targetSystemPos, pos1, pos2, pos3);
-
-		EDamageSystem sys1 = (EDamageSystem)systemOrder[pos1];
-		EDamageSystem sys2 = (EDamageSystem)systemOrder[pos2];
-		EDamageSystem sys3 = (EDamageSystem)systemOrder[pos3];
-
-		auto shipSys1 = LookupSystem(sys1);
-		auto shipSys2 = LookupSystem(sys2);
-		auto shipSys3 = LookupSystem(sys3);
-
-		uint8 numSys = 0;
-		uint16 totalHealth = 0;
-
-		if (shipSys1 != nullptr)
-		{
-			totalHealth += shipSys1->GetHealthLevel();
-			numSys++;
-		}
-		if (shipSys2 != nullptr)
-		{
-			totalHealth += shipSys2->GetHealthLevel();
-			numSys++;
-		}
-		if (shipSys3 != nullptr)
-		{
-			totalHealth += shipSys3->GetHealthLevel();
-			numSys++;
-		}
-
-		uint8 averageHealth = totalHealth / numSys; // we'll lose a couple of points in rounding here, that's ok
-		if (averageHealth == MAX_SYSTEM_HEALTH)
-			return;
-
-		SetHealth(sys1, averageHealth);
-		SetHealth(sys2, averageHealth);
-		SetHealth(sys3, averageHealth);
-		break;
-	}
-	case Card_RepairRowSmall:
-	{
-		uint8 pos1, pos2, pos3;
-		GetRowCells(targetSystemPos, pos1, pos2, pos3);
-
-		EDamageSystem sys1 = (EDamageSystem)systemOrder[pos1];
-		EDamageSystem sys2 = (EDamageSystem)systemOrder[pos2];
-		EDamageSystem sys3 = (EDamageSystem)systemOrder[pos3];
-
-		if (!RestoreDamage(sys1, 15) && !RestoreDamage(sys2, 15) && !RestoreDamage(sys3, 15))
-			return;
-
-		break;
-	}
-	case Card_DivertCol:
-	{
-		uint8 pos1, pos2, pos3;
-		GetColCells(targetSystemPos, pos1, pos2, pos3);
-
-		EDamageSystem col1 = (EDamageSystem)systemOrder[pos1];
-		EDamageSystem col2 = (EDamageSystem)systemOrder[pos2];
-		EDamageSystem col3 = (EDamageSystem)systemOrder[pos3];
-
-		EDamageSystem healSystem = (EDamageSystem)systemOrder[targetSystemPos];
-		EDamageSystem damage1 = col1 != healSystem ? col1 : col2;
-		EDamageSystem damage2 = col2 != healSystem && col2 != damage1 ? col2 : col3;
-
-		if (!RestoreDamage(healSystem, 50))
-			return;
-
-		DealDamage(damage1, 25);
-		DealDamage(damage2, 25);
-		break;
-	}
-	default:
-		return;
-	}
-	
-	// only remove card from hand if we play it successfully
-	SETREMOVEAT(cardHand, handPosition);
-
-	if (ISCLIENT())
-		SendRemoveCardFromHand(handPosition);
-}
-
 uint8 UDamageControlSystem::PickRandomCard()
 {
 	// TODO: probably want to make some cards rarer than others
-	return FMath::RandRange(0, NUM_DAMAGE_CARDS - 1);
+	return 0;
 }

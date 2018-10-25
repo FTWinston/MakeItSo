@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { PowerSystem, PowerSystemType, PowerTargetingMode } from "~/store/Power";
+import { PowerSystem, PowerSystemType, PowerTargetingMode } from './store';
 import './SystemList.scss';
 
 interface SystemListProps {
@@ -12,10 +12,10 @@ interface SystemListProps {
 
 export class SystemList extends React.PureComponent<SystemListProps, {}> {
     public render() {
-        let classes = 'damageSystemList';
+        let classes = 'powerSystemList';
         switch (this.props.targetingMode) {
             case PowerTargetingMode.TargetSingleSystem:
-                classes += ' damageSystemList--targetSingle'; break;
+                classes += ' powerSystemList--targetSingle'; break;
         }
         // TODO: use this targeting mode info to determine which systems to highlight when hovering etc
 
@@ -29,12 +29,12 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
     private renderSystem(system: PowerSystem, index: number) {
         return (
         <div
-            className="damageSystem"
+            className="powerSystem"
             key={index}
             onClick={() => this.props.systemSelected(index)}
         >
-            <div className="damageSystem__name">{this.getSystemName(system.type)}</div>
-            <div className="damageSystem__damage">{system.damage}</div>
+            <div className="powerSystem__name">{this.getSystemName(system.type)}</div>
+            <div className="powerSystem__power">{system.damage}</div>
         </div>
         );
     }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
-import { actionCreators, WarpState, WarpScreenStatus } from '~/store/Warp';
+import { actionCreators, WarpState, WarpScreenStatus } from './store';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { SensorView } from '~/components/general/SensorView';
 import { JumpPath, SensorTarget, TextLocalisation, Vector3 } from '~/functionality';

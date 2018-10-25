@@ -1,11 +1,11 @@
 import * as User from './User';
 import * as Crew from './Crew';
 import * as Screen from './Screen';
-import * as Damage from './Damage';
-import * as Helm from './Helm';
-import * as Power from './Power';
 import * as Sensors from './Sensors';
-import * as Warp from './Warp';
+import * as Damage from '~/components/systems/damage/store';
+import * as Helm from '~/components/systems/helm/store';
+import * as Power from '~/components/systems/power/store';
+import * as Warp from '~/components/systems/warp/store';
 
 // The top-level state object
 export interface ApplicationState {

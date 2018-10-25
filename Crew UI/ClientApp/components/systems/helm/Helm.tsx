@@ -2,7 +2,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation, InputMode, OrientationCube } from '~/functionality';
-import { HelmState as HelmBaseProps } from '~/store/Helm';
+import { HelmState as HelmBaseProps } from './store';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { ButtonHelm } from './ButtonHelm';
 import { TouchHelm } from './TouchHelm';

@@ -121,12 +121,6 @@ private:
 	void ChooseCard_Implementation(uint8 cardPosition);
 #endif
 
-	UFUNCTION(Server, Reliable)
-	void ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSystemPos);
-#ifdef WEB_SERVER_TEST
-	void ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystemPos);
-#endif
-
 	UShipSystem *LookupSystem(EDamageSystem system);
 	uint8 PickRandomCard();
 	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);

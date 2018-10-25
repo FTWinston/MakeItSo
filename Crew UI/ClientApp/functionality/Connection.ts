@@ -2,16 +2,12 @@ import { store } from '~/Client';
 import { actionCreators as crewActions } from '~/store/Crew';
 import { actionCreators as userActions } from '~/store/User';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
-import { actionCreators as helmActions } from '~/store/Helm';
-import { actionCreators as warpActions, WarpScreenStatus } from '~/store/Warp';
-import { actionCreators as powerActions, PowerCellType, PowerSystem, SystemCellLayout,
-    numCells as numPowerCells, maxNumSpare as maxNumSparePowerCells
-} from '~/store/Power';
-import { actionCreators as damageActions, DamageSystemType } from '~/store/Damage';
 import { actionCreators as sensorActions } from '~/store/Sensors';
 import { TextLocalisation } from './Localisation';
-import { ShipSystem, SensorTarget, parseSensorTarget, Vector3 } from '~/functionality';
-import { JumpPathStatus } from '~/functionality/sensors';
+import { ShipSystem, SensorTarget, parseSensorTarget } from '~/functionality';
+import { msgPrefix as helmPrefix, receiveMessage as helmMessage } from '~/components/systems/helm'
+import { msgPrefix as powerPrefix, receiveMessage as powerMessage } from '~/components/systems/power'
+import { msgPrefix as warpPrefix, receiveMessage as warpMessage } from '~/components/systems/warp'
 
 export class Connection {
     private socket: WebSocket;
@@ -97,237 +93,32 @@ export class Connection {
                     store.dispatch(screenActions.showSystemSelection());
                 }
                 break;
-            case 'helm_manoever_limits': {
-                let vals = data.split(' ');
-                let pitch = parseFloat(vals[0]);
-                let yaw = parseFloat(vals[1]);
-                let roll = parseFloat(vals[2]);
-                let translationX = parseFloat(vals[3]);
-                let translationY = parseFloat(vals[4]);
-                store.dispatch(helmActions.setManoeveringLimits(pitch, yaw, roll, translationX, translationY));
-                break;
-            }
-            case 'helm_speed_limits': {
-                let vals = data.split(' ');
-                let forwardMax = parseFloat(vals[0]);
-                let revMax = parseFloat(vals[1]);
-                store.dispatch(helmActions.setSpeedLimits(forwardMax, revMax));
-                break;
-            }
-            case 'helm_rotation': {
-                let vals = data.split(' ');
-                let pitch = parseFloat(vals[0]);
-                let yaw = parseFloat(vals[1]);
-                let roll = parseFloat(vals[2]);
-                let pitchRate = parseFloat(vals[3]);
-                let yawRate = parseFloat(vals[4]);
-                let rollRate = parseFloat(vals[5]);
-                store.dispatch(helmActions.setOrientation(pitch, yaw, roll));
-                store.dispatch(helmActions.setRotationRates(pitchRate, yawRate, rollRate));
-                break;
-            }
-            case 'helm_translation_rates': {
-                let vals = data.split(' ');
-                let forward = parseFloat(vals[0]);
-                let horiz = parseFloat(vals[1]);
-                let vert = parseFloat(vals[2]);
-                store.dispatch(helmActions.setTranslationRates(horiz, vert, forward));
-                break;
-            }
+
             case 'sensor_target': {
                 let target = parseSensorTarget(data);
                 store.dispatch(sensorActions.addTarget(target));
                 break;
             }
-            case 'warp_clear': {
-                store.dispatch(warpActions.clearAll());
-                break;
-            }
-            case 'warp_add_path': {
-                let vals = data.split(' ');
-                let id = parseInt(vals[0]);
-                let status = parseInt(vals[1]) as JumpPathStatus;
-                let power = parseFloat(vals[2]);
-
-                let points: Vector3[] = [];
-                for (let i=5; i<vals.length; i+=3) {
-                    points.push(new Vector3(
-                        parseFloat(vals[i-2]),
-                        parseFloat(vals[i-1]),
-                        parseFloat(vals[i])
-                    ));
-                }
-
-                store.dispatch(warpActions.addPath(id, status, points, power));
-                break;
-            }
-            case 'warp_ext_path': {
-                let vals = data.split(' ');
-                let id = parseInt(vals[0]);
-
-                let points: Vector3[] = [];
-                for (let i=3; i<vals.length; i+=3) {
-                    points.push(new Vector3(
-                        parseFloat(vals[i-2]),
-                        parseFloat(vals[i-1]),
-                        parseFloat(vals[i])
-                    ));
-                }
-
-                store.dispatch(warpActions.extendPath(id, points));
-                break;
-            }
-            case 'warp_rem_path': {
-                let vals = data.split(' ');
-                let id = parseInt(vals[0]);
-                let displayInvalid = parseInt(vals[1]) === 1;
-
-                if (displayInvalid) {
-                    // mark invalid now, then remove after 2 secs
-                    store.dispatch(warpActions.setPathStatus(id, JumpPathStatus.Invalid));
-                    setTimeout(() => store.dispatch(warpActions.removePath(id)), 2000);
-                } else {
-                    // remove immediately
-                    store.dispatch(warpActions.removePath(id));
-                }
-                break;
-            }
-            case 'warp_charge_jump': {
-                let vals = data.split(' ');
-                let id = parseInt(vals[0]);
-                let secsRemaining = parseInt(vals[1]);
-                let completion = parseInt(vals[2]);
-
-                store.dispatch(warpActions.chargeJump(id, secsRemaining, completion));
-                break;
-            }
-            case 'warp_cancel_jump': {
-                store.dispatch(warpActions.setScreenStatus(WarpScreenStatus.Viewing));
-                break;
-            }
-            case 'warp_jump_failed': {
-                // TODO: handle "jump failed" better, idk...
-                store.dispatch(warpActions.setScreenStatus(WarpScreenStatus.Charging));
-                break;
-            }
-            case 'warp_ship_pos': {
-                let vals = data.split(' ');
-                let x = parseInt(vals[0]);
-                let y = parseInt(vals[1]);
-                let z = parseInt(vals[2]);
-                store.dispatch(warpActions.setShipPosition(x, y, z));
-                break;
-            }
-            case 'warp_jump': {
-                let vals = data.split(' ');
-                let id = parseInt(vals[0]);
-                let secsRemaining = parseInt(vals[1]);
-
-                store.dispatch(warpActions.performJump(id, secsRemaining));
-                break;
-            }
-            case 'power_cell_t': {
-                let vals = data.split(' ').map(v => parseInt(v));
-                let cell = vals[0];
-                let type = vals[1] as PowerCellType;
-                store.dispatch(powerActions.setCellType(cell, type));
-                break;
-            }
-            case 'power_all_cells_t': {
-                let types = data.split(' ').map(v => parseInt(v) as PowerCellType);
-                if (types.length !== numPowerCells) {
-                    throw `Invalid number of power cells: need ${numPowerCells}, but got ${types.length}: ${data}`;
-                }
-                store.dispatch(powerActions.setAllCellTypes(types));
-                break;
-            }
-            case 'power_cell_p': {
-                let vals = data.split(' ').map(v => parseInt(v));
-                let cell = vals[0];
-                let level = vals[1];
-                store.dispatch(powerActions.setCellPower(cell, level));
-                break;
-            }
-            case 'power_all_cells_p': {
-                let levels = data.split(' ').map(v => parseInt(v));
-                if (levels.length !== numPowerCells) {
-                    throw `Invalid number of power cells: need ${numPowerCells}, but got ${levels.length}: ${data}`;
-                }
-                store.dispatch(powerActions.setAllCellPower(levels));
-                break;
-            }
-            case 'power_all_sys': {
-                let values = data.split(' ');
-                let systems: SystemCellLayout[] = [];
-                let sysNum = 0;
-                for (let i=2; i<values.length; i+=3) {
-                    systems.push({
-                        system: parseInt(values[i-2]) as PowerSystem,
-                        start: parseInt(values[i-1]),
-                        end: parseInt(values[i]),
-                    });
-                }
-                store.dispatch(powerActions.setAllSystems(systems));
-                break;
-            }
-            case 'power_heat': {
-                let vals = data.split(' ').map(v => parseInt(v));
-                store.dispatch(powerActions.setHeatLevels(vals[0], vals[1]));
-                break;
-            }
-            case 'power_reactor': {
-                store.dispatch(powerActions.setReactorPower(parseInt(data)));
-                break;
-            }
-            case 'power_all_spare': {
-                let types = data.length == 0 ? [] : data.split(' ').map(v => parseInt(v) as PowerCellType);
-                if (types.length > maxNumSparePowerCells) {
-                    throw `Invalid number of spare power cells: maximum of ${maxNumSparePowerCells}, but got ${types.length}: ${data}`;
-                }
-                store.dispatch(powerActions.setAllSpareCells(types));
-                break;
-            }
-            case 'dmg_order': {
-                let order = data.split(' ').map(str => parseInt(str));
-                store.dispatch(damageActions.sortSystems(order));
-                break;
-            }
-            case 'dmg_levels': {
-                let levels = data.split(' ').map(str => parseInt(str));
-                store.dispatch(damageActions.setAllDamage(levels));
-                break;
-            }
-            case 'dmg_level': {
-                let parts = data.split(' ').map(str => parseInt(str));
-                store.dispatch(damageActions.setDamage(parts[0] as DamageSystemType, parts[1]));
-                break;
-            };
-            case 'dmg_choice': {
-                let cardIDs = data.length === 0 ? [] : data.split(' ').map(str => parseInt(str));
-                store.dispatch(damageActions.setChoice(cardIDs));
-                break;
-            }
-            case 'dmg_queue': {
-                let size = parseInt(data);
-                store.dispatch(damageActions.setQueueSize(size));
-                break;
-            }
-            case 'dmg_hand': {
-                let cardIDs = data.length === 0 ? [] :data.split(' ').map(str => parseInt(str));
-                store.dispatch(damageActions.setHand(cardIDs));
-                break;
-            }
-            case 'dmg_add': {
-                let cardID = parseInt(data);
-                store.dispatch(damageActions.addCardToHand(cardID));
-                break;
-            }
-            case 'dmg_rem': {
-                let pos = parseInt(data);
-                store.dispatch(damageActions.removeCardFromHand(pos));
-                break;
-            }
             default:
+                if (cmd.startsWith(powerPrefix))
+                {
+                    if (powerMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                else if (cmd.startsWith(helmPrefix))
+                {
+                    if (helmMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                else if (cmd.startsWith(warpPrefix))
+                {
+                    if (warpMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                // warp prefix
                 console.log(`Unexpected command: ${cmd}`);
                 break;
         }

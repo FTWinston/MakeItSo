@@ -1,20 +1,20 @@
 @import '../../general/mixins';
 
-.damageCardWrapper {
+.powerCardWrapper {
     overflow: hidden;
     width: 11em;
 }
 
-.damageCardWrapper:last-child {
+.powerCardWrapper:last-child {
     overflow: visible;
     width: unset;
 }
 
-.damageCardWrapper--selected {
+.powerCardWrapper--selected {
     overflow: visible;
 }
 
-.damageCard {
+.powerCard {
     width: 10em;
     min-width: 10em;
     height: 15em;
@@ -30,37 +30,37 @@
     align-items: center;
 }
 
-.damageCard--selected {
+.powerCard--selected {
     flex-shrink: 0;
     border-color: $colorHighlight;
     background-color: #884400;
 }
 
-.damageCard--cantSelect {
+.powerCard--cantSelect {
     cursor: not-allowed;
 }
 
-.damageCard__name {
+.powerCard__name {
     font-weight: bold;
     font-size: 1.1em;
 }
 
-.damageCard__desc {
+.powerCard__desc {
     align-self: stretch;
 }
 
-.damageCard__rarity::after {
+.powerCard__rarity::after {
     content: 'o';
 }
 
-.damageCard--common .damageCard__rarity {
+.powerCard--common .powerCard__rarity {
     color: $colorTertiary;
 }
 
-.damageCard--rare .damageCard__rarity {
+.powerCard--rare .powerCard__rarity {
     color: #00ccff;
 }
 
-.damageCard--epic .damageCard__rarity {
+.powerCard--epic .powerCard__rarity {
     color: #cc66ff;   
 }

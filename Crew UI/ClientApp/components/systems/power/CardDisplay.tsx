@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { PowerCardInfo, PowerCardRarity, getPowerCardInfo, PowerTargetingMode, PowerCard } from '~/store/Power';
+import { PowerCardInfo, PowerCardRarity, getPowerCardInfo, PowerTargetingMode, PowerCard } from './store';
 import './CardDisplay.scss';
 
 interface CardDisplayProps {
@@ -23,31 +23,31 @@ export class CardDisplay extends React.Component<CardDisplayProps, {}> {
             };
         }
 
-        let cardClasses = 'damageCard', wrapperClasses = 'damageCardWrapper';
+        let cardClasses = 'powerCard', wrapperClasses = 'powerCardWrapper';
         switch (card.rarity) {
             case PowerCardRarity.Common:
-                cardClasses += ' damageCard--common'; break;
+                cardClasses += ' powerCard--common'; break;
             case PowerCardRarity.Rare:
-                cardClasses += ' damageCard--rare'; break;
+                cardClasses += ' powerCard--rare'; break;
             case PowerCardRarity.Epic:
-                cardClasses += ' damageCard--epic'; break;
+                cardClasses += ' powerCard--epic'; break;
         }
 
         if (this.props.selected) {
-            cardClasses += ' damageCard--selected';
-            wrapperClasses += ' damageCardWrapper--selected';
+            cardClasses += ' powerCard--selected';
+            wrapperClasses += ' powerCardWrapper--selected';
         }
         
         if (this.props.clicked === undefined) {
-            cardClasses += ' damageCard--cantSelect';
+            cardClasses += ' powerCard--cantSelect';
         }
 
         return (
         <div className={wrapperClasses}>
             <div className={cardClasses} onClick={this.props.clicked}>
-                <div className="damageCard__name">{card.name}</div>
-                <div className="damageCard__rarity" />
-                <div className="damageCard__desc">{card.desc}</div>
+                <div className="powerCard__name">{card.name}</div>
+                <div className="powerCard__rarity" />
+                <div className="powerCard__desc">{card.desc}</div>
             </div>
         </div>
         );

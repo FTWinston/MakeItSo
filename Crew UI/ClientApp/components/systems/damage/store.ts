@@ -74,6 +74,7 @@ const unloadedState: DamageState = {
 
 export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Action) => {
     const action = rawAction as KnownAction;
+/*
     switch (action.type) {
         case 'SEL_CARD': {
             return {
@@ -85,7 +86,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             // The following line guarantees that every action in the KnownAction union has been covered by a case above
             const exhaustiveCheck: never = action;
     }
-
+*/
     return state || unloadedState;
 };
 

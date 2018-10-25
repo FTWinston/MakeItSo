@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { CardDisplay } from "./CardDisplay";
+import { CardDisplay } from './CardDisplay';
 import './CardSelection.scss';
-import { PowerCard } from "~/store/Power";
+import { PowerCard } from './store';
 
 interface CardSelectionProps {
     text: TextLocalisation;
@@ -14,10 +14,10 @@ interface CardSelectionProps {
 
 export class CardSelection extends React.PureComponent<CardSelectionProps, {}> {
     public render() {
-        let queueSize = this.props.queueSize <= 0 ? undefined : <div className="damageCardChoice__queueSize">{this.props.queueSize}</div>;
+        let queueSize = this.props.queueSize <= 0 ? undefined : <div className="powerCardChoice__queueSize">{this.props.queueSize}</div>;
 
         return (
-        <div className="damageCardChoice">
+        <div className="powerCardChoice">
             {queueSize}
             {this.props.cards.map((card, index) => this.renderCard(card, index))}
         </div>

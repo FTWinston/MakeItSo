@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { CardDisplay } from './CardDisplay';
-import { PowerCard } from '~/store/Power';
+import { PowerCard } from './store';
 import './CardHand.scss';
 
 interface CardHandProps {
@@ -14,7 +14,7 @@ interface CardHandProps {
 export class CardHand extends React.PureComponent<CardHandProps, {}> {
     public render() {
         return (
-        <div className="damageCardHand">
+        <div className="powerCardHand">
             {this.props.cards.map((card, index) => this.renderCard(card, index))}
         </div>
         );

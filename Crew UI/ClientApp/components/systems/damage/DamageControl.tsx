@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
 import { TextLocalisation } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
-import { DamageSystemType, DamageState, DamageSystem, actionCreators } from '~/store/Damage';
+import { DamageSystemType, DamageState, DamageSystem, actionCreators } from './store';
 import { connection } from '~/Client';
 import './DamageControl.scss';
 

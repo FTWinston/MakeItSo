@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
-import { actionCreators, maxHandSize, getPowerCardInfo, PowerState } from '~/store/Power';
+import { actionCreators, maxHandSize, getPowerCardInfo, PowerState } from './store';
 import { TextLocalisation } from '~/functionality';
 import { connection } from '~/Client';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';

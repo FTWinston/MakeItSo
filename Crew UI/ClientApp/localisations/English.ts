@@ -266,7 +266,7 @@ let words: TextLocalisation = {
             boostComms: 'Boost Communications',
             boostCommsDesc: 'Increase power of communications system by 25% for 20 seconds.',
             boostSelectable: 'Boost Any System',
-            boostSelectableDesc: 'Increase power of selected system by 25% for 20 seconds.',
+            boostSelectableDesc: 'Increase power of selected system by 20% for 20 seconds.',
             overloadHelm: 'Overload Helm',
             overloadHelmDesc: 'Increase power of helm system by 50% for 10 seconds, then damage it.',
             overloadWarp: 'Overload Warp',
@@ -282,7 +282,7 @@ let words: TextLocalisation = {
             overloadComms: 'Overload Communications',
             overloadCommsDesc: 'Increase power of communications system by 50% for 10 seconds, then damage it.',
             overloadSelectable: 'Overload Any System',
-            overloadSelectableDesc: 'Increase power of selected system by 50% for 10 seconds, then damage it.',
+            overloadSelectableDesc: 'Increase power of selected system by 40% for 10 seconds, then damage it.',
         },
         damage: {
             
