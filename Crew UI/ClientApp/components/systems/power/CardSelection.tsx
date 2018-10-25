@@ -2,11 +2,11 @@ import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { CardDisplay } from "./CardDisplay";
 import './CardSelection.scss';
-import { DamageCard } from "~/store/Damage";
+import { PowerCard } from "~/store/Power";
 
 interface CardSelectionProps {
     text: TextLocalisation;
-    cards: DamageCard[];
+    cards: PowerCard[];
     queueSize: number;
     canSelect: boolean;
     cardSelected: (number: number) => void;
@@ -24,7 +24,7 @@ export class CardSelection extends React.PureComponent<CardSelectionProps, {}> {
         );
     }
 
-    private renderCard(card: DamageCard, index: number) {
+    private renderCard(card: PowerCard, index: number) {
         return <CardDisplay
             card={card}
             selected={false}

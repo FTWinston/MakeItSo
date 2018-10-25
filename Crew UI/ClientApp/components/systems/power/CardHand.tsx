@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { CardDisplay } from '~/components/systems/damage/CardDisplay';
-import { DamageCard } from '~/store/Damage';
+import { CardDisplay } from './CardDisplay';
+import { PowerCard } from '~/store/Power';
 import './CardHand.scss';
 
 interface CardHandProps {
     text: TextLocalisation;
-    cards: DamageCard[];
+    cards: PowerCard[];
     selectedHandPos?: number;
     cardSelected: (cardPos: number) => void;
 }
@@ -20,7 +20,7 @@ export class CardHand extends React.PureComponent<CardHandProps, {}> {
         );
     }
 
-    private renderCard(card: DamageCard, index: number) {
+    private renderCard(card: PowerCard, index: number) {
         return <CardDisplay
             card={card}
             key={index}

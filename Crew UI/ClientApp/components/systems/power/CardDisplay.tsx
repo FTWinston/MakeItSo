@@ -1,35 +1,35 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { DamageCardInfo, DamageCardRarity, getDamageCardInfo, DamageTargetingMode, DamageCard } from '~/store/Damage';
+import { PowerCardInfo, PowerCardRarity, getPowerCardInfo, PowerTargetingMode, PowerCard } from '~/store/Power';
 import './CardDisplay.scss';
 
 interface CardDisplayProps {
     text: TextLocalisation;
-    card: DamageCard;
+    card: PowerCard;
     selected: boolean;
     clicked?: () => void;
 }
 
 export class CardDisplay extends React.Component<CardDisplayProps, {}> {
     public render() {
-        let card = getDamageCardInfo(this.props.card, this.props.text);
+        let card = getPowerCardInfo(this.props.card, this.props.text);
 
         if (card === null) {
             card = {
                 name: '???',
                 desc: `Card ID ${this.props.card} not recognised`,
-                rarity: DamageCardRarity.Common,
-                targetingMode: DamageTargetingMode.SingleCard,
+                rarity: PowerCardRarity.Common,
+                targetingMode: PowerTargetingMode.Untargetted,
             };
         }
 
         let cardClasses = 'damageCard', wrapperClasses = 'damageCardWrapper';
         switch (card.rarity) {
-            case DamageCardRarity.Common:
+            case PowerCardRarity.Common:
                 cardClasses += ' damageCard--common'; break;
-            case DamageCardRarity.Rare:
+            case PowerCardRarity.Rare:
                 cardClasses += ' damageCard--rare'; break;
-            case DamageCardRarity.Epic:
+            case PowerCardRarity.Epic:
                 cardClasses += ' damageCard--epic'; break;
         }
 

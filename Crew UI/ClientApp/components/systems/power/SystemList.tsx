@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { DamageSystem, DamageSystemType, DamageTargetingMode } from "~/store/Damage";
+import { PowerSystem, PowerSystemType, PowerTargetingMode } from "~/store/Power";
 import './SystemList.scss';
 
 interface SystemListProps {
     text: TextLocalisation;
-    systems: DamageSystem[];
-    targetingMode?: DamageTargetingMode;
+    systems: PowerSystem[];
+    targetingMode?: PowerTargetingMode;
     systemSelected: (systemPos: number) => void;
 }
 
@@ -14,16 +14,8 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
     public render() {
         let classes = 'damageSystemList';
         switch (this.props.targetingMode) {
-            case DamageTargetingMode.SingleCard:
+            case PowerTargetingMode.TargetSingleSystem:
                 classes += ' damageSystemList--targetSingle'; break;
-            case DamageTargetingMode.Row:
-                classes += ' damageSystemList--targetRow'; break;
-            case DamageTargetingMode.Column:
-                classes += ' damageSystemList--targetColumn'; break;
-            case DamageTargetingMode.Adjacent:
-                classes += ' damageSystemList--targetAdjacent'; break;
-            case DamageTargetingMode.All:
-                classes += ' damageSystemList--targetAll'; break;
         }
         // TODO: use this targeting mode info to determine which systems to highlight when hovering etc
 
@@ -34,11 +26,7 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
         );
     }
 
-    private renderSystem(system: DamageSystem, index: number) {
-        if (system.type === DamageSystemType.Empty) {
-            return <div key={index} />;
-        }
-
+    private renderSystem(system: PowerSystem, index: number) {
         return (
         <div
             className="damageSystem"
@@ -51,23 +39,21 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
         );
     }
 
-    private getSystemName(system: DamageSystemType) {
+    private getSystemName(system: PowerSystemType) {
         switch (system) {
-            case DamageSystemType.Power:
-                return this.props.text.systemNames.power;
-            case DamageSystemType.Helm:
+            case PowerSystemType.Helm:
                 return this.props.text.systemNames.helm;
-            case DamageSystemType.Warp:
+            case PowerSystemType.Warp:
                 return this.props.text.systemNames.warp;
-            case DamageSystemType.BeamWeapons:
-                return this.props.text.systemNames.weapons + ' 1';
-            case DamageSystemType.Torpedoes:
-                return this.props.text.systemNames.weapons + ' 2';
-            case DamageSystemType.Sensors:
+            case PowerSystemType.BeamWeapons:
+                return this.props.text.systemNames.weapons;
+            case PowerSystemType.Sensors:
                 return this.props.text.systemNames.sensors;
-            case DamageSystemType.Shields:
+            case PowerSystemType.Shields:
                 return this.props.text.systemNames.shields;
-            case DamageSystemType.Comms:
+            case PowerSystemType.DamageControl:
+                return this.props.text.systemNames.damage;
+            case PowerSystemType.Comms:
                 return this.props.text.systemNames.comms;
             default:
                 return '';

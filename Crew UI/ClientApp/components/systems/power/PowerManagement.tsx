@@ -1,30 +1,21 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/Store';
-import { PowerCell, PowerState } from '~/store/Power';
+import { actionCreators, maxHandSize, getPowerCardInfo, PowerState } from '~/store/Power';
 import { TextLocalisation } from '~/functionality';
 import { connection } from '~/Client';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
-import { PowerGrid } from './PowerGrid';
-import { CellList } from './CellList';
+import { CardHand } from './CardHand';
+import { CardSelection } from './CardSelection';
+import { SystemList } from './SystemList';
 import './PowerManagement.scss';
 
 interface PowerManagementProps extends PowerState {
     text: TextLocalisation;
+    selectCard: (handPos?: number) => void;
 }
 
-interface PowerManagementState {
-    selectedQueueCell?: number;
-}
-
-class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerManagementState> {
-    constructor(props: PowerManagementProps) {
-        super(props);
-        
-        this.state = {
-        }
-    }
-
+class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
     name() { return 'power'; }
 
     protected getHelpText() {
@@ -36,47 +27,52 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
     }
 
     public render() {
+        let selectedCard = this.props.selectedHandPos === undefined
+            ? null
+            : getPowerCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
+        let targetingMode = selectedCard === null ? undefined : selectedCard.targetingMode;
+
         return <div className="system power">
-            <PowerGrid
-                cells={this.props.cells}
-                cellClicked={cellIndex => this.gridCellClicked(cellIndex)}
-                reactorClicked={() => this.reactorClicked()}
-                heatLevel={this.props.heatLevel}
-                heatRate={this.props.heatRate}
+            <SystemList
                 text={this.props.text}
+                systems={this.props.systems}
+                systemSelected={num => this.selectSystem(num)}
+                targetingMode={targetingMode}
             />
-            <CellList
+            <CardSelection
                 text={this.props.text}
-                cells={this.props.spareCells}
-                selectedIndex={this.state.selectedQueueCell}
-                cellClicked={cellIndex => this.spareCellClicked(cellIndex)}
+                cards={this.props.choiceCards}
+                queueSize={this.props.queueSize}
+                cardSelected={num => this.pickCard(num)}
+                canSelect={this.props.handCards.length < maxHandSize}
             />
-        </div>; // currently storing spare "types" only, not full cell objects. Which to go with? Converting during render is ungainly.
+            <CardHand
+                text={this.props.text}
+                cards={this.props.handCards}
+                cardSelected={num => this.selectCard(num)}
+                selectedHandPos={this.props.selectedHandPos}
+            />
+        </div>;
     }
 
-    private gridCellClicked(cellIndex: number) {
-        // If a spare cell is selected, send place command. Otherwise, send rotate command.
-        if (this.state.selectedQueueCell === undefined) {
-            connection.send(`power_rotCell ${cellIndex}`);
+    private selectCard(handPos: number) {
+        this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
+    }
+
+    private selectSystem(systemPos: number) {
+        if (this.props.selectedHandPos === undefined) {
+            return; // do nothing if no card selected
         }
-        else {
-            connection.send(`power_placeCell ${cellIndex} ${this.state.selectedQueueCell}`);
-            this.setState({
-                selectedQueueCell: undefined,
-            });
-        }
+
+        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, systemPos);
     }
 
-    private spareCellClicked(spareCellNum: number) {
-        let selection = this.state.selectedQueueCell === spareCellNum ? undefined : spareCellNum;
-
-        this.setState({
-            selectedQueueCell: selection,
-        });
+    private pickCard(cardNum: number) {
+        connection.send(`dmg_pickCard ${cardNum}`);
     }
 
-    private reactorClicked() {
-        connection.send('power_jog');
+    private playCard(cardID: number, handPos: number, targetSystemPos: number) {
+        connection.send(`dmg_useCard ${cardID} ${handPos} ${targetSystemPos}`);
     }
 }
 
@@ -84,11 +80,8 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, PowerMan
 const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (state) => {
     return {
         text: state.user.text,
-        cells: state.power.cells,
-        reactorPower: state.power.reactorPower,
-        heatLevel: state.power.heatLevel,
-        heatRate: state.power.heatRate,
-        spareCells: state.power.spareCells,
+        ...state.power,
+        selectCard: actionCreators.selectCard,
     }
 };
 

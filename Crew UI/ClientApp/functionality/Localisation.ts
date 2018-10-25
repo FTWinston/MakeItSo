@@ -185,31 +185,40 @@ export interface TextLocalisation {
 
         },
         power: {
-            spareCells: string;
-            reactor: string;
-            heat: string;
+            boostHelm: string;
+            boostHelmDesc: string;
+            boostWarp: string;
+            boostWarpDesc: string;
+            boostWeapons: string;
+            boostWeaponsDesc: string;
+            boostSensors: string;
+            boostSensorsDesc: string;
+            boostShields: string;
+            boostShieldsDesc: string;
+            boostDamageControl: string;
+            boostDamageControlDesc: string;
+            boostComms: string;
+            boostCommsDesc: string;
+            boostSelectable: string;
+            boostSelectableDesc: string;
+            overloadHelm: string;
+            overloadHelmDesc: string;
+            overloadWarp: string;
+            overloadWarpDesc: string;
+            overloadWeapons: string;
+            overloadWeaponsDesc: string;
+            overloadSensors: string;
+            overloadSensorsDesc: string;
+            overloadShields: string;
+            overloadShieldsDesc: string;
+            overloadDamageControl: string;
+            overloadDamageControlDesc: string;
+            overloadComms: string;
+            overloadCommsDesc: string;
+            overloadSelectable: string;
+            overloadSelectableDesc: string;
         },
         damage: {
-            minorFix: string;
-            minorFixDesc: string;
-            moderateFix: string;
-            moderateFixDesc: string;
-            majorFix: string;
-            majorFixDesc: string;
-            swapLeft: string;
-            swapLeftDesc: string;
-            swapRight: string;
-            swapRightDesc: string;
-            swapUp: string;
-            swapUpDesc: string;
-            swapDown: string;
-            swapDownDesc: string;
-            distributeRow: string;
-            distributeRowDesc: string;
-            repairRowSmall: string;
-            repairRowSmallDesc: string;
-            divertCol: string;
-            divertColDesc: string;
         },
         comms: {
 
