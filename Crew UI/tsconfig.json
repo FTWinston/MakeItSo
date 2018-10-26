@@ -2,21 +2,32 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-        "~/*": ["ClientApp/*"]
+        "~/*": ["src/*"]
     },
-    "module": "es2015",
-    "moduleResolution": "node",
+    "module": "esnext",
     "target": "es5",
-    "jsx": "react",
-    "experimentalDecorators": true,
-    "sourceMap": true,
-    "skipDefaultLibCheck": true,
-    "strict": true,
     "lib": ["es6", "dom"],
-    "types": ["webpack-env"]
+    "sourceMap": true,
+    "allowJs": true,
+    "jsx": "react",
+    "moduleResolution": "node",
+    "rootDir": "src",
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "importHelpers": true,
+    "strictNullChecks": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "noUnusedLocals": true
   },
   "exclude": [
-      "bin",
-      "node_modules"
+    "node_modules",
+    "build",
+    "docs",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest"
   ]
 }
