@@ -446,25 +446,6 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
-.systemSelection {
-  display: grid;
-  grid-template-columns: 2.5em 10em 2em 1fr;
-  grid-row-gap: 0.5em;
-  justify-items: stretch;
-  align-items: center;
-  min-width: 25em; }
-  @media (max-width: 440px) {
-    .systemSelection {
-      min-width: calc(100vw - 2rem); } }
-
-.systemSelection__help, .systemSelection__group {
-  justify-self: center; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
 .option {
   display: flex;
   align-items: center;
@@ -472,166 +453,6 @@ $lightBackground: #999;
 
 .option__name {
   margin-right: 2em; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.damageCardWrapper {
-  overflow: hidden;
-  width: 11em; }
-
-.damageCardWrapper:last-child {
-  overflow: visible;
-  width: unset; }
-
-.damageCardWrapper--selected {
-  overflow: visible; }
-
-.damageCard {
-  width: 10em;
-  min-width: 10em;
-  height: 15em;
-  border-radius: 0.5em;
-  border: solid #d09bcf 1px;
-  background-color: #442200;
-  padding: 0.25em 0.1em 0 0.1em;
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center; }
-
-.damageCard--selected {
-  flex-shrink: 0;
-  border-color: #e0e5f8;
-  background-color: #884400; }
-
-.damageCard--cantSelect {
-  cursor: not-allowed; }
-
-.damageCard__name {
-  font-weight: bold;
-  font-size: 1.1em; }
-
-.damageCard__desc {
-  align-self: stretch; }
-
-.damageCard__rarity::after {
-  content: 'o'; }
-
-.damageCard--common .damageCard__rarity {
-  color: #9f9bfd; }
-
-.damageCard--rare .damageCard__rarity {
-  color: #00ccff; }
-
-.damageCard--epic .damageCard__rarity {
-  color: #cc66ff; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.damageCardHand {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.damageCardChoice {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center; }
-
-.damageCardChoice__queueSize {
-  border-radius: 2em;
-  font-weight: bold;
-  font-size: 2em;
-  background-color: #ff7d01;
-  color: #333;
-  align-self: flex-start;
-  padding: 0.1em;
-  margin-right: 1em;
-  text-align: center;
-  width: 1.1em; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.damageSystemList {
-  display: grid;
-  grid-gap: 1em;
-  grid-template-rows: 1fr 1fr 1fr;
-  grid-template-columns: 1fr 1fr 1fr; }
-
-.damageSystem {
-  border-radius: 1em;
-  background-color: #9f9bfd;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center; }
-  @media (orientation: landscape) {
-    .damageSystem {
-      font-size: 2vw; } }
-  @media (orientation: portrait) {
-    .damageSystem {
-      font-size: 3vw; } }
-
-.damageSystem__damage {
-  font-weight: bold;
-  font-size: 1.5em; }
-
-.damageSystem__damage::after {
-  content: '%';
-  font-weight: normal; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.damageControl {
-  display: grid;
-  grid-gap: 1em; }
-  @media (orientation: landscape) {
-    .damageControl {
-      grid-template-rows: 1fr 2fr;
-      grid-template-columns: 3fr 4fr;
-      grid-template-areas: "systems selection" "systems hand"; } }
-  @media (orientation: portrait) {
-    .damageControl {
-      grid-template-rows: 2fr 2fr 1fr;
-      grid-template-columns: 1fr;
-      grid-template-areas: "systems" "hand" "selection"; } }
-
-.damageSystemList {
-  grid-area: systems; }
-
-.damageCardChoice {
-  grid-area: selection; }
-
-.damageCardHand {
-  grid-area: hand; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -799,91 +620,126 @@ $fadedColor: #777;
 $darkBackground: #000;
 $lightBackground: #999;
 */
-.gridCell {
-  background-color: grey;
-  border-radius: 3px;
-  grid-column-end: auto;
-  grid-row-end: auto; }
+.powerCardWrapper {
+  overflow: hidden;
+  width: 11em; }
 
-.gridCell--inList {
-  margin: 1em 0 1em 0;
-  width: 10vmin;
-  height: 10vmin; }
+.powerCardWrapper:last-child {
+  overflow: visible;
+  width: unset; }
 
-.gridCell--selected {
-  outline: solid #ffcc00 2vmin;
-  border-radius: 0; }
+.powerCardWrapper--selected {
+  overflow: visible; }
 
-.gridCell--reactor {
-  background-color: #cc6600;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-evenly;
-  align-items: center; }
-
-.gridCell--system {
-  background-color: #0099cc;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center; }
-  .gridCell--system.gridCell--rotated {
-    flex-direction: column; }
-    .gridCell--system.gridCell--rotated .gridCell__sysname {
-      transform: rotate(90deg);
-      transform-origin: center; }
-
-.gridCell__sysname {
-  flex-basis: 2px; }
-
-.gridCell__power {
-  flex-basis: 1px;
-  font-size: 1.5em; }
-
-.gridCell__power::after {
-  content: '%'; }
-
-.gridCell__heat::before {
-  content: 'heat: '; }
-
-.gridCell__heatRate::before {
-  content: 'rate: '; }
-
-.gridCell--broken {
-  background-color: #ff0000; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.powerGrid {
-  flex-grow: 1;
-  background-color: black;
-  display: grid;
-  grid-template-columns: repeat(11, 1fr);
-  grid-template-rows: repeat(11, 1fr);
-  grid-gap: 2px;
-  justify-items: stretch;
-  align-items: stretch;
-  justify-content: center;
-  align-content: center;
-  max-width: calc(100vmin - 2.4rem);
-  max-height: calc(100vmin - 2.4rem); }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-.powerCellList {
+.powerCard {
+  width: 10em;
+  min-width: 10em;
+  height: 15em;
+  border-radius: 0.5em;
+  border: solid #d09bcf 1px;
+  background-color: #442200;
+  padding: 0.25em 0.1em 0 0.1em;
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  align-content: stretch; }
+  align-items: center; }
 
-.powerCellList__headings {
+.powerCard--selected {
+  flex-shrink: 0;
+  border-color: #e0e5f8;
+  background-color: #884400; }
+
+.powerCard--cantSelect {
+  cursor: not-allowed; }
+
+.powerCard__name {
+  font-weight: bold;
   font-size: 1.1em; }
+
+.powerCard__desc {
+  align-self: stretch; }
+
+.powerCard__rarity::after {
+  content: 'o'; }
+
+.powerCard--common .powerCard__rarity {
+  color: #9f9bfd; }
+
+.powerCard--rare .powerCard__rarity {
+  color: #00ccff; }
+
+.powerCard--epic .powerCard__rarity {
+  color: #cc66ff; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.powerCardHand {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.powerCardChoice {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center; }
+
+.powerCardChoice__queueSize {
+  border-radius: 2em;
+  font-weight: bold;
+  font-size: 2em;
+  background-color: #ff7d01;
+  color: #333;
+  align-self: flex-start;
+  padding: 0.1em;
+  margin-right: 1em;
+  text-align: center;
+  width: 1.1em; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.powerSystemList {
+  display: grid;
+  grid-gap: 1em;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr; }
+
+.powerSystem {
+  border-radius: 1em;
+  background-color: #9f9bfd;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center; }
+  @media (orientation: landscape) {
+    .powerSystem {
+      font-size: 2vw; } }
+  @media (orientation: portrait) {
+    .powerSystem {
+      font-size: 3vw; } }
+
+.powerSystem__power {
+  font-weight: bold;
+  font-size: 1.5em; }
+
+.powerSystem__power::after {
+  content: '%';
+  font-weight: normal; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -891,21 +747,27 @@ $darkBackground: #000;
 $lightBackground: #999;
 */
 .power {
-  display: flex;
-  justify-content: space-evenly;
-  align-content: stretch; }
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
-/*
-$disabledColor: #666;
-$fadedColor: #777;
-$darkBackground: #000;
-$lightBackground: #999;
-*/
+  display: grid;
+  grid-gap: 1em; }
+  @media (orientation: landscape) {
+    .power {
+      grid-template-rows: 1fr 2fr;
+      grid-template-columns: 3fr 4fr;
+      grid-template-areas: "systems selection" "systems hand"; } }
+  @media (orientation: portrait) {
+    .power {
+      grid-template-rows: 2fr 2fr 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: "systems" "hand" "selection"; } }
+
+.powerSystemList {
+  grid-area: systems; }
+
+.powerCardChoice {
+  grid-area: selection; }
+
+.powerCardHand {
+  grid-area: hand; }
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -983,6 +845,71 @@ $lightBackground: #999;
   display: flex;
   justify-content: center;
   align-items: center; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.systemSelection {
+  display: grid;
+  grid-template-columns: 2.5em 10em 2em 1fr;
+  grid-row-gap: 0.5em;
+  justify-items: stretch;
+  align-items: center;
+  min-width: 25em; }
+  @media (max-width: 440px) {
+    .systemSelection {
+      min-width: calc(100vw - 2rem); } }
+
+.systemSelection__help, .systemSelection__group {
+  justify-self: center; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+.damageControl {
+  display: grid;
+  grid-gap: 1em; }
+  @media (orientation: landscape) {
+    .damageControl {
+      grid-template-rows: 1fr 2fr;
+      grid-template-columns: 3fr 4fr;
+      grid-template-areas: "systems selection" "systems hand"; } }
+  @media (orientation: portrait) {
+    .damageControl {
+      grid-template-rows: 2fr 2fr 1fr;
+      grid-template-columns: 1fr;
+      grid-template-areas: "systems" "hand" "selection"; } }
+
+.damageSystemList {
+  grid-area: systems; }
+
+.damageCardChoice {
+  grid-area: selection; }
+
+.damageCardHand {
+  grid-area: hand; }
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
+/*
+$disabledColor: #666;
+$fadedColor: #777;
+$darkBackground: #000;
+$lightBackground: #999;
+*/
 /*
 $disabledColor: #666;
 $fadedColor: #777;
@@ -1100,4 +1027,4 @@ body {
   min-height: 100vh;
   padding: 0.5rem; }
 
-/*# sourceMappingURL=site.css.map*/
+/*# sourceMappingURL=main.9ea26279.css.map*/
