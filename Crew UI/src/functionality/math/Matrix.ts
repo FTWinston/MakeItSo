@@ -7,7 +7,7 @@ export class Matrix {
 
     element(x: number, y: number) {
 		if (x < 0 || x > 2 || y < 0 || y > 2) {
-			throw 'Matrix x & y must be in the range 0 - 2';
+			throw new Error('Matrix x & y must be in the range 0 - 2');
         }
         
 		return this.elements[y * 3 + x];
@@ -53,8 +53,8 @@ export class Matrix {
     ] as NineNumbers);
 
     static xRotation(angle: number) {
-        var a = Math.cos(angle);
-        var b = Math.sin(angle);
+        let a = Math.cos(angle);
+        let b = Math.sin(angle);
         return new Matrix([
             1, 0, 0,
             0, a,-b,
@@ -63,8 +63,8 @@ export class Matrix {
     }
 
     static yRotation(angle: number) {
-        var a = Math.cos(angle);
-        var b = Math.sin(angle);
+        let a = Math.cos(angle);
+        let b = Math.sin(angle);
         return new Matrix([
             a, 0, b,
             0, 1, 0,
@@ -73,8 +73,8 @@ export class Matrix {
     }
 
     static zRotation(angle: number) {
-        var a = Math.cos(angle);
-        var b = Math.sin(angle);
+        let a = Math.cos(angle);
+        let b = Math.sin(angle);
         return new Matrix([
             a,-b, 0,
             b, a, 0,

@@ -248,7 +248,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             };
         }
         case 'REMOVE_PATH': {
-            let paths = state.paths.filter(paths => paths.id !== action.id);
+            let paths = state.paths.filter(path => path.id !== action.id);
 
             let retVal = {
                 ...state,

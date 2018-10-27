@@ -60,11 +60,11 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         start?: () => void,
         finish?: () => void,
     ) {
-        var params = {
+        let params = {
             event: name,
             pointers: pointers,
             direction: direction,
-            //threshold: threshold,
+            // threshold: threshold,
         };
 
         let pan = new Hammer.Pan(params);
@@ -136,7 +136,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         start?: () => void,
         finish?: () => void,
     ) {
-        var params = {
+        let params = {
             event: name,
             pointers: pointers,
             direction: Hammer.DIRECTION_ALL,
@@ -205,7 +205,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         eventScale: number,
         rotated: (val: number) => void,
     ) {
-        var params = {
+        let params = {
             event: name,
         };
 
@@ -235,7 +235,7 @@ export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
         start?: () => void,
         end?: () => void,
     ) {
-        var params = {
+        let params = {
             event: name,
             threshold: threshold,
         };

@@ -47,6 +47,6 @@ export function parseSensorTarget(data: string) {
             return new Ship(id, pos, vel, rel);
         }
         default:
-            throw `Unexpected target type: ${vals[4]}`;
+            throw new Error(`Unexpected target type: ${vals[4]}`);
     }
 }

@@ -98,7 +98,8 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
     }
 
     private drawSensors(ctx: CanvasRenderingContext2D, width: number, height: number) {
-        let halfWidth = width / 2, halfHeight = height / 2;
+        let halfWidth = width / 2;
+        let halfHeight = height / 2;
         ctx.clearRect(0, 0, width, height);
 
         ctx.save();
@@ -295,7 +296,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
 
         // mouse wheel zooming
         area.element.addEventListener('wheel', ev => {
-            if (ev.deltaY == 0) {
+            if (ev.deltaY === 0) {
                 return;
             }
             ev.preventDefault();
@@ -322,7 +323,7 @@ export class SensorView extends React.PureComponent<SensorViewProps, SensorViewS
 
     private rotate(dx: number, dz: number) {
         this.setState(state => { return {
-            //xRotation: state.xRotation + dx,
+            // xRotation: state.xRotation + dx,
             zRotation: state.zRotation + dz,
         }});
     }

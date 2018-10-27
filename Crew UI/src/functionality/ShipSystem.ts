@@ -44,7 +44,7 @@ export function getSystemName(system: ShipSystem, text: TextLocalisation) {
         case ShipSystem.None:
             return '';
         default:
-            var exhaustiveCheck: never = system;
+            let exhaustiveCheck: never = system;
             return exhaustiveCheck;
     }
 }

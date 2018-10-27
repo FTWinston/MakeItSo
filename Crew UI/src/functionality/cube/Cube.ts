@@ -65,7 +65,7 @@ export class Cube {
             ctx.moveTo(point.x, point.y);
 
             for (faceVertex++; faceVertex < 4; faceVertex++) {
-                let point = face.vertices[faceVertex]
+                point = face.vertices[faceVertex]
                     .scale(radius)
                     .rotateY(roll)
                     .rotateX(pitch)

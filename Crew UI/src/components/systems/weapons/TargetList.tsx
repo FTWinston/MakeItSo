@@ -8,9 +8,7 @@ interface TargetListProps {
 
 export class TargetList extends React.PureComponent<TargetListProps, {}> {
     public render() {
-        return <div className="weapons__targetList">
-            
-        </div>;
+        return <div className="weapons__targetList" />
         // TODO: implement
     }
 }

@@ -44,7 +44,7 @@ export class Hotkeys {
     }
     static unregister(hotkey: Hotkey, button: Button) {
         let keyCode = this.getKeyCode(hotkey);
-        if (this.bindings[keyCode] == button)
+        if (this.bindings[keyCode] === button)
             delete this.bindings[keyCode];
     }
     static initialize() {
@@ -52,7 +52,7 @@ export class Hotkeys {
         document.onkeyup = Hotkeys.onKeyUp;
     }
     private static onKeyDown(e: KeyboardEvent) {
-        var button = Hotkeys.bindings[e.which];
+        let button = Hotkeys.bindings[e.which];
         if (button === undefined) {
             if (e.which === 112) {
                 store.dispatch(actionCreators.showHotkeys(!store.getState().user.showingHotkeys));
@@ -65,7 +65,7 @@ export class Hotkeys {
             button.keyDown(e);
     }
     private static onKeyUp(e: KeyboardEvent) {
-        var button = Hotkeys.bindings[e.which];
+        let button = Hotkeys.bindings[e.which];
         if (button === undefined)
             return;
         

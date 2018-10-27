@@ -23,7 +23,7 @@ export class DirectionInput extends React.PureComponent<DirectionInputProps, {}>
             classes += ' ' + this.props.className;
         }
 
-        let roll = this.props.roll == undefined
+        let roll = this.props.roll === undefined
             ? undefined
             : <RotaryInput value={this.props.roll} label={this.props.text.systems.helm.roll} mode={RotaryInputMode.TopSemi}
                 valueChanged={this.props.readonly ? undefined : v => this.rollChanged(v)} valueUnit="°" />;

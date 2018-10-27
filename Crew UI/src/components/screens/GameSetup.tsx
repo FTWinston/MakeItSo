@@ -145,7 +145,7 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
         let name: string;
         do {
             name = this.getRandomName();
-        } while (name == this.state.shipName);
+        } while (name === this.state.shipName);
 
         this.setState({ shipName: name });
     }
@@ -164,11 +164,11 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
         if (this.state.gameType === undefined)
             return false;
 
-        if (this.state.shipName === undefined || this.state.shipName.trim().length == 0)
+        if (this.state.shipName === undefined || this.state.shipName.trim().length === 0)
             return false;
 
         if (this.state.gameType === GameType.Join) {
-            if (this.state.joinAddress === undefined || this.state.joinAddress.trim().length == 0)
+            if (this.state.joinAddress === undefined || this.state.joinAddress.trim().length === 0)
                 return false;
         }
 
@@ -181,7 +181,7 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
         }
 
         if (this.state.gameType === GameType.Host) {
-             if (this.state.serverName === undefined || this.state.serverName.trim().length == 0)
+             if (this.state.serverName === undefined || this.state.serverName.trim().length === 0)
                 return false;
         }
         else if (this.state.gameType === GameType.Local) {

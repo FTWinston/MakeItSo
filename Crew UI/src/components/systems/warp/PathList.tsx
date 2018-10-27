@@ -36,13 +36,13 @@ export class PathList extends React.PureComponent<PathListProps, {}> {
         );
 
         return <Panel className="warp__pathList" footer={footerButtons} contentIsList={true}>
-            {this.props.paths.map(path => (
+            {this.props.paths.map(p => (
                 <PathListItem
-                    key={path.id}
-                    path={path}
+                    key={p.id}
+                    path={p}
                     text={this.props.text}
-                    selected={this.props.selectedPath === path}
-                    onSelected={p => this.props.pathSelected(p)}
+                    selected={this.props.selectedPath === p}
+                    onSelected={x => this.props.pathSelected(x)}
                 />
                 )
             )}

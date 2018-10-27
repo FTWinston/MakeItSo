@@ -29,7 +29,7 @@ export class Choice extends React.Component<IChoiceProps, IChoiceState> {
         if (this.props.className !== undefined)
             classes += ' ' + this.props.className;
 
-        let prompt = this.props.prompt == null ? null : <div className="choice__prompt">{this.props.prompt}</div>;
+        let prompt = this.props.prompt === null ? null : <div className="choice__prompt">{this.props.prompt}</div>;
 
         return (
             <div className={classes}>
@@ -46,7 +46,7 @@ export class Choice extends React.Component<IChoiceProps, IChoiceState> {
     
     private renderDescription() {
         let anyDesc = false;
-        React.Children.forEach(this.props.children as React.ReactNode, function (child: any) {
+        React.Children.forEach(this.props.children as React.ReactNode, (child: any) => {
             if (child.props.description !== undefined)
                 anyDesc = true;
         });
@@ -54,7 +54,8 @@ export class Choice extends React.Component<IChoiceProps, IChoiceState> {
         if (!anyDesc)
             return undefined;
 
-        let description: string, descClass: string;
+        let description: string;
+        let descClass: string;
         if (this.state.activeChild !== undefined && this.state.activeChild.props.description !== undefined) {
             description = this.state.activeChild.props.description;
             descClass = 'choice__description';

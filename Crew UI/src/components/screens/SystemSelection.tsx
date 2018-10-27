@@ -151,7 +151,7 @@ const mapStateToProps: (state: ApplicationState) => SystemSelectionDataProps = (
 
     let players: { [key: number]: string } = {};
 
-    for (var system of allSystems) {
+    for (let system of allSystems) {
         players[system] = state.crew.players.filter(p => p.selectedSystems & system).map(p => p.name).join(', ');
     }
 

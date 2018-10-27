@@ -28,7 +28,7 @@ export class ConfirmButton extends React.Component<IConfirmButtonProps, IConfirm
         if (this.state.primed) {
             this.clearAutoCancel();
 
-            if (this.props.clicked != undefined)
+            if (this.props.clicked !== undefined)
                 this.props.clicked();
             
             if (this.props.command !== undefined)

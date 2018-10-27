@@ -1,6 +1,6 @@
 import { Vector3 } from '~/functionality/math';
 
-type matrix = [number, number, number][];
+type matrix = Array<[number, number, number]>;
 
 export class CubeFace {
     public normal: Vector3;

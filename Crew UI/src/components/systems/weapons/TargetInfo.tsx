@@ -8,8 +8,7 @@ interface TargetInfoProps {
 
 export class TargetInfo extends React.PureComponent<TargetInfoProps, {}> {
     public render() {
-        return <div>
-        </div>;
+        return <div />
         // TODO: implement
     }
 }

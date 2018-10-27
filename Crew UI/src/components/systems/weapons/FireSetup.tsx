@@ -8,8 +8,7 @@ interface FireSetupProps {
 
 export class FireSetup extends React.PureComponent<FireSetupProps, {}> {
     public render() {
-        return <div>
-        </div>;
+        return <div />
         // TODO: implement
     }
 }

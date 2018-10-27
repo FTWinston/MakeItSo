@@ -41,7 +41,7 @@ export class JumpPath extends SensorTarget {
                     break;
                 case JumpPathStatus.Calculating:
                     ctx.setLineDash([5, 3]);
-                    //break; NO BREAK SO THIS USES SAME COLOR AS default
+                    // break; NO BREAK SO THIS USES SAME COLOR AS default
                 default:
                     ctx.strokeStyle = '#ccc';
                     break;
@@ -56,7 +56,7 @@ export class JumpPath extends SensorTarget {
         let firstScreenPos = new Vector2(0, 0);
         let lastScreenPos = firstScreenPos;
         for (let point of this.points) {
-            let screenPos = display.transform(point).position;
+            screenPos = display.transform(point).position;
             lastScreenPos = screenPos;
 
             if (first) {

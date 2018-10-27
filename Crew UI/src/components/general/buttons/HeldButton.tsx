@@ -29,7 +29,7 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
     private mouseDown() {
         this.setState({held: true});
 
-        if (this.props.pressed != undefined)
+        if (this.props.pressed !== undefined)
             this.props.pressed();
 
         if (this.props.pressCommand !== undefined)
@@ -41,7 +41,7 @@ export class HeldButton extends React.Component<IHeldButtonProps, IHeldButtonSta
 
         this.setState({held: false});
 
-        if (this.props.released != undefined)
+        if (this.props.released !== undefined)
             this.props.released();
         
         if (this.props.releaseCommand !== undefined)

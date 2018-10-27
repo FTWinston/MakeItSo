@@ -46,7 +46,7 @@ export class ToggleButton extends React.Component<IToggleButtonProps, IToggleBut
                 return; // in a choice, don't deactivate a button by clicking on it
             }
 
-            if (this.props.deactivated != undefined)
+            if (this.props.deactivated !== undefined)
                this.props.deactivated();
 
             if (this.props.deactivateCommand !== undefined)
@@ -56,7 +56,7 @@ export class ToggleButton extends React.Component<IToggleButtonProps, IToggleBut
             if (this.props.choiceOptionActivated !== undefined)
                 this.props.choiceOptionActivated(this);
 
-            if (this.props.activated != undefined)
+            if (this.props.activated !== undefined)
                 this.props.activated();
             
             if (this.props.activateCommand !== undefined)

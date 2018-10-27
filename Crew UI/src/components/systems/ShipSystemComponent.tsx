@@ -33,7 +33,7 @@ export abstract class ShipSystemComponent<TProps extends SystemComponentProps, T
                 options.push(<BooleanOption key={opt} label={label} value={val as boolean} changeValue={v => this.changeBooleanOption(opt, v)} text={this.props.text} />)
             }
             else {
-                throw 'Unable to handle non-boolean options in system state';
+                throw new Error('Unable to handle non-boolean options in system state');
             }
         }
         if (options.length === 0) {
