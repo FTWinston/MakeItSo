@@ -18,9 +18,9 @@ export interface TypedHelmProps extends HelmBaseProps {
     drawOrientation: (ctx: CanvasRenderingContext2D, width: number, height: number) => void;
 }
 
-const orientation = new OrientationCube();
-
 export class Helm extends ShipSystemComponent<HelmProps, {}> {
+    private orientation = new OrientationCube();
+
     constructor(props: HelmProps) {
         super(props);
         
@@ -62,7 +62,7 @@ export class Helm extends ShipSystemComponent<HelmProps, {}> {
         ctx.clearRect(0, 0, width, height);
         ctx.translate(halfWidth, halfHeight);
         ctx.fillStyle = '#0c0';
-        orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, this.props.roll);
+        this.orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, this.props.roll);
         ctx.translate(-halfWidth, -halfHeight);
     }
 

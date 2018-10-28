@@ -1,6 +1,7 @@
 import { Action, Reducer } from 'redux';
 import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
 import { Vector3 } from '~/functionality/math/Vector3';
+import { exhaustiveActionCheck } from '~/store';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -332,9 +333,8 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             }
         }
         default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            const exhaustiveCheck: never = action;
-            return exhaustiveCheck;
+            exhaustiveActionCheck(action);
+            break;
     }
 
     return state || unloadedState;

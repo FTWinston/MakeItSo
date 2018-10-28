@@ -1,5 +1,6 @@
 import { Action, Reducer } from 'redux';
 import { SensorTarget, Vector3 } from '~/functionality';
+import { exhaustiveActionCheck } from './exhaustiveActionCheck';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -92,9 +93,8 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
             };
         }
         default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            const exhaustiveCheck: never = action;
-            return exhaustiveCheck;
+            exhaustiveActionCheck(action);
+            break;
     }
 
     return state || unloadedState;

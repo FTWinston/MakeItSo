@@ -1,5 +1,6 @@
 import { Reducer } from 'redux';
 import { ShipSystem } from '~/functionality';
+import { exhaustiveActionCheck } from './exhaustiveActionCheck';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -74,7 +75,9 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: CrewState = { players: [] };
+const unloadedState: CrewState = {
+    players: []
+};
 
 export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownAction) => {
     switch (action.type) {
@@ -142,9 +145,8 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 }),
             }
         default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            const exhaustiveCheck: never = action;
-            return exhaustiveCheck;
+            exhaustiveActionCheck(action);
+            break;
     }
 
     return state || unloadedState;

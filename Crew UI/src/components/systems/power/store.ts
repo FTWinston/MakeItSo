@@ -1,5 +1,6 @@
 import { Action, Reducer } from 'redux';
 import { TextLocalisation } from "~/functionality";
+import { exhaustiveActionCheck } from '~/store';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -237,9 +238,8 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             }
         }
         default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            const exhaustiveCheck: never = action;
-            return exhaustiveCheck;
+            exhaustiveActionCheck(action);
+            break;
     }
 
     return state || unloadedState;

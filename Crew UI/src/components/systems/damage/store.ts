@@ -84,9 +84,8 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             }
         }
         default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            const exhaustiveCheck: never = action;
-            return exhaustiveCheck;
+            exhaustiveActionCheck(action);
+            break;
     }
 */
     return state || unloadedState;

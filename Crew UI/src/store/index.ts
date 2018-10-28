@@ -33,6 +33,8 @@ export const reducers = {
     warp: Warp.reducer,
 };
 
+export { exhaustiveActionCheck } from './exhaustiveActionCheck';
+
 // This type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
 // correctly typed to match your store.
 export type AppThunkAction<TAction> = (dispatch: (action: TAction) => void, getState: () => ApplicationState) => void;

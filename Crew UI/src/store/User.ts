@@ -1,5 +1,6 @@
 import { Action, Reducer } from 'redux';
 import { InputMode, Localisation, Localisations, TextLocalisation } from '~/functionality';
+import { exhaustiveActionCheck } from './exhaustiveActionCheck';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -111,9 +112,8 @@ export const reducer: Reducer<UserState> = (state: UserState, rawAction: Action)
                 screenHeight: action.height,
             };
         default:
-            // The following line guarantees that every action in the KnownAction union has been covered by a case above
-            const exhaustiveCheck: never = action;
-            return exhaustiveCheck;
+            exhaustiveActionCheck(action);
+            break;
     }
 
     return state || unloadedState;
