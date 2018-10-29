@@ -15,7 +15,7 @@ class MAKEITSO_API UPowerSystem : public UShipSystem
 
 public:
 	enum EPowerSystem {
-		Power_Helm = 1,
+		Power_Helm = 0,
 		Power_Warp,
 		Power_BeamWeapons,
 		Power_Sensors,

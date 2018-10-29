@@ -34,7 +34,7 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
             onClick={() => this.props.systemSelected(index)}
         >
             <div className="powerSystem__name">{this.getSystemName(system.type)}</div>
-            <div className="powerSystem__power">{system.damage}</div>
+            <div className="powerSystem__power">{system.power}</div>
         </div>
         );
     }

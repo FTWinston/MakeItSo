@@ -6,7 +6,7 @@ import { exhaustiveActionCheck } from '~/store';
 // STATE - This defines the type of data maintained in the Redux store.
 
 export const enum PowerSystemType {
-    Helm = 1,
+    Helm = 0,
     Warp,
     BeamWeapons,
     Sensors,
@@ -19,7 +19,7 @@ export const maxHandSize = 8;
 
 export interface PowerSystem {
     type: PowerSystemType;
-    damage: number;
+    power: number;
 }
 
 export const enum PowerCardRarity {
@@ -144,13 +144,13 @@ export const actionCreators = {
 
 const unloadedState: PowerState = {
     systems: [
-        { type: PowerSystemType.Helm, damage: 0, },
-        { type: PowerSystemType.Warp, damage: 0, },
-        { type: PowerSystemType.BeamWeapons, damage: 0, },
-        { type: PowerSystemType.Sensors, damage: 0, },
-        { type: PowerSystemType.Shields, damage: 0, },
-        { type: PowerSystemType.DamageControl, damage: 0, },
-        { type: PowerSystemType.Comms, damage: 0, },
+        { type: PowerSystemType.Helm, power: 0, },
+        { type: PowerSystemType.Warp, power: 0, },
+        { type: PowerSystemType.BeamWeapons, power: 0, },
+        { type: PowerSystemType.Sensors, power: 0, },
+        { type: PowerSystemType.Shields, power: 0, },
+        { type: PowerSystemType.DamageControl, power: 0, },
+        { type: PowerSystemType.Comms, power: 0, },
     ],
     choiceCards: [],
     handCards: [],
@@ -165,7 +165,7 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             
             action.power.map((val, index) => {
                 let type = index as PowerSystemType;
-                systems.filter(s => s.type === type)[0].damage = val;
+                systems.filter(s => s.type === type)[0].power = val;
             });
 
             return {
@@ -177,7 +177,7 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             let systems = state.systems.slice();
 
             let system = systems.filter(s => s.type === action.system)[0];
-            system.damage = action.power;
+            system.power = action.power;
 
             return {
                 ...state,
