@@ -12,9 +12,17 @@ const history = createBrowserHistory();
 
 export const store = configureStore(history);
 
-export const connection = new Connection('ws://' + location.host + '/ws');
+const rootElement = document.getElementById('client-root')!;
+
+let serverRoot = rootElement.getAttribute('data-gameServer')!;
+if (serverRoot.length === 0) {
+    serverRoot = location.host;
+}
+
+export const connection = new Connection(`ws://${serverRoot}/ws`);
 
 Hotkeys.initialize();
+
 
 function renderApp() {
     ReactDOM.render(
@@ -23,7 +31,7 @@ function renderApp() {
                 <ScreenManager />
             </Provider>
         </AppContainer>,
-        document.getElementById('client-root')
+        rootElement
     );
 }
 
