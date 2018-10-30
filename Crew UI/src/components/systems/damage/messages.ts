@@ -15,8 +15,7 @@ export function receiveMessage(cmd: string, data: string) {
                 parseInt(vals[3]),
                 parseInt(vals[4])
             ] as [number, number, number, number, number];
-            const rerolls = parseInt(vals[5]);
-            store.dispatch(actionCreators.rollDice(dice, rerolls));
+            store.dispatch(actionCreators.setDice(dice));
             break;
         }
         case 'dmg_clear': {
@@ -28,7 +27,7 @@ export function receiveMessage(cmd: string, data: string) {
             const vals = data.split(' ');
             const system = parseInt(vals[0]) as DamageSystemType;
             const damage = parseInt(vals[1]);
-            const combo = vals.length > 2 ? parseInt(vals[2]) as DiceComboType : undefined;
+            const combo = parseInt(vals[2]) as DiceComboType;
 
             store.dispatch(actionCreators.setSystem(system, damage, combo));
             break;

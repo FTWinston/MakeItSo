@@ -55,7 +55,10 @@ export interface DamageState {
 interface SetDiceAction {
     type: 'SET_DICE';
     values: [number, number, number, number, number];
-    numReRolls: number;
+}
+
+interface ExpendRollAction {
+    type: 'EXPEND_ROLL';
 }
 
 interface ClearDiceAction {
@@ -77,17 +80,19 @@ interface SetSystemDamageAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetDiceAction | ClearDiceAction | ToggleDiceLockAction | SetSystemDamageAction;
+type KnownAction = SetDiceAction | ExpendRollAction | ClearDiceAction | ToggleDiceLockAction | SetSystemDamageAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    rollDice: (values: [number, number, number, number, number], numReRolls: number) => <SetDiceAction>{
+    setDice: (values: [number, number, number, number, number]) => <SetDiceAction>{
         type: 'SET_DICE',
         values,
-        numReRolls,
+    },
+    expendRole: () => <ExpendRollAction>{
+        type: 'EXPEND_ROLL',
     },
     clearDice: (numReRolls: number) => <ClearDiceAction>{
         type: 'CLEAR_DICE',
@@ -134,9 +139,18 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             return {
                 ...state,
                 dice: action.values,
-                numReRolls: action.numReRolls,
                 hasRolled: true,
             }
+        }
+        case 'EXPEND_ROLL': {
+            if (state.numReRolls > 0) {
+                return {
+                    ...state,
+                    numReRolls: state.numReRolls - 1,
+                    hasRolled: true,
+                }
+            }
+            break;
         }
         case 'CLEAR_DICE': {
             return {

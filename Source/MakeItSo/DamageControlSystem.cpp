@@ -9,60 +9,59 @@
 #include "CrewManager.h"
 #include "UIConnectionInfo.h"
 
+#define NUM_DICE 5
+#define MAX_REROLLS 3
 
 UDamageControlSystem::UDamageControlSystem()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
 #ifndef WEB_SERVER_TEST
-	systemOrder.AddZeroed(MAX_DAMAGE_SYSTEMS);
-	damageLevels.AddZeroed(MAX_DAMAGE_SYSTEMS);
+	dice.AddZeroed(NUM_DICE);
+	systemHealth.AddZeroed(MAX_DAMAGE_SYSTEMS);
+	systemCombos.AddZeroed(MAX_DAMAGE_SYSTEMS);
 #else
-	systemOrder.assign(MAX_DAMAGE_SYSTEMS, 0);
-	damageLevels.assign(MAX_DAMAGE_SYSTEMS, 0);
+	dice.assign(NUM_DICE, 0);
+	systemHealth.assign(MAX_DAMAGE_SYSTEMS, 0);
+	systemCombos.assign(MAX_DAMAGE_SYSTEMS, Dice_None);
 #endif
 }
 
 void UDamageControlSystem::ResetData()
 {
-	for (auto i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
-		damageLevels[i] = 0;
+	ResetDice();
 
-	systemOrder[0] = Damage_Power;
-	systemOrder[1] = Damage_Helm;
-	systemOrder[2] = Damage_Warp;
-	systemOrder[3] = Damage_BeamWeapons;
-	systemOrder[4] = Damage_Empty;
-	systemOrder[5] = Damage_Torpedoes;
-	systemOrder[6] = Damage_Sensors;
-	systemOrder[7] = Damage_Shields;
-	systemOrder[8] = Damage_Comms;
-	
-	CLEAR(cardChoice);
-	CLEAR(cardHand);
-
-#ifndef WEB_SERVER_TEST
-	choiceQueue.Empty();
-#else
-	while (!QUEUE_IS_EMPTY(choiceQueue))
-		choiceQueue.pop();
-#endif
-
-	choiceQueueSize = 0;
-	choiceGeneratedAmount = 0;
+	for (uint8 i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
+	{
+		systemHealth[i] = 100;
+		systemCombos[i] = Dice_None;
+	}
 }
 
 bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "dmg_roll "))
 	{
-		TArray<FString> parts = SplitParts(msg, sizeof("dmg_roll ")); // e.g. 01110
+		TArray<FString> parts = SplitParts(msg, sizeof("dmg_roll "));
 
-		// TODO: do stuff
+		if (SIZENUM(parts) == 5)
+		{
+			bool roll1 = STOI(parts[0]) == 1;
+			bool roll2 = STOI(parts[1]) == 1;
+			bool roll3 = STOI(parts[2]) == 1;
+			bool roll4 = STOI(parts[3]) == 1;
+			bool roll5 = STOI(parts[4]) == 1;
+			RollDice(roll1, roll2, roll3, roll4, roll5);
+		}
 	}
 	else if (MATCHES(msg, "dmg_discard"))
 	{
-		// TODO: clear stuff
+		ResetDice();
+	}
+	else if (STARTS_WITH(msg, "dmg_system "))
+	{
+		uint8 systemNum = ExtractInt(msg, sizeof("dmg_system "));
+		ApplyDiceToSystem((EDamageSystem)systemNum);
 	}
 	else
 		return false;
@@ -70,230 +69,129 @@ bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_
 	return true;
 }
 
+
 void UDamageControlSystem::SendAllData_Implementation()
 {
-	SendSystemOrder();
-	SendAllDamageLevels();
-	SendCardChoice();
-	SendWholeHand();
-	SendQueueSize();
+	SendDice();
+	SendRollsRemaining();
+
+	for (uint8 i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
+	{
+		SendSystemState((EDamageSystem)i);
+	}
 }
 
-#define CHOICE_GENERATION_ENERGY_AMOUNT 500
-#define MAX_CHOICE_QUEUE_SIZE 8
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendSystemOrder() { SendSystemOrder_Implementation(); }
-#endif
-void UDamageControlSystem::SendSystemOrder_Implementation()
+void UDamageControlSystem::OnReplicated_Dice(TArray<uint8> beforeChange)
 {
-	auto command = CombineIDs(TEXT("dmg_order "), systemOrder);
-	SendSystem(command);
+	SendDice();
 }
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendAllDamageLevels() { SendAllDamageLevels_Implementation(); }
-#endif
-void UDamageControlSystem::SendAllDamageLevels_Implementation()
-{
-	auto command = CombineIDs(TEXT("dmg_levels "), damageLevels);
-	SendSystem(command);
-}
 
 #ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendCardChoice() { SendCardChoice_Implementation(); }
+void UDamageControlSystem::SendDice() { SendDice_Implementation(); }
 #endif
-void UDamageControlSystem::SendCardChoice_Implementation()
-{
-	auto command = CombineIDs(TEXT("dmg_choice "), cardChoice);
-	SendSystem(command);
-}
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendQueueSize() { SendQueueSize_Implementation(); }
-#endif
-void UDamageControlSystem::SendQueueSize_Implementation()
+void UDamageControlSystem::SendDice_Implementation()
 {
-	FString output = TEXT("dmg_queue ");
-	APPENDINT(output, choiceQueueSize);
+	FString output = TEXT("dmg_dice");
+
+	for (auto val : dice)
+	{
+		output += TEXT(" ");
+		APPENDINT(output, val);
+	}
+
 	SendSystem(output);
 }
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendWholeHand() { SendWholeHand_Implementation(); }
-#endif
-void UDamageControlSystem::SendWholeHand_Implementation()
-{
-	auto command = CombineIDs(TEXT("dmg_hand "), cardHand);
-	SendSystem(command);
-}
 
 #ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendDamageLevel(EDamageSystem system, uint8 damageLevel) { SendDamageLevel_Implementation(system, damageLevel); }
+void UDamageControlSystem::SendRollsRemaining() { SendRollsRemaining_Implementation(); }
 #endif
-void UDamageControlSystem::SendDamageLevel_Implementation(EDamageSystem system, uint8 damageLevel)
+
+void UDamageControlSystem::SendRollsRemaining_Implementation()
 {
-	FString output = TEXT("dmg_level ");
+	FString output = TEXT("dmg_rolls ");
+	APPENDINT(output, rollsRemaining);
+	SendSystem(output);
+}
+
+
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::SendSystemState(EDamageSystem system) { SendSystemState_Implementation(system); }
+#endif
+
+void UDamageControlSystem::SendSystemState_Implementation(EDamageSystem system)
+{
+	FString output = TEXT("dmg_system ");
 	APPENDINT(output, system);
 	output += TEXT(" ");
-	APPENDINT(output, damageLevel);
-
-	SendSystem(output);
-}
-
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendAddCardToHand(uint8 cardID) { SendAddCardToHand_Implementation(cardID); }
-#endif
-void UDamageControlSystem::SendAddCardToHand_Implementation(uint8 cardID)
-{
-	FString output = TEXT("dmg_add ");
-	APPENDINT(output, cardID);
-
-	SendSystem(output);
-}
-
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendRemoveCardFromHand(uint8 handPosition) { SendRemoveCardFromHand_Implementation(handPosition); }
-#endif
-void UDamageControlSystem::SendRemoveCardFromHand_Implementation(uint8 handPosition)
-{
-	FString output = TEXT("dmg_rem ");
-	APPENDINT(output, handPosition);
-
+	APPENDINT(output, systemHealth[system]);
+	output += TEXT(" ");
+	APPENDINT(output, systemCombos[system]);
 	SendSystem(output);
 }
 
 
-void UDamageControlSystem::OnReplicated_DamageLevels(TArray<uint8> beforeChange)
-{
-	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
-	auto numSys = SIZENUM(damageLevels);
-	if (SIZENUM(beforeChange) != numSys)
-	{
-		SendAllDamageLevels();
-		return;
-	}
-
-	for (uint32 i = 0; i < numSys; i++)
-	{
-		auto currentVal = damageLevels[i];
-		if (beforeChange[i] != currentVal)
-			SendDamageLevel((EDamageSystem)i, currentVal);
-	}
-}
-
-void UDamageControlSystem::OnReplicated_SystemOrder(TArray<uint8> beforeChange)
-{
-	SendSystemOrder();
-}
-
-void UDamageControlSystem::OnReplicated_ChoiceQueueSize(uint8 beforeChange)
-{
-	SendQueueSize();
-}
-
-
-void UDamageControlSystem::OnReplicated_DiceValues(TArray<uint8> beforeChange)
-{
-	// TODO: stuff
-}
-
-void UDamageControlSystem::OnReplicated_CardChoice(TArray<uint8> beforeChange)
-{
-	SendCardChoice();
-}
-
-void UDamageControlSystem::AddCardChoice(uint8 card1, uint8 card2, uint8 card3)
-{
-	TArray<uint8> newChoice;
-	SETADD(newChoice, card1);
-	SETADD(newChoice, card2);
-	SETADD(newChoice, card3);
-
-	bool alreadyShowingChoice = NOTEMPTY(cardChoice);
-
-	if (alreadyShowingChoice)
-	{
-#ifndef WEB_SERVER_TEST
-		choiceQueue.Enqueue(newChoice);
-#else
-		choiceQueue.push(newChoice);
-#endif
-		choiceQueueSize = SIZENUM(choiceQueue);
-	}
-	else
-	{
-		cardChoice = newChoice;
-
-		if (ISCLIENT())
-			SendCardChoice();
-	}
-
-	if (ISCLIENT())
-		SendQueueSize();
-}
-
-FString UDamageControlSystem::CombineIDs(const TCHAR *prefix, TArray<uint8> IDs)
-{
-	FString output = prefix;
-
-	if (NOTEMPTY(IDs))
-	{
-		bool first = true;
-		for (int32 id : IDs)
-		{
-			if (first)
-				first = false;
-			else
-				output += TEXT(" ");
-
-			APPENDINT(output, id);
-		}
-	}
-	return output;
-}
-
-#define MAX_HAND_SIZE 8
 
 #ifdef WEB_SERVER_TEST
-void UDamageControlSystem::ChooseCard(uint8 cardPosition) { ChooseCard_Implementation(cardPosition); }
+void UDamageControlSystem::RollDice(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5) { RollDice_Implementation(roll1, roll2, roll3, roll4, roll5); }
 #endif
-
-void UDamageControlSystem::ChooseCard_Implementation(uint8 cardPosition)
+void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5)
 {
-	if (cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
+	if (rollsRemaining == 0)
 		return;
 
-	uint8 chosenCardID = cardChoice[cardPosition];
-	SETADD(cardHand, chosenCardID);
+	rollsRemaining--;
 
-	if (ISCLIENT())
-		SendAddCardToHand(chosenCardID);
-
-	if (QUEUE_IS_EMPTY(choiceQueue))
-	{
-		CLEAR(cardChoice);
-
-		if (ISCLIENT())
-			SendCardChoice();
-		return;
-	}
-
-#ifndef WEB_SERVER_TEST
-	cardChoices.Dequeue(cardChoice);
-#else
-	cardChoice = choiceQueue.front();
-	choiceQueue.pop();
-#endif
-
-	choiceQueueSize = SIZENUM(choiceQueue);
+	if (roll1)
+		dice[0] = Roll();
+	if (roll2)
+		dice[1] = Roll();
+	if (roll3)
+		dice[2] = Roll();
+	if (roll4)
+		dice[3] = Roll();
+	if (roll5)
+		dice[4] = Roll();
 
 	if (ISCLIENT())
 	{
-		SendCardChoice();
-		SendQueueSize();
+		SendDice();
 	}
 }
+
+uint8 UDamageControlSystem::Roll()
+{
+	return FMath::RandRange(1, 6);
+}
+
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::ResetDice() { ResetDice_Implementation(); }
+#endif
+void UDamageControlSystem::ResetDice_Implementation()
+{
+	rollsRemaining = MAX_REROLLS;
+	for (uint8 i = 0; i < NUM_DICE; i++)
+		dice[i] = 0;
+
+	if (ISCLIENT())
+	{
+		SendDice();
+	}
+}
+
+#ifdef WEB_SERVER_TEST
+void UDamageControlSystem::ApplyDiceToSystem(EDamageSystem system) { ApplyDiceToSystem_Implementation(system); }
+#endif
+void UDamageControlSystem::ApplyDiceToSystem_Implementation(EDamageSystem system)
+{
+	// TODO: calculate effect of current dice combo, apply it to current system
+
+	ResetDice();
+}
+
 
 UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 {
@@ -307,8 +205,6 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 		return crewManager->GetSystem(UShipSystem::ESystem::Warp);
 	case Damage_BeamWeapons:
 		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
-//	case Damage_Torpedoes:
-//		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
 	case Damage_Sensors:
 		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);
 //	case Damage_Shields:
@@ -321,6 +217,7 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 }
 
 
+// TODO: how do changes to system health (from elsewhere) affect this system? It needs to be notified.
 bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 {
 	UShipSystem *targetSystem = LookupSystem(system);
@@ -328,11 +225,9 @@ bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 		return false;
 
 	targetSystem->RestoreDamage(amount);
-	auto newValue = targetSystem->GetHealthLevel();
-	damageLevels[system] = newValue;
+	systemHealth[system] = targetSystem->GetHealthLevel();
 
-	if (ISCLIENT())
-		SendDamageLevel(system, newValue);
+	SendSystemState(system);
 
 	return true;
 }
@@ -344,11 +239,9 @@ bool UDamageControlSystem::DealDamage(EDamageSystem system, uint8 amount)
 		return false;
 
 	targetSystem->TakeDamage(amount);
-	auto newValue = targetSystem->GetHealthLevel();
-	damageLevels[system] = newValue;
+	systemHealth[system] = targetSystem->GetHealthLevel();
 
-	if (ISCLIENT())
-		SendDamageLevel(system, newValue);
+	SendSystemState(system);
 
 	return true;
 }
@@ -365,6 +258,5 @@ void UDamageControlSystem::SetHealth(EDamageSystem system, uint8 newValue)
 	else if (existingHealth < newValue)
 		targetSystem->RestoreDamage(newValue - existingHealth);
 
-	if (ISCLIENT())
-		SendDamageLevel(system, newValue);
+	SendSystemState(system);
 }

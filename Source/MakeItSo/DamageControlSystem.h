@@ -30,6 +30,23 @@ public:
 		MAX_DAMAGE_SYSTEMS
 	};
 
+	enum EDiceCombo : uint8 {
+		Dice_None = 0,
+		Dice_Aces,
+		Dice_Twos,
+		Dice_Threes,
+		Dice_Fours,
+		Dice_Fives,
+		Dice_Sixes,
+		Dice_ThreeOfAKind,
+		Dice_FourOfAKind,
+		Dice_FullHouse,
+		Dice_SmallStraight,
+		Dice_LargeStraight,
+		Dice_Yahtzee,
+		MAX_DICE_COMBOS
+	};
+
 	UDamageControlSystem();
 	virtual void ResetData() override;
 
@@ -39,92 +56,63 @@ public:
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
 private:
-	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
+	// Replicated properties
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_Dice)
+	TArray<uint8> dice;
+	void OnReplicated_Dice(TArray<uint8> beforeChange);
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_DamageLevels)
-	TArray<uint8> damageLevels;
-	void OnReplicated_DamageLevels(TArray<uint8> beforeChange);
+	UPROPERTY(Replicated)
+	uint8 rollsRemaining;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemOrder)
-	TArray<uint8> systemOrder;
-	void OnReplicated_SystemOrder(TArray<uint8> beforeChange);
+	UPROPERTY(Replicated)
+	TArray<uint8> systemHealth;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_DiceValues)
-	TArray<uint8> diceValues;
-	void OnReplicated_DiceValues(TArray<uint8> beforeChange);
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardChoice)
-	TArray<uint8> cardChoice;
-	void OnReplicated_CardChoice(TArray<uint8> beforeChange);
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ChoiceQueueSize)
-	uint8 choiceQueueSize;
-	void OnReplicated_ChoiceQueueSize(uint8 beforeChange);
-
-	UPROPERTY()
-	TQueue<TArray<uint8>> choiceQueue;
+	UPROPERTY(Replicated)
+	TArray<EDiceCombo> systemCombos;
 
 
+	// Client functions, that can be called from the server
 	UFUNCTION(Client, Reliable)
-	void SendSystemOrder();
+	void SendDice();
 #ifdef WEB_SERVER_TEST
-	void SendSystemOrder_Implementation();
+	void SendDice_Implementation();
 #endif
 
 	UFUNCTION(Client, Reliable)
-	void SendAllDamageLevels();
+	void SendRollsRemaining();
 #ifdef WEB_SERVER_TEST
-	void SendAllDamageLevels_Implementation();
+	void SendRollsRemaining_Implementation();
 #endif
 
 	UFUNCTION(Client, Reliable)
-	void SendDamageLevel(EDamageSystem system, uint8 damageLevel);
+	void SendSystemState(EDamageSystem system);
 #ifdef WEB_SERVER_TEST
-	void SendDamageLevel_Implementation(EDamageSystem system, uint8 damageLevel);
+	void SendSystemState_Implementation(EDamageSystem system);
 #endif
 
-	UFUNCTION(Client, Reliable)
-	void SendCardChoice();
-#ifdef WEB_SERVER_TEST
-	void SendCardChoice_Implementation();
-#endif
 
-	UFUNCTION(Client, Reliable)
-	void SendQueueSize();
+	// Server functions, that can be called from the client
+	UFUNCTION(Server, Reliable)
+	void RollDice(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5);
 #ifdef WEB_SERVER_TEST
-	void SendQueueSize_Implementation();
-#endif
-
-	UFUNCTION(Client, Reliable)
-	void SendWholeHand();
-#ifdef WEB_SERVER_TEST
-	void SendWholeHand_Implementation();
-#endif
-
-	UFUNCTION(Client, Reliable)
-	void SendAddCardToHand(uint8 cardID);
-#ifdef WEB_SERVER_TEST
-	void SendAddCardToHand_Implementation(uint8 cardID);
-#endif
-
-	UFUNCTION(Client, Reliable)
-	void SendRemoveCardFromHand(uint8 handPosition);
-#ifdef WEB_SERVER_TEST
-	void SendRemoveCardFromHand_Implementation(uint8 handPosition);
+	void RollDice_Implementation(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5);
 #endif
 
 	UFUNCTION(Server, Reliable)
-	void ChooseCard(uint8 cardPosition);
+	void ResetDice();
 #ifdef WEB_SERVER_TEST
-	void ChooseCard_Implementation(uint8 cardPosition);
+	void ResetDice_Implementation();
 #endif
 
+	UFUNCTION(Server, Reliable)
+	void ApplyDiceToSystem(EDamageSystem system);
+#ifdef WEB_SERVER_TEST
+	void ApplyDiceToSystem_Implementation(EDamageSystem system);
+#endif
+
+
+	uint8 Roll();
 	UShipSystem *LookupSystem(EDamageSystem system);
-	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
-
-	UPROPERTY()
-	uint16 choiceGeneratedAmount;
-
 	bool RestoreDamage(EDamageSystem system, uint8 amount);
 	bool DealDamage(EDamageSystem system, uint8 amount);
 	void SetHealth(EDamageSystem system, uint8 newValue);

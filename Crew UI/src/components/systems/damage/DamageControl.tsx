@@ -60,10 +60,10 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     }
 
     private rollDice() {
-        let msg = 'dmg_roll ';
+        let msg = 'dmg_roll';
 
         for (let i=0; i<this.props.lockedDice.length; i++) {
-            msg += this.props.lockedDice[i] ? '1' : '0';
+            msg += this.props.lockedDice[i] ? ' 1' : ' 0';
         }
 
         connection.send(msg);
