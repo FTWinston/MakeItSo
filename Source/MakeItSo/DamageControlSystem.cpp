@@ -12,9 +12,7 @@
 
 UDamageControlSystem::UDamageControlSystem()
 {
-	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 1.0f;
-	PrimaryComponentTick.SetTickFunctionEnable(true);
+	PrimaryComponentTick.bCanEverTick = false;
 
 #ifndef WEB_SERVER_TEST
 	systemOrder.AddZeroed(MAX_DAMAGE_SYSTEMS);
@@ -56,22 +54,15 @@ void UDamageControlSystem::ResetData()
 
 bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(msg, "dmg_pickCard "))
+	if (STARTS_WITH(msg, "dmg_roll "))
 	{
-		uint8 cardNum = ExtractInt(msg, sizeof("dmg_pickCard "));
-		ChooseCard(cardNum);
+		TArray<FString> parts = SplitParts(msg, sizeof("dmg_roll ")); // e.g. 01110
+
+		// TODO: do stuff
 	}
-	else if (STARTS_WITH(msg, "dmg_useCard "))
+	else if (MATCHES(msg, "dmg_discard"))
 	{
-		TArray<FString> parts = SplitParts(msg, sizeof("dmg_useCard "));
-
-		if (SIZENUM(parts) >= 3)
-		{
-			uint8 cardID = STOI(parts[0]);
-			uint8 handPosition = STOI(parts[1]);
-			uint8 targetSystemPos = (EDamageSystem)STOI(parts[2]);
-
-		}
+		// TODO: clear stuff
 	}
 	else
 		return false;
@@ -90,20 +81,6 @@ void UDamageControlSystem::SendAllData_Implementation()
 
 #define CHOICE_GENERATION_ENERGY_AMOUNT 500
 #define MAX_CHOICE_QUEUE_SIZE 8
-
-void UDamageControlSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
-		return;
-
-	choiceGeneratedAmount += GetPowerLevel();
-
-	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
-		return;
-
-	choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
-	AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
-}
 
 #ifdef WEB_SERVER_TEST
 void UDamageControlSystem::SendSystemOrder() { SendSystemOrder_Implementation(); }
@@ -216,52 +193,9 @@ void UDamageControlSystem::OnReplicated_ChoiceQueueSize(uint8 beforeChange)
 }
 
 
-void UDamageControlSystem::OnReplicated_CardHand(TArray<uint8> beforeChange)
+void UDamageControlSystem::OnReplicated_DiceValues(TArray<uint8> beforeChange)
 {
-	auto oldSize = SIZENUM(beforeChange), newSize = SIZENUM(damageLevels);
-
-	if (newSize == oldSize + 1)
-	{
-		// one card added ... if any differ except the last card, resend whole hand
-		for (uint8 i = 0; i < oldSize; i++)
-			if (beforeChange[i] != cardHand[i])
-			{
-				SendWholeHand();
-				return;
-			}
-
-		// send the addition of the one new card
-		SendAddCardToHand(cardHand[oldSize]);
-	}
-	else if (oldSize == newSize + 1)
-	{
-		// one card removed ... if any differ except the card that was removed, resend whole hand
-		auto offset = 0;
-		uint8 removedPos;
-
-		for (uint8 i = 0; i < newSize; i++)
-			if (beforeChange[i + offset] != cardHand[i])
-			{
-				if (offset > 0)
-				{
-					// have already passed one difference, so resend all
-					SendWholeHand();
-					return;
-				}
-
-				removedPos = i;
-				offset = 1;
-			}
-
-		if (offset == 0)
-			removedPos = newSize;
-
-		SendRemoveCardFromHand(removedPos);
-	}
-	else
-	{
-		SendWholeHand();
-	}
+	// TODO: stuff
 }
 
 void UDamageControlSystem::OnReplicated_CardChoice(TArray<uint8> beforeChange)
@@ -433,54 +367,4 @@ void UDamageControlSystem::SetHealth(EDamageSystem system, uint8 newValue)
 
 	if (ISCLIENT())
 		SendDamageLevel(system, newValue);
-}
-
-void UDamageControlSystem::GetRowCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3)
-{
-	if (testPos < 3)
-	{
-		outPos1 = 0;
-		outPos2 = 1;
-		outPos3 = 2;
-	}
-	else if (testPos < 6)
-	{
-		outPos1 = 3;
-		outPos2 = 4;
-		outPos3 = 5;
-	}
-	else
-	{
-		outPos1 = 6;
-		outPos2 = 7;
-		outPos3 = 8;
-	}
-}
-
-void UDamageControlSystem::GetColCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3)
-{
-	if (testPos == 0 || testPos == 3 || testPos == 6)
-	{
-		outPos1 = 0;
-		outPos2 = 3;
-		outPos3 = 6;
-	}
-	else if (testPos == 1 || testPos == 4 || testPos == 7)
-	{
-		outPos1 = 1;
-		outPos2 = 4;
-		outPos3 = 7;
-	}
-	else
-	{
-		outPos1 = 2;
-		outPos2 = 5;
-		outPos3 = 8;
-	}
-}
-
-uint8 UDamageControlSystem::PickRandomCard()
-{
-	// TODO: probably want to make some cards rarer than others
-	return 0;
 }

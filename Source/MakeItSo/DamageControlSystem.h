@@ -11,7 +11,7 @@
  * 
  */
 
- UCLASS()
+UCLASS()
 class MAKEITSO_API UDamageControlSystem : public UShipSystem
 {
 	GENERATED_BODY()
@@ -35,8 +35,6 @@ public:
 
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
-	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
@@ -51,9 +49,9 @@ private:
 	TArray<uint8> systemOrder;
 	void OnReplicated_SystemOrder(TArray<uint8> beforeChange);
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardHand)
-	TArray<uint8> cardHand;
-	void OnReplicated_CardHand(TArray<uint8> beforeChange);
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_DiceValues)
+	TArray<uint8> diceValues;
+	void OnReplicated_DiceValues(TArray<uint8> beforeChange);
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardChoice)
 	TArray<uint8> cardChoice;
@@ -122,7 +120,6 @@ private:
 #endif
 
 	UShipSystem *LookupSystem(EDamageSystem system);
-	uint8 PickRandomCard();
 	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
 
 	UPROPERTY()
@@ -131,6 +128,4 @@ private:
 	bool RestoreDamage(EDamageSystem system, uint8 amount);
 	bool DealDamage(EDamageSystem system, uint8 amount);
 	void SetHealth(EDamageSystem system, uint8 newValue);
-	void GetRowCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3);
-	void GetColCells(uint8 testPos, uint8 &outPos1, uint8 &outPos2, uint8 &outPos3);
 };

@@ -219,6 +219,9 @@ export interface TextLocalisation {
             overloadSelectableDesc: string;
         },
         damage: {
+            roll: string;
+            reroll: string;
+            discard: string;
         },
         comms: {
 

@@ -4,6 +4,7 @@ import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
 import { actionCreators as sensorActions } from '~/store/Sensors';
 import { ShipSystem, parseSensorTarget } from '~/functionality';
 import { msgPrefix as helmPrefix, receiveMessage as helmMessage } from '~/components/systems/helm'
+import { msgPrefix as damagePrefix, receiveMessage as damageMessage } from '~/components/systems/damage'
 import { msgPrefix as powerPrefix, receiveMessage as powerMessage } from '~/components/systems/power'
 import { msgPrefix as warpPrefix, receiveMessage as warpMessage } from '~/components/systems/warp'
 
@@ -98,13 +99,7 @@ export class Connection {
                 break;
             }
             default:
-                if (cmd.startsWith(powerPrefix))
-                {
-                    if (powerMessage(cmd, data)) {
-                        break;
-                    }
-                }
-                else if (cmd.startsWith(helmPrefix))
+                if (cmd.startsWith(helmPrefix))
                 {
                     if (helmMessage(cmd, data)) {
                         break;
@@ -116,7 +111,19 @@ export class Connection {
                         break;
                     }
                 }
-                // warp prefix
+                else if (cmd.startsWith(powerPrefix))
+                {
+                    if (powerMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                else if (cmd.startsWith(damagePrefix))
+                {
+                    if (damageMessage(cmd, data)) {
+                        break;
+                    }
+                }
+
                 console.log(`Unexpected command: ${cmd}`);
                 break;
         }

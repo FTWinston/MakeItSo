@@ -285,7 +285,9 @@ let words: TextLocalisation = {
             overloadSelectableDesc: 'Increase power of selected system by 40% for 10 seconds, then damage it.',
         },
         damage: {
-            
+            roll: 'Roll',
+            reroll: 'Reroll',
+            discard: 'Discard',
         },
         comms: {
 
