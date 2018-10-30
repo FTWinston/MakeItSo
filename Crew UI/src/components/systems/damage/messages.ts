@@ -18,9 +18,9 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setDice(dice));
             break;
         }
-        case 'dmg_clear': {
+        case 'dmg_rolls': {
             const rerolls = parseInt(data);
-            store.dispatch(actionCreators.clearDice(rerolls));
+            store.dispatch(actionCreators.setRolls(rerolls));
             break;
         }
         case 'dmg_system': {

@@ -286,7 +286,6 @@ let words: TextLocalisation = {
         },
         damage: {
             roll: 'Roll',
-            reroll: 'Reroll',
             discard: 'Discard',
         },
         comms: {

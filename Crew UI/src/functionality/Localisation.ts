@@ -220,7 +220,6 @@ export interface TextLocalisation {
         },
         damage: {
             roll: string;
-            reroll: string;
             discard: string;
         },
         comms: {

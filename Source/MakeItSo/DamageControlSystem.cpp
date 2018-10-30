@@ -140,25 +140,27 @@ void UDamageControlSystem::RollDice(bool roll1, bool roll2, bool roll3, bool rol
 #endif
 void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5)
 {
-	if (rollsRemaining == 0)
+	if (rollsRemaining == 0 || !(roll1 || roll2 || roll3 || roll4 || roll5)) {
 		return;
+	}
 
 	rollsRemaining--;
 
-	if (roll1)
+	if (roll1 || dice[0] == 0)
 		dice[0] = Roll();
-	if (roll2)
+	if (roll2 || dice[1] == 0)
 		dice[1] = Roll();
-	if (roll3)
+	if (roll3 || dice[2] == 0)
 		dice[2] = Roll();
-	if (roll4)
+	if (roll4 || dice[3] == 0)
 		dice[3] = Roll();
-	if (roll5)
+	if (roll5 || dice[4] == 0)
 		dice[4] = Roll();
 
 	if (ISCLIENT())
 	{
 		SendDice();
+		SendRollsRemaining();
 	}
 }
 
@@ -179,6 +181,7 @@ void UDamageControlSystem::ResetDice_Implementation()
 	if (ISCLIENT())
 	{
 		SendDice();
+		SendRollsRemaining();
 	}
 }
 

@@ -12,6 +12,7 @@ import { connection } from '~/index';
 interface DamageControlProps extends DamageState {
     text: TextLocalisation;
     toggleDice: (index: number) => void;
+    unlockDice: () => void;
 }
 
 class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
@@ -26,13 +27,21 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     }
 
     public render() {
-        const dice = this.props.dice.map((d, i) => <Dice key={i} value={d} locked={this.props.lockedDice[i]} toggle={() => this.props.toggleDice(i)} />)
+        const canLock = this.props.dice[0] !== 0;
+        const dice = this.props.dice.map((d, i) =>
+            <Dice
+                key={i}
+                value={d}
+                canLock={canLock}
+                locked={this.props.lockedDice[i]}
+                toggle={() => this.props.toggleDice(i)}
+            />
+        )
 
-        const rollText = this.props.hasRolled
-            ? this.props.text.systems.damage.roll
-            : `${this.props.text.systems.damage.reroll} (${this.props.numReRolls})`;
+        const rollText = `${this.props.text.systems.damage.roll} (${this.props.numReRolls})`;
 
         const roll = () => this.rollDice();
+        const unlock = () => this.props.unlockDice();
 
         return <div className="system damageControl">
             <div className="damageControl__systemList">
@@ -50,10 +59,11 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                 />
 
                 <PushButton
-                    disabled={this.props.hasRolled}
+                    disabled={this.props.dice[0] === 0}
                     color={ButtonColor.Tertiary}
                     text={this.props.text.systems.damage.discard}
                     command="dmg_discard"
+                    clicked={unlock}
                 />
             </div>
         </div>
@@ -62,8 +72,8 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     private rollDice() {
         let msg = 'dmg_roll';
 
-        for (let i=0; i<this.props.lockedDice.length; i++) {
-            msg += this.props.lockedDice[i] ? ' 1' : ' 0';
+        for (let lock of this.props.lockedDice) {
+            msg += lock ? ' 0' : ' 1';
         }
 
         connection.send(msg);
@@ -75,6 +85,7 @@ const mapStateToProps: (state: ApplicationState) => DamageControlProps = (state)
     return {
         text: state.user.text,
         toggleDice: actionCreators.toggleDice,
+        unlockDice: actionCreators.unlockDice,
         ...state.damage,
     }
 };

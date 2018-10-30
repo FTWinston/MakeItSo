@@ -45,7 +45,6 @@ export interface DamageState {
     dice: [number, number, number, number, number];
     lockedDice: [boolean, boolean, boolean, boolean, boolean];
     numReRolls: number;
-    hasRolled: boolean;
 }
 
 // -----------------
@@ -57,18 +56,18 @@ interface SetDiceAction {
     values: [number, number, number, number, number];
 }
 
-interface ExpendRollAction {
-    type: 'EXPEND_ROLL';
-}
-
-interface ClearDiceAction {
-    type: 'CLEAR_DICE';
-    numReRolls: number;
+interface SetRollsAction {
+    type: 'SET_ROLLS';
+    rollsRemaining: number;
 }
 
 interface ToggleDiceLockAction {
     type: 'LOCK_DICE';
     index: number;
+}
+
+interface UnlockDiceAction {
+    type: 'UNLOCK_ALL';
 }
 
 interface SetSystemDamageAction {
@@ -80,7 +79,7 @@ interface SetSystemDamageAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetDiceAction | ExpendRollAction | ClearDiceAction | ToggleDiceLockAction | SetSystemDamageAction;
+type KnownAction = SetDiceAction | SetRollsAction | ToggleDiceLockAction | UnlockDiceAction | SetSystemDamageAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -91,16 +90,16 @@ export const actionCreators = {
         type: 'SET_DICE',
         values,
     },
-    expendRole: () => <ExpendRollAction>{
-        type: 'EXPEND_ROLL',
-    },
-    clearDice: (numReRolls: number) => <ClearDiceAction>{
-        type: 'CLEAR_DICE',
-        numReRolls,
+    setRolls: (rollsRemaining: number) => <SetRollsAction>{
+        type: 'SET_ROLLS',
+        rollsRemaining,
     },
     toggleDice: (index: number) => <ToggleDiceLockAction>{
         type: 'LOCK_DICE',
         index,
+    },
+    unlockDice: () => <UnlockDiceAction>{
+        type: 'UNLOCK_ALL',
     },
     setSystem: (system: DamageSystemType, damage: number, combo: DiceComboType | undefined) => <SetSystemDamageAction>{
         type: 'SET_SYSTEM',
@@ -128,7 +127,6 @@ const unloadedState: DamageState = {
     dice: [0, 0, 0, 0, 0],
     lockedDice: [false, false, false, false, false],
     numReRolls: 3,
-    hasRolled: false,
 };
 
 export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Action) => {
@@ -139,26 +137,12 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             return {
                 ...state,
                 dice: action.values,
-                hasRolled: true,
             }
         }
-        case 'EXPEND_ROLL': {
-            if (state.numReRolls > 0) {
-                return {
-                    ...state,
-                    numReRolls: state.numReRolls - 1,
-                    hasRolled: true,
-                }
-            }
-            break;
-        }
-        case 'CLEAR_DICE': {
+        case 'SET_ROLLS': {
             return {
                 ...state,
-                dice: [0, 0, 0, 0, 0],
-                lockedDice: [false, false, false, false, false],
-                numReRolls: action.numReRolls,
-                hasRolled: false,
+                numReRolls: action.rollsRemaining,
             }
         }
         case 'LOCK_DICE': {
@@ -169,9 +153,15 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
                 lockedDice,
             }
         }
+        case 'UNLOCK_ALL': {
+            return {
+                ...state,
+                lockedDice: [false, false, false, false, false],
+            }
+        }
         case 'SET_SYSTEM': {
             const systems = state.systems.slice();
-            const system = systems[action.type];
+            const system = systems[action.system];
             system.damage = action.damage;
             system.combo = action.combo;
 

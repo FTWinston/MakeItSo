@@ -4,16 +4,19 @@ import { FlexibleCanvas } from '~/components/general';
 
 interface IProps {
     value: number;
+    canLock: boolean;
     locked: boolean;
     toggle: () => void;
 }
 
 export class Dice extends React.PureComponent<IProps> {
     render() {
+        const classes = this.props.canLock ? 'dice' : 'dice dice--notLockable';
+
         return <FlexibleCanvas
-            className="dice"
+            className={classes}
             draw={(ctx, w, h) => this.draw(ctx, w, h)}
-            onClick={() => this.props.toggle()}
+            onClick={this.props.canLock ? () => this.props.toggle() : undefined}
         />
     }
 
