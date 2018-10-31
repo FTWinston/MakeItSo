@@ -287,6 +287,38 @@ let words: TextLocalisation = {
         damage: {
             roll: 'Roll',
             discard: 'Discard',
+
+            
+            comboNames: {
+                aces: 'Aces',
+                twos: 'Twos',
+                threes: 'Threes',
+                fours: 'Fours',
+                fives: 'Fives',
+                sixes: 'Sixes',
+                threeOfAKind: 'Three of a Kind',
+                fourOfAKind: 'Four of a Kind',
+                fullHouse: 'Full House',
+                smallStraight: 'Small Straight',
+                largeStraight: 'Large Straight',
+                yahtzee: 'Yahtzee',
+                chance: 'Chance',
+            },
+            comboDescriptions: {
+                aces: 'The sum of dice showing 1',
+                twos: 'The sum of dice showing 2',
+                threes: 'The sum of dice showing 3',
+                fours: 'The sum of dice showing 4',
+                fives: 'The sum of dice showing 5',
+                sixes: 'The sum of dice showing 6',
+                threeOfAKind: 'Three dice the same',
+                fourOfAKind: 'Four dice the same',
+                fullHouse: 'Three of one number and two of another',
+                smallStraight: 'Four sequential numbers',
+                largeStraight: 'Five sequential numbers',
+                yahtzee: 'All five dice the same',
+                chance: 'Any combination of dice',
+            }
         },
         comms: {
 

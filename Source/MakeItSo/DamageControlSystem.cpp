@@ -206,7 +206,7 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 		return crewManager->GetSystem(UShipSystem::ESystem::Helm);
 	case Damage_Warp:
 		return crewManager->GetSystem(UShipSystem::ESystem::Warp);
-	case Damage_BeamWeapons:
+	case Damage_Weapons:
 		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
 	case Damage_Sensors:
 		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);

@@ -221,6 +221,36 @@ export interface TextLocalisation {
         damage: {
             roll: string;
             discard: string;
+            comboNames: {
+                aces: string;
+                twos: string;
+                threes: string;
+                fours: string;
+                fives: string;
+                sixes: string;
+                threeOfAKind: string;
+                fourOfAKind: string;
+                fullHouse: string;
+                smallStraight: string;
+                largeStraight: string;
+                yahtzee: string;
+                chance: string;
+            }
+            comboDescriptions: {
+                aces: string;
+                twos: string;
+                threes: string;
+                fours: string;
+                fives: string;
+                sixes: string;
+                threeOfAKind: string;
+                fourOfAKind: string;
+                fullHouse: string;
+                smallStraight: string;
+                largeStraight: string;
+                yahtzee: string;
+                chance: string;
+            }
         },
         comms: {
 

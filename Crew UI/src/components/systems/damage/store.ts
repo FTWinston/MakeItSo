@@ -9,8 +9,7 @@ export const enum DamageSystemType {
     Power,
     Helm,
     Warp,
-    BeamWeapons,
-    Torpedoes,
+    Weapons,
     Sensors,
     Shields,
     Comms,
@@ -30,14 +29,13 @@ export const enum DiceComboType {
     SmallStraight,
     LargeStraight,
     Yahtzee,
+    Chance,
 }
-
-// const numDamageSystems = DamageSystemType.Comms as number;
 
 export interface DamageSystem {
     type: DamageSystemType;
-    damage: number;
-    combo?: DiceComboType;
+    health: number;
+    combo: DiceComboType;
 }
 
 export interface DamageState {
@@ -73,7 +71,7 @@ interface UnlockDiceAction {
 interface SetSystemDamageAction {
     type: 'SET_SYSTEM';
     system: DamageSystemType;
-    damage: number;
+    health: number;
     combo: DiceComboType;
 }
 
@@ -101,10 +99,10 @@ export const actionCreators = {
     unlockDice: () => <UnlockDiceAction>{
         type: 'UNLOCK_ALL',
     },
-    setSystem: (system: DamageSystemType, damage: number, combo: DiceComboType | undefined) => <SetSystemDamageAction>{
+    setSystem: (system: DamageSystemType, health: number, combo: DiceComboType | undefined) => <SetSystemDamageAction>{
         type: 'SET_SYSTEM',
         system,
-        damage,
+        health,
         combo,
     }
 };
@@ -114,15 +112,14 @@ export const actionCreators = {
 
 const unloadedState: DamageState = {
     systems: [
-        { type: DamageSystemType.Power, damage: 0, },
-        { type: DamageSystemType.Helm, damage: 0, },
-        { type: DamageSystemType.Warp, damage: 0, },
-        { type: DamageSystemType.BeamWeapons, damage: 0, },
-        { type: DamageSystemType.Empty, damage: 0, },
-        { type: DamageSystemType.Torpedoes, damage: 0, },
-        { type: DamageSystemType.Sensors, damage: 0, },
-        { type: DamageSystemType.Shields, damage: 0, },
-        { type: DamageSystemType.Comms, damage: 0, },
+        { type: DamageSystemType.Power, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Helm, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Warp, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Weapons, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Empty, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Sensors, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Shields, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.Comms, health: 0, combo: DiceComboType.None },
     ],
     dice: [0, 0, 0, 0, 0],
     lockedDice: [false, false, false, false, false],
@@ -162,7 +159,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
         case 'SET_SYSTEM': {
             const systems = state.systems.slice();
             const system = systems[action.system];
-            system.damage = action.damage;
+            system.health = action.health;
             system.combo = action.combo;
 
             return {

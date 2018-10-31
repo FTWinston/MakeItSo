@@ -24,6 +24,10 @@
 
 .damageControl__systemList {
     grid-area: systems;
+    display: flex;
+    flex-wrap: wrap;
+
+    align-content: flex-start;
 }
 
 .damageControl__diceList {
@@ -40,4 +44,10 @@
 
 .damageControl__diceActions {
     grid-area: actions;
+    font-size: 2em;
+    text-align: center;
+}
+
+.damageControl__diceActions > * + * {
+    margin-left: 1em;
 }

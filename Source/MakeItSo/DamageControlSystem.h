@@ -22,8 +22,7 @@ public:
 		Damage_Power,
 		Damage_Helm,
 		Damage_Warp,
-		Damage_BeamWeapons,
-		Damage_Torpedoes,
+		Damage_Weapons,
 		Damage_Sensors,
 		Damage_Shields,
 		Damage_Comms,
@@ -44,6 +43,7 @@ public:
 		Dice_SmallStraight,
 		Dice_LargeStraight,
 		Dice_Yahtzee,
+		Dice_Chance,
 		MAX_DICE_COMBOS
 	};
 

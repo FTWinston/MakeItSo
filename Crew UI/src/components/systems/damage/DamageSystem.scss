@@ -1,0 +1,56 @@
+@import '../../general/mixins';
+
+.damageSystem {
+    display: grid;
+    grid-gap: 0.5em;
+
+    
+    grid-template-rows: 3fr 2fr 2fr;
+    grid-template-columns: 5fr 2fr;
+    grid-template-areas:
+        "title health"
+        "combo heal"
+        "desc desc";
+
+    border: solid #ccc 1px;
+    padding: 0.5em;
+    margin: 0 1em 1em 0;
+
+    width: 14em;
+    height: 10em;
+}
+
+.damageSystem__name {
+    grid-area: title;
+    font-size: 1.5em;
+}
+
+.damageSystem__comboName {
+    grid-area: combo;
+    font-size: 1.25em;
+    
+    justify-content: center;
+    align-content: center;
+}
+
+.damageSystem__comboDesc {
+    grid-area: desc;
+}
+
+.damageSystem__health {
+    grid-area: health;
+    font-size: 1.5em;
+}
+
+.damageSystem__heal {
+    grid-area: heal;
+    font-size: 1.5em;
+}
+
+.damageSystem--applicable {
+    background-color: $colorGoodLight;
+}
+
+.damageSystem--applicable.damageSystem--perfect {
+    background-color: $colorGoodDark;
+}
