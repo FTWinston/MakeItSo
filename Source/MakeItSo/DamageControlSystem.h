@@ -115,8 +115,12 @@ private:
 
 
 	uint8 Roll();
+	uint8 GetDiceScore(EDiceCombo combo);
 	UShipSystem *LookupSystem(EDamageSystem system);
 	EDamageSystem GetDamageSystem(UShipSystem::ESystem system);
 	bool RestoreDamage(EDamageSystem system, uint8 amount);
 	EDiceCombo SelectCombo(EDiceCombo currentCombo, uint8 systemHealth);
+
+	uint8 SumOfNumber(uint8 number);
+	uint8 SumOfAKind(uint8 number);
 };

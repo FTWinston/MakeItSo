@@ -183,6 +183,189 @@ uint8 UDamageControlSystem::Roll()
 	return FMath::RandRange(1, 6);
 }
 
+uint8 UDamageControlSystem::GetDiceScore(EDiceCombo combo)
+{
+	if (dice[0] == 0) {
+		return 0;
+	}
+
+	switch (combo) {
+	case Dice_Aces:
+		return SumOfNumber(1);
+	
+	case Dice_Twos:
+		return SumOfNumber(2);
+	
+	case Dice_Threes:
+		return SumOfNumber(3);
+	
+	case Dice_Fours:
+		return SumOfNumber(4);
+	
+	case Dice_Fives:
+		return SumOfNumber(5);
+	
+	case Dice_Sixes:
+		return SumOfNumber(6);
+	
+	case Dice_ThreeOfAKind: {
+		return SumOfAKind(3);
+	}
+	case Dice_FourOfAKind: {
+		return SumOfAKind(4);
+	}
+	case Dice_FullHouse: {
+		uint8 first = dice[0];
+		uint8 numFirst = 1;
+		uint8 second = 0;
+		uint8 numSecond = 0;
+
+		for (uint8 i = 1; i < NUM_DICE; i++) {
+			auto die = dice[i];
+
+			if (die == first)
+				numFirst++;
+			else if (second == 0)
+			{
+				second = die;
+				numSecond++;
+			}
+			else if (die == second)
+				numSecond++;
+			else
+				return 0;
+		}
+
+		return numFirst > 2 && numSecond > 2
+			? 25
+			: 0;
+	}
+	case Dice_SmallStraight: {
+		uint8 numOnes = 0;
+		uint8 numTwos = 0;
+		uint8 numThrees = 0;
+		uint8 numFours = 0;
+		uint8 numFives = 0;
+		uint8 numSixes = 0;
+		for (auto die : dice)
+		{
+			if (die == 1)
+				numOnes++;
+			else if (die == 2)
+				numTwos++;
+			else if (die == 3)
+				numThrees++;
+			else if (die == 4)
+				numFours++;
+			else if (die == 5)
+				numFives++;
+			else if (die == 6)
+				numSixes++;
+		}
+
+		if (numThrees > 0 && numFours > 0 && (
+			(numOnes > 0 && numTwos > 0)
+			|| (numTwos > 0 && numFives > 0)
+			|| (numFives > 0 && numSixes > 0)
+		))
+			return 30;
+
+		return 0;
+	}
+	case Dice_LargeStraight: {
+		uint8 numOnes = 0;
+		uint8 numTwos = 0;
+		uint8 numThrees = 0;
+		uint8 numFours = 0;
+		uint8 numFives = 0;
+		uint8 numSixes = 0;
+		for (auto die : dice)
+		{
+			if (die == 1)
+				numOnes++;
+			else if (die == 2)
+				numTwos++;
+			else if (die == 3)
+				numThrees++;
+			else if (die == 4)
+				numFours++;
+			else if (die == 5)
+				numFives++;
+			else if (die == 6)
+				numSixes++;
+		}
+
+		if (numTwos > 0 && numThrees > 0 && numFours > 0 && numFives > 0 && (numOnes > 0 || numSixes > 0))
+			return 40;
+
+		return 0;
+	}
+	case Dice_Yahtzee: {
+		auto first = dice[0];
+
+		for (auto die : dice)
+			if (die != first)
+				return 0;
+
+		return 50;
+	}
+	case Dice_Chance: {
+		uint8 sum = 0;
+
+		for (auto die : dice)
+			sum += die;
+
+		return sum;
+	}
+	default:
+		return 0;
+	}
+}
+
+uint8 UDamageControlSystem::SumOfNumber(uint8 value)
+{
+	uint8 sum = 0;
+
+	for (auto die : dice)
+		if (die == value)
+			sum += value;
+
+	return sum;
+}
+
+uint8 UDamageControlSystem::SumOfAKind(uint8 number)
+{
+	uint8 numOnes = 0;
+	uint8 numTwos = 0;
+	uint8 numThrees = 0;
+	uint8 numFours = 0;
+	uint8 numFives = 0;
+	uint8 numSixes = 0;
+	uint8 sum = 0;
+	for (auto die : dice)
+	{
+		sum += die;
+		if (die == 1)
+			numOnes++;
+		else if (die == 2)
+			numTwos++;
+		else if (die == 3)
+			numThrees++;
+		else if (die == 4)
+			numFours++;
+		else if (die == 5)
+			numFives++;
+		else if (die == 6)
+			numSixes++;
+	}
+
+	return numOnes >= number || numTwos >= number || numThrees >= number
+		|| numFours >= number || numFives >= number || numSixes >= number
+		? sum
+		: 0;
+}
+
+
 #ifdef WEB_SERVER_TEST
 void UDamageControlSystem::ResetDice() { ResetDice_Implementation(); }
 #endif
