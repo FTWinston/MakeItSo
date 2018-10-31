@@ -18,7 +18,6 @@ class MAKEITSO_API UDamageControlSystem : public UShipSystem
 
 public:
 	enum EDamageSystem : uint8 {
-		Damage_Empty = 0,
 		Damage_Power,
 		Damage_Helm,
 		Damage_Warp,
@@ -26,7 +25,8 @@ public:
 		Damage_Sensors,
 		Damage_Shields,
 		Damage_Comms,
-		MAX_DAMAGE_SYSTEMS
+		Damage_None,
+		NUM_DAMAGE_SYSTEMS = Damage_None
 	};
 
 	enum EDiceCombo : uint8 {
@@ -44,7 +44,6 @@ public:
 		Dice_LargeStraight,
 		Dice_Yahtzee,
 		Dice_Chance,
-		MAX_DICE_COMBOS
 	};
 
 	UDamageControlSystem();
@@ -53,8 +52,12 @@ public:
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 
+	void SetSystemHealth(UShipSystem::ESystem system, uint8 health);
+
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
+	virtual void UpdateDamageControl(uint8 health) override { } // This system itself doesn't take damage
+
 private:
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_Dice)
@@ -113,7 +116,7 @@ private:
 
 	uint8 Roll();
 	UShipSystem *LookupSystem(EDamageSystem system);
+	EDamageSystem GetDamageSystem(UShipSystem::ESystem system);
 	bool RestoreDamage(EDamageSystem system, uint8 amount);
-	bool DealDamage(EDamageSystem system, uint8 amount);
-	void SetHealth(EDamageSystem system, uint8 newValue);
+	EDiceCombo SelectCombo(EDiceCombo currentCombo, uint8 systemHealth);
 };

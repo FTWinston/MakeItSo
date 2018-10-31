@@ -122,7 +122,9 @@ protected:
 	float ExtractFloat(websocket_message *msg, int offset);
 	TArray<FString> SplitParts(websocket_message *msg, int offset);
 
+	virtual void UpdateDamageControl(uint8 health);
 private:
+
 	UPROPERTY(Replicated)
 	uint8 systemHealth;
 

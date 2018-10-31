@@ -22,8 +22,8 @@ UDamageControlSystem::UDamageControlSystem()
 	systemCombos.AddZeroed(MAX_DAMAGE_SYSTEMS);
 #else
 	dice.assign(NUM_DICE, 0);
-	systemHealth.assign(MAX_DAMAGE_SYSTEMS, 0);
-	systemCombos.assign(MAX_DAMAGE_SYSTEMS, Dice_None);
+	systemHealth.assign(NUM_DAMAGE_SYSTEMS, 0);
+	systemCombos.assign(NUM_DAMAGE_SYSTEMS, Dice_None);
 #endif
 }
 
@@ -31,10 +31,13 @@ void UDamageControlSystem::ResetData()
 {
 	ResetDice();
 
-	for (uint8 i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
+	for (uint8 i = 0; i < NUM_DAMAGE_SYSTEMS; i++)
 	{
-		systemHealth[i] = 100;
-		systemCombos[i] = Dice_None;
+		auto system = LookupSystem((EDamageSystem)i);
+		auto health = system != nullptr ? system->GetHealthLevel() : 0;
+
+		systemHealth[i] = health;
+		systemCombos[i] = system == nullptr ? Dice_None : SelectCombo(systemCombos[i], health);
 	}
 }
 
@@ -75,10 +78,21 @@ void UDamageControlSystem::SendAllData_Implementation()
 	SendDice();
 	SendRollsRemaining();
 
-	for (uint8 i = 0; i < MAX_DAMAGE_SYSTEMS; i++)
+	for (uint8 i = 0; i < NUM_DAMAGE_SYSTEMS; i++)
 	{
 		SendSystemState((EDamageSystem)i);
 	}
+}
+
+
+void UDamageControlSystem::SetSystemHealth(UShipSystem::ESystem system, uint8 health)
+{
+	auto damageSystem = GetDamageSystem(system);
+	if (damageSystem == Damage_None)
+		return;
+
+	systemHealth[damageSystem] = health;
+	systemCombos[damageSystem] = SelectCombo(systemCombos[damageSystem], health);
 }
 
 
@@ -191,8 +205,14 @@ void UDamageControlSystem::ApplyDiceToSystem(EDamageSystem system) { ApplyDiceTo
 void UDamageControlSystem::ApplyDiceToSystem_Implementation(EDamageSystem system)
 {
 	// TODO: calculate effect of current dice combo, apply it to current system
+	uint8 healingAmount = 10;
+
+	// To ensure that we don't stick with the current combo solely because it's still valid for the new damage level, clear it.
+	systemCombos[system] = Dice_None;
 
 	ResetDice();
+
+	RestoreDamage(system, healingAmount);
 }
 
 
@@ -219,8 +239,29 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 	}
 }
 
+UDamageControlSystem::EDamageSystem UDamageControlSystem::GetDamageSystem(UShipSystem::ESystem system)
+{
+	switch (system)
+	{
+	case UShipSystem::ESystem::PowerManagement:
+		return Damage_Power;
+	case UShipSystem::ESystem::Helm:
+		return Damage_Helm;
+	case UShipSystem::ESystem::Warp:
+		return Damage_Warp;
+	case UShipSystem::ESystem::Weapons:
+		return Damage_Weapons;
+	case UShipSystem::ESystem::Sensors:
+		return Damage_Sensors;
+	//	case ???:
+	//		return Damage_Shields;
+	case UShipSystem::ESystem::Communications:
+		return Damage_Comms;
+	default:
+		return Damage_None;
+	}
+}
 
-// TODO: how do changes to system health (from elsewhere) affect this system? It needs to be notified.
 bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 {
 	UShipSystem *targetSystem = LookupSystem(system);
@@ -235,31 +276,132 @@ bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 	return true;
 }
 
-bool UDamageControlSystem::DealDamage(EDamageSystem system, uint8 amount)
+UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectCombo(EDiceCombo currentCombo, uint8 systemHealth)
 {
-	UShipSystem *targetSystem = LookupSystem(system);
-	if (targetSystem == nullptr || targetSystem->GetHealthLevel() >= MAX_SYSTEM_HEALTH)
-		return false;
+	if (systemHealth >= 100)
+		return Dice_None;
 
-	targetSystem->TakeDamage(amount);
-	systemHealth[system] = targetSystem->GetHealthLevel();
-
-	SendSystemState(system);
-
-	return true;
-}
-
-void UDamageControlSystem::SetHealth(EDamageSystem system, uint8 newValue)
-{
-	UShipSystem *targetSystem = LookupSystem(system);
-	if (targetSystem == nullptr)
-		return;
+	if (systemHealth == 0)
+		return Dice_Yahtzee;
 	
-	uint8 existingHealth = targetSystem->GetHealthLevel();
-	if (existingHealth > newValue)
-		targetSystem->TakeDamage(existingHealth - newValue);
-	else if (existingHealth < newValue)
-		targetSystem->RestoreDamage(newValue - existingHealth);
+	// Determine if the current combo is valid for the current system health value.
+	// Combos are valid for a wider "health" range than they are selectable for, to avoid changing combos that the user is trying to get.
+	switch (currentCombo)
+	{
+		case Dice_Aces:
+			if (systemHealth >= 1 && systemHealth <= 25)
+				return currentCombo;
+			break;
+		case Dice_Twos:
+			if (systemHealth >= 1 && systemHealth <= 35)
+				return currentCombo;
+			break;
+		case Dice_Threes:
+			if (systemHealth >= 1 && systemHealth <= 40)
+				return currentCombo;
+			break;
+		case Dice_Fours:
+			if (systemHealth >= 5 && systemHealth <= 45)
+				return currentCombo;
+			break;
+		case Dice_Fives:
+			if (systemHealth >= 8 && systemHealth <= 50)
+				return currentCombo;
+			break;
+		case Dice_Sixes:
+			if (systemHealth >= 10 && systemHealth <= 55)
+				return currentCombo;
+			break;
+		case Dice_ThreeOfAKind:
+			if (systemHealth >= 20 && systemHealth <= 60)
+				return currentCombo;
+			break;
+		case Dice_FourOfAKind:
+			if (systemHealth >= 30 && systemHealth <= 70)
+				return currentCombo;
+			break;
+		case Dice_FullHouse:
+			if (systemHealth >= 35 && systemHealth <= 80)
+				return currentCombo;
+			break;
+		case Dice_SmallStraight:
+			if (systemHealth >= 40 && systemHealth <= 60)
+				return currentCombo;
+			break;
+		case Dice_LargeStraight:
+			if (systemHealth >= 50 && systemHealth <= 99)
+				return currentCombo;
+			break;
+		case Dice_Yahtzee:
+			if (systemHealth >= 90)
+				return currentCombo;
+			break;
+		case Dice_Chance:
+			if (systemHealth >= 10 && systemHealth <= 99)
+				return currentCombo;
+			break;
+	}
 
-	SendSystemState(system);
+	// The current combo isn't valid for this systemHealth value, so select a new combo.
+	if (systemHealth < 10) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_Aces
+			: Dice_Twos;
+	}
+
+	if (systemHealth < 20) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_Twos
+			: Dice_Threes;
+	}
+
+	if (systemHealth < 30) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_Threes
+			: Dice_Fours;
+	}
+
+	if (systemHealth < 40) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_Fours
+			: Dice_Fives;
+	}
+
+	if (systemHealth < 50) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_Fives
+			: Dice_Sixes;
+	}
+
+	// Beyond 50% damage, a small chance of getting Chance...
+	if (FMath::RandRange(1, 8) == 1)
+		return Dice_Chance;
+
+	if (systemHealth < 60) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_Sixes
+			: Dice_ThreeOfAKind;
+	}
+
+	if (systemHealth < 70) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_ThreeOfAKind
+			: Dice_FourOfAKind;
+	}
+
+	if (systemHealth < 80) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_FourOfAKind
+			: Dice_FullHouse;
+	}
+
+	if (systemHealth < 90) {
+		return FMath::RandRange(1, 2) == 1
+			? Dice_FullHouse
+			: Dice_SmallStraight;
+	}
+
+	return FMath::RandRange(1, 2) == 1
+		? Dice_SmallStraight
+		: Dice_LargeStraight;
 }

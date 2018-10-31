@@ -5,6 +5,7 @@
 #include "ShipSystem.h"
 #endif
 
+#include "DamageControlSystem.h"
 #include "CrewManager.h"
 #include "Mongoose.h"
 
@@ -50,6 +51,7 @@ void UShipSystem::TakeDamage_Implementation(uint8 damageAmount)
 	if (systemHealth > prevValue)
 		systemHealth = 0; // value wrapped
 
+	UpdateDamageControl(systemHealth);
 	ApplySystemDamage(prevValue, systemHealth);
 }
 
@@ -64,7 +66,17 @@ void UShipSystem::RestoreDamage_Implementation(uint8 damageAmount)
 	if (systemHealth < prevValue)
 		systemHealth = MAX_SYSTEM_HEALTH; // value wrapped
 
+	UpdateDamageControl(systemHealth);
 	RepairSystemDamage(prevValue, systemHealth);
+}
+
+void UShipSystem::UpdateDamageControl(uint8 newHealth)
+{
+	auto damageControl = crewManager->GetSystem(ESystem::DamageControl);
+	if (damageControl == nullptr)
+		return;
+
+	((UDamageControlSystem*)damageControl)->SetSystemHealth(GetSystem(), newHealth);
 }
 
 #ifdef WEB_SERVER_TEST
