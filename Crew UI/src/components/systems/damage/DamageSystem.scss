@@ -4,54 +4,84 @@
     display: grid;
     grid-gap: 0.5em;
 
-    
     grid-template-rows: 3fr 2fr 2fr;
-    grid-template-columns: 5fr 2fr;
+    grid-template-columns: 1fr 4.5em;
     grid-template-areas:
         "title health"
         "combo heal"
         "desc desc";
 
+    align-items: center;
+
     border: solid #ccc 1px;
     padding: 0.5em;
-    margin: 0 1em 1em 0;
+    margin: 0 1em 2em 0;
+    
+    cursor: not-allowed;
 
-    width: 14em;
+    width: 18em;
     height: 10em;
 }
 
 .damageSystem__name {
     grid-area: title;
     font-size: 1.5em;
+    margin: 0;
+
+    text-align: center;
 }
 
 .damageSystem__comboName {
     grid-area: combo;
     font-size: 1.25em;
-    
-    justify-content: center;
-    align-content: center;
+    padding-left: 0.5rem;
 }
 
 .damageSystem__comboDesc {
     grid-area: desc;
+    padding-left: 0.5rem;
 }
 
 .damageSystem__health {
     grid-area: health;
-    font-size: 1.5em;
+    color: #cccccc;
 }
 
 .damageSystem__heal {
     grid-area: heal;
+    color: #ffffff;
+    /*
+    background-color: green;
+    padding: 0 0.25em;
+    border-radius: 0.25em;
+    */
+}
+
+.damageSystem__health, .damageSystem__heal {
     font-size: 1.5em;
+    justify-self: right;
+    padding-right: 0.25em;
 }
 
 .damageSystem--applicable:not(.damageSystem--perfect) {
-    background-color: $colorGoodLight;
+    border-color: #ffffff;
     cursor: pointer;
+    background-color: #006600;
 }
 
-.damageSystem--applicable.damageSystem--perfect {
-    background-color: $colorGoodDark;
+
+.damageSystem--destroyed .damageSystem__health {
+    color: #990000;
+}
+
+.damageSystem--severelyDamaged .damageSystem__health {
+    color: #ff0000;
+} 
+
+.damageSystem--damaged .damageSystem__health {
+    color: #ff9999;
+}
+
+.damageSystem--perfect .damageSystem__health {
+    color: #ffffff;
 }
