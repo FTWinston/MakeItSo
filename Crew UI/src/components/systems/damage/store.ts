@@ -5,8 +5,7 @@ import { exhaustiveActionCheck } from '~/store';
 // STATE - This defines the type of data maintained in the Redux store.
 
 export const enum DamageSystemType {
-    Empty = 0,
-    Power,
+    Power = 0,
     Helm,
     Warp,
     Weapons,
@@ -116,7 +115,6 @@ const unloadedState: DamageState = {
         { type: DamageSystemType.Helm, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Warp, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Weapons, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Empty, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Sensors, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Shields, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Comms, health: 0, combo: DiceComboType.None },

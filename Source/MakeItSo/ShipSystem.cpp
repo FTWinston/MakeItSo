@@ -58,10 +58,10 @@ void UShipSystem::TakeDamage_Implementation(uint8 damageAmount)
 #ifdef WEB_SERVER_TEST
 void UShipSystem::RestoreDamage(uint8 restoreAmount) { RestoreDamage_Implementation(restoreAmount); }
 #endif
-void UShipSystem::RestoreDamage_Implementation(uint8 damageAmount)
+void UShipSystem::RestoreDamage_Implementation(uint8 restoreAmount)
 {
 	uint8 prevValue = systemHealth;
-	systemHealth = FMath::Max(systemHealth + damageAmount, MAX_SYSTEM_HEALTH);
+	systemHealth = FMath::Min(systemHealth + restoreAmount, MAX_SYSTEM_HEALTH);
 	
 	if (systemHealth < prevValue)
 		systemHealth = MAX_SYSTEM_HEALTH; // value wrapped

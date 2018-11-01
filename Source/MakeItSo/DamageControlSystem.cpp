@@ -113,10 +113,10 @@ void UDamageControlSystem::SendDice_Implementation()
 {
 	FString output = TEXT("dmg_dice");
 
-	for (auto val : dice)
+	for (uint8 i = 0; i < NUM_DICE; i++)
 	{
 		output += TEXT(" ");
-		APPENDINT(output, val);
+		APPENDINT(output, dice[i]);
 	}
 
 	SendSystem(output);
@@ -416,8 +416,8 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
 	case Damage_Sensors:
 		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);
-//	case Damage_Shields:
-//		return ???;
+	//case Damage_Shields:
+	//	return crewManager->GetSystem(UShipSystem::ESystem::Shields);
 	case Damage_Comms:
 		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
 	default:
@@ -439,8 +439,8 @@ UDamageControlSystem::EDamageSystem UDamageControlSystem::GetDamageSystem(UShipS
 		return Damage_Weapons;
 	case UShipSystem::ESystem::Sensors:
 		return Damage_Sensors;
-	//	case ???:
-	//		return Damage_Shields;
+	//case UShipSystem::ESystem::Shields:
+	//	return Damage_Shields;
 	case UShipSystem::ESystem::Communications:
 		return Damage_Comms;
 	default:
