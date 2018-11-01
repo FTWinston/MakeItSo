@@ -470,123 +470,265 @@ UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectCombo(EDiceCombo cu
 		return Dice_Yahtzee;
 	
 	// Determine if the current combo is valid for the current system health value.
-	// Combos are valid for a wider "health" range than they are selectable for, to avoid changing combos that the user is trying to get.
+	// Combos are valid for a wider "health" range than they are selectable for,
+	// to avoid frequently changing combos that the user is trying to get.
+
+	// Note that all the health range numbers used here are derived from the following:
+	// https://docs.google.com/spreadsheets/d/1za88_ZAMghhpvxSFiYDpOpMLkk5pqCQaZE8nFel_yQA/edit?usp=sharing
+
 	switch (currentCombo)
 	{
 		case Dice_Aces:
-			if (systemHealth >= 1 && systemHealth <= 25)
+			if (systemHealth >= 70)
 				return currentCombo;
 			break;
 		case Dice_Twos:
-			if (systemHealth >= 1 && systemHealth <= 35)
+			if (systemHealth >= 65)
 				return currentCombo;
 			break;
 		case Dice_Threes:
-			if (systemHealth >= 1 && systemHealth <= 40)
+			if (systemHealth >= 60)
 				return currentCombo;
 			break;
 		case Dice_Fours:
-			if (systemHealth >= 5 && systemHealth <= 45)
+			if (systemHealth >= 50)
 				return currentCombo;
 			break;
 		case Dice_Fives:
-			if (systemHealth >= 8 && systemHealth <= 50)
+			if (systemHealth >= 40)
 				return currentCombo;
 			break;
 		case Dice_Sixes:
-			if (systemHealth >= 10 && systemHealth <= 55)
+			if (systemHealth >= 30)
 				return currentCombo;
 			break;
 		case Dice_ThreeOfAKind:
-			if (systemHealth >= 20 && systemHealth <= 60)
+			if (systemHealth >= 25)
 				return currentCombo;
 			break;
 		case Dice_FourOfAKind:
-			if (systemHealth >= 30 && systemHealth <= 70)
+			if (systemHealth >= 15 && systemHealth <= 75)
 				return currentCombo;
 			break;
 		case Dice_FullHouse:
-			if (systemHealth >= 35 && systemHealth <= 80)
+			if (systemHealth <= 75)
 				return currentCombo;
 			break;
 		case Dice_SmallStraight:
-			if (systemHealth >= 40 && systemHealth <= 60)
+			if (systemHealth <= 65)
 				return currentCombo;
 			break;
 		case Dice_LargeStraight:
-			if (systemHealth >= 50 && systemHealth <= 99)
+			if (systemHealth <= 50)
 				return currentCombo;
 			break;
 		case Dice_Yahtzee:
-			if (systemHealth >= 90)
+			if (systemHealth <= 10)
 				return currentCombo;
 			break;
 		case Dice_Chance:
-			if (systemHealth >= 10 && systemHealth <= 99)
+			if (systemHealth >= 15 && systemHealth <= 75)
 				return currentCombo;
 			break;
 	}
 
-	// The current combo isn't valid for this systemHealth value, so select a new combo.
-	if (systemHealth < 10) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_Aces
-			: Dice_Twos;
-	}
+	if (systemHealth > 96)
+		return Dice_Aces;
 
-	if (systemHealth < 20) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_Twos
-			: Dice_Threes;
-	}
+	if (systemHealth > 92)
+		switch (FMath::RandRange(1, 2))
+		{
+		case 1:
+			return Dice_Aces;
+		default:
+			return Dice_Twos;
+		}
 
-	if (systemHealth < 30) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_Threes
-			: Dice_Fours;
-	}
+	if (systemHealth > 88)
+		switch (FMath::RandRange(1, 3))
+		{
+		case 1:
+			return Dice_Aces;
+		case 2:
+			return Dice_Twos;
+		default:
+			return Dice_Threes;
+		}
 
-	if (systemHealth < 40) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_Fours
-			: Dice_Fives;
-	}
+	if (systemHealth > 82)
+		switch (FMath::RandRange(1, 4))
+		{
+		case 1:
+			return Dice_Aces;
+		case 2:
+			return Dice_Twos;
+		case 3:
+			return Dice_Threes;
+		default:
+			return Dice_Fours;
+		}
 
-	if (systemHealth < 50) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_Fives
-			: Dice_Sixes;
-	}
+	if (systemHealth > 79)
+		switch (FMath::RandRange(1, 5))
+		{
+		case 1:
+			return Dice_Aces;
+		case 2:
+			return Dice_Twos;
+		case 3:
+			return Dice_Threes;
+		case 4:
+			return Dice_Fours;
+		default:
+			return Dice_Fives;
+		}
 
-	// Beyond 50% damage, a small chance of getting Chance...
-	if (FMath::RandRange(1, 8) == 1)
-		return Dice_Chance;
+	if (systemHealth > 74)
+		switch (FMath::RandRange(1, 4))
+		{
+		case 1:
+			return Dice_Twos;
+		case 2:
+			return Dice_Threes;
+		case 3:
+			return Dice_Fours;
+		default:
+			return Dice_Fives;
+		}
 
-	if (systemHealth < 60) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_Sixes
-			: Dice_ThreeOfAKind;
-	}
+	if (systemHealth > 67)
+		switch (FMath::RandRange(1, 4))
+		{
+		case 1:
+			return Dice_Threes;
+		case 2:
+			return Dice_Fours;
+		case 3:
+			return Dice_Fives;
+		default:
+			return Dice_Sixes;
+		}
 
-	if (systemHealth < 70) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_ThreeOfAKind
-			: Dice_FourOfAKind;
-	}
+	if (systemHealth > 59)
+		switch (FMath::RandRange(1, 5))
+		{
+		case 1:
+			return Dice_Fours;
+		case 2:
+			return Dice_Fives;
+		case 3:
+			return Dice_Sixes;
+		case 4:
+			return Dice_ThreeOfAKind;
+		default:
+			return Dice_Chance;
+		}
 
-	if (systemHealth < 80) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_FourOfAKind
-			: Dice_FullHouse;
-	}
+	if (systemHealth > 49)
+		switch (FMath::RandRange(1, 5))
+		{
+		case 1:
+			return Dice_Fives;
+		case 2:
+			return Dice_Sixes;
+		case 3:
+			return Dice_ThreeOfAKind;
+		case 4:
+			return Dice_FourOfAKind;
+		default:
+			return Dice_Chance;
+		}
 
-	if (systemHealth < 90) {
-		return FMath::RandRange(1, 2) == 1
-			? Dice_FullHouse
-			: Dice_SmallStraight;
-	}
+	if (systemHealth > 40)
+		switch (FMath::RandRange(1, 5))
+		{
+		case 1:
+			return Dice_Sixes;
+		case 2:
+			return Dice_ThreeOfAKind;
+		case 3:
+			return Dice_FourOfAKind;
+		case 4:
+			return Dice_FullHouse;
+		default:
+			return Dice_Chance;
+		}
 
-	return FMath::RandRange(1, 2) == 1
-		? Dice_SmallStraight
-		: Dice_LargeStraight;
+	if (systemHealth > 34)
+		switch (FMath::RandRange(1, 5))
+		{
+		case 1:
+			return Dice_ThreeOfAKind;
+		case 2:
+			return Dice_FourOfAKind;
+		case 3:
+			return Dice_FullHouse;
+		case 4:
+			return Dice_SmallStraight;
+		default:
+			return Dice_Chance;
+		}
+
+	if (systemHealth > 30)
+		switch (FMath::RandRange(1, 4))
+		{
+		case 1:
+			return Dice_FourOfAKind;
+		case 2:
+			return Dice_FullHouse;
+		case 3:
+			return Dice_SmallStraight;
+		default:
+			return Dice_Chance;
+		}
+
+	if (systemHealth > 24)
+		switch (FMath::RandRange(1, 5))
+		{
+		case 1:
+			return Dice_FourOfAKind;
+		case 2:
+			return Dice_FullHouse;
+		case 3:
+			return Dice_SmallStraight;
+		case 4:
+			return Dice_LargeStraight;
+		default:
+			return Dice_Chance;
+		}
+
+	if (systemHealth > 19)
+		switch (FMath::RandRange(1, 4))
+		{
+		case 1:
+			return Dice_FullHouse;
+		case 2:
+			return Dice_SmallStraight;
+		case 3:
+			return Dice_LargeStraight;
+		default:
+			return Dice_Chance;
+		}
+
+	if (systemHealth > 14)
+		switch (FMath::RandRange(1, 3))
+		{
+		case 1:
+			return Dice_FullHouse;
+		case 2:
+			return Dice_SmallStraight;
+		default:
+			return Dice_LargeStraight;
+		}
+
+	if (systemHealth > 9)
+		switch (FMath::RandRange(1, 2))
+		{
+		case 1:
+			return Dice_SmallStraight;
+		default:
+			return Dice_LargeStraight;
+		}
+
+	return Dice_LargeStraight;
 }
