@@ -80,7 +80,7 @@ void UDamageControlSystem::SendAllData_Implementation()
 
 	for (uint8 i = 0; i < NUM_DAMAGE_SYSTEMS; i++)
 	{
-		SendSystemState((EDamageSystem)i);
+		SendSystemState((EDamageSystem)i, systemHealth[i], systemCombos[i]);
 	}
 }
 
@@ -91,8 +91,11 @@ void UDamageControlSystem::SetSystemHealth(UShipSystem::ESystem system, uint8 he
 	if (damageSystem == Damage_None)
 		return;
 
+	auto combo = SelectCombo(systemCombos[damageSystem], health);
 	systemHealth[damageSystem] = health;
-	systemCombos[damageSystem] = SelectCombo(systemCombos[damageSystem], health);
+	systemCombos[damageSystem] = combo;
+
+	SendSystemState(damageSystem, health, combo);
 }
 
 
@@ -133,17 +136,17 @@ void UDamageControlSystem::SendRollsRemaining_Implementation()
 
 
 #ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendSystemState(EDamageSystem system) { SendSystemState_Implementation(system); }
+void UDamageControlSystem::SendSystemState(EDamageSystem system, uint8 health, EDiceCombo combo) { SendSystemState_Implementation(system, health, combo); }
 #endif
 
-void UDamageControlSystem::SendSystemState_Implementation(EDamageSystem system)
+void UDamageControlSystem::SendSystemState_Implementation(EDamageSystem system, uint8 health, EDiceCombo combo)
 {
 	FString output = TEXT("dmg_system ");
 	APPENDINT(output, system);
 	output += TEXT(" ");
-	APPENDINT(output, systemHealth[system]);
+	APPENDINT(output, health);
 	output += TEXT(" ");
-	APPENDINT(output, systemCombos[system]);
+	APPENDINT(output, combo);
 	SendSystem(output);
 }
 
@@ -387,8 +390,8 @@ void UDamageControlSystem::ApplyDiceToSystem(EDamageSystem system) { ApplyDiceTo
 #endif
 void UDamageControlSystem::ApplyDiceToSystem_Implementation(EDamageSystem system)
 {
-	// TODO: calculate effect of current dice combo, apply it to current system
-	uint8 healingAmount = 10;
+	auto combo = systemCombos[system];
+	uint8 healingAmount = GetDiceScore(combo);
 
 	// To ensure that we don't stick with the current combo solely because it's still valid for the new damage level, clear it.
 	systemCombos[system] = Dice_None;
@@ -452,9 +455,8 @@ bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 		return false;
 
 	targetSystem->RestoreDamage(amount);
-	systemHealth[system] = targetSystem->GetHealthLevel();
-
-	SendSystemState(system);
+	auto health = targetSystem->GetHealthLevel();
+	systemHealth[system] = health;
 
 	return true;
 }

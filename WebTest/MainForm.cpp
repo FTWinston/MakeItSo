@@ -3,6 +3,7 @@
 #include "CrewManager.h"
 #include "MakeItSoPawn.h"
 #include "ShipSystem.h"
+#include "DamageControlSystem.h"
 #include <ctime>
 
 using namespace System;
@@ -185,11 +186,42 @@ System::Void WebTest::MainForm::btnRespawnDamage_Click(System::Object^  sender, 
 
 System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	FString message = L"damage ";
-	message += std::to_wstring(rand() % 10); // section
-	message += L" ";
-	message += std::to_wstring(rand() % 5 + 1); // amount
-	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::DamageControl, CHARARR(message));
+	auto damageControl = (UDamageControlSystem*)crewManager->GetSystem(UShipSystem::ESystem::DamageControl);
+
+	UShipSystem::ESystem system;
+	switch (FMath::RandRange(1, 6))
+	{
+	case 1:
+		system = UShipSystem::ESystem::Helm;
+		break;
+	case 2:
+		system = UShipSystem::ESystem::Warp;
+		break;
+	case 3:
+		system = UShipSystem::ESystem::Weapons;
+		break;
+	case 4:
+		system = UShipSystem::ESystem::Sensors;
+		break;
+	case 5:
+		system = UShipSystem::ESystem::PowerManagement;
+		break;
+	case 6:
+		system = UShipSystem::ESystem::Communications;
+		break;
+
+		// TODO: also shields
+	}
+
+	auto systemHealth = crewManager->GetSystem(system)->GetHealthLevel();
+
+	auto reduction = FMath::RandRange(1, 25);
+	
+	systemHealth = systemHealth < reduction
+		? 0
+		: systemHealth - reduction;
+
+	damageControl->SetSystemHealth(system, systemHealth);
 }
 
 System::Void WebTest::MainForm::txtPosX_TextChanged(System::Object^  sender, System::EventArgs^  e)

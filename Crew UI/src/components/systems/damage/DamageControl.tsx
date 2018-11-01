@@ -71,6 +71,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                     color={ButtonColor.Primary}
                     text={rollText}
                     clicked={roll}
+                    hotkey="space"
                 />
 
                 <PushButton
@@ -79,6 +80,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                     text={this.props.text.systems.damage.discard}
                     command="dmg_discard"
                     clicked={unlock}
+                    hotkey="D"
                 />
             </div>
         </div>

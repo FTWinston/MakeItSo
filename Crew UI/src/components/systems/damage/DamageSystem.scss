@@ -47,8 +47,9 @@
     font-size: 1.5em;
 }
 
-.damageSystem--applicable {
+.damageSystem--applicable:not(.damageSystem--perfect) {
     background-color: $colorGoodLight;
+    cursor: pointer;
 }
 
 .damageSystem--applicable.damageSystem--perfect {

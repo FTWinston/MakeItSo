@@ -88,9 +88,9 @@ private:
 #endif
 
 	UFUNCTION(Client, Reliable)
-	void SendSystemState(EDamageSystem system);
+	void SendSystemState(EDamageSystem system, uint8 health, EDiceCombo combo);
 #ifdef WEB_SERVER_TEST
-	void SendSystemState_Implementation(EDamageSystem system);
+	void SendSystemState_Implementation(EDamageSystem system, uint8 health, EDiceCombo combo);
 #endif
 
 
