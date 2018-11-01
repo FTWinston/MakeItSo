@@ -213,15 +213,8 @@ System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, Syst
 		// TODO: also shields
 	}
 
-	auto systemHealth = crewManager->GetSystem(system)->GetHealthLevel();
-
-	auto reduction = FMath::RandRange(1, 25);
-	
-	systemHealth = systemHealth < reduction
-		? 0
-		: systemHealth - reduction;
-
-	damageControl->SetSystemHealth(system, systemHealth);
+	auto shipSystem = crewManager->GetSystem(system);
+	shipSystem->TakeDamage(FMath::RandRange(1, 25));
 }
 
 System::Void WebTest::MainForm::txtPosX_TextChanged(System::Object^  sender, System::EventArgs^  e)
