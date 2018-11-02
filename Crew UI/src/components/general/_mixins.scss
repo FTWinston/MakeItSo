@@ -2,6 +2,8 @@
 
 $clientPadding: 0.5rem;
 $headerHeight: 2.4rem;
+$usedVerticalSpace: $clientPadding + $clientPadding + $headerHeight;
+$systemHeight: calc(100% - $usedVerticalSpace);
 
 @mixin ui-color($color) {
     border-color: $color;

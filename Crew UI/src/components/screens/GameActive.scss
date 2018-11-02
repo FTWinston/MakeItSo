@@ -56,6 +56,10 @@
     background-color: $backgroundColor;
 }
 
+.system {
+    overflow: hidden;
+}
+
 .systemWrapper, .systemHelp, .systemOptions, .system {
     flex-basis: 0;
     flex-grow: 1;

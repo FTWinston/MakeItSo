@@ -113,10 +113,10 @@ void UDamageControlSystem::SendDice_Implementation()
 {
 	FString output = TEXT("dmg_dice");
 
-	for (uint8 i = 0; i < NUM_DICE; i++)
+	for (auto die : dice)
 	{
 		output += TEXT(" ");
-		APPENDINT(output, dice[i]);
+		APPENDINT(output, die);
 	}
 
 	SendSystem(output);
