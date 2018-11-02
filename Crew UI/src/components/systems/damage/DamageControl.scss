@@ -112,12 +112,7 @@
         .damageControl__systemList {
             flex-direction: column;
             flex-wrap: nowrap;
-        }
-
-        .damageControl__systemList .damageSystem {
-            width: auto;
-            height: auto;
-            min-height: 8em;
+            justify-content: flex-start;
         }
     }
 

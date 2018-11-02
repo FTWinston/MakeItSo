@@ -2,7 +2,7 @@
 
 .damageSystem {
     display: grid;
-    grid-gap: 0.5em;
+    grid-gap: 0.25em;
 
     grid-template-rows: 3fr 2fr 2fr;
     grid-template-columns: 1fr 4.5em;
@@ -84,4 +84,22 @@
 
 .damageSystem--perfect .damageSystem__health {
     color: #ffffff;
+}
+
+
+@include portrait() {
+    @media(max-width: 599px) {
+        .damageSystem {
+            grid-template-rows: 1fr 1fr 1em;
+            grid-template-columns: 1fr 4.5em;
+            grid-template-areas:
+                "title health"
+                "combo heal"
+                "desc desc";
+            
+            min-height: 6em;
+            width: auto;
+            height: auto;
+        }
+    }
 }
