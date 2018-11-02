@@ -244,6 +244,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     
     private selectSystem(type: DamageSystemType) {
         connection.send(`dmg_system ${type}`);
+        this.props.unlockDice();
     }
 }
 

@@ -115,7 +115,9 @@
         }
 
         .damageControl__systemList .damageSystem {
-            width: unset;
+            width: auto;
+            height: auto;
+            min-height: 8em;
         }
     }
 
