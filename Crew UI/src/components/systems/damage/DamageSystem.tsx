@@ -119,6 +119,8 @@ export class DamageSystem extends React.PureComponent<IProps> {
                 return this.props.text.systems.damage.comboNames.largeStraight;
             case DiceComboType.Yahtzee:
                 return this.props.text.systems.damage.comboNames.yahtzee;
+            case DiceComboType.Chance:
+                return this.props.text.systems.damage.comboNames.chance;
             default:
                 return undefined;
         }
@@ -150,6 +152,8 @@ export class DamageSystem extends React.PureComponent<IProps> {
                 return this.props.text.systems.damage.comboDescriptions.largeStraight;
             case DiceComboType.Yahtzee:
                 return this.props.text.systems.damage.comboDescriptions.yahtzee;
+            case DiceComboType.Chance:
+                return this.props.text.systems.damage.comboDescriptions.chance;
             default:
                 return undefined;
         }
@@ -170,6 +174,7 @@ export class DamageSystem extends React.PureComponent<IProps> {
             case DiceComboType.Sixes:
             case DiceComboType.ThreeOfAKind:
             case DiceComboType.FourOfAKind:
+            case DiceComboType.Chance:
                 return 30;
             case DiceComboType.FullHouse:
                 return 25;
