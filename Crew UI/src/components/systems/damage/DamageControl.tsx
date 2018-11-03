@@ -56,6 +56,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
 
         const rollText = `${this.props.text.systems.damage.roll} (${this.props.numReRolls})`;
 
+        const disableRoll = this.props.numReRolls === 0 || this.props.lockedDice.every(b => b);
         const roll = () => this.rollDice();
         const unlock = () => this.props.unlockDice();
 
@@ -68,7 +69,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
             </div>
             <div className="damageControl__diceActions">
                 <PushButton
-                    disabled={this.props.numReRolls === 0}
+                    disabled={disableRoll}
                     color={ButtonColor.Primary}
                     text={rollText}
                     clicked={roll}
