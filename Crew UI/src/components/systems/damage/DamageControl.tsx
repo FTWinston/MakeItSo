@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
-import { TextLocalisation } from '~/functionality';
+import { TextLocalisation, Hotkey } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { DamageState, actionCreators, DamageSystemType, DiceComboType } from './store';
 import './DamageControl.scss';
@@ -50,6 +50,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                 canLock={canLock}
                 locked={this.props.lockedDice[i]}
                 toggle={() => this.props.toggleDice(i)}
+                hotkey={(i + 1).toString() as Hotkey}
             />
         );
 

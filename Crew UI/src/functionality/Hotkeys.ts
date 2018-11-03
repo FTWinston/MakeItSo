@@ -8,8 +8,20 @@ export type Hotkey = 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' |
             | 'F2' | 'F3' | 'F4' | 'F5' | 'F6' | 'F7' | 'F8' | 'F9' | 'F10'
             | ',' | '.' | '/' | 'enter' | 'space' | 'control' | 'shift' | 'alt' | 'tab';
 
+interface IButtonBinding {
+    isButton: true;
+    button: Button;
+}
+
+interface IActionBinding {
+    isButton: false;
+    action: () => void;
+}
+
+type Binding = IButtonBinding | IActionBinding;
+
 export class Hotkeys {
-    private static bindings: { [key: number]:Button; } = {};
+    private static bindings: { [key: number]:Binding; } = {};
     
     private static keyCodes: { [key: string]:number; } = {
         'enter': 13,
@@ -31,6 +43,7 @@ export class Hotkeys {
         '.': 190,
         '/': 191,
     };
+
     private static getKeyCode(hotkey: Hotkey) {
         let keyCode = this.keyCodes[hotkey];
         if (keyCode !== undefined)
@@ -38,22 +51,38 @@ export class Hotkeys {
 
         return hotkey.charCodeAt(0);
     }
+
     static register(hotkey: Hotkey, button: Button) {
         let keyCode = this.getKeyCode(hotkey);
-        this.bindings[keyCode] = button;
+        this.bindings[keyCode] = {isButton: true, button};
     }
-    static unregister(hotkey: Hotkey, button: Button) {
+
+    static unregister(hotkey: Hotkey, button?: Button) {
         let keyCode = this.getKeyCode(hotkey);
-        if (this.bindings[keyCode] === button)
-            delete this.bindings[keyCode];
+            
+        if (button !== undefined) {
+            const binding = this.bindings[keyCode];
+            if (!binding.isButton || binding.button !== button) {
+                return;
+            }
+        }
+
+        delete this.bindings[keyCode];
     }
+
+    static registerAction(hotkey: Hotkey, action: () => void) {
+        let keyCode = this.getKeyCode(hotkey);
+        this.bindings[keyCode] = { isButton: false, action };
+    }
+
     static initialize() {
         document.onkeydown = Hotkeys.onKeyDown;
         document.onkeyup = Hotkeys.onKeyUp;
     }
+
     private static onKeyDown(e: KeyboardEvent) {
-        let button = Hotkeys.bindings[e.which];
-        if (button === undefined) {
+        const binding = Hotkeys.bindings[e.which];
+        if (binding === undefined) {
             if (e.which === 112) {
                 store.dispatch(actionCreators.showHotkeys(!store.getState().user.showingHotkeys));
                 e.preventDefault();
@@ -61,14 +90,24 @@ export class Hotkeys {
             return;
         }
         
-        if (button.keyDown !== undefined)
-            button.keyDown(e);
+        if (binding.isButton) {
+            const button = binding.button;
+            if (button.keyDown !== undefined) {
+                button.keyDown(e);
+            }
+        }
+        else {
+            binding.action();
+        }
     }
+
     private static onKeyUp(e: KeyboardEvent) {
-        let button = Hotkeys.bindings[e.which];
-        if (button === undefined)
+        const binding = Hotkeys.bindings[e.which];
+        if (binding === undefined || !binding.isButton)
             return;
         
+        const button = binding.button;
+
         if (button.keyUp !== undefined)
             button.keyUp(e);
         if (button.keyPress !== undefined)

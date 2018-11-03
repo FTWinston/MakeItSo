@@ -1,15 +1,30 @@
 import * as React from 'react';
 import './Dice.scss';
 import { FlexibleCanvas } from '~/components/general';
+import { Hotkey, Hotkeys } from '~/functionality';
 
 interface IProps {
     value: number;
     canLock: boolean;
     locked: boolean;
     toggle: () => void;
+    hotkey?: Hotkey;
 }
 
 export class Dice extends React.PureComponent<IProps> {
+    componentDidMount() {
+        if (this.props.hotkey != null) {
+            Hotkeys.registerAction(this.props.hotkey, () => { if (this.props.canLock) this.props.toggle(); });
+        }
+    }
+
+    componentWillUnmount() {
+        if (this.props.hotkey != null) {
+            Hotkeys.unregister(this.props.hotkey);
+        }
+    }
+
+
     render() {
         const classes = this.props.canLock ? 'dice' : 'dice dice--notLockable';
 
