@@ -18,11 +18,22 @@ export class DamageSystem extends React.PureComponent<IProps> {
             ? () => this.props.select()
             : undefined;
 
+        let style;
+        const maxHealth = 100;
+        if (this.props.healAmount < maxHealth && this.props.healAmount > 0) {
+            const healFraction = this.props.healAmount + this.props.health >= maxHealth
+                ? 1 // if healing to max, that's as good as you can achieve, even if it's not the biggest value for this combo
+                : Math.min(1, this.props.healAmount / this.getMaxComboValue());
+
+            const greenHex = Math.round(160 * healFraction).toString(16);
+            style = { backgroundColor: `#00${greenHex}00` };
+        }
+
         const healIndication = this.props.healAmount === 0
             ? undefined
             : <div className="damageSystem__heal">+{this.props.healAmount}%</div>
 
-        return <div className={this.determineClasses()} onClick={clicked}>
+        return <div className={this.determineClasses()} style={style} onClick={clicked}>
             <h2 className="damageSystem__name">{this.getSystemName()}</h2>
             <div className="damageSystem__comboName">{this.getComboName()}</div>
             <div className="damageSystem__comboDesc">{this.getComboDescription()}</div>
@@ -141,6 +152,35 @@ export class DamageSystem extends React.PureComponent<IProps> {
                 return this.props.text.systems.damage.comboDescriptions.yahtzee;
             default:
                 return undefined;
+        }
+    }
+
+    private getMaxComboValue() {
+        switch (this.props.combo) {
+            case DiceComboType.Aces:
+                return 5;
+            case DiceComboType.Twos:
+                return 10;
+            case DiceComboType.Threes:
+                return 15;
+            case DiceComboType.Fours:
+                return 20;
+            case DiceComboType.Fives:
+                return 25;
+            case DiceComboType.Sixes:
+            case DiceComboType.ThreeOfAKind:
+            case DiceComboType.FourOfAKind:
+                return 30;
+            case DiceComboType.FullHouse:
+                return 25;
+            case DiceComboType.SmallStraight:
+                return 30;
+            case DiceComboType.LargeStraight:
+                return 40;
+            case DiceComboType.Yahtzee:
+                return 50;
+            default:
+                return 0;
         }
     }
 }

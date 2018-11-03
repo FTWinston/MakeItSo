@@ -21,6 +21,7 @@
 
     width: 18em;
     height: 10em;
+    border-radius: 0.25em;
 }
 
 .damageSystem__name {
@@ -69,6 +70,9 @@
     background-color: #006600;
 }
 
+.damageSystem--perfect {
+    background-color: transparent;
+}
 
 .damageSystem--destroyed .damageSystem__health {
     color: #990000;
