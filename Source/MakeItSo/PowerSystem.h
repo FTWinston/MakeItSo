@@ -17,12 +17,13 @@ public:
 	enum EPowerSystem {
 		Power_Helm = 0,
 		Power_Warp,
-		Power_BeamWeapons,
+		Power_Weapons,
 		Power_Sensors,
 		Power_Shields,
 		Power_DamageControl,
 		Power_Comms,
-		MAX_POWER_SYSTEMS
+		Power_None,
+		NUM_POWER_SYSTEMS = Power_None
 	};
 	
 	UPowerSystem();
@@ -32,11 +33,13 @@ public:
 	virtual void SendAllData_Implementation() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void SetSystemPower(UShipSystem::ESystem system, uint8 power);
+
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
-private:
-	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
 
+private:
+	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_PowerLevels)
 	TArray<uint8> powerLevels;
 	void OnReplicated_PowerLevels(TArray<uint8> beforeChange);
@@ -56,6 +59,8 @@ private:
 	UPROPERTY()
 	TQueue<TArray<uint8>> choiceQueue;
 
+
+	// Client functiosn, that can be called from the server
 	UFUNCTION(Client, Reliable)
 	void SendAllPowerLevels();
 #ifdef WEB_SERVER_TEST
@@ -98,6 +103,8 @@ private:
 	void SendRemoveCardFromHand_Implementation(uint8 handPosition);
 #endif
 
+
+	// Server functions, that can be called from the client
 	UFUNCTION(Server, Reliable)
 	void ChooseCard(uint8 cardPosition);
 #ifdef WEB_SERVER_TEST
@@ -110,13 +117,16 @@ private:
 	void ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystemPos);
 #endif
 
-	UShipSystem *LookupSystem(EPowerSystem system);
-	uint8 PickRandomCard();
-	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
-
+private:
 	UPROPERTY()
 	uint16 choiceGeneratedAmount;
 
+	UShipSystem *LookupSystem(EPowerSystem system);
+	EPowerSystem GetPowerSystem(UShipSystem::ESystem system);
+	uint8 PickRandomCard();
+	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
+
+	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
 	bool AddPower(EPowerSystem system, uint8 amount);
 	bool ReducePower(EPowerSystem system, uint8 amount);
 };

@@ -14,7 +14,7 @@ export function receiveMessage(cmd: string, data: string) {
             let parts = data.split(' ').map(str => parseInt(str));
             store.dispatch(actionCreators.setPower(parts[0] as PowerSystemType, parts[1]));
             break;
-        };
+        }
         case 'power_choice': {
             let cardIDs = data.length === 0 ? [] : data.split(' ').map(str => parseInt(str));
             store.dispatch(actionCreators.setChoice(cardIDs));

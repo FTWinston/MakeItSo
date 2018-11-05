@@ -113,7 +113,7 @@ private:
 	void ApplyDiceToSystem_Implementation(EDamageSystem system);
 #endif
 
-
+private:
 	uint8 Roll();
 	uint8 GetDiceScore(EDiceCombo combo);
 	UShipSystem *LookupSystem(EDamageSystem system);

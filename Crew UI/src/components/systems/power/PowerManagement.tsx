@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
-import { actionCreators, maxHandSize, getPowerCardInfo, PowerState } from './store';
+import { actionCreators, maxHandSize, getPowerCardInfo, PowerState, PowerSystemType } from './store';
 import { TextLocalisation } from '~/functionality';
 import { connection } from '~/index';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
@@ -30,14 +30,16 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
         let selectedCard = this.props.selectedHandPos === undefined
             ? null
             : getPowerCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
-        let targetingMode = selectedCard === null ? undefined : selectedCard.targetingMode;
+
+        let selectSystem = selectedCard === null || !selectedCard.selectTarget
+            ? undefined
+            : (system: PowerSystemType) => this.selectSystem(system);
 
         return <div className="system power">
             <SystemList
                 text={this.props.text}
                 systems={this.props.systems}
-                systemSelected={num => this.selectSystem(num)}
-                targetingMode={targetingMode}
+                systemSelected={selectSystem}
             />
             <CardSelection
                 text={this.props.text}
@@ -59,20 +61,20 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
         this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
     }
 
-    private selectSystem(systemPos: number) {
+    private selectSystem(system: PowerSystemType) {
         if (this.props.selectedHandPos === undefined) {
             return; // do nothing if no card selected
         }
 
-        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, systemPos);
+        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, system);
     }
 
     private pickCard(cardNum: number) {
-        connection.send(`dmg_pickCard ${cardNum}`);
+        connection.send(`power_pickCard ${cardNum}`);
     }
 
-    private playCard(cardID: number, handPos: number, targetSystemPos: number) {
-        connection.send(`dmg_useCard ${cardID} ${handPos} ${targetSystemPos}`);
+    private playCard(cardID: number, handPos: number, targetSystem: PowerSystemType) {
+        connection.send(`power_useCard ${cardID} ${handPos} ${targetSystem}`);
     }
 }
 

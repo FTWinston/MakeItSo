@@ -417,7 +417,7 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 	case Damage_Sensors:
 		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);
 	//case Damage_Shields:
-	//	return crewManager->GetSystem(UShipSystem::ESystem::Shields);
+	//	  return crewManager->GetSystem(UShipSystem::ESystem::Shields);
 	case Damage_Comms:
 		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
 	default:
@@ -440,7 +440,7 @@ UDamageControlSystem::EDamageSystem UDamageControlSystem::GetDamageSystem(UShipS
 	case UShipSystem::ESystem::Sensors:
 		return Damage_Sensors;
 	//case UShipSystem::ESystem::Shields:
-	//	return Damage_Shields;
+	//	  return Damage_Shields;
 	case UShipSystem::ESystem::Communications:
 		return Damage_Comms;
 	default:

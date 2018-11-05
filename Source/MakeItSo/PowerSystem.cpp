@@ -15,15 +15,15 @@ UPowerSystem::UPowerSystem()
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 
 #ifndef WEB_SERVER_TEST
-	powerLevels.AddZeroed(MAX_POWER_SYSTEMS);
+	powerLevels.AddZeroed(NUM_POWER_SYSTEMS);
 #else
-	powerLevels.assign(MAX_POWER_SYSTEMS, 0);
+	powerLevels.assign(NUM_POWER_SYSTEMS, 0);
 #endif
 }
 
 void UPowerSystem::ResetData()
 {
-	for (auto i = 0; i < MAX_POWER_SYSTEMS; i++)
+	for (auto i = 0; i < NUM_POWER_SYSTEMS; i++)
 		powerLevels[i] = 0;
 
 	CLEAR(cardChoice);
@@ -74,15 +74,15 @@ void UPowerSystem::SendAllData_Implementation()
 	SendQueueSize();
 }
 
-#define CHOICE_GENERATION_ENERGY_AMOUNT 500
-#define MAX_CHOICE_QUEUE_SIZE 8
+#define CHOICE_GENERATION_ENERGY_AMOUNT 1000
+#define MAX_CHOICE_QUEUE_SIZE 9
 
 void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
 		return;
 
-	choiceGeneratedAmount += GetPowerLevel();
+	choiceGeneratedAmount += GetHealthLevel();
 
 	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
 		return;
@@ -90,6 +90,21 @@ void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
 	AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
 }
+
+
+void UPowerSystem::SetSystemPower(UShipSystem::ESystem system, uint8 power)
+{
+	auto powerSystem = GetPowerSystem(system);
+	if (powerSystem == Power_None)
+		return;
+
+	powerLevels[powerSystem] = power;
+
+	if (ISCLIENT())
+		SendPowerLevel(powerSystem, power);
+}
+
+
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::SendAllPowerLevels() { SendAllPowerLevels_Implementation(); }
@@ -343,7 +358,7 @@ UShipSystem *UPowerSystem::LookupSystem(EPowerSystem system)
 		return crewManager->GetSystem(UShipSystem::ESystem::Helm);
 	case Power_Warp:
 		return crewManager->GetSystem(UShipSystem::ESystem::Warp);
-	case Power_BeamWeapons:
+	case Power_Weapons:
 		return crewManager->GetSystem(UShipSystem::ESystem::Weapons);
 	case Power_Sensors:
 		return crewManager->GetSystem(UShipSystem::ESystem::Sensors);
@@ -355,6 +370,30 @@ UShipSystem *UPowerSystem::LookupSystem(EPowerSystem system)
 		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
 	default:
 		return nullptr;
+	}
+}
+
+
+UPowerSystem::EPowerSystem UPowerSystem::GetPowerSystem(UShipSystem::ESystem system)
+{
+	switch (system)
+	{
+	case UShipSystem::ESystem::Helm:
+		return Power_Helm;
+	case UShipSystem::ESystem::Warp:
+		return Power_Warp;
+	case UShipSystem::ESystem::Weapons:
+		return Power_Weapons;
+	case UShipSystem::ESystem::Sensors:
+		return Power_Sensors;
+	//case UShipSystem::ESystem::Shields:
+	//	  return Power_Shields;
+	case UShipSystem::ESystem::DamageControl:
+		return Power_DamageControl;
+	case UShipSystem::ESystem::Communications:
+		return Power_Comms;
+	default:
+		return Power_None;
 	}
 }
 
@@ -440,7 +479,7 @@ void UPowerSystem::ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSy
 
 void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystem)
 {
-	if (targetSystem >= MAX_POWER_SYSTEMS || cardHand[handPosition] != cardID)
+	if (targetSystem >= NUM_POWER_SYSTEMS || cardHand[handPosition] != cardID)
 		return;
 
 	switch ((EPowerCard)cardID)
@@ -459,7 +498,7 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 		}
 		case Card_BoostWeapons:
 		{
-			if (!AddPower(EPowerSystem::Power_BeamWeapons, 25))
+			if (!AddPower(EPowerSystem::Power_Weapons, 25))
 				return;
 			break;
 		}
@@ -508,7 +547,7 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 		}
 		case Card_OverloadWeapons:
 		{
-			if (!AddPower(EPowerSystem::Power_BeamWeapons, 50))
+			if (!AddPower(EPowerSystem::Power_Weapons, 50))
 				return;
 			break;
 		}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { PowerCardRarity, getPowerCardInfo, PowerTargetingMode, PowerCard } from './store';
+import { PowerCardRarity, getPowerCardInfo, PowerCard } from './store';
 import './CardDisplay.scss';
 
 
@@ -20,7 +20,7 @@ export class CardDisplay extends React.Component<CardDisplayProps, {}> {
                 name: '???',
                 desc: `Card ID ${this.props.card} not recognised`,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         }
 

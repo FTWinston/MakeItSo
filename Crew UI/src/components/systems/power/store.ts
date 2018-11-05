@@ -28,17 +28,12 @@ export const enum PowerCardRarity {
     Epic,
 }
 
-export const enum PowerTargetingMode {
-    Untargetted,
-    TargetSingleSystem,
-}
-
 
 export interface PowerCardInfo {
     name: string;
     desc: string;
     rarity: PowerCardRarity;
-    targetingMode: PowerTargetingMode;
+    selectTarget: boolean;
 }
 
 export interface PowerState {
@@ -273,112 +268,112 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
                 name: text.systems.power.boostHelm,
                 desc: text.systems.power.boostHelmDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostWarp:
             return {
                 name: text.systems.power.boostWarp,
                 desc: text.systems.power.boostWarpDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostWeapons:
             return {
                 name: text.systems.power.boostWeapons,
                 desc: text.systems.power.boostWeaponsDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostSensors:
             return {
                 name: text.systems.power.boostSensors,
                 desc: text.systems.power.boostSensorsDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostShields:
             return {
                 name: text.systems.power.boostShields,
                 desc: text.systems.power.boostShieldsDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostDamageControl:
             return {
                 name: text.systems.power.boostDamageControl,
                 desc: text.systems.power.boostDamageControlDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostComms:
             return {
                 name: text.systems.power.boostComms,
                 desc: text.systems.power.boostCommsDesc,
                 rarity: PowerCardRarity.Common,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.BoostSelectable:
             return {
                 name: text.systems.power.boostSelectable,
                 desc: text.systems.power.boostSelectableDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.TargetSingleSystem,
+                selectTarget: false,
             };
         case PowerCard.OverloadHelm:
             return {
                 name: text.systems.power.overloadHelm,
                 desc: text.systems.power.overloadHelmDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadWarp:
             return {
                 name: text.systems.power.overloadWarp,
                 desc: text.systems.power.overloadWarpDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadWeapons:
             return {
                 name: text.systems.power.overloadWeapons,
                 desc: text.systems.power.overloadWeaponsDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadSensors:
             return {
                 name: text.systems.power.overloadSensors,
                 desc: text.systems.power.overloadSensorsDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadShields:
             return {
                 name: text.systems.power.overloadShields,
                 desc: text.systems.power.overloadShieldsDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadDamageControl:
             return {
                 name: text.systems.power.overloadDamageControl,
                 desc: text.systems.power.overloadDamageControlDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadComms:
             return {
                 name: text.systems.power.overloadComms,
                 desc: text.systems.power.overloadCommsDesc,
                 rarity: PowerCardRarity.Rare,
-                targetingMode: PowerTargetingMode.Untargetted,
+                selectTarget: false,
             };
         case PowerCard.OverloadSelectable:
             return {
                 name: text.systems.power.overloadSelectable,
                 desc: text.systems.power.overloadSelectableDesc,
                 rarity: PowerCardRarity.Epic,
-                targetingMode: PowerTargetingMode.TargetSingleSystem,
+                selectTarget: true,
             };
         default:
             return null;

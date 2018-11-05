@@ -3,7 +3,7 @@
 #include "CrewManager.h"
 #include "MakeItSoPawn.h"
 #include "ShipSystem.h"
-#include "DamageControlSystem.h"
+#include "PowerSystem.h"
 #include <ctime>
 
 using namespace System;
@@ -158,6 +158,7 @@ System::Void WebTest::MainForm::btnAuxPower_Click(System::Object^  sender, Syste
 
 System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, System::EventArgs^  e)
 {
+	/*
 	int card1 = rand() % 7;
 	int card2, card3;
 
@@ -176,7 +177,9 @@ System::Void WebTest::MainForm::btnChooseCards_Click(System::Object^  sender, Sy
 	message += L" ";
 	message += std::to_wstring(card3);
 
-	//crewManager->ProcessSystemMessage(UShipSystem::ESystem::PowerManagement, CHARARR(message));
+
+	auto powerSystem = (UPowerSystem*)crewManager->GetSystem(UShipSystem::ESystem::PowerManagement);
+	*/
 }
 
 System::Void WebTest::MainForm::btnRespawnDamage_Click(System::Object^  sender, System::EventArgs^  e)
@@ -186,8 +189,6 @@ System::Void WebTest::MainForm::btnRespawnDamage_Click(System::Object^  sender, 
 
 System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e)
 {
-	auto damageControl = (UDamageControlSystem*)crewManager->GetSystem(UShipSystem::ESystem::DamageControl);
-
 	UShipSystem::ESystem system;
 	switch (FMath::RandRange(1, 6))
 	{
