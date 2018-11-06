@@ -1,0 +1,30 @@
+@import '../../general/mixins';
+
+.powerSelectionIndicator {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.powerSelectionIndicator__queueSize {
+    border-radius: 2em;
+    font-weight: bold;
+    font-size: 2em;
+    background-color: $colorPrimary;
+    color: $backgroundColor;
+    padding: 0.1em;
+    text-align: center;
+    width: 1.1em;
+}
+
+@include landscape() {
+    .powerSelectionIndicator__label {
+        display: none;
+    }
+}
+
+@include portrait() {
+    .powerSelectionIndicator {
+        cursor: pointer;
+    }
+}

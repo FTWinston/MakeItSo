@@ -185,6 +185,8 @@ export interface TextLocalisation {
 
         },
         power: {
+            pickCards: string;
+
             boostHelm: string;
             boostHelmDesc: string;
             boostWarp: string;

@@ -1,29 +1,25 @@
 @import '../../general/mixins';
 
 .powerSystemList {
-    display: grid;
-    grid-gap: 1em;
-    
-    grid-template-rows: 1fr 1fr 1fr;
-    grid-template-columns: 1fr 1fr 1fr;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .powerSystem {
-    border-radius: 1em;
+    border-radius: 0.5em;
     background-color: $colorTertiary;
     color: white;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
-    
-    @include landscape() {
-        font-size: 2vw;
-    }
+    padding: 0.1em 0.5em 0 0.5em;
+}
 
-    @include portrait() {
-        font-size: 3vw;
-    }
+.powerSystem__name {
+    flex-grow: 1;
+    text-align: center;
 }
 
 .powerSystem__power {

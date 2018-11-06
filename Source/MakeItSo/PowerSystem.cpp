@@ -307,7 +307,7 @@ FString UPowerSystem::CombineIDs(const TCHAR *prefix, TArray<uint8> IDs)
 	return output;
 }
 
-#define MAX_HAND_SIZE 8
+#define MAX_HAND_SIZE 6
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::ChooseCard(uint8 cardPosition) { ChooseCard_Implementation(cardPosition); }

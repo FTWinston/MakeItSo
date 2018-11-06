@@ -5,17 +5,34 @@ import { actionCreators, maxHandSize, getPowerCardInfo, PowerState, PowerSystemT
 import { TextLocalisation } from '~/functionality';
 import { connection } from '~/index';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
-import { CardHand } from './CardHand';
-import { CardSelection } from './CardSelection';
 import { SystemList } from './SystemList';
 import './PowerManagement.scss';
+import { CardSet } from './CardSet';
+import { SelectionIndicator } from './SelectionIndicator';
 
-interface PowerManagementProps extends PowerState {
+interface IProps extends PowerState {
     text: TextLocalisation;
     selectCard: (handPos?: number) => void;
 }
 
-class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
+const enum ExpandSection {
+    None = 0,
+    Selection,
+    SpecificCard,
+}
+
+interface IState {
+    expand: ExpandSection;
+}
+
+class PowerManagement extends ShipSystemComponent<IProps, IState> {
+    constructor(props: IProps) { 
+        super(props);
+        this.state = {
+            expand: ExpandSection.None,
+        };
+    }
+
     name() { return 'power'; }
 
     protected getHelpText() {
@@ -27,32 +44,53 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
     }
 
     public render() {
-        let selectedCard = this.props.selectedHandPos === undefined
+        const selectedCard = this.props.selectedHandPos === undefined
             ? null
             : getPowerCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
 
-        let selectSystem = selectedCard === null || !selectedCard.selectTarget
+        const selectSystem = selectedCard === null || !selectedCard.selectTarget
             ? undefined
             : (system: PowerSystemType) => this.selectSystem(system);
 
-        return <div className="system power">
+        const handNotFull = this.props.handCards.length < maxHandSize;
+
+        const queueSize = this.props.queueSize <= 0
+            ? undefined
+            : <SelectionIndicator
+                className="power__selectionIndicator"
+                text={this.props.text}
+                queueSize={this.props.queueSize}
+                selected={() => this.setState({ expand: ExpandSection.Selection })}
+            />
+
+        const cardSelected = handNotFull
+            ? (num: number) => this.pickCard(num)
+            : undefined;
+
+        let classes = 'system power';
+        if (this.state.expand === ExpandSection.Selection) {
+            classes += ' power--selection';
+        }
+
+        return <div className={classes}>
             <SystemList
                 text={this.props.text}
                 systems={this.props.systems}
                 systemSelected={selectSystem}
             />
-            <CardSelection
+            {queueSize}
+            <CardSet
+                className="power__cardSelection"
                 text={this.props.text}
                 cards={this.props.choiceCards}
-                queueSize={this.props.queueSize}
-                cardSelected={num => this.pickCard(num)}
-                canSelect={this.props.handCards.length < maxHandSize}
+                cardSelected={cardSelected}
             />
-            <CardHand
+            <CardSet
+                className="power__cardHand"
                 text={this.props.text}
                 cards={this.props.handCards}
                 cardSelected={num => this.selectCard(num)}
-                selectedHandPos={this.props.selectedHandPos}
+                selectedCardPos={this.props.selectedHandPos}
             />
         </div>;
     }
@@ -79,7 +117,7 @@ class PowerManagement extends ShipSystemComponent<PowerManagementProps, {}> {
 }
 
 // Selects which state properties are merged into the component's props
-const mapStateToProps: (state: ApplicationState) => PowerManagementProps = (state) => {
+const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
     return {
         text: state.user.text,
         ...state.power,

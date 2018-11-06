@@ -10,6 +10,17 @@
     width: unset;
 }
 
+@include portrait() {    
+    .powerCardWrapper {
+        width: unset;
+        height: 16em;
+    }
+
+    .powerCardWrapper:last-child {
+        height: unset;
+    }
+}
+
 .powerCardWrapper--selected {
     overflow: visible;
 }
