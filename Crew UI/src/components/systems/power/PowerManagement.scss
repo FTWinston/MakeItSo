@@ -13,12 +13,22 @@
     grid-area: selection;
 }
 
+.power_selectionActions {
+    grid-area: selectionActions;
+    display: flex;
+    justify-content: space-evenly;
+}
+
 .power__cardHand {
     grid-area: hand;
 }
 
 .power__selectionIndicator {
     grid-area: action;
+}
+
+.power__selectionBack {
+    display: none;
 }
 
 @include landscape() {
@@ -34,11 +44,23 @@
 
 @include portrait() {
     .power {
-        grid-template-rows: 1fr 3em;
+        grid-gap: 0.5em;
+        grid-template-rows: 1em 1fr 3em;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
+            "systems label"
             "systems cards"
             "action cards";
+    }
+
+    .power__handLabel,
+    .power__selectionLabel {
+        grid-area: label;
+    }
+
+    .power__selectionLabel,
+    .power_selectionActions {
+        display: none;
     }
 
     .power .powerCardSet {
@@ -60,12 +82,26 @@
     }
 
     .power--selection {
-        & .power__cardSelection {
+        grid-template-areas:
+            "systems label"
+            "systems cards"
+            "selectionActions selectionActions";
+
+        & .power__cardSelection,
+        & .power_selectionActions {
             display: flex;
         }
 
-        & .power__cardHand {
+        & .power__cardHand,
+        & .power__handLabel,
+        & .power__selectionIndicator {
             display: none;
+        }
+
+        & .power__discardChoice,
+        & .power__selectionLabel,
+        & .power__selectionBack {
+            display: block;
         }
     }
 }

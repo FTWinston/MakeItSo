@@ -106,9 +106,9 @@ private:
 
 	// Server functions, that can be called from the client
 	UFUNCTION(Server, Reliable)
-	void ChooseCard(uint8 cardPosition);
+	void ChooseCard(int8 cardPosition);
 #ifdef WEB_SERVER_TEST
-	void ChooseCard_Implementation(uint8 cardPosition);
+	void ChooseCard_Implementation(int8 cardPosition);
 #endif
 
 	UFUNCTION(Server, Reliable)

@@ -44,7 +44,7 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 {
 	if (STARTS_WITH(msg, "power_pickCard "))
 	{
-		uint8 cardNum = ExtractInt(msg, sizeof("power_pickCard "));
+		int8 cardNum = ExtractInt(msg, sizeof("power_pickCard "));
 		ChooseCard(cardNum);
 	}
 	else if (STARTS_WITH(msg, "power_useCard "))
@@ -310,19 +310,22 @@ FString UPowerSystem::CombineIDs(const TCHAR *prefix, TArray<uint8> IDs)
 #define MAX_HAND_SIZE 6
 
 #ifdef WEB_SERVER_TEST
-void UPowerSystem::ChooseCard(uint8 cardPosition) { ChooseCard_Implementation(cardPosition); }
+void UPowerSystem::ChooseCard(int8 cardPosition) { ChooseCard_Implementation(cardPosition); }
 #endif
 
-void UPowerSystem::ChooseCard_Implementation(uint8 cardPosition)
+void UPowerSystem::ChooseCard_Implementation(int8 cardPosition)
 {
-	if (cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
+	if (cardPosition < -1 || cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
 		return;
 
-	uint8 chosenCardID = cardChoice[cardPosition];
-	SETADD(cardHand, chosenCardID);
+	if (cardPosition > -1)
+	{
+		uint8 chosenCardID = cardChoice[cardPosition];
+		SETADD(cardHand, chosenCardID);
 
-	if (ISCLIENT())
-		SendAddCardToHand(chosenCardID);
+		if (ISCLIENT())
+			SendAddCardToHand(chosenCardID);
+	}
 
 	if (QUEUE_IS_EMPTY(choiceQueue))
 	{

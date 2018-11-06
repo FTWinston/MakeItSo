@@ -252,6 +252,10 @@ let words: TextLocalisation = {
         },
         power: {
             pickCards: 'Pick cards',
+            discardChoice: 'Discard all',
+            handLabel: 'Your cards:',
+            choiceLabel: 'Choose a card:',
+
             boostHelm: 'Boost Helm',
             boostHelmDesc: 'Increase power of helm system by 25% for 20 seconds.',
             boostWarp: 'Boost Warp',

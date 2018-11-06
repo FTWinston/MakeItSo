@@ -9,6 +9,7 @@ import { SystemList } from './SystemList';
 import './PowerManagement.scss';
 import { CardSet } from './CardSet';
 import { SelectionIndicator } from './SelectionIndicator';
+import { ConfirmButton, ButtonColor, PushButton } from '~/components/general';
 
 interface IProps extends PowerState {
     text: TextLocalisation;
@@ -44,6 +45,8 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
     }
 
     public render() {
+        const systemText = this.props.text.systems.power;
+
         const selectedCard = this.props.selectedHandPos === undefined
             ? null
             : getPowerCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
@@ -63,6 +66,23 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
                 selected={() => this.setState({ expand: ExpandSection.Selection })}
             />
 
+        const selectionActions = this.props.choiceCards.length === 0
+            ? undefined
+            : <div className="power_selectionActions">
+                <ConfirmButton
+                    className="power__discardChoice"
+                    color={ButtonColor.Secondary}
+                    text={systemText.discardChoice}
+                    clicked={() => this.pickCard(-1)}
+                />
+                <PushButton
+                    className="power__selectionBack"
+                    color={ButtonColor.Secondary}
+                    text={this.props.text.common.cancel}
+                    clicked={() => this.setState({ expand: ExpandSection.None })}
+                />
+            </div>
+
         const cardSelected = handNotFull
             ? (num: number) => this.pickCard(num)
             : undefined;
@@ -78,7 +98,10 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
                 systems={this.props.systems}
                 systemSelected={selectSystem}
             />
+            <div className="power__handLabel">{systemText.handLabel}</div>
+            <div className="power__selectionLabel">{systemText.choiceLabel}</div>
             {queueSize}
+            {selectionActions}
             <CardSet
                 className="power__cardSelection"
                 text={this.props.text}
@@ -109,6 +132,10 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
 
     private pickCard(cardNum: number) {
         connection.send(`power_pickCard ${cardNum}`);
+
+        if (this.props.queueSize < 1) {
+            this.setState({ expand: ExpandSection.None });
+        }
     }
 
     private playCard(cardID: number, handPos: number, targetSystem: PowerSystemType) {
