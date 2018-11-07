@@ -37,7 +37,7 @@ void UPowerSystem::ResetData()
 #endif
 
 	choiceQueueSize = 0;
-	choiceGeneratedAmount = 0;
+	auxPowerGenerationProgress = 0;
 }
 
 bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
@@ -79,7 +79,7 @@ void UPowerSystem::SendAllData_Implementation()
 	SendQueueSize();
 }
 
-#define CHOICE_GENERATION_ENERGY_AMOUNT 1000
+#define CHOICE_GENERATION_AUX_AMOUNT 1000
 #define MAX_CHOICE_QUEUE_SIZE 9
 
 void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -87,18 +87,90 @@ void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
 		return;
 
-	choiceGeneratedAmount += GetHealthLevel();
+	int16 powerDifference = NUM_POWER_SYSTEMS * 100 - overallPower;
 
-	if (choiceGeneratedAmount >= CHOICE_GENERATION_ENERGY_AMOUNT)
-	{
-		choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
-		AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
-	}
+	if (powerDifference < 0)
+		RemoveAuxPower(-powerDifference);
+	else if (powerDifference < 0)
+		AddAuxPower(powerDifference);
+	else
+		return;
 
 	if (ISCLIENT())
 		SendGeneration();
 }
 
+void UPowerSystem::AddAuxPower(int16 amount)
+{
+	// TODO: account for GetHealthLevel() ... or does that affect the overall power rather than anything else?
+
+	auxPowerGenerationProgress += amount;
+
+	if (auxPowerGenerationProgress >= CHOICE_GENERATION_AUX_AMOUNT)
+	{
+		auxPowerGenerationProgress -= CHOICE_GENERATION_AUX_AMOUNT;
+		AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
+	}
+}
+
+void UPowerSystem::RemoveAuxPower(int16 amount)
+{
+	if (auxPowerGenerationProgress < amount)
+	{
+		// Remove a card from the queue, if there are any.
+		if (choiceQueueSize > 0)
+		{
+#ifndef WEB_SERVER_TEST
+			choiceQueue.Dequeue(newChoice);
+#else
+			choiceQueue.pop();
+#endif
+			choiceQueueSize--;
+
+			if (ISCLIENT())
+				SendQueueSize();
+		}
+
+		// Otherwise, remove a card from the hand, if there are any.
+		else if (SIZENUM(cardHand) > 0)
+		{
+			auto removePos = SIZENUM(cardHand) - 1;
+			SETREMOVEAT(cardHand, removePos);
+
+			if (ISCLIENT())
+				SendRemoveCardFromHand(removePos);
+		}
+
+		// Otherwise, shut enough systems down to account for the defecit.
+		else
+		{
+			for (uint8 i = 0; i < NUM_POWER_SYSTEMS; i++)
+				if (powerLevels[i] > 0)
+				{
+					auto system = LookupSystem((EPowerSystem)i);
+					if (system == nullptr)
+						continue;
+
+					amount -= powerLevels[i];
+					system->SetPowerLevel(0);
+
+					// If there is still unaccounted for power drain, keep shutting systems down...
+					if (amount <= 0)
+						break;
+				}
+
+			auxPowerGenerationProgress = 0;
+			return;
+		}
+
+		// have consumed aux power point or a card, so "wrap" the aux power back up again
+		auxPowerGenerationProgress = CHOICE_GENERATION_AUX_AMOUNT - amount + auxPowerGenerationProgress;
+	}
+	else
+	{
+		auxPowerGenerationProgress -= amount;
+	}
+}
 
 void UPowerSystem::SetSystemPower(UShipSystem::ESystem system, uint8 power)
 {
@@ -106,13 +178,27 @@ void UPowerSystem::SetSystemPower(UShipSystem::ESystem system, uint8 power)
 	if (powerSystem == Power_None)
 		return;
 
+	auto orig = powerLevels[powerSystem];
 	powerLevels[powerSystem] = power;
 
+	overallPower += power - orig;
+
 	if (ISCLIENT())
+	{
 		SendPowerLevel(powerSystem, power);
+		SendOverallPower(overallPower);
+	}
 }
 
-
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendOverallPower(uint16 overallPower) { SendOverallPower_Implementation(overallPower); }
+#endif
+void UPowerSystem::SendOverallPower_Implementation(uint16 overallPower)
+{
+	FString output = TEXT("power_all ");
+	APPENDINT(output, overallPower / NUM_POWER_SYSTEMS);
+	SendSystem(output);
+}
 
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::SendAllPowerLevels() { SendAllPowerLevels_Implementation(); }
@@ -148,7 +234,7 @@ void UPowerSystem::SendGeneration() { SendGeneration_Implementation(); }
 void UPowerSystem::SendGeneration_Implementation()
 {
 	FString output = TEXT("power_gen ");
-	uint8 percent = 100 * choiceGeneratedAmount / CHOICE_GENERATION_ENERGY_AMOUNT;
+	uint8 percent = 100 * auxPowerGenerationProgress / CHOICE_GENERATION_AUX_AMOUNT;
 
 	APPENDINT(output, percent);
 	SendSystem(output);
@@ -199,6 +285,12 @@ void UPowerSystem::SendRemoveCardFromHand_Implementation(uint8 handPosition)
 }
 
 
+void UPowerSystem::OnReplicated_OverallPower(uint16 beforeChange)
+{
+	SendOverallPower(overallPower);
+}
+
+
 void UPowerSystem::OnReplicated_PowerLevels(TArray<uint8> beforeChange)
 {
 	// if length has changed, send everything to the UI. Otherwise, only send the values that have changed.
@@ -223,7 +315,7 @@ void UPowerSystem::OnReplicated_ChoiceQueueSize(uint8 beforeChange)
 	SendQueueSize();
 }
 
-void UPowerSystem::OnReplicated_ChoiceGeneratedAmount(uint8 beforeChange)
+void UPowerSystem::OnReplicated_AuxPowerGenerationProgress(uint8 beforeChange)
 {
 	SendGeneration();
 }
@@ -340,7 +432,7 @@ void UPowerSystem::ChooseCard(int8 cardPosition) { ChooseCard_Implementation(car
 
 void UPowerSystem::ChooseCard_Implementation(int8 cardPosition)
 {
-	if (cardPosition < -1 || cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
+	if (cardPosition < -1 || (uint8)cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
 		return;
 
 	if (cardPosition > -1)
@@ -488,12 +580,7 @@ void UPowerSystem::ToggleSystem_Implementation(EPowerSystem system)
 
 	// If it's zero, set it to 100. Otherwise, set it to 0.
 	auto powerLevel = powerLevels[system] == 0 ? 100 : 0;
-
 	targetSystem->SetPowerLevel(powerLevel);
-	powerLevels[system] = powerLevel;
-
-	if (ISCLIENT())
-		SendPowerLevel(system, powerLevel);
 }
 
 

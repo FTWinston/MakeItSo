@@ -40,6 +40,10 @@ protected:
 
 private:
 	// Replicated properties
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OverallPower)
+	uint16 overallPower;
+	void OnReplicated_OverallPower(uint16 beforeChange);
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_PowerLevels)
 	TArray<uint8> powerLevels;
 	void OnReplicated_PowerLevels(TArray<uint8> beforeChange);
@@ -56,15 +60,21 @@ private:
 	uint8 choiceQueueSize;
 	void OnReplicated_ChoiceQueueSize(uint8 beforeChange);
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ChoiceGeneratedAmount)
-	uint16 choiceGeneratedAmount;
-	void OnReplicated_ChoiceGeneratedAmount(uint8 beforeChange);
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_AuxPowerGenerationProgress)
+	uint16 auxPowerGenerationProgress;
+	void OnReplicated_AuxPowerGenerationProgress(uint8 beforeChange);
 
 	UPROPERTY()
 	TQueue<TArray<uint8>> choiceQueue;
 
 
-	// Client functiosn, that can be called from the server
+	// Client functions, that can be called from the server
+	UFUNCTION(Client, Reliable)
+	void SendOverallPower(uint16 overallPower);
+#ifdef WEB_SERVER_TEST
+	void SendOverallPower_Implementation(uint16 overallPower);
+#endif
+
 	UFUNCTION(Client, Reliable)
 	void SendAllPowerLevels();
 #ifdef WEB_SERVER_TEST
@@ -134,8 +144,12 @@ private:
 #endif
 
 private:
+	void AddAuxPower(int16 amount);
+	void RemoveAuxPower(int16 amount);
+
 	UShipSystem *LookupSystem(EPowerSystem system);
 	EPowerSystem GetPowerSystem(UShipSystem::ESystem system);
+
 	uint8 PickRandomCard();
 	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
 
