@@ -9,7 +9,7 @@ import { SystemList } from './SystemList';
 import './PowerManagement.scss';
 import { CardSet } from './CardSet';
 import { SelectionIndicator } from './SelectionIndicator';
-import { ConfirmButton, ButtonColor, PushButton } from '~/components/general';
+import { ConfirmButton, ButtonColor, PushButton, ProgressBar } from '~/components/general';
 
 interface IProps extends PowerState {
     text: TextLocalisation;
@@ -52,23 +52,23 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             : getPowerCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
 
         const selectSystem = selectedCard === null || !selectedCard.selectTarget
-            ? undefined
+            ? (system: PowerSystemType) => this.toggleSystem(system)
             : (system: PowerSystemType) => this.selectSystem(system);
 
         const handNotFull = this.props.handCards.length < maxHandSize;
 
-        const queueSize = this.props.queueSize <= 0
+        const queueSize = this.props.numChoices <= 0
             ? undefined
             : <SelectionIndicator
                 className="power__selectionIndicator"
                 text={this.props.text}
-                queueSize={this.props.queueSize}
+                queueSize={this.props.numChoices}
                 selected={() => this.setState({ expand: ExpandSection.Selection })}
             />
 
         const selectionActions = this.props.choiceCards.length === 0
             ? undefined
-            : <div className="power_selectionActions">
+            : <div className="power__selectionActions">
                 <ConfirmButton
                     className="power__discardChoice"
                     color={ButtonColor.Secondary}
@@ -100,6 +100,10 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             />
             <div className="power__handLabel">{systemText.handLabel}</div>
             <div className="power__selectionLabel">{systemText.choiceLabel}</div>
+            <div className="power__overallPower">
+                Overall power 100%
+            </div>
+            <ProgressBar value={this.props.generationProgress} maxValue={100} showNumber={false} className="power__charge" />
             {queueSize}
             {selectionActions}
             <CardSet
@@ -118,6 +122,10 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
         </div>;
     }
 
+    private toggleSystem(system: PowerSystemType) {
+        connection.send(`power_toggle ${system}`);
+    }
+
     private selectCard(handPos: number) {
         this.props.selectCard(handPos === this.props.selectedHandPos ? undefined : handPos);
     }
@@ -133,7 +141,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
     private pickCard(cardNum: number) {
         connection.send(`power_pickCard ${cardNum}`);
 
-        if (this.props.queueSize < 1) {
+        if (this.props.numChoices < 1) {
             this.setState({ expand: ExpandSection.None });
         }
     }

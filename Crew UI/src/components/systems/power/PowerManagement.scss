@@ -13,10 +13,19 @@
     grid-area: selection;
 }
 
-.power_selectionActions {
+.power__selectionActions {
     grid-area: selectionActions;
     display: flex;
     justify-content: space-evenly;
+}
+
+.power__overallPower {
+    grid-area: overall;
+}
+
+.power__charge {
+    grid-area: charge;
+    background-color: green;
 }
 
 .power__cardHand {
@@ -45,12 +54,13 @@
 @include portrait() {
     .power {
         grid-gap: 0.5em;
-        grid-template-rows: 1em 1fr 3em;
+        grid-template-rows: 2.5em 0.25em 1em 1fr;
         grid-template-columns: 2fr 3fr;
         grid-template-areas:
+            "overall action"
+            "charge charge"
             "systems label"
-            "systems cards"
-            "action cards";
+            "systems cards";
     }
 
     .power__handLabel,
@@ -59,7 +69,7 @@
     }
 
     .power__selectionLabel,
-    .power_selectionActions {
+    .power__selectionActions {
         display: none;
     }
 
@@ -83,18 +93,20 @@
 
     .power--selection {
         grid-template-areas:
+            "selectionActions selectionActions"
+            "charge charge"
             "systems label"
-            "systems cards"
-            "selectionActions selectionActions";
+            "systems cards";
 
         & .power__cardSelection,
-        & .power_selectionActions {
+        & .power__selectionActions {
             display: flex;
         }
 
         & .power__cardHand,
         & .power__handLabel,
-        & .power__selectionIndicator {
+        & .power__selectionIndicator,
+        & .power__overallPower {
             display: none;
         }
 

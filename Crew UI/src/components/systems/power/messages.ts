@@ -20,9 +20,14 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setChoice(cardIDs));
             break;
         }
-        case 'power_queue': {
+        case 'power_choices': {
             let size = parseInt(data);
-            store.dispatch(actionCreators.setQueueSize(size));
+            store.dispatch(actionCreators.SetNumChoices(size));
+            break;
+        }
+        case 'power_gen': {
+            let fraction = parseInt(data);
+            store.dispatch(actionCreators.SetGenerationProgress(fraction));
             break;
         }
         case 'power_hand': {

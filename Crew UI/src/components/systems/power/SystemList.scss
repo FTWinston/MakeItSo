@@ -5,29 +5,3 @@
     flex-direction: column;
     justify-content: space-between;
 }
-
-.powerSystem {
-    border-radius: 0.5em;
-    background-color: $colorTertiary;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0.1em 0.5em 0 0.5em;
-}
-
-.powerSystem__name {
-    flex-grow: 1;
-    text-align: center;
-}
-
-.powerSystem__power {
-    font-weight: bold;
-    font-size: 1.5em;
-}
-
-.powerSystem__power::after {
-    content: '%';
-    font-weight: normal;
-}

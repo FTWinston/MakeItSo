@@ -40,7 +40,8 @@ export interface PowerState {
     systems: PowerSystem[];
     choiceCards: PowerCard[];
     handCards: PowerCard[];
-    queueSize: number;
+    numChoices: number;
+    generationProgress: number;
     selectedHandPos?: number;
 }
 
@@ -69,9 +70,14 @@ interface SetHandAction {
     cardIDs: number[];
 }
 
-interface SetQueueAction {
-    type: 'QUEUE';
-    size: number;
+interface SetNumChoicesAction {
+    type: 'CHOICES';
+    number: number;
+}
+
+interface SetGenerationProgressAction {
+    type: 'GENERATION';
+    fraction: number;
 }
 
 interface AddCardAction {
@@ -92,7 +98,7 @@ interface SelectCardAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetAllPowerAction | SetPowerAction | SetChoiceAction | SetHandAction
-    | SetQueueAction | AddCardAction | RemoveCardAction | SelectCardAction;
+    | SetNumChoicesAction | SetGenerationProgressAction | AddCardAction | RemoveCardAction | SelectCardAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -116,9 +122,13 @@ export const actionCreators = {
         type: 'HAND',
         cardIDs: cardIDs,
     },
-    setQueueSize: (size: number) => <SetQueueAction>{
-        type: 'QUEUE',
-        size: size,
+    SetNumChoices: (size: number) => <SetNumChoicesAction>{
+        type: 'CHOICES',
+        number: size,
+    },
+    SetGenerationProgress: (fraction: number) => <SetGenerationProgressAction>{
+        type: 'GENERATION',
+        fraction: fraction,
     },
     addCardToHand: (cardID: number) => <AddCardAction>{
         type: 'ADD_CARD',
@@ -149,7 +159,8 @@ const unloadedState: PowerState = {
     ],
     choiceCards: [],
     handCards: [],
-    queueSize: 0,
+    numChoices: 0,
+    generationProgress: 0,
 };
 
 export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Action) => {
@@ -191,10 +202,16 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
                 handCards: action.cardIDs,
             };
         }
-        case 'QUEUE': {
+        case 'CHOICES': {
             return {
                 ...state,
-                queueSize: action.size,
+                numChoices: action.number,
+            };
+        }
+        case 'GENERATION': {
+            return {
+                ...state,
+                generationProgress: action.fraction,
             };
         }
         case 'ADD_CARD': {

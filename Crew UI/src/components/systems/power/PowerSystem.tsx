@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PowerSystemType } from './store';
-import './SystemList.scss';
+import './PowerSystem.scss';
 import { TextLocalisation } from '~/functionality';
 
 interface IProps {
@@ -14,6 +14,10 @@ export class PowerSystem extends React.PureComponent<IProps, {}> {
     public render() {
         let classes = 'powerSystem';
         let selected;
+
+        if (this.props.power === 0) {
+            classes += ' powerSystem--disabled';
+        }
 
         if (this.props.selected !== undefined) {
             selected = () => this.props.selected!();

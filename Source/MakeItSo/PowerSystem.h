@@ -56,6 +56,10 @@ private:
 	uint8 choiceQueueSize;
 	void OnReplicated_ChoiceQueueSize(uint8 beforeChange);
 
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ChoiceGeneratedAmount)
+	uint16 choiceGeneratedAmount;
+	void OnReplicated_ChoiceGeneratedAmount(uint8 beforeChange);
+
 	UPROPERTY()
 	TQueue<TArray<uint8>> choiceQueue;
 
@@ -83,6 +87,12 @@ private:
 	void SendQueueSize();
 #ifdef WEB_SERVER_TEST
 	void SendQueueSize_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendGeneration();
+#ifdef WEB_SERVER_TEST
+	void SendGeneration_Implementation();
 #endif
 
 	UFUNCTION(Client, Reliable)
@@ -117,10 +127,13 @@ private:
 	void ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystemPos);
 #endif
 
-private:
-	UPROPERTY()
-	uint16 choiceGeneratedAmount;
+	UFUNCTION(Server, Reliable)
+	void ToggleSystem(EPowerSystem system);
+#ifdef WEB_SERVER_TEST
+	void ToggleSystem_Implementation(EPowerSystem system);
+#endif
 
+private:
 	UShipSystem *LookupSystem(EPowerSystem system);
 	EPowerSystem GetPowerSystem(UShipSystem::ESystem system);
 	uint8 PickRandomCard();

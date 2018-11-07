@@ -1,9 +1,6 @@
 ﻿@import 'mixins';
 
 .progressBar {
-    border: solid $textColor 1px;
-    background-color: $backgroundColor;
-    height: 1.8em;
     display: flex;
     justify-content: flex-start;
     align-self: stretch;
@@ -11,9 +8,22 @@
 
 .progressBar__indicator {
     background-color: $colorSecondary;
-    color: $colorHighlight;
-    overflow: visible;
     text-align: center;
     transition: width 0.2s;
-    padding-top: 0.35em;
+}
+
+.progressBar__remainder {
+    flex-grow: 1;
+    background-color: $colorSecondary;
+    opacity: 0.15;
+}
+
+.progressBar--text {
+    height: 1.8em;
+
+    & .progressBar__indicator {
+        color: $colorHighlight;
+        overflow: visible;
+        padding-top: 0.35em;
+    }
 }

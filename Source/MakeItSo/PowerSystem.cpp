@@ -60,6 +60,11 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 			ActivateCard(cardID, handPosition, targetSystemPos);
 		}
 	}
+	else if (STARTS_WITH(msg, "power_toggle "))
+	{
+		EPowerSystem targetSystem = (EPowerSystem)ExtractInt(msg, sizeof("power_toggle "));
+		ToggleSystem(targetSystem);
+	}
 	else
 		return false;
 
@@ -84,11 +89,14 @@ void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	choiceGeneratedAmount += GetHealthLevel();
 
-	if (choiceGeneratedAmount < CHOICE_GENERATION_ENERGY_AMOUNT)
-		return;
+	if (choiceGeneratedAmount >= CHOICE_GENERATION_ENERGY_AMOUNT)
+	{
+		choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
+		AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
+	}
 
-	choiceGeneratedAmount -= CHOICE_GENERATION_ENERGY_AMOUNT;
-	AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
+	if (ISCLIENT())
+		SendGeneration();
 }
 
 
@@ -129,8 +137,20 @@ void UPowerSystem::SendQueueSize() { SendQueueSize_Implementation(); }
 #endif
 void UPowerSystem::SendQueueSize_Implementation()
 {
-	FString output = TEXT("power_queue ");
+	FString output = TEXT("power_choices ");
 	APPENDINT(output, choiceQueueSize);
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendGeneration() { SendGeneration_Implementation(); }
+#endif
+void UPowerSystem::SendGeneration_Implementation()
+{
+	FString output = TEXT("power_gen ");
+	uint8 percent = 100 * choiceGeneratedAmount / CHOICE_GENERATION_ENERGY_AMOUNT;
+
+	APPENDINT(output, percent);
 	SendSystem(output);
 }
 
@@ -201,6 +221,11 @@ void UPowerSystem::OnReplicated_PowerLevels(TArray<uint8> beforeChange)
 void UPowerSystem::OnReplicated_ChoiceQueueSize(uint8 beforeChange)
 {
 	SendQueueSize();
+}
+
+void UPowerSystem::OnReplicated_ChoiceGeneratedAmount(uint8 beforeChange)
+{
+	SendGeneration();
 }
 
 
@@ -448,6 +473,27 @@ bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
 		SendPowerLevel(system, powerLevel);
 
 	return true;
+}
+
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::ToggleSystem(EPowerSystem system) { ToggleSystem_Implementation(system); }
+#endif
+
+void UPowerSystem::ToggleSystem_Implementation(EPowerSystem system)
+{
+	UShipSystem *targetSystem = LookupSystem(system);
+	if (targetSystem == nullptr)
+		return;
+
+	// If it's zero, set it to 100. Otherwise, set it to 0.
+	auto powerLevel = powerLevels[system] == 0 ? 100 : 0;
+
+	targetSystem->SetPowerLevel(powerLevel);
+	powerLevels[system] = powerLevel;
+
+	if (ISCLIENT())
+		SendPowerLevel(system, powerLevel);
 }
 
 
