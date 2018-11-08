@@ -20,11 +20,11 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     name() { return 'power'; }
 
     protected getHelpText() {
-        return this.props.text.systemHelp.power;
+        return this.props.text.systemHelp.damage;
     }
 
     protected getOptionLabels() {
-        return this.props.text.systems.power;
+        return this.props.text.systems.helm; // obviously wrong
     }
 
     public render() {

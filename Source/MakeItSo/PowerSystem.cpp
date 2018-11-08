@@ -86,7 +86,7 @@ void UPowerSystem::SendAllData_Implementation()
 	SendQueueSize();
 }
 
-#define CHOICE_GENERATION_AUX_AMOUNT 1400
+#define CHOICE_GENERATION_AUX_AMOUNT 2100
 #define MAX_CHOICE_QUEUE_SIZE 9
 
 void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -125,10 +125,26 @@ void UPowerSystem::QueueAction(uint8 totalTickDelay, UPowerAction* action)
 	uint8 cumulativeDelay = 0;
 	int8 insertIndex = -1;
 
-	while (++insertIndex < queueSize && cumulativeDelay < totalTickDelay)
+	while (true)
 	{
-		cumulativeDelay += upcomingActions[insertIndex]->delayInTicks;
+		if (++insertIndex >= queueSize)
+			break;
+
+		auto newDelay = cumulativeDelay + upcomingActions[insertIndex]->delayInTicks;
+
+		if (newDelay > totalTickDelay)
+		{
+			upcomingActions[insertIndex]->delayInTicks = newDelay - totalTickDelay;
+			break;
+		}
+		else if (newDelay == totalTickDelay)
+			break;
+
+		cumulativeDelay = newDelay;
 	}
+
+	// hmm, we've gone past it by this point, haven't we?
+	action->delayInTicks = totalTickDelay - cumulativeDelay;
 
 	SETINSERT(upcomingActions, action, insertIndex);
 }

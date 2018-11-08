@@ -306,8 +306,8 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
             };
         case PowerCard.BoostWarp:
             return {
-                name: text.systems.power.cards.boostHelm.name,
-                desc: text.systems.power.cards.boostHelm.desc,
+                name: text.systems.power.cards.boostWarp.name,
+                desc: text.systems.power.cards.boostWarp.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Warp,
             };
