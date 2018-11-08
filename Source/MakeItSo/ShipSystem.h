@@ -95,6 +95,13 @@ public:
 	virtual void SetPowerLevel_Implementation(uint8 newLevel);
 #endif
 
+	UFUNCTION()
+	virtual bool AddPower(uint8 addAmount);
+
+	UFUNCTION()
+	virtual bool ReducePower(uint8 reduceAmount);
+
+
 	uint8 GetHealthLevel() { return systemHealth; }
 	uint8 GetPowerLevel() { return systemPower; }
 

@@ -34,6 +34,7 @@ void UPowerSystem::ResetData()
 
 	CLEAR(cardChoice);
 	CLEAR(cardHand);
+	CLEAR(upcomingActions);
 
 #ifndef WEB_SERVER_TEST
 	choiceQueue.Empty();
@@ -90,6 +91,67 @@ void UPowerSystem::SendAllData_Implementation()
 
 void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	TickQueuedActions();
+
+	TickAuxPower();
+}
+
+void UPowerSystem::TickQueuedActions()
+{
+	auto queueSize = SIZENUM(upcomingActions);
+	if (queueSize == 0)
+		return;
+
+	auto firstAction = upcomingActions[0];
+	firstAction->delayInTicks--;
+
+	while (firstAction->delayInTicks <= 0)
+	{
+		PerformAction(firstAction);
+		
+		SETREMOVEAT(upcomingActions, 0);
+		delete firstAction;
+
+		if (--queueSize == 0)
+			break;
+
+		firstAction = upcomingActions[0];
+	}
+}
+
+void UPowerSystem::QueueAction(uint8 totalTickDelay, UPowerAction* action)
+{
+	int8 queueSize = (int8)SIZENUM(upcomingActions);
+	uint8 cumulativeDelay = 0;
+	int8 insertIndex = -1;
+
+	while (++insertIndex < queueSize && cumulativeDelay < totalTickDelay)
+	{
+		cumulativeDelay += upcomingActions[insertIndex]->delayInTicks;
+	}
+
+	SETINSERT(upcomingActions, action, insertIndex);
+}
+
+void UPowerSystem::PerformAction(UPowerAction* action)
+{
+	auto system = LookupSystem(action->system);
+	if (system == nullptr)
+		return;
+
+	if (action->healthChange > 0)
+		system->RestoreDamage(action->healthChange);
+	else if (action->healthChange < 0)
+		system->TakeDamage(-action->healthChange);
+
+	if (action->powerChange > 0)
+		system->AddPower(action->powerChange);
+	else if (action->powerChange < 0)
+		system->ReducePower(-action->powerChange);
+}
+
+void UPowerSystem::TickAuxPower()
+{
 	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
 		return;
 
@@ -108,7 +170,7 @@ void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 void UPowerSystem::AddAuxPower(int16 amount)
 {
-	// TODO: account for GetHealthLevel() ... or does that affect the overall power rather than anything else?
+	// TODO: account for GetHealthLevel() ... or does that affect the overall power "max" rather than aux generation rate?
 
 	auxPowerGenerationProgress += amount;
 
@@ -535,16 +597,10 @@ bool UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 	
 	auto powerLevel = targetSystem->GetPowerLevel();
 
-	if (powerLevel >= MAX_SYSTEM_POWER)
-		return false;
-
 	if (powerLevel == 0)
-		powerLevel = 100;
+		amount += 100;
 
-	powerLevel = FMath::Min((uint8)MAX_SYSTEM_POWER, powerLevel + amount);
-	targetSystem->SetPowerLevel(powerLevel);
-
-	return true;
+	return targetSystem->AddPower(amount);
 }
 
 bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
@@ -566,12 +622,6 @@ bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
 	}
 
 	targetSystem->SetPowerLevel(powerLevel);
-
-	powerLevels[system] = powerLevel;
-
-	if (ISCLIENT())
-		SendPowerLevel(system, powerLevel);
-
 	return true;
 }
 
@@ -632,48 +682,96 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 		{
 			if (!AddPower(EPowerSystem::Power_Helm, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Helm;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostWarp:
 		{
 			if (!AddPower(EPowerSystem::Power_Warp, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Warp;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostWeapons:
 		{
 			if (!AddPower(EPowerSystem::Power_Weapons, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Weapons;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostSensors:
 		{
 			if (!AddPower(EPowerSystem::Power_Sensors, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Sensors;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostShields:
 		{
 			if (!AddPower(EPowerSystem::Power_Shields, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Shields;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostDamageControl:
 		{
 			if (!AddPower(EPowerSystem::Power_DamageControl, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_DamageControl;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostComms:
 		{
 			if (!AddPower(EPowerSystem::Power_Comms, 25))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Comms;
+			action->powerChange = -25;
+
+			QueueAction(10, action);
 			break;
 		}
 		case Card_BoostSelectable:
 		{
 			if (!AddPower((EPowerSystem)targetSystem, 20))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = (EPowerSystem)targetSystem;
+			action->powerChange = -20;
+
+			QueueAction(10, action);
 			break;
 		}
 
@@ -681,48 +779,96 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 		{
 			if (!AddPower(EPowerSystem::Power_Helm, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Helm;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadWarp:
 		{
 			if (!AddPower(EPowerSystem::Power_Warp, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Warp;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadWeapons:
 		{
 			if (!AddPower(EPowerSystem::Power_Weapons, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Weapons;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadSensors:
 		{
 			if (!AddPower(EPowerSystem::Power_Sensors, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Sensors;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadShields:
 		{
 			if (!AddPower(EPowerSystem::Power_Shields, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Shields;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadDamageControl:
 		{
 			if (!AddPower(EPowerSystem::Power_DamageControl, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_DamageControl;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadComms:
 		{
 			if (!AddPower(EPowerSystem::Power_Comms, 50))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = EPowerSystem::Power_Comms;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 		case Card_OverloadSelectable:
 		{
 			if (!AddPower((EPowerSystem)targetSystem, 40))
 				return;
+
+			auto action = new UPowerAction();
+			action->system = (EPowerSystem)targetSystem;
+			action->powerChange = -50;
+
+			QueueAction(8, action);
 			break;
 		}
 

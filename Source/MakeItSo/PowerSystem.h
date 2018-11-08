@@ -7,6 +7,7 @@
 #include "ShipSystem.h"
 #include "PowerSystem.Generated.h"
 
+class UPowerAction;
 
 UCLASS()
 class MAKEITSO_API UPowerSystem : public UShipSystem
@@ -66,6 +67,9 @@ private:
 
 	UPROPERTY()
 	TQueue<TArray<uint8>> choiceQueue;
+
+	UPROPERTY()
+	TArray<UPowerAction*> upcomingActions;
 
 
 	// Client functions, that can be called from the server
@@ -144,6 +148,10 @@ private:
 #endif
 
 private:
+	void QueueAction(uint8 totalTickDelay, UPowerAction* action);
+	void PerformAction(UPowerAction* action);
+	void TickQueuedActions();
+	void TickAuxPower();
 	void AddAuxPower(int16 amount);
 	void RemoveAuxPower(int16 amount);
 
@@ -156,4 +164,18 @@ private:
 	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
 	bool AddPower(EPowerSystem system, uint8 amount);
 	bool ReducePower(EPowerSystem system, uint8 amount);
+};
+
+
+UCLASS()
+class MAKEITSO_API UPowerAction : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	UPowerSystem::EPowerSystem system;
+	int8 healthChange;
+	int8 powerChange;
+
+	uint8 delayInTicks;
 };

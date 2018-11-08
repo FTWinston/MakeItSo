@@ -93,6 +93,29 @@ void UShipSystem::SetPowerLevel_Implementation(uint8 newLevel)
 	UpdatePowerSystem(newLevel);
 }
 
+bool UShipSystem::AddPower(uint8 addAmount)
+{
+	uint8 newLevel = FMath::Min((uint8)MAX_SYSTEM_POWER, systemPower + addAmount);
+	if (newLevel == systemPower)
+		return false;
+
+	SetPowerLevel(newLevel);
+	return true;
+}
+
+bool UShipSystem::ReducePower(uint8 reduceAmount)
+{
+	if (systemPower == 0)
+		return false;
+
+	uint8 newLevel = reduceAmount >= systemPower
+		? 0
+		: systemPower - reduceAmount;
+
+	SetPowerLevel(newLevel);
+	return true;
+}
+
 void UShipSystem::UpdatePowerSystem(uint8 newPower)
 {
 	auto powerSystem = crewManager->GetSystem(ESystem::PowerManagement);
