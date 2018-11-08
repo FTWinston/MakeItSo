@@ -299,112 +299,112 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
     switch (card) {
         case PowerCard.BoostHelm:
             return {
-                name: text.systems.power.boostHelm,
-                desc: text.systems.power.boostHelmDesc,
+                name: text.systems.power.cards.boostHelm.name,
+                desc: text.systems.power.cards.boostHelm.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Helm,
             };
         case PowerCard.BoostWarp:
             return {
-                name: text.systems.power.boostWarp,
-                desc: text.systems.power.boostWarpDesc,
+                name: text.systems.power.cards.boostHelm.name,
+                desc: text.systems.power.cards.boostHelm.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Warp,
             };
         case PowerCard.BoostWeapons:
             return {
-                name: text.systems.power.boostWeapons,
-                desc: text.systems.power.boostWeaponsDesc,
+                name: text.systems.power.cards.boostWeapons.name,
+                desc: text.systems.power.cards.boostWeapons.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Weapons,
             };
         case PowerCard.BoostSensors:
             return {
-                name: text.systems.power.boostSensors,
-                desc: text.systems.power.boostSensorsDesc,
+                name: text.systems.power.cards.boostSensors.name,
+                desc: text.systems.power.cards.boostSensors.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Sensors,
             };
         case PowerCard.BoostShields:
             return {
-                name: text.systems.power.boostShields,
-                desc: text.systems.power.boostShieldsDesc,
+                name: text.systems.power.cards.boostShields.name,
+                desc: text.systems.power.cards.boostShields.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Shields,
             };
         case PowerCard.BoostDamageControl:
             return {
-                name: text.systems.power.boostDamageControl,
-                desc: text.systems.power.boostDamageControlDesc,
+                name: text.systems.power.cards.boostDamageControl.name,
+                desc: text.systems.power.cards.boostDamageControl.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.DamageControl,
             };
         case PowerCard.BoostComms:
             return {
-                name: text.systems.power.boostComms,
-                desc: text.systems.power.boostCommsDesc,
+                name: text.systems.power.cards.boostComms.name,
+                desc: text.systems.power.cards.boostComms.desc,
                 rarity: PowerCardRarity.Common,
                 targetSystem: PowerSystemType.Comms,
             };
         case PowerCard.BoostSelectable:
             return {
-                name: text.systems.power.boostSelectable,
-                desc: text.systems.power.boostSelectableDesc,
+                name: text.systems.power.cards.boostSelectable.name,
+                desc: text.systems.power.cards.boostSelectable.desc,
                 rarity: PowerCardRarity.Rare,
             };
         case PowerCard.OverloadHelm:
             return {
-                name: text.systems.power.overloadHelm,
-                desc: text.systems.power.overloadHelmDesc,
+                name: text.systems.power.cards.overloadHelm.name,
+                desc: text.systems.power.cards.overloadHelm.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.Helm,
             };
         case PowerCard.OverloadWarp:
             return {
-                name: text.systems.power.overloadWarp,
-                desc: text.systems.power.overloadWarpDesc,
+                name: text.systems.power.cards.overloadWarp.name,
+                desc: text.systems.power.cards.overloadWarp.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.Warp,
             };
         case PowerCard.OverloadWeapons:
             return {
-                name: text.systems.power.overloadWeapons,
-                desc: text.systems.power.overloadWeaponsDesc,
+                name: text.systems.power.cards.overloadWeapons.name,
+                desc: text.systems.power.cards.overloadWeapons.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.Weapons,
             };
         case PowerCard.OverloadSensors:
             return {
-                name: text.systems.power.overloadSensors,
-                desc: text.systems.power.overloadSensorsDesc,
+                name: text.systems.power.cards.overloadSensors.name,
+                desc: text.systems.power.cards.overloadSensors.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.Sensors,
             };
         case PowerCard.OverloadShields:
             return {
-                name: text.systems.power.overloadShields,
-                desc: text.systems.power.overloadShieldsDesc,
+                name: text.systems.power.cards.overloadShields.name,
+                desc: text.systems.power.cards.overloadShields.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.Shields,
             };
         case PowerCard.OverloadDamageControl:
             return {
-                name: text.systems.power.overloadDamageControl,
-                desc: text.systems.power.overloadDamageControlDesc,
+                name: text.systems.power.cards.overloadDamageControl.name,
+                desc: text.systems.power.cards.overloadDamageControl.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.DamageControl,
             };
         case PowerCard.OverloadComms:
             return {
-                name: text.systems.power.overloadComms,
-                desc: text.systems.power.overloadCommsDesc,
+                name: text.systems.power.cards.overloadComms.name,
+                desc: text.systems.power.cards.overloadComms.desc,
                 rarity: PowerCardRarity.Rare,
                 targetSystem: PowerSystemType.Comms,
             };
         case PowerCard.OverloadSelectable:
             return {
-                name: text.systems.power.overloadSelectable,
-                desc: text.systems.power.overloadSelectableDesc,
+                name: text.systems.power.cards.overloadSelectable.name,
+                desc: text.systems.power.cards.overloadSelectable.desc,
                 rarity: PowerCardRarity.Epic,
             };
         default:

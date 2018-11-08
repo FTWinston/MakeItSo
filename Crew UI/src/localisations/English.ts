@@ -256,39 +256,72 @@ let words: TextLocalisation = {
             handLabel: 'Your cards:',
             choiceLabel: 'Choose a card:',
             overallPower: 'Overall power usage:',
-
-            boostHelm: 'Boost Helm',
-            boostHelmDesc: 'Increase power of helm system by 25% for 20 seconds.',
-            boostWarp: 'Boost Warp',
-            boostWarpDesc: 'Increase power of warp system by 25% for 20 seconds.',
-            boostWeapons: 'Boost Weapons',
-            boostWeaponsDesc: 'Increase power of weapons system by 25% for 20 seconds.',
-            boostSensors: 'Boost Sensors',
-            boostSensorsDesc: 'Increase power of sensors system by 25% for 20 seconds.',
-            boostShields: 'Boost Shields',
-            boostShieldsDesc: 'Increase power of shields system by 25% for 20 seconds.',
-            boostDamageControl: 'Boost Damage Control',
-            boostDamageControlDesc: 'Increase power of damage control system by 25% for 20 seconds.',
-            boostComms: 'Boost Communications',
-            boostCommsDesc: 'Increase power of communications system by 25% for 20 seconds.',
-            boostSelectable: 'Boost Any System',
-            boostSelectableDesc: 'Increase power of selected system by 20% for 20 seconds.',
-            overloadHelm: 'Overload Helm',
-            overloadHelmDesc: 'Increase power of helm system by 50% for 10 seconds, then damage it.',
-            overloadWarp: 'Overload Warp',
-            overloadWarpDesc: 'Increase power of warp system by 50% for 10 seconds, then damage it.',
-            overloadWeapons: 'Overload Weapons',
-            overloadWeaponsDesc: 'Increase power of weapons system by 50% for 10 seconds, then damage it.',
-            overloadSensors: 'Overload Sensors',
-            overloadSensorsDesc: 'Increase power of sensors system by 50% for 10 seconds, then damage it.',
-            overloadShields: 'Overload Shields',
-            overloadShieldsDesc: 'Increase power of shields system by 50% for 10 seconds, then damage it.',
-            overloadDamageControl: 'Overload Damage Control',
-            overloadDamageControlDesc: 'Increase power of damage control system by 50% for 10 seconds, then damage it.',
-            overloadComms: 'Overload Communications',
-            overloadCommsDesc: 'Increase power of communications system by 50% for 10 seconds, then damage it.',
-            overloadSelectable: 'Overload Any System',
-            overloadSelectableDesc: 'Increase power of selected system by 40% for 10 seconds, then damage it.',
+            cards: {
+                boostHelm: {
+                    name: 'Boost Helm',
+                    desc: 'Increase power of helm system by 25% for 20 seconds.',
+                },
+                boostWarp: {
+                    name: 'Boost Warp',
+                    desc: 'Increase power of warp system by 25% for 20 seconds.',
+                },
+                boostWeapons: {
+                    name: 'Boost Weapons',
+                    desc: 'Increase power of weapons system by 25% for 20 seconds.',
+                },
+                boostSensors: {
+                    name: 'Boost Sensors',
+                    desc: 'Increase power of sensors system by 25% for 20 seconds.',
+                },
+                boostShields: {
+                    name: 'Boost Shields',
+                    desc: 'Increase power of shields system by 25% for 20 seconds.',
+                },
+                boostDamageControl: {
+                    name: 'Boost Damage Control',
+                    desc: 'Increase power of damage control system by 25% for 20 seconds.',
+                },
+                boostComms: {
+                    name: 'Boost Communications',
+                    desc: 'Increase power of communications system by 25% for 20 seconds.',
+                },
+                boostSelectable: {
+                    name: 'Boost Any System',
+                    desc: 'Increase power of selected system by 20% for 20 seconds.',
+                },
+                overloadHelm: {
+                    name: 'Overload Helm',
+                    desc: 'Increase power of helm system by 50% for 10 seconds, then damage it.',
+                },
+                overloadWarp: {
+                    name: 'Overload Warp',
+                    desc: 'Increase power of warp system by 50% for 10 seconds, then damage it.',
+                },
+                overloadWeapons: {
+                    name: 'Overload Weapons',
+                    desc: 'Increase power of weapons system by 50% for 10 seconds, then damage it.',
+                },
+                overloadSensors: {
+                    name: 'Overload Sensors',
+                    desc: 'Increase power of sensors system by 50% for 10 seconds, then damage it.',
+                },
+                overloadShields: {
+                    name: 'Overload Shields',
+                    desc: 'Increase power of shields system by 50% for 10 seconds, then damage it.',
+                },
+                overloadDamageControl: {
+                    name: 'Overload Damage Control',
+                    desc: 'Increase power of damage control system by 50% for 10 seconds, then damage it.',
+                },
+                overloadComms: {
+                    name: 'Overload Communications',
+                    desc: 'Increase power of communications system by 50% for 10 seconds, then damage it.',
+                },
+                overloadSelectable: {
+                    name: 'Overload Any System',
+                    desc: 'Increase power of selected system by 40% for 10 seconds, then damage it.',
+                },
+            }
         },
         damage: {
             roll: 'Roll',

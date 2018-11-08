@@ -173,9 +173,16 @@ class MAKEITSO_API UPowerAction : public UObject
 	GENERATED_BODY()
 
 public:
+	UPowerAction(UPowerSystem::EPowerSystem system, int8 powerChange, int8 healthChange)
+	{
+		this->system = system;
+		this->powerChange = powerChange;
+		this->healthChange = healthChange;
+	}
+
 	UPowerSystem::EPowerSystem system;
-	int8 healthChange;
 	int8 powerChange;
+	int8 healthChange;
 
 	uint8 delayInTicks;
 };

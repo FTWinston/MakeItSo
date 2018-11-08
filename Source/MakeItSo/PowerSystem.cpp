@@ -683,11 +683,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Helm, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Helm;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Helm, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostWarp:
@@ -695,11 +692,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Warp, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Warp;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Warp, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostWeapons:
@@ -707,11 +701,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Weapons, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Weapons;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostSensors:
@@ -719,11 +710,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Sensors, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Sensors;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostShields:
@@ -731,11 +719,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Shields, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Shields;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Shields, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostDamageControl:
@@ -743,11 +728,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_DamageControl, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_DamageControl;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostComms:
@@ -755,11 +737,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Comms, 25))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Comms;
-			action->powerChange = -25;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Comms, -25, 0);
+			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostSelectable:
@@ -767,11 +746,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower((EPowerSystem)targetSystem, 20))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = (EPowerSystem)targetSystem;
-			action->powerChange = -20;
-
-			QueueAction(10, action);
+			auto action = new UPowerAction((EPowerSystem)targetSystem, -20, 0);
+			QueueAction(20, action);
 			break;
 		}
 
@@ -780,11 +756,7 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Helm, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Helm;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Helm, -50, -25);
 			break;
 		}
 		case Card_OverloadWarp:
@@ -792,11 +764,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Warp, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Warp;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Warp, -50, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadWeapons:
@@ -804,11 +773,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Weapons, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Weapons;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -50, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadSensors:
@@ -816,11 +782,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Sensors, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Sensors;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -50, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadShields:
@@ -828,11 +791,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Shields, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Shields;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Shields, -50, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadDamageControl:
@@ -840,11 +800,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_DamageControl, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_DamageControl;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -50, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadComms:
@@ -852,11 +809,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower(EPowerSystem::Power_Comms, 50))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = EPowerSystem::Power_Comms;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction(EPowerSystem::Power_Comms, -50, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadSelectable:
@@ -864,11 +818,8 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (!AddPower((EPowerSystem)targetSystem, 40))
 				return;
 
-			auto action = new UPowerAction();
-			action->system = (EPowerSystem)targetSystem;
-			action->powerChange = -50;
-
-			QueueAction(8, action);
+			auto action = new UPowerAction((EPowerSystem)targetSystem, -40, -25);
+			QueueAction(10, action);
 			break;
 		}
 

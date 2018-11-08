@@ -191,38 +191,72 @@ export interface TextLocalisation {
             choiceLabel: string;
             overallPower: string;
 
-            boostHelm: string;
-            boostHelmDesc: string;
-            boostWarp: string;
-            boostWarpDesc: string;
-            boostWeapons: string;
-            boostWeaponsDesc: string;
-            boostSensors: string;
-            boostSensorsDesc: string;
-            boostShields: string;
-            boostShieldsDesc: string;
-            boostDamageControl: string;
-            boostDamageControlDesc: string;
-            boostComms: string;
-            boostCommsDesc: string;
-            boostSelectable: string;
-            boostSelectableDesc: string;
-            overloadHelm: string;
-            overloadHelmDesc: string;
-            overloadWarp: string;
-            overloadWarpDesc: string;
-            overloadWeapons: string;
-            overloadWeaponsDesc: string;
-            overloadSensors: string;
-            overloadSensorsDesc: string;
-            overloadShields: string;
-            overloadShieldsDesc: string;
-            overloadDamageControl: string;
-            overloadDamageControlDesc: string;
-            overloadComms: string;
-            overloadCommsDesc: string;
-            overloadSelectable: string;
-            overloadSelectableDesc: string;
+            cards: {
+                boostHelm: {
+                    name: string;
+                    desc: string;
+                },
+                boostWarp: {
+                    name: string;
+                    desc: string;
+                },
+                boostWeapons: {
+                    name: string;
+                    desc: string;
+                },
+                boostSensors: {
+                    name: string;
+                    desc: string;
+                },
+                boostShields: {
+                    name: string;
+                    desc: string;
+                },
+                boostDamageControl: {
+                    name: string;
+                    desc: string;
+                },
+                boostComms: {
+                    name: string;
+                    desc: string;
+                },
+                boostSelectable: {
+                    name: string;
+                    desc: string;
+                },
+                overloadHelm: {
+                    name: string;
+                    desc: string;
+                },
+                overloadWarp: {
+                    name: string;
+                    desc: string;
+                },
+                overloadWeapons: {
+                    name: string;
+                    desc: string;
+                },
+                overloadSensors: {
+                    name: string;
+                    desc: string;
+                },
+                overloadShields: {
+                    name: string;
+                    desc: string;
+                },
+                overloadDamageControl: {
+                    name: string;
+                    desc: string;
+                },
+                overloadComms: {
+                    name: string;
+                    desc: string;
+                },
+                overloadSelectable: {
+                    name: string;
+                    desc: string;
+                }
+            }
         },
         damage: {
             roll: string;

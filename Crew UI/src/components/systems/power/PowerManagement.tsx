@@ -41,7 +41,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
     }
 
     protected getOptionLabels() {
-        return this.props.text.systems.power;
+        return this.props.text.systems.helm; // obviously wrong
     }
 
     public render() {
