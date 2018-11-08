@@ -8,17 +8,17 @@ interface SystemListProps {
     text: TextLocalisation;
     systems: PowerSystem[];
     systemSelected?: (system: PowerSystemType) => void;
+    selecting: boolean;
+    selectableSystem?: PowerSystemType;
 }
 
 export class SystemList extends React.PureComponent<SystemListProps, {}> {
     public render() {
         let classes = 'powerSystemList';
-        if (this.props.systemSelected !== undefined) {
-            classes += ' powerSystemList--selectable';
-        }
 
         const systems = this.props.systems.map((system, index) => {
             const selected = this.props.systemSelected === undefined
+                    || (this.props.selectableSystem !== undefined && this.props.selectableSystem !== system.type)
                 ? undefined
                 : () => this.props.systemSelected!(system.type);
 
@@ -26,7 +26,9 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
                 text={this.props.text}
                 system={system.type}
                 power={system.power}
-                selected={selected}
+                onSelected={selected}
+                selecting={this.props.selecting}
+                canSelect={this.props.selectableSystem === undefined || this.props.selectableSystem === system.type}
                 key={index}
             />
         });

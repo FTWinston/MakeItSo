@@ -20,7 +20,6 @@ export class CardDisplay extends React.Component<CardDisplayProps, {}> {
                 name: '???',
                 desc: `Card ID ${this.props.card} not recognised`,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
             };
         }
 

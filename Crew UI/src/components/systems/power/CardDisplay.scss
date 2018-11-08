@@ -5,19 +5,17 @@
     width: 11em;
 }
 
-.powerCardWrapper:last-child {
-    overflow: visible;
-    width: unset;
+@include landscape() {
+    .powerCardWrapper:last-child {
+        overflow: visible;
+        width: unset;
+    }
 }
 
 @include portrait() {    
     .powerCardWrapper {
         width: unset;
         height: 16em;
-    }
-
-    .powerCardWrapper:last-child {
-        height: unset;
     }
 }
 

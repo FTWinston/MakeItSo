@@ -8,7 +8,7 @@ import { exhaustiveActionCheck } from '~/store';
 export const enum PowerSystemType {
     Helm = 0,
     Warp,
-    BeamWeapons,
+    Weapons,
     Sensors,
     Shields,
     DamageControl,
@@ -33,7 +33,7 @@ export interface PowerCardInfo {
     name: string;
     desc: string;
     rarity: PowerCardRarity;
-    selectTarget: boolean;
+    targetSystem?: PowerSystemType;
 }
 
 export interface PowerState {
@@ -42,6 +42,7 @@ export interface PowerState {
     handCards: PowerCard[];
     numChoices: number;
     generationProgress: number;
+    overallPower: number;
     selectedHandPos?: number;
 }
 
@@ -80,6 +81,11 @@ interface SetGenerationProgressAction {
     fraction: number;
 }
 
+interface SetOverallPowerAction {
+    type: 'OVERALL';
+    value: number;
+}
+
 interface AddCardAction {
     type: 'ADD_CARD';
     cardID: number;
@@ -97,8 +103,8 @@ interface SelectCardAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetAllPowerAction | SetPowerAction | SetChoiceAction | SetHandAction
-    | SetNumChoicesAction | SetGenerationProgressAction | AddCardAction | RemoveCardAction | SelectCardAction;
+type KnownAction = SetAllPowerAction | SetPowerAction | SetChoiceAction | SetHandAction | SetNumChoicesAction
+    | SetGenerationProgressAction | SetOverallPowerAction | AddCardAction | RemoveCardAction | SelectCardAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -122,13 +128,17 @@ export const actionCreators = {
         type: 'HAND',
         cardIDs: cardIDs,
     },
-    SetNumChoices: (size: number) => <SetNumChoicesAction>{
+    setNumChoices: (size: number) => <SetNumChoicesAction>{
         type: 'CHOICES',
         number: size,
     },
-    SetGenerationProgress: (fraction: number) => <SetGenerationProgressAction>{
+    setGenerationProgress: (fraction: number) => <SetGenerationProgressAction>{
         type: 'GENERATION',
         fraction: fraction,
+    },
+    setOverallPower: (value: number) => <SetOverallPowerAction>{
+        type: 'OVERALL',
+        value: value,
     },
     addCardToHand: (cardID: number) => <AddCardAction>{
         type: 'ADD_CARD',
@@ -151,7 +161,7 @@ const unloadedState: PowerState = {
     systems: [
         { type: PowerSystemType.Helm, power: 0, },
         { type: PowerSystemType.Warp, power: 0, },
-        { type: PowerSystemType.BeamWeapons, power: 0, },
+        { type: PowerSystemType.Weapons, power: 0, },
         { type: PowerSystemType.Sensors, power: 0, },
         { type: PowerSystemType.Shields, power: 0, },
         { type: PowerSystemType.DamageControl, power: 0, },
@@ -161,6 +171,7 @@ const unloadedState: PowerState = {
     handCards: [],
     numChoices: 0,
     generationProgress: 0,
+    overallPower: 0,
 };
 
 export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Action) => {
@@ -212,6 +223,12 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             return {
                 ...state,
                 generationProgress: action.fraction,
+            };
+        }
+        case 'OVERALL': {
+            return {
+                ...state,
+                overallPower: action.value,
             };
         }
         case 'ADD_CARD': {
@@ -285,112 +302,110 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
                 name: text.systems.power.boostHelm,
                 desc: text.systems.power.boostHelmDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Helm,
             };
         case PowerCard.BoostWarp:
             return {
                 name: text.systems.power.boostWarp,
                 desc: text.systems.power.boostWarpDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Warp,
             };
         case PowerCard.BoostWeapons:
             return {
                 name: text.systems.power.boostWeapons,
                 desc: text.systems.power.boostWeaponsDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Weapons,
             };
         case PowerCard.BoostSensors:
             return {
                 name: text.systems.power.boostSensors,
                 desc: text.systems.power.boostSensorsDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Sensors,
             };
         case PowerCard.BoostShields:
             return {
                 name: text.systems.power.boostShields,
                 desc: text.systems.power.boostShieldsDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Shields,
             };
         case PowerCard.BoostDamageControl:
             return {
                 name: text.systems.power.boostDamageControl,
                 desc: text.systems.power.boostDamageControlDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.DamageControl,
             };
         case PowerCard.BoostComms:
             return {
                 name: text.systems.power.boostComms,
                 desc: text.systems.power.boostCommsDesc,
                 rarity: PowerCardRarity.Common,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Comms,
             };
         case PowerCard.BoostSelectable:
             return {
                 name: text.systems.power.boostSelectable,
                 desc: text.systems.power.boostSelectableDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
             };
         case PowerCard.OverloadHelm:
             return {
                 name: text.systems.power.overloadHelm,
                 desc: text.systems.power.overloadHelmDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Helm,
             };
         case PowerCard.OverloadWarp:
             return {
                 name: text.systems.power.overloadWarp,
                 desc: text.systems.power.overloadWarpDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Warp,
             };
         case PowerCard.OverloadWeapons:
             return {
                 name: text.systems.power.overloadWeapons,
                 desc: text.systems.power.overloadWeaponsDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Weapons,
             };
         case PowerCard.OverloadSensors:
             return {
                 name: text.systems.power.overloadSensors,
                 desc: text.systems.power.overloadSensorsDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Sensors,
             };
         case PowerCard.OverloadShields:
             return {
                 name: text.systems.power.overloadShields,
                 desc: text.systems.power.overloadShieldsDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Shields,
             };
         case PowerCard.OverloadDamageControl:
             return {
                 name: text.systems.power.overloadDamageControl,
                 desc: text.systems.power.overloadDamageControlDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.DamageControl,
             };
         case PowerCard.OverloadComms:
             return {
                 name: text.systems.power.overloadComms,
                 desc: text.systems.power.overloadCommsDesc,
                 rarity: PowerCardRarity.Rare,
-                selectTarget: false,
+                targetSystem: PowerSystemType.Comms,
             };
         case PowerCard.OverloadSelectable:
             return {
                 name: text.systems.power.overloadSelectable,
                 desc: text.systems.power.overloadSelectableDesc,
                 rarity: PowerCardRarity.Epic,
-                selectTarget: true,
             };
         default:
             return null;

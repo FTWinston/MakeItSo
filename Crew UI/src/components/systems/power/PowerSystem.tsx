@@ -7,20 +7,28 @@ interface IProps {
     text: TextLocalisation;
     system: PowerSystemType;
     power: number;
-    selected?: () => void;
+    onSelected?: () => void;
+    selecting: boolean;
+    canSelect: boolean;
 }
 
 export class PowerSystem extends React.PureComponent<IProps, {}> {
     public render() {
         let classes = 'powerSystem';
+        if (this.props.selecting) {
+            classes += this.props.canSelect
+                ? ' powerSystem--selecting'
+                : ' powerSystem--unselectable';
+        }
+
         let selected;
 
         if (this.props.power === 0) {
             classes += ' powerSystem--disabled';
         }
 
-        if (this.props.selected !== undefined) {
-            selected = () => this.props.selected!();
+        if (this.props.onSelected !== undefined) {
+            selected = () => this.props.onSelected!();
             classes += ' powerSystem--selectable';
         }
 
@@ -38,7 +46,7 @@ export class PowerSystem extends React.PureComponent<IProps, {}> {
                 return this.props.text.systemNames.helm;
             case PowerSystemType.Warp:
                 return this.props.text.systemNames.warp;
-            case PowerSystemType.BeamWeapons:
+            case PowerSystemType.Weapons:
                 return this.props.text.systemNames.weapons;
             case PowerSystemType.Sensors:
                 return this.props.text.systemNames.sensors;

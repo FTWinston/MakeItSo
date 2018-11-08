@@ -255,6 +255,7 @@ let words: TextLocalisation = {
             discardChoice: 'Discard all',
             handLabel: 'Your cards:',
             choiceLabel: 'Choose a card:',
+            overallPower: 'Overall power usage:',
 
             boostHelm: 'Boost Helm',
             boostHelmDesc: 'Increase power of helm system by 25% for 20 seconds.',

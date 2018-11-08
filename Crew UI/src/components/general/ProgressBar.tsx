@@ -24,10 +24,13 @@ export class ProgressBar extends React.PureComponent<IProgressBarProps, {}> {
         }
 
         const percentStyle = {width: percentNumber + '%'};
+        const indicator = this.props.showNumber || this.props.value > 0
+            ? <div className="progressBar__indicator" style={percentStyle}>{text}</div>
+            : undefined;
 
         return (
             <div className={classes}>
-                <div className="progressBar__indicator" style={percentStyle}>{text}</div>
+                {indicator}
                 <div className="progressBar__remainder" />
             </div>
         )

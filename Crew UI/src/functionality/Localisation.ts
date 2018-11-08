@@ -189,6 +189,7 @@ export interface TextLocalisation {
             discardChoice: string;
             handLabel: string;
             choiceLabel: string;
+            overallPower: string;
 
             boostHelm: string;
             boostHelmDesc: string;

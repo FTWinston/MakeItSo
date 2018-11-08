@@ -123,6 +123,7 @@ protected:
 	TArray<FString> SplitParts(websocket_message *msg, int offset);
 
 	virtual void UpdateDamageControl(uint8 health);
+	virtual void UpdatePowerSystem(uint8 power);
 private:
 
 	UPROPERTY(Replicated)

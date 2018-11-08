@@ -1,6 +1,7 @@
 import * as React from 'react';
 import './SelectionIndicator.scss';
 import { TextLocalisation } from '~/functionality';
+import { PushButton, ButtonColor } from '~/components/general';
 
 interface IProps {
     className?: string;
@@ -20,9 +21,14 @@ export class SelectionIndicator extends React.PureComponent<IProps, {}> {
             ? () => this.props.selected!()
             : undefined;
 
-        return <div className={classes} onClick={selected}>
+        return <div className={classes}>
             <div className="powerSelectionIndicator__queueSize">{this.props.queueSize}</div>
-            <div className="powerSelectionIndicator__label">{this.props.text.systems.power.pickCards}</div>
+            <PushButton
+                className="powerSelectionIndicator__label"
+                text={this.props.text.systems.power.pickCards}
+                clicked={selected}
+                color={ButtonColor.Primary}
+            />
         </div>
     }
 }

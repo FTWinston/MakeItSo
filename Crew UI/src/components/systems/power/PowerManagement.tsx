@@ -51,7 +51,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             ? null
             : getPowerCardInfo(this.props.handCards[this.props.selectedHandPos], this.props.text);
 
-        const selectSystem = selectedCard === null || !selectedCard.selectTarget
+        const selectSystem = selectedCard === null
             ? (system: PowerSystemType) => this.toggleSystem(system)
             : (system: PowerSystemType) => this.selectSystem(system);
 
@@ -87,9 +87,15 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             ? (num: number) => this.pickCard(num)
             : undefined;
 
+        let selectableSystem;
+
         let classes = 'system power';
+        if (selectedCard !== null) {
+            classes += ' power--systemSelect';
+            selectableSystem = selectedCard.targetSystem;
+        }
         if (this.state.expand === ExpandSection.Selection) {
-            classes += ' power--selection';
+            classes += ' power--cardSelection';
         }
 
         return <div className={classes}>
@@ -97,11 +103,13 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
                 text={this.props.text}
                 systems={this.props.systems}
                 systemSelected={selectSystem}
+                selectableSystem={selectableSystem}
+                selecting={selectedCard !== null}
             />
             <div className="power__handLabel">{systemText.handLabel}</div>
             <div className="power__selectionLabel">{systemText.choiceLabel}</div>
-            <div className="power__overallPower">
-                Overall power 100%
+            <div className={this.props.overallPower > 100 ? 'power__overallPower power__overallPower--draining' : 'power__overallPower'}>
+                {this.props.text.systems.power.overallPower} {this.props.overallPower}%
             </div>
             <ProgressBar value={this.props.generationProgress} maxValue={100} showNumber={false} className="power__charge" />
             {queueSize}
@@ -163,7 +171,7 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {},
+    actionCreators,
     null,
     { withRef: true },
 )(PowerManagement);

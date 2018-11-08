@@ -23,8 +23,14 @@ UPowerSystem::UPowerSystem()
 
 void UPowerSystem::ResetData()
 {
+	overallPower = 0;
 	for (auto i = 0; i < NUM_POWER_SYSTEMS; i++)
-		powerLevels[i] = 0;
+	{
+		auto system = LookupSystem((EPowerSystem)i);
+		auto systemPower = system == nullptr ? 0 : system->GetPowerLevel();
+		powerLevels[i] = systemPower;
+		overallPower += systemPower;
+	}
 
 	CLEAR(cardChoice);
 	CLEAR(cardHand);
@@ -79,7 +85,7 @@ void UPowerSystem::SendAllData_Implementation()
 	SendQueueSize();
 }
 
-#define CHOICE_GENERATION_AUX_AMOUNT 1000
+#define CHOICE_GENERATION_AUX_AMOUNT 1400
 #define MAX_CHOICE_QUEUE_SIZE 9
 
 void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -91,7 +97,7 @@ void UPowerSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 
 	if (powerDifference < 0)
 		RemoveAuxPower(-powerDifference);
-	else if (powerDifference < 0)
+	else if (powerDifference > 0)
 		AddAuxPower(powerDifference);
 	else
 		return;
@@ -108,7 +114,11 @@ void UPowerSystem::AddAuxPower(int16 amount)
 
 	if (auxPowerGenerationProgress >= CHOICE_GENERATION_AUX_AMOUNT)
 	{
-		auxPowerGenerationProgress -= CHOICE_GENERATION_AUX_AMOUNT;
+		if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
+			auxPowerGenerationProgress = 0; // when we're full, don't leave a partial bar
+		else
+			auxPowerGenerationProgress -= CHOICE_GENERATION_AUX_AMOUNT;
+
 		AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
 	}
 }
@@ -144,7 +154,7 @@ void UPowerSystem::RemoveAuxPower(int16 amount)
 		// Otherwise, shut enough systems down to account for the defecit.
 		else
 		{
-			for (uint8 i = 0; i < NUM_POWER_SYSTEMS; i++)
+			for (uint8 i = NUM_POWER_SYSTEMS - 1; i >= 0; i++)
 				if (powerLevels[i] > 0)
 				{
 					auto system = LookupSystem((EPowerSystem)i);
@@ -432,7 +442,7 @@ void UPowerSystem::ChooseCard(int8 cardPosition) { ChooseCard_Implementation(car
 
 void UPowerSystem::ChooseCard_Implementation(int8 cardPosition)
 {
-	if (cardPosition < -1 || (uint8)cardPosition >= SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
+	if (cardPosition < -1 || cardPosition >= (int8)SIZENUM(cardChoice) || SIZENUM(cardHand) >= MAX_HAND_SIZE)
 		return;
 
 	if (cardPosition > -1)
@@ -528,13 +538,11 @@ bool UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 	if (powerLevel >= MAX_SYSTEM_POWER)
 		return false;
 
+	if (powerLevel == 0)
+		powerLevel = 100;
+
 	powerLevel = FMath::Min((uint8)MAX_SYSTEM_POWER, powerLevel + amount);
 	targetSystem->SetPowerLevel(powerLevel);
-
-	powerLevels[system] = powerLevel;
-
-	if (ISCLIENT())
-		SendPowerLevel(system, powerLevel);
 
 	return true;
 }

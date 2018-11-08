@@ -6,6 +6,7 @@
 #endif
 
 #include "DamageControlSystem.h"
+#include "PowerSystem.h"
 #include "CrewManager.h"
 #include "Mongoose.h"
 
@@ -16,7 +17,7 @@ UShipSystem::UShipSystem()
 	SetIsReplicated(true);
 
 	systemHealth = MAX_SYSTEM_HEALTH;
-	systemPower = 0;
+	systemPower = 100;
 
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -79,6 +80,7 @@ void UShipSystem::UpdateDamageControl(uint8 newHealth)
 	((UDamageControlSystem*)damageControl)->SetSystemHealth(GetSystem(), newHealth);
 }
 
+
 #ifdef WEB_SERVER_TEST
 void UShipSystem::SetPowerLevel(uint8 newLevel) { SetPowerLevel_Implementation(newLevel); }
 #endif
@@ -88,7 +90,18 @@ void UShipSystem::SetPowerLevel_Implementation(uint8 newLevel)
 		newLevel = MAX_SYSTEM_POWER;
 
 	systemPower = newLevel;
+	UpdatePowerSystem(newLevel);
 }
+
+void UShipSystem::UpdatePowerSystem(uint8 newPower)
+{
+	auto powerSystem = crewManager->GetSystem(ESystem::PowerManagement);
+	if (powerSystem == nullptr)
+		return;
+
+	((UPowerSystem*)powerSystem)->SetSystemPower(GetSystem(), newPower);
+}
+
 
 #ifdef WEB_SERVER_TEST
 void UShipSystem::SendAllData() { SendAllData_Implementation(); }
