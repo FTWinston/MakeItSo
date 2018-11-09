@@ -16,8 +16,10 @@ UPowerSystem::UPowerSystem()
 
 #ifndef WEB_SERVER_TEST
 	powerLevels.AddZeroed(NUM_POWER_SYSTEMS);
+	systemCapacity.AddZeroed(NUM_POWER_SYSTEMS);
 #else
 	powerLevels.assign(NUM_POWER_SYSTEMS, 0);
+	systemCapacity.assign(NUM_POWER_SYSTEMS, 0);
 #endif
 }
 
@@ -27,8 +29,15 @@ void UPowerSystem::ResetData()
 	for (auto i = 0; i < NUM_POWER_SYSTEMS; i++)
 	{
 		auto system = LookupSystem((EPowerSystem)i);
-		auto systemPower = system == nullptr ? 0 : system->GetPowerLevel();
+
+		auto systemPower = system == nullptr
+			? 0 : system->GetPowerLevel();
+
 		powerLevels[i] = systemPower;
+
+		systemCapacity[i] = systemPower == 0
+			? 100 : systemPower;
+
 		overallPower += systemPower;
 	}
 
@@ -161,9 +170,9 @@ void UPowerSystem::PerformAction(UPowerAction* action)
 		system->TakeDamage(-action->healthChange);
 
 	if (action->powerChange > 0)
-		system->AddPower(action->powerChange);
+		AddPower(action->system, action->powerChange);
 	else if (action->powerChange < 0)
-		system->ReducePower(-action->powerChange);
+		ReducePower(action->system, -action->powerChange);
 }
 
 void UPowerSystem::TickAuxPower()
@@ -270,6 +279,9 @@ void UPowerSystem::SetSystemPower(UShipSystem::ESystem system, uint8 power)
 	powerLevels[powerSystem] = power;
 
 	overallPower += power - orig;
+
+	if (power != 0)
+		systemCapacity[powerSystem] = power;
 
 	if (ISCLIENT())
 	{
@@ -605,18 +617,38 @@ UPowerSystem::EPowerSystem UPowerSystem::GetPowerSystem(UShipSystem::ESystem sys
 	}
 }
 
+uint8 UPowerSystem::GetPowerAddition(uint8 current, uint8 addition)
+{
+	return FMath::Min((uint8)MAX_SYSTEM_POWER, current + addition);
+}
+
+uint8 UPowerSystem::GetPowerReduction(uint8 current, uint8 reduction)
+{
+	return reduction >= current
+		? 0
+		: current - reduction;
+}
+
 bool UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 {
 	UShipSystem *targetSystem = LookupSystem(system);
 	if (targetSystem == nullptr)
 		return false;
-	
-	auto powerLevel = targetSystem->GetPowerLevel();
 
-	if (powerLevel == 0)
-		amount += 100;
+	auto currentCapacity = systemCapacity[system];
+	auto newLevel = GetPowerAddition(currentCapacity, amount);
 
-	return targetSystem->AddPower(amount);
+	if (newLevel == currentCapacity)
+		return false;
+
+	systemCapacity[system] = newLevel;
+
+	// Only adjust the power level if the system is turned on. Don't turn it on through this.
+	auto currentLevel = targetSystem->GetPowerLevel();
+	if (currentLevel > 0)
+		targetSystem->SetPowerLevel(newLevel);
+
+	return true;
 }
 
 bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
@@ -625,19 +657,19 @@ bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
 	if (targetSystem == nullptr)
 		return false;
 
-	auto powerLevel = targetSystem->GetPowerLevel();
+	auto currentCapacity = systemCapacity[system];
+	auto newLevel = GetPowerReduction(currentCapacity, amount);
 
-	if (powerLevel <= 0)
+	if (newLevel == currentCapacity)
 		return false;
 
-	if (powerLevel <= amount)
-		powerLevel = 0;
-	else
-	{
-		powerLevel = powerLevel - amount;
-	}
+	systemCapacity[system] = newLevel;
 
-	targetSystem->SetPowerLevel(powerLevel);
+	// Only adjust the power level if the system is turned on. Don't turn it on through this.
+	auto currentLevel = targetSystem->GetPowerLevel();
+	if (currentLevel > 0)
+		targetSystem->SetPowerLevel(newLevel);
+
 	return true;
 }
 
@@ -652,8 +684,10 @@ void UPowerSystem::ToggleSystem_Implementation(EPowerSystem system)
 	if (targetSystem == nullptr)
 		return;
 
-	// If it's zero, set it to 100. Otherwise, set it to 0.
-	auto powerLevel = powerLevels[system] == 0 ? 100 : 0;
+	// If it's zero, set it to its current capacity. Otherwise, set it to 0.
+	auto powerLevel = targetSystem->GetPowerLevel() == 0
+		? systemCapacity[system] : 0;
+
 	targetSystem->SetPowerLevel(powerLevel);
 }
 

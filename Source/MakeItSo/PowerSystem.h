@@ -35,7 +35,9 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetSystemPower(UShipSystem::ESystem system, uint8 power);
-
+	
+	static uint8 GetPowerAddition(uint8 current, uint8 addition);
+	static uint8 GetPowerReduction(uint8 current, uint8 reduction);
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::PowerManagement; }
 
@@ -48,6 +50,9 @@ private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_PowerLevels)
 	TArray<uint8> powerLevels;
 	void OnReplicated_PowerLevels(TArray<uint8> beforeChange);
+
+	UPROPERTY()
+	TArray<uint8> systemCapacity;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardHand)
 	TArray<uint8> cardHand;
