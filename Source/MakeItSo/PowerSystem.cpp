@@ -76,6 +76,11 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 			ActivateCard(cardID, handPosition, targetSystemPos);
 		}
 	}
+	else if (STARTS_WITH(msg, "power_discardCard "))
+	{
+		uint8 handPosition = ExtractInt(msg, sizeof("power_discardCard "));
+		DiscardCard(handPosition);
+	}
 	else if (STARTS_WITH(msg, "power_toggle "))
 	{
 		EPowerSystem targetSystem = (EPowerSystem)ExtractInt(msg, sizeof("power_toggle "));
@@ -718,12 +723,28 @@ enum EPowerCard
 
 
 #ifdef WEB_SERVER_TEST
+void UPowerSystem::DiscardCard(uint8 handPosition) { DiscardCard_Implementation(handPosition); }
+#endif
+
+void UPowerSystem::DiscardCard_Implementation(uint8 handPosition)
+{
+	if (handPosition >= SIZENUM(cardHand))
+		return;
+
+	SETREMOVEAT(cardHand, handPosition);
+
+	if (ISCLIENT())
+		SendRemoveCardFromHand(handPosition);
+}
+
+
+#ifdef WEB_SERVER_TEST
 void UPowerSystem::ActivateCard(uint8 cardID, uint8 handPosition, uint8 targetSystemPos) { ActivateCard_Implementation(cardID, handPosition, targetSystemPos); }
 #endif
 
 void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition, uint8 targetSystem)
 {
-	if (targetSystem >= NUM_POWER_SYSTEMS || cardHand[handPosition] != cardID)
+	if (targetSystem >= NUM_POWER_SYSTEMS || handPosition >= SIZENUM(cardHand) || cardHand[handPosition] != cardID)
 		return;
 
 	switch ((EPowerCard)cardID)

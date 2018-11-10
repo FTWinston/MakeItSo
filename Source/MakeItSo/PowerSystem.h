@@ -147,6 +147,12 @@ private:
 #endif
 
 	UFUNCTION(Server, Reliable)
+	void DiscardCard(uint8 handPosition);
+#ifdef WEB_SERVER_TEST
+	void DiscardCard_Implementation(uint8 handPosition);
+#endif
+
+	UFUNCTION(Server, Reliable)
 	void ToggleSystem(EPowerSystem system);
 #ifdef WEB_SERVER_TEST
 	void ToggleSystem_Implementation(EPowerSystem system);

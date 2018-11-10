@@ -252,6 +252,7 @@ let words: TextLocalisation = {
         },
         power: {
             pickCards: 'Pick cards',
+            discardCard: 'Discard card',
             discardChoice: 'Discard all',
             handLabel: 'Your cards:',
             choiceLabel: 'Choose a card:',

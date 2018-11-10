@@ -186,6 +186,7 @@ export interface TextLocalisation {
         },
         power: {
             pickCards: string;
+            discardCard: string;
             discardChoice: string;
             handLabel: string;
             choiceLabel: string;

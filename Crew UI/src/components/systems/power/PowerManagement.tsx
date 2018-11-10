@@ -8,7 +8,6 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { SystemList } from './SystemList';
 import './PowerManagement.scss';
 import { CardSet } from './CardSet';
-import { SelectionIndicator } from './SelectionIndicator';
 import { ConfirmButton, ButtonColor, PushButton, ProgressBar } from '~/components/general';
 
 interface IProps extends PowerState {
@@ -59,11 +58,24 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
 
         const queueSize = this.props.numChoices <= 0
             ? undefined
-            : <SelectionIndicator
-                className="power__selectionIndicator"
-                text={this.props.text}
-                queueSize={this.props.numChoices}
-                selected={() => this.setState({ expand: ExpandSection.Selection })}
+            : <div className="power__queueSize">{this.props.numChoices}</div>
+
+        const chooseButton = this.props.numChoices <= 0
+            ? undefined
+            : <PushButton
+                className="power__chooseButton"
+                text={this.props.text.systems.power.pickCards}
+                clicked={() => this.setState({ expand: ExpandSection.Selection })}
+                color={ButtonColor.Primary}
+            />
+
+        const discardButton = selectedCard === null
+            ? undefined
+            : <ConfirmButton
+                className="power__discardButton"
+                text={this.props.text.systems.power.discardCard}
+                clicked={() => this.discardCard()}
+                color={ButtonColor.Secondary}
             />
 
         const selectionActions = this.props.choiceCards.length === 0
@@ -91,7 +103,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
 
         let classes = 'system power';
         if (selectedCard !== null) {
-            classes += ' power--systemSelect';
+            classes += ' power--systemSelection';
             selectableSystem = selectedCard.targetSystem;
         }
         if (this.state.expand === ExpandSection.Selection) {
@@ -113,6 +125,8 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             </div>
             <ProgressBar value={this.props.generationProgress} maxValue={100} showNumber={false} className="power__charge" />
             {queueSize}
+            {chooseButton}
+            {discardButton}
             {selectionActions}
             <CardSet
                 className="power__cardSelection"
@@ -143,7 +157,16 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             return; // do nothing if no card selected
         }
 
-        this.playCard(this.props.handCards[this.props.selectedHandPos], this.props.selectedHandPos, system);
+        const cardID = this.props.handCards[this.props.selectedHandPos] 
+        connection.send(`power_useCard ${cardID} ${this.props.selectedHandPos} ${system}`);
+    }
+
+    private discardCard() {
+        if (this.props.selectedHandPos === undefined) {
+            return; // do nothing if no card selected
+        }
+        
+        connection.send(`power_discardCard ${this.props.selectedHandPos}`);
     }
 
     private pickCard(cardNum: number) {
@@ -152,10 +175,6 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
         if (this.props.numChoices < 1) {
             this.setState({ expand: ExpandSection.None });
         }
-    }
-
-    private playCard(cardID: number, handPos: number, targetSystem: PowerSystemType) {
-        connection.send(`power_useCard ${cardID} ${handPos} ${targetSystem}`);
     }
 }
 

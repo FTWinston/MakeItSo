@@ -35,8 +35,27 @@
     grid-area: hand;
 }
 
-.power__selectionIndicator {
+.power__queueSize {
+    grid-area: queueSize;
+    border-radius: 2em;
+    font-weight: bold;
+    font-size: 1.75em;
+    background-color: $colorPrimary;
+    color: $backgroundColor;
+    padding: 0.1em;
+    align-self: center;
+    text-align: center;
+    width: 1.3em;
+}
+
+.power__chooseButton,
+.power__discardButton {
     grid-area: action;
+    justify-self: center;
+}
+
+.power__selectionBack {
+    display: none;
 }
 
 .power__selectionBack {
@@ -59,12 +78,12 @@
     .power {
         grid-gap: 0.5em;
         grid-template-rows: 2.5em 0.25em 1em 1fr;
-        grid-template-columns: 2fr 3fr;
+        grid-template-columns: 2fr 3em 3fr;
         grid-template-areas:
-            "overall action"
-            "charge charge"
-            "systems label"
-            "systems cards";
+            "overall queueSize action"
+            "charge charge charge"
+            "systems label label"
+            "systems cards cards";
     }
 
     .power__handLabel,
@@ -97,10 +116,10 @@
 
     .power--cardSelection {
         grid-template-areas:
-            "selectionActions selectionActions"
-            "charge charge"
-            "systems label"
-            "systems cards";
+            "selectionActions selectionActions selectionActions"
+            "charge charge charge"
+            "systems label label"
+            "systems cards cards";
 
         & .power__cardSelection,
         & .power__selectionActions {
@@ -109,7 +128,9 @@
 
         & .power__cardHand,
         & .power__handLabel,
-        & .power__selectionIndicator,
+        & .power__queueSize,
+        & .power__chooseButton,
+        & .power__discardButton,
         & .power__overallPower {
             display: none;
         }
@@ -118,6 +139,19 @@
         & .power__selectionLabel,
         & .power__selectionBack {
             display: block;
+        }
+    }
+
+    .power--systemSelection {
+        grid-template-areas:
+            "overall action action"
+            "charge charge charge"
+            "systems label label"
+            "systems cards cards";
+
+        & .power__chooseButton,
+        & .power__queueSize {
+            display: none;
         }
     }
 }
