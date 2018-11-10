@@ -44,6 +44,7 @@ export interface PowerState {
     generationProgress: number;
     overallPower: number;
     selectedHandPos?: number;
+    maxHandSize: number;
 }
 
 // -----------------
@@ -172,6 +173,7 @@ const unloadedState: PowerState = {
     numChoices: 0,
     generationProgress: 0,
     overallPower: 0,
+    maxHandSize: 6,
 };
 
 export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Action) => {

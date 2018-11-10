@@ -66,6 +66,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
                 className="power__chooseButton"
                 text={this.props.text.systems.power.pickCards}
                 clicked={() => this.setState({ expand: ExpandSection.Selection })}
+                disabled={this.props.handCards.length >= this.props.maxHandSize}
                 color={ButtonColor.Primary}
             />
 
@@ -170,11 +171,11 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
     }
 
     private pickCard(cardNum: number) {
-        connection.send(`power_pickCard ${cardNum}`);
-
-        if (this.props.numChoices < 1) {
+        if (this.props.numChoices < 1 || this.props.handCards.length >= this.props.maxHandSize - 1) {
             this.setState({ expand: ExpandSection.None });
         }
+
+        connection.send(`power_pickCard ${cardNum}`);
     }
 }
 
