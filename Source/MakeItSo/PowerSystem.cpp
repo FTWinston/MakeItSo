@@ -201,12 +201,12 @@ void UPowerSystem::AddAuxPower(int16 amount)
 
 	if (auxPowerGenerationProgress >= CHOICE_GENERATION_AUX_AMOUNT)
 	{
+		AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
+
 		if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
 			auxPowerGenerationProgress = 0; // when we're full, don't leave a partial bar
 		else
 			auxPowerGenerationProgress -= CHOICE_GENERATION_AUX_AMOUNT;
-
-		AddCardChoice(PickRandomCard(), PickRandomCard(), PickRandomCard());
 	}
 }
 
