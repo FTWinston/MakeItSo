@@ -72,7 +72,7 @@
         grid-template-rows: 2.5em 0.25em 1em 1fr;
         grid-template-columns: 0.8fr 1.2fr 3fr;
         grid-template-areas:
-            "queueSize action action"
+            "queueSize nothing action"
             "charge charge charge"
             "systems systems label"
             "systems systems cards";

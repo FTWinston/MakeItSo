@@ -26,6 +26,7 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
                 text={this.props.text}
                 system={system.type}
                 power={system.power}
+                numEffects={system.numEffects}
                 onSelected={selected}
                 selecting={this.props.selecting}
                 canSelect={this.props.selectableSystem === undefined || this.props.selectableSystem === system.type}

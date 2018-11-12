@@ -54,6 +54,10 @@ private:
 	UPROPERTY()
 	TArray<uint8> systemCapacity;
 
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SystemEffects)
+	TArray<uint8> systemEffects;
+	void OnReplicated_SystemEffects(TArray<uint8> beforeChange);
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CardHand)
 	TArray<uint8> cardHand;
 	void OnReplicated_CardHand(TArray<uint8> beforeChange);
@@ -94,6 +98,12 @@ private:
 	void SendPowerLevel(EPowerSystem system, uint8 powerLevel);
 #ifdef WEB_SERVER_TEST
 	void SendPowerLevel_Implementation(EPowerSystem system, uint8 powerLevel);
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendSystemEffects(EPowerSystem system, uint8 numEffects);
+#ifdef WEB_SERVER_TEST
+	void SendSystemEffects_Implementation(EPowerSystem system, uint8 numEffects);
 #endif
 
 	UFUNCTION(Client, Reliable)

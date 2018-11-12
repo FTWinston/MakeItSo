@@ -25,6 +25,10 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setNumChoices(size));
             break;
         }
+        case 'power_effects': {
+            const parts = data.split(' ').map(str => parseInt(str));
+            store.dispatch(actionCreators.setNumEffects(parts[0] as PowerSystemType, parts[1]));
+        }
         case 'power_gen': {
             const fraction = parseInt(data);
             store.dispatch(actionCreators.setGenerationProgress(fraction));

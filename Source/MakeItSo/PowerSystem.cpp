@@ -17,9 +17,11 @@ UPowerSystem::UPowerSystem()
 #ifndef WEB_SERVER_TEST
 	powerLevels.AddZeroed(NUM_POWER_SYSTEMS);
 	systemCapacity.AddZeroed(NUM_POWER_SYSTEMS);
+	systemEffects.AddZeroed(NUM_POWER_SYSTEMS);
 #else
 	powerLevels.assign(NUM_POWER_SYSTEMS, 0);
 	systemCapacity.assign(NUM_POWER_SYSTEMS, 0);
+	systemEffects.assign(NUM_POWER_SYSTEMS, 0);
 #endif
 }
 
@@ -37,6 +39,8 @@ void UPowerSystem::ResetData()
 
 		systemCapacity[i] = systemPower == 0
 			? 100 : systemPower;
+
+		systemEffects[i] = 0;
 
 		overallPower += systemPower;
 	}
@@ -99,6 +103,11 @@ void UPowerSystem::SendAllData_Implementation()
 	SendCardChoice();
 	SendWholeHand();
 	SendQueueSize();
+
+	auto numSys = SIZENUM(systemEffects);
+
+	for (uint32 i = 0; i < numSys; i++)
+		SendSystemEffects((EPowerSystem)i, systemEffects[i]);
 }
 
 #define CHOICE_GENERATION_AUX_AMOUNT 2100
@@ -162,6 +171,10 @@ void UPowerSystem::QueueAction(uint8 totalTickDelay, UPowerAction* action)
 	action->delayInTicks = totalTickDelay - cumulativeDelay;
 
 	SETINSERT(upcomingActions, action, insertIndex);
+
+	auto numEffects = ++systemEffects[action->system];
+	if (ISCLIENT())
+		SendSystemEffects(action->system, numEffects);
 }
 
 void UPowerSystem::PerformAction(UPowerAction* action)
@@ -179,6 +192,10 @@ void UPowerSystem::PerformAction(UPowerAction* action)
 		AddPower(action->system, action->powerChange);
 	else if (action->powerChange < 0)
 		ReducePower(action->system, -action->powerChange);
+
+	auto numEffects = --systemEffects[action->system];
+	if (ISCLIENT())
+		SendSystemEffects(action->system, numEffects);
 }
 
 void UPowerSystem::TickAuxPower()
@@ -368,6 +385,20 @@ void UPowerSystem::SendPowerLevel_Implementation(EPowerSystem system, uint8 powe
 	SendAll(output);
 }
 
+
+#ifdef WEB_SERVER_TEST
+void UPowerSystem::SendSystemEffects(EPowerSystem system, uint8 numEffects) { SendSystemEffects_Implementation(system, numEffects); }
+#endif
+void UPowerSystem::SendSystemEffects_Implementation(EPowerSystem system, uint8 numEffects)
+{
+	FString output = TEXT("power_effects ");
+	APPENDINT(output, system);
+	output += TEXT(" ");
+	APPENDINT(output, numEffects);
+
+	SendSystem(output);
+}
+
 #ifdef WEB_SERVER_TEST
 void UPowerSystem::SendAddCardToHand(uint8 cardID) { SendAddCardToHand_Implementation(cardID); }
 #endif
@@ -426,6 +457,18 @@ void UPowerSystem::OnReplicated_AuxPowerGenerationProgress(uint8 beforeChange)
 	SendGeneration();
 }
 
+
+void UPowerSystem::OnReplicated_SystemEffects(TArray<uint8> beforeChange)
+{
+	auto numSys = SIZENUM(systemEffects);
+
+	for (uint32 i = 0; i < numSys; i++)
+	{
+		auto currentVal = systemEffects[i];
+		if (beforeChange[i] != currentVal)
+			SendSystemEffects((EPowerSystem)i, currentVal);
+	}
+}
 
 void UPowerSystem::OnReplicated_CardHand(TArray<uint8> beforeChange)
 {

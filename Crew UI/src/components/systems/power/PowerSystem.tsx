@@ -10,6 +10,7 @@ interface IProps {
     onSelected?: () => void;
     selecting: boolean;
     canSelect: boolean;
+    numEffects: number;
 }
 
 export class PowerSystem extends React.PureComponent<IProps, {}> {
@@ -36,6 +37,7 @@ export class PowerSystem extends React.PureComponent<IProps, {}> {
         <div className={classes} onClick={selected}>
             <div className="powerSystem__name">{this.getSystemName()}</div>
             <div className="powerSystem__power">{this.props.power}</div>
+            <div className="powerSystem__effects">{this.renderEffects()}</div>
         </div>
         );
     }
@@ -59,5 +61,15 @@ export class PowerSystem extends React.PureComponent<IProps, {}> {
             default:
                 return '';
         }
+    }
+
+    private renderEffects() {
+        const effects = [];
+        
+        for (let i = this.props.numEffects; i > 0; i--) {
+            effects.push(<div className="powerSystem__effect" key={i} />);
+        }
+
+        return effects;
     }
 }

@@ -20,6 +20,7 @@ export const maxHandSize = 8;
 export interface PowerSystem {
     type: PowerSystemType;
     power: number;
+    numEffects: number;
 }
 
 export const enum PowerCardRarity {
@@ -60,6 +61,12 @@ interface SetPowerAction {
     type: 'POWER_SYSTEM';
     system: PowerSystemType;
     power: number;
+}
+
+interface SetNumEffectsAction {
+    type: 'EFFECTS';
+    system: PowerSystemType;
+    effects: number;
 }
 
 interface SetChoiceAction {
@@ -104,7 +111,7 @@ interface SelectCardAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetAllPowerAction | SetPowerAction | SetChoiceAction | SetHandAction | SetNumChoicesAction
+type KnownAction = SetAllPowerAction | SetPowerAction | SetNumEffectsAction | SetChoiceAction | SetHandAction | SetNumChoicesAction
     | SetGenerationProgressAction | SetOverallPowerAction | AddCardAction | RemoveCardAction | SelectCardAction;
 
 // ----------------
@@ -120,6 +127,11 @@ export const actionCreators = {
         type: 'POWER_SYSTEM',
         system: system,
         power: power,
+    },
+    setNumEffects: (system: PowerSystemType, effects: number) => <SetNumEffectsAction>{
+        type: 'EFFECTS',
+        system: system,
+        effects: effects,
     },
     setChoice: (cardIDs: number[]) => <SetChoiceAction>{
         type: 'CHOICE',
@@ -160,13 +172,13 @@ export const actionCreators = {
 
 const unloadedState: PowerState = {
     systems: [
-        { type: PowerSystemType.Helm, power: 0, },
-        { type: PowerSystemType.Warp, power: 0, },
-        { type: PowerSystemType.Weapons, power: 0, },
-        { type: PowerSystemType.Sensors, power: 0, },
-        { type: PowerSystemType.Shields, power: 0, },
-        { type: PowerSystemType.DamageControl, power: 0, },
-        { type: PowerSystemType.Comms, power: 0, },
+        { type: PowerSystemType.Helm, power: 0, numEffects: 0, },
+        { type: PowerSystemType.Warp, power: 0, numEffects: 0, },
+        { type: PowerSystemType.Weapons, power: 0, numEffects: 0, },
+        { type: PowerSystemType.Sensors, power: 0, numEffects: 0, },
+        { type: PowerSystemType.Shields, power: 0, numEffects: 0, },
+        { type: PowerSystemType.DamageControl, power: 0, numEffects: 0, },
+        { type: PowerSystemType.Comms, power: 0, numEffects: 0, },
     ],
     choiceCards: [],
     handCards: [],
@@ -189,7 +201,7 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
 
             return {
                 ...state,
-                systems: systems,
+                systems,
             };
         }
         case 'POWER_SYSTEM': {
@@ -200,7 +212,18 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
 
             return {
                 ...state,
-                systems: systems,
+                systems,
+            };
+        }
+        case 'EFFECTS': {
+            let systems = state.systems.slice();
+
+            const system = systems.find(s => s.type === action.system)!;
+            system.numEffects = action.effects;
+
+            return {
+                ...state,
+                systems,
             };
         }
         case 'CHOICE': {
