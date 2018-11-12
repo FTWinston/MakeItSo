@@ -19,14 +19,6 @@
     justify-content: space-evenly;
 }
 
-.power__overallPower {
-    grid-area: overall;
-}
-
-.power__overallPower--draining {
-    color: #faa;
-}
-
 .power__charge {
     grid-area: charge;
 }
@@ -43,7 +35,7 @@
     background-color: $colorPrimary;
     color: $backgroundColor;
     padding: 0.1em;
-    align-self: center;
+    justify-self: center;
     text-align: center;
     width: 1.3em;
 }
@@ -78,12 +70,12 @@
     .power {
         grid-gap: 0.5em;
         grid-template-rows: 2.5em 0.25em 1em 1fr;
-        grid-template-columns: 2fr 3em 3fr;
+        grid-template-columns: 0.8fr 1.2fr 3fr;
         grid-template-areas:
-            "overall queueSize action"
+            "queueSize action action"
             "charge charge charge"
-            "systems label label"
-            "systems cards cards";
+            "systems systems label"
+            "systems systems cards";
     }
 
     .power__handLabel,
@@ -116,10 +108,10 @@
 
     .power--cardSelection {
         grid-template-areas:
-            "selectionActions selectionActions selectionActions"
+            "queueSize selectionActions selectionActions"
             "charge charge charge"
-            "systems label label"
-            "systems cards cards";
+            "systems systems label"
+            "systems systems cards";
 
         & .power__cardSelection,
         & .power__selectionActions {
@@ -128,10 +120,8 @@
 
         & .power__cardHand,
         & .power__handLabel,
-        & .power__queueSize,
         & .power__chooseButton,
-        & .power__discardButton,
-        & .power__overallPower {
+        & .power__discardButton {
             display: none;
         }
 
@@ -144,13 +134,12 @@
 
     .power--systemSelection {
         grid-template-areas:
-            "overall action action"
+            "queueSize action action"
             "charge charge charge"
-            "systems label label"
-            "systems cards cards";
+            "systems systems label"
+            "systems systems cards";
 
-        & .power__chooseButton,
-        & .power__queueSize {
+        & .power__chooseButton {
             display: none;
         }
     }

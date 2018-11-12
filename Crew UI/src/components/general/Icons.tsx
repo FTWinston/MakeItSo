@@ -23,6 +23,9 @@ const DamageIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist
 const ViewScreenIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/video.svg');
 const CommunicationsIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/phone-call.svg');
 
+export const SystemPower: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zap.svg');
+export const SystemHealth: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/heart.svg');
+
 export enum Icon {
     Help,
     Pause,

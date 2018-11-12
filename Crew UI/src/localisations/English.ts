@@ -253,10 +253,11 @@ let words: TextLocalisation = {
         power: {
             pickCards: 'Pick cards',
             discardCard: 'Discard card',
-            discardChoice: 'Discard all',
+            discardChoice: 'Discard choice',
             handLabel: 'Your cards:',
             choiceLabel: 'Choose a card:',
-            overallPower: 'Overall power usage:',
+            backToHand: 'Go back',
+            
             cards: {
                 boostHelm: {
                     name: 'Boost Helm',

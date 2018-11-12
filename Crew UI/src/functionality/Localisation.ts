@@ -190,7 +190,7 @@ export interface TextLocalisation {
             discardChoice: string;
             handLabel: string;
             choiceLabel: string;
-            overallPower: string;
+            backToHand: string;
 
             cards: {
                 boostHelm: {

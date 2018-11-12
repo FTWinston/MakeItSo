@@ -91,7 +91,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
                 <PushButton
                     className="power__selectionBack"
                     color={ButtonColor.Secondary}
-                    text={this.props.text.common.cancel}
+                    text={this.props.text.systems.power.backToHand}
                     clicked={() => this.setState({ expand: ExpandSection.None })}
                 />
             </div>
@@ -121,9 +121,6 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             />
             <div className="power__handLabel">{systemText.handLabel}</div>
             <div className="power__selectionLabel">{systemText.choiceLabel}</div>
-            <div className={this.props.overallPower > 100 ? 'power__overallPower power__overallPower--draining' : 'power__overallPower'}>
-                {this.props.text.systems.power.overallPower} {this.props.overallPower}%
-            </div>
             <ProgressBar value={this.props.generationProgress} maxValue={100} showNumber={false} className="power__charge" />
             {queueSize}
             {chooseButton}
