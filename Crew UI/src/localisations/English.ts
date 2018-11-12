@@ -289,7 +289,7 @@ let words: TextLocalisation = {
                 },
                 boostSelectable: {
                     name: 'Boost Any System',
-                    desc: 'Increase power of selected system by 20% for 20 seconds.',
+                    desc: 'Increase power of selected system by 25% for 15 seconds.',
                 },
                 overloadHelm: {
                     name: 'Overload Helm',
@@ -321,7 +321,7 @@ let words: TextLocalisation = {
                 },
                 overloadSelectable: {
                     name: 'Overload Any System',
-                    desc: 'Increase power of selected system by 40% for 10 seconds, then damage it.',
+                    desc: 'Increase power of selected system by 50% for 10 seconds, then damage it.',
                 },
             }
         },

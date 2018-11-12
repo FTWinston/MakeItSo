@@ -678,17 +678,17 @@ uint8 UPowerSystem::GetPowerReduction(uint8 current, uint8 reduction)
 		: current - reduction;
 }
 
-bool UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
+int8 UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 {
 	UShipSystem *targetSystem = LookupSystem(system);
 	if (targetSystem == nullptr)
-		return false;
+		return 0;
 
 	auto currentCapacity = systemCapacity[system];
 	auto newLevel = GetPowerAddition(currentCapacity, amount);
 
 	if (newLevel == currentCapacity)
-		return false;
+		return 0;
 
 	systemCapacity[system] = newLevel;
 
@@ -697,7 +697,7 @@ bool UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 	if (currentLevel > 0)
 		targetSystem->SetPowerLevel(newLevel);
 
-	return true;
+	return newLevel - currentCapacity;
 }
 
 bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
@@ -795,145 +795,162 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 	{
 		case Card_BoostHelm:
 		{
-			if (!AddPower(EPowerSystem::Power_Helm, 25))
+			auto amount = AddPower(EPowerSystem::Power_Helm, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Helm, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_Helm, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostWarp:
 		{
-			if (!AddPower(EPowerSystem::Power_Warp, 25))
+			auto amount = AddPower(EPowerSystem::Power_Warp, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Warp, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_Warp, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostWeapons:
 		{
-			if (!AddPower(EPowerSystem::Power_Weapons, 25))
+			auto amount = AddPower(EPowerSystem::Power_Weapons, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostSensors:
 		{
-			if (!AddPower(EPowerSystem::Power_Sensors, 25))
+			auto amount = AddPower(EPowerSystem::Power_Sensors, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostShields:
 		{
-			if (!AddPower(EPowerSystem::Power_Shields, 25))
+			auto amount = AddPower(EPowerSystem::Power_Shields, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Shields, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_Shields, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostDamageControl:
 		{
-			if (!AddPower(EPowerSystem::Power_DamageControl, 25))
+			auto amount = AddPower(EPowerSystem::Power_DamageControl, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostComms:
 		{
-			if (!AddPower(EPowerSystem::Power_Comms, 25))
+			auto amount = AddPower(EPowerSystem::Power_Comms, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Comms, -25, 0);
+			auto action = new UPowerAction(EPowerSystem::Power_Comms, -amount, 0);
 			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostSelectable:
 		{
-			if (!AddPower((EPowerSystem)targetSystem, 20))
+			auto amount = AddPower((EPowerSystem)targetSystem, 25);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction((EPowerSystem)targetSystem, -20, 0);
-			QueueAction(20, action);
+			auto action = new UPowerAction((EPowerSystem)targetSystem, -amount, 0);
+			QueueAction(15, action);
 			break;
 		}
 
 		case Card_OverloadHelm:
 		{
-			if (!AddPower(EPowerSystem::Power_Helm, 50))
+			auto amount = AddPower(EPowerSystem::Power_Helm, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Helm, -50, -25);
+			auto action = new UPowerAction(EPowerSystem::Power_Helm, -amount, -25);
+			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadWarp:
 		{
-			if (!AddPower(EPowerSystem::Power_Warp, 50))
+			auto amount = AddPower(EPowerSystem::Power_Warp, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Warp, -50, -25);
+			auto action = new UPowerAction(EPowerSystem::Power_Warp, -amount, -25);
 			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadWeapons:
 		{
-			if (!AddPower(EPowerSystem::Power_Weapons, 50))
+			auto amount = AddPower(EPowerSystem::Power_Weapons, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -50, -25);
+			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -amount, -25);
 			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadSensors:
 		{
-			if (!AddPower(EPowerSystem::Power_Sensors, 50))
+			auto amount = AddPower(EPowerSystem::Power_Sensors, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -50, -25);
+			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -amount, -25);
 			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadShields:
 		{
-			if (!AddPower(EPowerSystem::Power_Shields, 50))
+			auto amount = AddPower(EPowerSystem::Power_Shields, 50);
+			if (amount == 0)
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Shields, -50, -25);
+			
+			auto action = new UPowerAction(EPowerSystem::Power_Shields, -amount, -25);
 			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadDamageControl:
 		{
-			if (!AddPower(EPowerSystem::Power_DamageControl, 50))
+			auto amount = AddPower(EPowerSystem::Power_DamageControl, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -50, -25);
+			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -amount, -25);
 			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadComms:
 		{
-			if (!AddPower(EPowerSystem::Power_Comms, 50))
+			auto amount = AddPower(EPowerSystem::Power_Comms, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction(EPowerSystem::Power_Comms, -50, -25);
+			auto action = new UPowerAction(EPowerSystem::Power_Comms, -amount, -25);
 			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadSelectable:
 		{
-			if (!AddPower((EPowerSystem)targetSystem, 40))
+			auto amount = AddPower((EPowerSystem)targetSystem, 50);
+			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction((EPowerSystem)targetSystem, -40, -25);
+			auto action = new UPowerAction((EPowerSystem)targetSystem, -amount, -40);
 			QueueAction(10, action);
 			break;
 		}

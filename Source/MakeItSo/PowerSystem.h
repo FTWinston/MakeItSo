@@ -183,7 +183,7 @@ private:
 	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
 
 	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
-	bool AddPower(EPowerSystem system, uint8 amount);
+	int8 AddPower(EPowerSystem system, uint8 amount);
 	bool ReducePower(EPowerSystem system, uint8 amount);
 };
 
