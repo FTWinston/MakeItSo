@@ -81,7 +81,7 @@ class Settings extends React.Component<SettingsProps, {}> {
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) => {
-    let localPlayer = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
+    let localPlayer = state.crew.players.find(p => p.id === state.crew.localPlayerID);
 
     return {
         userName: state.user.userName,
@@ -93,7 +93,7 @@ const mapStateToProps: (state: ApplicationState) => SettingsDataProps = (state) 
 
         gameInProgress: state.screen.gameState === ScreenStore.GameState.Active
                      || state.screen.gameState === ScreenStore.GameState.Finished,
-        hasSelectedSystems: localPlayer.length > 0 && localPlayer[0].selectedSystems !== 0,
+        hasSelectedSystems: localPlayer !== undefined && localPlayer.selectedSystems !== 0,
     }
 };
 

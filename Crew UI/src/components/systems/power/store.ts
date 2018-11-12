@@ -184,7 +184,7 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
             
             action.power.map((val, index) => {
                 let type = index as PowerSystemType;
-                systems.filter(s => s.type === type)[0].power = val;
+                systems.find(s => s.type === type)!.power = val;
             });
 
             return {
@@ -195,7 +195,7 @@ export const reducer: Reducer<PowerState> = (state: PowerState, rawAction: Actio
         case 'POWER_SYSTEM': {
             let systems = state.systems.slice();
 
-            let system = systems.filter(s => s.type === action.system)[0];
+            const system = systems.find(s => s.type === action.system)!;
             system.power = action.power;
 
             return {

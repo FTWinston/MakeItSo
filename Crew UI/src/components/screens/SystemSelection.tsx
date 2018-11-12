@@ -146,8 +146,8 @@ class SystemSelection extends React.Component<SystemSelectionProps, {}> {
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => SystemSelectionDataProps = (state) => {
     // use the current player's selections if we have any
-    let localPlayer = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
-    let preselectedSystems = localPlayer.length === 0 ? 0 : localPlayer[0].selectedSystems; // if 0, use saved session values?
+    let localPlayer = state.crew.players.find(p => p.id === state.crew.localPlayerID);
+    let preselectedSystems = localPlayer === undefined ? 0 : localPlayer.selectedSystems; // if 0, use saved session values?
 
     let players: { [key: number]: string } = {};
 

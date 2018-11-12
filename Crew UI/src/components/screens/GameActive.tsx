@@ -161,7 +161,7 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => GameActiveProps = (state) => {
-    let player = state.crew.players.filter(p => p.id === state.crew.localPlayerID);
+    let player = state.crew.players.find(p => p.id === state.crew.localPlayerID)!;
     
     let disabled: ShipSystem = 0;
     for (let other of state.crew.players) {
@@ -170,14 +170,14 @@ const mapStateToProps: (state: ApplicationState) => GameActiveProps = (state) =>
         }
     }
 
-    let activeSystem = player[0].activeSystem;
+    let activeSystem = player.activeSystem;
     let activeName = activeSystem === undefined ? undefined : getSystemName(activeSystem, state.user.text);
 
     return {
         text: state.user.text,
         activeSystem: activeSystem,
         activeSystemName: activeName,
-        displaySystems: player[0].selectedSystems,
+        displaySystems: player.selectedSystems,
         disableSystems: disabled,
     }
 };
