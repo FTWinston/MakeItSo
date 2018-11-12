@@ -1,5 +1,6 @@
 import { Action, Reducer/*, ActionCreator*/ } from 'redux';
-import { exhaustiveActionCheck } from '~/store';
+import { exhaustiveActionCheck, ApplicationState } from '~/store';
+import { ShipSystem } from '~/functionality';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -172,3 +173,37 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
 
     return state || unloadedState;
 };
+
+export function getSystemHealth(system: ShipSystem, state: ApplicationState) {
+    let damageSystem: DamageSystemType;
+
+    switch (system) {
+        case ShipSystem.Helm:
+            damageSystem = DamageSystemType.Helm;
+            break;
+        case ShipSystem.Warp:
+            damageSystem = DamageSystemType.Warp;
+            break;
+        case ShipSystem.Weapons:
+            damageSystem = DamageSystemType.Weapons;
+            break;
+        case ShipSystem.Sensors:
+            damageSystem = DamageSystemType.Sensors;
+            break;
+        case ShipSystem.PowerManagement:
+            damageSystem = DamageSystemType.Power;
+            break;
+        case ShipSystem.Communications:
+            damageSystem = DamageSystemType.Comms;
+            break;
+        /*
+        case ShipSystem.Shields:
+            damageSystem = DamageSystemType.Shields;
+            break;
+        */
+        default:
+            return undefined;
+    }
+
+    return state.damage.systems.find(s => s.type === damageSystem)!.health;
+}

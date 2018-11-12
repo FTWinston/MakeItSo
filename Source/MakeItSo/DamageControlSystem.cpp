@@ -147,7 +147,7 @@ void UDamageControlSystem::SendSystemState_Implementation(EDamageSystem system, 
 	APPENDINT(output, health);
 	output += TEXT(" ");
 	APPENDINT(output, combo);
-	SendSystem(output);
+	SendAll(output);
 }
 
 

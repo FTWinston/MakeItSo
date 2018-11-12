@@ -95,6 +95,7 @@ bool UPowerSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message 
 void UPowerSystem::SendAllData_Implementation()
 {
 	SendAllPowerLevels();
+	SendOverallPower(overallPower);
 	SendCardChoice();
 	SendWholeHand();
 	SendQueueSize();
@@ -311,7 +312,7 @@ void UPowerSystem::SendAllPowerLevels() { SendAllPowerLevels_Implementation(); }
 void UPowerSystem::SendAllPowerLevels_Implementation()
 {
 	auto command = CombineIDs(TEXT("power_levels "), powerLevels);
-	SendSystem(command);
+	SendAll(command);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -364,7 +365,7 @@ void UPowerSystem::SendPowerLevel_Implementation(EPowerSystem system, uint8 powe
 	output += TEXT(" ");
 	APPENDINT(output, powerLevel);
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 #ifdef WEB_SERVER_TEST

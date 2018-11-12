@@ -5,7 +5,15 @@ export const msgPrefix = 'dmg_';
 
 export function receiveMessage(cmd: string, data: string) {
     switch (cmd) {
-        
+        case 'dmg_system': {
+            const vals = data.split(' ');
+            const system = parseInt(vals[0]) as DamageSystemType;
+            const damage = parseInt(vals[1]);
+            const combo = parseInt(vals[2]) as DiceComboType;
+
+            store.dispatch(actionCreators.setSystem(system, damage, combo));
+            break;
+        }
         case 'dmg_dice': {
             const vals = data.split(' ');
             const dice = [
@@ -21,15 +29,6 @@ export function receiveMessage(cmd: string, data: string) {
         case 'dmg_rolls': {
             const rerolls = parseInt(data);
             store.dispatch(actionCreators.setRolls(rerolls));
-            break;
-        }
-        case 'dmg_system': {
-            const vals = data.split(' ');
-            const system = parseInt(vals[0]) as DamageSystemType;
-            const damage = parseInt(vals[1]);
-            const combo = parseInt(vals[2]) as DiceComboType;
-
-            store.dispatch(actionCreators.setSystem(system, damage, combo));
             break;
         }
         default:

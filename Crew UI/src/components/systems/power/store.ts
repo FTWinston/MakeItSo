@@ -1,6 +1,6 @@
 import { Action, Reducer } from 'redux';
-import { TextLocalisation } from "~/functionality";
-import { exhaustiveActionCheck } from '~/store';
+import { TextLocalisation, ShipSystem } from "~/functionality";
+import { exhaustiveActionCheck, ApplicationState } from '~/store';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -412,4 +412,40 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
         default:
             return null;
     }
+}
+
+export function getSystemPower(system: ShipSystem, state: ApplicationState) {
+    let powerSystem: PowerSystemType;
+
+    switch (system) {
+        case ShipSystem.Helm:
+            powerSystem = PowerSystemType.Helm;
+            break;
+        case ShipSystem.Warp:
+            powerSystem = PowerSystemType.Warp;
+            break;
+        case ShipSystem.Weapons:
+            powerSystem = PowerSystemType.Weapons;
+            break;
+        case ShipSystem.Sensors:
+            powerSystem = PowerSystemType.Sensors;
+            break;
+        case ShipSystem.PowerManagement:
+            return state.power.overallPower;
+        case ShipSystem.DamageControl:
+            powerSystem = PowerSystemType.DamageControl;
+            break;
+        case ShipSystem.Communications:
+            powerSystem = PowerSystemType.Comms;
+            break;
+        /*
+        case ShipSystem.Shields:
+            powerSystem = PowerSystemType.Shields;
+            break;
+        */
+        default:
+            return undefined;
+    }
+
+    return state.power.systems.find(s => s.type === powerSystem)!.power;
 }
