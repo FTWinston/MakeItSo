@@ -2,7 +2,7 @@
 
 .power {
     display: grid;
-    grid-gap: 1em;
+    grid-gap: 0.5em;
 }
 
 .powerSystemList {
@@ -54,21 +54,84 @@
     display: none;
 }
 
+.power__handLabel,
+.power__selectionLabel {
+    grid-area: label;
+}
+
+.power__selectionLabel,
+.power__selectionActions {
+    display: none;
+}
+
+.power .power__cardSelection {
+    display: none;
+    grid-area: cards;
+}
+
+.power__cardHand {
+    grid-area: cards;
+}
+
+.power__selectionIndicator {
+    grid-area: action;
+}
+
+
+.power--cardSelection {
+    & .power__cardSelection,
+    & .power__selectionActions {
+        display: flex;
+    }
+
+    & .power__cardHand,
+    & .power__handLabel,
+    & .power__chooseButton,
+    & .power__discardButton {
+        display: none;
+    }
+
+    & .power__discardChoice,
+    & .power__selectionLabel,
+    & .power__selectionBack {
+        display: block;
+    }
+}
+
+.power--systemSelection {
+    & .power__chooseButton {
+        display: none;
+    }
+}
 
 @include landscape() {
     .power {
-        grid-template-rows: 1fr 2fr;
-        grid-template-columns: 3fr 4fr;
+        grid-template-rows: 2.5em 0.25em 7em 1em 3fr;
+        grid-template-columns: 1fr 2fr;
         grid-template-areas:
-            "systems selection"
-            "systems hand";
+            "queueSize action"
+            "charge charge"
+            "systems systems"
+            "label label"
+            "cards cards";
+    }
+    .power .powerCardSet {
+        align-items: flex-start;
+    }
+
+    .power--cardSelection {
+        grid-template-areas:
+            "queueSize selectionActions"
+            "charge charge"
+            "systems systems"
+            "label label"
+            "cards cards";
     }
 }
 
 
 @include portrait() {
     .power {
-        grid-gap: 0.5em;
         grid-template-rows: 2.5em 0.25em 1em 1fr;
         grid-template-columns: 0.8fr 1.2fr 3fr;
         grid-template-areas:
@@ -78,32 +141,9 @@
             "systems systems cards";
     }
 
-    .power__handLabel,
-    .power__selectionLabel {
-        grid-area: label;
-    }
-
-    .power__selectionLabel,
-    .power__selectionActions {
-        display: none;
-    }
-
     .power .powerCardSet {
         flex-direction: column;
         align-items: flex-end;
-    }
-
-    .power .power__cardSelection {
-        display: none;
-        grid-area: cards;
-    }
-
-    .power__cardHand {
-        grid-area: cards;
-    }
-
-    .power__selectionIndicator {
-        grid-area: action;
     }
 
     .power--cardSelection {
@@ -112,24 +152,6 @@
             "charge charge charge"
             "systems systems label"
             "systems systems cards";
-
-        & .power__cardSelection,
-        & .power__selectionActions {
-            display: flex;
-        }
-
-        & .power__cardHand,
-        & .power__handLabel,
-        & .power__chooseButton,
-        & .power__discardButton {
-            display: none;
-        }
-
-        & .power__discardChoice,
-        & .power__selectionLabel,
-        & .power__selectionBack {
-            display: block;
-        }
     }
 
     .power--systemSelection {
@@ -138,9 +160,5 @@
             "charge charge charge"
             "systems systems label"
             "systems systems cards";
-
-        & .power__chooseButton {
-            display: none;
-        }
     }
 }

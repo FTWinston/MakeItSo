@@ -2,6 +2,15 @@
 
 .powerSystemList {
     display: flex;
-    flex-direction: column;
     justify-content: space-between;
+
+    @include portrait() {
+        flex-direction: column;
+    }
+
+    @include landscape() {
+        flex-wrap: wrap;
+        align-content: space-between;
+        justify-content: space-evenly;
+    }
 }

@@ -12,6 +12,11 @@
     padding: 0.1em 0.5em 0 0.5em;
     transition: 0.3s all;
     position: relative;
+    max-height: 3.5em;
+    
+    @include landscape() {
+        width: 9em;
+    }
 }
 
 .powerSystem--selecting {
