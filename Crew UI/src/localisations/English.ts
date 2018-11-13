@@ -323,6 +323,46 @@ let words: TextLocalisation = {
                     name: 'Overload Any System',
                     desc: 'Increase power of selected system by 50% for 10 seconds, then damage it.',
                 },
+                rerouteHelm: {
+                    name: 'Reroute Helm',
+                    desc: 'Reduce power of helm system by 100% for 10 seconds, adding power to target system.',
+                },
+                rerouteWarp: {
+                    name: 'Reroute Warp',
+                    desc: 'Reduce power of warp system by 100% for 10 seconds, adding power to target system.',
+                },
+                rerouteWeapons: {
+                    name: 'Reroute Weapons',
+                    desc: 'Reduce power of weapons system by 100% for 10 seconds, adding power to target system.',
+                },
+                rerouteSensors: {
+                    name: 'Reroute Sensors',
+                    desc: 'Reduce power of sensors system by 100% for 10 seconds, adding power to target system.',
+                },
+                rerouteShields: {
+                    name: 'Reroute Shields',
+                    desc: 'Reduce power of shields system by 100% for 10 seconds, adding power to target system.',
+                },
+                rerouteDamageControl: {
+                    name: 'Reroute Damage Control',
+                    desc: 'Reduce power of damage control system by 100% for 10 seconds, adding power to target system.',
+                },
+                rerouteComms: {
+                    name: 'Reroute Communications',
+                    desc: 'Reduce power of communications system by 100% for 10 seconds, adding power to target system.',
+                },
+                bypassSafeties: {
+                    name: 'Bypass Safeties',
+                    desc: 'Increase power of target system by 75% for 15 seconds, and deal damage to every other system.',
+                },
+                focusPower: {
+                    name: 'Focus Power',
+                    desc: 'Reduce power of all non-target systems by 25 for 10 seconds, adding removed power to target system.',
+                },
+                recalibrate: {
+                    name: 'Recalibrate',
+                    desc: 'Remove all ongoing effects from target system, resetting its power to 100%.',
+                },
             }
         },
         damage: {

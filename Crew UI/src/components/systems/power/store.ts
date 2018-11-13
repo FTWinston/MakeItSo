@@ -317,6 +317,18 @@ export const enum PowerCard {
     OverloadDamageControl,
     OverloadComms,
     OverloadSelectable,
+
+    RerouteHelm,
+    RerouteWarp,
+    RerouteWeapons,
+    RerouteSensors,
+    RerouteShields,
+    RerouteDamageControl,
+    RerouteComms,
+
+    BypassSafeties,
+    FocusPower,
+    Recalibrate,
 }
 
 
@@ -430,6 +442,73 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
             return {
                 name: text.systems.power.cards.overloadSelectable.name,
                 desc: text.systems.power.cards.overloadSelectable.desc,
+                rarity: PowerCardRarity.Epic,
+            };
+        case PowerCard.RerouteHelm:
+            return {
+                name: text.systems.power.cards.rerouteHelm.name,
+                desc: text.systems.power.cards.rerouteHelm.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.Helm,
+            };
+        case PowerCard.RerouteWarp:
+            return {
+                name: text.systems.power.cards.rerouteWarp.name,
+                desc: text.systems.power.cards.rerouteWarp.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.Warp,
+            };
+        case PowerCard.RerouteWeapons:
+            return {
+                name: text.systems.power.cards.rerouteWeapons.name,
+                desc: text.systems.power.cards.rerouteWeapons.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.Weapons,
+            };
+        case PowerCard.RerouteSensors:
+            return {
+                name: text.systems.power.cards.rerouteSensors.name,
+                desc: text.systems.power.cards.rerouteSensors.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.Sensors,
+            };
+        case PowerCard.RerouteShields:
+            return {
+                name: text.systems.power.cards.rerouteShields.name,
+                desc: text.systems.power.cards.rerouteShields.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.Shields,
+            };
+        case PowerCard.RerouteDamageControl:
+            return {
+                name: text.systems.power.cards.rerouteDamageControl.name,
+                desc: text.systems.power.cards.rerouteDamageControl.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.DamageControl,
+            };
+        case PowerCard.RerouteComms:
+            return {
+                name: text.systems.power.cards.rerouteComms.name,
+                desc: text.systems.power.cards.rerouteComms.desc,
+                rarity: PowerCardRarity.Rare,
+                targetSystem: PowerSystemType.Comms,
+            };
+        case PowerCard.BypassSafeties:
+            return {
+                name: text.systems.power.cards.bypassSafeties.name,
+                desc: text.systems.power.cards.bypassSafeties.desc,
+                rarity: PowerCardRarity.Epic,
+            };
+        case PowerCard.FocusPower:
+            return {
+                name: text.systems.power.cards.focusPower.name,
+                desc: text.systems.power.cards.focusPower.desc,
+                rarity: PowerCardRarity.Epic,
+            };
+        case PowerCard.Recalibrate:
+            return {
+                name: text.systems.power.cards.recalibrate.name,
+                desc: text.systems.power.cards.recalibrate.desc,
                 rarity: PowerCardRarity.Epic,
             };
         default:

@@ -171,6 +171,7 @@ private:
 private:
 	void QueueAction(uint8 totalTickDelay, UPowerAction* action);
 	void PerformAction(UPowerAction* action);
+	void RemoveAction(uint8 index);
 	void TickQueuedActions();
 	void TickAuxPower();
 	void AddAuxPower(int16 amount);
@@ -183,8 +184,13 @@ private:
 	FString CombineIDs(const TCHAR *prefix, TArray<uint8> cardIDs);
 
 	void AddCardChoice(uint8 card1, uint8 card2, uint8 card3);
-	int8 AddPower(EPowerSystem system, uint8 amount);
-	bool ReducePower(EPowerSystem system, uint8 amount);
+	uint8 AddPower(EPowerSystem system, uint8 amount);
+	uint8 ReducePower(EPowerSystem system, uint8 amount);
+	void SetPower(EPowerSystem system, uint8 amount);
+
+	bool ApplyEffect_Boost(EPowerSystem system, uint8 duration);
+	bool ApplyEffect_Overload(EPowerSystem system, uint8 damage);
+	bool ApplyEffect_Reroute(EPowerSystem from, EPowerSystem to);
 };
 
 

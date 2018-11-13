@@ -198,6 +198,18 @@ void UPowerSystem::PerformAction(UPowerAction* action)
 		SendSystemEffects(action->system, numEffects);
 }
 
+void UPowerSystem::RemoveAction(uint8 index)
+{
+	UPowerAction *action = upcomingActions[index];
+
+	SETREMOVEAT(upcomingActions, index);
+	delete action;
+
+	auto numEffects = ++systemEffects[action->system];
+	if (ISCLIENT())
+		SendSystemEffects(action->system, numEffects);
+}
+
 void UPowerSystem::TickAuxPower()
 {
 	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
@@ -678,7 +690,7 @@ uint8 UPowerSystem::GetPowerReduction(uint8 current, uint8 reduction)
 		: current - reduction;
 }
 
-int8 UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
+uint8 UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 {
 	UShipSystem *targetSystem = LookupSystem(system);
 	if (targetSystem == nullptr)
@@ -700,17 +712,17 @@ int8 UPowerSystem::AddPower(EPowerSystem system, uint8 amount)
 	return newLevel - currentCapacity;
 }
 
-bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
+uint8 UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
 {
 	UShipSystem *targetSystem = LookupSystem(system);
 	if (targetSystem == nullptr)
-		return false;
+		return 0;
 
 	auto currentCapacity = systemCapacity[system];
 	auto newLevel = GetPowerReduction(currentCapacity, amount);
 
 	if (newLevel == currentCapacity)
-		return false;
+		return 0;
 
 	systemCapacity[system] = newLevel;
 
@@ -719,7 +731,21 @@ bool UPowerSystem::ReducePower(EPowerSystem system, uint8 amount)
 	if (currentLevel > 0)
 		targetSystem->SetPowerLevel(newLevel);
 
-	return true;
+	return currentCapacity - newLevel;
+}
+
+void UPowerSystem::SetPower(EPowerSystem system, uint8 amount)
+{
+	UShipSystem *targetSystem = LookupSystem(system);
+	if (targetSystem == nullptr)
+		return;
+
+	systemCapacity[system] = amount;
+
+	// Only adjust the power level if the system is turned on. Don't turn it on through this.
+	auto currentLevel = targetSystem->GetPowerLevel();
+	if (currentLevel > 0)
+		targetSystem->SetPowerLevel(amount);
 }
 
 
@@ -741,8 +767,7 @@ void UPowerSystem::ToggleSystem_Implementation(EPowerSystem system)
 }
 
 
-// TODO: implement more cards
-enum EPowerCard
+enum EPowerCard : uint8
 {
 	Card_BoostHelm = 0,
 	Card_BoostWarp,
@@ -762,7 +787,17 @@ enum EPowerCard
 	Card_OverloadComms,
 	Card_OverloadSelectable,
 
-	NUM_POWER_CARDS,
+	Card_RerouteHelm,
+	Card_RerouteWarp,
+	Card_RerouteWeapons,
+	Card_RerouteSensors,
+	Card_RerouteShields,
+	Card_RerouteDamageControl,
+	Card_RerouteComms,
+
+	Card_BypassSafeties,
+	Card_FocusPower,
+	Card_Recalibrate,
 };
 
 
@@ -795,164 +830,207 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 	{
 		case Card_BoostHelm:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Helm, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_Helm, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Helm, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostWarp:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Warp, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_Warp, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Warp, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostWeapons:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Weapons, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_Weapons, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostSensors:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Sensors, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_Sensors, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostShields:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Shields, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_Shields, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Shields, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostDamageControl:
 		{
-			auto amount = AddPower(EPowerSystem::Power_DamageControl, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_DamageControl, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostComms:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Comms, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost(EPowerSystem::Power_Comms, 20))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Comms, -amount, 0);
-			QueueAction(20, action);
 			break;
 		}
 		case Card_BoostSelectable:
 		{
-			auto amount = AddPower((EPowerSystem)targetSystem, 25);
-			if (amount == 0)
+			if (!ApplyEffect_Boost((EPowerSystem)targetSystem, 15))
 				return;
-
-			auto action = new UPowerAction((EPowerSystem)targetSystem, -amount, 0);
-			QueueAction(15, action);
 			break;
 		}
 
 		case Card_OverloadHelm:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Helm, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_Helm, 25))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Helm, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadWarp:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Warp, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_Warp, 25))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Warp, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadWeapons:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Weapons, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_Weapons, 25))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Weapons, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadSensors:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Sensors, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_Sensors, 25))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Sensors, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadShields:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Shields, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_Shields, 25))
 				return;
-			
-			auto action = new UPowerAction(EPowerSystem::Power_Shields, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadDamageControl:
 		{
-			auto amount = AddPower(EPowerSystem::Power_DamageControl, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_DamageControl, 25))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_DamageControl, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadComms:
 		{
-			auto amount = AddPower(EPowerSystem::Power_Comms, 50);
-			if (amount == 0)
+			if (!ApplyEffect_Overload(EPowerSystem::Power_Comms, 25))
 				return;
-
-			auto action = new UPowerAction(EPowerSystem::Power_Comms, -amount, -25);
-			QueueAction(10, action);
 			break;
 		}
 		case Card_OverloadSelectable:
 		{
-			auto amount = AddPower((EPowerSystem)targetSystem, 50);
+			if (!ApplyEffect_Overload((EPowerSystem)targetSystem, 40))
+				return;
+			break;
+		}
+
+		case Card_RerouteHelm:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_Helm, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+		case Card_RerouteWarp:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_Warp, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+		case Card_RerouteWeapons:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_Weapons, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+		case Card_RerouteSensors:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_Sensors, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+		case Card_RerouteShields:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_Shields, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+		case Card_RerouteDamageControl:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_DamageControl, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+		case Card_RerouteComms:
+		{
+			if (!ApplyEffect_Reroute(EPowerSystem::Power_Comms, (EPowerSystem)targetSystem))
+				return;
+			break;
+		}
+
+		case Card_BypassSafeties:
+		{
+			auto amount = AddPower((EPowerSystem)targetSystem, 75);
 			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction((EPowerSystem)targetSystem, -amount, -40);
-			QueueAction(10, action);
+			auto action = new UPowerAction((EPowerSystem)targetSystem, -amount, 0);
+			QueueAction(15, action);
+
+			for (auto i = 0; i < NUM_POWER_SYSTEMS; i++)
+			{
+				if (i == targetSystem)
+					continue;
+
+				auto system = LookupSystem((EPowerSystem)targetSystem);
+				if (system == nullptr)
+					continue;
+
+				system->TakeDamage(10);
+			}
 			break;
+		}
+		case Card_FocusPower:
+		{
+			uint16 totalReduction = 0;
+
+			for (auto i = 0; i < NUM_POWER_SYSTEMS; i++)
+			{
+				if (i == targetSystem)
+					continue;
+
+				auto reduceAmount = ReducePower((EPowerSystem)i, 25);
+				if (reduceAmount == 0)
+					continue;
+
+				totalReduction += reduceAmount;
+
+				auto action = new UPowerAction((EPowerSystem)i, reduceAmount, 0);
+				QueueAction(10, action);
+			}
+
+			auto addAmount = AddPower((EPowerSystem)targetSystem, totalReduction);
+			if (addAmount != 0)
+			{
+				auto action = new UPowerAction((EPowerSystem)targetSystem, -addAmount, 0);
+				QueueAction(10, action);
+			}
+		}
+		case Card_Recalibrate:
+		{
+			auto target = (EPowerSystem)targetSystem;
+
+			for (auto i = SIZENUM(upcomingActions) - 1; i >= 0; i--)
+			{
+				if (upcomingActions[i]->system != target)
+					continue;
+
+				RemoveAction(i);
+				i++;
+			}
+
+			SetPower(target, 100);
 		}
 
 		default:
@@ -966,8 +1044,90 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 		SendRemoveCardFromHand(handPosition);
 }
 
+EPowerCard commonCards[] = {
+	Card_BoostHelm,
+	Card_BoostWarp,
+	Card_BoostWeapons,
+	Card_BoostSensors,
+	Card_BoostShields,
+	Card_BoostDamageControl,
+	Card_BoostComms
+};
+
+EPowerCard rareCards[] = {
+	Card_OverloadHelm,
+	Card_OverloadWarp,
+	Card_OverloadWeapons,
+	Card_OverloadSensors,
+	Card_OverloadShields,
+	Card_OverloadDamageControl,
+	Card_OverloadComms,
+
+	Card_RerouteHelm,
+	Card_RerouteWarp,
+	Card_RerouteWeapons,
+	Card_RerouteSensors,
+	Card_RerouteShields,
+	Card_RerouteDamageControl,
+	Card_RerouteComms,
+};
+
+EPowerCard epicCards[] = {
+	Card_OverloadSelectable,
+	Card_BypassSafeties,
+	Card_FocusPower,
+	Card_Recalibrate,
+};
+
 uint8 UPowerSystem::PickRandomCard()
 {
-	// TODO: probably want to make some cards rarer than others
-	return FMath::RandRange(0, NUM_POWER_CARDS - 1);
+	uint8 cardBracket = FMath::RandRange(1, 10);
+
+	if (cardBracket >= 10)
+		return epicCards[FMath::RandRange(0, sizeof(epicCards) - 1)];
+	else if (cardBracket >= 7)
+		return rareCards[FMath::RandRange(0, sizeof(rareCards) - 1)];
+	else
+		return commonCards[FMath::RandRange(0, sizeof(commonCards) - 1)];
+}
+
+
+bool UPowerSystem::ApplyEffect_Boost(EPowerSystem system, uint8 duration)
+{
+	auto amount = AddPower(system, 25);
+	if (amount == 0)
+		return false;
+
+	auto action = new UPowerAction(system, -amount, 0);
+	QueueAction(duration, action);
+	return true;
+}
+
+bool UPowerSystem::ApplyEffect_Overload(EPowerSystem system, uint8 damage)
+{
+	auto amount = AddPower(system, 50);
+	if (amount == 0)
+		return false;
+
+	auto action = new UPowerAction(system, -amount, -damage);
+	QueueAction(10, action);
+	return true;
+}
+
+bool UPowerSystem::ApplyEffect_Reroute(EPowerSystem from, EPowerSystem to)
+{
+	auto reduceAmount = ReducePower(from, 100);
+	if (reduceAmount == 0)
+		return false;
+
+	auto addAmount = AddPower(to, reduceAmount);
+	if (addAmount != 0)
+	{
+		auto action = new UPowerAction(to, -addAmount, 0);
+		QueueAction(10, action);
+	}
+
+	auto action = new UPowerAction(from, reduceAmount, 0);
+	QueueAction(10, action);
+	return true;
 }

@@ -256,7 +256,47 @@ export interface TextLocalisation {
                 overloadSelectable: {
                     name: string;
                     desc: string;
-                }
+                },
+                rerouteHelm: {
+                    name: string;
+                    desc: string;
+                },
+                rerouteWarp: {
+                    name: string;
+                    desc: string;
+                },
+                rerouteWeapons: {
+                    name: string;
+                    desc: string;
+                },
+                rerouteSensors: {
+                    name: string;
+                    desc: string;
+                },
+                rerouteShields: {
+                    name: string;
+                    desc: string;
+                },
+                rerouteDamageControl: {
+                    name: string;
+                    desc: string;
+                },
+                rerouteComms: {
+                    name: string;
+                    desc: string;
+                },
+                bypassSafeties: {
+                    name: string;
+                    desc: string;
+                },
+                focusPower: {
+                    name: string;
+                    desc: string;
+                },
+                recalibrate: {
+                    name: string;
+                    desc: string;
+                },
             }
         },
         damage: {
