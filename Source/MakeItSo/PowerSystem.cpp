@@ -1084,11 +1084,11 @@ uint8 UPowerSystem::PickRandomCard()
 	uint8 cardBracket = FMath::RandRange(1, 10);
 
 	if (cardBracket >= 10)
-		return epicCards[FMath::RandRange(0, sizeof(epicCards) - 1)];
+		return epicCards[FMath::RandRange(0, sizeof(epicCards) / sizeof(EPowerCard) - 1)];
 	else if (cardBracket >= 7)
-		return rareCards[FMath::RandRange(0, sizeof(rareCards) - 1)];
+		return rareCards[FMath::RandRange(0, sizeof(rareCards) / sizeof(EPowerCard) - 1)];
 	else
-		return commonCards[FMath::RandRange(0, sizeof(commonCards) - 1)];
+		return commonCards[FMath::RandRange(0, sizeof(commonCards) / sizeof(EPowerCard) - 1)];
 }
 
 
