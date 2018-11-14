@@ -127,6 +127,39 @@
             "label label"
             "cards cards";
     }
+
+    @media(max-height: 510px) {
+        .power {
+            font-size: 0.9em;
+        }
+    }
+
+    @media(max-height: 464px) {
+        .power {
+            font-size: 0.8em;
+        }
+    }
+
+    @media(max-height: 419px) {
+        .power {
+            font-size: 0.7em;
+        }
+    }
+
+    @media(max-height: 380px) {
+        .power {
+            grid-template-rows: 2.5em 0.25em 3.5em 1em 3fr;
+        }
+        .powerSystemList {
+            font-size: 0.8em;
+        }
+        .power__selectionActions,
+        .power__cardSelection,
+        .power__cardHand,
+        .power__handLabel {
+            font-size: 1.1em;
+        }
+    }
 }
 
 
