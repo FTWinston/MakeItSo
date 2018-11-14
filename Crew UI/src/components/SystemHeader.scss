@@ -29,12 +29,23 @@
 .systemHeader__health {
     font-size: 1.5em;
     color: white;
+    text-align: right;
 }
 
 .systemHeader__power:after,
 .systemHeader__health:after {
     content: '%';
     font-size: 0.65em;
+}
+
+@media(min-width: 450px) {
+    .systemHeader__health {
+        flex-grow: 1;
+    }
+
+    .systemHeader__power {
+        width: 5em;
+    }
 }
 
 /*
