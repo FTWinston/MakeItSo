@@ -96,8 +96,10 @@
             justify-content: space-evenly;
         }
 
-        .damageControl__systemList {
-            align-content: center;
+        @media(min-height: 800px) {
+            .damageControl__systemList {
+                align-content: center;
+            }
         }
     }
 }
