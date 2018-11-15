@@ -2,8 +2,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ShipSystem, getSystemName, TextLocalisation } from '~/functionality';
 import { ApplicationState } from '~/store';
-import { connection } from '..';
-import { PushButton, Icon, ButtonColor } from './general';
+import { connection } from '../../..';
+import { PushButton, Icon, ButtonColor } from '../../general';
 import './GameMenu.scss';
 
 interface IProps {
@@ -60,8 +60,8 @@ class GameMenu extends React.PureComponent<IProps> {
             : () => { this.setState({ showingHelp: false, showingOptions: false }); connection.send(`viewsys ${system}`); };
 
         // TODO: render health, power
-        return <div>
-            <PushButton key={system} text={getSystemName(system, this.props.text)} noBorder={true} icon={icon} disabled={disabled} color={color} clicked={clicked} />
+        return <div key={system}>
+            <PushButton text={getSystemName(system, this.props.text)} noBorder={true} icon={icon} disabled={disabled} color={color} clicked={clicked} />
         </div>
     }
 }

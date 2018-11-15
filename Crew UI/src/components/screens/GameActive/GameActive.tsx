@@ -5,10 +5,10 @@ import { TextLocalisation, ShipSystem, getSystemName } from '~/functionality';
 import { Screen } from '~/components/general';
 import * as Systems from '~/components/systems';
 import './GameActive.scss';
-import { SystemHeader } from '../SystemHeader';
-import { getSystemHealth } from '../systems/damage/store';
-import { getSystemPower } from '../systems/power/store';
-import GameMenu from '../GameMenu';
+import { SystemHeader } from './SystemHeader';
+import { getSystemHealth } from '../../systems/damage/store';
+import { getSystemPower } from '../../systems/power/store';
+import GameMenu from './GameMenu';
 
 interface IProps {
     activeSystem?: ShipSystem;

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SystemHealth, SystemPower } from './general/Icons';
+import { SystemHealth, SystemPower } from '../../general/Icons';
 import './SystemHeader.scss';
 
 interface IProps {
