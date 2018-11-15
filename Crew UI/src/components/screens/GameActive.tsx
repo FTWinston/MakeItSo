@@ -8,11 +8,10 @@ import './GameActive.scss';
 import { SystemHeader } from '../SystemHeader';
 import { getSystemHealth } from '../systems/damage/store';
 import { getSystemPower } from '../systems/power/store';
+import GameMenu from '../GameMenu';
 
-interface GameActiveProps {
+interface IProps {
     activeSystem?: ShipSystem;
-    displaySystems: ShipSystem;
-    disableSystems: ShipSystem;
     text: TextLocalisation;
     systemPower?: number;
     systemHealth?: number;
@@ -25,20 +24,28 @@ const enum ScreenComponent {
     Options
 }
 
-interface GameActiveState {
+interface IState {
     showing: ScreenComponent,
 }
 
-class GameActive extends React.Component<GameActiveProps, GameActiveState> {
+class GameActive extends React.Component<IProps, IState> {
     system: Systems.BaseSystemComponent | null;
 
-    constructor(props: GameActiveProps) {    
+    constructor(props: IProps) {    
         super(props);
 
         this.system = null;
         this.state = {
             showing: ScreenComponent.System,
         };
+    }
+
+    componentWillReceiveProps(newProps: IProps) {
+        if (newProps.activeSystem !== this.props.activeSystem) {
+            this.setState({
+                showing: ScreenComponent.System,
+            });
+        }
     }
 
     public render() {
@@ -50,7 +57,7 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
 
         switch (this.state.showing) {
             case ScreenComponent.Menu:
-                additional = this.renderMenu();
+                additional = <GameMenu />;
                 break;
             case ScreenComponent.Help:
                 additional = this.system == null
@@ -110,12 +117,6 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
         }
     }
 
-    private renderMenu() {
-        return <div>
-            menu
-        </div>
-    }
-
     private headerClicked() {
         this.setState({
             showing: this.state.showing === ScreenComponent.System
@@ -126,25 +127,13 @@ class GameActive extends React.Component<GameActiveProps, GameActiveState> {
 }
 
 // Selects which state properties are merged into the component's props
-const mapStateToProps: (state: ApplicationState) => GameActiveProps = (state) => {
-    let player = state.crew.players.find(p => p.id === state.crew.localPlayerID)!;
-    
-    let disabled: ShipSystem = 0;
-    for (let other of state.crew.players) {
-        if (other.id !== state.crew.localPlayerID && other.activeSystem !== undefined) {
-            disabled |= other.activeSystem;
-        }
-    }
-
-    let activeSystem = player.activeSystem;
-    let activeName = activeSystem === undefined ? undefined : getSystemName(activeSystem, state.user.text);
+const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
+    const player = state.crew.players.find(p => p.id === state.crew.localPlayerID)!;
+    const activeSystem = player.activeSystem;
 
     return {
         text: state.user.text,
         activeSystem: activeSystem,
-        activeSystemName: activeName,
-        displaySystems: player.selectedSystems,
-        disableSystems: disabled,
         systemHealth: getSystemHealth(activeSystem, state),
         systemPower: getSystemPower(activeSystem, state),
     }
