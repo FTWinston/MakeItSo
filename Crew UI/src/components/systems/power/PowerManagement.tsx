@@ -97,11 +97,13 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
             : undefined;
 
         let selectableSystem;
+        let ignoreSystem;
 
         let classes = 'system power';
         if (selectedCard !== null) {
             classes += ' power--systemSelection';
             selectableSystem = selectedCard.targetSystem;
+            ignoreSystem = selectedCard.ignoreSystem;
         }
         if (this.state.expand === ExpandSection.Selection) {
             classes += ' power--cardSelection';
@@ -113,6 +115,7 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
                 systems={this.props.systems}
                 systemSelected={selectSystem}
                 selectableSystem={selectableSystem}
+                ignoreSystem={ignoreSystem}
                 selecting={selectedCard !== null}
             />
             <div className="power__handLabel">{systemText.handLabel}</div>

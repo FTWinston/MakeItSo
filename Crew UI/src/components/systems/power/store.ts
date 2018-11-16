@@ -35,6 +35,7 @@ export interface PowerCardInfo {
     desc: string;
     rarity: PowerCardRarity;
     targetSystem?: PowerSystemType;
+    ignoreSystem?: PowerSystemType;
 }
 
 export interface PowerState {
@@ -449,49 +450,49 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
                 name: text.systems.power.cards.rerouteHelm.name,
                 desc: text.systems.power.cards.rerouteHelm.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.Helm,
+                ignoreSystem: PowerSystemType.Helm,
             };
         case PowerCard.RerouteWarp:
             return {
                 name: text.systems.power.cards.rerouteWarp.name,
                 desc: text.systems.power.cards.rerouteWarp.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.Warp,
+                ignoreSystem: PowerSystemType.Warp,
             };
         case PowerCard.RerouteWeapons:
             return {
                 name: text.systems.power.cards.rerouteWeapons.name,
                 desc: text.systems.power.cards.rerouteWeapons.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.Weapons,
+                ignoreSystem: PowerSystemType.Weapons,
             };
         case PowerCard.RerouteSensors:
             return {
                 name: text.systems.power.cards.rerouteSensors.name,
                 desc: text.systems.power.cards.rerouteSensors.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.Sensors,
+                ignoreSystem: PowerSystemType.Sensors,
             };
         case PowerCard.RerouteShields:
             return {
                 name: text.systems.power.cards.rerouteShields.name,
                 desc: text.systems.power.cards.rerouteShields.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.Shields,
+                ignoreSystem: PowerSystemType.Shields,
             };
         case PowerCard.RerouteDamageControl:
             return {
                 name: text.systems.power.cards.rerouteDamageControl.name,
                 desc: text.systems.power.cards.rerouteDamageControl.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.DamageControl,
+                ignoreSystem: PowerSystemType.DamageControl,
             };
         case PowerCard.RerouteComms:
             return {
                 name: text.systems.power.cards.rerouteComms.name,
                 desc: text.systems.power.cards.rerouteComms.desc,
                 rarity: PowerCardRarity.Rare,
-                targetSystem: PowerSystemType.Comms,
+                ignoreSystem: PowerSystemType.Comms,
             };
         case PowerCard.BypassSafeties:
             return {

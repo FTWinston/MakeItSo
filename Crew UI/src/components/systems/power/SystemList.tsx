@@ -10,6 +10,7 @@ interface SystemListProps {
     systemSelected?: (system: PowerSystemType) => void;
     selecting: boolean;
     selectableSystem?: PowerSystemType;
+    ignoreSystem?: PowerSystemType;
 }
 
 export class SystemList extends React.PureComponent<SystemListProps, {}> {
@@ -22,6 +23,9 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
                 ? undefined
                 : () => this.props.systemSelected!(system.type);
 
+            const canSelect = (this.props.selectableSystem === undefined || this.props.selectableSystem === system.type)
+                && system.type !== this.props.ignoreSystem;
+
             return <SystemDisplay
                 text={this.props.text}
                 system={system.type}
@@ -29,7 +33,7 @@ export class SystemList extends React.PureComponent<SystemListProps, {}> {
                 numEffects={system.numEffects}
                 onSelected={selected}
                 selecting={this.props.selecting}
-                canSelect={this.props.selectableSystem === undefined || this.props.selectableSystem === system.type}
+                canSelect={canSelect}
                 key={index}
             />
         });
