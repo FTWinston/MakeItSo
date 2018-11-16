@@ -115,6 +115,7 @@ private:
 
 private:
 	uint8 Roll();
+	uint8 GetNumRerolls();
 	uint8 GetDiceScore(EDiceCombo combo);
 	UShipSystem *LookupSystem(EDamageSystem system);
 	EDamageSystem GetDamageSystem(UShipSystem::ESystem system);

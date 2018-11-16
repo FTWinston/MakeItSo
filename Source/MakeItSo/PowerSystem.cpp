@@ -215,7 +215,11 @@ void UPowerSystem::TickAuxPower()
 	if (choiceQueueSize >= MAX_CHOICE_QUEUE_SIZE)
 		return;
 
-	int16 powerDifference = NUM_POWER_SYSTEMS * 100 - overallPower;
+	// If health is 100, capacity is 100 * NUM_POWER_SYSTEMS
+	// If health is 0, capacity is 100.
+	int16 capacity = 100 + (NUM_POWER_SYSTEMS - 1) * GetHealthLevel();
+
+	int16 powerDifference = capacity - overallPower;
 
 	if (powerDifference < 0)
 		RemoveAuxPower(-powerDifference);
@@ -230,8 +234,6 @@ void UPowerSystem::TickAuxPower()
 
 void UPowerSystem::AddAuxPower(int16 amount)
 {
-	// TODO: account for GetHealthLevel() ... or does that affect the overall power "max" rather than aux generation rate?
-
 	auxPowerGenerationProgress += amount;
 
 	if (auxPowerGenerationProgress >= CHOICE_GENERATION_AUX_AMOUNT)

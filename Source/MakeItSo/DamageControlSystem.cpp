@@ -10,7 +10,6 @@
 #include "UIConnectionInfo.h"
 
 #define NUM_DICE 5
-#define MAX_REROLLS 3
 
 UDamageControlSystem::UDamageControlSystem()
 {
@@ -161,7 +160,19 @@ void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool 
 		return;
 	}
 
+	if (GetPowerLevel() == 0)
+	{
+		rollsRemaining = 0;
+		SendRollsRemaining();
+		return;
+	}
+
 	rollsRemaining--;
+
+	// In case the power level has reduced, shrink things even further
+	uint8 maxLimit = GetNumRerolls();
+	if (rollsRemaining > maxLimit)
+		rollsRemaining = maxLimit;
 
 	if (roll1 || dice[0] == 0)
 		dice[0] = Roll();
@@ -184,6 +195,23 @@ void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool 
 uint8 UDamageControlSystem::Roll()
 {
 	return FMath::RandRange(1, 6);
+}
+
+uint8 UDamageControlSystem::GetNumRerolls()
+{
+	// 150 should be 5
+	// 125 should be 4
+	// 100 should be 3
+	// 75 should be 2
+	// 50 should be 1
+	// 25 should be 0
+	// 0 is CANT ROLL
+
+	uint8 power = GetPowerLevel();
+	if (power < 25)
+		return 0;
+
+	return (power - 25) / 25;
 }
 
 uint8 UDamageControlSystem::GetDiceScore(EDiceCombo combo)
@@ -374,7 +402,7 @@ void UDamageControlSystem::ResetDice() { ResetDice_Implementation(); }
 #endif
 void UDamageControlSystem::ResetDice_Implementation()
 {
-	rollsRemaining = MAX_REROLLS;
+	rollsRemaining = GetNumRerolls();
 	for (uint8 i = 0; i < NUM_DICE; i++)
 		dice[i] = 0;
 
