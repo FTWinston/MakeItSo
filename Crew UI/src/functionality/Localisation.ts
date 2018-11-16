@@ -19,6 +19,7 @@ export interface TextLocalisation {
     common: {
         save: string;
         cancel: string;
+        goBack: string;
         ready: string;
         settings: string;
         help: string;

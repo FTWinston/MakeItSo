@@ -35,10 +35,6 @@ class PowerManagement extends ShipSystemComponent<IProps, IState> {
 
     name() { return 'power'; }
 
-    protected getHelpText() {
-        return this.props.text.systemHelp.power;
-    }
-
     protected getOptionLabels() {
         return this.props.text.systems.helm; // obviously wrong
     }

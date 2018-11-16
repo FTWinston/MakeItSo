@@ -4,6 +4,7 @@ let words: TextLocalisation = {
     common: {
         save: 'Save',
         cancel: 'Cancel',
+        goBack: 'Go back',
         ready: 'Ready',
         settings: 'Settings',
         help: 'Help',

@@ -1,0 +1,25 @@
+@import '../../general/mixins';
+
+.systemMenuItem {
+    display: flex;
+    color: $fadedColor;
+    align-items: center;
+}
+
+.systemMenuItem--selectable {
+    color: white;
+}
+
+.systemMenuItem--active {
+    color: $colorHighlight;
+}
+
+.systemMenuItem__name {
+    margin-left: 0.5em;
+    width: 8em;
+}
+
+.systemMenuItem__health,
+.systemMenuItem__power {
+    margin-left: 0.5em;
+}

@@ -1,0 +1,16 @@
+@import '../../general/mixins';
+
+.gameMenu {
+    display: flex;
+    flex-direction: column;
+}
+
+.gameMenu > * {
+    margin: 0.25em 0;
+}
+
+.gameMenu__separator {
+    height: 0.1em;
+    border-radius: 0.05em;
+    background-color: $colorPrimary;
+}

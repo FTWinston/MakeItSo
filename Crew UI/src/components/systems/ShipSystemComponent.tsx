@@ -9,12 +9,10 @@ export interface SystemComponentProps {
 export interface BaseSystemComponent {
     name(): string;
     renderOptions(): JSX.Element;
-    renderHelp(): JSX.Element;
 }
 
 export abstract class ShipSystemComponent<TProps extends SystemComponentProps, TOptions> extends React.PureComponent<TProps, TOptions> implements BaseSystemComponent { 
     abstract name(): string;
-    protected abstract getHelpText(): string;
     protected abstract getOptionLabels(): {[key: string]: string};
 
     componentWillMount() {
@@ -43,10 +41,6 @@ export abstract class ShipSystemComponent<TProps extends SystemComponentProps, T
         return <div className="systemOptions">{options}</div>;
     }
     
-    renderHelp() {
-        return <div className="systemHelp">{this.getHelpText()}</div>;
-    }
-
     private loadOptions() {
         let state: {[key: string]: string|boolean} = {};
 

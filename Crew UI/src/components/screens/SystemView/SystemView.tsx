@@ -4,86 +4,36 @@ import { ApplicationState } from '~/store';
 import { TextLocalisation, ShipSystem, getSystemName } from '~/functionality';
 import { Screen } from '~/components/general';
 import * as Systems from '~/components/systems';
-import './GameActive.scss';
+import './SystemView.scss';
 import { SystemHeader } from './SystemHeader';
 import { getSystemHealth } from '../../systems/damage/store';
 import { getSystemPower } from '../../systems/power/store';
-import GameMenu from './GameMenu';
+import { actionCreators } from '~/store/Screen';
 
 interface IProps {
     activeSystem?: ShipSystem;
     text: TextLocalisation;
     systemPower?: number;
     systemHealth?: number;
+    showGameMenu: () => void;
 }
 
-const enum ScreenComponent {
-    System,
-    Menu,
-    Help,
-    Options
-}
-
-interface IState {
-    showing: ScreenComponent,
-}
-
-class GameActive extends React.Component<IProps, IState> {
-    system: Systems.BaseSystemComponent | null;
-
-    constructor(props: IProps) {    
-        super(props);
-
-        this.system = null;
-        this.state = {
-            showing: ScreenComponent.System,
-        };
-    }
-
-    componentWillReceiveProps(newProps: IProps) {
-        if (newProps.activeSystem !== this.props.activeSystem) {
-            this.setState({
-                showing: ScreenComponent.System,
-            });
-        }
-    }
+class GameActive extends React.Component<IProps> {
+    system: Systems.BaseSystemComponent | null = null;
 
     public render() {
         let activeSystemName = this.props.activeSystem === undefined ? undefined : getSystemName(this.props.activeSystem, this.props.text);
 
         let system = this.renderSystem(this.props.activeSystem);
 
-        let additional;
-
-        switch (this.state.showing) {
-            case ScreenComponent.Menu:
-                additional = <GameMenu />;
-                break;
-            case ScreenComponent.Help:
-                additional = this.system == null
-                    ? undefined
-                    : this.system.renderHelp();
-                break;
-            case ScreenComponent.Options:
-                additional = this.system == null
-                    ? undefined
-                    : this.system.renderOptions();
-                break;
-        }
-
-        let wrapperClasses = this.state.showing === ScreenComponent.System
-            ? 'systemWrapper'
-            : 'systemWrapper systemWrapper--hidden';
-
         return <Screen>
             <SystemHeader
                 name={activeSystemName}
                 health={this.props.systemHealth}
                 power={this.props.systemPower}
-                onClick={() => this.headerClicked()}
+                onClick={() => this.props.showGameMenu()}
             />
-            {additional}
-            <div className={wrapperClasses}>{system}</div>
+            <div className="systemWrapper">{system}</div>
         </Screen>
     }
 
@@ -116,14 +66,6 @@ class GameActive extends React.Component<IProps, IState> {
                 return undefined;
         }
     }
-
-    private headerClicked() {
-        this.setState({
-            showing: this.state.showing === ScreenComponent.System
-                ? ScreenComponent.Menu
-                : ScreenComponent.System,
-        });
-    }
 }
 
 // Selects which state properties are merged into the component's props
@@ -136,11 +78,12 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
         activeSystem: activeSystem,
         systemHealth: getSystemHealth(activeSystem, state),
         systemPower: getSystemPower(activeSystem, state),
+        showGameMenu: actionCreators.showGameMenu,
     }
 };
 
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {}
+    actionCreators
 )(GameActive);

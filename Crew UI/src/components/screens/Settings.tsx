@@ -69,7 +69,7 @@ class Settings extends React.Component<SettingsProps, {}> {
 
         if (this.props.gameInProgress) {
             if (this.props.hasSelectedSystems) {
-                this.props.showGame();
+                this.props.showSystemView();
             } else {
                 this.props.showWaitingForGame();
             }
