@@ -6,6 +6,7 @@
 #endif
 
 #include "UIConnectionInfo.h"
+#include "CrewManager.h"
 
 void USensorSystem::SendAllData_Implementation()
 {
@@ -22,4 +23,14 @@ void USensorSystem::SendAllData_Implementation()
 bool USensorSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	return false;
+}
+
+void USensorSystem::AddTarget(USensorTargetInfo *target)
+{
+	SETADD(sensorTargets, target);
+}
+
+void USensorSystem::RemoveTarget(USensorTargetInfo *target)
+{
+	SETREMOVEVAL(sensorTargets, target);
 }
