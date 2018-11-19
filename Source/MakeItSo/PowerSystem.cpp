@@ -977,7 +977,7 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			if (amount == 0)
 				return;
 
-			auto action = new UPowerAction((EPowerSystem)targetSystem, -amount, 0);
+			auto action = new UPowerAction((EPowerSystem)targetSystem, -(int8)amount, 0);
 			QueueAction(15, action);
 
 			for (auto i = 0; i < NUM_POWER_SYSTEMS; i++)
@@ -1015,7 +1015,7 @@ void UPowerSystem::ActivateCard_Implementation(uint8 cardID, uint8 handPosition,
 			auto addAmount = AddPower((EPowerSystem)targetSystem, totalReduction);
 			if (addAmount != 0)
 			{
-				auto action = new UPowerAction((EPowerSystem)targetSystem, -addAmount, 0);
+				auto action = new UPowerAction((EPowerSystem)targetSystem, -(int8)addAmount, 0);
 				QueueAction(10, action);
 			}
 		}
@@ -1100,7 +1100,7 @@ bool UPowerSystem::ApplyEffect_Boost(EPowerSystem system, uint8 duration)
 	if (amount == 0)
 		return false;
 
-	auto action = new UPowerAction(system, -amount, 0);
+	auto action = new UPowerAction(system, -(int8)amount, 0);
 	QueueAction(duration, action);
 	return true;
 }
@@ -1111,7 +1111,7 @@ bool UPowerSystem::ApplyEffect_Overload(EPowerSystem system, uint8 damage)
 	if (amount == 0)
 		return false;
 
-	auto action = new UPowerAction(system, -amount, -damage);
+	auto action = new UPowerAction(system, -(int8)amount, -(int8)damage);
 	QueueAction(10, action);
 	return true;
 }
@@ -1125,7 +1125,7 @@ bool UPowerSystem::ApplyEffect_Reroute(EPowerSystem from, EPowerSystem to)
 	auto addAmount = AddPower(to, reduceAmount);
 	if (addAmount != 0)
 	{
-		auto action = new UPowerAction(to, -addAmount, 0);
+		auto action = new UPowerAction(to, -(int8)addAmount, 0);
 		QueueAction(10, action);
 	}
 

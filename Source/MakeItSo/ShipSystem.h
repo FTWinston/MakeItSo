@@ -22,6 +22,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {}
 	bool IsComponentTickEnabled() { return PrimaryComponentTick.IsTickFunctionEnabled(); }
 	float GetComponentTickInterval() { return PrimaryComponentTick.TickInterval; }
+	virtual bool ReplicateSubobjects(class UActorChannel * Channel, class FOutBunch * Bunch, FReplicationFlags * RepFlags) { return true; }
 protected:
 	FTickFunction PrimaryComponentTick;
 	virtual void BeginPlay() {}

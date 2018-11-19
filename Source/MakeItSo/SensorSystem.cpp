@@ -34,3 +34,14 @@ void USensorSystem::RemoveTarget(USensorTargetInfo *target)
 {
 	SETREMOVEVAL(sensorTargets, target);
 }
+
+bool USensorSystem::ReplicateSubobjects(UActorChannel *Channel, FOutBunch *Bunch, FReplicationFlags *RepFlags)
+{
+	bool wroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+
+	auto limit = SIZENUM(sensorTargets);
+	for (int32 i = 0; i < limit; i++)
+		wroteSomething |= Channel->ReplicateSubobject(sensorTargets[i], Bunch, RepFlags);
+
+	return wroteSomething;
+}

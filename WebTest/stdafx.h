@@ -19,6 +19,7 @@
 #define MAKEITSO_API 
 
 #define UCLASS(...) 
+#define USTRUCT(...) 
 #define GENERATED_BODY() 
 #define UFUNCTION(...) 
 #define UPROPERTY(...) 
@@ -46,7 +47,13 @@
 
 class UObject {};
 class APlayerController {};
-class FLifetimeProperty {};
+class UActorChannel {};
+struct FLifetimeProperty {};
+struct FOutBunch {};
+
+struct FReplicationFlags {
+
+};
 
 class Super
 {
@@ -55,6 +62,7 @@ public:
 	static void BeginPlay() {}
 	static void Restart() {}
 	static void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) {}
+	static bool ReplicateSubobjects(UActorChannel *Channel, FOutBunch * Bunch, FReplicationFlags *RepFlags) { return true; }
 };
 
 class FMath {

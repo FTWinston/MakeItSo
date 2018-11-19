@@ -47,6 +47,7 @@ public:
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	void AddTarget(USensorTargetInfo *target);
 	void RemoveTarget(USensorTargetInfo *target);
+	virtual bool ReplicateSubobjects(UActorChannel * Channel, FOutBunch * Bunch, FReplicationFlags * RepFlags) override;
 
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
@@ -69,6 +70,7 @@ private:
 	void OnReplicated_SensorCards(TArray<int8> beforeChange) {}
 };
 
+UCLASS()
 class MAKEITSO_API USensorTargetInfo : public UObject
 {
 public:
