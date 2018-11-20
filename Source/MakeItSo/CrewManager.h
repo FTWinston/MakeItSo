@@ -48,6 +48,10 @@
 #define CLEAR(map) map.Empty()
 #define CLEAR_PTR(map) map->Empty()
 #define QUEUE_IS_EMPTY(queue) queue.IsEmpty()
+#define NEW_OBJECT(type, outer) NewObject<type>(outer);
+#define WEAK_PTR_DECLARE(type) TWeakPtr<type>
+#define WEAK_PTR_VALID(ptr) ptr.IsValid()
+#define WEAK_PTR_GET(ptr) ptr.Pin()
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -79,6 +83,10 @@
 #define CLEAR(map) map.clear()
 #define CLEAR_PTR(map) map->clear()
 #define QUEUE_IS_EMPTY(queue) queue.empty()
+#define NEW_OBJECT(type, outer) new type();
+#define WEAK_PTR_DECLARE(type) type*
+#define WEAK_PTR_VALID(ptr) (ptr != nullptr)
+#define WEAK_PTR_GET(ptr) ptr
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)

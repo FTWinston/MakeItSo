@@ -5,6 +5,7 @@
 #endif
 
 #include "ShipSystem.h"
+#include "CrewManager.h"
 #include "SensorSystem.Generated.h"
 
 class USensorTargetInfo;
@@ -43,39 +44,51 @@ public:
 		Rel_Neutral,
 	};
 
+	USensorSystem();
+	virtual void ResetData() override;
 	virtual void SendAllData_Implementation() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
-	void AddTarget(USensorTargetInfo *target);
-	void RemoveTarget(USensorTargetInfo *target);
+	void AddTarget(AActor *target);
+	void RemoveTarget(AActor *target);
+
+#ifndef WEB_SERVER_TEST
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;
 	virtual bool ReplicateSubobjects(UActorChannel * Channel, FOutBunch * Bunch, FReplicationFlags * RepFlags) override;
+#endif
 
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
 private:
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
-	TArray<USensorTargetInfo*> sensorTargets;
-	void OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange) {}
+	TMap<uint16, USensorTargetInfo*> sensorTargets;
+	void OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange);
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
 	USensorTargetInfo *openTarget;
-	void OnReplicated_OpenTarget(USensorTargetInfo* beforeChange) {}
+	void OnReplicated_OpenTarget(USensorTargetInfo* beforeChange);
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OpenSystem)
 	USensorSystem::ESensorSystem openSystem;
-	void OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange) {}
+	void OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange);
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorCards)
 	TArray<int8> sensorCards;
-	void OnReplicated_SensorCards(TArray<int8> beforeChange) {}
+	void OnReplicated_SensorCards(TArray<int8> beforeChange);
+
+
+	uint16 nextTargetID;
 };
 
 UCLASS()
 class MAKEITSO_API USensorTargetInfo : public UObject
 {
 public:
-	UPROPERTY(Replicated)
-	uint16 id;
+#ifndef WEB_SERVER_TEST
+	virtual void IsSupportedForNetworking() override { return true; }
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;
+#endif
 
 	UPROPERTY(Replicated)
 	USensorSystem::ETargetType type;
@@ -86,13 +99,13 @@ public:
 	UPROPERTY(Replicated)
 	FVector location;
 
+	UPROPERTY(Replicated)
+	TMap<USensorSystem::ESensorSystem, uint8> systemInfoLevels;
+
+	// The actor in question may not be visible in the scene, so the client doesn't use it directly.
+	WEAK_PTR_DECLARE(AActor) actor;
+
 	// color?
 	// velocity?
 	// radius?
-
-	UPROPERTY(Replicated)
-	TArray<USensorSystem::ESensorSystem> systems;
-	
-	UPROPERTY(Replicated)
-	TArray<uint8> infoLevels;
 };

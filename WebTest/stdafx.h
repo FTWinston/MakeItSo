@@ -45,25 +45,6 @@
 #define DOREPLIFETIME(...)
 #define DOREPLIFETIME_CONDITION(...)
 
-class UObject {};
-class APlayerController {};
-class UActorChannel {};
-struct FLifetimeProperty {};
-struct FOutBunch {};
-
-struct FReplicationFlags {
-
-};
-
-class Super
-{
-public:
-	static void BeginDestroy() {}
-	static void BeginPlay() {}
-	static void Restart() {}
-	static void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) {}
-	static bool ReplicateSubobjects(UActorChannel *Channel, FOutBunch * Bunch, FReplicationFlags *RepFlags) { return true; }
-};
 
 class FMath {
 public:
@@ -337,4 +318,45 @@ public:
 	{
 		return Pitch != V.Pitch || Yaw != V.Yaw || Roll != V.Roll;
 	}
+};
+
+class UObject {};
+
+class AActor : public UObject
+{
+public:
+	FVector GetActorLocation() { return location; }
+	void SetActorLocation(FVector loc) { location = loc; }
+private:
+	FVector location = FVector::ZeroVector;
+};
+
+class APawn : public AActor
+{
+public:
+	virtual void Restart() {};
+};
+
+class APlayerController : public AActor {};
+class UActorChannel {};
+struct FLifetimeProperty {};
+class FOutBunch {};
+
+class UStaticMeshComponent { };
+class USpringArmComponent { };
+class UCameraComponent { };
+
+
+struct FReplicationFlags {
+
+};
+
+class Super
+{
+public:
+	static void BeginDestroy() {}
+	static void BeginPlay() {}
+	static void Restart() {}
+	static void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) {}
+	static bool ReplicateSubobjects(UActorChannel *Channel, FOutBunch * Bunch, FReplicationFlags *RepFlags) { return true; }
 };

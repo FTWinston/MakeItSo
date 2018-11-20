@@ -8,20 +8,6 @@
 #include "ShipSystem.h"
 #include "MakeItSoPawn.generated.h"
 
-#ifdef WEB_SERVER_TEST
-class APawn {
-public:
-	virtual void Restart() {};
-	FVector GetActorLocation() { return location; }
-	void SetActorLocation(FVector loc) { location = loc; }
-private:
-	FVector location = FVector::ZeroVector;
-};
-class UStaticMeshComponent { };
-class USpringArmComponent { };
-class UCameraComponent { };
-#endif
-
 class UWarpJump;
 
 UCLASS(Config=Game)
