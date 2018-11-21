@@ -99,6 +99,11 @@ export class Connection {
                 store.dispatch(sensorActions.addTarget(target));
                 break;
             }
+            case 'sensor_rem': {
+                let id = parseInt(data);
+                store.dispatch(sensorActions.removeTarget(id));
+                break;
+            }
             default:
                 if (cmd.startsWith(helmPrefix))
                 {

@@ -60,6 +60,9 @@ public:
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
 private:
+	void SendTargetData(uint8 id, USensorTargetInfo *target);
+
+
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
 	TMap<uint16, USensorTargetInfo*> sensorTargets;
