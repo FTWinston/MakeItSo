@@ -6,7 +6,8 @@ import { Star } from './Star';
 import { Planet } from './Planet';
 import { Station } from './Station';
 import { Ship } from './Ship';
-export { JumpPath, JumpPathStatus, Star, Planet, Station, Ship };
+import { MiscTarget } from './MiscTarget';
+export { JumpPath, JumpPathStatus, Star, Planet, Station, Ship, MiscTarget };
 
 import { Vector3 } from '../';
 import { Relationship } from '~/functionality/sensors/RelatableTarget';
@@ -45,6 +46,9 @@ export function parseSensorTarget(data: string) {
                 parseFloat(vals[8])
             );
             return new Ship(id, pos, vel, rel);
+        }
+        case '?': {
+            return new MiscTarget(id, pos);
         }
         default:
             throw new Error(`Unexpected target type: ${vals[4]}`);
