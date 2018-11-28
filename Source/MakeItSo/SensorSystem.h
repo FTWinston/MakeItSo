@@ -15,7 +15,7 @@ class MAKEITSO_API USensorSystem : public UShipSystem
 {
 	GENERATED_BODY()
 public:
-	enum ESensorSystem {
+	enum ESensorSystem : uint8 {
 		Sensor_None = 0,
 		Sensor_Power,
 		Sensor_Helm,
@@ -29,7 +29,7 @@ public:
 		NUM_SENSOR_SYSTEMS = Sensor_Comms
 	};
 
-	enum ETargetType {
+	enum ETargetType : uint8 {
 		Type_Star = 0,
 		Type_Planet,
 		Type_Station,
@@ -37,11 +37,39 @@ public:
 		Type_Misc,
 	};
 
-	enum ETargetRelationship {
+	enum ETargetRelationship : uint8 {
 		Rel_None = 0,
 		Rel_Friendly,
 		Rel_Hostile,
 		Rel_Neutral,
+	};
+
+	enum ECellContent : uint8 {
+		Cell_Empty,
+		Cell_Group1,
+		Cell_Group2,
+		Cell_Group3,
+		Cell_Group4,
+		Cell_Group5,
+		Cell_Group6,
+		Cell_Group7,
+		Cell_Group8,
+		Cell_Group9,
+	};
+
+	enum ECellDisplay : uint8 {
+		Show_Unknown = 0,
+		Show_Empty,
+		Show_Hit,
+		Show_Group1,
+		Show_Group2,
+		Show_Group3,
+		Show_Group4,
+		Show_Group5,
+		Show_Group6,
+		Show_Group7,
+		Show_Group8,
+		Show_Group9,
 	};
 
 	USensorSystem();
@@ -76,9 +104,14 @@ private:
 	USensorSystem::ESensorSystem openSystem;
 	void OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange);
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorCards)
-	TArray<int8> sensorCards;
-	void OnReplicated_SensorCards(TArray<int8> beforeChange);
+
+	TArray<ECellContent> targetCells;
+
+	TArray<uint8> cellGroupSizesRemaining;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CellDisplay)
+	TArray<ECellDisplay> cellDisplay;
+	void OnReplicated_CellDisplay(TArray<ECellDisplay> beforeChange);
 
 
 	uint16 nextTargetID;

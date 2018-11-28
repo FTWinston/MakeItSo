@@ -8,12 +8,27 @@
 #include "UIConnectionInfo.h"
 #include "CrewManager.h"
 
+#define MAX_CELL_GROUPS 9
+#define TARGET_GRID_WIDTH 8
+#define TARGET_GRID_HEIGHT 8
+#define NUM_TARGET_CELLS TARGET_GRID_WIDTH * TARGET_GRID_HEIGHT
+
 
 USensorSystem::USensorSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	PrimaryComponentTick.TickInterval = 1.0f;
 	PrimaryComponentTick.SetTickFunctionEnable(true);
+
+#ifndef WEB_SERVER_TEST
+	targetCells.AddZeroed(NUM_TARGET_CELLS);
+	cellDisplay.AddZeroed(NUM_TARGET_CELLS);
+	cellGroupSizesRemaining.AddZeroed(MAX_CELL_GROUPS);
+#else
+	targetCells.assign(NUM_TARGET_CELLS, ECellContent::Cell_Empty);
+	cellDisplay.assign(NUM_TARGET_CELLS, ECellDisplay::Show_Unknown);
+	cellGroupSizesRemaining.assign(MAX_CELL_GROUPS, 0);
+#endif
 }
 
 void USensorSystem::ResetData()
@@ -22,6 +37,15 @@ void USensorSystem::ResetData()
 	openSystem = ESensorSystem::Sensor_None;
 	openTarget = nullptr;
 	EMPTY(sensorTargets);
+
+	for (auto i = 0; i < MAX_CELL_GROUPS; i++)
+		cellGroupSizesRemaining[i] = 0;
+	
+	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
+	{
+		targetCells[i] = ECellContent::Cell_Empty;
+		cellDisplay[i] = ECellDisplay::Show_Unknown;
+	}
 
 #ifdef WEB_SERVER_TEST
 	auto actor = new AActor();
@@ -221,7 +245,7 @@ void USensorSystem::OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeC
 
 }
 
-void USensorSystem::OnReplicated_SensorCards(TArray<int8> beforeChange)
+void USensorSystem::OnReplicated_CellDisplay(TArray<USensorSystem::ECellDisplay> beforeChange)
 {
 
 }
@@ -235,7 +259,7 @@ void USensorSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLif
 	DOREPLIFETIME(USensorSystem, sensorTargets);
 	DOREPLIFETIME(USensorSystem, openTarget);
 	DOREPLIFETIME(USensorSystem, openSystem);
-	DOREPLIFETIME(USensorSystem, sensorCards);
+	DOREPLIFETIME(USensorSystem, targetCells);
 }
 
 bool USensorSystem::ReplicateSubobjects(UActorChannel *Channel, FOutBunch *Bunch, FReplicationFlags *RepFlags)
