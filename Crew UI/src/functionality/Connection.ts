@@ -1,7 +1,7 @@
 import { store } from '~/index';
 import { actionCreators as crewActions } from '~/store/Crew';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
-import { actionCreators as sensorActions } from '~/store/Sensors';
+import { actionCreators as sensorActions } from '~/store/Environment';
 import { ShipSystem, parseSensorTarget } from '~/functionality';
 import { msgPrefix as helmPrefix, receiveMessage as helmMessage } from '~/components/systems/helm'
 import { msgPrefix as damagePrefix, receiveMessage as damageMessage } from '~/components/systems/damage'

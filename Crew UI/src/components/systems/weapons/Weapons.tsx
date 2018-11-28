@@ -44,7 +44,7 @@ class Weapons extends ShipSystemComponent<WeaponsProps, {}> {
 const mapStateToProps: (state: ApplicationState) => WeaponsProps = (state) => {
     return {
         text: state.user.text,
-        allTargets: state.sensors.targets,
+        allTargets: state.environment.targets,
     }
 };
 

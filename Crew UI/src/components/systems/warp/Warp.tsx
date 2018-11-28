@@ -134,7 +134,7 @@ class Warp extends ShipSystemComponent<WarpProps, WarpOptions> implements React.
 const mapStateToProps: (state: ApplicationState) => WarpProps = (state) => {
     return {
         ...state.warp,
-        sensorTargets: state.sensors.targets,
+        sensorTargets: state.environment.targets,
         text: state.user.text,
         selectPath: actionCreators.selectPath,
         setScreenStatus: actionCreators.setScreenStatus,

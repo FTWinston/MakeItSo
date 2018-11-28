@@ -5,7 +5,7 @@ import { exhaustiveActionCheck } from './exhaustiveActionCheck';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
-export interface SensorState {
+export interface EnvironmentState {
     targets: SensorTarget[];
 }
 
@@ -56,11 +56,11 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: SensorState = {
+const unloadedState: EnvironmentState = {
     targets: [],
 };
 
-export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Action) => {
+export const reducer: Reducer<EnvironmentState> = (state: EnvironmentState, rawAction: Action) => {
     const action = rawAction as KnownAction;
     switch (action.type) {
         case 'ADD_TARGET': {
