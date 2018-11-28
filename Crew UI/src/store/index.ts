@@ -5,6 +5,7 @@ import * as Environment from './Environment';
 import * as Damage from '~/components/systems/damage/store';
 import * as Helm from '~/components/systems/helm/store';
 import * as Power from '~/components/systems/power/store';
+import * as Sensors from '~/components/systems/sensors/store';
 import * as Warp from '~/components/systems/warp/store';
 
 // The top-level state object
@@ -15,6 +16,7 @@ export interface ApplicationState {
     damage: Damage.DamageState;
     helm: Helm.HelmState;
     power: Power.PowerState;
+    sensors: Sensors.SensorState;
     environment: Environment.EnvironmentState;
     warp: Warp.WarpState;
 }
@@ -29,6 +31,7 @@ export const reducers = {
     damage: Damage.reducer,
     helm: Helm.reducer,
     power: Power.reducer,
+    sensors: Sensors.reducer,
     environment: Environment.reducer,
     warp: Warp.reducer,
 };
