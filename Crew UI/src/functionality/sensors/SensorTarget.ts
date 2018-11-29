@@ -1,8 +1,16 @@
 import { CanvasBounds3D } from '~/functionality';
 import { Vector2, Vector3 } from '~/functionality/math';
 
+export const enum SensorTargetType {
+    Star,
+    Planet,
+    Ship,
+    Station,
+    Misc,
+}
+
 export abstract class SensorTarget {
-    constructor(readonly id: number, public position: Vector3) {
+    constructor(readonly id: number, public type: SensorTargetType, public position: Vector3) {
     }
 
     interpolate(interval: number) {}

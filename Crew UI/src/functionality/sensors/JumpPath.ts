@@ -1,5 +1,5 @@
 import { CanvasBounds3D } from '~/functionality';
-import { SensorTarget } from './SensorTarget';
+import { SensorTarget, SensorTargetType } from './SensorTarget';
 import { Vector2, Vector3 } from '~/functionality/math';
 
 export const enum JumpPathStatus { // matches enum in WarpSystem.h
@@ -12,7 +12,7 @@ export const enum JumpPathStatus { // matches enum in WarpSystem.h
 export class JumpPath extends SensorTarget {
     public highlighted = false;
     constructor(id: number, public power: number, public status: JumpPathStatus, public points: Vector3[]) {
-        super(id, points[0]);
+        super(id, SensorTargetType.Misc, points[0]);
     }
 
     isBetween(min: Vector3, max: Vector3) {

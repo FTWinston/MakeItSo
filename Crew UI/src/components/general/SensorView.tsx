@@ -6,7 +6,7 @@ interface SensorViewProps {
     className?: string;
     targets: SensorTarget[];
     autoRotate?: boolean;
-    selected?: (target: SensorTarget) => void;
+    // selected?: (target: SensorTarget) => void;
 }
 
 interface SensorViewState {

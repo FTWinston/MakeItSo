@@ -1,10 +1,11 @@
 import { CanvasBounds3D } from '~/functionality';
 import { Celestial } from './Celestial';
 import { Vector2, Vector3 } from '~/functionality/math';
+import { SensorTargetType } from './SensorTarget';
 
 export class Star extends Celestial {
     constructor(id: number, position: Vector3, color: string, radius: number, public damageRadius?: number) {
-        super(id, position, color, radius);
+        super(id, SensorTargetType.Star, position, color, radius);
     }
 
     protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D) {

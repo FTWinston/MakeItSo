@@ -2,10 +2,11 @@ import { CanvasBounds3D } from '~/functionality';
 import { MoveableTarget } from './MoveableTarget';
 import { Relationship } from './RelatableTarget';
 import { Vector2, Vector3 } from '~/functionality/math';
+import { SensorTargetType } from './SensorTarget';
 
 export class Ship extends MoveableTarget {
     constructor(id: number, position: Vector3, velocity: Vector3, relationship: Relationship) {
-        super(id, position, velocity, relationship);
+        super(id, SensorTargetType.Ship, position, velocity, relationship);
     }
     
     protected getShadowRadius(display: CanvasBounds3D) { return display.onePixel * 10; }

@@ -1,5 +1,5 @@
 import { CanvasBounds3D } from '~/functionality';
-import { SensorTarget } from './SensorTarget';
+import { SensorTarget, SensorTargetType } from './SensorTarget';
 import { Vector2, Vector3 } from '~/functionality/math';
 
 export const enum Relationship {
@@ -10,8 +10,8 @@ export const enum Relationship {
 }
 
 export abstract class RelatableTarget extends SensorTarget {
-    constructor(id: number, position: Vector3, public relationship: Relationship) {
-        super(id, position);
+    constructor(id: number, type: SensorTargetType, position: Vector3, public relationship: Relationship) {
+        super(id, type, position);
     }
 
     protected getRelationColor() {

@@ -1,5 +1,5 @@
 import { CanvasBounds3D } from '~/functionality';
-import { SensorTarget } from './SensorTarget';
+import { SensorTarget, SensorTargetType } from './SensorTarget';
 import { Vector2, Vector3 } from '~/functionality/math'; 
 import texture from './sphere_shade.png';
 
@@ -7,8 +7,8 @@ let image = new Image();
 image.src = texture;
 
 export class Celestial extends SensorTarget {
-    constructor(id: number, position: Vector3, public color: string, public radius: number) {
-        super(id, position);
+    constructor(id: number, type: SensorTargetType, position: Vector3, public color: string, public radius: number) {
+        super(id, type, position);
     }
 
     protected getShadowRadius(display: CanvasBounds3D) { return this.radius * 0.85; }

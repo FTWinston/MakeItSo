@@ -4,10 +4,11 @@ import { ApplicationState } from '~/store';
 import { TextLocalisation, SensorTarget } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Sensors.scss';
-import { SensorState, actionCreators } from './store';
+import { SensorState, actionCreators, SensorSystemType } from './store';
 import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from './TargetList';
 import { connection } from '~/index';
+import { TargetDisplay } from './TargetDisplay';
 
 interface SensorsProps extends SensorState {
     text: TextLocalisation;
@@ -22,25 +23,28 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
     }
 
     public render() {
-        if (this.props.selectedTarget === null) {
-            const selectTarget = (target: SensorTarget) => connection.send(`sensors_target ${target.id}`);
+        const selectTarget = (target: SensorTarget) => connection.send(`sensors_target ${target.id}`);
 
-            return <div className="system sensors">
-                <SensorView className="sensors__targetSelect" targets={this.props.allTargets} selected={selectTarget} />
+        if (this.props.selectedTarget === null) {
+            return <div className="system sensors sensors--noTarget">
+                <SensorView className="sensors__targetSelect" targets={this.props.allTargets} />
                 <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
             </div>
         }
         else if (this.props.openSystem === null) {
-            // const selectSystem = (system: SensorSystemType) => connection.send(`sensors_system ${system}`);
-            // const back = () => connection.send(`sensors_target 0`);
-
-            return <div className="system sensors">target display</div>
+            const selectSystem = (system: SensorSystemType) => connection.send(`sensors_system ${system}`);
+            const back = () => connection.send(`sensors_target 0`);
+            
+            return <div className="system sensors sensors--target">
+                <TargetDisplay target={this.props.selectedTarget} text={this.props.text} goBack={back} selectSystem={selectSystem} />
+                <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
+            </div>
         }
         else {
             // const revealCell = (cellIndex: number) => connection.send(`sensors_reveal ${cellIndex}`);
             // const back = () => connection.send(`sensors_system 0`);
 
-            return <div className="system sensors">system scan display</div>
+            return <div className="system sensors sensors--targetSystem">system scan display</div>
         }
     }
 }
