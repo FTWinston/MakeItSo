@@ -5,7 +5,7 @@ import { exhaustiveActionCheck } from '~/store';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
-const enum SensorSystemType {
+export const enum SensorSystemType {
     Power = 1,
     Helm,
     Warp,
