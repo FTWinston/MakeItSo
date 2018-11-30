@@ -9,6 +9,8 @@ import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from './TargetList';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
+import { SensorSystemInfo } from './SensorSystemInfo';
+import { SensorSystemTargeting } from './SensorSystemTargeting';
 
 interface SensorsProps extends SensorState {
     text: TextLocalisation;
@@ -19,7 +21,7 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
     name() { return 'sensors'; }
 
     protected getOptionLabels() {
-        return this.props.text.systems.sensors;
+        return this.props.text.systems.helm;
     }
 
     public render() {
@@ -36,15 +38,33 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
             const back = () => connection.send(`sensors_target 0`);
             
             return <div className="system sensors sensors--target">
-                <TargetDisplay target={this.props.selectedTarget} text={this.props.text} goBack={back} selectSystem={selectSystem} />
+                <TargetDisplay
+                    target={this.props.selectedTarget}
+                    systems={this.props.targetSystems}
+                    text={this.props.text}
+                    goBack={back}
+                    selectSystem={selectSystem}
+                />
                 <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
             </div>
         }
         else {
-            // const revealCell = (cellIndex: number) => connection.send(`sensors_reveal ${cellIndex}`);
-            // const back = () => connection.send(`sensors_system 0`);
+            const revealCell = (cellIndex: number) => connection.send(`sensors_reveal ${cellIndex}`);
+            const back = () => connection.send(`sensors_system 0`);
 
-            return <div className="system sensors sensors--targetSystem">system scan display</div>
+            return <div className="system sensors sensors--targetSystem">
+                <SensorSystemInfo
+                    target={this.props.selectedTarget}
+                    system={this.props.openSystem}
+                    text={this.props.text}
+                    goBack={back}
+                />
+                <SensorSystemTargeting
+                    cells={this.props.targetSystemCells}
+                    text={this.props.text}
+                    revealCell={revealCell}
+                />
+            </div>
         }
     }
 }

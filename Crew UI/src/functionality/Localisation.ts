@@ -183,7 +183,13 @@ export interface TextLocalisation {
 
         },
         sensors: {
-
+            targetTypes: {
+                star: string;
+                planet: string;
+                station: string;
+                ship: string;
+                misc: string;
+            }
         },
         power: {
             pickCards: string;

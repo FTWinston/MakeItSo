@@ -16,7 +16,7 @@ export const enum SensorSystemType {
     Comms,
 }
 
-const enum SensorTargetCellType {
+export const enum SensorTargetCellType {
     Unknown = 0,
     Empty,
     Hit,

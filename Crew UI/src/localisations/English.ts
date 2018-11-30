@@ -249,7 +249,13 @@ let words: TextLocalisation = {
 
         },
         sensors: {
-
+            targetTypes: {
+                star: 'Star',
+                planet: 'Planet',
+                station: 'Station',
+                ship: 'Ship',
+                misc: 'Misc',
+            }
         },
         power: {
             pickCards: 'Pick cards',
