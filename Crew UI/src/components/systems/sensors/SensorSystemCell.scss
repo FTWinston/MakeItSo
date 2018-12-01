@@ -1,0 +1,60 @@
+@import '../../general/mixins';
+
+.sensorSystemCell {
+    border-radius: 5%;
+}
+
+.sensorSystemCell--unknown {
+    background-color: grey;
+}
+
+.sensorSystemCell--empty {
+    background-color: transparent;
+}
+
+.sensorSystemCell--hit {
+    background-color: red;
+}
+
+/*
+.sensorSystemCell--reveal {
+    TODO: consistent border?
+}
+*/
+
+.sensorSystemCell--color1 {
+
+}
+
+
+.sensorSystemCell--color2 {
+
+}
+
+.sensorSystemCell--color3 {
+
+}
+
+.sensorSystemCell--color4 {
+
+}
+
+.sensorSystemCell--color5 {
+
+}
+
+.sensorSystemCell--color6 {
+
+}
+
+.sensorSystemCell--color7 {
+
+}
+
+.sensorSystemCell--color8 {
+
+}
+
+.sensorSystemCell--color9 {
+
+}
