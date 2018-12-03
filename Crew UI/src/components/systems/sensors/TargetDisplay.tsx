@@ -9,6 +9,7 @@ interface IProps {
     text: TextLocalisation;
     target: SensorTarget;
     systems: SensorSystemType[];
+    systemLevels: number[];
     goBack: () => void;
     selectSystem: (system: SensorSystemType) => void;
 }
@@ -32,9 +33,12 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
         </div>
     }
 
-    private renderSystemItem(system: SensorSystemType, key: number) {
-        return <div className="sensorSystemLink" key={key} onClick={() => this.props.selectSystem(system)}>
+    private renderSystemItem(system: SensorSystemType, index: number) {
+        const level = this.props.systemLevels[index];
+
+        return <div className="sensorSystemLink" key={index} onClick={() => this.props.selectSystem(system)}>
             <div className="sensorSystemLink__name">{TargetDisplay.getSystemName(system, this.props.text)}</div>
+            <div className="sensorSystemLink__level">{level}</div>
         </div>
 
         // TODO: indicate scan level, system health and system power, if known (and relevant)

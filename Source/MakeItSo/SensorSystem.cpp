@@ -280,6 +280,24 @@ void USensorSystem::SendTargetSelection(uint8 targetID)
 {
 	FString output = TEXT("sensor_target ");
 	APPENDINT(output, targetID);
+
+	if (targetID != 0)
+	{
+		auto target = sensorTargets[targetID];
+
+		if (target != nullptr)
+			for (auto item : target->systemInfoLevels)
+			{
+				ESensorSystem system = PAIRKEY(item);
+				uint8 infoLevel = PAIRVALUE(item);
+
+				output += TEXT(" ");
+				APPENDINT(output, (uint8)system);
+				output += TEXT(" ");
+				APPENDINT(output, infoLevel);
+			}
+	}
+
 	SendSystem(output);
 }
 

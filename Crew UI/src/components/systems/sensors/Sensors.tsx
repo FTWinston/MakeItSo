@@ -62,6 +62,7 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
                 <TargetDisplay
                     target={this.state.selectedTarget}
                     systems={this.props.targetSystems}
+                    systemLevels={this.props.targetSystemLevels}
                     text={this.props.text}
                     goBack={back}
                     selectSystem={selectSystem}
@@ -72,11 +73,15 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
         else {
             const revealCell = (cellIndex: number) => connection.send(`sensors_reveal ${cellIndex}`);
             const back = () => connection.send(`sensors_system 0`);
+            const systemLevel = this.props.targetSystemLevels[
+                this.props.targetSystems.indexOf(this.props.openSystem)
+            ];
 
             return <div className="system sensors sensors--targetSystem">
                 <SensorSystemInfo
                     target={this.state.selectedTarget}
                     system={this.props.openSystem}
+                    infoLevel={systemLevel}
                     text={this.props.text}
                     goBack={back}
                 />

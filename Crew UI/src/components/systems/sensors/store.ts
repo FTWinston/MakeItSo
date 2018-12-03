@@ -33,6 +33,7 @@ export const enum SensorTargetCellType {
 export interface SensorState {
     selectedTargetID: number;
     targetSystems: SensorSystemType[];
+    targetSystemLevels: number[];
     openSystem: SensorSystemType | null;
     targetSystemCells: SensorTargetCellType[];
     targetGridSize: number;
@@ -50,6 +51,7 @@ interface SetSelectedTargetAction {
 interface SetTargetSystemsAction {
     type: 'TARGET_SYSTEMS';
     systems: SensorSystemType[];
+    levels: number[];
 }
 
 interface OpenTargetSystemAction {
@@ -81,9 +83,10 @@ export const actionCreators = {
         type: 'SENSOR_TARGET',
         targetID: targetID,
     },
-    setTargetSystems: (systems: SensorSystemType[]) => <SetTargetSystemsAction>{
+    setTargetSystems: (systems: SensorSystemType[], levels: number[]) => <SetTargetSystemsAction>{
         type: 'TARGET_SYSTEMS',
         systems: systems,
+        levels: levels,
     },
     openTargetSystem: (system: SensorSystemType | null) => <OpenTargetSystemAction>{
         type: 'OPEN_SYSTEM',
@@ -106,6 +109,7 @@ export const actionCreators = {
 const unloadedState: SensorState = {
     selectedTargetID: 0,
     targetSystems: [],
+    targetSystemLevels: [],
     openSystem: null,
     targetSystemCells: [],
     targetGridSize: 0,
@@ -124,6 +128,7 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
             return {
                 ...state,
                 targetSystems: action.systems,
+                targetSystemLevels: action.levels,
             };
         }
         case 'OPEN_SYSTEM': {

@@ -6,13 +6,23 @@ export const msgPrefix = 'sensor_';
 export function receiveMessage(cmd: string, data: string) {
     switch (cmd) {
         case 'sensor_target': {
-            const id = parseInt(data);
-            store.dispatch(actionCreators.setSelectedTarget(id));
+            const ids = data.split(' ').map(str => parseInt(str));
+
+            if (ids.length === 0)
+                break;
+
+            store.dispatch(actionCreators.setSelectedTarget(ids[0]));
+
+            const systems: SensorSystemType[] = [];
+            const levels: number[] = [];
+
+            for (let i=2; i<ids.length; i++) {
+                systems.push(ids[i-1] as SensorSystemType);
+                levels.push(ids[i]);
+            }
+            
+            store.dispatch(actionCreators.setTargetSystems(systems, levels));
             break;
-        }
-        case 'sensor_systems': { // TODO: actually call this
-            const systems = data.length === 0 ? [] : data.split(' ').map(str => parseInt(str) as SensorSystemType);
-            store.dispatch(actionCreators.setTargetSystems(systems));
         }
         case 'sensor_cells': { // TODO: actually call this
             const cells = data.length === 0 ? [] : data.split(' ').map(str => parseInt(str) as SensorTargetCellType);

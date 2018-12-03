@@ -9,6 +9,7 @@ interface IProps {
     text: TextLocalisation;
     target: SensorTarget;
     system: SensorSystemType;
+    infoLevel: number;
     goBack: () => void;
 }
 
@@ -19,11 +20,11 @@ export class SensorSystemInfo extends React.PureComponent<IProps, {}> {
         const type = TargetDisplay.getTypeName(target.type, this.props.text);
 
         return <div className={classes}>
-            <div className="targetListItem__heading">
-                <span className="targetListItem__type">{type}</span>: <span className="targetListItem__id">{target.id}</span>
+            <div className="sensorSystemInfo__heading">
+                <span className="sensorSystemInfo__type">{type}</span>: <span className="sensorSystemInfo__id">{target.id}</span>
             </div>
-            <div className="targetListItem__system">{type}</div>
-
+            <div className="sensorSystemInfo__system">{type}</div>
+            <div className="sensorSystemInfo__level">{this.props.infoLevel}</div>
             <PushButton color={ButtonColor.Secondary} clicked={this.props.goBack} text={this.props.text.common.goBack} />
         </div>
 
