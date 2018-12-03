@@ -96,9 +96,9 @@ private:
 	TMap<uint16, USensorTargetInfo*> sensorTargets;
 	void OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange);
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
-	USensorTargetInfo *openTarget;
-	void OnReplicated_OpenTarget(USensorTargetInfo* beforeChange);
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OpenTargetID)
+	uint16 openTargetID;
+	void OnReplicated_OpenTargetID(uint16 beforeChange);
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OpenSystem)
 	USensorSystem::ESensorSystem openSystem;
@@ -115,6 +115,22 @@ private:
 
 
 	uint16 nextTargetID;
+
+
+	// Client functions, that can be called from the server
+	UFUNCTION(Client, Reliable)
+	void SendTargetSelection(uint8 targetID);
+#ifdef WEB_SERVER_TEST
+	void SendTargetSelection_Implementation(uint8 targetID);
+#endif
+
+	// Server functions, that can be called from the client
+	UFUNCTION(Server, Reliable)
+	void OpenTarget(uint8 targetID);
+#ifdef WEB_SERVER_TEST
+	void OpenTarget_Implementation(uint8 targetID);
+#endif
+
 };
 
 UCLASS()

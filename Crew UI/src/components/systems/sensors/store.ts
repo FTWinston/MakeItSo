@@ -1,5 +1,4 @@
 import { Action, Reducer } from 'redux';
-import { SensorTarget } from '~/functionality';
 import { exhaustiveActionCheck } from '~/store';
 
 // -----------------
@@ -32,10 +31,11 @@ export const enum SensorTargetCellType {
 }
 
 export interface SensorState {
-    selectedTarget: SensorTarget | null;
+    selectedTargetID: number;
     targetSystems: SensorSystemType[];
     openSystem: SensorSystemType | null;
     targetSystemCells: SensorTargetCellType[];
+    targetGridSize: number;
 }
 
 // -----------------
@@ -44,7 +44,7 @@ export interface SensorState {
 
 interface SetSelectedTargetAction {
     type: 'SENSOR_TARGET';
-    target: SensorTarget | null;
+    targetID: number;
 }
 
 interface SetTargetSystemsAction {
@@ -77,9 +77,9 @@ type KnownAction = SetSelectedTargetAction | SetTargetSystemsAction | OpenTarget
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    setSelectedTarget: (target: SensorTarget | null) => <SetSelectedTargetAction>{
+    setSelectedTarget: (targetID: number) => <SetSelectedTargetAction>{
         type: 'SENSOR_TARGET',
-        target: target,
+        targetID: targetID,
     },
     setTargetSystems: (systems: SensorSystemType[]) => <SetTargetSystemsAction>{
         type: 'TARGET_SYSTEMS',
@@ -104,10 +104,11 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: SensorState = {
-    selectedTarget: null,
+    selectedTargetID: 0,
     targetSystems: [],
     openSystem: null,
     targetSystemCells: [],
+    targetGridSize: 0,
 };
 
 export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Action) => {
@@ -116,7 +117,7 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
         case 'SENSOR_TARGET': {
             return {
                 ...state,
-                selectedTarget: action.target,
+                selectedTargetID: action.targetID,
             }
         }
         case 'TARGET_SYSTEMS': {
@@ -135,6 +136,7 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
             return {
                 ...state,
                 targetSystemCells: action.cells,
+                targetGridSize: Math.ceil(Math.sqrt(action.cells.length)),
             };
         }
         case 'SET_CELL': {

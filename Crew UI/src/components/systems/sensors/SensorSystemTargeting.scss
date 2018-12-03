@@ -7,6 +7,7 @@
     align-content: center;
 }
 
+// To keep cells square, this could be made cleverer: portrait and landscape versions, probably using vmin.
 @for $i from 5 through 10 {
     .sensorSystemTargeting--size#{$i} {
         grid-template-rows: repeat($i, 1fr);

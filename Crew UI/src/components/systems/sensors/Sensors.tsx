@@ -17,7 +17,28 @@ interface SensorsProps extends SensorState {
     allTargets: SensorTarget[];
 }
 
-class Sensors extends ShipSystemComponent<SensorsProps, {}> {
+interface IState {
+    selectedTarget?: SensorTarget;
+}
+
+class Sensors extends ShipSystemComponent<SensorsProps, IState> {
+    constructor(props: SensorsProps) {
+        super(props);
+
+        this.state = {
+        };
+    }
+
+    componentWillReceiveProps(newProps: SensorsProps) {
+        if (newProps.selectedTargetID !== this.props.selectedTargetID) {
+            const target = this.props.allTargets.find(t => t.id === newProps.selectedTargetID);
+
+            this.setState({
+                selectedTarget: target,
+            });
+        }
+    }
+
     name() { return 'sensors'; }
 
     protected getOptionLabels() {
@@ -27,7 +48,7 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
     public render() {
         const selectTarget = (target: SensorTarget) => connection.send(`sensors_target ${target.id}`);
 
-        if (this.props.selectedTarget === null) {
+        if (this.state.selectedTarget === undefined) {
             return <div className="system sensors sensors--noTarget">
                 <SensorView className="sensors__targetSelect" targets={this.props.allTargets} />
                 <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
@@ -39,7 +60,7 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
             
             return <div className="system sensors sensors--target">
                 <TargetDisplay
-                    target={this.props.selectedTarget}
+                    target={this.state.selectedTarget}
                     systems={this.props.targetSystems}
                     text={this.props.text}
                     goBack={back}
@@ -54,12 +75,13 @@ class Sensors extends ShipSystemComponent<SensorsProps, {}> {
 
             return <div className="system sensors sensors--targetSystem">
                 <SensorSystemInfo
-                    target={this.props.selectedTarget}
+                    target={this.state.selectedTarget}
                     system={this.props.openSystem}
                     text={this.props.text}
                     goBack={back}
                 />
                 <SensorSystemTargeting
+                    gridSize={this.props.targetGridSize}
                     cells={this.props.targetSystemCells}
                     text={this.props.text}
                     revealCell={revealCell}

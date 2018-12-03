@@ -5,7 +5,11 @@
 }
 
 .sensorSystemCell--unknown {
-    background-color: grey;
+    background-color: $colorSecondary;
+}
+
+.sensorSystemCell:not(.sensorSystemCell--unknown) {
+    border: solid grey 1px;
 }
 
 .sensorSystemCell--empty {
@@ -13,48 +17,42 @@
 }
 
 .sensorSystemCell--hit {
-    background-color: red;
+    background-color: $colorBadLight;
+    border-color: $colorBadDark;
 }
-
-/*
-.sensorSystemCell--reveal {
-    TODO: consistent border?
-}
-*/
 
 .sensorSystemCell--color1 {
-
+    background-color: orange;
 }
 
-
 .sensorSystemCell--color2 {
-
+    background-color: yellowgreen;
 }
 
 .sensorSystemCell--color3 {
-
+    background-color: violet;
 }
 
 .sensorSystemCell--color4 {
-
+    background-color: seagreen;
 }
 
 .sensorSystemCell--color5 {
-
+    background-color: cadetblue;
 }
 
 .sensorSystemCell--color6 {
-
+    background-color: cornflowerblue;
 }
 
 .sensorSystemCell--color7 {
-
+    background-color: coral;
 }
 
 .sensorSystemCell--color8 {
-
+    background-color: indianred;
 }
 
 .sensorSystemCell--color9 {
-
+    background-color: khaki;
 }

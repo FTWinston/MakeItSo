@@ -1,9 +1,10 @@
 import { store } from '~/index';
 import { actionCreators as crewActions } from '~/store/Crew';
 import { actionCreators as screenActions, ClientScreen } from '~/store/Screen';
-import { actionCreators as sensorActions } from '~/store/Environment';
+import { actionCreators as environmentActions } from '~/store/Environment';
 import { ShipSystem, parseSensorTarget } from '~/functionality';
 import { msgPrefix as helmPrefix, receiveMessage as helmMessage } from '~/components/systems/helm'
+import { msgPrefix as sensorPrefix, receiveMessage as sensorMessage } from '~/components/systems/sensors'
 import { msgPrefix as damagePrefix, receiveMessage as damageMessage } from '~/components/systems/damage'
 import { msgPrefix as powerPrefix, receiveMessage as powerMessage } from '~/components/systems/power'
 import { msgPrefix as warpPrefix, receiveMessage as warpMessage } from '~/components/systems/warp'
@@ -94,15 +95,19 @@ export class Connection {
                 }
                 break;
 
-            case 'sensor_target': {
+            // "sensor targets" are actually shown on multiple systems
+            case 'env_target': {
                 let target = parseSensorTarget(data);
-                store.dispatch(sensorActions.addTarget(target));
+                store.dispatch(environmentActions.addOrUpdateTarget(target));
                 break;
             }
-            case 'sensor_rem': {
+            case 'env_rem': {
                 let id = parseInt(data);
-                store.dispatch(sensorActions.removeTarget(id));
+                store.dispatch(environmentActions.removeTarget(id));
                 break;
+            }
+            case 'env_clear': {
+                store.dispatch(environmentActions.removeAllTargets());
             }
             default:
                 if (cmd.startsWith(helmPrefix))
@@ -114,6 +119,12 @@ export class Connection {
                 else if (cmd.startsWith(warpPrefix))
                 {
                     if (warpMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                else if (cmd.startsWith(sensorPrefix))
+                {
+                    if (sensorMessage(cmd, data)) {
                         break;
                     }
                 }

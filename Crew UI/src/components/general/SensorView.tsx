@@ -23,7 +23,7 @@ interface TargetDrawInfo {
     zDepth: number;
 }
 
-export class SensorView extends React.PureComponent<SensorViewProps, SensorViewState> {
+export class SensorView extends React.Component<SensorViewProps, SensorViewState> {
     static defaultProps = {
         autoRotate: true,
     };

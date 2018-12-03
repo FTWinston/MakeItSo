@@ -13,8 +13,8 @@ export interface EnvironmentState {
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface AddTargetAction {
-    type: 'ADD_TARGET';
+interface SetTargetAction {
+    type: 'SET_TARGET';
     target: SensorTarget;
 }
 
@@ -29,17 +29,21 @@ interface RemoveTargetAction {
     targetID: number;
 }
 
+interface RemoveAllAction {
+    type: 'REMOVE_ALL';
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = AddTargetAction | MoveTargetAction | RemoveTargetAction;
+type KnownAction = SetTargetAction | MoveTargetAction | RemoveTargetAction | RemoveAllAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    addTarget: (target: SensorTarget) => <AddTargetAction>{
-        type: 'ADD_TARGET',
+    addOrUpdateTarget: (target: SensorTarget) => <SetTargetAction>{
+        type: 'SET_TARGET',
         target: target,
     },
     moveTarget: (id: number, position: Vector3) => <MoveTargetAction>{
@@ -50,6 +54,9 @@ export const actionCreators = {
     removeTarget: (id: number) => <RemoveTargetAction>{
         type: 'REMOVE_TARGET',
         targetID: id,
+    },
+    removeAllTargets: () => <RemoveAllAction>{
+        type: 'REMOVE_ALL',
     },
 };
 
@@ -63,10 +70,20 @@ const unloadedState: EnvironmentState = {
 export const reducer: Reducer<EnvironmentState> = (state: EnvironmentState, rawAction: Action) => {
     const action = rawAction as KnownAction;
     switch (action.type) {
-        case 'ADD_TARGET': {
+        case 'SET_TARGET': {
+            const targets = state.targets.slice();
+            const existingIndex = targets.findIndex(t => t.id === action.target.id);
+            
+            if (existingIndex === -1) {
+                targets.push(action.target);
+            }
+            else {
+                targets[existingIndex] = action.target;
+            }
+
             return {
                 ...state,
-                targets: [...state.targets, action.target],
+                targets: targets,
             };
         }
         case 'MOVE_TARGET': {
@@ -90,6 +107,12 @@ export const reducer: Reducer<EnvironmentState> = (state: EnvironmentState, rawA
             return {
                 ...state,
                 targets: targets,
+            };
+        }
+        case 'REMOVE_ALL': {
+            return {
+                ...state,
+                targets: [],
             };
         }
         default:

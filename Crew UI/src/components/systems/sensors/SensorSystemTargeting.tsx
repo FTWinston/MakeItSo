@@ -6,6 +6,7 @@ import { SensorSystemCell } from './SensorSystemCell';
 
 interface IProps {
     text: TextLocalisation;
+    gridSize: number;
     cells: SensorTargetCellType[];
     revealCell: (cellIndex: number) => void;
 }
@@ -29,9 +30,7 @@ export class SensorSystemTargeting extends React.PureComponent<IProps, {}> {
 
     private determineClasses() {
         let classes = 'sensorSystemTargeting';
-
-        const gridSize = Math.ceil(Math.sqrt(this.props.cells.length));
-        classes += ' sensorSystemTargeting--size' + gridSize;
+        classes += ' sensorSystemTargeting--size' + this.props.gridSize;
         
         return classes;
     }

@@ -9,7 +9,7 @@ interface TouchAreaProps {
     className?: string;
 }
 
-export class TouchArea extends React.PureComponent<TouchAreaProps, {}> {
+export class TouchArea extends React.Component<TouchAreaProps, {}> {
     private hammer: Hammer.Manager;
     private canvas?: FlexibleCanvas;
     private _element: HTMLDivElement;

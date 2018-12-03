@@ -35,7 +35,7 @@ void USensorSystem::ResetData()
 {
 	nextTargetID = 0;
 	openSystem = ESensorSystem::Sensor_None;
-	openTarget = nullptr;
+	openTargetID = 0;
 	EMPTY(sensorTargets);
 
 	for (auto i = 0; i < MAX_CELL_GROUPS; i++)
@@ -101,13 +101,15 @@ void USensorSystem::ResetData()
 
 void USensorSystem::SendAllData_Implementation()
 {
+	SendSystemFixed("env_clear");
+
 	for (auto item : sensorTargets)
 		SendTargetData(PAIRKEY(item), PAIRVALUE(item));
 }
 
 void USensorSystem::SendTargetData(uint8 id, USensorTargetInfo *target)
 {
-	FString output = TEXT("sensor_target ");
+	FString output = TEXT("env_target ");
 	APPENDINT(output, id);
 	output += TEXT(" ");
 
@@ -162,7 +164,7 @@ void USensorSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			if (ISCLIENT())
 			{
 				// send removal of this target
-				FString output = TEXT("sensor_rem ");
+				FString output = TEXT("env_rem ");
 				APPENDINT(output, id);
 				SendSystem(output);
 			}
@@ -185,7 +187,30 @@ void USensorSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 bool USensorSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	return false;
+	if (STARTS_WITH(msg, "sensors_target "))
+	{
+		int8 targetID = ExtractInt(msg, sizeof("sensors_target "));
+		OpenTarget(targetID);
+	}
+	else
+		return false;
+
+	return true;
+}
+
+#ifdef WEB_SERVER_TEST
+void USensorSystem::OpenTarget(uint8 targetID) { OpenTarget_Implementation(targetID); }
+#endif
+
+void USensorSystem::OpenTarget_Implementation(uint8 targetID)
+{
+	if (targetID != 0 && !MAPCONTAINS(sensorTargets, targetID))
+		return;
+
+	openTargetID = targetID;
+
+	if (ISCLIENT())
+		SendTargetSelection(targetID);
 }
 
 void USensorSystem::AddTarget(AActor *target)
@@ -235,9 +260,9 @@ void USensorSystem::OnReplicated_SensorTargets(TArray<USensorTargetInfo*> before
 
 }
 
-void USensorSystem::OnReplicated_OpenTarget(USensorTargetInfo* beforeChange)
+void USensorSystem::OnReplicated_OpenTargetID(uint16 beforeChange)
 {
-
+	SendTargetSelection(openTargetID);
 }
 
 void USensorSystem::OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange)
@@ -248,6 +273,14 @@ void USensorSystem::OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeC
 void USensorSystem::OnReplicated_CellDisplay(TArray<USensorSystem::ECellDisplay> beforeChange)
 {
 
+}
+
+
+void USensorSystem::SendTargetSelection(uint8 targetID)
+{
+	FString output = TEXT("sensor_target ");
+	APPENDINT(output, targetID);
+	SendSystem(output);
 }
 
 
