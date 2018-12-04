@@ -2,10 +2,18 @@
 
 .sensorSystemCell {
     border-radius: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .sensorSystemCell--unknown {
     background-color: $colorSecondary;
+    cursor: pointer;
+}
+
+.sensorSystemCell--unknown::before {
+    content: '?';
 }
 
 .sensorSystemCell:not(.sensorSystemCell--unknown) {
@@ -21,38 +29,7 @@
     border-color: $colorBadDark;
 }
 
-.sensorSystemCell--color1 {
-    background-color: orange;
-}
-
-.sensorSystemCell--color2 {
-    background-color: yellowgreen;
-}
-
-.sensorSystemCell--color3 {
-    background-color: violet;
-}
-
-.sensorSystemCell--color4 {
-    background-color: seagreen;
-}
-
-.sensorSystemCell--color5 {
-    background-color: cadetblue;
-}
-
-.sensorSystemCell--color6 {
-    background-color: cornflowerblue;
-}
-
-.sensorSystemCell--color7 {
-    background-color: coral;
-}
-
-.sensorSystemCell--color8 {
-    background-color: indianred;
-}
-
-.sensorSystemCell--color9 {
-    background-color: khaki;
+.sensorSystemCell--hit::before {
+    content: 'X';
+    color: $colorBadDark;
 }

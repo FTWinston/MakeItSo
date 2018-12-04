@@ -23,28 +23,13 @@ export class SensorSystemCell extends React.PureComponent<IProps, {}> {
         switch (this.props.type) {
             case SensorTargetCellType.Unknown:
                 classes += ' sensorSystemCell--unknown';
+                break;
             case SensorTargetCellType.Empty:
                 classes += ' sensorSystemCell--empty';
+                break;
             case SensorTargetCellType.Hit:
                 classes += ' sensorSystemCell--hit';
-            case SensorTargetCellType.Group1:
-                classes += ' sensorSystemCell--color1';
-            case SensorTargetCellType.Group2:
-                classes += ' sensorSystemCell--color2';
-            case SensorTargetCellType.Group3:
-                classes += ' sensorSystemCell--color3';
-            case SensorTargetCellType.Group4:
-                classes += ' sensorSystemCell--color4';
-            case SensorTargetCellType.Group5:
-                classes += ' sensorSystemCell--color5';
-            case SensorTargetCellType.Group6:
-                classes += ' sensorSystemCell--color3';
-            case SensorTargetCellType.Group7:
-                classes += ' sensorSystemCell--color7';
-            case SensorTargetCellType.Group8:
-                classes += ' sensorSystemCell--color8';
-            case SensorTargetCellType.Group9:
-                classes += ' sensorSystemCell--color9';
+                break;
         }
         
         return classes;

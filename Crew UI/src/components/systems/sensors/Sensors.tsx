@@ -78,18 +78,18 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
             ];
 
             return <div className="system sensors sensors--targetSystem">
+                <SensorSystemTargeting
+                    gridSize={this.props.targetGridSize}
+                    cells={this.props.targetSystemCells}
+                    text={this.props.text}
+                    revealCell={revealCell}
+                />
                 <SensorSystemInfo
                     target={this.state.selectedTarget}
                     system={this.props.openSystem}
                     infoLevel={systemLevel}
                     text={this.props.text}
                     goBack={back}
-                />
-                <SensorSystemTargeting
-                    gridSize={this.props.targetGridSize}
-                    cells={this.props.targetSystemCells}
-                    text={this.props.text}
-                    revealCell={revealCell}
                 />
             </div>
         }

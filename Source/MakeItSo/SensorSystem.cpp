@@ -11,8 +11,9 @@
 #define MAX_CELL_GROUPS 9
 #define TARGET_GRID_WIDTH 8
 #define TARGET_GRID_HEIGHT 8
-#define NUM_TARGET_CELLS TARGET_GRID_WIDTH * TARGET_GRID_HEIGHT
+#define NUM_TARGET_CELLS (TARGET_GRID_WIDTH * TARGET_GRID_HEIGHT)
 
+#define CELLINDEX(x, y) (y * TARGET_GRID_WIDTH + x)
 
 USensorSystem::USensorSystem()
 {
@@ -25,7 +26,7 @@ USensorSystem::USensorSystem()
 	cellDisplay.AddZeroed(NUM_TARGET_CELLS);
 	cellGroupSizesRemaining.AddZeroed(MAX_CELL_GROUPS);
 #else
-	targetCells.assign(NUM_TARGET_CELLS, ECellContent::Cell_Empty);
+	targetCells.assign(NUM_TARGET_CELLS, false);
 	cellDisplay.assign(NUM_TARGET_CELLS, ECellDisplay::Show_Unknown);
 	cellGroupSizesRemaining.assign(MAX_CELL_GROUPS, 0);
 #endif
@@ -34,6 +35,7 @@ USensorSystem::USensorSystem()
 void USensorSystem::ResetData()
 {
 	nextTargetID = 0;
+	numToReveal = 0;
 	openSystem = ESensorSystem::Sensor_None;
 	openTargetID = 0;
 	EMPTY(sensorTargets);
@@ -43,7 +45,7 @@ void USensorSystem::ResetData()
 	
 	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
 	{
-		targetCells[i] = ECellContent::Cell_Empty;
+		targetCells[i] = false;
 		cellDisplay[i] = ECellDisplay::Show_Unknown;
 	}
 
@@ -105,6 +107,12 @@ void USensorSystem::SendAllData_Implementation()
 
 	for (auto item : sensorTargets)
 		SendTargetData(PAIRKEY(item), PAIRVALUE(item));
+
+	// SendTargetSelection(?);
+
+	// SendSystemSelection(?);
+
+	SendTargetCells();
 }
 
 void USensorSystem::SendTargetData(uint8 id, USensorTargetInfo *target)
@@ -192,6 +200,16 @@ bool USensorSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 		int8 targetID = ExtractInt(msg, sizeof("sensors_target "));
 		OpenTarget(targetID);
 	}
+	else if (STARTS_WITH(msg, "sensors_system "))
+	{
+		auto system = (ESensorSystem)ExtractInt(msg, sizeof("sensors_system "));
+		OpenSystem(system);
+	}
+	else if (STARTS_WITH(msg, "sensors_reveal "))
+	{
+		auto index = ExtractInt(msg, sizeof("sensors_reveal "));
+		RevealCell(index);
+	}
 	else
 		return false;
 
@@ -204,13 +222,78 @@ void USensorSystem::OpenTarget(uint8 targetID) { OpenTarget_Implementation(targe
 
 void USensorSystem::OpenTarget_Implementation(uint8 targetID)
 {
-	if (targetID != 0 && !MAPCONTAINS(sensorTargets, targetID))
+	if (targetID == 0 || !MAPCONTAINS(sensorTargets, targetID))
 		return;
 
 	openTargetID = targetID;
 
 	if (ISCLIENT())
 		SendTargetSelection(targetID);
+}
+
+#ifdef WEB_SERVER_TEST
+void USensorSystem::OpenSystem(ESensorSystem system) { OpenSystem_Implementation(system); }
+#endif
+
+void USensorSystem::OpenSystem_Implementation(ESensorSystem system)
+{
+	if (openTargetID == 0 || !MAPCONTAINS(sensorTargets, openTargetID))
+		return;
+
+	auto target = sensorTargets[openTargetID];
+
+	if (system != ESensorSystem::Sensor_None && !MAPCONTAINS(target->systemInfoLevels, system))
+		return;
+
+	openSystem = system;
+
+	if (ISCLIENT())
+		SendSystemSelection(system);
+
+	if (system != ESensorSystem::Sensor_None)
+	{
+		PopulateCells(openSystem, target->systemInfoLevels[system]);
+	}
+}
+
+#ifdef WEB_SERVER_TEST
+void USensorSystem::RevealCell(uint16 cellIndex) { RevealCell_Implementation(cellIndex); }
+#endif
+
+void USensorSystem::RevealCell_Implementation(uint16 cellIndex)
+{
+	if (cellIndex >= NUM_TARGET_CELLS)
+		return;
+
+	// TODO: enqueue this reveal
+
+	auto content = targetCells[cellIndex];
+
+	ECellDisplay reveal;
+	if (content == false)
+		reveal = ECellDisplay::Show_Empty;
+	else
+	{
+		reveal = ECellDisplay::Show_Hit;
+		
+		numToReveal--;
+	}
+
+	cellDisplay[cellIndex] = reveal;
+
+	if (ISCLIENT())
+		SendTargetCell(cellIndex, reveal);
+
+	// TODO: wait til the next tick to move to the next level
+	if (numToReveal == 0)
+	{
+		// TODO: show whatever info is unlocked
+
+		// increase info level & repopulate cells
+		auto target = sensorTargets[openTargetID];
+		auto newLevel = ++target->systemInfoLevels[openSystem];
+		PopulateCells(openSystem, newLevel);
+	}
 }
 
 void USensorSystem::AddTarget(AActor *target)
@@ -254,6 +337,120 @@ void USensorSystem::RemoveTarget(AActor *target)
 	}
 }
 
+void USensorSystem::PopulateCells(ESensorSystem system, uint8 infoLevel)
+{
+	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
+	{
+		targetCells[i] = false;
+		cellDisplay[i] = ECellDisplay::Show_Unknown;
+	}
+
+	numToReveal = 0;
+
+	// Place "ships" according to the info level .. could be interesting for this to vary from system to system, I guess?
+	switch (infoLevel)
+	{
+	case 0:
+		PlaceTarget(5);
+		PlaceTarget(4);
+		break;
+	case 1:
+		PlaceTarget(5);
+		PlaceTarget(4);
+		PlaceTarget(3);
+		break;
+	case 2:
+		PlaceTarget(4);
+		PlaceTarget(3);
+		PlaceTarget(3);
+		break;
+	default:
+		PlaceTarget(3);
+		PlaceTarget(3);
+		PlaceTarget(2);
+		break;
+	}
+
+	// reveal empty cells dependent upon damage
+	uint16 numRevealedCells = GetHealthLevel() * 0.4f / 100.f * NUM_TARGET_CELLS;
+	for (auto i = 0; i < numRevealedCells; i++)
+	{
+		auto cellIndex = PickEmptyCell();
+		cellDisplay[cellIndex] = ECellDisplay::Show_Empty;
+	}
+
+	if (ISCLIENT())
+		SendTargetCells();
+}
+
+void USensorSystem::PlaceTarget(uint8 targetSize)
+{
+	while (!TryPlaceTarget(targetSize))
+		;
+
+	numToReveal += targetSize;
+}
+
+bool USensorSystem::TryPlaceTarget(uint8 targetSize)
+{
+	uint8 stepX, stepY;
+	uint8 startX, startY;
+
+	switch (FMath::RandRange(0, 1))
+	{
+	case 0:
+		stepX = 1;
+		stepY = 0;
+
+		startX = FMath::RandRange(0, TARGET_GRID_WIDTH - 1 - targetSize);
+		startY = FMath::RandRange(0, TARGET_GRID_HEIGHT - 1);
+		break;
+	case 1:
+		stepX = 0;
+		stepY = 1;
+
+		startX = FMath::RandRange(0, TARGET_GRID_WIDTH - 1);
+		startY = FMath::RandRange(0, TARGET_GRID_HEIGHT - 1 - targetSize);
+		break;
+	}
+
+	auto currentX = startX;
+	auto currentY = startY;
+
+	for (int i = 0; i < targetSize; i++)
+	{
+		if (targetCells[CELLINDEX(currentX, currentY)] != false)
+			return false;
+
+		currentX += stepX;
+		currentY += stepY;
+	}
+
+	currentX = startX;
+	currentY = startY;
+
+	for (int i = 0; i < targetSize; i++)
+	{
+		targetCells[CELLINDEX(currentX, currentY)] = true;
+
+		currentX += stepX;
+		currentY += stepY;
+	}
+
+	return true;
+}
+
+int32 USensorSystem::PickEmptyCell()
+{
+	int32 cellIndex;
+
+	do
+	{
+		cellIndex = FMath::RandRange(0, NUM_TARGET_CELLS - 1);
+	} while (targetCells[cellIndex]);
+
+	return cellIndex;
+}
 
 void USensorSystem::OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange)
 {
@@ -267,16 +464,20 @@ void USensorSystem::OnReplicated_OpenTargetID(uint16 beforeChange)
 
 void USensorSystem::OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange)
 {
-
+	SendSystemSelection(openSystem);
 }
 
 void USensorSystem::OnReplicated_CellDisplay(TArray<USensorSystem::ECellDisplay> beforeChange)
 {
-
+	// TODO: only send changed cell, if only one changes ... !
+	SendTargetCells();
 }
 
 
-void USensorSystem::SendTargetSelection(uint8 targetID)
+#ifdef WEB_SERVER_TEST
+void USensorSystem::SendTargetSelection(uint8 targetID) { SendTargetSelection_Implementation(targetID); }
+#endif
+void USensorSystem::SendTargetSelection_Implementation(uint8 targetID)
 {
 	FString output = TEXT("sensor_target ");
 	APPENDINT(output, targetID);
@@ -298,6 +499,38 @@ void USensorSystem::SendTargetSelection(uint8 targetID)
 			}
 	}
 
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void USensorSystem::SendSystemSelection(ESensorSystem system) { SendSystemSelection_Implementation(system); }
+#endif
+void USensorSystem::SendSystemSelection_Implementation(ESensorSystem system)
+{
+	FString output = TEXT("sensor_system ");
+	APPENDINT(output, (uint8)system);
+	SendSystem(output);
+}
+
+void USensorSystem::SendTargetCells()
+{
+	FString output = TEXT("sensor_cells ");
+
+	for (ECellDisplay cell : cellDisplay)
+		APPENDINT(output, (uint8)cell);
+
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void USensorSystem::SendTargetCell(uint16 cellIndex, ECellDisplay display) { SendTargetCell_Implementation(cellIndex, display); }
+#endif
+void USensorSystem::SendTargetCell_Implementation(uint16 cellIndex, ECellDisplay display)
+{
+	FString output = TEXT("sensor_cell ");
+	APPENDINT(output, cellIndex);
+	output += TEXT(" ");
+	APPENDINT(output, (uint8)display);
 	SendSystem(output);
 }
 

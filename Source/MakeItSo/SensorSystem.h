@@ -44,32 +44,10 @@ public:
 		Rel_Neutral,
 	};
 
-	enum ECellContent : uint8 {
-		Cell_Empty,
-		Cell_Group1,
-		Cell_Group2,
-		Cell_Group3,
-		Cell_Group4,
-		Cell_Group5,
-		Cell_Group6,
-		Cell_Group7,
-		Cell_Group8,
-		Cell_Group9,
-	};
-
 	enum ECellDisplay : uint8 {
 		Show_Unknown = 0,
 		Show_Empty,
 		Show_Hit,
-		Show_Group1,
-		Show_Group2,
-		Show_Group3,
-		Show_Group4,
-		Show_Group5,
-		Show_Group6,
-		Show_Group7,
-		Show_Group8,
-		Show_Group9,
 	};
 
 	USensorSystem();
@@ -89,7 +67,10 @@ protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
 private:
 	void SendTargetData(uint8 id, USensorTargetInfo *target);
-
+	void PopulateCells(ESensorSystem system, uint8 infoLevel);
+	void PlaceTarget(uint8 targetSize);
+	bool TryPlaceTarget(uint8 targetSize);
+	int32 PickEmptyCell();
 
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
@@ -105,7 +86,8 @@ private:
 	void OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange);
 
 
-	TArray<ECellContent> targetCells;
+	TArray<bool> targetCells;
+	uint16 numToReveal;
 
 	TArray<uint8> cellGroupSizesRemaining;
 
@@ -124,6 +106,20 @@ private:
 	void SendTargetSelection_Implementation(uint8 targetID);
 #endif
 
+	UFUNCTION(Client, Reliable)
+	void SendSystemSelection(ESensorSystem system);
+#ifdef WEB_SERVER_TEST
+	void SendSystemSelection_Implementation(ESensorSystem system);
+#endif
+
+	void SendTargetCells();
+
+	UFUNCTION(Client, Reliable)
+	void SendTargetCell(uint16 cellIndex, ECellDisplay display);
+#ifdef WEB_SERVER_TEST
+	void SendTargetCell_Implementation(uint16 cellIndex, ECellDisplay display);
+#endif
+
 	// Server functions, that can be called from the client
 	UFUNCTION(Server, Reliable)
 	void OpenTarget(uint8 targetID);
@@ -131,6 +127,17 @@ private:
 	void OpenTarget_Implementation(uint8 targetID);
 #endif
 
+	UFUNCTION(Server, Reliable)
+	void OpenSystem(ESensorSystem system);
+#ifdef WEB_SERVER_TEST
+	void OpenSystem_Implementation(ESensorSystem system);
+#endif
+
+	UFUNCTION(Server, Reliable)
+	void RevealCell(uint16 cellIndex);
+#ifdef WEB_SERVER_TEST
+	void RevealCell_Implementation(uint16 cellIndex);
+#endif
 };
 
 UCLASS()
