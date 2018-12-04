@@ -19,6 +19,7 @@ export const enum SensorTargetCellType {
     Unknown = 0,
     Empty,
     Hit,
+    Queued,
 }
 
 export interface SensorState {

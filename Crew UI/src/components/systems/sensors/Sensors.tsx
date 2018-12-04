@@ -4,7 +4,7 @@ import { ApplicationState } from '~/store';
 import { TextLocalisation, SensorTarget } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Sensors.scss';
-import { SensorState, actionCreators, SensorSystemType } from './store';
+import { SensorState, actionCreators, SensorSystemType, SensorTargetCellType } from './store';
 import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from './TargetList';
 import { connection } from '~/index';
@@ -15,6 +15,7 @@ import { SensorSystemTargeting } from './SensorSystemTargeting';
 interface SensorsProps extends SensorState {
     text: TextLocalisation;
     allTargets: SensorTarget[];
+    setTargetCell: (cellIndex: number, type: SensorTargetCellType) => void;
 }
 
 interface IState {
@@ -71,7 +72,10 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
             </div>
         }
         else {
-            const revealCell = (cellIndex: number) => connection.send(`sensors_reveal ${cellIndex}`);
+            const revealCell = (cellIndex: number) => {
+                this.props.setTargetCell(cellIndex, SensorTargetCellType.Queued);
+                connection.send(`sensors_reveal ${cellIndex}`);
+            };
             const back = () => connection.send(`sensors_system 0`);
             const systemLevel = this.props.targetSystemLevels[
                 this.props.targetSystems.indexOf(this.props.openSystem)
@@ -101,6 +105,7 @@ const mapStateToProps: (state: ApplicationState) => SensorsProps = (state) => {
     return {
         text: state.user.text,
         allTargets: state.environment.targets,
+        setTargetCell: actionCreators.setTargetCell,
         ...state.sensors,
     }
 };

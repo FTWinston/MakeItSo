@@ -255,7 +255,7 @@ void UPowerSystem::RemoveAuxPower(int16 amount)
 		if (choiceQueueSize > 0)
 		{
 #ifndef WEB_SERVER_TEST
-			choiceQueue.Dequeue(newChoice);
+			choiceQueue.Dequeue();
 #else
 			choiceQueue.pop();
 #endif

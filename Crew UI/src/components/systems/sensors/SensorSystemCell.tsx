@@ -30,6 +30,9 @@ export class SensorSystemCell extends React.PureComponent<IProps, {}> {
             case SensorTargetCellType.Hit:
                 classes += ' sensorSystemCell--hit';
                 break;
+            case SensorTargetCellType.Queued:
+                classes += ' sensorSystemCell--queued';
+                break;
         }
         
         return classes;

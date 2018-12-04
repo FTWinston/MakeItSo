@@ -12,6 +12,7 @@
 #define TARGET_GRID_WIDTH 8
 #define TARGET_GRID_HEIGHT 8
 #define NUM_TARGET_CELLS (TARGET_GRID_WIDTH * TARGET_GRID_HEIGHT)
+#define MAX_INITIAL_REVEAL_FRACTION 0.4f
 
 #define CELLINDEX(x, y) (y * TARGET_GRID_WIDTH + x)
 
@@ -39,6 +40,7 @@ void USensorSystem::ResetData()
 	openSystem = ESensorSystem::Sensor_None;
 	openTargetID = 0;
 	EMPTY(sensorTargets);
+	EMPTY(revealQueue);
 
 	for (auto i = 0; i < MAX_CELL_GROUPS; i++)
 		cellGroupSizesRemaining[i] = 0;
@@ -159,6 +161,18 @@ void USensorSystem::SendTargetData(uint8 id, USensorTargetInfo *target)
 
 void USensorSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (!QUEUE_IS_EMPTY(revealQueue))
+	{
+#ifndef WEB_SERVER_TEST
+		uint16 index = revealQueue.Dequeue();
+#else
+		uint16 index = revealQueue.front();
+		revealQueue.pop();
+#endif
+
+		PerformReveal(index);
+	}
+
 	for (auto item : sensorTargets)
 	{
 		auto targetInfo = PAIRVALUE(item);
@@ -265,8 +279,15 @@ void USensorSystem::RevealCell_Implementation(uint16 cellIndex)
 	if (cellIndex >= NUM_TARGET_CELLS)
 		return;
 
-	// TODO: enqueue this reveal
+#ifndef WEB_SERVER_TEST
+	revealQueue.Enqueue(cellIndex);
+#else
+	revealQueue.push(cellIndex);
+#endif
+}
 
+void USensorSystem::PerformReveal(uint16 cellIndex)
+{
 	auto content = targetCells[cellIndex];
 
 	ECellDisplay reveal;
@@ -339,6 +360,8 @@ void USensorSystem::RemoveTarget(AActor *target)
 
 void USensorSystem::PopulateCells(ESensorSystem system, uint8 infoLevel)
 {
+	EMPTY(revealQueue);
+
 	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
 	{
 		targetCells[i] = false;
@@ -372,7 +395,7 @@ void USensorSystem::PopulateCells(ESensorSystem system, uint8 infoLevel)
 	}
 
 	// reveal empty cells dependent upon damage
-	uint16 numRevealedCells = GetHealthLevel() * 0.4f / 100.f * NUM_TARGET_CELLS;
+	uint16 numRevealedCells = (uint16)(GetHealthLevel() * MAX_INITIAL_REVEAL_FRACTION / 100.f * NUM_TARGET_CELLS);
 	for (auto i = 0; i < numRevealedCells; i++)
 	{
 		auto cellIndex = PickEmptyCell();
@@ -417,7 +440,7 @@ bool USensorSystem::TryPlaceTarget(uint8 targetSize)
 	auto currentX = startX;
 	auto currentY = startY;
 
-	for (int i = 0; i < targetSize; i++)
+	for (uint8 i = 0; i < targetSize; i++)
 	{
 		if (targetCells[CELLINDEX(currentX, currentY)] != false)
 			return false;
@@ -429,7 +452,7 @@ bool USensorSystem::TryPlaceTarget(uint8 targetSize)
 	currentX = startX;
 	currentY = startY;
 
-	for (int i = 0; i < targetSize; i++)
+	for (uint8 i = 0; i < targetSize; i++)
 	{
 		targetCells[CELLINDEX(currentX, currentY)] = true;
 

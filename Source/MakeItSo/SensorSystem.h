@@ -85,8 +85,10 @@ private:
 	USensorSystem::ESensorSystem openSystem;
 	void OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange);
 
-
+	UPROPERTY()
 	TArray<bool> targetCells;
+
+	UPROPERTY()
 	uint16 numToReveal;
 
 	TArray<uint8> cellGroupSizesRemaining;
@@ -95,8 +97,11 @@ private:
 	TArray<ECellDisplay> cellDisplay;
 	void OnReplicated_CellDisplay(TArray<ECellDisplay> beforeChange);
 
-
+	UPROPERTY()
 	uint16 nextTargetID;
+
+	UPROPERTY()
+	TQueue<uint16> revealQueue;
 
 
 	// Client functions, that can be called from the server
@@ -138,6 +143,8 @@ private:
 #ifdef WEB_SERVER_TEST
 	void RevealCell_Implementation(uint16 cellIndex);
 #endif
+
+	void PerformReveal(uint16 cellIndex);
 };
 
 UCLASS()
