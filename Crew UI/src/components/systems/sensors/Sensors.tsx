@@ -64,20 +64,21 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
             const back = () => connection.send(`sensors_target 0`);
 
             return <div className="system sensors sensors--target">
+                <TargetDisplay
+                    target={this.state.selectedTarget}
+                    systems={this.props.targetSystems}
+                    systemLevels={this.props.targetSystemLevels}
+                    systemSizes={this.props.targetSystemSizes}
+                    selectableSystems={this.props.selectableSystems}
+                    text={this.props.text}
+                    goBack={back}
+                    selectSystem={selectSystem}
+                />
                 <SensorSystemTargeting
                     gridSize={this.props.targetGridSize}
                     cells={this.props.targetCells}
                     text={this.props.text}
                     revealCell={revealCell}
-                />
-                <TargetDisplay
-                    target={this.state.selectedTarget}
-                    systems={this.props.targetSystems}
-                    systemLevels={this.props.targetSystemLevels}
-                    selectableSystems={this.props.selectableSystems}
-                    text={this.props.text}
-                    goBack={back}
-                    selectSystem={selectSystem}
                 />
             </div>
         }

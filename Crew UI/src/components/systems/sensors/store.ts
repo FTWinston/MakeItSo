@@ -26,6 +26,7 @@ export interface SensorState {
     selectedTargetID: number;
     targetSystems: SensorSystemType[];
     targetSystemLevels: number[];
+    targetSystemSizes: number[];
     selectableSystems: SensorSystemType[];
     targetCells: SensorTargetCellType[];
     targetGridSize: number;
@@ -44,6 +45,7 @@ interface SetTargetSystemsAction {
     type: 'TARGET_SYSTEMS';
     systems: SensorSystemType[];
     levels: number[];
+    sizes: number[];
 }
 
 interface SetSystemSelectableAction {
@@ -76,10 +78,11 @@ export const actionCreators = {
         type: 'SENSOR_TARGET',
         targetID: targetID,
     },
-    setTargetSystems: (systems: SensorSystemType[], levels: number[]) => <SetTargetSystemsAction>{
+    setTargetSystems: (systems: SensorSystemType[], levels: number[], sizes: number[]) => <SetTargetSystemsAction>{
         type: 'TARGET_SYSTEMS',
         systems: systems,
         levels: levels,
+        sizes: sizes,
     },
     setSystemSelectable: (system: SensorSystemType, selectable: boolean) => <SetSystemSelectableAction>{
         type: 'SELECTABLE',
@@ -104,6 +107,7 @@ const unloadedState: SensorState = {
     selectedTargetID: 0,
     targetSystems: [],
     targetSystemLevels: [],
+    targetSystemSizes: [],
     selectableSystems: [],
     targetCells: [],
     targetGridSize: 0,
@@ -123,6 +127,7 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
                 ...state,
                 targetSystems: action.systems,
                 targetSystemLevels: action.levels,
+                targetSystemSizes: action.sizes,
             };
         }
         case 'SELECTABLE': {

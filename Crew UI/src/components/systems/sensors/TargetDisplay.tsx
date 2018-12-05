@@ -10,6 +10,7 @@ interface IProps {
     target: SensorTarget;
     systems: SensorSystemType[];
     systemLevels: number[];
+    systemSizes: number[];
     selectableSystems: SensorSystemType[];
     goBack: () => void;
     selectSystem: (system: SensorSystemType) => void;
@@ -21,12 +22,12 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
         const type = TargetDisplay.getTypeName(target.type, this.props.text);
         const systems = this.props.systems.map((s, i) => this.renderSystemItem(s, i));
 
-        return <div className="sensors__targetDisplay targetDisplay">
-            <div className="targetDisplay__heading">
-                <span className="targetDisplay__type">{type}</span>: <span className="targetDisplay__id">{target.id}</span>
+        return <div className="sensors__targetDisplay sensorTargetDisplay">
+            <div className="sensorTargetDisplay__heading">
+                <span className="sensorTargetDisplay__type">{type}</span>: <span className="sensorTargetDisplay__id">{target.id}</span>
             </div>
 
-            <div className="targetDisplay__systemList">
+            <div className="sensorTargetDisplay__systemList">
                 {systems}
             </div>
 
@@ -36,6 +37,7 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
 
     private renderSystemItem(system: SensorSystemType, index: number) {
         const level = this.props.systemLevels[index];
+        const size = this.props.systemSizes[index];
         const canSelect = this.props.selectableSystems.indexOf(system) !== -1;
 
         let classes = 'sensorTargetSystem';
@@ -48,7 +50,14 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
 
         return <div className={classes} key={index} onClick={clicked}>
             <div className="sensorTargetSystem__name">{TargetDisplay.getSystemName(system, this.props.text)}</div>
-            <div className="sensorTargetSystem__level">{level}</div>
+            <div className="sensorTargetSystem__size">
+                <span className="sensorTargetSystem__label">length</span>
+                <span className="sensorTargetSystem__value">{size}</span>
+            </div>
+            <div className="sensorTargetSystem__level">
+                <span className="sensorTargetSystem__label">info level</span>
+                <span className="sensorTargetSystem__value">{level}</span>
+            </div>
         </div>
 
         // TODO: indicate scan level, system health and system power, if known (and relevant)

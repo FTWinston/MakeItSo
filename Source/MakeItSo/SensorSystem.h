@@ -165,6 +165,9 @@ public:
 	UPROPERTY(Replicated)
 	TMap<USensorSystem::ESensorSystem, uint8> systemInfoLevels;
 
+	UPROPERTY(Replicated)
+	TMap<USensorSystem::ESensorSystem, uint8> systemTargetSizes;
+
 	// The actor in question may not be visible in the scene, so the client doesn't use it directly.
 	WEAK_PTR_DECLARE(AActor) actor;
 

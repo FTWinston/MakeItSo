@@ -15,13 +15,15 @@ export function receiveMessage(cmd: string, data: string) {
 
             const systems: SensorSystemType[] = [];
             const levels: number[] = [];
+            const sizes: number[] = [];
 
-            for (let i=2; i<ids.length; i += 2) {
-                systems.push(ids[i-1] as SensorSystemType);
-                levels.push(ids[i]);
+            for (let i=3; i<ids.length; i += 3) {
+                systems.push(ids[i-2] as SensorSystemType);
+                levels.push(ids[i-1]);
+                sizes.push(ids[i]);
             }
             
-            store.dispatch(actionCreators.setTargetSystems(systems, levels));
+            store.dispatch(actionCreators.setTargetSystems(systems, levels, sizes));
             break;
         }
         case 'sensor_selectable': {

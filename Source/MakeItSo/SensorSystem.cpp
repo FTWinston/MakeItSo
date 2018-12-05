@@ -109,7 +109,10 @@ void USensorSystem::SendAllData_Implementation()
 	for (auto item : sensorTargets)
 		SendTargetData(PAIRKEY(item), PAIRVALUE(item));
 
-	// TODO: SendTargetSelection(?);
+	if (openTargetID != 0)
+	{
+		SendTargetSelection(openTargetID);
+	}
 
 	SendTargetCells();
 }
@@ -285,6 +288,8 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 	// TODO: send revealed info ... decide what that info is!
 
 	PopulateCells(target);
+
+	SendTargetSelection(openTargetID);
 }
 
 void USensorSystem::PerformReveal(uint16 cellIndex)
@@ -504,10 +509,16 @@ void USensorSystem::SendTargetSelection_Implementation(uint8 targetID)
 				ESensorSystem system = PAIRKEY(item);
 				uint8 infoLevel = PAIRVALUE(item);
 
+				uint8 targetSize = MAPCONTAINS(target->systemTargetSizes, system)
+					? target->systemTargetSizes[system]
+					: 0;
+
 				output += TEXT(" ");
 				APPENDINT(output, (uint8)system);
 				output += TEXT(" ");
 				APPENDINT(output, infoLevel);
+				output += TEXT(" ");
+				APPENDINT(output, targetSize);
 			}
 	}
 

@@ -1,6 +1,52 @@
 @import '../../general/mixins';
 
-.sensorTargetSystem--selectable {
+.sensorTargetDisplay {
+    display: flex;
+
+    @include landscape() {
+        flex-direction: column;
+    }
+}
+
+.sensorTargetDisplay__heading {
+    font-size: 1.5em;
+    margin-bottom: 0.25em;
+}
+
+.sensorTargetDisplay__id {
+    color: $colorHighlight;
+}
+
+.sensorTargetDisplay__systemList {
+    margin-bottom: 1em;
+}
+
+.sensorTargetSystem {
+    padding: 0.25em 0.5em;
+    border-radius: 0.5em;
+
+    display: flex;
+}
+
+.sensorTargetSystem__name,
+.sensorTargetSystem__value {
     font-weight: bold;
+}
+
+.sensorTargetSystem__size,
+.sensorTargetSystem__level {
+    margin-left: 1em;
+}
+
+.sensorTargetSystem__label::after {
+    content: ': ';
+}
+
+.sensorTargetSystem__name {
+     flex-grow: 1;
+}
+
+.sensorTargetSystem--selectable {
+    color: $colorHighlight;
     background-color: $colorTertiary;
 }

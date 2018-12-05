@@ -1,16 +1,28 @@
 @import '../../general/mixins';
 
 @include landscape() {
-    .sensors--noTarget, .sensors--target {
+    .sensors--noTarget {
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: 1fr 16em;
     }
+    
+    .sensors--target {
+        display: grid;
+        grid-gap: 0.5em;
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr 2fr;
+    }
 }
 @include portrait() {
-    .sensors--noTarget, .sensors--target {
+    .sensors--noTarget {
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: 5fr 2fr;
+    }
+    .sensors--target {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 2fr 5fr;
     }
 }
