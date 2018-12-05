@@ -12,7 +12,7 @@
 #define TARGET_GRID_WIDTH 8
 #define TARGET_GRID_HEIGHT 8
 #define NUM_TARGET_CELLS (TARGET_GRID_WIDTH * TARGET_GRID_HEIGHT)
-#define MAX_INITIAL_REVEAL_FRACTION 0.4f
+#define MAX_INITIAL_REVEAL_FRACTION 0.33f
 
 #define CELLINDEX(x, y) (y * TARGET_GRID_WIDTH + x)
 
@@ -27,7 +27,7 @@ USensorSystem::USensorSystem()
 	cellDisplay.AddZeroed(NUM_TARGET_CELLS);
 	cellGroupSizesRemaining.AddZeroed(MAX_CELL_GROUPS);
 #else
-	targetCells.assign(NUM_TARGET_CELLS, false);
+	targetCells.assign(NUM_TARGET_CELLS, ESensorSystem::Sensor_None);
 	cellDisplay.assign(NUM_TARGET_CELLS, ECellDisplay::Show_Unknown);
 	cellGroupSizesRemaining.assign(MAX_CELL_GROUPS, 0);
 #endif
@@ -36,18 +36,17 @@ USensorSystem::USensorSystem()
 void USensorSystem::ResetData()
 {
 	nextTargetID = 0;
-	numToReveal = 0;
-	openSystem = ESensorSystem::Sensor_None;
 	openTargetID = 0;
 	EMPTY(sensorTargets);
 	EMPTY(revealQueue);
+	EMPTY(systemCellsRemaining);
 
 	for (auto i = 0; i < MAX_CELL_GROUPS; i++)
 		cellGroupSizesRemaining[i] = 0;
 	
 	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
 	{
-		targetCells[i] = false;
+		targetCells[i] = ESensorSystem::Sensor_None;
 		cellDisplay[i] = ECellDisplay::Show_Unknown;
 	}
 
@@ -110,9 +109,7 @@ void USensorSystem::SendAllData_Implementation()
 	for (auto item : sensorTargets)
 		SendTargetData(PAIRKEY(item), PAIRVALUE(item));
 
-	// SendTargetSelection(?);
-
-	// SendSystemSelection(?);
+	// TODO: SendTargetSelection(?);
 
 	SendTargetCells();
 }
@@ -214,15 +211,15 @@ bool USensorSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 		int8 targetID = ExtractInt(msg, sizeof("sensors_target "));
 		OpenTarget(targetID);
 	}
-	else if (STARTS_WITH(msg, "sensors_system "))
-	{
-		auto system = (ESensorSystem)ExtractInt(msg, sizeof("sensors_system "));
-		OpenSystem(system);
-	}
 	else if (STARTS_WITH(msg, "sensors_reveal "))
 	{
 		auto index = ExtractInt(msg, sizeof("sensors_reveal "));
 		RevealCell(index);
+	}
+	else if (STARTS_WITH(msg, "sensors_system "))
+	{
+		auto system = (ESensorSystem)ExtractInt(msg, sizeof("sensors_system "));
+		RevealSystem(system);
 	}
 	else
 		return false;
@@ -243,31 +240,9 @@ void USensorSystem::OpenTarget_Implementation(uint8 targetID)
 
 	if (ISCLIENT())
 		SendTargetSelection(targetID);
-}
 
-#ifdef WEB_SERVER_TEST
-void USensorSystem::OpenSystem(ESensorSystem system) { OpenSystem_Implementation(system); }
-#endif
-
-void USensorSystem::OpenSystem_Implementation(ESensorSystem system)
-{
-	if (openTargetID == 0 || !MAPCONTAINS(sensorTargets, openTargetID))
-		return;
-
-	auto target = sensorTargets[openTargetID];
-
-	if (system != ESensorSystem::Sensor_None && !MAPCONTAINS(target->systemInfoLevels, system))
-		return;
-
-	openSystem = system;
-
-	if (ISCLIENT())
-		SendSystemSelection(system);
-
-	if (system != ESensorSystem::Sensor_None)
-	{
-		PopulateCells(openSystem, target->systemInfoLevels[system]);
-	}
+	auto target = sensorTargets[targetID];
+	PopulateCells(target);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -286,35 +261,57 @@ void USensorSystem::RevealCell_Implementation(uint16 cellIndex)
 #endif
 }
 
+
+#ifdef WEB_SERVER_TEST
+void USensorSystem::RevealSystem(ESensorSystem system) { RevealSystem_Implementation(system); }
+#endif
+
+void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
+{
+	if (!MAPCONTAINS(systemCellsRemaining, system) || systemCellsRemaining[system] != 0)
+		return;
+
+	if (openTargetID == 0 || !MAPCONTAINS(sensorTargets, openTargetID))
+		return;
+
+	auto target = sensorTargets[openTargetID];
+
+	if (!MAPCONTAINS(target->systemInfoLevels, system))
+		return;
+
+	// this system was picked by the user, increase its info level
+	auto newLevel = ++target->systemInfoLevels[system];
+
+	// TODO: send revealed info ... decide what that info is!
+
+	PopulateCells(target);
+}
+
 void USensorSystem::PerformReveal(uint16 cellIndex)
 {
-	auto content = targetCells[cellIndex];
+	if (cellDisplay[cellIndex] != ECellDisplay::Show_Unknown)
+		return;
 
-	ECellDisplay reveal;
-	if (content == false)
-		reveal = ECellDisplay::Show_Empty;
-	else
-	{
-		reveal = ECellDisplay::Show_Hit;
-		
-		numToReveal--;
-	}
+	auto system = targetCells[cellIndex];
 
-	cellDisplay[cellIndex] = reveal;
+	ECellDisplay display = system == ESensorSystem::Sensor_None
+		? ECellDisplay::Show_Empty
+		: ECellDisplay::Show_Hit;
+
+	cellDisplay[cellIndex] = display;
 
 	if (ISCLIENT())
-		SendTargetCell(cellIndex, reveal);
+		SendTargetCell(cellIndex, display);
 
-	// TODO: wait til the next tick to move to the next level
-	if (numToReveal == 0)
-	{
-		// TODO: show whatever info is unlocked
+	if (system == ESensorSystem::Sensor_None || !MAPCONTAINS(systemCellsRemaining, system))
+		return;
 
-		// increase info level & repopulate cells
-		auto target = sensorTargets[openTargetID];
-		auto newLevel = ++target->systemInfoLevels[openSystem];
-		PopulateCells(openSystem, newLevel);
-	}
+	if (--systemCellsRemaining[system] > 0)
+		return;
+
+	// TODO: highlight relevant "hit" cells on the grid?
+
+	SendSelectable(system);
 }
 
 void USensorSystem::AddTarget(AActor *target)
@@ -358,41 +355,32 @@ void USensorSystem::RemoveTarget(AActor *target)
 	}
 }
 
-void USensorSystem::PopulateCells(ESensorSystem system, uint8 infoLevel)
+void USensorSystem::PopulateCells(USensorTargetInfo *target)
 {
 	EMPTY(revealQueue);
+	CLEAR(systemCellsRemaining);
 
 	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
 	{
-		targetCells[i] = false;
+		targetCells[i] = ESensorSystem::Sensor_None;
 		cellDisplay[i] = ECellDisplay::Show_Unknown;
 	}
 
-	numToReveal = 0;
-
-	// Place "ships" according to the info level .. could be interesting for this to vary from system to system, I guess?
-	switch (infoLevel)
+	// place "targets" according to the info level of their system
+	// ... could be interesting to vary "default" system sizes between ship types, to add variety
+	for (auto pair : target->systemInfoLevels)
 	{
-	case 0:
-		PlaceTarget(5);
-		PlaceTarget(4);
-		break;
-	case 1:
-		PlaceTarget(5);
-		PlaceTarget(4);
-		PlaceTarget(3);
-		break;
-	case 2:
-		PlaceTarget(4);
-		PlaceTarget(3);
-		PlaceTarget(3);
-		break;
-	default:
-		PlaceTarget(3);
-		PlaceTarget(3);
-		PlaceTarget(2);
-		break;
+		ESensorSystem system = PAIRKEY(pair);
+		uint8 level = PAIRVALUE(pair);
+
+		uint8 size = level >= 3
+			? 2
+			: 5 - level;
+		
+		size = PlaceTarget(size, system);
+		systemCellsRemaining[system] = size;
 	}
+
 
 	// reveal empty cells dependent upon damage
 	uint16 numRevealedCells = (uint16)(GetHealthLevel() * MAX_INITIAL_REVEAL_FRACTION / 100.f * NUM_TARGET_CELLS);
@@ -406,15 +394,21 @@ void USensorSystem::PopulateCells(ESensorSystem system, uint8 infoLevel)
 		SendTargetCells();
 }
 
-void USensorSystem::PlaceTarget(uint8 targetSize)
+#define MAX_PLACEMENT_TRIES 100
+uint8 USensorSystem::PlaceTarget(uint8 targetSize, ESensorSystem system)
 {
-	while (!TryPlaceTarget(targetSize))
-		;
+	// don't try forever no matter what, in case we cock up somehow
+	while (true)
+	{
+		for (int32 i = MAX_PLACEMENT_TRIES; i > 0; i--)
+			if (TryPlaceTarget(targetSize, system))
+				return targetSize;
 
-	numToReveal += targetSize;
+		targetSize--;
+	}
 }
 
-bool USensorSystem::TryPlaceTarget(uint8 targetSize)
+bool USensorSystem::TryPlaceTarget(uint8 targetSize, ESensorSystem system)
 {
 	uint8 stepX, stepY;
 	uint8 startX, startY;
@@ -442,7 +436,7 @@ bool USensorSystem::TryPlaceTarget(uint8 targetSize)
 
 	for (uint8 i = 0; i < targetSize; i++)
 	{
-		if (targetCells[CELLINDEX(currentX, currentY)] != false)
+		if (targetCells[CELLINDEX(currentX, currentY)] != ESensorSystem::Sensor_None)
 			return false;
 
 		currentX += stepX;
@@ -454,7 +448,7 @@ bool USensorSystem::TryPlaceTarget(uint8 targetSize)
 
 	for (uint8 i = 0; i < targetSize; i++)
 	{
-		targetCells[CELLINDEX(currentX, currentY)] = true;
+		targetCells[CELLINDEX(currentX, currentY)] = system;
 
 		currentX += stepX;
 		currentY += stepY;
@@ -483,11 +477,6 @@ void USensorSystem::OnReplicated_SensorTargets(TArray<USensorTargetInfo*> before
 void USensorSystem::OnReplicated_OpenTargetID(uint16 beforeChange)
 {
 	SendTargetSelection(openTargetID);
-}
-
-void USensorSystem::OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange)
-{
-	SendSystemSelection(openSystem);
 }
 
 void USensorSystem::OnReplicated_CellDisplay(TArray<USensorSystem::ECellDisplay> beforeChange)
@@ -525,15 +514,17 @@ void USensorSystem::SendTargetSelection_Implementation(uint8 targetID)
 	SendSystem(output);
 }
 
+
 #ifdef WEB_SERVER_TEST
-void USensorSystem::SendSystemSelection(ESensorSystem system) { SendSystemSelection_Implementation(system); }
+void USensorSystem::SendSelectable(ESensorSystem system) { SendSelectable_Implementation(system); }
 #endif
-void USensorSystem::SendSystemSelection_Implementation(ESensorSystem system)
+void USensorSystem::SendSelectable_Implementation(ESensorSystem system)
 {
-	FString output = TEXT("sensor_system ");
+	FString output = TEXT("sensor_selectable ");
 	APPENDINT(output, (uint8)system);
 	SendSystem(output);
 }
+
 
 void USensorSystem::SendTargetCells()
 {

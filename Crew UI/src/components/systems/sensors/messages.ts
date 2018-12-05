@@ -24,10 +24,9 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setTargetSystems(systems, levels));
             break;
         }
-        case 'sensor_system': {
-            const iSystem = parseInt(data);
-            const system = iSystem <= 0 ? null : iSystem as SensorSystemType;
-            store.dispatch(actionCreators.openTargetSystem(system));
+        case 'sensor_selectable': {
+            const system = parseInt(data) as SensorSystemType;
+            store.dispatch(actionCreators.setSystemSelectable(system, true));
             break;
         }
         case 'sensor_cells': {

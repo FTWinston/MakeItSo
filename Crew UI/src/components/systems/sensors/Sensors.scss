@@ -1,14 +1,14 @@
 @import '../../general/mixins';
 
 @include landscape() {
-    .sensors--noTarget, .sensors--target, .sensors--targetSystem {
+    .sensors--noTarget, .sensors--target {
         display: grid;
         grid-template-rows: 1fr;
         grid-template-columns: 1fr 16em;
     }
 }
 @include portrait() {
-    .sensors--noTarget, .sensors--target, .sensors--targetSystem {
+    .sensors--noTarget, .sensors--target {
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: 5fr 2fr;

@@ -26,8 +26,8 @@ export interface SensorState {
     selectedTargetID: number;
     targetSystems: SensorSystemType[];
     targetSystemLevels: number[];
-    openSystem: SensorSystemType | null;
-    targetSystemCells: SensorTargetCellType[];
+    selectableSystems: SensorSystemType[];
+    targetCells: SensorTargetCellType[];
     targetGridSize: number;
 }
 
@@ -46,9 +46,10 @@ interface SetTargetSystemsAction {
     levels: number[];
 }
 
-interface OpenTargetSystemAction {
-    type: 'OPEN_SYSTEM';
-    system: SensorSystemType | null;
+interface SetSystemSelectableAction {
+    type: 'SELECTABLE';
+    system: SensorSystemType;
+    selectable: boolean;
 }
 
 interface SetTargetCellsAction {
@@ -64,7 +65,7 @@ interface SetTargetCellAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetSelectedTargetAction | SetTargetSystemsAction | OpenTargetSystemAction | SetTargetCellsAction | SetTargetCellAction;
+type KnownAction = SetSelectedTargetAction | SetTargetSystemsAction | SetSystemSelectableAction | SetTargetCellsAction | SetTargetCellAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -80,9 +81,10 @@ export const actionCreators = {
         systems: systems,
         levels: levels,
     },
-    openTargetSystem: (system: SensorSystemType | null) => <OpenTargetSystemAction>{
-        type: 'OPEN_SYSTEM',
+    setSystemSelectable: (system: SensorSystemType, selectable: boolean) => <SetSystemSelectableAction>{
+        type: 'SELECTABLE',
         system: system,
+        selectable: selectable,
     },
     setTargetCells: (cells: SensorTargetCellType[]) => <SetTargetCellsAction>{
         type: 'SET_CELLS',
@@ -102,8 +104,8 @@ const unloadedState: SensorState = {
     selectedTargetID: 0,
     targetSystems: [],
     targetSystemLevels: [],
-    openSystem: null,
-    targetSystemCells: [],
+    selectableSystems: [],
+    targetCells: [],
     targetGridSize: 0,
 };
 
@@ -123,26 +125,38 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
                 targetSystemLevels: action.levels,
             };
         }
-        case 'OPEN_SYSTEM': {
+        case 'SELECTABLE': {
+            const selectables = state.selectableSystems.slice();
+            const existingIndex = state.selectableSystems.indexOf(action.system);
+
+            if (action.selectable) {
+                if (existingIndex === -1) {
+                    selectables.push(action.system);
+                }
+            }
+            else if (existingIndex !== -1) {
+                selectables.splice(existingIndex, 1);
+            }
+
             return {
                 ...state,
-                openSystem: action.system,
+                selectableSystems: selectables,
             };
         }
         case 'SET_CELLS': {
             return {
                 ...state,
-                targetSystemCells: action.cells,
+                targetCells: action.cells,
                 targetGridSize: Math.ceil(Math.sqrt(action.cells.length)),
             };
         }
         case 'SET_CELL': {
-            const cells = state.targetSystemCells.slice();
+            const cells = state.targetCells.slice();
             cells[action.index] = action.value;
 
             return {
                 ...state,
-                targetSystemCells: cells,
+                targetCells: cells,
             };
         }
         default:

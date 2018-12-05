@@ -9,7 +9,6 @@ import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from './TargetList';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
-import { SensorSystemInfo } from './SensorSystemInfo';
 import { SensorSystemTargeting } from './SensorSystemTargeting';
 
 interface SensorsProps extends SensorState {
@@ -55,45 +54,30 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
                 <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
             </div>
         }
-        else if (this.props.openSystem === null) {
-            const selectSystem = (system: SensorSystemType) => connection.send(`sensors_system ${system}`);
-            const back = () => connection.send(`sensors_target 0`);
-            
-            return <div className="system sensors sensors--target">
-                <TargetDisplay
-                    target={this.state.selectedTarget}
-                    systems={this.props.targetSystems}
-                    systemLevels={this.props.targetSystemLevels}
-                    text={this.props.text}
-                    goBack={back}
-                    selectSystem={selectSystem}
-                />
-                <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
-            </div>
-        }
         else {
             const revealCell = (cellIndex: number) => {
                 this.props.setTargetCell(cellIndex, SensorTargetCellType.Queued);
                 connection.send(`sensors_reveal ${cellIndex}`);
             };
-            const back = () => connection.send(`sensors_system 0`);
-            const systemLevel = this.props.targetSystemLevels[
-                this.props.targetSystems.indexOf(this.props.openSystem)
-            ];
+            const selectSystem = (system: SensorSystemType) => connection.send(`sensors_system ${system}`);
 
-            return <div className="system sensors sensors--targetSystem">
+            const back = () => connection.send(`sensors_target 0`);
+
+            return <div className="system sensors sensors--target">
                 <SensorSystemTargeting
                     gridSize={this.props.targetGridSize}
-                    cells={this.props.targetSystemCells}
+                    cells={this.props.targetCells}
                     text={this.props.text}
                     revealCell={revealCell}
                 />
-                <SensorSystemInfo
+                <TargetDisplay
                     target={this.state.selectedTarget}
-                    system={this.props.openSystem}
-                    infoLevel={systemLevel}
+                    systems={this.props.targetSystems}
+                    systemLevels={this.props.targetSystemLevels}
+                    selectableSystems={this.props.selectableSystems}
                     text={this.props.text}
                     goBack={back}
+                    selectSystem={selectSystem}
                 />
             </div>
         }

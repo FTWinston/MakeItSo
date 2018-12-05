@@ -10,6 +10,7 @@ interface IProps {
     target: SensorTarget;
     systems: SensorSystemType[];
     systemLevels: number[];
+    selectableSystems: SensorSystemType[];
     goBack: () => void;
     selectSystem: (system: SensorSystemType) => void;
 }
@@ -35,10 +36,19 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
 
     private renderSystemItem(system: SensorSystemType, index: number) {
         const level = this.props.systemLevels[index];
+        const canSelect = this.props.selectableSystems.indexOf(system) !== -1;
 
-        return <div className="sensorSystemLink" key={index} onClick={() => this.props.selectSystem(system)}>
-            <div className="sensorSystemLink__name">{TargetDisplay.getSystemName(system, this.props.text)}</div>
-            <div className="sensorSystemLink__level">{level}</div>
+        let classes = 'sensorTargetSystem';
+        let clicked: (() => void) | undefined;
+
+        if (canSelect) {
+            classes += ' sensorTargetSystem--selectable';
+            clicked = () => this.props.selectSystem(system);
+        }
+
+        return <div className={classes} key={index} onClick={clicked}>
+            <div className="sensorTargetSystem__name">{TargetDisplay.getSystemName(system, this.props.text)}</div>
+            <div className="sensorTargetSystem__level">{level}</div>
         </div>
 
         // TODO: indicate scan level, system health and system power, if known (and relevant)

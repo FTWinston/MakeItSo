@@ -67,9 +67,9 @@ protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
 private:
 	void SendTargetData(uint8 id, USensorTargetInfo *target);
-	void PopulateCells(ESensorSystem system, uint8 infoLevel);
-	void PlaceTarget(uint8 targetSize);
-	bool TryPlaceTarget(uint8 targetSize);
+	void PopulateCells(USensorTargetInfo *target);
+	uint8 PlaceTarget(uint8 targetSize, ESensorSystem system);
+	bool TryPlaceTarget(uint8 targetSize, ESensorSystem system);
 	int32 PickEmptyCell();
 
 	// Replicated properties
@@ -81,15 +81,11 @@ private:
 	uint16 openTargetID;
 	void OnReplicated_OpenTargetID(uint16 beforeChange);
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_OpenSystem)
-	USensorSystem::ESensorSystem openSystem;
-	void OnReplicated_OpenSystem(USensorSystem::ESensorSystem beforeChange);
+	UPROPERTY()
+	TArray<ESensorSystem> targetCells;
 
 	UPROPERTY()
-	TArray<bool> targetCells;
-
-	UPROPERTY()
-	uint16 numToReveal;
+	TMap<ESensorSystem, uint8> systemCellsRemaining;
 
 	TArray<uint8> cellGroupSizesRemaining;
 
@@ -112,10 +108,11 @@ private:
 #endif
 
 	UFUNCTION(Client, Reliable)
-	void SendSystemSelection(ESensorSystem system);
+	void SendSelectable(ESensorSystem system);
 #ifdef WEB_SERVER_TEST
-	void SendSystemSelection_Implementation(ESensorSystem system);
+	void SendSelectable_Implementation(ESensorSystem system);
 #endif
+
 
 	void SendTargetCells();
 
@@ -133,15 +130,15 @@ private:
 #endif
 
 	UFUNCTION(Server, Reliable)
-	void OpenSystem(ESensorSystem system);
-#ifdef WEB_SERVER_TEST
-	void OpenSystem_Implementation(ESensorSystem system);
-#endif
-
-	UFUNCTION(Server, Reliable)
 	void RevealCell(uint16 cellIndex);
 #ifdef WEB_SERVER_TEST
 	void RevealCell_Implementation(uint16 cellIndex);
+#endif
+
+	UFUNCTION(Server, Reliable)
+	void RevealSystem(ESensorSystem system);
+#ifdef WEB_SERVER_TEST
+	void RevealSystem_Implementation(ESensorSystem system);
 #endif
 
 	void PerformReveal(uint16 cellIndex);
