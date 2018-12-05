@@ -42,18 +42,27 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
 
         let classes = 'sensorTargetSystem';
         let clicked: (() => void) | undefined;
+        let sizeDisplay;
 
         if (canSelect) {
             classes += ' sensorTargetSystem--selectable';
             clicked = () => this.props.selectSystem(system);
         }
 
+
+        if (size <= 0) {
+            classes += ' sensorTargetSystem--maxLevel';
+        }
+        else {
+            sizeDisplay = <div className="sensorTargetSystem__size">
+            <span className="sensorTargetSystem__label">length</span>
+            <span className="sensorTargetSystem__value">{size}</span>
+        </div>
+        }
+
         return <div className={classes} key={index} onClick={clicked}>
             <div className="sensorTargetSystem__name">{TargetDisplay.getSystemName(system, this.props.text)}</div>
-            <div className="sensorTargetSystem__size">
-                <span className="sensorTargetSystem__label">length</span>
-                <span className="sensorTargetSystem__value">{size}</span>
-            </div>
+            {sizeDisplay}
             <div className="sensorTargetSystem__level">
                 <span className="sensorTargetSystem__label">info level</span>
                 <span className="sensorTargetSystem__value">{level}</span>

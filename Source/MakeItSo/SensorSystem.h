@@ -66,6 +66,7 @@ public:
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
 private:
+	void UpdateTargetData(uint16 targetID, USensorTargetInfo *targetInfo);
 	void SendTargetData(uint8 id, USensorTargetInfo *target);
 	void PopulateCells(USensorTargetInfo *target);
 	uint8 PlaceTarget(uint8 targetSize, ESensorSystem system);
@@ -86,6 +87,9 @@ private:
 
 	UPROPERTY()
 	TMap<ESensorSystem, uint8> systemCellsRemaining;
+
+	UPROPERTY(Replicated)
+	TMap<ESensorSystem, uint8> systemTargetSizes;
 
 	TArray<uint8> cellGroupSizesRemaining;
 
@@ -165,8 +169,17 @@ public:
 	UPROPERTY(Replicated)
 	TMap<USensorSystem::ESensorSystem, uint8> systemInfoLevels;
 
-	UPROPERTY(Replicated)
-	TMap<USensorSystem::ESensorSystem, uint8> systemTargetSizes;
+	UPROPERTY()
+	TMap<USensorSystem::ESensorSystem, uint8> maxInfoLevels;
+
+	UPROPERTY(Replicated) // TODO: replicatedUsing?
+	TMap<USensorSystem::ESensorSystem, uint8> systemHealth;
+
+	UPROPERTY(Replicated) // TODO: replicatedUsing?
+	TMap<USensorSystem::ESensorSystem, uint8> systemPower;
+
+	UPROPERTY(Replicated) // TODO: replicatedUsing?
+	TMap<USensorSystem::ESensorSystem, uint8> systemVulnerabilities;
 
 	// The actor in question may not be visible in the scene, so the client doesn't use it directly.
 	WEAK_PTR_DECLARE(AActor) actor;

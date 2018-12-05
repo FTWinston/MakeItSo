@@ -40,6 +40,7 @@ void USensorSystem::ResetData()
 	EMPTY(sensorTargets);
 	EMPTY(revealQueue);
 	EMPTY(systemCellsRemaining);
+	EMPTY(systemTargetSizes);
 
 	for (auto i = 0; i < MAX_CELL_GROUPS; i++)
 		cellGroupSizesRemaining[i] = 0;
@@ -175,6 +176,7 @@ void USensorSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 	for (auto item : sensorTargets)
 	{
+		auto targetID = PAIRKEY(item);
 		auto targetInfo = PAIRVALUE(item);
 
 		if (!WEAK_PTR_VALID(targetInfo->actor))
@@ -193,17 +195,43 @@ void USensorSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			continue;
 		}
 
-		auto actor = WEAK_PTR_GET(targetInfo->actor);
+		UpdateTargetData(targetID, targetInfo);
+	}
+}
 
-		targetInfo->location = actor->GetActorLocation();
+void USensorSystem::UpdateTargetData(uint16 targetID, USensorTargetInfo *targetInfo)
+{
+	auto actor = WEAK_PTR_GET(targetInfo->actor);
 
-		// TODO: update any other properties that might change
+	targetInfo->location = actor->GetActorLocation();
 
-		if (ISCLIENT())
+	// TODO: update any other properties that might change
+
+	for (auto pair : targetInfo->systemInfoLevels)
+	{
+		ESensorSystem system = PAIRKEY(pair);
+		uint8 infoLevel = PAIRVALUE(pair);
+
+		if (infoLevel >= 1)
 		{
-			// TODO: only resend this component if it changes
-			SendTargetData(PAIRKEY(item), targetInfo);
+			// TODO: get actual system power level
+			targetInfo->systemPower[system] = 100;
+
+			// TODO: send system power if it has changed (and send it in the first place)
 		}
+		if (infoLevel >= 2)
+		{
+			// TODO: get actual system health
+			targetInfo->systemHealth[system] = 100;
+
+			// TODO: send system health if it has changed (and send it in the first place)
+		}
+	}
+
+	if (ISCLIENT())
+	{
+		// TODO: only resend this component if it changes
+		SendTargetData(targetID, targetInfo);
 	}
 }
 
@@ -282,10 +310,45 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 	if (!MAPCONTAINS(target->systemInfoLevels, system))
 		return;
 
-	// this system was picked by the user, increase its info level
-	auto newLevel = ++target->systemInfoLevels[system];
+	uint8 infoLevel = target->systemInfoLevels[system];
+	uint8 maxInfoLevel = MAPCONTAINS(target->maxInfoLevels, system)
+		? target->maxInfoLevels[system]
+		: 255;
 
-	// TODO: send revealed info ... decide what that info is!
+	if (maxInfoLevel <= infoLevel)
+		return; // can't increase this any more, as it is maxed out
+
+	// this system was picked by the user, increase its info level
+	infoLevel++;
+
+	target->systemInfoLevels[system] = infoLevel;
+
+	switch (target->type)
+	{
+	case ETargetType::Type_Ship:
+	case ETargetType::Type_Station:
+		if (infoLevel >= 3)
+		{
+			if (MAPCONTAINS(target->systemVulnerabilities, system))
+				++target->systemVulnerabilities[system];
+			else
+				target->systemVulnerabilities[system] = 1;
+
+			// TODO: record an actual vulnerability, pass it on to the weapons system
+		}
+		break;
+	default:
+		// TODO: reveal any secret info ... somehow.
+		// If no more data to scan for, inform the player and don't let them try. Just have no "grid target" maybe?
+		break;
+	}
+
+	if (infoLevel >= maxInfoLevel)
+	{
+		// TODO: inform user that this info level has now maxed out
+	}
+
+	UpdateTargetData(openTargetID, target);
 
 	PopulateCells(target);
 
@@ -331,14 +394,27 @@ void USensorSystem::AddTarget(AActor *target)
 	targetInfo->location = target->GetActorLocation();
 
 	// TODO: get sensor data from actor ... perhaps have a "sensor data" component on it?
+
 	targetInfo->relationship = ETargetRelationship::Rel_None;
 	targetInfo->type = ETargetType::Type_Misc;
 	
 	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Power, 1, ESensorSystem, uint8);
 	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Helm, 0, ESensorSystem, uint8);
 	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Weapons, 0, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Sensors, 1, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Warp, 2, ESensorSystem, uint8);
 
-	MAPADD(sensorTargets, nextTargetID, targetInfo, uint16, USensorTargetInfo*);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Power, 3, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Helm, 3, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Weapons, 3, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Sensors, 3, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Warp, 3, ESensorSystem, uint8);
+
+	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Power, 100, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Sensors, 100, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
+
+	MAPADD(targetInfo->systemHealth, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
 }
 
 void USensorSystem::RemoveTarget(AActor *target)
@@ -364,6 +440,7 @@ void USensorSystem::PopulateCells(USensorTargetInfo *target)
 {
 	EMPTY(revealQueue);
 	CLEAR(systemCellsRemaining);
+	CLEAR(systemTargetSizes);
 
 	for (auto i = 0; i < NUM_TARGET_CELLS; i++)
 	{
@@ -378,12 +455,20 @@ void USensorSystem::PopulateCells(USensorTargetInfo *target)
 		ESensorSystem system = PAIRKEY(pair);
 		uint8 level = PAIRVALUE(pair);
 
+		uint8 maxInfoLevel = MAPCONTAINS(target->maxInfoLevels, system)
+			? target->maxInfoLevels[system]
+			: 255;
+
+		if (level >= maxInfoLevel)
+			continue;
+
 		uint8 size = level >= 3
 			? 2
 			: 5 - level;
 		
 		size = PlaceTarget(size, system);
 		systemCellsRemaining[system] = size;
+		systemTargetSizes[system] = size;
 	}
 
 
@@ -509,8 +594,8 @@ void USensorSystem::SendTargetSelection_Implementation(uint8 targetID)
 				ESensorSystem system = PAIRKEY(item);
 				uint8 infoLevel = PAIRVALUE(item);
 
-				uint8 targetSize = MAPCONTAINS(target->systemTargetSizes, system)
-					? target->systemTargetSizes[system]
+				uint8 targetSize = MAPCONTAINS(systemTargetSizes, system)
+					? systemTargetSizes[system]
 					: 0;
 
 				output += TEXT(" ");
