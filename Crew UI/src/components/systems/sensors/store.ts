@@ -128,6 +128,7 @@ export const reducer: Reducer<SensorState> = (state: SensorState, rawAction: Act
                 targetSystems: action.systems,
                 targetSystemLevels: action.levels,
                 targetSystemSizes: action.sizes,
+                selectableSystems: [],
             };
         }
         case 'SELECTABLE': {

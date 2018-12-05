@@ -49,6 +49,7 @@
 .sensorTargetSystem--selectable {
     color: $colorHighlight;
     background-color: $colorTertiary;
+    cursor: pointer;
 }
 
 .sensorTargetSystem--maxLevel .sensorTargetSystem__level {

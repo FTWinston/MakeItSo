@@ -30,6 +30,7 @@ export class SensorView extends React.Component<SensorViewProps, SensorViewState
 
     private touch: TouchArea;
     private viewTransform: Matrix;
+    private mounted: boolean = false;
 
     constructor(props: SensorViewProps) {
         super(props);
@@ -56,11 +57,13 @@ export class SensorView extends React.Component<SensorViewProps, SensorViewState
             return true;
         }
 
-        setTimeout(() => this.touch.redraw(), 0); // wait til state/props actually change
+        setTimeout(() => { if (this.mounted) { this.touch.redraw() } }, 0); // wait til state/props actually change
         return false;
     }
 
     componentDidMount() {
+        this.mounted = true;
+
         if (this.props.autoRotate) {
             this.autoRotateStep();
         }
@@ -89,6 +92,7 @@ export class SensorView extends React.Component<SensorViewProps, SensorViewState
     }
 
     componentWillUnmount() {
+        this.mounted = false;
         this.stopRotation();
     }
 

@@ -269,11 +269,11 @@ void USensorSystem::OpenTarget_Implementation(uint8 targetID)
 
 	openTargetID = targetID;
 
-	if (ISCLIENT())
-		SendTargetSelection(targetID);
-
 	auto target = sensorTargets[targetID];
 	PopulateCells(target);
+
+	if (ISCLIENT())
+		SendTargetSelection(targetID);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -415,6 +415,8 @@ void USensorSystem::AddTarget(AActor *target)
 	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
 
 	MAPADD(targetInfo->systemHealth, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
+
+	MAPADD(sensorTargets, nextTargetID, targetInfo, uint16, USensorTargetInfo*);
 }
 
 void USensorSystem::RemoveTarget(AActor *target)

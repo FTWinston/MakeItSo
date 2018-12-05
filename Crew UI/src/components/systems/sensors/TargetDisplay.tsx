@@ -37,7 +37,7 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
 
     private renderSystemItem(system: SensorSystemType, index: number) {
         const level = this.props.systemLevels[index];
-        const size = this.props.systemSizes[index];
+        let size = this.props.systemSizes[index];
         const canSelect = this.props.selectableSystems.indexOf(system) !== -1;
 
         let classes = 'sensorTargetSystem';
@@ -47,17 +47,19 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
         if (canSelect) {
             classes += ' sensorTargetSystem--selectable';
             clicked = () => this.props.selectSystem(system);
+            size = 0;
         }
-
-
-        if (size <= 0) {
+        else if (size === 0) {
             classes += ' sensorTargetSystem--maxLevel';
         }
-        else {
-            sizeDisplay = <div className="sensorTargetSystem__size">
-            <span className="sensorTargetSystem__label">length</span>
-            <span className="sensorTargetSystem__value">{size}</span>
-        </div>
+
+        if (size > 0) {
+            sizeDisplay = (
+                <div className="sensorTargetSystem__size">
+                    <span className="sensorTargetSystem__label">length</span>
+                    <span className="sensorTargetSystem__value">{size}</span>
+                </div>
+            );
         }
 
         return <div className={classes} key={index} onClick={clicked}>

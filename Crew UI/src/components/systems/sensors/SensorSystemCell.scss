@@ -21,6 +21,7 @@
 .sensorSystemCell--unknown::before,
 .sensorSystemCell--queued::before {
     content: '?';
+    color: $colorHighlight;
 }
 
 .sensorSystemCell:not(.sensorSystemCell--unknown) {
