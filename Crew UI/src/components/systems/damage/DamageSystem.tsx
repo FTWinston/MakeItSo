@@ -88,6 +88,8 @@ export class DamageSystem extends React.PureComponent<IProps> {
                 return this.props.text.systemNames.shields;
             case DamageSystemType.Comms:
                 return this.props.text.systemNames.comms;
+            case DamageSystemType.DamageControl:
+                return this.props.text.systemNames.damage;
             default:
                 return undefined;
         }

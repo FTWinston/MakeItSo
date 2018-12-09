@@ -38,17 +38,29 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
             />
         });
 
-        const canLock = this.props.dice[0] !== 0;
-        const dice = this.props.dice.map((d, i) =>
-            <Dice
+        const canLockAny = this.props.dice[0] !== 0;
+        const dice = this.props.dice.map((d, i) => {
+            let canLock: boolean;
+            let locked: boolean;
+
+            if (this.props.fixedDice[i]) {
+                canLock = false;
+                locked = true;
+            }
+            else {
+                canLock = canLockAny;
+                locked = this.props.lockedDice[i]
+            }
+
+            return <Dice
                 key={i}
                 value={d}
-                canLock={canLock}
-                locked={this.props.lockedDice[i]}
+                canToggle={canLock}
+                locked={locked}
                 toggle={() => this.props.toggleDice(i)}
                 hotkey={(i + 1).toString() as Hotkey}
             />
-        );
+        });
 
         const rollText = `${this.props.text.systems.damage.roll} (${this.props.numReRolls})`;
 

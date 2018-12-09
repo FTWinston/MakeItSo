@@ -25,6 +25,7 @@ public:
 		Damage_Sensors,
 		Damage_Shields,
 		Damage_Comms,
+		Damage_DamageControl,
 		Damage_None,
 		NUM_DAMAGE_SYSTEMS = Damage_None
 	};
@@ -56,8 +57,9 @@ public:
 
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::DamageControl; }
-	virtual void UpdateDamageControl(uint8 health) override { } // This system itself doesn't take damage
 
+	virtual void ApplySystemDamage(uint8 prevValue, uint8 newValue) override;
+	virtual void RepairSystemDamage(uint8 prevValue, uint8 newValue) override;
 private:
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_Dice)
@@ -116,11 +118,14 @@ private:
 private:
 	uint8 Roll();
 	uint8 GetNumRerolls();
+	uint8 GetNumRollableDice(uint8 healthLevel);
 	uint8 GetDiceScore(EDiceCombo combo);
 	UShipSystem *LookupSystem(EDamageSystem system);
 	EDamageSystem GetDamageSystem(UShipSystem::ESystem system);
 	bool RestoreDamage(EDamageSystem system, uint8 amount);
-	EDiceCombo SelectCombo(EDiceCombo currentCombo, uint8 systemHealth);
+	EDiceCombo SelectCombo(EDamageSystem system, EDiceCombo currentCombo, uint8 systemHealth);
+	EDiceCombo SelectComboForOtherSystem(EDiceCombo currentCombo, uint8 systemHealth);
+	EDiceCombo SelectComboForDamageControl(EDiceCombo currentCombo, uint8 systemHealth);
 
 	uint8 SumOfNumber(uint8 number);
 	uint8 SumOfAKind(uint8 number);

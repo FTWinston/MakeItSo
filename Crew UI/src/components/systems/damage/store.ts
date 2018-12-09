@@ -13,6 +13,7 @@ export const enum DamageSystemType {
     Sensors,
     Shields,
     Comms,
+    DamageControl,
 }
 
 export const enum DiceComboType {
@@ -42,6 +43,7 @@ export interface DamageState {
     systems: DamageSystem[];
     dice: [number, number, number, number, number];
     lockedDice: [boolean, boolean, boolean, boolean, boolean];
+    fixedDice: [boolean, boolean, boolean, boolean, boolean];
     numReRolls: number;
 }
 
@@ -52,6 +54,7 @@ export interface DamageState {
 interface SetDiceAction {
     type: 'SET_DICE';
     values: [number, number, number, number, number];
+    fixed: [boolean, boolean, boolean, boolean, boolean];
 }
 
 interface SetRollsAction {
@@ -84,9 +87,10 @@ type KnownAction = SetDiceAction | SetRollsAction | ToggleDiceLockAction | Unloc
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    setDice: (values: [number, number, number, number, number]) => <SetDiceAction>{
+    setDice: (values: [number, number, number, number, number], fixed: [boolean, boolean, boolean, boolean, boolean]) => <SetDiceAction>{
         type: 'SET_DICE',
         values,
+        fixed
     },
     setRolls: (rollsRemaining: number) => <SetRollsAction>{
         type: 'SET_ROLLS',
@@ -119,9 +123,11 @@ const unloadedState: DamageState = {
         { type: DamageSystemType.Sensors, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Shields, health: 0, combo: DiceComboType.None },
         { type: DamageSystemType.Comms, health: 0, combo: DiceComboType.None },
+        { type: DamageSystemType.DamageControl, health: 0, combo: DiceComboType.None },
     ],
     dice: [0, 0, 0, 0, 0],
     lockedDice: [false, false, false, false, false],
+    fixedDice: [false, false, false, false, false],
     numReRolls: 3,
 };
 
@@ -133,6 +139,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             return {
                 ...state,
                 dice: action.values,
+                fixedDice: action.fixed,
             }
         }
         case 'SET_ROLLS': {
@@ -195,6 +202,9 @@ export function getSystemHealth(system: ShipSystem | undefined, state: Applicati
             break;
         case ShipSystem.Communications:
             damageSystem = DamageSystemType.Comms;
+            break;
+        case ShipSystem.DamageControl:
+            damageSystem = DamageSystemType.DamageControl;
             break;
         /*
         case ShipSystem.Shields:

@@ -190,7 +190,7 @@ System::Void WebTest::MainForm::btnRespawnDamage_Click(System::Object^  sender, 
 System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, System::EventArgs^  e)
 {
 	UShipSystem::ESystem system;
-	switch (FMath::RandRange(1, 6))
+	switch (FMath::RandRange(1, 7))
 	{
 	case 1:
 		system = UShipSystem::ESystem::Helm;
@@ -209,6 +209,9 @@ System::Void WebTest::MainForm::btnAddDamage_Click(System::Object^  sender, Syst
 		break;
 	case 6:
 		system = UShipSystem::ESystem::Communications;
+		break;
+	case 7:
+		system = UShipSystem::ESystem::DamageControl;
 		break;
 
 		// TODO: also shields

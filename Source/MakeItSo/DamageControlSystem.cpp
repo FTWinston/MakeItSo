@@ -32,11 +32,13 @@ void UDamageControlSystem::ResetData()
 
 	for (uint8 i = 0; i < NUM_DAMAGE_SYSTEMS; i++)
 	{
-		auto system = LookupSystem((EDamageSystem)i);
-		auto health = system != nullptr ? system->GetHealthLevel() : 0;
+		auto system = (EDamageSystem)i;
+
+		auto damageSystem = LookupSystem(system);
+		auto health = damageSystem != nullptr ? damageSystem->GetHealthLevel() : 0;
 
 		systemHealth[i] = health;
-		systemCombos[i] = system == nullptr ? Dice_None : SelectCombo(systemCombos[i], health);
+		systemCombos[i] = damageSystem == nullptr ? Dice_None : SelectCombo(system, systemCombos[i], health);
 	}
 }
 
@@ -90,7 +92,7 @@ void UDamageControlSystem::SetSystemHealth(UShipSystem::ESystem system, uint8 he
 	if (damageSystem == Damage_None)
 		return;
 
-	auto combo = SelectCombo(systemCombos[damageSystem], health);
+	auto combo = SelectCombo(damageSystem, systemCombos[damageSystem], health);
 	systemHealth[damageSystem] = health;
 	systemCombos[damageSystem] = combo;
 
@@ -117,6 +119,15 @@ void UDamageControlSystem::SendDice_Implementation()
 		output += TEXT(" ");
 		APPENDINT(output, die);
 	}
+
+	uint8 numRerollable = GetNumRollableDice(GetHealthLevel());
+	uint8 i;
+	
+	for (i = 0; i < numRerollable; i++)
+		output += TEXT(" 1");
+
+	for (i; i < NUM_DICE; i++)
+		output += TEXT(" 0");
 
 	SendSystem(output);
 }
@@ -156,6 +167,19 @@ void UDamageControlSystem::RollDice(bool roll1, bool roll2, bool roll3, bool rol
 #endif
 void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5)
 {
+	uint8 numRollable = GetNumRollableDice(GetHealthLevel());
+
+	if (roll1 && numRollable < 1)
+		roll1 = false;
+	if (roll2 && numRollable < 2)
+		roll2 = false;
+	if (roll3 && numRollable < 3)
+		roll3 = false;
+	if (roll4 && numRollable < 4)
+		roll4 = false;
+	if (roll5 && numRollable < 5)
+		roll5 = false;
+
 	if (rollsRemaining == 0 || !(roll1 || roll2 || roll3 || roll4 || roll5)) {
 		return;
 	}
@@ -212,6 +236,34 @@ uint8 UDamageControlSystem::GetNumRerolls()
 		return 0;
 
 	return (power - 25) / 25;
+}
+
+uint8 UDamageControlSystem::GetNumRollableDice(uint8 health)
+{
+	if (health >= 100)
+		return NUM_DICE;
+	if (health >= 80)
+		return 4;
+	if (health >= 60)
+		return 3;
+	if (health >= 40)
+		return 2;
+	if (health >= 20)
+		return 1;
+
+	return 0;
+}
+
+void UDamageControlSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)
+{
+	if (GetNumRollableDice(prevValue) != GetNumRollableDice(newValue))
+		SendDice();
+}
+
+void UDamageControlSystem::RepairSystemDamage(uint8 prevValue, uint8 newValue)
+{
+	if (GetNumRollableDice(prevValue) != GetNumRollableDice(newValue))
+		SendDice();
 }
 
 uint8 UDamageControlSystem::GetDiceScore(EDiceCombo combo)
@@ -448,6 +500,8 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 	//	  return crewManager->GetSystem(UShipSystem::ESystem::Shields);
 	case Damage_Comms:
 		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
+	case Damage_DamageControl:
+		return crewManager->GetSystem(UShipSystem::ESystem::DamageControl);
 	default:
 		return nullptr;
 	}
@@ -471,6 +525,8 @@ UDamageControlSystem::EDamageSystem UDamageControlSystem::GetDamageSystem(UShipS
 	//	  return Damage_Shields;
 	case UShipSystem::ESystem::Communications:
 		return Damage_Comms;
+	case UShipSystem::ESystem::DamageControl:
+		return Damage_DamageControl;
 	default:
 		return Damage_None;
 	}
@@ -489,7 +545,14 @@ bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 	return true;
 }
 
-UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectCombo(EDiceCombo currentCombo, uint8 systemHealth)
+UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectCombo(EDamageSystem system, EDiceCombo currentCombo, uint8 systemHealth)
+{
+	return system == EDamageSystem::Damage_DamageControl
+		? SelectComboForDamageControl(currentCombo, systemHealth)
+		: SelectComboForOtherSystem(currentCombo, systemHealth);
+}
+
+UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectComboForOtherSystem(EDiceCombo currentCombo, uint8 systemHealth)
 {
 	if (systemHealth >= 100)
 		return Dice_None;
@@ -759,4 +822,49 @@ UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectCombo(EDiceCombo cu
 		}
 
 	return Dice_LargeStraight;
+}
+
+UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectComboForDamageControl(EDiceCombo currentCombo, uint8 systemHealth)
+{
+	if (systemHealth >= 100)
+		return Dice_None;
+
+	if (systemHealth == 0)
+		return Dice_ThreeOfAKind;
+
+	if (currentCombo != Dice_None)
+		return currentCombo;
+
+	// Initially, greater damage needs greater repair
+
+	if (systemHealth > 90)
+		return Dice_Aces;
+
+	if (systemHealth > 80)
+		return Dice_Twos;
+
+	if (systemHealth > 70)
+		return Dice_Threes;
+
+	if (systemHealth > 60)
+		return Dice_Fours;
+
+	if (systemHealth > 50)
+		return Dice_Fives;
+
+	if (systemHealth > 40)
+		return Dice_Sixes;
+
+	// This system doesn't use harder combos at lower health, instead it uses lower-scoring ones.
+
+	if (systemHealth > 30)
+		return Dice_Fives;
+
+	if (systemHealth > 20)
+		return Dice_Fours;
+
+	if (systemHealth > 10)
+		return Dice_Threes;
+
+	return Dice_Twos;
 }

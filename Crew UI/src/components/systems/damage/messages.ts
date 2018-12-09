@@ -16,6 +16,7 @@ export function receiveMessage(cmd: string, data: string) {
         }
         case 'dmg_dice': {
             const vals = data.split(' ');
+            
             const dice = [
                 parseInt(vals[0]),
                 parseInt(vals[1]),
@@ -23,7 +24,16 @@ export function receiveMessage(cmd: string, data: string) {
                 parseInt(vals[3]),
                 parseInt(vals[4])
             ] as [number, number, number, number, number];
-            store.dispatch(actionCreators.setDice(dice));
+
+            const fixed = [
+                vals[5] === '0',
+                vals[6] === '0',
+                vals[7] === '0',
+                vals[8] === '0',
+                vals[9] === '0'
+            ] as [boolean, boolean, boolean, boolean, boolean];
+
+            store.dispatch(actionCreators.setDice(dice, fixed));
             break;
         }
         case 'dmg_rolls': {

@@ -5,7 +5,7 @@ import { Hotkey, Hotkeys } from '~/functionality';
 
 interface IProps {
     value: number;
-    canLock: boolean;
+    canToggle: boolean;
     locked: boolean;
     toggle: () => void;
     hotkey?: Hotkey;
@@ -14,7 +14,7 @@ interface IProps {
 export class Dice extends React.PureComponent<IProps> {
     componentDidMount() {
         if (this.props.hotkey != null) {
-            Hotkeys.registerAction(this.props.hotkey, () => { if (this.props.canLock) this.props.toggle(); });
+            Hotkeys.registerAction(this.props.hotkey, () => { if (this.props.canToggle) this.props.toggle(); });
         }
     }
 
@@ -26,19 +26,21 @@ export class Dice extends React.PureComponent<IProps> {
 
 
     render() {
-        const classes = this.props.canLock ? 'dice' : 'dice dice--notLockable';
+        const classes = this.props.canToggle ? 'dice' : 'dice dice--notLockable';
 
         return <FlexibleCanvas
             className={classes}
             draw={(ctx, w, h) => this.draw(ctx, w, h)}
-            onClick={this.props.canLock ? () => this.props.toggle() : undefined}
+            onClick={this.props.canToggle ? () => this.props.toggle() : undefined}
         />
     }
 
     private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
         ctx.fillStyle = '#ccc';
         ctx.fillRect(0, 0, width, height);
-        ctx.fillStyle = this.props.locked ? '#d00' : '#000';
+        ctx.fillStyle = this.props.locked
+            ? this.props.canToggle ? '#0a0' : '#d00'
+            : '#000';
         let dotSize = Math.min(width, height) * 0.1;
 
         switch (this.props.value) {
