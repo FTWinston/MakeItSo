@@ -48,7 +48,10 @@ protected:
 private:
 	void TickCharging(float DeltaTime);
 	void TickJumping(float DeltaTime);
-	FVector DetermineJumpDestination(TArray<uint8> solution);
+	TArray<bool> ResolveSolution(TArray<uint8> solution);
+	FVector DetermineJumpDestination(uint8 numWrongGroups);
+	uint8 DeterminePuzzleSize();
+	void CalculatePuzzle();
 
 
 	UPROPERTY(Replicated)
@@ -78,14 +81,13 @@ private:
 	TArray<uint8> puzzleCellGroups;
 
 	UPROPERTY(Replicated)
-	TArray<uint16> puzzleGroupTargets;
+	TArray<int16> puzzleGroupTargets;
 
 	UPROPERTY(Replicated)
 	TArray<EOperator> puzzleGroupOperators;
 
 	UPROPERTY()
 	FVector lastSentLocation;
-
 
 	// Client functions, that can be called from the server
 	UFUNCTION(Client, Reliable)
@@ -104,6 +106,18 @@ private:
 	void SendJumpCharge();
 #ifdef WEB_SERVER_TEST
 	void SendJumpCharge_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendJumpPositions(FVector startPos, FVector targetPos);
+#ifdef WEB_SERVER_TEST
+	void SendJumpPositions_Implementation(FVector startPos, FVector targetPos);
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendPuzzleResults(TArray<bool> results);
+#ifdef WEB_SERVER_TEST
+	void SendPuzzleResults_Implementation(TArray<bool> results);
 #endif
 
 

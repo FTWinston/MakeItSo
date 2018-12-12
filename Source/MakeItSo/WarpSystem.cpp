@@ -92,7 +92,8 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 
 		TArray<uint8> solution;
 
-		// TODO: convert parts to numbers, pass them into PerformWarpJump
+		for (auto part : parts)
+			SETADD(solution, (uint8)STOI(part));
 
 		PerformWarpJump(solution);
 		return true;
@@ -107,7 +108,15 @@ void UWarpSystem::SendAllData_Implementation()
 
 	SendJumpCharge();
 
-	// TODO: depending on state, also send jump source, jump target and puzzle data
+	if (jumpState != EJumpState::Idle)
+	{
+		SendJumpPositions(jumpStartPosition, jumpTargetPosition);
+
+		if (jumpState != EJumpState::Jumping)
+		{
+			// TODO: send all puzzle data ... puzzleSize, puzzleCellGroups, puzzleGroupOperators, puzzleGroupTargets
+		}
+	}
 }
 
 
@@ -122,8 +131,15 @@ void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 		return;
 
 	jumpStartPosition = crewManager->GetShipPawn()->GetActorLocation();
+	jumpTargetPosition = targetPos;
 
-	// TODO: calculate puzzle data, send it to client
+	SendJumpPositions(jumpStartPosition, jumpTargetPosition);
+	
+	puzzleWidth = DeterminePuzzleSize();
+
+	CalculatePuzzle();
+
+	// TODO: send all puzzle data ... puzzleSize, puzzleCellGroups, puzzleGroupOperators, puzzleGroupTargets
 }
 
 
@@ -155,7 +171,19 @@ void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 	if (jumpState != EJumpState::Ready)
 		return;
 
-	actualJumpDestination = DetermineJumpDestination(solution);
+	if (SIZENUM(solution) != puzzleWidth * puzzleWidth)
+		return;
+
+	auto groupResults = ResolveSolution(solution);
+
+	SendPuzzleResults(groupResults);
+
+	uint8 numWrongGroups = 0;
+	for (auto i = SIZENUM(groupResults) - 1; i >= 0; i--)
+		if (groupResults[i] != puzzleGroupTargets[i])
+			numWrongGroups++;
+
+	actualJumpDestination = DetermineJumpDestination(numWrongGroups);
 
 	// TODO: set jump end time
 
@@ -219,11 +247,37 @@ void UWarpSystem::TickJumping(float DeltaTime)
 	}
 }
 
-FVector UWarpSystem::DetermineJumpDestination(TArray<uint8> solution)
+TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
+{
+	auto numGroups = SIZENUM(puzzleCellGroups);
+	TArray<bool> groupResults;
+
+#ifndef WEB_SERVER_TEST
+	groupResults.AddZeroed(numGroups);
+#else
+	groupResults.assign(numGroups, 0);
+#endif
+
+	for (auto iGroup = 0; iGroup < numGroups; iGroup++)
+	{
+		auto groupOperator = puzzleGroupOperators[iGroup];
+		auto groupTarget = puzzleGroupTargets[iGroup];
+
+		int16 groupTotal = 0;
+		
+		// TODO: apply operator to numbers, see if they reach the target
+
+		groupResults[iGroup] = groupTotal == puzzleGroupTargets[iGroup];
+	}
+
+	return groupResults;
+}
+
+FVector UWarpSystem::DetermineJumpDestination(uint8 numWrongGroups)
 {
 	FVector destination = jumpTargetPosition;
 
-	// TODO: add an offset based on how correct the solution is
+	// TODO: add an offset based on numWrongGroups
 
 	// add an offset equivalent to the ship's current offset from the calculated jump start position
 	destination += (crewManager->GetShipPawn()->GetActorLocation() - jumpStartPosition);
@@ -231,6 +285,57 @@ FVector UWarpSystem::DetermineJumpDestination(TArray<uint8> solution)
 	// TODO: add an offset based on system health level
 
 	return jumpTargetPosition;
+}
+
+uint8 UWarpSystem::DeterminePuzzleSize()
+{
+	auto jumpDistSq = FVector::DistSquared(jumpStartPosition, jumpTargetPosition);
+	if (jumpDistSq < 10)
+		return 2;
+	if (jumpDistSq < 100)
+		return 3;
+	if (jumpDistSq < 1000)
+		return 4;
+	if (jumpDistSq < 10000)
+		return 5;
+	if (jumpDistSq < 100000)
+		return 6;
+	if (jumpDistSq < 1000000)
+		return 7;
+	if (jumpDistSq < 10000000)
+		return 8;
+	
+	return 9;
+}
+
+void UWarpSystem::CalculatePuzzle()
+{
+	CLEAR(puzzleCellGroups);
+	CLEAR(puzzleGroupOperators);
+	CLEAR(puzzleGroupTargets);
+
+	auto numCells = puzzleWidth * puzzleWidth;
+
+#ifndef WEB_SERVER_TEST
+	puzzleCellGroups.AddZeroed(numCells);
+#else
+	puzzleCellGroups.assign(numCells, 0);
+#endif
+
+	// TODO: populate the following, for a grid of puzzleSize:
+
+	// puzzleCellGroups
+	// puzzleGroupOperators
+	// puzzleGroupTargets
+
+
+	// this is just placeholder data
+	SETADD(puzzleGroupOperators, EOperator::Add);
+	SETADD(puzzleGroupOperators, EOperator::Multiply);
+	SETADD(puzzleGroupTargets, 47);
+	SETADD(puzzleGroupTargets, 72);
+	for (auto i = 0; i < numCells; i++)
+		puzzleCellGroups[i] = i % 2;
 }
 
 #ifdef WEB_SERVER_TEST
@@ -267,6 +372,28 @@ void UWarpSystem::SendJumpCharge_Implementation()
 	SendSystem(output);
 }
 
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendJumpPositions(FVector start, FVector target) { SendJumpPositions_Implementation(start, target); }
+#endif
+void UWarpSystem::SendJumpPositions_Implementation(FVector start, FVector target)
+{
+	FString output = TEXT("warp_positions ");
+
+	APPENDINT(output, start.X);
+	output += TEXT(" ");
+	APPENDINT(output, start.Y);
+	output += TEXT(" ");
+	APPENDINT(output, start.Z);
+
+	APPENDINT(output, target.X);
+	output += TEXT(" ");
+	APPENDINT(output, target.Y);
+	output += TEXT(" ");
+	APPENDINT(output, target.Z);
+
+	SendSystem(output);
+}
+
 void UWarpSystem::OnReplicated_JumpState(EJumpState beforeChange)
 {
 	SendJumpState();
@@ -279,5 +406,20 @@ void UWarpSystem::SendJumpState_Implementation()
 {
 	FString output = TEXT("warp_state ");
 	APPENDINT(output, (uint8)jumpState);
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendPuzzleResults(TArray<bool> results) { SendPuzzleResults_Implementation(results); }
+#endif
+void UWarpSystem::SendPuzzleResults_Implementation(TArray<bool> results)
+{
+	FString output = TEXT("warp_results");
+	
+	for (auto result : results)
+	{
+		output += result ? TEXT(" 1") : TEXT(" 0");
+	}
+
 	SendSystem(output);
 }
