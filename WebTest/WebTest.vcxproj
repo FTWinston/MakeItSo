@@ -92,7 +92,6 @@
     <ClInclude Include="..\Source\MakeItSo\PowerSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\SensorSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\ShipSystem.h" />
-    <ClInclude Include="..\Source\MakeItSo\WarpJump.h" />
     <ClInclude Include="..\Source\MakeItSo\WarpSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\ViewscreenSystem.h" />
     <ClInclude Include="..\Source\MakeItSo\WeaponSystem.h" />
@@ -110,7 +109,6 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ViewscreenSystem.Generated.h" />
-    <ClInclude Include="WarpJump.Generated.h" />
     <ClInclude Include="WarpSystem.Generated.h" />
     <ClInclude Include="WeaponSystem.Generated.h" />
   </ItemGroup>
@@ -124,7 +122,6 @@
     <ClCompile Include="..\Source\MakeItSo\PowerSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\SensorSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\ShipSystem.cpp" />
-    <ClCompile Include="..\Source\MakeItSo\WarpJump.cpp" />
     <ClCompile Include="..\Source\MakeItSo\WarpSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\ViewscreenSystem.cpp" />
     <ClCompile Include="..\Source\MakeItSo\WeaponSystem.cpp" />

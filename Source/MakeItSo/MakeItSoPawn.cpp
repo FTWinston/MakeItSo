@@ -95,12 +95,12 @@ void AMakeItSoPawn::Restart()
 	//GetWorld()->GetFirstPlayerController()->ClientMessage(TEXT("AMakeItSoPawn::Restart"));
 }
 
-void AMakeItSoPawn::StartWarpJump(UWarpJump *jump)
+void AMakeItSoPawn::StartWarpJump(FVector destination)
 {
 	// TODO: hide ship, disable controls, show warp jumping effect
 }
 
-void AMakeItSoPawn::FinishWarpJump(UWarpJump *jump)
+void AMakeItSoPawn::FinishWarpJump(FVector destination)
 {
 	// TODO: move ship, show ship, enable controls, hide warp jumping effect
 }

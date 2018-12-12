@@ -87,12 +87,6 @@
     <ClInclude Include="WeaponSystem.Generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\Source\MakeItSo\WarpJump.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WarpJump.Generated.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ShipSystem.Generated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -141,9 +135,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\MakeItSo\MakeItSoPawn.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Source\MakeItSo\WarpJump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\Source\MakeItSo\ShipSystem.cpp">

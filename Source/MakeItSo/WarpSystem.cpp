@@ -11,11 +11,7 @@
 #include "MakeItSoPawn.h"
 #include "WarpJump.h"
 
-#define JUMP_CHARGE_GENERATED_PER_TICK 1
-#define JUMP_CHARGE_CONSUMPTION_PER_TICK 4
-
-#define JUMP_START_RANGE 100.0f
-#define JUMP_START_RANGE_SQ JUMP_START_RANGE * JUMP_START_RANGE
+#define JUMP_CHARGE_FULL_POWER_HEALTH_GENERATION_RATE 1
 
 #define LOCATION_UPDATE_THRESHOLD 5
 #define LOCATION_UPDATE_THRESHOLD_SQ LOCATION_UPDATE_THRESHOLD * LOCATION_UPDATE_THRESHOLD
@@ -23,388 +19,218 @@
 UWarpSystem::UWarpSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	PrimaryComponentTick.TickInterval = 0.2f;
+	PrimaryComponentTick.TickInterval = 0.5f;
 	PrimaryComponentTick.SetTickFunctionEnable(true);
 
-	calculationStepsRemaining = 0;
-	calculationStartPower = 0;
-	calculationCurrentVelocity = FVector::ZeroVector;
-
-	jumpState = SystemJumpState::JUMP_STATE_IDLE;
-	nextJumpID = 1;
-	activeJumpID = 0;
+	jumpState = EJumpState::Idle;
+	lastSentLocation = FVector::ZeroVector;
 	jumpCharge = 0;
+	jumpRequiredCharge = 0;
+
+	jumpStartPosition = FVector::ZeroVector;
+	jumpTargetPosition = FVector::ZeroVector;
+	actualJumpDestination = FVector::ZeroVector;
+
+	puzzleWidth = 0;
 }
 
 void UWarpSystem::ResetData()
 {
-	CleanupAfterCalculation();
-
-	nextJumpID = 1;
-	activeJumpID = 0;
+	jumpState = EJumpState::Idle;
 	jumpCharge = 0;
+	jumpRequiredCharge = 0;
 
-	CLEAR(calculatedJumps);
+	CLEAR(puzzleCellGroups);
+	CLEAR(puzzleGroupTargets);
+	CLEAR(puzzleGroupOperators);
+
+	jumpStartPosition = FVector::ZeroVector;
+	jumpTargetPosition = FVector::ZeroVector;
+	actualJumpDestination = FVector::ZeroVector;
+
+	puzzleWidth = 0;
 }
 
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(UWarpSystem, calculationStartPower, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UWarpSystem, calculationStepPositions, COND_OwnerOnly);
-	DOREPLIFETIME_CONDITION(UWarpSystem, calculatedJumps, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, jumpStartPosition, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, jumpTargetPosition, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, jumpRequiredCharge, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, jumpState, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, jumpCharge, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, puzzleWidth, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, puzzleCellGroups, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, puzzleGroupTargets, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(UWarpSystem, puzzleGroupOperators, COND_OwnerOnly);
 }
 
 bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "warp_plot "))
 	{
-		// warp_plot fromX fromY fromZ yaw pitch power
+		// warp_plot toX toY toZ
 		TArray<FString> parts = SplitParts(msg, sizeof("warp_plot "));
 
-		if (SIZENUM(parts) < 6)
+		if (SIZENUM(parts) < 3)
 			return false;
 
-		FVector startPos = FVector(STOF(parts[0]), STOF(parts[1]), STOF(parts[2]));
-		FRotator direction = FRotator(STOF(parts[4]), STOF(parts[3]), 0);
-		float power = STOF(parts[5]);
-		StartJumpCalculation(startPos, direction, power);
+		FVector targetPos = FVector(STOF(parts[0]), STOF(parts[1]), STOF(parts[2]));
+
+		CalculateJump(targetPos);
 		return true;
 	}
-	else if (MATCHES(msg, "warp_plot_cancel"))
+	else if (STARTS_WITH(msg, "warp_cancel "))
 	{
-		CleanupAfterCalculation();
-		SendPathDeletion(nextJumpID, false);
+		CancelJump();
 		return true;
 	}
-	else if (STARTS_WITH(msg, "warp_delete "))
+	else if (STARTS_WITH(msg, "warp_jump "))
 	{
-		int32 jumpID = ExtractInt(msg, sizeof("warp_delete "));
-		DeleteJump(jumpID);
+		TArray<FString> parts = SplitParts(msg, sizeof("warp_jump "));
+
+		TArray<uint8> solution;
+
+		// TODO: convert parts to numbers, pass them into PerformWarpJump
+
+		PerformWarpJump(solution);
 		return true;
 	}
-	else if (STARTS_WITH(msg, "warp_prepare_jump "))
-	{
-		int32 jumpID = ExtractInt(msg, sizeof("warp_prepare_jump "));
-		PrepareWarpJump(jumpID);
-		return true;
-	}
-	else if (MATCHES(msg, "warp_jump_cancel"))
-	{
-		if (activeJumpID != 0)
-		{
-			CancelWarpJump();
-		}
-		return true;
-	}
-	else if (MATCHES(msg, "warp_plot_reject"))
-	{
-		// delete the last calculated jump
-		DeleteJump(nextJumpID - 1);
-		return true;
-	}
-	else if (MATCHES(msg, "warp_jump"))
-	{
-		if (activeJumpID != 0)
-		{
-			PerformWarpJump();
-		}
-		return true;
-	}
-	
+
 	return false;
 }
 
 void UWarpSystem::SendAllData_Implementation()
 {
-	SendSystemFixed("warp_clear");
+	SendJumpState();
 
-	SendShipLocation();
+	SendJumpCharge();
 
-	for (auto pathInfo : calculatedJumps)
-	{
-		auto path = PAIRVALUE(pathInfo);
-		SendPath(PAIRKEY(pathInfo), JumpPathStatus::Plotted, path->JumpPower, path->PositionSteps);
-	}
-
-	if (activeJumpID != 0)
-	{	
-		if (jumpState == SystemJumpState::JUMP_STATE_JUMPING)
-			SendJumpInProgress();
-		else if (jumpState == SystemJumpState::JUMP_STATE_CHARGING)
-			DetermineAndSendJumpCharge();
-	}
-
-	UShipSystem::SendAllData_Implementation();
+	// TODO: depending on state, also send jump source, jump target and puzzle data
 }
+
+
 
 #ifdef WEB_SERVER_TEST
-void UWarpSystem::StartJumpCalculation(FVector startPos, FRotator direction, float power) { if (StartJumpCalculation_Validate(startPos, direction, power)) StartJumpCalculation_Implementation(startPos, direction, power); }
-void UWarpSystem::DeleteJump(int32 jumpID) { if (DeleteJump_Validate(jumpID)) DeleteJump_Implementation(jumpID); }
-void UWarpSystem::PrepareWarpJump(int32 jumpID) { if (PrepareWarpJump_Validate(jumpID)) PrepareWarpJump_Implementation(jumpID); }
-void UWarpSystem::CancelWarpJump() { CancelWarpJump_Implementation(); }
-void UWarpSystem::PerformWarpJump() { if (PerformWarpJump_Validate()) PerformWarpJump_Implementation(); }
+void UWarpSystem::CalculateJump(FVector targetPos) { CalculateJump_Implementation(targetPos); }
 #endif
 
-bool UWarpSystem::StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power)
+void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 {
-	if (power < 0 || power > 100)
-		return false;
+	if (jumpState != EJumpState::Idle)
+		return;
 
-	return true;
+	jumpStartPosition = crewManager->GetShipPawn()->GetActorLocation();
+
+	// TODO: calculate puzzle data, send it to client
 }
 
-#define NUM_WARP_JUMP_STEPS 50
 
-void UWarpSystem::StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power)
-{
-#ifndef WEB_SERVER_TEST
-	calculationStepPositions.Reset(NUM_WARP_JUMP_STEPS);
-#else
-	calculationStepPositions.clear();
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::CancelJump() { CancelJump_Implementation(); }
 #endif
-	SETADD(calculationStepPositions, startPos);
+
+void UWarpSystem::CancelJump_Implementation()
+{
+	if (jumpState != EJumpState::Idle)
+		return;
+
+	ResetData();
 
 	if (ISCLIENT())
 	{
-		CalculationStepsAdded(0);
+		SendJumpState();
+		SendJumpCharge();
 	}
+}
 
-	calculationStartPower = power;
-	calculationCurrentVelocity = direction.Vector() * power;
-	calculationStepsRemaining = NUM_WARP_JUMP_STEPS - 1;
 
-	jumpState = SystemJumpState::JUMP_STATE_CALCULATING;
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::PerformWarpJump(TArray<uint8> solution) { PerformWarpJump_Implementation(solution); }
+#endif
+
+void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
+{
+	if (jumpState != EJumpState::Ready)
+		return;
+
+	actualJumpDestination = DetermineJumpDestination(solution);
+
+	// TODO: set jump end time
+
+	jumpState = EJumpState::Jumping;
+	if (ISCLIENT())
+		SendJumpState();
+
+	crewManager->GetShipPawn()->StartWarpJump(actualJumpDestination);
 }
 
 void UWarpSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	switch (jumpState) {
+	case EJumpState::Charging:
+		TickCharging(DeltaTime);
+		break;
+	case EJumpState::Jumping:
+		TickJumping(DeltaTime);
+		return; // Don't bother sending the ship location.
+	}
+
 	auto shipLocation = crewManager->GetShipPawn()->GetActorLocation();
 	if (FVector::DistSquared(lastSentLocation, shipLocation) > LOCATION_UPDATE_THRESHOLD_SQ)
 	{
 		SendShipLocation();
 		lastSentLocation = shipLocation;
 	}
-
-	switch (jumpState) {
-	case SystemJumpState::JUMP_STATE_CALCULATING:
-		TickCalculating(DeltaTime); break;
-	case SystemJumpState::JUMP_STATE_CHARGING:
-		TickCharging(DeltaTime); break;
-	case SystemJumpState::JUMP_STATE_JUMPING:
-		TickJumping(DeltaTime); break;
-	}
-}
-
-void UWarpSystem::TickCalculating(float DeltaTime)
-{
-	if (calculationStepsRemaining <= 0)
-		return;
-
-	float jumpStepTimeInterval = 0.2f;
-	FVector nextPoint = CalculateNextPosition(LASTITEM(calculationStepPositions), calculationCurrentVelocity, jumpStepTimeInterval);
-
-	SETADD(calculationStepPositions, nextPoint);
-
-	if (ISCLIENT())
-	{// account for replication not affecting local client
-		CalculationStepsAdded(SIZENUM(calculationStepPositions) - 1);
-	}
-
-	if (!IsSafeJumpPosition(nextPoint))
-	{
-		// jump calculation has reached an unpassable point, and must be aborted
-		SendPathDeletion(nextJumpID, true);
-
-		CleanupAfterCalculation();
-	}
-	else if (--calculationStepsRemaining <= 0)
-	{
-		// have safely reached the end of the jump calculation
-		auto jump = MAKENEW(UWarpJump);
-		jump->JumpPower = calculationStartPower;
-		jump->PositionSteps = TArray<FVector>(calculationStepPositions);
-		
-		MAPADD(calculatedJumps, nextJumpID++, jump, int32, UWarpJump*);
-
-		if (ISCLIENT())
-		{// account for replication not affecting local client
-			SendPath(nextJumpID - 1, JumpPathStatus::Plotted, jump->JumpPower, jump->PositionSteps);
-		}
-
-		CleanupAfterCalculation();
-	}
 }
 
 void UWarpSystem::TickCharging(float DeltaTime)
 {
-	jumpCharge += JUMP_CHARGE_GENERATED_PER_TICK;
-	int requiredCharge = DetermineAndSendJumpCharge();
+	jumpCharge += JUMP_CHARGE_FULL_POWER_HEALTH_GENERATION_RATE * DeltaTime * GetPowerLevel() * GetHealthLevel() / (100.f * 100.f);
 
-	if (jumpCharge < requiredCharge)
+	if (jumpCharge >= jumpRequiredCharge)
 	{
-		return;
+		jumpState = EJumpState::Ready;
+
+		if (ISCLIENT())
+			SendJumpState();
+
+		jumpCharge = jumpRequiredCharge;
 	}
 
-	jumpState = JUMP_STATE_IDLE;
-	jumpCharge = requiredCharge;
-}
-
-int UWarpSystem::DetermineAndSendJumpCharge()
-{
-	int32 requiredCharge = (int32)calculatedJumps[activeJumpID]->JumpPower;
-
-	int32 chargeSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * (requiredCharge - jumpCharge) / JUMP_CHARGE_GENERATED_PER_TICK);
-
-	FString output = TEXT("warp_charge_jump ");
-	APPENDINT(output, activeJumpID);
-	output += TEXT(" ");
-	APPENDINT(output, chargeSecsRemaining);
-	output += TEXT(" ");
-
-	int32 progress = FMath::Min(100, 100 * jumpCharge / requiredCharge);
-	APPENDINT(output, progress);
-
-	SendSystem(output);
-
-	return requiredCharge;
+	if (ISCLIENT())
+		SendJumpCharge();
 }
 
 void UWarpSystem::TickJumping(float DeltaTime)
 {
-	jumpCharge -= JUMP_CHARGE_CONSUMPTION_PER_TICK;
-	if (jumpCharge > 0)
-	{
-		return;
-	}
+	// TODO: Wait until jump end time has been reached
 
-	jumpState = JUMP_STATE_IDLE;
-	jumpCharge = 0;
 
-	SendSystemFixed("warp_cancel_jump");
-	crewManager->GetShipPawn()->FinishWarpJump(calculatedJumps[activeJumpID]);
+	crewManager->GetShipPawn()->FinishWarpJump(actualJumpDestination);
 
-	// delete the jump that was just done
-	MAPREMOVE(calculatedJumps, activeJumpID);
+	ResetData();
+
 	if (ISCLIENT())
 	{
-		SendPathDeletion(activeJumpID, false);
-	}
-
-	activeJumpID = 0;
-}
-
-void UWarpSystem::CleanupAfterCalculation()
-{
-	jumpState = SystemJumpState::JUMP_STATE_IDLE;
-
-	calculationStepsRemaining = 0;
-	calculationStartPower = 0;
-	calculationCurrentVelocity = FVector::ZeroVector;
-
-#ifndef WEB_SERVER_TEST
-	calculationStepPositions.Reset(0);
-#else
-	calculationStepPositions.clear();
-#endif
-}
-
-FVector UWarpSystem::CalculateNextPosition(FVector position, FVector velocity, float timeStep)
-{
-	// TODO: RK4 gravity simulation. May require multiple smaller steps, I guess?
-	// https://en.wikipedia.org/wiki/Runge-Kutta_methods#Usage
-
-	return position + velocity * timeStep;
-}
-
-bool UWarpSystem::IsSafeJumpPosition(FVector position)
-{
-	// TODO: check this isn't inside a planet or star
-	return true;
-}
-
-void UWarpSystem::OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange)
-{
-	int32 prevSize = SIZENUM(beforeChange);
-	CalculationStepsAdded(prevSize);
-}
-
-void UWarpSystem::CalculationStepsAdded(int32 prevSize)
-{
-	if (prevSize == 0)
-	{
-		SendPath(nextJumpID, JumpPathStatus::Calculating, calculationStartPower, calculationStepPositions);
-		prevSize = 1;
-	}
-
-	int32 newSize = SIZENUM(calculationStepPositions);
-	for (auto i = prevSize; i < newSize; i++) {
-		AddCalculationStep(calculationStepPositions[i]);
+		SendJumpState();
+		SendJumpCharge();
 	}
 }
 
-void UWarpSystem::OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange)
+FVector UWarpSystem::DetermineJumpDestination(TArray<uint8> solution)
 {
-	// send deletion of any paths that have been removed
-	for (auto path : beforeChange)
-	{
-		int32 id = PAIRKEY(path);
+	FVector destination = jumpTargetPosition;
 
-		if (!MAPCONTAINS(calculatedJumps, id))
-			SendPathDeletion(id, false);
-	}
+	// TODO: add an offset based on how correct the solution is
 
-	// send any paths that have been newly added
-	for (auto pathInfo : calculatedJumps)
-	{
-		int32 id = PAIRKEY(pathInfo);
+	// add an offset equivalent to the ship's current offset from the calculated jump start position
+	destination += (crewManager->GetShipPawn()->GetActorLocation() - jumpStartPosition);
 
-		if (!MAPCONTAINS(beforeChange, id))
-		{
-			auto path = PAIRVALUE(pathInfo);
-			SendPath(id, JumpPathStatus::Plotted, path->JumpPower, path->PositionSteps);
-		}
-	}
-}
+	// TODO: add an offset based on system health level
 
-void UWarpSystem::AddCalculationStep(FVector newPoint)
-{
-	FString output = TEXT("warp_ext_path ");
-
-	APPENDINT(output, nextJumpID);
-	AddPointToOutput(output, newPoint);
-
-	SendSystem(output);
-}
-
-void UWarpSystem::SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps)
-{
-	FString output = TEXT("warp_add_path ");
-	
-	APPENDINT(output, pathID);
-	output += TEXT(" ");
-	APPENDINT(output, pathStatus);
-	output += TEXT(" ");
-	APPENDINT(output, jumpPower);
-
-	for (auto point : positionSteps)
-		AddPointToOutput(output, point);
-
-	SendSystem(output);
-}
-
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendPathDeletion(int32 pathID, bool displayInvalid) { SendPathDeletion_Implementation(pathID, displayInvalid); }
-#endif
-void UWarpSystem::SendPathDeletion_Implementation(int32 pathID, bool displayInvalid)
-{
-	FString output = TEXT("warp_rem_path ");
-
-	APPENDINT(output, pathID);
-	output += displayInvalid ? TEXT(" 1") : TEXT(" 0");
-
-	SendSystem(output);
+	return jumpTargetPosition;
 }
 
 #ifdef WEB_SERVER_TEST
@@ -424,95 +250,34 @@ void UWarpSystem::SendShipLocation_Implementation()
 	SendSystem(output);
 }
 
-void UWarpSystem::AddPointToOutput(FString &output, FVector point)
+void UWarpSystem::OnReplicated_JumpCharge(float beforeChange)
 {
-	output += TEXT(" ");
-	APPENDINT(output, point.X);
-	output += TEXT(" ");
-	APPENDINT(output, point.Y);
-	output += TEXT(" ");
-	APPENDINT(output, point.Z);
+	SendJumpCharge();
 }
 
-bool UWarpSystem::DeleteJump_Validate(int32 jumpID)
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendJumpCharge() { SendJumpCharge_Implementation(); }
+#endif
+void UWarpSystem::SendJumpCharge_Implementation()
 {
-	return MAPCONTAINS(calculatedJumps, jumpID);
+	uint8 progress = (uint8)(100 * jumpCharge / jumpRequiredCharge);
+
+	FString output = TEXT("warp_charge ");
+	APPENDINT(output, progress);
+	SendSystem(output);
 }
 
-void UWarpSystem::DeleteJump_Implementation(int32 jumpID)
+void UWarpSystem::OnReplicated_JumpState(EJumpState beforeChange)
 {
-	MAPREMOVE(calculatedJumps, jumpID);
-
-	if (ISCLIENT())
-	{
-		SendPathDeletion(jumpID, false);
-	}
+	SendJumpState();
 }
 
-bool UWarpSystem::PrepareWarpJump_Validate(int32 jumpID)
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendJumpState() { SendJumpState_Implementation(); }
+#endif
+void UWarpSystem::SendJumpState_Implementation()
 {
-	return MAPCONTAINS(calculatedJumps, jumpID);
-}
-
-void UWarpSystem::PrepareWarpJump_Implementation(int32 jumpID)
-{
-	activeJumpID = jumpID;
-	jumpState = SystemJumpState::JUMP_STATE_CHARGING;
-	PrimaryComponentTick.SetTickFunctionEnable(true);
-	
-	DetermineAndSendJumpCharge();
-}
-
-void UWarpSystem::CancelWarpJump_Implementation()
-{
-	activeJumpID = 0;
-	jumpCharge = 0;
-	PrimaryComponentTick.SetTickFunctionEnable(false);
-
-	SendSystemFixed("warp_cancel_jump");
-}
-
-bool UWarpSystem::PerformWarpJump_Validate()
-{
-	return activeJumpID != 0;
-}
-
-void UWarpSystem::PerformWarpJump_Implementation()
-{
-	auto jump = calculatedJumps[activeJumpID];
-	auto ship = crewManager->GetShipPawn();
-
-	// check there's sufficient charge for this jump
-	if (jumpCharge < jump->JumpPower)
-	{
-		SendSystemFixed("warp_jump_failed");
-		return;
-	}
-
-	// check jump is in range
-	auto distanceFromStartSq = FVector::DistSquared(jump->StartPosition(), ship->GetActorLocation());
-	if (distanceFromStartSq > JUMP_START_RANGE_SQ)
-	{
-		SendSystemFixed("warp_jump_failed");
-		return;
-	}
-
-	jumpState = SystemJumpState::JUMP_STATE_JUMPING;
-	PrimaryComponentTick.SetTickFunctionEnable(true);
-
-	ship->StartWarpJump(jump);
-
-	SendJumpInProgress();
-}
-
-void UWarpSystem::SendJumpInProgress()
-{
-	int32 jumpSecsRemaining = (int32)(PrimaryComponentTick.TickInterval * jumpCharge / JUMP_CHARGE_CONSUMPTION_PER_TICK);
-
-	FString output = TEXT("warp_jump ");
-	APPENDINT(output, activeJumpID);
-	output += TEXT(" ");
-	APPENDINT(output, jumpSecsRemaining);
-
+	FString output = TEXT("warp_state ");
+	APPENDINT(output, (uint8)jumpState);
 	SendSystem(output);
 }

@@ -15,46 +15,29 @@ class MAKEITSO_API UWarpSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
+	enum EJumpState : uint8
+	{
+		Idle = 0,
+		Calculating = 1,
+		Charging = 2,
+		Ready = 3,
+		Jumping = 5,
+	};
+
+	enum EOperator
+	{
+		Add = 1,
+		Subtract = 2,
+		Multiply = 3,
+		Divide = 4,
+	};
+
 	UWarpSystem();
 	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void StartJumpCalculation(FVector startPos, FRotator direction, float power);
-#ifdef WEB_SERVER_TEST
-	bool StartJumpCalculation_Validate(FVector startPos, FRotator direction, float power);
-	void StartJumpCalculation_Implementation(FVector startPos, FRotator direction, float power);
-#endif
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void DeleteJump(int32 jumpID);
-#ifdef WEB_SERVER_TEST
-	bool DeleteJump_Validate(int32 jumpID);
-	void DeleteJump_Implementation(int32 jumpID);
-#endif
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void PrepareWarpJump(int32 jumpID);
-#ifdef WEB_SERVER_TEST
-	bool PrepareWarpJump_Validate(int32 jumpID);
-	void PrepareWarpJump_Implementation(int32 jumpID);
-#endif
-
-	UFUNCTION(Server, Reliable, WithValidation)
-	void PerformWarpJump();
-#ifdef WEB_SERVER_TEST
-	bool PerformWarpJump_Validate();
-	void PerformWarpJump_Implementation();
-#endif
-
-	UFUNCTION(Server, Reliable)
-	void CancelWarpJump();
-#ifdef WEB_SERVER_TEST
-	void CancelWarpJump_Implementation();
-#endif
-
+	
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Warp; }
 
@@ -63,77 +46,83 @@ protected:
 #endif
 
 private:
-	void TickCalculating(float DeltaTime);
 	void TickCharging(float DeltaTime);
 	void TickJumping(float DeltaTime);
-	int DetermineAndSendJumpCharge();
+	FVector DetermineJumpDestination(TArray<uint8> solution);
 
-	enum JumpPathStatus // matches enum in JumpPath.ts
-	{
-		Calculating = 1,
-		Invalid = 2,
-		Plotted = 3,
-		//InRange = 4
-	};
 
-	enum SystemJumpState {
-		JUMP_STATE_IDLE,
-		JUMP_STATE_CALCULATING,
-		JUMP_STATE_CHARGING,
-		JUMP_STATE_JUMPING,
-	};
-	SystemJumpState jumpState;
+	UPROPERTY(Replicated)
+	FVector jumpStartPosition;
 
-	void SendPath(int32 pathID, JumpPathStatus pathStatus, float jumpPower, TArray<FVector> positionSteps);
+	UPROPERTY(Replicated)
+	FVector jumpTargetPosition;
 
-	UFUNCTION(Client, Reliable)
-	void SendPathDeletion(int32 pathID, bool displayInvalid);
-#ifdef WEB_SERVER_TEST
-	void SendPathDeletion_Implementation(int32 pathID, bool displayInvalid);
-#endif
+	UPROPERTY()
+	FVector actualJumpDestination;
 
+	UPROPERTY(Replicated)
+	float jumpRequiredCharge;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_JumpState)
+	EJumpState jumpState;
+	void OnReplicated_JumpState(EJumpState beforeChange);
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_JumpCharge)
+	float jumpCharge;
+	void OnReplicated_JumpCharge(float beforeChange);
+
+	UPROPERTY(Replicated)
+	uint8 puzzleWidth;
+
+	UPROPERTY(Replicated)
+	TArray<uint8> puzzleCellGroups;
+
+	UPROPERTY(Replicated)
+	TArray<uint16> puzzleGroupTargets;
+
+	UPROPERTY(Replicated)
+	TArray<EOperator> puzzleGroupOperators;
+
+	UPROPERTY()
 	FVector lastSentLocation;
 
+
+	// Client functions, that can be called from the server
 	UFUNCTION(Client, Reliable)
 	void SendShipLocation();
 #ifdef WEB_SERVER_TEST
 	void SendShipLocation_Implementation();
 #endif
 
-	void AddCalculationStep(FVector newPoint);
-	void AddPointToOutput(FString &output, FVector point);
+	UFUNCTION(Client, Reliable)
+	void SendJumpState();
+#ifdef WEB_SERVER_TEST
+	void SendJumpState_Implementation();
+#endif
 
-	FVector CalculateNextPosition(FVector position, FVector velocity, float timeStep);
-	bool IsSafeJumpPosition(FVector position);
-	void CleanupAfterCalculation();
+	UFUNCTION(Client, Reliable)
+	void SendJumpCharge();
+#ifdef WEB_SERVER_TEST
+	void SendJumpCharge_Implementation();
+#endif
 
-	UPROPERTY(Replicated)
-	float calculationStartPower;
-	
-	FVector calculationCurrentVelocity;
-	int calculationStepsRemaining;
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculationStepPositions)
-	TArray<FVector> calculationStepPositions;
+	// Server functions, that can be called from the client
+	UFUNCTION(Server, Reliable)
+	void CalculateJump(FVector targetPos);
+#ifdef WEB_SERVER_TEST
+	void CalculateJump_Implementation(FVector targetPos);
+#endif
 
-	UFUNCTION()
-	void OnReplicated_CalculationStepPositions(TArray<FVector> beforeChange);
+	UFUNCTION(Server, Reliable)
+	void CancelJump();
+#ifdef WEB_SERVER_TEST
+	void CancelJump_Implementation();
+#endif
 
-	void CalculationStepsAdded(int32 prevNumSteps);
-
-	int32 nextJumpID;
-
-	UPROPERTY(Replicated)
-	int32 activeJumpID;
-
-	UPROPERTY(Replicated)
-	int32 jumpCharge;
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CalculatedJumps)
-	TMap<int32, UWarpJump*> calculatedJumps;
-
-	UFUNCTION()
-	void OnReplicated_CalculatedJumps(TMap<int32, UWarpJump*> beforeChange);
-
-	void SendJumpInProgress();
+	UFUNCTION(Server, Reliable)
+	void PerformWarpJump(TArray<uint8> solution);
+#ifdef WEB_SERVER_TEST
+	void PerformWarpJump_Implementation(TArray<uint8> solution);
+#endif
 };

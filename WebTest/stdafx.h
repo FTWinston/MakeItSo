@@ -155,10 +155,20 @@ struct FVector {
 		return result;
 	}
 
-	FVector operator+=(const FVector& Q) {
+	void operator+=(const FVector& Q) {
 		this->X += Q.X;
 		this->Y += Q.Y;
 		this->Z += Q.Z;
+	}
+
+	FVector operator-(const FVector& Q) const {
+		FVector result;
+
+		result.X = this->X - Q.X;
+		result.Y = this->Y - Q.Y;
+		result.Z = this->Z - Q.Z;
+
+		return result;
 	}
 
 	FVector operator*(const float Q) {

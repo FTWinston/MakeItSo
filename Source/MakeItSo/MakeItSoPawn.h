@@ -42,8 +42,8 @@ public:
 
 	TMap<UShipSystem::ESystem, UShipSystem*> systems;
 
-	void StartWarpJump(UWarpJump* jump);
-	void FinishWarpJump(UWarpJump* jump);
+	void StartWarpJump(FVector destination);
+	void FinishWarpJump(FVector destination);
 
 protected:
 	void Restart() override;
