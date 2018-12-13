@@ -179,8 +179,8 @@ void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 	SendPuzzleResults(groupResults);
 
 	uint8 numWrongGroups = 0;
-	for (auto i = SIZENUM(groupResults) - 1; i >= 0; i--)
-		if (groupResults[i] != puzzleGroupTargets[i])
+	for (auto groupResult : groupResults)
+		if (!groupResult)
 			numWrongGroups++;
 
 	actualJumpDestination = DetermineJumpDestination(numWrongGroups);
@@ -258,7 +258,7 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 	groupResults.assign(numGroups, 0);
 #endif
 
-	for (auto iGroup = 0; iGroup < numGroups; iGroup++)
+	for (uint32 iGroup = 0; iGroup < numGroups; iGroup++)
 	{
 		auto groupOperator = puzzleGroupOperators[iGroup];
 		auto groupTarget = puzzleGroupTargets[iGroup];
@@ -290,8 +290,7 @@ FVector UWarpSystem::DetermineJumpDestination(uint8 numWrongGroups)
 uint8 UWarpSystem::DeterminePuzzleSize()
 {
 	auto jumpDistSq = FVector::DistSquared(jumpStartPosition, jumpTargetPosition);
-	if (jumpDistSq < 10)
-		return 2;
+
 	if (jumpDistSq < 100)
 		return 3;
 	if (jumpDistSq < 1000)
@@ -314,19 +313,25 @@ void UWarpSystem::CalculatePuzzle()
 	CLEAR(puzzleGroupOperators);
 	CLEAR(puzzleGroupTargets);
 
-	auto numCells = puzzleWidth * puzzleWidth;
+	uint16 numCells = puzzleWidth * puzzleWidth;
+
+	TArray<uint8> solution;
 
 #ifndef WEB_SERVER_TEST
 	puzzleCellGroups.AddZeroed(numCells);
+	solution.AddZeroed(numCells);
 #else
 	puzzleCellGroups.assign(numCells, 0);
+	solution.assign(numCells, 0);
 #endif
+	
+	CreateLatinSquare(solution);
+	AllocateCellGroups();
 
-	// TODO: populate the following, for a grid of puzzleSize:
 
-	// puzzleCellGroups
-	// puzzleGroupOperators
-	// puzzleGroupTargets
+	// TODO: allocate puzzleGroupOperators
+
+	// TODO: use solution to allocate puzzleGroupTargets ... share logic with ResolveSolution
 
 
 	// this is just placeholder data
@@ -334,8 +339,143 @@ void UWarpSystem::CalculatePuzzle()
 	SETADD(puzzleGroupOperators, EOperator::Multiply);
 	SETADD(puzzleGroupTargets, 47);
 	SETADD(puzzleGroupTargets, 72);
-	for (auto i = 0; i < numCells; i++)
+	for (uint16 i = 0; i < numCells; i++)
 		puzzleCellGroups[i] = i % 2;
+}
+
+void UWarpSystem::CreateLatinSquare(TArray<uint8> cells)
+{
+#define CELLINDEX(x, y) (y * puzzleWidth + x)
+
+	// Apply numbers from 0 to puzzleWidth-1 in a standard pattern
+	for (uint8 x = 0; x < puzzleWidth; x++)
+		for (uint8 y = 0; y < puzzleWidth; y++)
+		{
+			uint8 val = x + y;
+			if (val >= puzzleWidth)
+				val -= puzzleWidth;
+
+			cells[CELLINDEX(x, y)] = val;
+		}
+	
+	// shuffle rows
+	for (uint8 y = 0; y < puzzleWidth; y++)
+	{
+		auto newY = FMath::RandRange(0, puzzleWidth - 1);
+
+		uint8 tmp;
+
+		for (uint8 x = 0; x < puzzleWidth; x++)
+		{
+			auto index1 = CELLINDEX(x, y);
+			auto index2 = CELLINDEX(x, newY);
+
+			tmp = cells[index1];
+			cells[index1] = cells[index2];
+			cells[index2] = tmp;
+		}
+	}
+
+	// shuffle columns
+	for (uint8 x = 0; x < puzzleWidth; x++)
+	{
+		auto newX = FMath::RandRange(0, puzzleWidth - 1);
+
+		uint8 tmp;
+
+		for (uint8 y = 0; y < puzzleWidth; y++)
+		{
+			auto index1 = CELLINDEX(x, y);
+			auto index2 = CELLINDEX(newX, y);
+
+			tmp = cells[index1];
+			cells[index1] = cells[index2];
+			cells[index2] = tmp;
+		}
+	}
+}
+
+void UWarpSystem::AllocateCellGroups()
+{
+	TArray<TSet<uint8>> groupCells;
+	TSet<uint8> allocatedCells;
+	bool allowSize1 = true;
+
+	for (uint8 iCell = puzzleWidth * puzzleWidth - 1; iCell >=0; iCell--)
+	{
+		if (SETCONTAINS(allocatedCells, iCell))
+			continue;
+		
+		auto targetGroupSize = FMath::RandRange(allowSize1 ? 1 : 2, 4);
+
+		if (targetGroupSize == 1)
+			allowSize1 = false; // only allow a single size 1 group ... though we might end up with an extra one for the last cell anyway
+
+		TSet<uint8> group;
+		SETADD(group, iCell);
+		SETADD(allocatedCells, iCell);
+
+		auto groupSize = 1;
+		TSet<uint8> unoccupiedNeighbours;
+
+		AddUnallocatedNeighbouringCellIndices(iCell, unoccupiedNeighbours, allocatedCells);
+
+		while (groupSize < targetGroupSize)
+		{
+			auto numNeighbours = SIZENUM(unoccupiedNeighbours);
+			if (numNeighbours == 0)
+				break;
+
+#ifdef WEB_SERVER_TEST
+			auto neighbourArray = unoccupiedNeighbours;
+#else
+			auto neighbourArray = unoccupiedNeighbours.Array();
+#endif
+
+			uint8 expandToCell = neighbourArray[FMath::RandRange(0, numNeighbours - 1)];
+			SETREMOVEVAL(unoccupiedNeighbours, expandToCell);
+			SETADD(allocatedCells, expandToCell);
+			SETADD(group, expandToCell);
+			groupSize++;
+
+			AddUnallocatedNeighbouringCellIndices(expandToCell, unoccupiedNeighbours, allocatedCells);
+		}
+
+		SETADD(groupCells, group);
+	}
+}
+
+void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TSet<uint8> output, TSet<uint8> allocatedCells)
+{
+	if (cellIndex >= puzzleWidth)
+	{
+		uint8 testIndex = cellIndex - puzzleWidth;
+		if (!SETCONTAINS(allocatedCells, testIndex))
+			SETADD(allocatedCells, testIndex);
+	}
+
+	if (cellIndex < puzzleWidth * puzzleWidth - puzzleWidth)
+	{
+		uint8 testIndex = cellIndex + puzzleWidth;
+		if (!SETCONTAINS(allocatedCells, testIndex))
+			SETADD(allocatedCells, testIndex);
+	}
+
+	uint8 cellX = cellIndex % puzzleWidth;
+
+	if (cellX > 0)
+	{
+		uint8 testIndex = cellIndex - 1;
+		if (!SETCONTAINS(allocatedCells, testIndex))
+			SETADD(allocatedCells, testIndex);
+	}
+
+	if (cellX < puzzleWidth - 1)
+	{
+		uint8 testIndex = cellIndex + 1;
+		if (!SETCONTAINS(allocatedCells, testIndex))
+			SETADD(allocatedCells, testIndex);
+	}
 }
 
 #ifdef WEB_SERVER_TEST

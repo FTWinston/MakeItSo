@@ -52,6 +52,9 @@ private:
 	FVector DetermineJumpDestination(uint8 numWrongGroups);
 	uint8 DeterminePuzzleSize();
 	void CalculatePuzzle();
+	void CreateLatinSquare(TArray<uint8> cells);
+	void AllocateCellGroups();
+	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TSet<uint8> output, TSet<uint8> allocatedCells);
 
 
 	UPROPERTY(Replicated)
