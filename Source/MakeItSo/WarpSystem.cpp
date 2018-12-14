@@ -5,6 +5,10 @@
 #else
 #include "stdafx.h"
 #include "WarpSystem.h"
+
+#include <algorithm>    // std::shuffle
+#include <random>       // std::default_random_engine
+#include <chrono>       // std::chrono::system_clock
 #endif
 
 #include "CrewManager.h"
@@ -326,21 +330,27 @@ void UWarpSystem::CalculatePuzzle()
 #endif
 	
 	CreateLatinSquare(solution);
-	AllocateCellGroups();
+	TArray<TArray<uint8>> cellGroups = AllocateCellGroups();
 
+	for (auto cellGroup : cellGroups)
+	{
+		auto groupSize = SIZENUM(cellGroup);
 
-	// TODO: allocate puzzleGroupOperators
+		auto groupOperator = groupSize == 1
+			? EOperator::Add
+			: (EOperator)FMath::RandRange(EOperator::MIN_OPERATOR, EOperator::MAX_OPERATOR);
 
-	// TODO: use solution to allocate puzzleGroupTargets ... share logic with ResolveSolution
+		int16 groupTarget;
+		if (!TryPickTarget( cellGroup, groupOperator, groupTarget))
+		{
+			groupOperator = (EOperator)FMath::RandRange(EOperator::MIN_OPERATOR, EOperator::MAX_SAFE_OPERATOR);
 
-
-	// this is just placeholder data
-	SETADD(puzzleGroupOperators, EOperator::Add);
-	SETADD(puzzleGroupOperators, EOperator::Multiply);
-	SETADD(puzzleGroupTargets, 47);
-	SETADD(puzzleGroupTargets, 72);
-	for (uint16 i = 0; i < numCells; i++)
-		puzzleCellGroups[i] = i % 2;
+			TryPickTarget(cellGroup, groupOperator, groupTarget);
+		}
+		
+		SETADD(puzzleGroupOperators, groupOperator);
+		SETADD(puzzleGroupTargets, groupTarget);
+	}
 }
 
 void UWarpSystem::CreateLatinSquare(TArray<uint8> cells)
@@ -395,11 +405,12 @@ void UWarpSystem::CreateLatinSquare(TArray<uint8> cells)
 	}
 }
 
-void UWarpSystem::AllocateCellGroups()
+TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 {
-	TArray<TSet<uint8>> groupCells;
+	TArray<TArray<uint8>> groupCells;
 	TSet<uint8> allocatedCells;
 	bool allowSize1 = true;
+	uint8 iNextGroup = 1;
 
 	for (uint8 iCell = puzzleWidth * puzzleWidth - 1; iCell >=0; iCell--)
 	{
@@ -411,12 +422,13 @@ void UWarpSystem::AllocateCellGroups()
 		if (targetGroupSize == 1)
 			allowSize1 = false; // only allow a single size 1 group ... though we might end up with an extra one for the last cell anyway
 
-		TSet<uint8> group;
+		TArray<uint8> group;
 		SETADD(group, iCell);
 		SETADD(allocatedCells, iCell);
+		puzzleCellGroups[iCell] = iNextGroup;
 
 		auto groupSize = 1;
-		TSet<uint8> unoccupiedNeighbours;
+		TArray<uint8> unoccupiedNeighbours;
 
 		AddUnallocatedNeighbouringCellIndices(iCell, unoccupiedNeighbours, allocatedCells);
 
@@ -426,26 +438,26 @@ void UWarpSystem::AllocateCellGroups()
 			if (numNeighbours == 0)
 				break;
 
-#ifdef WEB_SERVER_TEST
-			auto neighbourArray = unoccupiedNeighbours;
-#else
-			auto neighbourArray = unoccupiedNeighbours.Array();
-#endif
-
-			uint8 expandToCell = neighbourArray[FMath::RandRange(0, numNeighbours - 1)];
+			uint8 expandToCell = unoccupiedNeighbours[FMath::RandRange(0, numNeighbours - 1)];
 			SETREMOVEVAL(unoccupiedNeighbours, expandToCell);
 			SETADD(allocatedCells, expandToCell);
 			SETADD(group, expandToCell);
 			groupSize++;
 
+			puzzleCellGroups[expandToCell] = iNextGroup;
+
 			AddUnallocatedNeighbouringCellIndices(expandToCell, unoccupiedNeighbours, allocatedCells);
 		}
 
 		SETADD(groupCells, group);
+
+		iNextGroup++;
 	}
+
+	return groupCells;
 }
 
-void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TSet<uint8> output, TSet<uint8> allocatedCells)
+void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> output, TSet<uint8> allocatedCells)
 {
 	if (cellIndex >= puzzleWidth)
 	{
@@ -477,6 +489,69 @@ void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TSet<ui
 			SETADD(allocatedCells, testIndex);
 	}
 }
+
+bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, int16 &groupTarget)
+{
+	if (groupOperator > MAX_UNORDERED_OPERATOR)
+	{
+#ifdef WEB_SERVER_TEST
+		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		std::shuffle(group.begin(), group.end(), std::default_random_engine(seed));
+#else
+		group.Sort([this](const uint8 item1, const uint8 item2) {
+			return FMath::FRand() < 0.5f;
+		});
+#endif
+	}
+
+	switch (groupOperator)
+	{
+	case EOperator::Add:
+		groupTarget = 0;
+		for (auto value : group)
+			groupTarget += value;
+
+		break;
+
+	case EOperator::Subtract:
+		groupTarget = group[0];
+
+		for (auto i = SIZENUM(group) - 1; i >= 1; i++)
+			groupTarget -= group[i];
+
+		if (groupTarget < 0)
+			return false; // No functional need to prevent negatives, just keeps things easier for the user.
+						  // There might be another order that doesn't go negative, though.
+		break;
+
+	case EOperator::Multiply:
+		groupTarget = 1;
+		for (auto value : group)
+			groupTarget *= value;
+		break;
+
+	case EOperator::Divide:
+		groupTarget = group[0];
+
+		for (auto i = SIZENUM(group) - 1; i >= 1; i++)
+		{
+			auto value = group[i];
+
+			if (groupTarget % value != 0)
+				return false; // There might still be another order this works in.
+
+			groupTarget /= value;
+		}
+
+		break;
+
+	default:
+		return false;
+	}
+
+	return true;
+}
+
 
 #ifdef WEB_SERVER_TEST
 void UWarpSystem::SendShipLocation() { SendShipLocation_Implementation(); }

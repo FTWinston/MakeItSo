@@ -27,9 +27,14 @@ public:
 	enum EOperator
 	{
 		Add = 1,
-		Subtract = 2,
-		Multiply = 3,
+		Multiply = 2,
+		Subtract = 3,
 		Divide = 4,
+
+		MIN_OPERATOR = Add,
+		MAX_OPERATOR = Divide,
+		MAX_SAFE_OPERATOR = Multiply, // Safe as in, will work regardless of the numbers / order
+		MAX_UNORDERED_OPERATOR = Multiply,
 	};
 
 	UWarpSystem();
@@ -53,8 +58,9 @@ private:
 	uint8 DeterminePuzzleSize();
 	void CalculatePuzzle();
 	void CreateLatinSquare(TArray<uint8> cells);
-	void AllocateCellGroups();
-	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TSet<uint8> output, TSet<uint8> allocatedCells);
+	TArray<TArray<uint8>> AllocateCellGroups();
+	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> output, TSet<uint8> allocatedCells);
+	bool TryPickTarget(TArray<uint8> group, EOperator groupOperator, int16 &groupTarget);
 
 
 	UPROPERTY(Replicated)
