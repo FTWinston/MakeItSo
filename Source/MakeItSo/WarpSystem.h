@@ -18,10 +18,9 @@ public:
 	enum EJumpState : uint8
 	{
 		Idle = 0,
-		Calculating = 1,
-		Charging = 2,
-		Ready = 3,
-		Jumping = 5,
+		Charging = 1,
+		Ready = 2,
+		Jumping = 3,
 	};
 
 	enum EOperator
@@ -57,9 +56,9 @@ private:
 	FVector DetermineJumpDestination(uint8 numWrongGroups);
 	uint8 DeterminePuzzleSize();
 	void CalculatePuzzle();
-	void CreateLatinSquare(TArray<uint8> cells);
+	void CreateLatinSquare(TArray<uint8> &cells);
 	TArray<TArray<uint8>> AllocateCellGroups();
-	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> output, TSet<uint8> allocatedCells);
+	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells);
 	bool TryPickTarget(TArray<uint8> group, EOperator groupOperator, int16 &groupTarget);
 
 

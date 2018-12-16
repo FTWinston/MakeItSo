@@ -1,13 +1,12 @@
 export { SensorTarget } from './SensorTarget';
 export { /*RelatableTarget,*/ Relationship } from './RelatableTarget';
 //export { MoveableTarget } from './MoveableTarget';
-import { JumpPath, JumpPathStatus } from './JumpPath';
 import { Star } from './Star';
 import { Planet } from './Planet';
 import { Station } from './Station';
 import { Ship } from './Ship';
 import { MiscTarget } from './MiscTarget';
-export { JumpPath, JumpPathStatus, Star, Planet, Station, Ship, MiscTarget };
+export { Star, Planet, Station, Ship, MiscTarget };
 
 import { Vector3 } from '../';
 import { Relationship } from '~/functionality/sensors/RelatableTarget';

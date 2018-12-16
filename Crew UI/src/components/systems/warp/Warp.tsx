@@ -1,35 +1,23 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ApplicationState } from '~/store';
-import { actionCreators, WarpState, WarpScreenStatus } from './store';
+import { ApplicationState, exhaustiveActionCheck } from '~/store';
+import { actionCreators, WarpState, WarpJumpStatus } from './store';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { SensorView } from '~/components/general/SensorView';
-import { JumpPath, SensorTarget, TextLocalisation, Vector3 } from '~/functionality';
-import { JumpCountdown } from './JumpCountdown';
-import { JumpEditor } from './JumpEditor';
-import { PathList } from './PathList';
+import { SensorTarget, TextLocalisation, Vector3 } from '~/functionality';
 import { connection } from '~/index';
 import './Warp.scss';
+import { ConfirmButton, ButtonColor, PushButton } from '~/components/general';
+import { KenKenPuzzle } from './KenKenPuzzle';
 
 interface WarpProps extends WarpState {
     text: TextLocalisation;
     sensorTargets: SensorTarget[];
-    selectPath: (id: number | undefined) => void;
-    setScreenStatus: (status: WarpScreenStatus) => void;
+    setPuzzleValue: (cellIndex: number, value: number) => void;
 }
 
-interface WarpOptions {
-    autoRotate: boolean;
-}
-
-class Warp extends ShipSystemComponent<WarpProps, WarpOptions> implements React.Component<WarpProps> {
-    constructor(props: WarpProps) {
-        super(props);
-        
-        this.state = {
-            autoRotate: true,
-        };
-    }
+class Warp extends ShipSystemComponent<WarpProps, {}> implements React.Component<WarpProps> {
+    private sensorsView: SensorView | null = null;
 
     name() { return 'warp'; }
 
@@ -42,91 +30,95 @@ class Warp extends ShipSystemComponent<WarpProps, WarpOptions> implements React.
     }
 
     public render() {
-        return <div className="system warp">
-            {this.renderControlPanel()}
-            <SensorView className="warp__sensorMap" autoRotate={this.state.autoRotate} targets={[...this.props.sensorTargets, ...this.props.paths]} />
-        </div>;
-    }
-
-    private renderControlPanel() {
-        switch (this.props.status) {
-            case WarpScreenStatus.Viewing:
-                return <PathList
-                    text={this.props.text}
-                    paths={this.props.paths}
-                    selectedPath={this.props.activePath}
-                    pathSelected={p => this.pathSelected(p)}
-                    newSelected={() => this.showEdit()}
-                    deletePath={p => this.deletePath(p)}
-                    startJump={p => this.startJump(p)}
-                />;
-            case WarpScreenStatus.Charging:
-            case WarpScreenStatus.Jumping:
-                return <JumpCountdown
-                    text={this.props.text}
-                    path={this.props.activePath}
-                    endTime={this.props.jumpEndTime}
-                    completion={this.props.chargeCompletion}
-                    jumping={this.props.status === WarpScreenStatus.Jumping}
-                    cancel={() => this.cancelJump()}
-                    jump={() => this.performJump()}
-                />;
-            default:
-                return <JumpEditor
-                    text={this.props.text}
-                    editPath={this.props.activePath}
-                    startCalculating={(from, yaw, pitch, power) => this.calculatePath(from, yaw, pitch, power)}
-                    rejectPath={() => this.rejectPath()}
-                    close={() => this.closeEdit()}
-                    cancelCalculation={() => this.cancelCalculation()}
-                    status={this.props.status}
-                    getShipPos={() => this.props.shipPosition}
-                />;
+        if (this.props.status === WarpJumpStatus.Idle) {
+            return <div className="system warp warp--idle">
+                {this.renderDestinationControls()}
+                <SensorView
+                    ref={v => this.sensorsView = v}
+                    className="warp__sensorMap"
+                    targets={[...this.props.sensorTargets/*, this.props.jumpStartPosition, this.props.jumpEndPosition*/]}
+                />
+            </div>;
         }
+
+        const cellClicked = this.props.status === WarpJumpStatus.Jumping
+            ? undefined
+            : (cellIndex: number, value: number) => this.props.setPuzzleValue(cellIndex, value);
+
+        const puzzle = <KenKenPuzzle
+            className="warp__puzzle"
+            size={this.props.puzzleSize}
+            values={this.props.puzzleValues}
+            cellGroups={this.props.puzzleCellGroups}
+            groupTargets={this.props.puzzleGroupTargets}
+            groupOperators={this.props.puzzleGroupOperators}
+            groupValidity={this.props.puzzleGroupValidity}
+            cellClicked={cellClicked}
+        />
+
+        switch (this.props.status) {
+            case WarpJumpStatus.Charging:
+                return <div className="system warp warp--puzzle">
+                    {this.renderChargeProgress()}
+                    {puzzle}
+                </div>;
+                
+            case WarpJumpStatus.Ready:
+                return <div className="system warp warp--puzzle warp--ready">
+                    {this.renderJumpButton()}
+                    {puzzle}
+                </div>;
+            case WarpJumpStatus.Jumping:
+                return <div className="system warp warp--puzzle warp--jumping">
+                    {this.renderJumpResults()}
+                    {puzzle}
+                </div>;
+            default:
+                exhaustiveActionCheck(this.props.status);
+                break;
+        }
+
+        return <div />;
     }
 
-    private pathSelected(path: JumpPath) {
-        this.props.selectPath(path === this.props.activePath ? undefined : path.id);
+    private renderDestinationControls() {
+        return <div className="warp__toolbar">
+            <PushButton text={this.props.text.systems.warp.startJump} color={ButtonColor.Tertiary} clicked={() => this.plotJump(this.sensorsView!.state.center)} />
+            TODO: pan controls, current pos, current target pos
+        </div>
+    }
+    
+    private renderChargeProgress() {
+        return <div className="warp__toolbar">
+            <ConfirmButton text={this.props.text.common.cancel} color={ButtonColor.Secondary} clicked={() => this.cancelJump()} />
+            TODO: charge progress, start pos, target pos
+        </div>
+    }
+    
+    private renderJumpButton() {
+        return <div className="warp__toolbar">
+            <ConfirmButton text={this.props.text.systems.warp.jump} color={ButtonColor.Primary} clicked={() => this.performJump(this.props.puzzleValues)} />
+            <ConfirmButton text={this.props.text.common.cancel} color={ButtonColor.Secondary} clicked={() => this.cancelJump()} />
+            TODO: possibly disable jump button, start pos, target pos
+        </div>
+    }
+    
+    private renderJumpResults() {
+        return <div className="warp__toolbar">
+            TODO: success / mis-jump indicator
+        </div>
     }
 
-    private showEdit(path?: JumpPath) {
-        this.props.selectPath(path === undefined ? undefined : path.id);
-        this.props.setScreenStatus(WarpScreenStatus.Plotting);
-    }
-    private deletePath(path: JumpPath) {
-        connection.send(`warp_delete ${path.id}`);
-    }
-
-    private startJump(path: JumpPath) {
-        connection.send(`warp_prepare_jump ${path.id}`);
+    private performJump(puzzleValues: number[]) {
+        connection.send(`warp_jump ${puzzleValues.join(' ')}`);
     }
 
     private cancelJump() {
-        connection.send('warp_jump_cancel');
+        connection.send('warp_cancel');
     }
 
-    private performJump() {
-        connection.send('warp_jump');
-    }
-
-    private cancelCalculation() {
-        this.props.setScreenStatus(WarpScreenStatus.Plotting);
-        connection.send('warp_plot_cancel');
-    }
-
-    private closeEdit() {
-        this.props.selectPath(undefined);
-        this.props.setScreenStatus(WarpScreenStatus.Viewing);
-    }
-    
-    private rejectPath() {
-        connection.send('warp_plot_reject');
-        this.props.setScreenStatus(WarpScreenStatus.Plotting);
-    }
-
-    private calculatePath(from: Vector3, yaw: number, pitch: number, power: number) {
-        this.props.setScreenStatus(WarpScreenStatus.Calculating);
-        connection.send(`warp_plot ${from.x} ${from.y} ${from.z} ${yaw} ${pitch} ${power}`);
+    private plotJump(target: Vector3) {
+        connection.send(`warp_plot ${target.x} ${target.y} ${target.z}`);
     }
 }
 
@@ -136,8 +128,7 @@ const mapStateToProps: (state: ApplicationState) => WarpProps = (state) => {
         ...state.warp,
         sensorTargets: state.environment.targets,
         text: state.user.text,
-        selectPath: actionCreators.selectPath,
-        setScreenStatus: actionCreators.setScreenStatus,
+        setPuzzleValue: actionCreators.setPuzzleValue,
     }
 };
 

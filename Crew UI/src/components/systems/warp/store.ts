@@ -1,67 +1,52 @@
 import { Action, Reducer } from 'redux';
-import { JumpPath, JumpPathStatus } from '~/functionality/sensors';
 import { Vector3 } from '~/functionality/math/Vector3';
 import { exhaustiveActionCheck } from '~/store';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
-export const enum WarpScreenStatus {
-    Viewing,
-    Plotting,
-    Calculating,
-    CalculationFailed,
-    CalculationConfirm,
+export const enum WarpJumpStatus {
+    Idle = 0,
     Charging,
+    Ready,
     Jumping,
 }
 
+export const enum Operator {
+    Add = 1,
+    Multiply,
+    Subtract,
+    Divide,
+}
+
 export interface WarpState {
-    paths: JumpPath[];
-    status: WarpScreenStatus;
-    activePath?: JumpPath;
+    status: WarpJumpStatus;
+    shipPosition: Vector3;
+
+    jumpStartPosition?: Vector3;
+    jumpTargetPosition?: Vector3;
     jumpEndTime?: Date;
     chargeCompletion: number;
+
+    puzzleSize: number;
+    puzzleValues: number[];
+    puzzleCellGroups: number[];
+    puzzleGroupTargets: number[];
+    puzzleGroupOperators: Operator[];
+    puzzleGroupValidity?: boolean[];
+
+// TODO: populate / use this fields
     jumpStartEntranceRange: number;
-    shipPosition: Vector3;
 }
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface ClearPathsAction {
-    type: 'CLEAR_PATHS';
-}
-
-interface AddPathAction {
-    type: 'ADD_PATH';
-    id: number;
-    status: JumpPathStatus;
-    points: Vector3[];
-    power: number;
-}
-
-interface ExtendPathAction {
-    type: 'EXTEND_PATH';
-    id: number;
-    points: Vector3[];
-}
-
-interface SetPathStatusAction {
-    type: 'SET_PATH_STATUS';
-    id: number;
-    status: JumpPathStatus;
-}
-
-interface RemovePathAction {
-    type: 'REMOVE_PATH';
-    id: number;
-}
-
-interface SetScreenStatusAction {
-    type: 'SET_WARP_STATUS';
-    status: WarpScreenStatus;
+interface SetJumpPositionsAction {
+    type: 'JUMP_POSITIONS';
+    startPos: Vector3;
+    targetPos: Vector3;
 }
 
 interface SetShipPositionAction {
@@ -69,90 +54,91 @@ interface SetShipPositionAction {
     pos: Vector3;
 }
 
+interface SetJumpStateAction {
+    type: 'SET_STATE';
+    state: WarpJumpStatus;
+}
+
+interface SetPuzzleAction {
+    type: 'PUZZLE';
+    puzzleSize: number;
+    cellGroups: number[];
+    groupTargets: number[];
+    groupOperators: Operator[];
+}
+
+interface SetPuzzleResults {
+    type: 'PUZZLE_RESULTS';
+    groupValidity: boolean[];
+}
+
 interface ChargeJumpAction {
     type: 'CHARGE_JUMP';
-    pathID: number;
     endTime: Date;
     completion: number;
 }
 
-interface PerformJumpAction {
-    type: 'DO_JUMP';
-    pathID: number;
+interface ChargeJumpAction {
+    type: 'CHARGE_JUMP';
     endTime: Date;
+    completion: number;
 }
 
-interface SelectPathAction {
-    type: 'SELECT_PATH';
-    pathID: number;
+interface SetPuzzleValueAction {
+    type: 'PUZZLE_VALUE';
+    index: number;
+    value: number;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = ClearPathsAction | AddPathAction | ExtendPathAction | SetPathStatusAction | RemovePathAction |
-                   SetScreenStatusAction | SetShipPositionAction | ChargeJumpAction | PerformJumpAction | SelectPathAction;
+type KnownAction = SetJumpPositionsAction | SetJumpStateAction | SetPuzzleAction | SetPuzzleResults
+                    | SetShipPositionAction | ChargeJumpAction | SetPuzzleValueAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    clearAll: () => <ClearPathsAction>{
-        type: 'CLEAR_PATHS',
+    setJumpPositions: (startX: number, startY: number, startZ: number, targetX: number, targetY: number, targetZ: number) => <SetJumpPositionsAction>{
+        type: 'JUMP_POSITIONS',
+        startPos: new Vector3(startX, startY, startZ),
+        targetPos: new Vector3(targetX, targetY, targetZ),
     },
-    addPath: (id: number, status: JumpPathStatus, points: Vector3[], power: number) => <AddPathAction>{
-        type: 'ADD_PATH',
-        id: id,
-        status: status,
-        points: points,
-        power: power,
+    setJumpState: (state: WarpJumpStatus) => <SetJumpStateAction>{
+        type: 'SET_STATE',
+        state: state,
     },
-    extendPath: (id: number, points: Vector3[]) => <ExtendPathAction>{
-        type: 'EXTEND_PATH',
-        id: id,
-        points: points,
+    setPuzzle: (puzzleSize: number, cellGroups: number[], groupTargets: number[], groupOperators: Operator[]) => <SetPuzzleAction>{
+        type: 'PUZZLE',
+        puzzleSize: puzzleSize,
+        puzzleValues: new Array<number>(puzzleSize * puzzleSize),
+        cellGroups: cellGroups,
+        groupTargets: groupTargets,
+        groupOperators: groupOperators,
     },
-    setPathStatus: (id: number, status: JumpPathStatus) => <SetPathStatusAction>{
-        type: 'SET_PATH_STATUS',
-        id: id,
-        status: status,
-    },
-    removePath: (id: number) => <RemovePathAction>{
-        type: 'REMOVE_PATH',
-        id: id,
-    },
-    setScreenStatus: (status: WarpScreenStatus) => <SetScreenStatusAction>{
-        type: 'SET_WARP_STATUS',
-        status: status,
+    setPuzzleResults: (groupValidity: boolean[]) => <SetPuzzleResults>{
+        type: 'PUZZLE_RESULTS',
+        groupValidity: groupValidity,
     },
     setShipPosition: (x: number, y: number, z: number) => <SetShipPositionAction> {
         type: 'SET_SHIP_POSITION',
         pos: new Vector3(x, y, z),
     },
-    chargeJump: (pathID: number, duration: number, completion: number) => {
+    chargeJump: (duration: number, completion: number) => {
         let endTime = new Date();
         endTime.setSeconds(endTime.getSeconds() + duration);
 
         return <ChargeJumpAction> {
             type: 'CHARGE_JUMP',
-            pathID: pathID,
             endTime: endTime,
             completion: completion,
         };
     },
-    performJump: (pathID: number, duration: number) => {
-        let endTime = new Date();
-        endTime.setSeconds(endTime.getSeconds() + duration);
-
-        return <PerformJumpAction> {
-            type: 'DO_JUMP',
-            pathID: pathID,
-            endTime: endTime,
-        };
-    },
-    selectPath: (pathID: number | undefined) => <SelectPathAction>{
-        type: 'SELECT_PATH',
-        pathID: pathID,
+    setPuzzleValue: (cellIndex: number, value: number) => <SetPuzzleValueAction> {
+        type: 'PUZZLE_VALUE',
+        index: cellIndex,
+        value: value,
     }
 };
 
@@ -160,173 +146,81 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: WarpState = {
-    paths: [],
-    status: WarpScreenStatus.Viewing,
+    status: WarpJumpStatus.Idle,
+    shipPosition: new Vector3(0, 0, 0),
     chargeCompletion: 0,
     jumpStartEntranceRange: 100,
-    shipPosition: new Vector3(0, 0, 0),
+
+    puzzleSize: 0,
+    puzzleValues: [],
+    puzzleCellGroups: [],
+    puzzleGroupTargets: [],
+    puzzleGroupOperators: [],
 };
 
 export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action) => {
     const action = rawAction as KnownAction;
     switch (action.type) {
-        case 'CLEAR_PATHS': {
-            let retVal = {
-                ...state,
-                paths: [],
-            };
-
-            delete retVal.jumpEndTime;
-            delete retVal.activePath;
-            return retVal;
-        }
-        case 'ADD_PATH': {
-            // determine if path is in range of ship or not
-            let pathStatus = action.status;
-            if (pathStatus === JumpPathStatus.Plotted && isInJumpRange(state, action.points[0])) {
-                pathStatus = JumpPathStatus.InRange;
-            }
-
-            let pathIsNew = true;
-            let addingPath = new JumpPath(action.id, action.power, pathStatus, action.points);
-
-            // if path ID already exists, overwrite. Otherwise, add.
-            let paths = state.paths.map((path, index) => {
-                if (path.id === action.id) {
-                    pathIsNew = false;
-                    return addingPath;
-                }
-                return path;
-            });
-
-            if (pathIsNew) {
-                paths.push(addingPath);
-            }
-
-            // when path is sent again when it finishes calculating, switch screen status
-            let status = state.status === WarpScreenStatus.Calculating && action.status !== JumpPathStatus.Calculating
-                ? WarpScreenStatus.CalculationConfirm
-                : state.status;
-
+        case 'JUMP_POSITIONS': {
             return {
                 ...state,
-                paths: paths,
-                status: status,
-            };
-        }
-        case 'EXTEND_PATH': {
-            let paths = state.paths.map((path, index) => {
-                if (path.id === action.id) {
-                    return new JumpPath(path.id, path.power, path.status, [...path.points, ...action.points]);
-                }
-                return path;
-            });
-            
-            return {
-                ...state,
-                paths: paths,
-            };
-        }
-        case 'SET_PATH_STATUS': {
-            let paths = state.paths.map((path, index) => {
-                if (path.id === action.id) {
-                    return Object.assign({}, path, {
-                        status: action.status,
-                    });
-                }
-                return path;
-            });
-
-            // if we just calculated this path, it was a failure
-            let status = state.status === WarpScreenStatus.Calculating && action.status !== JumpPathStatus.Calculating
-                ? WarpScreenStatus.CalculationFailed
-                : state.status;
-
-            return {
-                ...state,
-                paths: paths,
-                status: status,
-            };
-        }
-        case 'REMOVE_PATH': {
-            let paths = state.paths.filter(path => path.id !== action.id);
-
-            let retVal = {
-                ...state,
-                paths: paths,
-            };
-
-            if (retVal.activePath !== undefined && retVal.activePath.id === action.id) {
-                delete retVal.activePath;
+                jumpStartPosition: action.startPos,
+                jumpTargetPosition: action.targetPos,
             }
-
-            return retVal;
         }
-        case 'SET_WARP_STATUS': {
-            let retVal = {
+        case 'SET_SHIP_POSITION': {
+            return {
                 ...state,
-                status: action.status,
+                shipPosition: action.pos,
+            }
+        }
+        case 'SET_STATE': {
+            const retVal = {
+                ...state,
+                status: action.state,
             };
 
-            delete retVal.jumpEndTime;
-            delete retVal.activePath;
+            if (action.state === WarpJumpStatus.Idle) {
+                retVal.puzzleSize = 0;
+                retVal.puzzleValues = [];
+                retVal.puzzleCellGroups = [];
+                retVal.puzzleGroupTargets = [];
+                retVal.puzzleGroupOperators = [];
+                delete retVal.jumpStartPosition;
+                delete retVal.jumpTargetPosition;
+                delete retVal.jumpEndTime;
+                delete retVal.puzzleGroupValidity;
+            }
             return retVal;
+        }
+        case 'PUZZLE': {
+            return {
+                ...state,
+                puzzleSize: action.puzzleSize,
+                puzzleCellGroups: action.cellGroups,
+                puzzleGroupTargets: action.groupTargets,
+                puzzleGroupOperators: action.groupOperators,
+            }
+        }
+        case 'PUZZLE_RESULTS': {
+            return {
+                ...state,
+                puzzleGroupValidity: action.groupValidity,
+            }
         }
         case 'CHARGE_JUMP': {
-            const path = state.paths.find(p => p.id === action.pathID);
-
             return {
                 ...state,
-                status: WarpScreenStatus.Charging,
-                activePath: path,
                 jumpEndTime: action.endTime,
                 chargeCompletion: action.completion,
             };
         }
-        case 'DO_JUMP': {
-            const path = state.paths.find(p => p.id === action.pathID);
-
-            return {
-                ...state,
-                status: WarpScreenStatus.Jumping,
-                activePath: path,
-                jumpEndTime: action.endTime,
-                chargeCompletion: 100,
-            };
-        }
-        case 'SELECT_PATH': {
-            let path: JumpPath | undefined;
-            if (action.pathID !== undefined) {
-                path = state.paths.find(p => p.id === action.pathID);
-            }
-
-            if (state.activePath !== undefined) {
-                state.activePath.highlighted = false;
-            }
-            if (path !== undefined) {
-                path.highlighted = true;
-            }
-
-            return {
-                ...state,
-                activePath: path,
-            };
-        }
-        case 'SET_SHIP_POSITION': {
-            // update stored paths, indicating if they're in range or not
-            let paths = state.paths.map((path, index) => updatePathStatus(path, state));
-
-            let activePath = state.activePath;
-            if (activePath !== undefined) { 
-                const prev = activePath;
-                activePath = paths.find(p => p.id === prev.id)!;
-            }
+        case 'PUZZLE_VALUE': {
+            const values = state.puzzleValues.slice();
+            values[action.index] = action.value;
             
             return {
                 ...state,
-                shipPosition: action.pos,
-                paths: paths,
-                activePath: activePath,
             }
         }
         default:
@@ -337,21 +231,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
     return state || unloadedState;
 };
 
-function isInJumpRange(state: WarpState, point: Vector3) {
+export function isInJumpRange(state: WarpState, point: Vector3) {
     let distSq = Vector3.distanceSq(state.shipPosition, point);
     return distSq < state.jumpStartEntranceRange * state.jumpStartEntranceRange;
-}
-
-function updatePathStatus(path: JumpPath, state: WarpState) {
-    if (path.status !== JumpPathStatus.InRange && path.status !== JumpPathStatus.Plotted) {
-        return path;
-    }
-
-    let status = isInJumpRange(state, path.points[0])
-        ? JumpPathStatus.InRange : JumpPathStatus.Plotted;
-    if (path.status === status) {
-        return path;
-    }
-
-    return new JumpPath(path.id, path.power, status, path.points);
 }

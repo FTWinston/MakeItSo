@@ -119,6 +119,7 @@ void UWarpSystem::SendAllData_Implementation()
 		if (jumpState != EJumpState::Jumping)
 		{
 			// TODO: send all puzzle data ... puzzleSize, puzzleCellGroups, puzzleGroupOperators, puzzleGroupTargets
+			SendSystemFixed("warp_puzzle");
 		}
 	}
 }
@@ -144,6 +145,13 @@ void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 	CalculatePuzzle();
 
 	// TODO: send all puzzle data ... puzzleSize, puzzleCellGroups, puzzleGroupOperators, puzzleGroupTargets
+	SendSystemFixed("warp_puzzle");
+
+
+	jumpState = EJumpState::Charging;
+
+	if (ISCLIENT())
+		SendJumpState();
 }
 
 
@@ -341,7 +349,7 @@ void UWarpSystem::CalculatePuzzle()
 			: (EOperator)FMath::RandRange(EOperator::MIN_OPERATOR, EOperator::MAX_OPERATOR);
 
 		int16 groupTarget;
-		if (!TryPickTarget( cellGroup, groupOperator, groupTarget))
+		if (!TryPickTarget(cellGroup, groupOperator, groupTarget))
 		{
 			groupOperator = (EOperator)FMath::RandRange(EOperator::MIN_OPERATOR, EOperator::MAX_SAFE_OPERATOR);
 
@@ -353,7 +361,7 @@ void UWarpSystem::CalculatePuzzle()
 	}
 }
 
-void UWarpSystem::CreateLatinSquare(TArray<uint8> cells)
+void UWarpSystem::CreateLatinSquare(TArray<uint8> &cells)
 {
 #define CELLINDEX(x, y) (y * puzzleWidth + x)
 
@@ -410,9 +418,10 @@ TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 	TArray<TArray<uint8>> groupCells;
 	TSet<uint8> allocatedCells;
 	bool allowSize1 = true;
-	uint8 iNextGroup = 1;
+	uint8 iNextGroup = 0;
 
-	for (uint8 iCell = puzzleWidth * puzzleWidth - 1; iCell >=0; iCell--)
+	uint8 numCells = puzzleWidth * puzzleWidth;
+	for (uint8 iCell = 0; iCell < numCells; iCell++)
 	{
 		if (SETCONTAINS(allocatedCells, iCell))
 			continue;
@@ -457,20 +466,20 @@ TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 	return groupCells;
 }
 
-void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> output, TSet<uint8> allocatedCells)
+void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells)
 {
 	if (cellIndex >= puzzleWidth)
 	{
 		uint8 testIndex = cellIndex - puzzleWidth;
 		if (!SETCONTAINS(allocatedCells, testIndex))
-			SETADD(allocatedCells, testIndex);
+			SETADD(output, testIndex);
 	}
 
 	if (cellIndex < puzzleWidth * puzzleWidth - puzzleWidth)
 	{
 		uint8 testIndex = cellIndex + puzzleWidth;
 		if (!SETCONTAINS(allocatedCells, testIndex))
-			SETADD(allocatedCells, testIndex);
+			SETADD(output, testIndex);
 	}
 
 	uint8 cellX = cellIndex % puzzleWidth;
@@ -479,14 +488,14 @@ void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<
 	{
 		uint8 testIndex = cellIndex - 1;
 		if (!SETCONTAINS(allocatedCells, testIndex))
-			SETADD(allocatedCells, testIndex);
+			SETADD(output, testIndex);
 	}
 
 	if (cellX < puzzleWidth - 1)
 	{
 		uint8 testIndex = cellIndex + 1;
 		if (!SETCONTAINS(allocatedCells, testIndex))
-			SETADD(allocatedCells, testIndex);
+			SETADD(output, testIndex);
 	}
 }
 
@@ -495,7 +504,7 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, in
 	if (groupOperator > MAX_UNORDERED_OPERATOR)
 	{
 #ifdef WEB_SERVER_TEST
-		unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+		unsigned int seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count();
 		std::shuffle(group.begin(), group.end(), std::default_random_engine(seed));
 #else
 		group.Sort([this](const uint8 item1, const uint8 item2) {
@@ -516,7 +525,7 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, in
 	case EOperator::Subtract:
 		groupTarget = group[0];
 
-		for (auto i = SIZENUM(group) - 1; i >= 1; i++)
+		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
 			groupTarget -= group[i];
 
 		if (groupTarget < 0)
@@ -533,7 +542,7 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, in
 	case EOperator::Divide:
 		groupTarget = group[0];
 
-		for (auto i = SIZENUM(group) - 1; i >= 1; i++)
+		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
 		{
 			auto value = group[i];
 
@@ -599,7 +608,7 @@ void UWarpSystem::SendJumpPositions_Implementation(FVector start, FVector target
 	APPENDINT(output, start.Y);
 	output += TEXT(" ");
 	APPENDINT(output, start.Z);
-
+	output += TEXT(" ");
 	APPENDINT(output, target.X);
 	output += TEXT(" ");
 	APPENDINT(output, target.Y);

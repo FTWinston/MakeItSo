@@ -1,0 +1,61 @@
+@import '../../general/mixins';
+
+.kenkenCell {
+    border: dashed 1px black;
+    position: relative;
+    font-size: 1.5em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.kenkenCell--invalid {
+    background-color: #fcc;
+    color: $colorBadDark;
+}
+
+.kenkenCell__target {
+    position: absolute;
+    top: 0.25em;
+    left: 0.25em;
+    font-size: 0.5em;
+}
+
+
+// group colors are temporary til borders can be got working
+
+.kenkenCell--group1 {
+    background-color: #ffc;
+}
+
+.kenkenCell--group2 {
+    background-color: #fcf;
+}
+
+.kenkenCell--group3 {
+    background-color: #cff;
+}
+
+.kenkenCell--group4 {
+    background-color: #ccf;
+}
+
+.kenkenCell--group5 {
+    background-color: #cfc;
+}
+
+.kenkenCell--group6 {
+    background-color: #fcc;
+}
+
+.kenkenCell--group7 {
+    background-color: #ccc;
+}
+
+.kenkenCell--group8 {
+    background-color: #fca;
+}
+
+.kenkenCell--group9 {
+    background-color: #acf;
+}

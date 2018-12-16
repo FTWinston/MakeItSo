@@ -5,5 +5,5 @@ export { Hotkeys, Hotkey } from './Hotkeys';
 export { InputMode } from './InputMode';
 export { Localisation, Localisations, TextLocalisation } from './Localisation';
 export { Matrix, Vector2, Vector3 } from './math';
-export { JumpPath, SensorTarget, Relationship, parseSensorTarget } from './sensors';
+export { SensorTarget, Relationship, parseSensorTarget } from './sensors';
 export { ShipSystem, allSystems, getSystemName } from './ShipSystem';
