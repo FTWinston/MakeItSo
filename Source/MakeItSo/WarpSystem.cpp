@@ -35,7 +35,7 @@ UWarpSystem::UWarpSystem()
 	jumpTargetPosition = FVector::ZeroVector;
 	actualJumpDestination = FVector::ZeroVector;
 
-	puzzleWidth = 0;
+	puzzle.width = 0;
 }
 
 void UWarpSystem::ResetData()
@@ -44,15 +44,15 @@ void UWarpSystem::ResetData()
 	jumpCharge = 0;
 	jumpRequiredCharge = 0;
 
-	CLEAR(puzzleCellGroups);
-	CLEAR(puzzleGroupTargets);
-	CLEAR(puzzleGroupOperators);
+	CLEAR(puzzle.cellGroups);
+	CLEAR(puzzle.groupTargets);
+	CLEAR(puzzle.groupOperators);
 
 	jumpStartPosition = FVector::ZeroVector;
 	jumpTargetPosition = FVector::ZeroVector;
 	actualJumpDestination = FVector::ZeroVector;
 
-	puzzleWidth = 0;
+	puzzle.width = 0;
 }
 
 void UWarpSystem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const
@@ -118,8 +118,7 @@ void UWarpSystem::SendAllData_Implementation()
 
 		if (jumpState != EJumpState::Jumping)
 		{
-			// TODO: send all puzzle data ... puzzleSize, puzzleCellGroups, puzzleGroupOperators, puzzleGroupTargets
-			SendSystemFixed("warp_puzzle");
+			SendPuzzleData();
 		}
 	}
 }
@@ -139,14 +138,11 @@ void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 	jumpTargetPosition = targetPos;
 
 	SendJumpPositions(jumpStartPosition, jumpTargetPosition);
-	
-	puzzleWidth = DeterminePuzzleSize();
 
 	CalculatePuzzle();
 
-	// TODO: send all puzzle data ... puzzleSize, puzzleCellGroups, puzzleGroupOperators, puzzleGroupTargets
-	SendSystemFixed("warp_puzzle");
-
+	if (ISCLIENT())
+		SendPuzzleData();
 
 	jumpState = EJumpState::Charging;
 
@@ -183,7 +179,7 @@ void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 	if (jumpState != EJumpState::Ready)
 		return;
 
-	if (SIZENUM(solution) != puzzleWidth * puzzleWidth)
+	if (SIZENUM(solution) != puzzle.width * puzzle.width)
 		return;
 
 	auto groupResults = ResolveSolution(solution);
@@ -261,7 +257,7 @@ void UWarpSystem::TickJumping(float DeltaTime)
 
 TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 {
-	auto numGroups = SIZENUM(puzzleCellGroups);
+	auto numGroups = SIZENUM(puzzle.cellGroups);
 	TArray<bool> groupResults;
 
 #ifndef WEB_SERVER_TEST
@@ -272,14 +268,14 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 
 	for (uint32 iGroup = 0; iGroup < numGroups; iGroup++)
 	{
-		auto groupOperator = puzzleGroupOperators[iGroup];
-		auto groupTarget = puzzleGroupTargets[iGroup];
+		auto groupOperator = puzzle.groupOperators[iGroup];
+		auto groupTarget = puzzle.groupTargets[iGroup];
 
 		int16 groupTotal = 0;
 		
 		// TODO: apply operator to numbers, see if they reach the target
 
-		groupResults[iGroup] = groupTotal == puzzleGroupTargets[iGroup];
+		groupResults[iGroup] = groupTotal == puzzle.groupTargets[iGroup];
 	}
 
 	return groupResults;
@@ -321,11 +317,13 @@ uint8 UWarpSystem::DeterminePuzzleSize()
 
 void UWarpSystem::CalculatePuzzle()
 {
-	CLEAR(puzzleCellGroups);
-	CLEAR(puzzleGroupOperators);
-	CLEAR(puzzleGroupTargets);
+	puzzle.width = DeterminePuzzleSize();
 
-	uint16 numCells = puzzleWidth * puzzleWidth;
+	CLEAR(puzzle.cellGroups);
+	CLEAR(puzzle.groupOperators);
+	CLEAR(puzzle.groupTargets);
+
+	uint16 numCells = puzzle.width * puzzle.width;
 
 	TArray<uint8> solution;
 
@@ -333,7 +331,7 @@ void UWarpSystem::CalculatePuzzle()
 	puzzleCellGroups.AddZeroed(numCells);
 	solution.AddZeroed(numCells);
 #else
-	puzzleCellGroups.assign(numCells, 0);
+	puzzle.cellGroups.assign(numCells, 0);
 	solution.assign(numCells, 0);
 #endif
 	
@@ -345,45 +343,45 @@ void UWarpSystem::CalculatePuzzle()
 		auto groupSize = SIZENUM(cellGroup);
 
 		auto groupOperator = groupSize == 1
-			? EOperator::Add
-			: (EOperator)FMath::RandRange(EOperator::MIN_OPERATOR, EOperator::MAX_OPERATOR);
+			? FKenKenData::EOperator::Add
+			: (FKenKenData::EOperator)FMath::RandRange(FKenKenData::MIN_OPERATOR, FKenKenData::MAX_OPERATOR);
 
 		int16 groupTarget;
 		if (!TryPickTarget(cellGroup, groupOperator, groupTarget))
 		{
-			groupOperator = (EOperator)FMath::RandRange(EOperator::MIN_OPERATOR, EOperator::MAX_SAFE_OPERATOR);
+			groupOperator = (FKenKenData::EOperator)FMath::RandRange(FKenKenData::MIN_OPERATOR, FKenKenData::MAX_SAFE_OPERATOR);
 
 			TryPickTarget(cellGroup, groupOperator, groupTarget);
 		}
 		
-		SETADD(puzzleGroupOperators, groupOperator);
-		SETADD(puzzleGroupTargets, groupTarget);
+		SETADD(puzzle.groupOperators, groupOperator);
+		SETADD(puzzle.groupTargets, groupTarget);
 	}
 }
 
 void UWarpSystem::CreateLatinSquare(TArray<uint8> &cells)
 {
-#define CELLINDEX(x, y) (y * puzzleWidth + x)
+#define CELLINDEX(x, y) (y * puzzle.width + x)
 
 	// Apply numbers from 0 to puzzleWidth-1 in a standard pattern
-	for (uint8 x = 0; x < puzzleWidth; x++)
-		for (uint8 y = 0; y < puzzleWidth; y++)
+	for (uint8 x = 0; x < puzzle.width; x++)
+		for (uint8 y = 0; y < puzzle.width; y++)
 		{
 			uint8 val = x + y;
-			if (val >= puzzleWidth)
-				val -= puzzleWidth;
+			if (val >= puzzle.width)
+				val -= puzzle.width;
 
 			cells[CELLINDEX(x, y)] = val;
 		}
 	
 	// shuffle rows
-	for (uint8 y = 0; y < puzzleWidth; y++)
+	for (uint8 y = 0; y < puzzle.width; y++)
 	{
-		auto newY = FMath::RandRange(0, puzzleWidth - 1);
+		auto newY = FMath::RandRange(0, puzzle.width - 1);
 
 		uint8 tmp;
 
-		for (uint8 x = 0; x < puzzleWidth; x++)
+		for (uint8 x = 0; x < puzzle.width; x++)
 		{
 			auto index1 = CELLINDEX(x, y);
 			auto index2 = CELLINDEX(x, newY);
@@ -395,13 +393,13 @@ void UWarpSystem::CreateLatinSquare(TArray<uint8> &cells)
 	}
 
 	// shuffle columns
-	for (uint8 x = 0; x < puzzleWidth; x++)
+	for (uint8 x = 0; x < puzzle.width; x++)
 	{
-		auto newX = FMath::RandRange(0, puzzleWidth - 1);
+		auto newX = FMath::RandRange(0, puzzle.width - 1);
 
 		uint8 tmp;
 
-		for (uint8 y = 0; y < puzzleWidth; y++)
+		for (uint8 y = 0; y < puzzle.width; y++)
 		{
 			auto index1 = CELLINDEX(x, y);
 			auto index2 = CELLINDEX(newX, y);
@@ -420,7 +418,7 @@ TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 	bool allowSize1 = true;
 	uint8 iNextGroup = 0;
 
-	uint8 numCells = puzzleWidth * puzzleWidth;
+	uint8 numCells = puzzle.width * puzzle.width;
 	for (uint8 iCell = 0; iCell < numCells; iCell++)
 	{
 		if (SETCONTAINS(allocatedCells, iCell))
@@ -434,7 +432,7 @@ TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 		TArray<uint8> group;
 		SETADD(group, iCell);
 		SETADD(allocatedCells, iCell);
-		puzzleCellGroups[iCell] = iNextGroup;
+		puzzle.cellGroups[iCell] = iNextGroup;
 
 		auto groupSize = 1;
 		TArray<uint8> unoccupiedNeighbours;
@@ -453,7 +451,7 @@ TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 			SETADD(group, expandToCell);
 			groupSize++;
 
-			puzzleCellGroups[expandToCell] = iNextGroup;
+			puzzle.cellGroups[expandToCell] = iNextGroup;
 
 			AddUnallocatedNeighbouringCellIndices(expandToCell, unoccupiedNeighbours, allocatedCells);
 		}
@@ -468,21 +466,21 @@ TArray<TArray<uint8>> UWarpSystem::AllocateCellGroups()
 
 void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells)
 {
-	if (cellIndex >= puzzleWidth)
+	if (cellIndex >= puzzle.width)
 	{
-		uint8 testIndex = cellIndex - puzzleWidth;
+		uint8 testIndex = cellIndex - puzzle.width;
 		if (!SETCONTAINS(allocatedCells, testIndex))
 			SETADD(output, testIndex);
 	}
 
-	if (cellIndex < puzzleWidth * puzzleWidth - puzzleWidth)
+	if (cellIndex < puzzle.width * puzzle.width - puzzle.width)
 	{
-		uint8 testIndex = cellIndex + puzzleWidth;
+		uint8 testIndex = cellIndex + puzzle.width;
 		if (!SETCONTAINS(allocatedCells, testIndex))
 			SETADD(output, testIndex);
 	}
 
-	uint8 cellX = cellIndex % puzzleWidth;
+	uint8 cellX = cellIndex % puzzle.width;
 
 	if (cellX > 0)
 	{
@@ -491,7 +489,7 @@ void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<
 			SETADD(output, testIndex);
 	}
 
-	if (cellX < puzzleWidth - 1)
+	if (cellX < puzzle.width - 1)
 	{
 		uint8 testIndex = cellIndex + 1;
 		if (!SETCONTAINS(allocatedCells, testIndex))
@@ -499,9 +497,9 @@ void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<
 	}
 }
 
-bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, int16 &groupTarget)
+bool UWarpSystem::TryPickTarget(TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &groupTarget)
 {
-	if (groupOperator > MAX_UNORDERED_OPERATOR)
+	if (groupOperator > FKenKenData::MAX_UNORDERED_OPERATOR)
 	{
 #ifdef WEB_SERVER_TEST
 		unsigned int seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count();
@@ -515,14 +513,14 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, in
 
 	switch (groupOperator)
 	{
-	case EOperator::Add:
+	case FKenKenData::EOperator::Add:
 		groupTarget = 0;
 		for (auto value : group)
 			groupTarget += value;
 
 		break;
 
-	case EOperator::Subtract:
+	case FKenKenData::EOperator::Subtract:
 		groupTarget = group[0];
 
 		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
@@ -533,13 +531,13 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, EOperator groupOperator, in
 						  // There might be another order that doesn't go negative, though.
 		break;
 
-	case EOperator::Multiply:
+	case FKenKenData::EOperator::Multiply:
 		groupTarget = 1;
 		for (auto value : group)
 			groupTarget *= value;
 		break;
 
-	case EOperator::Divide:
+	case FKenKenData::EOperator::Divide:
 		groupTarget = group[0];
 
 		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
@@ -582,6 +580,11 @@ void UWarpSystem::SendShipLocation_Implementation()
 void UWarpSystem::OnReplicated_JumpCharge(float beforeChange)
 {
 	SendJumpCharge();
+}
+
+void UWarpSystem::OnReplicated_Puzzle(FKenKenData beforeChange)
+{
+	SendPuzzleData();
 }
 
 #ifdef WEB_SERVER_TEST
@@ -630,6 +633,60 @@ void UWarpSystem::SendJumpState_Implementation()
 {
 	FString output = TEXT("warp_state ");
 	APPENDINT(output, (uint8)jumpState);
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendPuzzleData() { SendPuzzleData_Implementation(); }
+#endif
+void UWarpSystem::SendPuzzleData_Implementation()
+{
+	FString output = TEXT("warp_puzzle ");
+
+	APPENDINT(output, puzzle.width);
+
+	output += TEXT("/");
+
+
+	bool first = true;
+
+	for (auto group : puzzle.cellGroups)
+	{
+		if (first)
+			first = false;
+		else
+			output += TEXT(" ");
+		APPENDINT(output, group);
+	}
+
+	output += TEXT("/");
+
+
+	first = true;
+
+	for (auto groupOperator : puzzle.groupOperators)
+	{
+		if (first)
+			first = false;
+		else
+			output += TEXT(" ");
+		APPENDINT(output, (uint8)groupOperator);
+	}
+
+	output += TEXT("/");
+
+
+	first = true;
+
+	for (auto groupTarget : puzzle.groupTargets)
+	{
+		if (first)
+			first = false;
+		else
+			output += TEXT(" ");
+		APPENDINT(output, groupTarget);
+	}
+
 	SendSystem(output);
 }
 

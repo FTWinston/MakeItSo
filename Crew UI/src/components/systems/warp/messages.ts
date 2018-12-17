@@ -1,5 +1,5 @@
 import { store } from '~/index';
-import { actionCreators, Operator, WarpJumpStatus } from './store';
+import { actionCreators, WarpJumpStatus } from './store';
 
 export const msgPrefix = 'warp_';
 
@@ -29,11 +29,12 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'warp_puzzle': {
-            // TODO: read data for this
-            const puzzleSize = 2;
-            const cellGroups = [1, 1, 1, 2];
-            const groupTargets = [4, 1];
-            const groupOperators = [Operator.Multiply, Operator.Add];
+            const dataParts = data.split('/');
+
+            const puzzleSize = parseInt(dataParts[0]);
+            const cellGroups = dataParts[1].split(' ').map(val => parseInt(val));
+            const groupOperators = dataParts[2].split(' ').map(val => parseInt(val));
+            const groupTargets = dataParts[3].split(' ').map(val => parseInt(val));
             
             store.dispatch(actionCreators.setPuzzle(puzzleSize, cellGroups, groupTargets, groupOperators));
             break;

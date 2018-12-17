@@ -7,7 +7,38 @@
 #include "ShipSystem.h"
 #include "WarpSystem.Generated.h"
 
-class UWarpJump;
+
+USTRUCT()
+struct FKenKenData
+{
+	enum EOperator
+	{
+		Add = 1,
+		Multiply = 2,
+		Subtract = 3,
+		Divide = 4,
+
+		MIN_OPERATOR = Add,
+		MAX_OPERATOR = Divide,
+		MAX_SAFE_OPERATOR = Multiply, // Safe as in, will work regardless of the numbers / order
+		MAX_UNORDERED_OPERATOR = Multiply,
+	};
+
+	GENERATED_BODY()
+
+		UPROPERTY(Replicated)
+		uint8 width;
+
+	UPROPERTY(Replicated)
+		TArray<uint8> cellGroups;
+
+	UPROPERTY(Replicated)
+		TArray<int16> groupTargets;
+
+	UPROPERTY(Replicated)
+		TArray<EOperator> groupOperators;
+};
+
 
 UCLASS( ClassGroup = (Systems) )
 class MAKEITSO_API UWarpSystem : public UShipSystem
@@ -21,19 +52,6 @@ public:
 		Charging = 1,
 		Ready = 2,
 		Jumping = 3,
-	};
-
-	enum EOperator
-	{
-		Add = 1,
-		Multiply = 2,
-		Subtract = 3,
-		Divide = 4,
-
-		MIN_OPERATOR = Add,
-		MAX_OPERATOR = Divide,
-		MAX_SAFE_OPERATOR = Multiply, // Safe as in, will work regardless of the numbers / order
-		MAX_UNORDERED_OPERATOR = Multiply,
 	};
 
 	UWarpSystem();
@@ -59,7 +77,7 @@ private:
 	void CreateLatinSquare(TArray<uint8> &cells);
 	TArray<TArray<uint8>> AllocateCellGroups();
 	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells);
-	bool TryPickTarget(TArray<uint8> group, EOperator groupOperator, int16 &groupTarget);
+	bool TryPickTarget(TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &groupTarget);
 
 
 	UPROPERTY(Replicated)
@@ -82,17 +100,9 @@ private:
 	float jumpCharge;
 	void OnReplicated_JumpCharge(float beforeChange);
 
-	UPROPERTY(Replicated)
-	uint8 puzzleWidth;
-
-	UPROPERTY(Replicated)
-	TArray<uint8> puzzleCellGroups;
-
-	UPROPERTY(Replicated)
-	TArray<int16> puzzleGroupTargets;
-
-	UPROPERTY(Replicated)
-	TArray<EOperator> puzzleGroupOperators;
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_Puzzle)
+	FKenKenData puzzle;
+	void OnReplicated_Puzzle(FKenKenData beforeChange);
 
 	UPROPERTY()
 	FVector lastSentLocation;
@@ -120,6 +130,12 @@ private:
 	void SendJumpPositions(FVector startPos, FVector targetPos);
 #ifdef WEB_SERVER_TEST
 	void SendJumpPositions_Implementation(FVector startPos, FVector targetPos);
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendPuzzleData();
+#ifdef WEB_SERVER_TEST
+	void SendPuzzleData_Implementation();
 #endif
 
 	UFUNCTION(Client, Reliable)
