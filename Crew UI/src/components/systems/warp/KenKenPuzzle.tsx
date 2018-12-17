@@ -27,10 +27,29 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
             let operator: Operator | undefined;
             let target: number | undefined;
 
+            // write the target in the "first" cell of the group
             if (renderedGroups.indexOf(groupNum) === -1) {
                 operator = this.props.groupOperators[groupNum];
                 target = this.props.groupTargets[groupNum];
                 renderedGroups.push(groupNum);
+            }
+
+            let thickTop, thickLeft;
+            
+            if (index < this.props.size) {
+                thickTop = true;
+            }
+            else {
+                const upGroupNum = this.props.cellGroups[index - this.props.size];
+                thickTop = upGroupNum !== groupNum;
+            }
+
+            if (index % this.props.size === 0) {
+                thickLeft = true;
+            }
+            else {
+                const leftGroupNum = this.props.cellGroups[index - 1];
+                thickLeft = leftGroupNum !== groupNum;
             }
 
             return <KenKenCell
@@ -39,6 +58,8 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
                 key={index}
                 operator={operator}
                 target={target}
+                thickTopBorder={thickTop}
+                thickLeftBorder={thickLeft}
             />
         });
 

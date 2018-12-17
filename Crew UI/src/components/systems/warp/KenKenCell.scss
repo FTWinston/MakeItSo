@@ -1,4 +1,5 @@
 @import '../../general/mixins';
+@import './KenKenCellBorders';
 
 .kenkenCell {
     border: dashed 1px black;
@@ -21,41 +22,18 @@
     font-size: 0.5em;
 }
 
-
-// group colors are temporary til borders can be got working
-
-.kenkenCell--group1 {
-    background-color: #ffc;
+.kenkenCell--thickLeft {
+    border-left-style: $thickBorder;
 }
 
-.kenkenCell--group2 {
-    background-color: #fcf;
+.kenkenCell--thinLeft {
+    border-left-style: $thinBorder;
 }
 
-.kenkenCell--group3 {
-    background-color: #cff;
+.kenkenCell--thickTop {
+    border-top-style: $thickBorder;
 }
 
-.kenkenCell--group4 {
-    background-color: #ccf;
-}
-
-.kenkenCell--group5 {
-    background-color: #cfc;
-}
-
-.kenkenCell--group6 {
-    background-color: #fcc;
-}
-
-.kenkenCell--group7 {
-    background-color: #ccc;
-}
-
-.kenkenCell--group8 {
-    background-color: #fca;
-}
-
-.kenkenCell--group9 {
-    background-color: #acf;
+.kenkenCell--thinTop {
+    border-top-style: $thinBorder;
 }

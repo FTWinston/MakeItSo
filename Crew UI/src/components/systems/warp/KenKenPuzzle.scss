@@ -1,7 +1,10 @@
 @import '../../general/mixins';
+@import './KenKenCellBorders';
 
 .kenken {
     display: grid;
+    border-right-style: $thickBorder;
+    border-bottom-style: $thickBorder;
 }
 
 .kenken--size0 {

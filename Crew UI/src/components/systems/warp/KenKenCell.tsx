@@ -6,6 +6,9 @@ import { Operator } from './store';
 interface IProps {
     value: number;
     group: number;
+    thickLeftBorder: boolean;
+    thickTopBorder: boolean;
+
     isValid?: boolean;
     clicked?: () => void;
 
@@ -42,6 +45,14 @@ export class KenKenCell extends React.PureComponent<IProps, {}> {
                 ? ' kenkenCell--valid'
                 : ' kenkenCell--invalid';
         }
+
+        classes += this.props.thickLeftBorder
+            ? ' kenkenCell--thickLeft'
+            : ' kenkenCell--thinLeft';
+
+        classes += this.props.thickTopBorder
+            ? ' kenkenCell--thickTop'
+            : ' kenkenCell--thinTop';
 
         return classes;
     }
