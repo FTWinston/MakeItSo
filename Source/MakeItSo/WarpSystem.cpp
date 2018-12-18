@@ -85,7 +85,7 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 		CalculateJump(targetPos);
 		return true;
 	}
-	else if (STARTS_WITH(msg, "warp_cancel "))
+	else if (MATCHES(msg, "warp_cancel"))
 	{
 		CancelJump();
 		return true;
@@ -157,7 +157,7 @@ void UWarpSystem::CancelJump() { CancelJump_Implementation(); }
 
 void UWarpSystem::CancelJump_Implementation()
 {
-	if (jumpState != EJumpState::Idle)
+	if (jumpState == EJumpState::Idle)
 		return;
 
 	ResetData();
@@ -347,11 +347,11 @@ void UWarpSystem::CalculatePuzzle()
 			: (FKenKenData::EOperator)FMath::RandRange(FKenKenData::MIN_OPERATOR, FKenKenData::MAX_OPERATOR);
 
 		int16 groupTarget;
-		if (!TryPickTarget(cellGroup, groupOperator, groupTarget))
+		if (!TryPickTarget(cellGroup, solution, groupOperator, groupTarget))
 		{
 			groupOperator = (FKenKenData::EOperator)FMath::RandRange(FKenKenData::MIN_OPERATOR, FKenKenData::MAX_SAFE_OPERATOR);
 
-			TryPickTarget(cellGroup, groupOperator, groupTarget);
+			TryPickTarget(cellGroup, solution, groupOperator, groupTarget);
 		}
 		
 		SETADD(puzzle.groupOperators, groupOperator);
@@ -363,12 +363,12 @@ void UWarpSystem::CreateLatinSquare(TArray<uint8> &cells)
 {
 #define CELLINDEX(x, y) (y * puzzle.width + x)
 
-	// Apply numbers from 0 to puzzleWidth-1 in a standard pattern
+	// Apply numbers from 1 to puzzleWidth in a standard pattern
 	for (uint8 x = 0; x < puzzle.width; x++)
 		for (uint8 y = 0; y < puzzle.width; y++)
 		{
-			uint8 val = x + y;
-			if (val >= puzzle.width)
+			uint8 val = x + y + 1;
+			if (val > puzzle.width)
 				val -= puzzle.width;
 
 			cells[CELLINDEX(x, y)] = val;
@@ -497,7 +497,7 @@ void UWarpSystem::AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<
 	}
 }
 
-bool UWarpSystem::TryPickTarget(TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &groupTarget)
+bool UWarpSystem::TryPickTarget(TArray<uint8> group, TArray<uint8> values, FKenKenData::EOperator groupOperator, int16 &groupTarget)
 {
 	if (groupOperator > FKenKenData::MAX_UNORDERED_OPERATOR)
 	{
@@ -515,16 +515,16 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, FKenKenData::EOperator grou
 	{
 	case FKenKenData::EOperator::Add:
 		groupTarget = 0;
-		for (auto value : group)
-			groupTarget += value;
+		for (auto cellIndex : group)
+			groupTarget += values[cellIndex];
 
 		break;
 
 	case FKenKenData::EOperator::Subtract:
-		groupTarget = group[0];
+		groupTarget = values[group[0]];
 
 		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
-			groupTarget -= group[i];
+			groupTarget -= values[group[i]];
 
 		if (groupTarget < 0)
 			return false; // No functional need to prevent negatives, just keeps things easier for the user.
@@ -533,16 +533,19 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, FKenKenData::EOperator grou
 
 	case FKenKenData::EOperator::Multiply:
 		groupTarget = 1;
-		for (auto value : group)
-			groupTarget *= value;
+		for (auto cellIndex : group)
+			groupTarget *= values[cellIndex];
 		break;
 
 	case FKenKenData::EOperator::Divide:
-		groupTarget = group[0];
+		groupTarget = values[group[0]];
 
 		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
 		{
-			auto value = group[i];
+			auto value = values[group[i]];
+
+			if (value == 0)
+				return false; // why is this happening?
 
 			if (groupTarget % value != 0)
 				return false; // There might still be another order this works in.

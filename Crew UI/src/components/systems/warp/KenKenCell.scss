@@ -2,9 +2,7 @@
 @import './KenKenCellBorders';
 
 .kenkenCell {
-    border: dashed 1px black;
     position: relative;
-    font-size: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -19,21 +17,21 @@
     position: absolute;
     top: 0.25em;
     left: 0.25em;
-    font-size: 0.5em;
+    font-size: 0.67em;
 }
 
 .kenkenCell--thickLeft {
-    border-left-style: $thickBorder;
+    border-left: $thickBorder;
 }
 
 .kenkenCell--thinLeft {
-    border-left-style: $thinBorder;
+    border-left: $thinBorder;
 }
 
 .kenkenCell--thickTop {
-    border-top-style: $thickBorder;
+    border-top: $thickBorder;
 }
 
 .kenkenCell--thinTop {
-    border-top-style: $thinBorder;
+    border-top: $thinBorder;
 }

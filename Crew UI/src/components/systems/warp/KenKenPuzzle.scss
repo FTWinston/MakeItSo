@@ -3,8 +3,11 @@
 
 .kenken {
     display: grid;
-    border-right-style: $thickBorder;
-    border-bottom-style: $thickBorder;
+    border-right: $thickBorder;
+    border-bottom: $thickBorder;
+    font-size: 1.75em;
+    background-color: $colorTertiary;
+    color: black;
 }
 
 .kenken--size0 {

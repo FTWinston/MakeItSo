@@ -24,16 +24,6 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
         const cells = this.props.values.map((val, index) => {
             const groupNum = this.props.cellGroups[index];
 
-            let operator: Operator | undefined;
-            let target: number | undefined;
-
-            // write the target in the "first" cell of the group
-            if (renderedGroups.indexOf(groupNum) === -1) {
-                operator = this.props.groupOperators[groupNum];
-                target = this.props.groupTargets[groupNum];
-                renderedGroups.push(groupNum);
-            }
-
             let thickTop, thickLeft;
             
             if (index < this.props.size) {
@@ -52,9 +42,25 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
                 thickLeft = leftGroupNum !== groupNum;
             }
 
+            let operator: Operator | undefined;
+            let target: number | undefined;
+
+            // write the target in the "first" cell of the group
+            if (renderedGroups.indexOf(groupNum) === -1) {
+                // for a single-cell group, hide the operator
+                const actualOperator = this.props.groupOperators[groupNum];
+                const isSingleGroup = actualOperator === Operator.Add && thickLeft && thickTop && this.props.cellGroups.filter(g => g === groupNum).length <= 1;
+
+                if (!isSingleGroup) {
+                    operator = actualOperator;
+                }
+
+                target = this.props.groupTargets[groupNum];
+                renderedGroups.push(groupNum);
+            }
+
             return <KenKenCell
                 value={val}
-                group={groupNum}
                 key={index}
                 operator={operator}
                 target={target}

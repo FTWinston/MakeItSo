@@ -112,7 +112,6 @@ export const actionCreators = {
     setPuzzle: (puzzleSize: number, cellGroups: number[], groupTargets: number[], groupOperators: Operator[]) => <SetPuzzleAction>{
         type: 'PUZZLE',
         puzzleSize: puzzleSize,
-        puzzleValues: new Array<number>(puzzleSize * puzzleSize),
         cellGroups: cellGroups,
         groupTargets: groupTargets,
         groupOperators: groupOperators,
@@ -194,12 +193,18 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             return retVal;
         }
         case 'PUZZLE': {
+            const values = [];
+            for (let i = action.puzzleSize * action.puzzleSize; i > 0; i--) {
+                values.push(0);
+            }
+
             return {
                 ...state,
                 puzzleSize: action.puzzleSize,
                 puzzleCellGroups: action.cellGroups,
                 puzzleGroupTargets: action.groupTargets,
                 puzzleGroupOperators: action.groupOperators,
+                puzzleValues: values,
             }
         }
         case 'PUZZLE_RESULTS': {

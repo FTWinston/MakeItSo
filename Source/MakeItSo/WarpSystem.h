@@ -77,7 +77,7 @@ private:
 	void CreateLatinSquare(TArray<uint8> &cells);
 	TArray<TArray<uint8>> AllocateCellGroups();
 	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells);
-	bool TryPickTarget(TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &groupTarget);
+	bool TryPickTarget(TArray<uint8> group, TArray<uint8> solution, FKenKenData::EOperator groupOperator, int16 &groupTarget);
 
 
 	UPROPERTY(Replicated)

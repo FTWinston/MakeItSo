@@ -5,7 +5,6 @@ import { Operator } from './store';
 
 interface IProps {
     value: number;
-    group: number;
     thickLeftBorder: boolean;
     thickTopBorder: boolean;
 
@@ -37,8 +36,6 @@ export class KenKenCell extends React.PureComponent<IProps, {}> {
 
     private determineClasses() {
         let classes = 'kenkenCell';
-
-        classes += ` kenkenCell--group${this.props.group}`;
 
         if (this.props.isValid !== undefined) {
             classes += this.props.isValid
