@@ -9,6 +9,7 @@ import { connection } from '~/index';
 import './Warp.scss';
 import { ConfirmButton, ButtonColor, PushButton } from '~/components/general';
 import { KenKenPuzzle } from './KenKenPuzzle';
+import { Numbers } from './Numbers';
 
 interface WarpProps extends WarpState {
     text: TextLocalisation;
@@ -16,7 +17,19 @@ interface WarpProps extends WarpState {
     setPuzzleValue: (cellIndex: number, value: number) => void;
 }
 
-class Warp extends ShipSystemComponent<WarpProps, {}> implements React.Component<WarpProps> {
+interface IState {
+    selectedValue: number;
+}
+
+class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Component<WarpProps, IState> {
+    constructor(props: WarpProps) {
+        super(props);
+        
+        this.state = {
+            selectedValue: 0,
+        };
+    }
+
     private sensorsView: SensorView | null = null;
 
     name() { return 'warp'; }
@@ -43,7 +56,7 @@ class Warp extends ShipSystemComponent<WarpProps, {}> implements React.Component
 
         const cellClicked = this.props.status === WarpJumpStatus.Jumping
             ? undefined
-            : (cellIndex: number, value: number) => this.props.setPuzzleValue(cellIndex, value);
+            : (cellIndex: number) => this.props.setPuzzleValue(cellIndex, this.state.selectedValue);
 
         const puzzle = <KenKenPuzzle
             className="warp__puzzle"
@@ -61,12 +74,14 @@ class Warp extends ShipSystemComponent<WarpProps, {}> implements React.Component
                 return <div className="system warp warp--puzzle">
                     {this.renderChargeProgress()}
                     {puzzle}
+                    {<Numbers max={this.props.puzzleSize} selected={this.state.selectedValue} clicked={val => this.setState({ selectedValue: val })} />}
                 </div>;
                 
             case WarpJumpStatus.Ready:
                 return <div className="system warp warp--puzzle warp--ready">
                     {this.renderJumpButton()}
                     {puzzle}
+                    {<Numbers max={this.props.puzzleSize} selected={this.state.selectedValue} clicked={val => this.setState({ selectedValue: val })} />}
                 </div>;
             case WarpJumpStatus.Jumping:
                 return <div className="system warp warp--puzzle warp--jumping">

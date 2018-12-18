@@ -4,17 +4,18 @@
     display: grid;
 
     @include landscape() {
-        grid-template-rows: 1fr;
+        grid-template-rows: 1fr 1fr;
         grid-template-columns: 2fr 1fr;
-        grid-template-areas: "main controls";
+        grid-template-areas: "main controls"
+        "main numbers";
     }
 
     @include portrait() {
         grid-template-rows: 2fr 1fr;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr 1fr;
         grid-template-areas:
-            "main"
-            "controls";
+            "main main"
+            "controls numbers";
     }
 }
 
@@ -25,4 +26,8 @@
 
 .warp__toolbar {
     grid-area: controls;
+}
+
+.warp__numbers {
+    grid-area: numbers;
 }

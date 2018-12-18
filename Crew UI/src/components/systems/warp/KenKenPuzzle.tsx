@@ -12,7 +12,7 @@ interface IProps {
     groupTargets: number[];
     groupOperators: Operator[];
     groupValidity?: boolean[];
-    cellClicked?: (cellIndex: number, value: number) => void;
+    cellClicked?: (cellIndex: number) => void;
 }
 
 export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
@@ -59,6 +59,10 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
                 renderedGroups.push(groupNum);
             }
 
+            const clicked = this.props.cellClicked === undefined
+                ? undefined
+                : () => this.props.cellClicked!(index);
+
             return <KenKenCell
                 value={val}
                 key={index}
@@ -66,6 +70,7 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
                 target={target}
                 thickTopBorder={thickTop}
                 thickLeftBorder={thickLeft}
+                clicked={clicked}
             />
         });
 
