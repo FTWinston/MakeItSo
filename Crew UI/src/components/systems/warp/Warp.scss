@@ -30,4 +30,24 @@
 
 .warp__numbers {
     grid-area: numbers;
+    font-size: 3em;
+
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.warp__number {
+    padding: 0.5em;
+    margin: 0.25em;
+    border: solid $colorSecondary 0.125em;
+    cursor: pointer;
+    width: 2.25em;
+    text-align: center;
+    border-radius: 0.125em;
+}
+
+.warp__number--selected {
+    background-color: $colorSecondary;
+    color: $backgroundColor;
 }

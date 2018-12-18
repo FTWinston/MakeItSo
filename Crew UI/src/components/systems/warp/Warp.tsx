@@ -74,14 +74,14 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
                 return <div className="system warp warp--puzzle">
                     {this.renderChargeProgress()}
                     {puzzle}
-                    {<Numbers max={this.props.puzzleSize} selected={this.state.selectedValue} clicked={val => this.setState({ selectedValue: val })} />}
+                    {<Numbers max={this.props.puzzleSize} selected={this.state.selectedValue} clicked={val => this.numberSelected(val)} />}
                 </div>;
                 
             case WarpJumpStatus.Ready:
                 return <div className="system warp warp--puzzle warp--ready">
                     {this.renderJumpButton()}
                     {puzzle}
-                    {<Numbers max={this.props.puzzleSize} selected={this.state.selectedValue} clicked={val => this.setState({ selectedValue: val })} />}
+                    {<Numbers max={this.props.puzzleSize} selected={this.state.selectedValue} clicked={val => this.numberSelected(val)} />}
                 </div>;
             case WarpJumpStatus.Jumping:
                 return <div className="system warp warp--puzzle warp--jumping">
@@ -122,6 +122,10 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
         return <div className="warp__toolbar">
             TODO: success / mis-jump indicator
         </div>
+    }
+
+    private numberSelected(val: number) {
+        this.setState({ selectedValue: val === this.state.selectedValue ? 0 : val });
     }
 
     private performJump(puzzleValues: number[]) {

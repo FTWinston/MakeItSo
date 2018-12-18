@@ -226,6 +226,7 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             
             return {
                 ...state,
+                puzzleValues: values,
             }
         }
         default:

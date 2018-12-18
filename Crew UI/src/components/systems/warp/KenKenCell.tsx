@@ -28,7 +28,7 @@ export class KenKenCell extends React.PureComponent<IProps, {}> {
                 {this.props.target}
             </div>;
 
-        return <div className={classes}>
+        return <div className={classes} onClick={this.props.clicked}>
             {display}
             {target}
         </div>
