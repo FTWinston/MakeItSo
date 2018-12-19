@@ -105,7 +105,7 @@ void USensorSystem::ResetData()
 
 void USensorSystem::SendAllData_Implementation()
 {
-	SendSystemFixed("env_clear");
+	crewManager->SendSystemFixed(UShipSystem::ESystem::UseSensorData, "env_clear");
 
 	for (auto item : sensorTargets)
 		SendTargetData(PAIRKEY(item), PAIRVALUE(item));
@@ -157,7 +157,7 @@ void USensorSystem::SendTargetData(uint8 id, USensorTargetInfo *target)
 		break;
 	}
 
-	SendSystem(output);
+	crewManager->SendSystem(UShipSystem::ESystem::UseSensorData, output);
 }
 
 void USensorSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
