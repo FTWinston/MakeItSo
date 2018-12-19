@@ -257,7 +257,8 @@ void UWarpSystem::TickJumping(float DeltaTime)
 
 TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 {
-	auto numGroups = SIZENUM(puzzle.cellGroups);
+	auto numGroups = SIZENUM(puzzle.groupTargets);
+	auto numCells = SIZENUM(puzzle.cellGroups);
 	TArray<bool> groupResults;
 
 #ifndef WEB_SERVER_TEST
@@ -271,14 +272,72 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 		auto groupOperator = puzzle.groupOperators[iGroup];
 		auto groupTarget = puzzle.groupTargets[iGroup];
 
-		int16 groupTotal = 0;
-		
-		// TODO: apply operator to numbers, see if they reach the target
+		auto groupCells = puzzle.groupCells[iGroup];
 
-		groupResults[iGroup] = groupTotal == puzzle.groupTargets[iGroup];
+		groupResults[iGroup] = IsGroupValid(solution, groupCells, groupOperator, groupTarget);
 	}
 
 	return groupResults;
+}
+
+bool UWarpSystem::IsGroupValid(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget)
+{
+	int16 groupTotal;
+
+	if (ResolveGroup(solution, group, groupOperator, groupTotal) && groupTotal == groupTarget)
+		return true;
+
+	if (groupOperator > FKenKenData::MAX_UNORDERED_OPERATOR)
+	{
+		// TODO: try every permutation of group
+	}
+
+	return false;
+}
+
+bool UWarpSystem::ResolveGroup(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &result)
+{
+	result = 0;
+
+	switch (groupOperator)
+	{
+	case FKenKenData::EOperator::Add:
+		for (auto cellIndex : group)
+			result += solution[cellIndex];
+		break;
+
+	case FKenKenData::EOperator::Subtract:
+		result = solution[group[0]];
+
+		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
+			result -= solution[group[i]];
+		break;
+
+	case FKenKenData::EOperator::Multiply:
+		result = 1;
+		for (auto cellIndex : group)
+			result *= solution[cellIndex];
+		break;
+
+	case FKenKenData::EOperator::Divide:
+		result = solution[group[0]];
+
+		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
+		{
+			auto value = solution[group[i]];
+
+			if (value == 0)
+				return false; // avoid divide by zero, just in case
+
+			if (result % value != 0)
+				return false; // There might still be another order this works in.
+
+			result /= value;
+		}
+		break;
+	}
+
+	return true;
 }
 
 FVector UWarpSystem::DetermineJumpDestination(uint8 numWrongGroups)
@@ -299,17 +358,17 @@ uint8 UWarpSystem::DeterminePuzzleSize()
 {
 	auto jumpDistSq = FVector::DistSquared(jumpStartPosition, jumpTargetPosition);
 
-	if (jumpDistSq < 100)
-		return 3;
 	if (jumpDistSq < 1000)
-		return 4;
+		return 3;
 	if (jumpDistSq < 10000)
-		return 5;
+		return 4;
 	if (jumpDistSq < 100000)
-		return 6;
+		return 5;
 	if (jumpDistSq < 1000000)
-		return 7;
+		return 6;
 	if (jumpDistSq < 10000000)
+		return 7;
+	if (jumpDistSq < 100000000)
 		return 8;
 	
 	return 9;
@@ -336,9 +395,9 @@ void UWarpSystem::CalculatePuzzle()
 #endif
 	
 	CreateLatinSquare(solution);
-	TArray<TArray<uint8>> cellGroups = AllocateCellGroups();
+	puzzle.groupCells = AllocateCellGroups();
 
-	for (auto cellGroup : cellGroups)
+	for (auto cellGroup : puzzle.groupCells)
 	{
 		auto groupSize = SIZENUM(cellGroup);
 
@@ -349,7 +408,7 @@ void UWarpSystem::CalculatePuzzle()
 		int16 groupTarget;
 		if (!TryPickTarget(cellGroup, solution, groupOperator, groupTarget))
 		{
-			groupOperator = (FKenKenData::EOperator)FMath::RandRange(FKenKenData::MIN_OPERATOR, FKenKenData::MAX_SAFE_OPERATOR);
+			groupOperator = (FKenKenData::EOperator)FMath::RandRange(FKenKenData::MIN_OPERATOR, FKenKenData::MAX_UNORDERED_OPERATOR);
 
 			TryPickTarget(cellGroup, solution, groupOperator, groupTarget);
 		}
@@ -511,55 +570,7 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, TArray<uint8> values, FKenK
 #endif
 	}
 
-	switch (groupOperator)
-	{
-	case FKenKenData::EOperator::Add:
-		groupTarget = 0;
-		for (auto cellIndex : group)
-			groupTarget += values[cellIndex];
-
-		break;
-
-	case FKenKenData::EOperator::Subtract:
-		groupTarget = values[group[0]];
-
-		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
-			groupTarget -= values[group[i]];
-
-		if (groupTarget < 0)
-			return false; // No functional need to prevent negatives, just keeps things easier for the user.
-						  // There might be another order that doesn't go negative, though.
-		break;
-
-	case FKenKenData::EOperator::Multiply:
-		groupTarget = 1;
-		for (auto cellIndex : group)
-			groupTarget *= values[cellIndex];
-		break;
-
-	case FKenKenData::EOperator::Divide:
-		groupTarget = values[group[0]];
-
-		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
-		{
-			auto value = values[group[i]];
-
-			if (value == 0)
-				return false; // why is this happening?
-
-			if (groupTarget % value != 0)
-				return false; // There might still be another order this works in.
-
-			groupTarget /= value;
-		}
-
-		break;
-
-	default:
-		return false;
-	}
-
-	return true;
+	return ResolveGroup(values, group, groupOperator, groupTarget);
 }
 
 

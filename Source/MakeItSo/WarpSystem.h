@@ -20,23 +20,25 @@ struct FKenKenData
 
 		MIN_OPERATOR = Add,
 		MAX_OPERATOR = Divide,
-		MAX_SAFE_OPERATOR = Multiply, // Safe as in, will work regardless of the numbers / order
 		MAX_UNORDERED_OPERATOR = Multiply,
 	};
 
 	GENERATED_BODY()
 
-		UPROPERTY(Replicated)
-		uint8 width;
+	UPROPERTY(Replicated)
+	uint8 width;
 
 	UPROPERTY(Replicated)
-		TArray<uint8> cellGroups;
+	TArray<uint8> cellGroups;
 
 	UPROPERTY(Replicated)
-		TArray<int16> groupTargets;
+	TArray<int16> groupTargets;
 
 	UPROPERTY(Replicated)
-		TArray<EOperator> groupOperators;
+	TArray<EOperator> groupOperators;
+
+	UPROPERTY()
+	TArray<TArray<uint8>> groupCells; // this is just a cache for checking solutions
 };
 
 
@@ -71,6 +73,8 @@ private:
 	void TickCharging(float DeltaTime);
 	void TickJumping(float DeltaTime);
 	TArray<bool> ResolveSolution(TArray<uint8> solution);
+	bool IsGroupValid(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget);
+	bool ResolveGroup(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &result);
 	FVector DetermineJumpDestination(uint8 numWrongGroups);
 	uint8 DeterminePuzzleSize();
 	void CalculatePuzzle();
