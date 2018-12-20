@@ -15,7 +15,7 @@
 #include "MakeItSoPawn.h"
 #include "WarpJump.h"
 
-#define JUMP_CHARGE_FULL_POWER_HEALTH_GENERATION_RATE 1
+#define JUMP_CHARGE_FULL_POWER_HEALTH_GENERATION_RATE 4.5f
 
 #define LOCATION_UPDATE_THRESHOLD 5
 #define LOCATION_UPDATE_THRESHOLD_SQ LOCATION_UPDATE_THRESHOLD * LOCATION_UPDATE_THRESHOLD
@@ -140,6 +140,8 @@ void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 	SendJumpPositions(jumpStartPosition, jumpTargetPosition);
 
 	CalculatePuzzle();
+
+	jumpRequiredCharge = 10.f * puzzle.width * puzzle.width;
 
 	if (ISCLIENT())
 		SendPuzzleData();
