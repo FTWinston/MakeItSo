@@ -146,38 +146,17 @@ export interface TextLocalisation {
             moveForward: string;
         },
         warp: {
-            newPath: string;
-            deletePath: string;
             startJump: string;
-            unknownPosition: string;
             jump: string;
-            from: string;
+            panUp: string;
+            panDown: string;
+            plotJumpFrom: string;
+            plottingJumpFrom: string;
             to: string;
-            power: string;
-            powerDescription: string;
-            eta: string;
-            readyTime: string;
-            readyToJump: string;
-            outOfRange: string;
             charging: string;
-            jumpInProgress: string;
-            seconds: string;
-            startPos: string;
-            startPosDescription: string;
-            projectionYaw: string;
-            projectionYawDescription: string;
-            projectionPitch: string;
-            projectionPitchDescription: string;
-            calculate: string;
-            calculating: string;
-            stopCalculating: string;
-            editPath: string;
-            keepPath: string;
-            calculationFailed: string;
-            preparingStart: string;
-            readyStart: string;
-            jumpDestStart: string;
-            autoRotate: string;
+            shipPosition: string;
+            inRange: string;
+            outOfRange: string;
         },
         weapons: {
 

@@ -14,10 +14,10 @@ export class Coordinate extends React.PureComponent<ICoordinateProps, {}> {
             classes += ' ' + this.props.className;
         }
 
-        return <div className={classes}>
-            <span className="coordinate__number">{this.props.pos.x}</span>,
-            <span className="coordinate__number">{this.props.pos.y}</span>,
-            <span className="coordinate__number">{this.props.pos.z}</span>
-        </div>;
+        return <span className={classes}>
+            <span className="coordinate__number">{Math.round(this.props.pos.x)}</span>,
+            <span className="coordinate__number">{Math.round(this.props.pos.y)}</span>,
+            <span className="coordinate__number">{Math.round(this.props.pos.z)}</span>
+        </span>;
     }
 }

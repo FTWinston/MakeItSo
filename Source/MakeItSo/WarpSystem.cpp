@@ -182,6 +182,8 @@ void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 	if (SIZENUM(solution) != puzzle.width * puzzle.width)
 		return;
 
+	// TODO: if a number is repeated in any row or column, return
+
 	auto groupResults = ResolveSolution(solution);
 
 	SendPuzzleResults(groupResults);

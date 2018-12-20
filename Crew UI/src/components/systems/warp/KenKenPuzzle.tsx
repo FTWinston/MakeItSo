@@ -98,4 +98,16 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
 
         return classes;
     }
+
+    public isCompleted() {
+        for (const val of this.props.values) {
+            if (val === 0) {
+                return false;
+            }
+        }
+
+        // TODO: check rows and columns?
+
+        return true;
+    }
 }

@@ -12,7 +12,7 @@ export function receiveMessage(cmd: string, data: string) {
         }
         case 'warp_positions': {
             const vals = data.split(' ').map(v => parseInt(v));
-            store.dispatch(actionCreators.setJumpPositions(vals[0], vals[1], vals[2], vals[3], vals[5], vals[5]));
+            store.dispatch(actionCreators.setJumpPositions(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]));
             break;
         }
         case 'warp_charge': {

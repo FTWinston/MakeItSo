@@ -26,6 +26,7 @@
 
 .warp__toolbar {
     grid-area: controls;
+    padding-left: 0.5em;
 }
 
 .warp__numbers {
@@ -50,4 +51,43 @@
 .warp__number--selected {
     background-color: $colorSecondary;
     color: $backgroundColor;
+}
+
+.warp__fromCoords .coordinate__number {
+    color: $colorTertiary;
+}
+
+.warp__toCoords .coordinate__number {
+    color: $colorQuandry;
+}
+
+.warp__shipCoords--inRange .coordinate__number {
+    color: $colorGoodLight;
+}
+
+.warp__shipCoords--outRange .coordinate__number {
+    color: $colorBadLight;
+}
+
+.warp__rangeMsg--in {
+    opacity: 0.5;
+}
+
+.warp__rangeMsg--out {
+    color: $colorBadDark;
+}
+
+.warp__prepareJump {
+    margin-bottom: 1em;
+}
+
+.warp__chargeValue {
+    font-size: 2em;
+    color: $colorSecondary;
+    display: block;
+    text-align: center;
+}
+
+.warp__charge {
+    margin-top: 1em;
 }

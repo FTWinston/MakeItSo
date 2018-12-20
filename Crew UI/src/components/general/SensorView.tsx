@@ -274,7 +274,7 @@ export class SensorView extends React.Component<SensorViewProps, SensorViewState
             , undefined, () => this.interactionStarted(), () => this.interactionFinished());
         */
         // 2-finger panning for multitouch
-        let pan = area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy)
+        let pan = area.createPan2D('pan', 2, 1, false, (dx, dy) => this.pan(-dx, -dy, 0)
             , () => this.interactionStarted(), () => this.interactionFinished());
         
         // right-mouse panning for where multitouch isn't an option
@@ -282,7 +282,7 @@ export class SensorView extends React.Component<SensorViewProps, SensorViewState
         area.element.addEventListener('mousedown', ev => { if (ev.button !== 0) { rightMouseDown = true; this.interactionStarted(); } });
         area.element.addEventListener('mouseup', ev => { if (ev.button !== 0) { rightMouseDown = false; this.interactionFinished(); } });
         area.element.addEventListener('mouseout', () => { if (rightMouseDown) { rightMouseDown = false; this.interactionFinished(); } });
-        area.element.addEventListener('mousemove', ev => { if (rightMouseDown) { this.pan(-ev.movementX, -ev.movementY); } });
+        area.element.addEventListener('mousemove', ev => { if (rightMouseDown) { this.pan(-ev.movementX, -ev.movementY, 0); } });
 
         // pinch zooming
         let prevScale = 1;
@@ -312,17 +312,18 @@ export class SensorView extends React.Component<SensorViewProps, SensorViewState
         });
     }
 
-    private pan(screenDx: number, screenDy: number) {
+    public pan(screenDx: number, screenDy: number, dz: number) {
         screenDx /= this.state.zoom;
         screenDy /= this.state.zoom;
 
-        let sinRot = Math.sin(this.state.zRotation);
-        let cosRot = Math.cos(this.state.zRotation);
-        let worldDx =  screenDx * cosRot + screenDy * sinRot;
-        let worldDy = -screenDx * sinRot + screenDy * cosRot;
+        const sinRot = Math.sin(this.state.zRotation);
+        const cosRot = Math.cos(this.state.zRotation);
+        const worldDx =  screenDx * cosRot + screenDy * sinRot;
+        const worldDy = -screenDx * sinRot + screenDy * cosRot;
+        const worldDz = dz / this.state.zoom;
 
         this.setState(state => { return {
-            center: new Vector3(state.center.x + worldDx, state.center.y + worldDy, state.center.z),
+            center: new Vector3(state.center.x + worldDx, state.center.y + worldDy, state.center.z + worldDz),
         }});
     }
 
