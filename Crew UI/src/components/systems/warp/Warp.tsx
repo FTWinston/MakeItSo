@@ -11,6 +11,7 @@ import { KenKenPuzzle } from './KenKenPuzzle';
 import { Numbers } from './Numbers';
 import { DestinationControls } from './DestinationControls';
 import { PlottingControls } from './PlottingControls';
+import { JumpResults } from './JumpResults';
 
 interface WarpProps extends WarpState {
     text: TextLocalisation;
@@ -75,6 +76,8 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
             cellGroups={this.props.puzzleCellGroups}
             groupTargets={this.props.puzzleGroupTargets}
             groupOperators={this.props.puzzleGroupOperators}
+            rowValidity={this.props.puzzleRowValidity}
+            colValidity={this.props.puzzleColValidity}
             groupValidity={this.props.puzzleGroupValidity}
             cellClicked={cellClicked}
             ref={p => this.kenkenPuzzle = p}
@@ -96,7 +99,14 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
                 </div>;
             case WarpJumpStatus.Jumping:
                 return <div className="system warp warp--puzzle warp--jumping">
-                    {this.renderJumpResults()}
+                    <JumpResults
+                        eta={this.props.jumpEndTime}
+                        text={this.props.text}
+                        targetPosition={this.props.jumpTargetPosition === undefined ? new Vector3(0,0,0) : this.props.jumpTargetPosition}
+                        puzzleRowValidity={this.props.puzzleRowValidity === undefined ? [false] : this.props.puzzleRowValidity}
+                        puzzleColValidity={this.props.puzzleColValidity === undefined ? [false] : this.props.puzzleColValidity}
+                        puzzleGroupValidity={this.props.puzzleGroupValidity === undefined ? [false] : this.props.puzzleGroupValidity}
+                    />
                     {puzzle}
                 </div>;
             default:
@@ -140,12 +150,6 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
             performJump={() => this.performJump(this.props.puzzleValues)}
             text={this.props.text}
         />
-    }
-    
-    private renderJumpResults() {
-        return <div className="warp__toolbar">
-            TODO: success / mis-jump indicator
-        </div>
     }
 
     private numberSelected(val: number) {

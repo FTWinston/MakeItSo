@@ -25,7 +25,7 @@ export interface WarpState {
 
     jumpStartPosition?: Vector3;
     jumpTargetPosition?: Vector3;
-    jumpEndTime?: Date;
+    jumpEndTime: Date;
     chargeCompletion: number;
 
     puzzleSize: number;
@@ -33,6 +33,9 @@ export interface WarpState {
     puzzleCellGroups: number[];
     puzzleGroupTargets: number[];
     puzzleGroupOperators: Operator[];
+
+    puzzleRowValidity?: boolean[];
+    puzzleColValidity?: boolean[];
     puzzleGroupValidity?: boolean[];
 
 // TODO: populate / use this fields
@@ -69,7 +72,7 @@ interface SetPuzzleAction {
 
 interface SetPuzzleResults {
     type: 'PUZZLE_RESULTS';
-    groupValidity: boolean[];
+    validity: boolean[];
 }
 
 interface ChargeJumpAction {
@@ -90,10 +93,15 @@ interface SetPuzzleValueAction {
     value: number;
 }
 
+interface SetJumpEndTimeAction {
+    type: 'END_TIME',
+    endTime: Date,
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetJumpPositionsAction | SetJumpStateAction | SetPuzzleAction | SetPuzzleResults
-                    | SetShipPositionAction | ChargeJumpAction | SetPuzzleValueAction;
+                    | SetShipPositionAction | ChargeJumpAction | SetPuzzleValueAction | SetJumpEndTimeAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -116,9 +124,9 @@ export const actionCreators = {
         groupTargets: groupTargets,
         groupOperators: groupOperators,
     },
-    setPuzzleResults: (groupValidity: boolean[]) => <SetPuzzleResults>{
+    setPuzzleResults: (validity: boolean[]) => <SetPuzzleResults>{
         type: 'PUZZLE_RESULTS',
-        groupValidity: groupValidity,
+        validity: validity,
     },
     setShipPosition: (x: number, y: number, z: number) => <SetShipPositionAction> {
         type: 'SET_SHIP_POSITION',
@@ -138,7 +146,16 @@ export const actionCreators = {
         type: 'PUZZLE_VALUE',
         index: cellIndex,
         value: value,
-    }
+    },
+    setWarpDuration: (duration: number) => {
+        let endTime = new Date();
+        endTime.setSeconds(endTime.getSeconds() + duration);
+
+        return <SetJumpEndTimeAction> {
+            type: 'END_TIME',
+            endTime: endTime,
+        };
+    },
 };
 
 // ----------------
@@ -149,6 +166,7 @@ const unloadedState: WarpState = {
     shipPosition: new Vector3(0, 0, 0),
     chargeCompletion: 0,
     jumpStartEntranceRange: 100,
+    jumpEndTime: new Date(),
 
     puzzleSize: 0,
     puzzleValues: [],
@@ -187,7 +205,8 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
                 retVal.puzzleGroupOperators = [];
                 delete retVal.jumpStartPosition;
                 delete retVal.jumpTargetPosition;
-                delete retVal.jumpEndTime;
+                delete retVal.puzzleRowValidity;
+                delete retVal.puzzleColValidity;
                 delete retVal.puzzleGroupValidity;
             }
             return retVal;
@@ -208,9 +227,15 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             }
         }
         case 'PUZZLE_RESULTS': {
+            const rowValidity = action.validity.slice(0, state.puzzleSize);
+            const colValidity = action.validity.slice(state.puzzleSize, state.puzzleSize * 2);
+            const groupValidity = action.validity.slice(state.puzzleSize * 2);
+
             return {
                 ...state,
-                puzzleGroupValidity: action.groupValidity,
+                puzzleRowValidity: rowValidity,
+                puzzleColValidity: colValidity,
+                puzzleGroupValidity: groupValidity,
             }
         }
         case 'CHARGE_JUMP': {
@@ -227,6 +252,12 @@ export const reducer: Reducer<WarpState> = (state: WarpState, rawAction: Action)
             return {
                 ...state,
                 puzzleValues: values,
+            }
+        }
+        case 'END_TIME': {
+            return {
+                ...state,
+                jumpEndTime: action.endTime,
             }
         }
         default:

@@ -75,7 +75,7 @@ private:
 	TArray<bool> ResolveSolution(TArray<uint8> solution);
 	bool IsGroupValid(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget);
 	bool ResolveGroup(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &result);
-	FVector DetermineJumpDestination(uint8 numWrongGroups);
+	FVector DetermineJumpDestination(uint8 numPuzzleErrors);
 	uint8 DeterminePuzzleSize();
 	void CalculatePuzzle();
 	void CreateLatinSquare(TArray<uint8> &cells);
@@ -83,6 +83,9 @@ private:
 	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells);
 	bool TryPickTarget(TArray<uint8> group, TArray<uint8> solution, FKenKenData::EOperator groupOperator, int16 &groupTarget);
 
+
+	UPROPERTY()
+	float jumpTimeRemaining;
 
 	UPROPERTY(Replicated)
 	FVector jumpStartPosition;
@@ -128,6 +131,12 @@ private:
 	void SendJumpCharge();
 #ifdef WEB_SERVER_TEST
 	void SendJumpCharge_Implementation();
+#endif
+
+	UFUNCTION(Client, Reliable)
+	void SendJumpDuration(float duration);
+#ifdef WEB_SERVER_TEST
+	void SendJumpDuration_Implementation(float duration);
 #endif
 
 	UFUNCTION(Client, Reliable)

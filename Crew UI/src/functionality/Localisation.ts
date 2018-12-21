@@ -152,11 +152,16 @@ export interface TextLocalisation {
             panDown: string;
             plotJumpFrom: string;
             plottingJumpFrom: string;
+            jumpingTo: string;
             to: string;
             charging: string;
             shipPosition: string;
             inRange: string;
             outOfRange: string;
+            jumpValid: string;
+            jumpInvalid: string;
+            eta: string;
+            seconds: string;
         },
         weapons: {
 

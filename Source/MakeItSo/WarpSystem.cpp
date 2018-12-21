@@ -43,6 +43,7 @@ void UWarpSystem::ResetData()
 	jumpState = EJumpState::Idle;
 	jumpCharge = 0;
 	jumpRequiredCharge = 0;
+	jumpTimeRemaining = 0;
 
 	CLEAR(puzzle.cellGroups);
 	CLEAR(puzzle.groupTargets);
@@ -184,8 +185,6 @@ void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 	if (SIZENUM(solution) != puzzle.width * puzzle.width)
 		return;
 
-	// TODO: if a number is repeated in any row or column, return
-
 	auto groupResults = ResolveSolution(solution);
 
 	SendPuzzleResults(groupResults);
@@ -197,7 +196,8 @@ void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 
 	actualJumpDestination = DetermineJumpDestination(numWrongGroups);
 
-	// TODO: set jump end time
+	jumpTimeRemaining = puzzle.width * 2.f;
+	SendJumpDuration(jumpTimeRemaining);
 
 	jumpState = EJumpState::Jumping;
 	if (ISCLIENT())
@@ -245,8 +245,12 @@ void UWarpSystem::TickCharging(float DeltaTime)
 
 void UWarpSystem::TickJumping(float DeltaTime)
 {
-	// TODO: Wait until jump end time has been reached
-
+	// Wait until jump end time has been reached
+	if (jumpTimeRemaining > DeltaTime)
+	{
+		jumpTimeRemaining -= DeltaTime;
+		return;
+	}
 
 	crewManager->GetShipPawn()->FinishWarpJump(actualJumpDestination);
 
@@ -266,11 +270,57 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 	TArray<bool> groupResults;
 
 #ifndef WEB_SERVER_TEST
-	groupResults.AddZeroed(numGroups);
+	groupResults.AddZeroed(numGroups + puzzle.width + puzzle.width);
 #else
-	groupResults.assign(numGroups, 0);
+	groupResults.assign(numGroups + puzzle.width + puzzle.width, 0);
 #endif
 
+	// check rows contain no duplicate numbers
+	for (uint8 iRow = 0; iRow < puzzle.width; iRow++)
+	{
+		TSet<uint8> rowVals;
+		uint8 rowStart = puzzle.width * iRow;
+		uint8 rowEnd = rowStart + puzzle.width;
+
+		bool rowValid = true;
+
+		for (uint8 iCell = rowStart; iCell <= rowEnd; iCell++)
+		{
+			uint8 cellVal = solution[iCell];
+
+			if (SETCONTAINS(rowVals, cellVal))
+			{
+				rowValid = false;
+				break;
+			}
+		}
+
+		groupResults[iRow] = rowValid;
+	}
+
+	// check columns contain no duplicate numbers
+	for (uint8 iCol = 0; iCol < puzzle.width; iCol++)
+	{
+		TSet<uint8> colVals;
+		uint8 colStart = iCol;
+
+		bool colValid = true;
+
+		for (uint8 iCell = colStart; iCell <= numCells; iCell += puzzle.width)
+		{
+			uint8 cellVal = solution[iCell];
+
+			if (SETCONTAINS(colVals, cellVal))
+			{
+				colValid = false;
+				break;
+			}
+		}
+
+		groupResults[puzzle.width + iCol] = colValid;
+	}
+
+	// check groups reach their targets
 	for (uint32 iGroup = 0; iGroup < numGroups; iGroup++)
 	{
 		auto groupOperator = puzzle.groupOperators[iGroup];
@@ -344,11 +394,11 @@ bool UWarpSystem::ResolveGroup(TArray<uint8> solution, TArray<uint8> group, FKen
 	return true;
 }
 
-FVector UWarpSystem::DetermineJumpDestination(uint8 numWrongGroups)
+FVector UWarpSystem::DetermineJumpDestination(uint8 numPuzzleErrors)
 {
 	FVector destination = jumpTargetPosition;
 
-	// TODO: add an offset based on numWrongGroups
+	// TODO: add an offset based on numErrors
 
 	// add an offset equivalent to the ship's current offset from the calculated jump start position
 	destination += (crewManager->GetShipPawn()->GetActorLocation() - jumpStartPosition);
@@ -614,6 +664,16 @@ void UWarpSystem::SendJumpCharge_Implementation()
 
 	FString output = TEXT("warp_charge ");
 	APPENDINT(output, progress);
+	SendSystem(output);
+}
+
+#ifdef WEB_SERVER_TEST
+void UWarpSystem::SendJumpDuration(float duration) { SendJumpDuration_Implementation(duration); }
+#endif
+void UWarpSystem::SendJumpDuration_Implementation(float duration)
+{
+	FString output = TEXT("warp_duration ");
+	APPENDINT(output, (uint16)duration);
 	SendSystem(output);
 }
 

@@ -217,12 +217,17 @@ let words: TextLocalisation = {
             panUp: 'Pan up',
             panDown: 'Pan down',
             plotJumpFrom: 'Ready to plot jump from',
+            jumpingTo: 'Jupming to',
             plottingJumpFrom: 'Plotting jump from',
             to: 'to',
             charging: 'Jump charge progress',
             shipPosition: 'Current ship position',
             inRange: 'In range of the calculated start point.',
             outOfRange: 'Too far from the calculated start point. Cannot jump!',
+            jumpValid: 'Jump calculations are valid.',
+            jumpInvalid: 'Error in jump calculations. Jump destination is off-target!',
+            eta: 'Arriving at destination in',
+            seconds: 's',
         },
         weapons: {
 

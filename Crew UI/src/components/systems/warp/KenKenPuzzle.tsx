@@ -11,7 +11,11 @@ interface IProps {
     cellGroups: number[];
     groupTargets: number[];
     groupOperators: Operator[];
+    
+    rowValidity?: boolean[];
+    colValidity?: boolean[];
     groupValidity?: boolean[];
+
     cellClicked?: (cellIndex: number) => void;
 }
 
@@ -22,11 +26,13 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
         const renderedGroups: number[] = [];
 
         const cells = this.props.values.map((val, index) => {
+            const rowNum = Math.floor(index / this.props.size);
+            const colNum = index % this.props.size;
             const groupNum = this.props.cellGroups[index];
 
             let thickTop, thickLeft;
             
-            if (index < this.props.size) {
+            if (rowNum === 0) {
                 thickTop = true;
             }
             else {
@@ -34,7 +40,7 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
                 thickTop = upGroupNum !== groupNum;
             }
 
-            if (index % this.props.size === 0) {
+            if (colNum === 0) {
                 thickLeft = true;
             }
             else {
@@ -71,6 +77,9 @@ export class KenKenPuzzle extends React.PureComponent<IProps, {}> {
                 thickTopBorder={thickTop}
                 thickLeftBorder={thickLeft}
                 clicked={clicked}
+                rowValid={this.props.rowValidity === undefined || this.props.rowValidity[rowNum]}
+                colValid={this.props.colValidity === undefined || this.props.colValidity[colNum]}
+                groupValid={this.props.groupValidity === undefined || this.props.groupValidity[groupNum]}
             />
         });
 

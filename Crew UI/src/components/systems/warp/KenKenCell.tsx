@@ -8,7 +8,10 @@ interface IProps {
     thickLeftBorder: boolean;
     thickTopBorder: boolean;
 
-    isValid?: boolean;
+    rowValid: boolean;
+    colValid: boolean;
+    groupValid: boolean;
+
     clicked?: () => void;
 
     operator?: Operator;
@@ -37,10 +40,14 @@ export class KenKenCell extends React.PureComponent<IProps, {}> {
     private determineClasses() {
         let classes = 'kenkenCell';
 
-        if (this.props.isValid !== undefined) {
-            classes += this.props.isValid
-                ? ' kenkenCell--valid'
-                : ' kenkenCell--invalid';
+        if (!this.props.rowValid) {
+            classes += ' kenkenCell--invalidRow';
+        }
+        if (!this.props.colValid) {
+            classes += ' kenkenCell--invalidCol';
+        }
+        if (!this.props.groupValid) {
+            classes += ' kenkenCell--invalidGroup';
         }
 
         classes += this.props.thickLeftBorder

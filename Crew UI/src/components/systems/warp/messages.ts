@@ -44,6 +44,11 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setPuzzleResults(values));
             break;
         }
+        case 'warp_duration': {
+            const value = parseFloat(data);
+            store.dispatch(actionCreators.setWarpDuration(value));
+            break;
+        }
         default:
             return false;
     }
