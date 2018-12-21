@@ -272,7 +272,7 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 #ifndef WEB_SERVER_TEST
 	groupResults.AddZeroed(numGroups + puzzle.width + puzzle.width);
 #else
-	groupResults.assign(numGroups + puzzle.width + puzzle.width, 0);
+	groupResults.assign(numGroups + puzzle.width + puzzle.width, false);
 #endif
 
 	// check rows contain no duplicate numbers
@@ -284,7 +284,7 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 
 		bool rowValid = true;
 
-		for (uint8 iCell = rowStart; iCell <= rowEnd; iCell++)
+		for (uint8 iCell = rowStart; iCell < rowEnd; iCell++)
 		{
 			uint8 cellVal = solution[iCell];
 
@@ -293,6 +293,7 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 				rowValid = false;
 				break;
 			}
+			SETADD(rowVals, cellVal);
 		}
 
 		groupResults[iRow] = rowValid;
@@ -306,7 +307,7 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 
 		bool colValid = true;
 
-		for (uint8 iCell = colStart; iCell <= numCells; iCell += puzzle.width)
+		for (uint8 iCell = colStart; iCell < numCells; iCell += puzzle.width)
 		{
 			uint8 cellVal = solution[iCell];
 
@@ -315,20 +316,22 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 				colValid = false;
 				break;
 			}
+			SETADD(colVals, cellVal);
 		}
 
 		groupResults[puzzle.width + iCol] = colValid;
 	}
 
 	// check groups reach their targets
-	for (uint32 iGroup = 0; iGroup < numGroups; iGroup++)
+	uint16 startIndex = puzzle.width * 2;
+	for (uint16 iGroup = 0; iGroup < numGroups; iGroup++)
 	{
 		auto groupOperator = puzzle.groupOperators[iGroup];
 		auto groupTarget = puzzle.groupTargets[iGroup];
 
 		auto groupCells = puzzle.groupCells[iGroup];
 
-		groupResults[iGroup] = IsGroupValid(solution, groupCells, groupOperator, groupTarget);
+		groupResults[iGroup + startIndex] = IsGroupValid(solution, groupCells, groupOperator, groupTarget);
 	}
 
 	return groupResults;
@@ -365,6 +368,9 @@ bool UWarpSystem::ResolveGroup(TArray<uint8> solution, TArray<uint8> group, FKen
 
 		for (auto i = SIZENUM(group) - 1; i >= 1; i--)
 			result -= solution[group[i]];
+
+		if (result <= 0)
+			return false; // Don't go negative, cos subtracting to reach a negative number looks like --2
 		break;
 
 	case FKenKenData::EOperator::Multiply:

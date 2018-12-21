@@ -27,7 +27,7 @@ export class JumpResults extends React.PureComponent<IProps, IState> {
     private interval?: NodeJS.Timer;
 
     componentDidMount() {
-        this.interval = setInterval(() => this.tickCountdown(), 10000);
+        this.interval = setInterval(() => this.tickCountdown(), 1000);
     }
 
     componentWillUnmount() {
@@ -62,12 +62,12 @@ export class JumpResults extends React.PureComponent<IProps, IState> {
                 {valid ? words.jumpValid : words.jumpInvalid}
             </p>
             
-            <p>
+            <div>
                 {words.eta}:
                 <div className="warp__eta">
                     {this.state.secondsRemaining} {words.seconds}
                 </div>
-            </p>
+            </div>
         </div>
     }
 }
