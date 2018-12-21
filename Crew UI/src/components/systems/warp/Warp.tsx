@@ -7,9 +7,10 @@ import { SensorView } from '~/components/general/SensorView';
 import { SensorTarget, TextLocalisation, Vector3 } from '~/functionality';
 import { connection } from '~/index';
 import './Warp.scss';
-import { ConfirmButton, ButtonColor, PushButton, ButtonSet, HeldButton, ProgressBar, Coordinate } from '~/components/general';
 import { KenKenPuzzle } from './KenKenPuzzle';
 import { Numbers } from './Numbers';
+import { DestinationControls } from './DestinationControls';
+import { PlottingControls } from './PlottingControls';
 
 interface WarpProps extends WarpState {
     text: TextLocalisation;
@@ -45,8 +46,16 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
 
     public render() {
         if (this.props.status === WarpJumpStatus.Idle) {
+            const targetPos = this.sensorsView === null ? new Vector3(0, 0, 0) : this.sensorsView.state.center;
+
             return <div className="system warp warp--idle">
-                {this.renderDestinationControls()}
+                <DestinationControls
+                    shipPosition={this.props.shipPosition}
+                    targetPosition={targetPos}
+                    plotJump={() => this.plotJump(targetPos)}
+                    text={this.props.text}
+                    pan={(dx, dy, dz) => this.pan(dx, dy, dz)}
+                />
                 <SensorView
                     ref={v => this.sensorsView = v}
                     className="warp__sensorMap"
@@ -103,74 +112,34 @@ class Warp extends ShipSystemComponent<WarpProps, IState> implements React.Compo
         this.sensorsView!.pan(dx * scale, dy * scale, dz * scale);
     }
 
-    private renderDestinationControls() {
-        const shipPos = this.props.shipPosition;
-        const targetPos = this.sensorsView === null ? new Vector3(0, 0, 0) : this.sensorsView.state.center;
-        const words = this.props.text.systems.warp;
-
-        return <div className="warp__toolbar">
-            <p>
-                {words.plotJumpFrom} <Coordinate className="warp__fromCoords" pos={shipPos} /> {words.to} <Coordinate className="warp__toCoords" pos={targetPos} />.
-            </p>
-
-            <PushButton text={words.startJump} className="warp__prepareJump" color={ButtonColor.Secondary} clicked={() => this.plotJump(targetPos)} />
-
-            <ButtonSet color={ButtonColor.Quaternary}>
-                <HeldButton text={words.panUp} pressed={() => this.pan(0, 0, 1)} tick={interval => this.pan(0, 0, 10 * interval)} />
-                <HeldButton text={words.panDown} pressed={() => this.pan(0, 0, -1)} tick={interval => this.pan(0, 0, -10 * interval)} />
-            </ButtonSet>
-        </div>
-    }
-
     private renderPuzzleControls() {
-        const words = this.props.text.systems.warp;
-
         const startPos = this.props.jumpStartPosition === undefined
             ? new Vector3(0,0,0) : this.props.jumpStartPosition;
 
         const targetPos = this.props.jumpTargetPosition === undefined
             ? new Vector3(0,0,0) : this.props.jumpTargetPosition;
 
-        const shipPos = this.props.shipPosition;
-        
-        const inRange = Vector3.distanceSq(shipPos, startPos) <= this.props.jumpStartEntranceRange * this.props.jumpStartEntranceRange;
-
-        const rangeMessage = inRange
-            ? <span className="warp__rangeMsg--in">{words.inRange}</span>
-            : <span className="warp__rangeMsg--out">{words.outOfRange}</span>
-
-        const shipPosClassName = inRange
-            ? 'warp__shipCoords--inRange' : 'warp__shipCoords--outRange';
-
         let disableJump: boolean;
 
-        if (this.props.status !== WarpJumpStatus.Ready || !inRange || this.kenkenPuzzle === null) {
+        if (this.props.status !== WarpJumpStatus.Ready || this.kenkenPuzzle === null) {
             disableJump = true;
         }
         else {
-            // check puzzle is completed, and has no dodgy rows/cols
+            // TODO: should we also check if the puzzle has no dodgy rows/columns?
             disableJump = !this.kenkenPuzzle.isCompleted();
         }
 
-        return <div className="warp__toolbar">
-            <p>
-                {words.plottingJumpFrom} <Coordinate className="warp__fromCoords" pos={startPos} /> {words.to} <Coordinate className="warp__toCoords" pos={targetPos} />.
-            </p>
-            <p>
-                {words.shipPosition}: <Coordinate className={shipPosClassName} pos={this.props.shipPosition} />.
-                <br/>{rangeMessage}
-            </p>
-
-            <div>
-                <ConfirmButton text={this.props.text.systems.warp.jump} color={ButtonColor.Primary} disabled={disableJump} clicked={() => this.performJump(this.props.puzzleValues)} />
-                <ConfirmButton text={this.props.text.common.cancel} color={ButtonColor.Secondary} clicked={() => this.cancelJump()} />
-            </div>
-
-            <div className="warp__charge">
-                {words.charging}: 
-                <ProgressBar className="warp__chargeValue" maxValue={100} value={this.props.chargeCompletion} showNumber={true} />
-            </div>
-        </div>
+        return <PlottingControls
+            jumpStartPosition={startPos}
+            jumpTargetPosition={targetPos}
+            shipPosition={this.props.shipPosition}
+            disableJump={disableJump}
+            chargeCompletion={this.props.chargeCompletion}
+            jumpStartEntranceRange={this.props.jumpStartEntranceRange}
+            cancelJump={() => this.cancelJump()}
+            performJump={() => this.performJump(this.props.puzzleValues)}
+            text={this.props.text}
+        />
     }
     
     private renderJumpResults() {
