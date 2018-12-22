@@ -202,6 +202,15 @@ struct FVector {
 			 + (a.Y - b.Y) * (a.Y - b.Y)
 			 + (a.Z - b.Z) * (a.Z - b.Z);
 	}
+
+	static float Dist(const FVector &a, const FVector &b)
+	{
+		return sqrt(
+			(a.X - b.X) * (a.X - b.X)
+			+ (a.Y - b.Y) * (a.Y - b.Y)
+			+ (a.Z - b.Z) * (a.Z - b.Z)
+		);
+	}
 };
 
 struct FQuat {

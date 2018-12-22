@@ -430,8 +430,13 @@ FVector UWarpSystem::DetermineJumpDestination(uint8 numPuzzleErrors)
 {
 	FVector destination = jumpTargetPosition;
 
-	// add an offset based on numPuzzleErrors
-	auto offsetScale = numPuzzleErrors * 40.f;
+	float jumpDistance = FVector::Dist(jumpStartPosition, jumpTargetPosition);
+
+	// add "errors" based on system health
+	float numErrors = numPuzzleErrors + (100.f - GetHealthLevel()) / 30.f;
+
+	// add an offset based on the number of errors
+	auto offsetScale = numErrors * jumpDistance * 0.25f;
 	destination += FVector(
 		FMath::FRandRange(-offsetScale, offsetScale),
 		FMath::FRandRange(-offsetScale, offsetScale),
@@ -440,14 +445,6 @@ FVector UWarpSystem::DetermineJumpDestination(uint8 numPuzzleErrors)
 
 	// add an offset equivalent to the ship's current offset from the calculated jump start position
 	destination += (crewManager->GetShipPawn()->GetActorLocation() - jumpStartPosition);
-
-	// add an offset based on system health level
-	offsetScale = (100.f - GetHealthLevel()) * 15.f;
-	destination += FVector(
-		FMath::FRandRange(-offsetScale, offsetScale),
-		FMath::FRandRange(-offsetScale, offsetScale),
-		FMath::FRandRange(-offsetScale, offsetScale)
-	);
 
 	return jumpTargetPosition;
 }
