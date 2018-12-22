@@ -74,6 +74,8 @@ private:
 	void TickJumping(float DeltaTime);
 	TArray<bool> ResolveSolution(TArray<uint8> solution);
 	bool IsGroupValid(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget);
+	bool CheckGroupPermutatations(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget, uint16 stepsLeft);
+
 	bool ResolveGroup(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 &result);
 	FVector DetermineJumpDestination(uint8 numPuzzleErrors);
 	uint8 DeterminePuzzleSize();

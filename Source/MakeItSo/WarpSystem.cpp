@@ -339,14 +339,40 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 
 bool UWarpSystem::IsGroupValid(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget)
 {
-	int16 groupTotal;
-
-	if (ResolveGroup(solution, group, groupOperator, groupTotal) && groupTotal == groupTarget)
-		return true;
-
-	if (groupOperator > FKenKenData::MAX_UNORDERED_OPERATOR)
+	if (groupOperator <= FKenKenData::MAX_UNORDERED_OPERATOR)
 	{
-		// TODO: try every permutation of group
+		int16 groupTotal;
+		return ResolveGroup(solution, group, groupOperator, groupTotal) && groupTotal == groupTarget;
+	}
+
+	// try every permutation of group
+	return CheckGroupPermutatations(solution, group, groupOperator, groupTarget, (uint16)SIZENUM(group));
+}
+
+bool UWarpSystem::CheckGroupPermutatations(TArray<uint8> solution, TArray<uint8> group, FKenKenData::EOperator groupOperator, int16 groupTarget, uint16 stepsLeft)
+{
+	if (stepsLeft == 0)
+	{
+		int16 groupTotal;
+		return ResolveGroup(solution, group, groupOperator, groupTotal) && groupTotal == groupTarget;
+	}
+
+	auto modifyIndex = stepsLeft - 1;
+	for (auto i = modifyIndex; i >= 0; i--) {
+		// swap, check, then swap back
+		auto tmp = group[i];
+		group[i] = group[modifyIndex];
+		group[modifyIndex] = tmp;
+
+		int16 groupTotal;
+		bool success = ResolveGroup(solution, group, groupOperator, groupTotal) && groupTotal == groupTarget;
+
+		tmp = group[i];
+		group[i] = group[modifyIndex];
+		group[modifyIndex] = tmp;
+
+		if (success)
+			return true;
 	}
 
 	return false;
@@ -404,12 +430,24 @@ FVector UWarpSystem::DetermineJumpDestination(uint8 numPuzzleErrors)
 {
 	FVector destination = jumpTargetPosition;
 
-	// TODO: add an offset based on numErrors
+	// add an offset based on numPuzzleErrors
+	auto offsetScale = numPuzzleErrors * 40.f;
+	destination += FVector(
+		FMath::FRandRange(-offsetScale, offsetScale),
+		FMath::FRandRange(-offsetScale, offsetScale),
+		FMath::FRandRange(-offsetScale, offsetScale)
+	);
 
 	// add an offset equivalent to the ship's current offset from the calculated jump start position
 	destination += (crewManager->GetShipPawn()->GetActorLocation() - jumpStartPosition);
 
-	// TODO: add an offset based on system health level
+	// add an offset based on system health level
+	offsetScale = (100.f - GetHealthLevel()) * 15.f;
+	destination += FVector(
+		FMath::FRandRange(-offsetScale, offsetScale),
+		FMath::FRandRange(-offsetScale, offsetScale),
+		FMath::FRandRange(-offsetScale, offsetScale)
+	);
 
 	return jumpTargetPosition;
 }
@@ -418,17 +456,17 @@ uint8 UWarpSystem::DeterminePuzzleSize()
 {
 	auto jumpDistSq = FVector::DistSquared(jumpStartPosition, jumpTargetPosition);
 
-	if (jumpDistSq < 1000)
+	if (jumpDistSq < 50*50)
 		return 3;
-	if (jumpDistSq < 10000)
+	if (jumpDistSq < 250*250)
 		return 4;
-	if (jumpDistSq < 100000)
+	if (jumpDistSq < 1000*1000)
 		return 5;
-	if (jumpDistSq < 1000000)
+	if (jumpDistSq < 5000*5000)
 		return 6;
-	if (jumpDistSq < 10000000)
+	if (jumpDistSq < 25000*25000)
 		return 7;
-	if (jumpDistSq < 100000000)
+	if (jumpDistSq < 10000*100000)
 		return 8;
 	
 	return 9;

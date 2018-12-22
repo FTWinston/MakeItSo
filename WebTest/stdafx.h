@@ -51,6 +51,9 @@ public:
 	static int32 RandRange(int32 min, int32 max) {
 		return rand() % (max - min + 1) + min;
 	}
+	static float FRandRange(float min, float max) {
+		return min + static_cast <float> (rand()) / (static_cast <float> (RAND_MAX / (max - min)));
+	}
 	static int Min(int min, int max) {
 		return std::min(min, max);
 	}

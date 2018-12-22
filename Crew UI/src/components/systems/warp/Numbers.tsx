@@ -11,7 +11,7 @@ interface IProps {
 export class Numbers extends React.PureComponent<IProps, {}> {
     componentDidMount() {
         for (let i=1; i <= this.props.max; i++) {
-            Hotkeys.registerAction(i.toString() as Hotkey, () => this.props.clicked(i));
+            Hotkeys.registerAction(i.toString() as Hotkey, () => this.pushHotkey(i));
         }
         Hotkeys.registerAction('0', () => this.props.clicked(0));
         Hotkeys.registerAction('`', () => this.props.clicked(0));
@@ -34,8 +34,14 @@ export class Numbers extends React.PureComponent<IProps, {}> {
         }
         else if (prevProps.max < this.props.max) {
             for (let i=prevProps.max + 1; i <= this.props.max; i++) {
-                Hotkeys.registerAction(i.toString() as Hotkey, () => this.props.clicked(i));
+                Hotkeys.registerAction(i.toString() as Hotkey, () => this.pushHotkey(i));
             }
+        }
+    }
+
+    private pushHotkey(i: number) {
+        if (this.props.selected !== i) {
+            this.props.clicked(i);
         }
     }
 
