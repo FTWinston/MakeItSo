@@ -4,18 +4,47 @@
     display: grid;
 
     @include landscape() {
-        grid-template-rows: 1fr 1fr;
+        grid-template-rows: 1fr;
         grid-template-columns: 2fr 1fr;
-        grid-template-areas: "main controls"
-        "main numbers";
+        grid-template-areas: "main controls";
     }
 
     @include portrait() {
-        grid-template-rows: 2fr 1fr;
-        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 3.75fr 1fr;
+        grid-template-columns: 1fr;
         grid-template-areas:
-            "main main"
-            "controls numbers";
+            "main"
+            "controls";
+    }
+
+    &.warp--puzzle:not(.warp--jumping) {
+        @include landscape() {
+            grid-template-rows: 1fr 1fr;
+            grid-template-columns: 2fr 1fr;
+            grid-template-areas: "main controls"
+            "main numbers";
+        }
+    
+        @include portrait() {
+            grid-template-rows: 2fr 1fr;
+            grid-template-columns: 1fr 1fr;
+            grid-template-areas:
+                "main main"
+                "controls numbers";
+        }   
+    }
+}
+
+@include landscape() {
+    .warp__prepareJump {
+        margin-bottom: 1em;
+    }
+}
+
+@include portrait() {
+    .warp__destinationButtons {
+        display: flex;
+        justify-content: space-evenly;
     }
 }
 
@@ -27,18 +56,24 @@
 .warp__toolbar {
     grid-area: controls;
     padding-left: 0.5em;
+    
+    & p {
+        margin-top: 0;
+    }
 }
 
 .warp__numbers {
     grid-area: numbers;
-    font-size: 3em;
 
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
+    align-items: baseline;
+    justify-content: space-around;
+    align-content: center;
 }
 
 .warp__number {
+    font-size: 3em;
     padding: 0.5em;
     margin: 0.25em;
     border: solid $colorSecondary 0.125em;
@@ -46,6 +81,35 @@
     width: 2.25em;
     text-align: center;
     border-radius: 0.125em;
+
+    @include landscape() {
+        @media(max-width: 1250px) {
+            margin: 0.1em;
+        }
+
+        @media(max-width: 1120px) {
+            font-size: 2.75em;
+        }
+
+        @media(max-width: 1000px) {
+            font-size: 2.25em;
+        }
+
+        @media(max-width: 840px) {
+            font-size: 2em;
+        }
+
+        @media(max-width: 725px) {
+            width: 1.75em;
+        }
+    }
+
+    @include portrait() {
+        font-size: 2.25em;
+        width: 1.5em;
+        margin: 0.1em;
+        padding: 0.25em;
+    }
 }
 
 .warp__number--selected {
@@ -77,10 +141,6 @@
     color: $colorBadDark;
 }
 
-.warp__prepareJump {
-    margin-bottom: 1em;
-}
-
 .warp__chargeValue {
     font-size: 2em;
 }
@@ -102,4 +162,27 @@
     font-weight: bold;
     text-align: center;
     color: $colorPrimary;
+}
+
+.warp__jumpButtons {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+@media(max-height: 600px) {
+    .warp__charge {
+        margin-top: 0.5em;
+    }
+    .warp__chargeValue {
+        font-size: 1.5em;
+        height: 1.25em;
+
+        & .progressBar__indicator {
+            padding-top: 0.1em;
+        }
+    }
+
+    .warp__toolbar {
+        font-size: 0.9em;
+    }
 }

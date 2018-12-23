@@ -44,7 +44,7 @@ export class PlottingControls extends React.PureComponent<IProps, {}> {
                 <br/>{rangeMessage}
             </p>
 
-            <div>
+            <div className="warp__jumpButtons">
                 <ConfirmButton text={this.props.text.systems.warp.jump} color={ButtonColor.Primary} disabled={this.props.disableJump || !inRange} clicked={() => this.props.performJump()} />
                 <ConfirmButton text={this.props.text.common.cancel} color={ButtonColor.Secondary} clicked={() => this.props.cancelJump()} />
             </div>
