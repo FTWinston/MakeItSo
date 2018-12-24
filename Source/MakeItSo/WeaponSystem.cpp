@@ -82,7 +82,14 @@ void UWeaponSystem::SendPuzzle_Implementation()
 {
 	FString output = TEXT("wpn_puzzle ");
 
-	// TODO: send puzzle data
+	APPENDINT(output, targetingPuzzle.width);
+	output += TEXT(" ");
+	APPENDINT(output, targetingPuzzle.startCell);
+
+	for (auto cell : targetingPuzzle.cells)
+	{
+		output += cell ? TEXT(" 1") : TEXT(" 0");
+	}
 
 	SendSystem(output);
 }

@@ -7,6 +7,7 @@ import * as Helm from '~/components/systems/helm/store';
 import * as Power from '~/components/systems/power/store';
 import * as Sensors from '~/components/systems/sensors/store';
 import * as Warp from '~/components/systems/warp/store';
+import * as Weapons from '~/components/systems/weapons/store';
 
 // The top-level state object
 export interface ApplicationState {
@@ -19,6 +20,7 @@ export interface ApplicationState {
     sensors: Sensors.SensorState;
     environment: Environment.EnvironmentState;
     warp: Warp.WarpState;
+    weapons: Weapons.WeaponState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -34,6 +36,7 @@ export const reducers = {
     sensors: Sensors.reducer,
     environment: Environment.reducer,
     warp: Warp.reducer,
+    weapons: Weapons.reducer,
 };
 
 export { exhaustiveActionCheck } from './exhaustiveActionCheck';

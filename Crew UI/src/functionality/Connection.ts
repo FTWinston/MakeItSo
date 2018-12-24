@@ -8,6 +8,7 @@ import { msgPrefix as sensorPrefix, receiveMessage as sensorMessage } from '~/co
 import { msgPrefix as damagePrefix, receiveMessage as damageMessage } from '~/components/systems/damage'
 import { msgPrefix as powerPrefix, receiveMessage as powerMessage } from '~/components/systems/power'
 import { msgPrefix as warpPrefix, receiveMessage as warpMessage } from '~/components/systems/warp'
+import { msgPrefix as weaponPrefix, receiveMessage as weaponMessage } from '~/components/systems/weapons'
 
 export class Connection {
     private socket: WebSocket;
@@ -119,6 +120,12 @@ export class Connection {
                 else if (cmd.startsWith(warpPrefix))
                 {
                     if (warpMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                else if (cmd.startsWith(weaponPrefix))
+                {
+                    if (weaponMessage(cmd, data)) {
                         break;
                     }
                 }
