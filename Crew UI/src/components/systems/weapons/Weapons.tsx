@@ -50,8 +50,16 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const selectTarget = (target: SensorTarget) => connection.send(`wpn_target ${target.id}`);
 
             return <div className="system weapons weapons--targetSelection">
-                <SensorView className="weapons__targetSelect" targets={this.props.allTargets} />
-                <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} className="weapons__targetList" />
+                <SensorView
+                    className="weapons__targetSelect"
+                    targets={this.props.allTargets}
+                />
+                <TargetList
+                    text={this.props.text}
+                    targets={this.props.allTargets}
+                    selected={selectTarget}
+                    className="weapons__targetList"
+                />
             </div>
         }
         else if (this.props.selectedTargetingSolution === TargetingSolution.None)
@@ -60,8 +68,16 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const clearTarget = () => connection.send(`wpn_target 0`);
 
             return <div className="system weapons weapons--solutionSelection">
-                <TargetDisplay text={this.props.text} target={this.state.selectedTarget} deselectTarget={clearTarget} />
-                <SolutionList text={this.props.text} solutions={this.props.targetingSolutions} select={selectSolution} />
+                <TargetDisplay
+                    text={this.props.text}
+                    target={this.state.selectedTarget}
+                    deselectTarget={clearTarget}
+                />
+                <SolutionList
+                    text={this.props.text}
+                    solutions={this.props.targetingSolutions}
+                    select={selectSolution}
+                />
             </div>
         }
         else 
@@ -70,8 +86,19 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const clearSolution = () => connection.send(`wpn_solution ${TargetingSolution.None}`);
 
             return <div className="system weapons weapons--targeting">
-                <TargetDisplay text={this.props.text} target={this.state.selectedTarget} deselectTarget={clearTarget} deselectSolution={clearSolution} />
-                <FlowPuzzle text={this.props.text} width={this.props.puzzleWidth} startCell={this.props.puzzleStartCell} cells={this.props.puzzleCells} />
+                <TargetDisplay
+                    text={this.props.text}
+                    target={this.state.selectedTarget}
+                    deselectTarget={clearTarget}
+                    solution={this.props.selectedTargetingSolution}
+                    deselectSolution={clearSolution}
+                />
+                <FlowPuzzle
+                    text={this.props.text}
+                    width={this.props.puzzleWidth}
+                    startCell={this.props.puzzleStartCell}
+                    cells={this.props.puzzleCells}
+                />
             </div>
         }
     }

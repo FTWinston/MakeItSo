@@ -123,7 +123,7 @@ void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 
 void UWeaponSystem::SelectTargetingSolution_Implementation(ETargetingSolution solution)
 {
-	if (selectedTargetID == 0 || !SETCONTAINS(targetingSolutions, solution))
+	if (selectedTargetID == 0 || (solution != ETargetingSolution::None && !SETCONTAINS(targetingSolutions, solution)))
 		return; // invalid value, or invalid time
 
 	selectedTargetingSolution = solution;

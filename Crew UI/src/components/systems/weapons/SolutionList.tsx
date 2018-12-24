@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { TargetingSolution } from './store';
-import { SolutionListItem } from './SolutionListItem';
+import { SolutionInfo } from './SolutionInfo';
 
 interface IProps {
     text: TextLocalisation;
@@ -13,11 +13,12 @@ export class SolutionList extends React.PureComponent<IProps, {}> {
     public render() {
         const items = this.props.solutions.map((item, index) => {
             const select = () => this.props.select(item);
-            return <SolutionListItem
+            return <SolutionInfo
                 text={this.props.text}
                 solution={item}
                 select={select}
                 key={index}
+                className="weapons__solutionListItem"
             />
         });
 

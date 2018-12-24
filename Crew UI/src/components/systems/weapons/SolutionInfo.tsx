@@ -1,29 +1,34 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { TargetingSolution } from './store';
-import './SolutionListItem.scss';
+import './SolutionInfo.scss';
 
 interface IProps {
     text: TextLocalisation;
     solution: TargetingSolution;
-    select: () => void;
+    select?: () => void;
+    className?: string;
 }
 
-export class SolutionListItem extends React.PureComponent<IProps, {}> {
+export class SolutionInfo extends React.PureComponent<IProps, {}> {
     public render() {
         const text = this.getSolutionNameAndDesc();
-        const select = () => this.props.select();
+        const select = this.props.select === undefined
+            ? undefined : () => this.props.select!();
 
-        let classes = 'solutionListItem';
+        let classes = 'solutionInfo';
         if (this.isVulnerability()) {
-            classes += ' solutionListItem--vulnerability';
+            classes += ' solutionInfo--vulnerability';
+        }
+        if (this.props.className !== undefined) {
+            classes += ' ' + this.props.className;
         }
 
         return <div className={classes} onClick={select}>
-            <div className="solutionListItem__name">{text.name}</div>
-            <div className="solutionListItem__desc">{text.desc}</div>
-            <div className="solutionListItem__difficulty"><span className="solutionListItem__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionListItem__value">{this.getDifficulty()}</span></div>
-            <div className="solutionListItem__facing"><span className="solutionListItem__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className="solutionListItem__value">{this.getFacing()}</span></div>
+            <div className="solutionInfo__name">{text.name}</div>
+            <div className="solutionInfo__desc">{text.desc}</div>
+            <div className="solutionInfo__difficulty"><span className="solutionInfo__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionInfo__value">{this.getDifficulty()}</span></div>
+            <div className="solutionInfo__facing"><span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className="solutionInfo__value">{this.getFacing()}</span></div>
         </div>
     }
 

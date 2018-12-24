@@ -1,13 +1,13 @@
 @import '../../general/mixins';
 
-.solutionListItem {
+.weapons__solutionListItem {
     padding: 0.5em;
     border-radius: 0.25em;
     background-color: $fadedColor;
     color: white;
 }
 
-.solutionListItem + .solutionListItem {
+.weapons__solutionListItem + .weapons__solutionListItem {
     margin-top: 1em;
 }
 
@@ -16,16 +16,16 @@
     to { color: white; }
 }
 
-.solutionListItem--vulnerability .solutionListItem__name {
+.solutionInfo--vulnerability .solutionInfo__name {
     animation-name: vulnerability;
     animation-duration: 0.5s;
     animation-direction: alternate;
 }
 
-.solutionListItem__name {
+.solutionInfo__name {
     font-weight: bold;
 }
 
-.solutionListItem__value {
+.solutionInfo__value {
     font-weight: bold;
 }
