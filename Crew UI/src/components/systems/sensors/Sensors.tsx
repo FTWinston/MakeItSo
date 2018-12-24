@@ -51,7 +51,7 @@ class Sensors extends ShipSystemComponent<SensorsProps, IState> {
         if (this.state.selectedTarget === undefined) {
             return <div className="system sensors sensors--noTarget">
                 <SensorView className="sensors__targetSelect" targets={this.props.allTargets} />
-                <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} />
+                <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} className="sensors__targetList" />
             </div>
         }
         else {

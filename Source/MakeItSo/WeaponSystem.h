@@ -142,9 +142,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void SelectTargetingSolution(ETargetingSolution solution)
 #ifdef WEB_SERVER_TEST
-	{
-		SelectTargetingSolution_Implementation(solution);
-	}
+	{ SelectTargetingSolution_Implementation(solution); }
 	void SelectTargetingSolution_Implementation(ETargetingSolution solution);
 #endif
 	;

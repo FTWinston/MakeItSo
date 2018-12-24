@@ -239,7 +239,7 @@ bool USensorSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 {
 	if (STARTS_WITH(msg, "sensors_target "))
 	{
-		int8 targetID = ExtractInt(msg, sizeof("sensors_target "));
+		uint8 targetID = ExtractInt(msg, sizeof("sensors_target "));
 		OpenTarget(targetID);
 	}
 	else if (STARTS_WITH(msg, "sensors_reveal "))

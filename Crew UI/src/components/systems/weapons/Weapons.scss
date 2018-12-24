@@ -1,12 +1,12 @@
 @import '../../general/mixins';
 
-.weapons {
+.weapons--targetSelection {
     display: grid;
 
     @include landscape() {
         grid-template-rows: 1fr;
         grid-template-columns: 2fr 1fr;
-        grid-template-areas: "map controls";
+        grid-template-areas: "map list";
     }
 
     @include portrait() {
@@ -14,10 +14,41 @@
         grid-template-columns: 1fr;
         grid-template-areas:
             "map"
+            "list";
+    }
+}
+
+.weapons--solutionSelection, .weapons--targeting {
+    display: grid;
+
+    @include landscape() {
+        grid-template-rows: 1fr;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas: "info controls";
+    }
+
+    @include portrait() {
+        grid-template-rows: 1fr 1fr;
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "info"
             "controls";
     }
 }
 
 .weapons__targetSelect {
     grid-area: 'map';
+}
+
+.weapons__targetList {
+    grid-area: 'list';
+}
+
+.weapons__targetDisplay {
+    grid-area: 'info';
+}
+
+.weapons__solutionList,
+.weapons__puzzle {
+    grid-area: 'controls';
 }

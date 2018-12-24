@@ -23,7 +23,18 @@ void UWeaponSystem::ResetData()
 
 bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (MATCHES(msg, "wpn_fire"))
+	if (STARTS_WITH(msg, "wpn_target "))
+	{
+		uint8 targetID = ExtractInt(msg, sizeof("wpn_target "));
+		SelectTarget(targetID);
+	}
+
+	if (STARTS_WITH(msg, "wpn_solution "))
+	{
+		ETargetingSolution solution = (ETargetingSolution)ExtractInt(msg, sizeof("wpn_solution "));
+		SelectTargetingSolution(solution);
+	}
+	else if (STARTS_WITH(msg, "wpn_fire "))
 	{
 		// TODO: parse parameters, populate solutionSteps
 		TArray<FWeaponPuzzleData::EDirection> solutionSteps;
@@ -98,6 +109,7 @@ void UWeaponSystem::SendPuzzle_Implementation()
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 {
 	selectedTargetID = targetID;
+	selectedTargetingSolution = ETargetingSolution::None;
 
 	DetermineTargetingSolutions();
 
