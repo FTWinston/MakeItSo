@@ -1,0 +1,31 @@
+@import '../../general/mixins';
+
+.solutionListItem {
+    padding: 0.5em;
+    border-radius: 0.25em;
+    background-color: $fadedColor;
+    color: white;
+}
+
+.solutionListItem + .solutionListItem {
+    margin-top: 1em;
+}
+
+@keyframes vulnerability {
+    from { color: $colorGoodLight; }
+    to { color: white; }
+}
+
+.solutionListItem--vulnerability .solutionListItem__name {
+    animation-name: vulnerability;
+    animation-duration: 0.5s;
+    animation-direction: alternate;
+}
+
+.solutionListItem__name {
+    font-weight: bold;
+}
+
+.solutionListItem__value {
+    font-weight: bold;
+}

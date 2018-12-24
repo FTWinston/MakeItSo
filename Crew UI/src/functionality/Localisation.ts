@@ -164,7 +164,84 @@ export interface TextLocalisation {
             seconds: string;
         },
         weapons: {
-
+            difficultyPrefix: string;
+            difficulty: {
+                easy: string;
+                medium: string;
+                hard: string;
+            },
+            facingPrefix: string;
+            face: {
+                none: string;
+                front: string;
+                rear: string;
+                top: string;
+                bottom: string;
+                left: string;
+                right: string;
+            },
+            solutions: {
+                misc: {
+                    name: string;
+                    desc: string;
+                },
+                engines: {
+                    name: string;
+                    desc: string;
+                },
+                warp: {
+                    name: string;
+                    desc: string;
+                },
+                weapons: {
+                    name: string;
+                    desc: string;
+                },
+                sensors: {
+                    name: string;
+                    desc: string;
+                },
+                power: {
+                    name: string;
+                    desc: string;
+                },
+                damage: {
+                    name: string;
+                    desc: string;
+                },
+                comms: {
+                    name: string;
+                    desc: string;
+                },
+                miscVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+                engineVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+                warpVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+                weaponsVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+                sensorsVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+                powerVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+                damageVulnerability: {
+                    name: string;
+                    desc: string;
+                },
+            }
         },
         sensors: {
             targetTypes: {

@@ -230,7 +230,84 @@ let words: TextLocalisation = {
             seconds: 's',
         },
         weapons: {
-
+            difficultyPrefix: 'Difficulty:',
+            difficulty: {
+                easy: 'Easy',
+                medium: 'Medium',
+                hard: 'Hard',
+            },
+            facingPrefix: 'Easiest when facing:',
+            face: {
+                none: 'N/A',
+                front: 'Front',
+                rear: 'Rear',
+                top: 'Top',
+                bottom: 'Bottom',
+                left: 'Left',
+                right: 'Right',
+            },
+            solutions: {
+                misc: {
+                    name: 'General',
+                    desc: 'Don\'t focus on any specific point. Just try and hit the target.',
+                },
+                engines: {
+                    name: 'Target engines',
+                    desc: 'Limit the target\'s ability to manoeuvre.',
+                },
+                warp: {
+                    name: 'Target warp drive',
+                    desc: 'Increase the difficulty of jumping away.',
+                },
+                weapons: {
+                    name: 'Target weapons',
+                    desc: 'Reduce the target\'s ability to shoot back.',
+                },
+                sensors: {
+                    name: 'Target sensors',
+                    desc: 'Limit the target\'s situational awareness.',
+                },
+                power: {
+                    name: 'Target power core',
+                    desc: 'Reduce the target\'s available power.',
+                },
+                damage: {
+                    name: 'Target damage control',
+                    desc: 'Prevent the target from repairing damage as easily.',
+                },
+                comms: {
+                    name: 'Target communications',
+                    desc: 'Make it harder for the target to call for help.',
+                },
+                miscVulnerability: {
+                    name: 'Vulnerability: general',
+                    desc: 'Inflict more significant damage.',
+                },
+                engineVulnerability: {
+                    name: 'Vulnerability: engines',
+                    desc: 'Inflict more significant damage.',
+                },
+                warpVulnerability: {
+                    name: 'Vulnerability: warp drive',
+                    desc: 'Inflict more significant damage.',
+                },
+                weaponsVulnerability: {
+                    name: 'Vulnerability: weapons',
+                    desc: 'Inflict more significant damage.',
+                },
+                sensorsVulnerability: {
+                    name: 'Vulnerability: sensors',
+                    desc: 'Inflict more significant damage.',
+                },
+                powerVulnerability: {
+                    name: 'Vulnerability: power core',
+                    desc: 'Inflict more significant damage.',
+                },
+                damageVulnerability: {
+                    name: 'Vulnerability: damage control',
+                    desc: 'Inflict more significant damage.',
+                },
+            }
         },
         sensors: {
             targetTypes: {

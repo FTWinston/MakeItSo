@@ -116,6 +116,7 @@ void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 	if (ISCLIENT())
 	{
 		SendSelectedTarget();
+		SendSelectedTargetingSolution();
 		SendTargetingSolutions();
 	}
 }
@@ -157,7 +158,7 @@ void UWeaponSystem::DetermineTargetingSolutions()
 {
 	CLEAR(targetingSolutions);
 
-	if (selectedTargetID = 0)
+	if (selectedTargetID == 0)
 		return;
 
 	// TODO: decide available targeting solutions based on target type and sensor data

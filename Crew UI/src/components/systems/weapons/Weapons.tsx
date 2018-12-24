@@ -42,7 +42,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
     name() { return 'weapons'; }
 
     protected getOptionLabels() {
-        return this.props.text.systems.weapons;
+        return this.props.text.systems.warp;
     }
 
     public render() {
@@ -54,7 +54,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 <TargetList text={this.props.text} targets={this.props.allTargets} selected={selectTarget} className="weapons__targetList" />
             </div>
         }
-        else if (this.props.selectedTargetingSolution !== TargetingSolution.None)
+        else if (this.props.selectedTargetingSolution === TargetingSolution.None)
         {
             const selectSolution = (solution: TargetingSolution) => connection.send(`wpn_solution ${solution}`);
             const clearTarget = () => connection.send(`wpn_target 0`);
