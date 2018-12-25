@@ -8,6 +8,7 @@ interface IProps {
     solution: TargetingSolution;
     select?: () => void;
     className?: string;
+    currentlyFacing?: string;
 }
 
 export class SolutionInfo extends React.PureComponent<IProps, {}> {
@@ -24,11 +25,18 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
             classes += ' ' + this.props.className;
         }
 
+        const currentlyFacing = this.props.currentlyFacing === undefined
+            ? undefined
+            : <div className="solutionInfo__currentlyFacing">
+                <span className="solutionInfo__label">{this.props.text.systems.weapons.currentlyFacingPrefix}</span> <span className="solutionInfo__value">{this.getCurrentlyFacing()}</span>
+            </div>
+
         return <div className={classes} onClick={select}>
             <div className="solutionInfo__name">{text.name}</div>
             <div className="solutionInfo__desc">{text.desc}</div>
             <div className="solutionInfo__difficulty"><span className="solutionInfo__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionInfo__value">{this.getDifficulty()}</span></div>
-            <div className="solutionInfo__facing"><span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className="solutionInfo__value">{this.getFacing()}</span></div>
+            <div className="solutionInfo__bestFacing"><span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className="solutionInfo__value">{this.getBestFacing()}</span></div>
+            {currentlyFacing}
         </div>
     }
 
@@ -98,7 +106,7 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
         }
     }
 
-    private getFacing() {
+    private getBestFacing() {
         const facing = this.props.text.systems.weapons.face;
 
         switch (this.props.solution) {
@@ -134,6 +142,10 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
             default:
                 return facing.none;
         }
+    }
+
+    private getCurrentlyFacing() {
+        return this.props.currentlyFacing!;
     }
 
     private isVulnerability() {

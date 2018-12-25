@@ -1,0 +1,51 @@
+@import '../../general/mixins';
+
+.targetList__item {
+    padding: 0.5em;
+    border-radius: 0.25em;
+    background-color: $fadedColor;
+    color: white;
+    cursor: pointer;
+}
+
+.targetList__item + .targetList__item {
+    margin-top: 1em;
+}
+
+.targetList__item {
+    &.targetInfo--star {
+        background-color: $colorSecondary;
+    }
+
+    &.targetInfo--planet {
+        background-color: $colorTertiary;
+    }
+
+    &.targetInfo--station {
+        border: solid dimgrey 0.1em;
+        background-color: grey;
+    }
+
+    &.targetInfo--ship {
+        background-color: $colorQuaternary;
+    }
+
+    &.targetInfo--enemy {
+        border-color: $colorBadDark;
+        background-color: $colorBadLight;
+    }
+
+    &.targetInfo--neutral {
+        border-color: $colorHighlight;
+        background-color: $colorQuandry;
+    }
+
+    &.targetInfo--friendly {
+        border-color: $colorGoodDark;
+        background-color: $colorGoodLight;
+    }
+}
+
+.targetInfo__positionElement + .targetInfo__positionElement::before {
+    content: ', ';
+}

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SensorTarget, TextLocalisation } from '~/functionality';
-import { TargetListItem } from './TargetListItem';
+import { TargetInfo } from './TargetInfo';
 import './TargetList.scss';
 
 interface IProps {
@@ -13,7 +13,15 @@ interface IProps {
 export class TargetList extends React.PureComponent<IProps, {}> {
     public render() {
         const text = this.props.text;
-        const targets = this.props.targets.map((t, i) => <TargetListItem target={t} key={i} text={text} selected={() => this.props.selected(t)} /> )
+        const targets = this.props.targets.map((t, i) =>
+            <TargetInfo
+                target={t}
+                key={i}
+                text={text}
+                selected={() => this.props.selected(t)}
+                className="targetList__item"
+            />
+        );
         
         let classes = 'targetList';
         if (this.props.className !== undefined) {

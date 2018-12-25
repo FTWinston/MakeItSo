@@ -230,6 +230,7 @@ let words: TextLocalisation = {
             seconds: 's',
         },
         weapons: {
+            changeTarget: 'Change target',
             difficultyPrefix: 'Difficulty:',
             difficulty: {
                 easy: 'Easy',
@@ -237,6 +238,7 @@ let words: TextLocalisation = {
                 hard: 'Hard',
             },
             facingPrefix: 'Easiest when facing:',
+            currentlyFacingPrefix: 'Currently facing:',
             face: {
                 none: 'N/A',
                 front: 'Front',
@@ -246,37 +248,39 @@ let words: TextLocalisation = {
                 left: 'Left',
                 right: 'Right',
             },
+            solutionPrompt: 'Select a targeting solution to continue.',
+            changeSolution: 'Change targeting solution',
             solutions: {
                 misc: {
                     name: 'General',
                     desc: 'Don\'t focus on any specific point. Just try and hit the target.',
                 },
                 engines: {
-                    name: 'Target engines',
+                    name: 'Engines',
                     desc: 'Limit the target\'s ability to manoeuvre.',
                 },
                 warp: {
-                    name: 'Target warp drive',
+                    name: 'Warp drive',
                     desc: 'Increase the difficulty of jumping away.',
                 },
                 weapons: {
-                    name: 'Target weapons',
+                    name: 'Weapons',
                     desc: 'Reduce the target\'s ability to shoot back.',
                 },
                 sensors: {
-                    name: 'Target sensors',
+                    name: 'Sensors',
                     desc: 'Limit the target\'s situational awareness.',
                 },
                 power: {
-                    name: 'Target power core',
+                    name: 'Power core',
                     desc: 'Reduce the target\'s available power.',
                 },
                 damage: {
-                    name: 'Target damage control',
+                    name: 'Damage control',
                     desc: 'Prevent the target from repairing damage as easily.',
                 },
                 comms: {
-                    name: 'Target communications',
+                    name: 'Communications',
                     desc: 'Make it harder for the target to call for help.',
                 },
                 miscVulnerability: {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { SensorTarget, TextLocalisation } from '~/functionality';
-import './TargetListItem.scss';
+import './TargetInfo.scss';
 import { SensorTargetType } from '~/functionality/sensors/SensorTarget';
 import { TargetDisplay } from './TargetDisplay';
 import { RelatableTarget, Relationship } from '~/functionality/sensors/RelatableTarget';
@@ -8,49 +8,57 @@ import { RelatableTarget, Relationship } from '~/functionality/sensors/Relatable
 interface IProps {
     text: TextLocalisation;
     target: SensorTarget;
-    selected: () => void;
+    className?: string;
+    selected?: () => void;
 }
 
-export class TargetListItem extends React.PureComponent<IProps, {}> {
+export class TargetInfo extends React.PureComponent<IProps, {}> {
     public render() {
         const target = this.props.target;
         const classes = this.determineClasses();
         const type = TargetDisplay.getTypeName(target.type, this.props.text);
+        const selected = this.props.selected === undefined
+            ? undefined : () => this.props.selected!();
 
-        return <div className={classes} onClickCapture={() => this.props.selected()}>
-            <div className="targetListItem__heading">
-                <span className="targetListItem__type">{type}</span>: <span className="targetListItem__id">{target.id}</span>
+        return <div className={classes} onClickCapture={selected}>
+            <div className="targetInfo__heading">
+                <span className="targetInfo__type">{type}</span>: <span className="targetInfo__id">{target.id}</span>
             </div>
-            <div className="targetListItem__position">
+            <div className="targetInfo__position">
                 Position: 
-                <span className="targetListItem__positionElement">{target.position.x}</span>
-                <span className="targetListItem__positionElement">{target.position.y}</span>
-                <span className="targetListItem__positionElement">{target.position.z}</span>
+                <span className="targetInfo__positionElement">{target.position.x}</span>
+                <span className="targetInfo__positionElement">{target.position.y}</span>
+                <span className="targetInfo__positionElement">{target.position.z}</span>
             </div>
         </div>
     }
 
     private determineClasses() {
-        let classes = 'targetListItem';
+        let classes = 'targetInfo';
         switch (this.props.target.type) {
             case SensorTargetType.Star:
-                classes += ' targetListItem--star';
+                classes += ' targetInfo--star';
                 break;
             case SensorTargetType.Planet:
-                classes += ' targetListItem--planet';
+                classes += ' targetInfo--planet';
                 break;
             case SensorTargetType.Station:
-                classes += ' targetListItem--station';
+                classes += ' targetInfo--station';
                 classes += this.getRelationshipClasses();
                 break;
             case SensorTargetType.Ship:
-                classes += ' targetListItem--ship';
+                classes += ' targetInfo--ship';
                 classes += this.getRelationshipClasses();
                 break;
             case SensorTargetType.Misc:
-                classes += ' targetListItem--misc';
+                classes += ' targetInfo--misc';
                 break;
         }
+
+        if (this.props.className !== undefined) {
+            classes += ' ' + this.props.className;
+        }
+
         return classes;
     }
 
@@ -59,13 +67,13 @@ export class TargetListItem extends React.PureComponent<IProps, {}> {
 
         switch (relatable.relationship) {
             case Relationship.Enemy:
-                return ' targetListItem--enemy';
+                return ' targetInfo--enemy';
             case Relationship.Friendly:
-                return ' targetListItem--friendly';
+                return ' targetInfo--friendly';
             case Relationship.Neutral:
-                return ' targetListItem--neutral';
+                return ' targetInfo--neutral';
             case Relationship.Unknown:
-                return ' targetListItem--unknown';
+                return ' targetInfo--unknown';
         }
     }
 }

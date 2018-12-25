@@ -164,6 +164,7 @@ export interface TextLocalisation {
             seconds: string;
         },
         weapons: {
+            changeTarget: string;
             difficultyPrefix: string;
             difficulty: {
                 easy: string;
@@ -171,6 +172,7 @@ export interface TextLocalisation {
                 hard: string;
             },
             facingPrefix: string;
+            currentlyFacingPrefix: string;
             face: {
                 none: string;
                 front: string;
@@ -180,6 +182,8 @@ export interface TextLocalisation {
                 left: string;
                 right: string;
             },
+            solutionPrompt: string;
+            changeSolution: string;
             solutions: {
                 misc: {
                     name: string;

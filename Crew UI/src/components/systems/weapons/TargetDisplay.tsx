@@ -4,6 +4,7 @@ import { PushButton } from '~/components/general';
 import { ButtonColor } from '~/components/general/buttons/Button';
 import { TargetingSolution } from './store';
 import { SolutionInfo } from './SolutionInfo';
+import { TargetInfo } from '../sensors/TargetInfo';
 
 interface IProps {
     text: TextLocalisation;
@@ -17,23 +18,36 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
     public render() {
         const goBack = () => this.props.deselectTarget();
         
+        const target = <TargetInfo
+            target={this.props.target}
+            text={this.props.text}
+        />
+
         const solution = this.props.solution === undefined
-            ? undefined
-            : <SolutionInfo text={this.props.text} solution={this.props.solution} />
+            ? <div className="weapons__solutionPrompt">{this.props.text.systems.weapons.solutionPrompt}</div>
+            : <SolutionInfo
+                text={this.props.text}
+                solution={this.props.solution}
+                className="weapons__solutionDisplay"
+                currentlyFacing={this.getFacing()}
+            />
 
         const clearSolution = this.props.deselectSolution === undefined
             ? undefined
-            : <PushButton clicked={() => this.props.deselectSolution!()} text={this.props.text.common.cancel} color={ButtonColor.Quandry} />
+            : <PushButton clicked={() => this.props.deselectSolution!()} text={this.props.text.systems.weapons.changeSolution} color={ButtonColor.Quandry} />
 
         return <div className="weapons__targetDisplay">
-            TODO: implement
-
-            Target info: TODO.
+            {target}
 
             {solution}
             
             {clearSolution}
-            <PushButton clicked={goBack} text={this.props.text.common.goBack} color={ButtonColor.Quaternary} />
+            <PushButton clicked={goBack} text={this.props.text.systems.weapons.changeTarget} color={ButtonColor.Quaternary} />
         </div>
+    }
+
+    private getFacing() {
+        // TODO: actually calculate this ... need target's orientation!
+        return this.props.text.systems.weapons.face.front;
     }
 }

@@ -52,3 +52,7 @@
 .weapons__puzzle {
     grid-area: 'controls';
 }
+
+.weapons__solutionPrompt, .weapons__solutionDisplay {
+    margin: 1em 0;
+}
