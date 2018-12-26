@@ -1,0 +1,16 @@
+@import '../../general/mixins';
+
+.fillPuzzle {
+    display: grid;
+}
+
+.fillPuzzle--size0 {
+    visibility: hidden;
+}
+
+@for $i from 3 through 9 {
+    .fillPuzzle--size#{$i} {
+        grid-template-rows: repeat($i, 1fr);
+        grid-template-columns: repeat($i, 1fr);
+    }
+}

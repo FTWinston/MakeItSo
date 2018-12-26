@@ -10,7 +10,7 @@ import { WeaponState, TargetingSolution } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
 import { SolutionList } from './SolutionList';
-import { FlowPuzzle } from './FlowPuzzle';
+import { FillPuzzle } from './FillPuzzle';
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
@@ -84,6 +84,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
         {
             const clearTarget = () => connection.send(`wpn_target 0`);
             const clearSolution = () => connection.send(`wpn_solution ${TargetingSolution.None}`);
+            const sendFire = (indices: number[]) => connection.send(`wpn_fire ${indices.join(' ')}`);
 
             return <div className="system weapons weapons--targeting">
                 <TargetDisplay
@@ -93,11 +94,12 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     solution={this.props.selectedTargetingSolution}
                     deselectSolution={clearSolution}
                 />
-                <FlowPuzzle
+                <FillPuzzle
                     text={this.props.text}
                     width={this.props.puzzleWidth}
                     startCell={this.props.puzzleStartCell}
                     cells={this.props.puzzleCells}
+                    onCompleted={sendFire}
                 />
             </div>
         }

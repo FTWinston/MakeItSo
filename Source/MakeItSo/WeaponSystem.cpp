@@ -217,7 +217,7 @@ void UWeaponSystem::GeneratePuzzle()
 	uint8 numCells = targetingPuzzle.width * targetingPuzzle.width;
 	targetingPuzzle.startCell = FMath::RandRange(0, numCells - 1);
 	for (uint8 i = 0; i < numCells; i++)
-		SETADD(targetingPuzzle.cells, FMath::RandRange(0, 10) == 0);
+		SETADD(targetingPuzzle.cells, FMath::RandRange(0, 10) != 0);
 }
 
 void UWeaponSystem::ClearPuzzle()
