@@ -30,10 +30,10 @@ struct FWeaponPuzzleData
 	uint8 startCell;
 };
 
-UCLASS()
-class MAKEITSO_API UWeaponSystem : public UShipSystem
-{
-	enum ETargetingSolution : uint8
+USTRUCT()
+struct FWeaponTargetingSolution {
+
+	enum ETargetingSolutionType : uint8
 	{
 		None = 0,
 
@@ -61,6 +61,49 @@ class MAKEITSO_API UWeaponSystem : public UShipSystem
 		MAX_SYSTEM_VULNERABILITY = DamageControlVulnerability
 	};
 
+	enum ESolutionDifficulty : uint8 {
+		VeryEasy = 0,
+		Easy,
+		Medium,
+		Hard,
+		VeryHard,
+		Impossible,
+	};
+
+	enum ETargetingFace : int8 { // These are numbered stupidly to easily identify opposite faces
+		NoFace = 0,
+		Front = 1,
+		Rear = -1,
+		Left = 2,
+		Right = -2,
+		Top = 3,
+		Bottom = -3,
+	};
+
+	GENERATED_BODY()
+
+	FWeaponTargetingSolution() {}
+	
+	FWeaponTargetingSolution(ETargetingSolutionType type, ESolutionDifficulty difficulty, ETargetingFace bestFace)
+	{
+		this->type = type;
+		this->baseDifficulty = difficulty;
+		this->bestFacing = bestFace;
+	}
+
+	UPROPERTY(Replicated)
+	ETargetingSolutionType type;
+
+	UPROPERTY(Replicated)
+	ESolutionDifficulty baseDifficulty;
+
+	UPROPERTY(Replicated)
+	ETargetingFace bestFacing;
+};
+
+UCLASS()
+class MAKEITSO_API UWeaponSystem : public UShipSystem
+{
 	GENERATED_BODY()
 public:
 	UWeaponSystem();
@@ -74,11 +117,12 @@ protected:
 private:
 	void DetermineTargetingSolutions();
 	void ClearPuzzle();
-	uint8 DeterminePuzzleSize();
-	void GeneratePuzzle();
+	FWeaponTargetingSolution::ESolutionDifficulty DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
+	uint8 DeterminePuzzleSize(FWeaponTargetingSolution::ESolutionDifficulty difficulty);
+	void GeneratePuzzle(FWeaponTargetingSolution solution);
 	bool IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzleSolution);
-	UShipSystem::ESystem GetSystemForSolution(ETargetingSolution solution);
-	uint8 GetDamageForSolution(ETargetingSolution solution);
+	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
+	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SelectedTargetID)
@@ -86,17 +130,20 @@ private:
 	void OnReplicated_SelectedTargetID(uint16 beforeChange) { SendSelectedTarget(); }
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSolutions)
-	TSet<ETargetingSolution> targetingSolutions;
-	void OnReplicated_TargetingSolutions(TSet<ETargetingSolution> beforeChange) { SendTargetingSolutions(); }
+	TSet<FWeaponTargetingSolution> targetingSolutions;
+	void OnReplicated_TargetingSolutions(TSet<FWeaponTargetingSolution> beforeChange) { SendTargetingSolutions(); }
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SelectedTargetingSolution)
-	ETargetingSolution selectedTargetingSolution;
-	void OnReplicated_SelectedTargetingSolution(ETargetingSolution beforeChange) { SendSelectedTargetingSolution(); }
+	int8 selectedTargetingSolution;
+	void OnReplicated_SelectedTargetingSolution(int8 beforeChange) { SendSelectedTargetingSolution(); }
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingPuzzle)
 	FWeaponPuzzleData targetingPuzzle;
 	void OnReplicated_TargetingPuzzle(FWeaponPuzzleData beforeChange) { SendPuzzle(); }
 
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CurrentlyFacing)
+	FWeaponTargetingSolution::ETargetingFace currentlyFacing;
+	void OnReplicated_CurrentlyFacing(FWeaponTargetingSolution::ETargetingFace beforeChange) { SendFacing(); }
 
 	UFUNCTION(Client, Reliable)
 	void SendSelectedTarget()
@@ -130,6 +177,14 @@ private:
 #endif
 	;
 
+	UFUNCTION(Client, Reliable)
+	void SendFacing()
+#ifdef WEB_SERVER_TEST
+	{ SendFacing_Implementation(); }
+	void SendFacing_Implementation();
+#endif
+	;
+
 
 	UFUNCTION(Server, Reliable)
 	void SelectTarget(uint16 targetID)
@@ -140,10 +195,10 @@ private:
 	;
 
 	UFUNCTION(Server, Reliable)
-	void SelectTargetingSolution(ETargetingSolution solution)
+	void SelectTargetingSolution(int8 solutionIndex)
 #ifdef WEB_SERVER_TEST
-	{ SelectTargetingSolution_Implementation(solution); }
-	void SelectTargetingSolution_Implementation(ETargetingSolution solution);
+	{ SelectTargetingSolution_Implementation(solutionIndex); }
+	void SelectTargetingSolution_Implementation(int8 solutionIndex);
 #endif
 	;
 

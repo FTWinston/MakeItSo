@@ -10,13 +10,15 @@
 
 UWeaponSystem::UWeaponSystem()
 {
+	// TODO: make this tick and recalculate currentlyFacing when there's a target
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UWeaponSystem::ResetData()
 {
 	selectedTargetID = 0;
-	selectedTargetingSolution = ETargetingSolution::None;
+	selectedTargetingSolution = -1;
+	currentlyFacing = FWeaponTargetingSolution::ETargetingFace::NoFace;
 	CLEAR(targetingSolutions);
 	ClearPuzzle();
 }
@@ -31,8 +33,8 @@ bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 
 	if (STARTS_WITH(msg, "wpn_solution "))
 	{
-		ETargetingSolution solution = (ETargetingSolution)ExtractInt(msg, sizeof("wpn_solution "));
-		SelectTargetingSolution(solution);
+		int8 solutionIndex = ExtractInt(msg, sizeof("wpn_solution "));
+		SelectTargetingSolution(solutionIndex);
 	}
 	else if (STARTS_WITH(msg, "wpn_fire "))
 	{
@@ -52,8 +54,9 @@ void UWeaponSystem::SendAllData_Implementation()
 	SendSelectedTarget();
 	SendTargetingSolutions();
 	SendSelectedTargetingSolution();
+	SendFacing();
 
-	if (selectedTargetID != 0 && selectedTargetingSolution != ETargetingSolution::None)
+	if (selectedTargetID != 0 && selectedTargetingSolution != -1)
 		SendPuzzle();
 }
 
@@ -74,7 +77,11 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 	for (auto solution : targetingSolutions)
 	{
 		output += TEXT(" ");
-		APPENDINT(output, (uint8)solution);
+		APPENDINT(output, (uint8)solution.type);
+		output += TEXT(" ");
+		APPENDINT(output, (uint8)solution.baseDifficulty);
+		output += TEXT(" ");
+		APPENDINT(output, (int8)solution.bestFacing);
 	}
 
 	SendSystem(output);
@@ -84,7 +91,7 @@ void UWeaponSystem::SendSelectedTargetingSolution_Implementation()
 {
 	FString output = TEXT("wpn_solution ");
 
-	APPENDINT(output, (uint8)selectedTargetingSolution);
+	APPENDINT(output, (int8)selectedTargetingSolution);
 
 	SendSystem(output);
 }
@@ -105,11 +112,20 @@ void UWeaponSystem::SendPuzzle_Implementation()
 	SendSystem(output);
 }
 
+void UWeaponSystem::SendFacing_Implementation()
+{
+	FString output = TEXT("wpn_facing ");
+
+	APPENDINT(output, (int8)currentlyFacing);
+
+	SendSystem(output);
+}
+
 
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 {
 	selectedTargetID = targetID;
-	selectedTargetingSolution = ETargetingSolution::None;
+	selectedTargetingSolution = -1;
 
 	DetermineTargetingSolutions();
 
@@ -121,18 +137,20 @@ void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 	}
 }
 
-void UWeaponSystem::SelectTargetingSolution_Implementation(ETargetingSolution solution)
+void UWeaponSystem::SelectTargetingSolution_Implementation(int8 solutionIndex)
 {
-	if (selectedTargetID == 0 || (solution != ETargetingSolution::None && !SETCONTAINS(targetingSolutions, solution)))
+	if (selectedTargetID == 0 || solutionIndex < -1 || solutionIndex >= SIZENUM(targetingSolutions))
 		return; // invalid value, or invalid time
 
-	selectedTargetingSolution = solution;
+	selectedTargetingSolution = solutionIndex;
 	if (ISCLIENT())
 		SendSelectedTargetingSolution();
 
-	if (solution != ETargetingSolution::None)
+	if (solutionIndex > -1)
 	{
-		GeneratePuzzle();
+		auto solution = targetingSolutions[solutionIndex];
+
+		GeneratePuzzle(solution);
 		if (ISCLIENT())
 			SendPuzzle();
 	}
@@ -140,14 +158,18 @@ void UWeaponSystem::SelectTargetingSolution_Implementation(ETargetingSolution so
 
 void UWeaponSystem::Fire_Implementation(TArray<FWeaponPuzzleData::EDirection> puzzleSolution)
 {
-	if (selectedTargetID == 0 || selectedTargetingSolution == 0 || targetingPuzzle.width == 0)
+	if (selectedTargetID == 0
+		|| selectedTargetingSolution < 0
+		|| selectedTargetingSolution >= SIZENUM(targetingSolutions)
+		|| targetingPuzzle.width == 0
+		|| !IsValidSolution(puzzleSolution)
+	)
 		return;
 
-	if (!IsValidSolution(puzzleSolution))
-		return;
+	auto solution = targetingSolutions[selectedTargetingSolution];
 
-	auto targetSystem = GetSystemForSolution(selectedTargetingSolution);
-	auto damage = GetDamageForSolution(selectedTargetingSolution);
+	auto targetSystem = GetSystemForSolution(solution.type);
+	auto damage = GetDamageForSolution(solution.type);
 
 	// TODO: actually fire ... deal damage to targetSystem
 
@@ -163,54 +185,43 @@ void UWeaponSystem::DetermineTargetingSolutions()
 
 	// TODO: decide available targeting solutions based on target type and sensor data
 	// TODO: in particular, sensors needs to make vulnerabilities available here 
-	SETADD(targetingSolutions, ETargetingSolution::Engines);
-	SETADD(targetingSolutions, ETargetingSolution::Warp);
-	SETADD(targetingSolutions, ETargetingSolution::Weapons);
-	SETADD(targetingSolutions, ETargetingSolution::Sensors);
-	SETADD(targetingSolutions, ETargetingSolution::PowerManagement);
-	SETADD(targetingSolutions, ETargetingSolution::DamageControl);
-	SETADD(targetingSolutions, ETargetingSolution::Communications);
+
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Easy, FWeaponTargetingSolution::NoFace));
+
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Engines, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Rear));
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Warp, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Bottom));
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Weapons, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Front));
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Sensors, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Left));
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::PowerManagement, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Top));
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControl, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
+	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
 }
 
-uint8 UWeaponSystem::DeterminePuzzleSize()
+uint8 UWeaponSystem::DeterminePuzzleSize(FWeaponTargetingSolution::ESolutionDifficulty difficulty)
 {
-	uint8 puzzleSize;
-
-	if (selectedTargetingSolution == ETargetingSolution::None)
-		puzzleSize = 0;
-	else if (selectedTargetingSolution == ETargetingSolution::Misc)
-		puzzleSize = 3;
-	else if (selectedTargetingSolution == ETargetingSolution::MiscVulnerability)
-		puzzleSize = 7;
-	else if (selectedTargetingSolution >= ETargetingSolution::MIN_STANDARD_SYSTEM && selectedTargetingSolution <= ETargetingSolution::MAX_STANDARD_SYSTEM)
-		puzzleSize = 6;
-	else if (selectedTargetingSolution >= ETargetingSolution::MIN_SYSTEM_VULNERABILITY && selectedTargetingSolution <= ETargetingSolution::MAX_SYSTEM_VULNERABILITY)
-		puzzleSize = 6;
-	else
-		puzzleSize = 2;
-
-	auto health = GetHealthLevel();
-	if (health == 0)
-		puzzleSize = 0; // cannot fire
-	else if (health < 10)
-		puzzleSize += 6;
-	else if (health < 30)
-		puzzleSize += 5;
-	else if (health < 50)
-		puzzleSize += 4;
-	else if (health < 70)
-		puzzleSize += 3;
-	else if (health < 90)
-		puzzleSize += 2;
-	else if (health < 100)
-		puzzleSize += 1;
-
-	return puzzleSize;
+	switch (difficulty)
+	{
+	case FWeaponTargetingSolution::VeryEasy:
+		return 3; // 4x3
+	case FWeaponTargetingSolution::Easy:
+		return 4; // 4x4
+	case FWeaponTargetingSolution::Medium:
+		return 5; // 5x4
+	case FWeaponTargetingSolution::Hard:
+		return 5; // 5x5
+	case FWeaponTargetingSolution::VeryHard:
+		return 6; // 6x5
+	case FWeaponTargetingSolution::Impossible:
+	default:
+		return 0;
+	}
 }
 
-void UWeaponSystem::GeneratePuzzle()
+void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution solution)
 {
-	targetingPuzzle.width = DeterminePuzzleSize();
+	FWeaponTargetingSolution::ESolutionDifficulty actualDifficulty = DetermineDifficulty(solution.baseDifficulty, solution.bestFacing);
+
+	targetingPuzzle.width = DeterminePuzzleSize(actualDifficulty);
 	CLEAR(targetingPuzzle.cells);
 
 	// TODO: generate a proper puzzle ... this is a placeholder
@@ -218,6 +229,39 @@ void UWeaponSystem::GeneratePuzzle()
 	targetingPuzzle.startCell = FMath::RandRange(0, numCells - 1);
 	for (uint8 i = 0; i < numCells; i++)
 		SETADD(targetingPuzzle.cells, FMath::RandRange(0, 10) != 0);
+}
+
+FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)
+{
+	uint8 iDifficulty = baseDifficulty;
+
+	// Adjust difficulty to account for facing in the right / wrong direction
+	if (bestFacing == currentlyFacing)
+	{
+		if (iDifficulty > FWeaponTargetingSolution::VeryEasy)
+			iDifficulty --;
+	}
+	else if (bestFacing == -currentlyFacing) {
+		iDifficulty++;
+	}
+
+	// Adjust difficulty based on health
+	auto health = GetHealthLevel();
+	if (health == 0)
+		iDifficulty = FWeaponTargetingSolution::Impossible; // cannot fire
+	else if (health < 10)
+		iDifficulty += 4;
+	else if (health < 35)
+		iDifficulty += 3;
+	else if (health < 75)
+		iDifficulty += 2;
+	else if (health < 90)
+		iDifficulty += 1;
+
+	if (iDifficulty >= FWeaponTargetingSolution::Impossible)
+		return FWeaponTargetingSolution::Impossible;
+
+	return (FWeaponTargetingSolution::ESolutionDifficulty)iDifficulty;
 }
 
 void UWeaponSystem::ClearPuzzle()
@@ -236,12 +280,12 @@ bool UWeaponSystem::IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzle
 	return false;
 }
 
-UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolution solution)
+UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solution)
 {
 	switch (solution)
 	{
-	case Misc:
-	case MiscVulnerability:
+	case FWeaponTargetingSolution::Misc:
+	case FWeaponTargetingSolution::MiscVulnerability:
 		switch (FMath::RandRange(1, 7))
 		{
 		case 1:
@@ -262,31 +306,31 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolution solu
 			return UShipSystem::ESystem::None;
 		}
 
-	case Engines:
-	case EngineVulnerability:
+	case FWeaponTargetingSolution::Engines:
+	case FWeaponTargetingSolution::EngineVulnerability:
 		return UShipSystem::Helm;
 
-	case Warp:
-	case WarpVulnerability:
+	case FWeaponTargetingSolution::Warp:
+	case FWeaponTargetingSolution::WarpVulnerability:
 		return UShipSystem::Warp;
 
-	case Weapons:
-	case WeaponVulnerability:
+	case FWeaponTargetingSolution::Weapons:
+	case FWeaponTargetingSolution::WeaponVulnerability:
 		return UShipSystem::Weapons;
 
-	case Sensors:
-	case SensorVulnerability:
+	case FWeaponTargetingSolution::Sensors:
+	case FWeaponTargetingSolution::SensorVulnerability:
 		return UShipSystem::Sensors;
 
-	case PowerManagement:
-	case PowerVulnerability:
+	case FWeaponTargetingSolution::PowerManagement:
+	case FWeaponTargetingSolution::PowerVulnerability:
 		return UShipSystem::PowerManagement;
 
-	case DamageControl:
-	case DamageControlVulnerability:
+	case FWeaponTargetingSolution::DamageControl:
+	case FWeaponTargetingSolution::DamageControlVulnerability:
 		return UShipSystem::DamageControl;
 
-	case Communications:
+	case FWeaponTargetingSolution::Communications:
 		return UShipSystem::Communications;
 
 	default:
@@ -295,19 +339,19 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolution solu
 	}
 }
 
-uint8 UWeaponSystem::GetDamageForSolution(ETargetingSolution solution)
+uint8 UWeaponSystem::GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solution)
 {
-	uint8 damage = 0; 
+	float damage = 0; 
 
-	if (solution == ETargetingSolution::Misc)
-		damage = FMath::RandRange(15, 30);
-	else if (solution == ETargetingSolution::MiscVulnerability)
-		damage = FMath::RandRange(35, 55);
-	else if (solution >= ETargetingSolution::MIN_STANDARD_SYSTEM && solution <= ETargetingSolution::MAX_STANDARD_SYSTEM)
-		damage = FMath::RandRange(20, 40);
-	else if (solution >= ETargetingSolution::MIN_SYSTEM_VULNERABILITY && solution <= ETargetingSolution::MAX_SYSTEM_VULNERABILITY)
-		damage = FMath::RandRange(55, 75);
+	if (solution == FWeaponTargetingSolution::Misc)
+		damage = FMath::FRandRange(15, 30);
+	else if (solution == FWeaponTargetingSolution::MiscVulnerability)
+		damage = FMath::FRandRange(35, 55);
+	else if (solution >= FWeaponTargetingSolution::MIN_STANDARD_SYSTEM && solution <= FWeaponTargetingSolution::MAX_STANDARD_SYSTEM)
+		damage = FMath::FRandRange(20, 40);
+	else if (solution >= FWeaponTargetingSolution::MIN_SYSTEM_VULNERABILITY && solution <= FWeaponTargetingSolution::MAX_SYSTEM_VULNERABILITY)
+		damage = FMath::FRandRange(55, 75);
 
 	// scale damage should by system power
-	return damage * GetPowerLevel() / 100;
+	return (uint8)(damage * GetPowerLevel() / 100.f);
 }

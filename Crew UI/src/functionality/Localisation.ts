@@ -167,14 +167,17 @@ export interface TextLocalisation {
             changeTarget: string;
             difficultyPrefix: string;
             difficulty: {
+                vEasy: string;
                 easy: string;
                 medium: string;
                 hard: string;
+                vHard: string;
+                impossible: string;
             },
             facingPrefix: string;
             currentlyFacingPrefix: string;
             face: {
-                none: string;
+                any: string;
                 front: string;
                 rear: string;
                 top: string;

@@ -56,7 +56,7 @@
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
 #define NOTEMPTY(set) !set.empty()
-#define SIZENUM(set) set.size()
+#define SIZENUM(set) (int32)set.size()
 #define SIZENUM_PTR(set) set->size()
 #define SETCONTAINS(set, key) (std::find(set.begin(), set.end(), key) != set.end())
 #define MAPCONTAINS(set, key) (set.find(key) != set.end())

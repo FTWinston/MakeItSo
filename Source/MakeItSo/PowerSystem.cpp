@@ -106,7 +106,7 @@ void UPowerSystem::SendAllData_Implementation()
 
 	auto numSys = SIZENUM(systemEffects);
 
-	for (uint32 i = 0; i < numSys; i++)
+	for (int32 i = 0; i < numSys; i++)
 		SendSystemEffects((EPowerSystem)i, systemEffects[i]);
 }
 
@@ -452,7 +452,7 @@ void UPowerSystem::OnReplicated_PowerLevels(TArray<uint8> beforeChange)
 		return;
 	}
 
-	for (uint32 i = 0; i < numSys; i++)
+	for (int32 i = 0; i < numSys; i++)
 	{
 		auto currentVal = powerLevels[i];
 		if (beforeChange[i] != currentVal)
@@ -476,7 +476,7 @@ void UPowerSystem::OnReplicated_SystemEffects(TArray<uint8> beforeChange)
 {
 	auto numSys = SIZENUM(systemEffects);
 
-	for (uint32 i = 0; i < numSys; i++)
+	for (int32 i = 0; i < numSys; i++)
 	{
 		auto currentVal = systemEffects[i];
 		if (beforeChange[i] != currentVal)
@@ -491,7 +491,7 @@ void UPowerSystem::OnReplicated_CardHand(TArray<uint8> beforeChange)
 	if (newSize == oldSize + 1)
 	{
 		// one card added ... if any differ except the last card, resend whole hand
-		for (uint8 i = 0; i < oldSize; i++)
+		for (auto i = 0; i < oldSize; i++)
 			if (beforeChange[i] != cardHand[i])
 			{
 				SendWholeHand();
@@ -507,7 +507,7 @@ void UPowerSystem::OnReplicated_CardHand(TArray<uint8> beforeChange)
 		auto offset = 0;
 		uint8 removedPos;
 
-		for (uint8 i = 0; i < newSize; i++)
+		for (auto i = 0; i < newSize; i++)
 			if (beforeChange[i + offset] != cardHand[i])
 			{
 				if (offset > 0)

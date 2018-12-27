@@ -307,7 +307,7 @@ TArray<bool> UWarpSystem::ResolveSolution(TArray<uint8> solution)
 
 		bool colValid = true;
 
-		for (uint8 iCell = colStart; iCell < numCells; iCell += puzzle.width)
+		for (int8 iCell = colStart; iCell < numCells; iCell += puzzle.width)
 		{
 			uint8 cellVal = solution[iCell];
 

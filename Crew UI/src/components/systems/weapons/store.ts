@@ -4,7 +4,7 @@ import { exhaustiveActionCheck } from '~/store';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
-export const enum TargetingSolution {
+export const enum TargetingSolutionType {
     None = 0,
 
     Misc,
@@ -26,14 +26,41 @@ export const enum TargetingSolution {
     DamageControlVulnerability,
 }
 
+export const enum TargetingFace { // These are numbered stupidly to easily identify opposite faces
+    None = 0,
+    Front = 1,
+    Rear = -1,
+    Left = 2,
+    Right = -2,
+    Top = 3,
+    Bottom = -3,
+};
+
+export const enum TargetingDifficulty {
+    VeryEasy = 0,
+    Easy,
+    Medium,
+    Hard,
+    VeryHard,
+    Impossible,
+}
+
+export interface TargetingSolution {
+    type: TargetingSolutionType;
+    difficulty: TargetingDifficulty;
+    bestFacing: TargetingFace;
+}
+
 export interface WeaponState {
     selectedTargetID: number;
     targetingSolutions: TargetingSolution[];
-    selectedTargetingSolution: TargetingSolution;
+    selectedTargetingSolution?: TargetingSolution;
+
+    currentlyFacing: TargetingFace;
 
     puzzleWidth: number;
     puzzleStartCell: number;
-    puzzleCells: boolean[]
+    puzzleCells: boolean[];
 }
 
 // -----------------
@@ -52,7 +79,7 @@ interface SetTargetingSolutionsAction {
 
 interface SetSelectedTargetingSolutionAction {
     type: 'WPN_SOLUTION';
-    solution: TargetingSolution;
+    solutionIndex: number | undefined;
 }
 
 interface SetPuzzleAction {
@@ -62,9 +89,15 @@ interface SetPuzzleAction {
     cells: boolean[];
 }
 
+interface SetCurrentlyFacingAction {
+    type: 'WPN_FACE';
+    face: TargetingFace;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetSelectedTargetingSolutionAction | SetPuzzleAction;
+type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetSelectedTargetingSolutionAction
+    | SetPuzzleAction | SetCurrentlyFacingAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -79,15 +112,19 @@ export const actionCreators = {
         type: 'WPN_SOLUTIONS',
         solutions: solutions,
     },
-    setSelectedTargetingSolution: (solution: TargetingSolution) => <SetSelectedTargetingSolutionAction>{
+    setSelectedTargetingSolution: (index?: number) => <SetSelectedTargetingSolutionAction>{
         type: 'WPN_SOLUTION',
-        solution: solution,
+        solutionIndex: index,
     },
     setTargetingPuzzle: (width: number, startCell: number, cells: boolean[]) => <SetPuzzleAction>{
         type: 'WPN_PUZZLE',
         width: width,
         startCell: startCell,
         cells: cells,
+    },
+    setCurrentlyFacing: (face: TargetingFace) => <SetCurrentlyFacingAction>{
+        type: 'WPN_FACE',
+        face: face,
     },
 };
 
@@ -97,7 +134,7 @@ export const actionCreators = {
 const unloadedState: WeaponState = {
     selectedTargetID: 0,
     targetingSolutions: [],
-    selectedTargetingSolution: TargetingSolution.None,
+    currentlyFacing: TargetingFace.None,
     puzzleWidth: 0,
     puzzleStartCell: 0,
     puzzleCells: [],
@@ -119,9 +156,13 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
             };
         }
         case 'WPN_SOLUTION': {
+            const solution = action.solutionIndex !== undefined && action.solutionIndex < state.targetingSolutions.length
+                ? state.targetingSolutions[action.solutionIndex]
+                : undefined;
+
             return {
                 ...state,
-                selectedTargetingSolution: action.solution,
+                selectedTargetingSolution: solution,
             };
         }
         case 'WPN_PUZZLE': {
@@ -131,6 +172,12 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
                 puzzleStartCell: action.startCell,
                 puzzleCells: action.cells,
             };
+        }
+        case 'WPN_FACE': {
+            return {
+                ...state,
+                currentlyFacing: action.face,
+            }
         }
         default:
             exhaustiveActionCheck(action);

@@ -30,3 +30,11 @@
 .solutionInfo__value {
     font-weight: bold;
 }
+
+.soluionInfo__facingVal--best {
+    color: $colorGoodLight;
+}
+
+.soluionInfo__facingVal--worst {
+    color: $colorBadLight;
+}

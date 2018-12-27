@@ -25,9 +25,7 @@ export class FillPuzzle extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillUpdate(nextProps: IProps, nextState: IState) {
-        // TODO: detect changes to cells etc
-
-        if (this.state.filledCells.length >= this.props.cells.filter(c => c).length) {
+        if (this.state.filledCells.length !== nextState.filledCells.length && this.state.filledCells.length >= this.props.cells.filter(c => c).length) {
             this.props.onCompleted(this.state.filledCells);
         }
     }

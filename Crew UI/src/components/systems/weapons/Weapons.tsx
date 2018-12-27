@@ -6,7 +6,7 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Weapons.scss';
 import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from '../sensors/TargetList';
-import { WeaponState, TargetingSolution } from './store';
+import { WeaponState } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
 import { SolutionList } from './SolutionList';
@@ -62,9 +62,9 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 />
             </div>
         }
-        else if (this.props.selectedTargetingSolution === TargetingSolution.None)
+        else if (this.props.selectedTargetingSolution === undefined)
         {
-            const selectSolution = (solution: TargetingSolution) => connection.send(`wpn_solution ${solution}`);
+            const selectSolution = (solutionIndex: number) => connection.send(`wpn_solution ${solutionIndex}`);
             const clearTarget = () => connection.send(`wpn_target 0`);
 
             return <div className="system weapons weapons--solutionSelection">
@@ -72,18 +72,20 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     text={this.props.text}
                     target={this.state.selectedTarget}
                     deselectTarget={clearTarget}
+                    currentlyFacing={this.props.currentlyFacing}
                 />
                 <SolutionList
                     text={this.props.text}
                     solutions={this.props.targetingSolutions}
                     select={selectSolution}
+                    currentlyFacing={this.props.currentlyFacing}
                 />
             </div>
         }
         else 
         {
             const clearTarget = () => connection.send(`wpn_target 0`);
-            const clearSolution = () => connection.send(`wpn_solution ${TargetingSolution.None}`);
+            const clearSolution = () => connection.send(`wpn_solution -1`);
             const sendFire = (indices: number[]) => connection.send(`wpn_fire ${indices.join(' ')}`);
 
             return <div className="system weapons weapons--targeting">
@@ -93,6 +95,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     deselectTarget={clearTarget}
                     solution={this.props.selectedTargetingSolution}
                     deselectSolution={clearSolution}
+                    currentlyFacing={this.props.currentlyFacing}
                 />
                 <FillPuzzle
                     text={this.props.text}

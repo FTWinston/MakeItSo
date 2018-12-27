@@ -1,5 +1,5 @@
 import { store } from '~/index';
-import { actionCreators, TargetingSolution } from './store';
+import { actionCreators, TargetingFace, TargetingSolutionType, TargetingDifficulty } from './store';
 
 export const msgPrefix = 'wpn_';
 
@@ -12,13 +12,23 @@ export function receiveMessage(cmd: string, data: string) {
         }
         case 'wpn_solutions': {
             const vals = data === ''
-                ? [] : data.split(' ').map(v => parseInt(v) as TargetingSolution);
-            store.dispatch(actionCreators.setTargetingSolutions(vals));
+                ? [] : data.split(' ').map(v => parseInt(v));
+
+            const solutions = [];
+            for (let i=2; i<vals.length; i += 3) {
+                solutions.push({
+                    type: vals[i-2] as TargetingSolutionType,
+                    difficulty: vals[i-1] as TargetingDifficulty,
+                    bestFacing: vals[i] as TargetingFace,
+                })
+            }
+
+            store.dispatch(actionCreators.setTargetingSolutions(solutions));
             break;
         }
         case 'wpn_solution': {
-            const val = parseInt(data) as TargetingSolution;
-            store.dispatch(actionCreators.setSelectedTargetingSolution(val));
+            const index = parseInt(data);
+            store.dispatch(actionCreators.setSelectedTargetingSolution(index));
             break;
         }
         case 'wpn_puzzle': {
@@ -30,6 +40,10 @@ export function receiveMessage(cmd: string, data: string) {
 
             store.dispatch(actionCreators.setTargetingPuzzle(width, startCell, cells));
             break;
+        }
+        case 'wpn_facing': {
+            const face = parseInt(data) as TargetingFace;
+            store.dispatch(actionCreators.setCurrentlyFacing(face));
         }
         default:
             return false;
