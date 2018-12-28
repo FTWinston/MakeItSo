@@ -211,8 +211,8 @@ void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty
 		targetingPuzzle.width = 3;
 		targetingPuzzle.height = 3;
 
-		for (auto y = 0; y<targetingPuzzle.height; y++)
-			for (auto x = 0; x < targetingPuzzle.width; x++)
+		for (uint8 y = 0; y < targetingPuzzle.height; y++)
+			for (uint8 x = 0; x < targetingPuzzle.width; x++)
 				SETADD(targetingPuzzle.cells, true);
 
 		switch (FMath::RandRange(1, 4))
@@ -242,8 +242,8 @@ void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty
 		targetingPuzzle.width = 4;
 		targetingPuzzle.height = 3;
 
-		for (auto y = 0; y<targetingPuzzle.height; y++)
-			for (auto x = 0; x < targetingPuzzle.width; x++)
+		for (uint8 y = 0; y<targetingPuzzle.height; y++)
+			for (uint8 x = 0; x < targetingPuzzle.width; x++)
 				SETADD(targetingPuzzle.cells, true);
 
 		switch (FMath::RandRange(1, 3))
@@ -269,8 +269,8 @@ void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty
 		targetingPuzzle.width = 4;
 		targetingPuzzle.height = 4;
 
-		for (auto y = 0; y<targetingPuzzle.height; y++)
-			for (auto x = 0; x < targetingPuzzle.width; x++)
+		for (uint8 y = 0; y<targetingPuzzle.height; y++)
+			for (uint8 x = 0; x < targetingPuzzle.width; x++)
 				SETADD(targetingPuzzle.cells, true);
 
 		switch (FMath::RandRange(1, 6))
@@ -313,8 +313,8 @@ void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty
 		targetingPuzzle.width = 5;
 		targetingPuzzle.height = 4;
 
-		for (auto y = 0; y<targetingPuzzle.height; y++)
-			for (auto x = 0; x < targetingPuzzle.width; x++)
+		for (uint8 y = 0; y<targetingPuzzle.height; y++)
+			for (uint8 x = 0; x < targetingPuzzle.width; x++)
 				SETADD(targetingPuzzle.cells, true);
 
 		switch (FMath::RandRange(1, 3))
@@ -349,8 +349,8 @@ void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty
 		targetingPuzzle.width = 5;
 		targetingPuzzle.height = 5;
 
-		for (auto y = 0; y<targetingPuzzle.height; y++)
-			for (auto x = 0; x < targetingPuzzle.width; x++)
+		for (uint8 y = 0; y<targetingPuzzle.height; y++)
+			for (uint8 x = 0; x < targetingPuzzle.width; x++)
 				SETADD(targetingPuzzle.cells, true);
 
 		switch (FMath::RandRange(1, 2))
@@ -427,9 +427,51 @@ bool UWeaponSystem::IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzle
 {
 	if (targetingPuzzle.width == 0)
 		return false; // Cannot fire if we have no targeting solution
+	
+	// Check that the solution contains the right number of steps
+	int32 numSolutionCells = SIZENUM(puzzleSolution);
+	int32 numPuzzleCells = 0;
+	for (auto cell : targetingPuzzle.cells)
+		if (cell)
+			numPuzzleCells++;
 
-	// TODO: solve this
-	return false;
+	if (numSolutionCells != numPuzzleCells)
+		return false;
+
+	// Check that the solution starts with the start cell
+	if (puzzleSolution[0] != targetingPuzzle.startCell)
+		return false;
+
+	TSet<uint8> usedCells;
+	SETADD(usedCells, targetingPuzzle.startCell);
+	
+	auto prevCell = targetingPuzzle.startCell;
+	auto currentCell = prevCell;
+
+	for (auto i = 1; i < numSolutionCells; i++)
+	{
+		prevCell = currentCell;
+		currentCell = puzzleSolution[i];
+
+		// Ensure no cell index is repeated
+		if (SETCONTAINS(usedCells, currentCell))
+			return false;
+		SETADD(usedCells, currentCell);
+
+		// Check that each cell really is adjacent to the previous one
+		if (currentCell == prevCell - 1)
+			continue;
+		if (currentCell == prevCell + 1)
+			continue;
+		if (currentCell == prevCell - targetingPuzzle.width)
+			continue;
+		if (currentCell == prevCell + targetingPuzzle.width)
+			continue;
+
+		return false;
+	}
+
+	return true;
 }
 
 UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solution)
