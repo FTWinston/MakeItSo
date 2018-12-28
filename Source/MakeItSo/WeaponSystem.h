@@ -24,6 +24,9 @@ struct FWeaponPuzzleData
 	uint8 width;
 
 	UPROPERTY(Replicated)
+	uint8 height;
+
+	UPROPERTY(Replicated)
 	TArray<bool> cells;
 
 	UPROPERTY(Replicated)
@@ -118,8 +121,7 @@ private:
 	void DetermineTargetingSolutions();
 	void ClearPuzzle();
 	FWeaponTargetingSolution::ESolutionDifficulty DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
-	uint8 DeterminePuzzleSize(FWeaponTargetingSolution::ESolutionDifficulty difficulty);
-	void GeneratePuzzle(FWeaponTargetingSolution solution);
+	void GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty difficulty);
 	bool IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzleSolution);
 	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);

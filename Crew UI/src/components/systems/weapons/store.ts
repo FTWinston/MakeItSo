@@ -59,6 +59,7 @@ export interface WeaponState {
     currentlyFacing: TargetingFace;
 
     puzzleWidth: number;
+    puzzleHeight: number;
     puzzleStartCell: number;
     puzzleCells: boolean[];
 }
@@ -85,6 +86,7 @@ interface SetSelectedTargetingSolutionAction {
 interface SetPuzzleAction {
     type: 'WPN_PUZZLE';
     width: number;
+    height: number;
     startCell: number;
     cells: boolean[];
 }
@@ -116,9 +118,10 @@ export const actionCreators = {
         type: 'WPN_SOLUTION',
         solutionIndex: index,
     },
-    setTargetingPuzzle: (width: number, startCell: number, cells: boolean[]) => <SetPuzzleAction>{
+    setTargetingPuzzle: (width: number, height: number, startCell: number, cells: boolean[]) => <SetPuzzleAction>{
         type: 'WPN_PUZZLE',
         width: width,
+        height: height,
         startCell: startCell,
         cells: cells,
     },
@@ -136,6 +139,7 @@ const unloadedState: WeaponState = {
     targetingSolutions: [],
     currentlyFacing: TargetingFace.None,
     puzzleWidth: 0,
+    puzzleHeight: 0,
     puzzleStartCell: 0,
     puzzleCells: [],
 };
@@ -169,6 +173,7 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
             return {
                 ...state,
                 puzzleWidth: action.width,
+                puzzleHeigh: action.height,
                 puzzleStartCell: action.startCell,
                 puzzleCells: action.cells,
             };

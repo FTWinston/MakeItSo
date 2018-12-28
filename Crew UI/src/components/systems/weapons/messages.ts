@@ -35,10 +35,11 @@ export function receiveMessage(cmd: string, data: string) {
             const vals = data.split(' ');
 
             const width = parseInt(vals[0]);
-            const startCell = parseInt(vals[1]);
-            const cells = vals.slice(2).map(v => v === '1');
+            const height = parseInt(vals[1]);
+            const startCell = parseInt(vals[2]);
+            const cells = vals.slice(3).map(v => v === '1');
 
-            store.dispatch(actionCreators.setTargetingPuzzle(width, startCell, cells));
+            store.dispatch(actionCreators.setTargetingPuzzle(width, height, startCell, cells));
             break;
         }
         case 'wpn_facing': {

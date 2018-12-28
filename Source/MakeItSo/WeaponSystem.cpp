@@ -102,6 +102,8 @@ void UWeaponSystem::SendPuzzle_Implementation()
 
 	APPENDINT(output, targetingPuzzle.width);
 	output += TEXT(" ");
+	APPENDINT(output, targetingPuzzle.height);
+	output += TEXT(" ");
 	APPENDINT(output, targetingPuzzle.startCell);
 
 	for (auto cell : targetingPuzzle.cells)
@@ -150,7 +152,9 @@ void UWeaponSystem::SelectTargetingSolution_Implementation(int8 solutionIndex)
 	{
 		auto solution = targetingSolutions[solutionIndex];
 
-		GeneratePuzzle(solution);
+		auto difficulty = DetermineDifficulty(solution.baseDifficulty, solution.bestFacing);
+
+		GeneratePuzzle(difficulty);
 		if (ISCLIENT())
 			SendPuzzle();
 	}
@@ -197,38 +201,185 @@ void UWeaponSystem::DetermineTargetingSolutions()
 	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
 }
 
-uint8 UWeaponSystem::DeterminePuzzleSize(FWeaponTargetingSolution::ESolutionDifficulty difficulty)
+void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty difficulty)
 {
+	CLEAR(targetingPuzzle.cells);
+
 	switch (difficulty)
 	{
 	case FWeaponTargetingSolution::VeryEasy:
-		return 3; // 4x3
+		targetingPuzzle.width = 3;
+		targetingPuzzle.height = 3;
+
+		for (auto y = 0; y<targetingPuzzle.height; y++)
+			for (auto x = 0; x < targetingPuzzle.width; x++)
+				SETADD(targetingPuzzle.cells, true);
+
+		switch (FMath::RandRange(1, 4))
+		{
+		case 1:
+			targetingPuzzle.cells[0] = false;
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.startCell = 2;
+			return;
+		case 2:
+			targetingPuzzle.cells[0] = false;
+			targetingPuzzle.cells[8] = false;
+			targetingPuzzle.startCell = 5;
+			return;
+		case 3:
+			targetingPuzzle.cells[2] = false;
+			targetingPuzzle.startCell = 8;
+			return;
+		case 4:
+			targetingPuzzle.cells[0] = false;
+			targetingPuzzle.cells[2] = false;
+			targetingPuzzle.startCell = 6;
+			return;
+		// TODO: more variants
+		}
 	case FWeaponTargetingSolution::Easy:
-		return 4; // 4x4
+		targetingPuzzle.width = 4;
+		targetingPuzzle.height = 3;
+
+		for (auto y = 0; y<targetingPuzzle.height; y++)
+			for (auto x = 0; x < targetingPuzzle.width; x++)
+				SETADD(targetingPuzzle.cells, true);
+
+		switch (FMath::RandRange(1, 3))
+		{
+		case 1:
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.cells[7] = false;
+			targetingPuzzle.cells[8] = false;
+			targetingPuzzle.startCell = 4;
+			return;
+		case 2:
+			targetingPuzzle.cells[9] = false;
+			targetingPuzzle.cells[10] = false;
+			targetingPuzzle.startCell = 8;
+			return;
+		case 3:
+			targetingPuzzle.cells[2] = false;
+			targetingPuzzle.startCell = 1;
+			return;
+		// TODO: more variants
+		}
 	case FWeaponTargetingSolution::Medium:
-		return 5; // 5x4
+		targetingPuzzle.width = 4;
+		targetingPuzzle.height = 4;
+
+		for (auto y = 0; y<targetingPuzzle.height; y++)
+			for (auto x = 0; x < targetingPuzzle.width; x++)
+				SETADD(targetingPuzzle.cells, true);
+
+		switch (FMath::RandRange(1, 6))
+		{
+		case 1:
+			targetingPuzzle.cells[0] = false;
+			targetingPuzzle.cells[1] = false;
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.startCell = 9;
+			return;
+		case 2:
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.cells[4] = false;
+			targetingPuzzle.cells[7] = false;
+			targetingPuzzle.startCell = 8;
+			return;
+		case 3:
+			targetingPuzzle.cells[12] = false;
+			targetingPuzzle.cells[13] = false;
+			targetingPuzzle.cells[15] = false;
+			targetingPuzzle.startCell = 3;
+			return;
+		case 4:
+			targetingPuzzle.cells[7] = false;
+			targetingPuzzle.cells[9] = false;
+			targetingPuzzle.startCell = 10;
+			return;
+		case 5:
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.cells[8] = false;
+			targetingPuzzle.startCell = 0;
+			return;
+		case 6:
+			targetingPuzzle.cells[1] = false;
+			targetingPuzzle.startCell = 13;
+			return;
+		// TODO: more variants
+		}
 	case FWeaponTargetingSolution::Hard:
-		return 5; // 5x5
+		targetingPuzzle.width = 5;
+		targetingPuzzle.height = 4;
+
+		for (auto y = 0; y<targetingPuzzle.height; y++)
+			for (auto x = 0; x < targetingPuzzle.width; x++)
+				SETADD(targetingPuzzle.cells, true);
+
+		switch (FMath::RandRange(1, 3))
+		{
+		case 1:
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.cells[4] = false;
+			targetingPuzzle.cells[9] = false;
+			targetingPuzzle.cells[14] = false;
+			targetingPuzzle.cells[16] = false;
+			targetingPuzzle.startCell = 15;
+			return;
+		case 2:
+			targetingPuzzle.cells[0] = false;
+			targetingPuzzle.cells[4] = false;
+			targetingPuzzle.cells[9] = false;
+			targetingPuzzle.cells[10] = false;
+			targetingPuzzle.cells[15] = false;
+			targetingPuzzle.startCell = 13;
+			return;
+		case 3:
+			targetingPuzzle.cells[5] = false;
+			targetingPuzzle.cells[10] = false;
+			targetingPuzzle.cells[11] = false;
+			targetingPuzzle.cells[15] = false;
+			targetingPuzzle.cells[16] = false;
+			targetingPuzzle.startCell = 14;
+			return;
+		// TODO: more variants
+		}
 	case FWeaponTargetingSolution::VeryHard:
-		return 6; // 6x5
+		targetingPuzzle.width = 5;
+		targetingPuzzle.height = 5;
+
+		for (auto y = 0; y<targetingPuzzle.height; y++)
+			for (auto x = 0; x < targetingPuzzle.width; x++)
+				SETADD(targetingPuzzle.cells, true);
+
+		switch (FMath::RandRange(1, 2))
+		{
+		case 1: // 1-96
+			targetingPuzzle.cells[3] = false;
+			targetingPuzzle.cells[4] = false;
+			targetingPuzzle.cells[18] = false;
+			targetingPuzzle.cells[19] = false;
+			targetingPuzzle.cells[24] = false;
+			targetingPuzzle.startCell = 12;
+			return;
+		case 2: // 1-97
+			targetingPuzzle.cells[2] = false;
+			targetingPuzzle.cells[8] = false;
+			targetingPuzzle.cells[17] = false;
+			targetingPuzzle.cells[23] = false;
+			targetingPuzzle.cells[24] = false;
+			targetingPuzzle.startCell = 22;
+			return;
+		// TODO: more variants
+		}
 	case FWeaponTargetingSolution::Impossible:
 	default:
-		return 0;
+		targetingPuzzle.width = 0;
+		targetingPuzzle.height = 0;
+		targetingPuzzle.startCell = 0;
+		return;
 	}
-}
-
-void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution solution)
-{
-	FWeaponTargetingSolution::ESolutionDifficulty actualDifficulty = DetermineDifficulty(solution.baseDifficulty, solution.bestFacing);
-
-	targetingPuzzle.width = DeterminePuzzleSize(actualDifficulty);
-	CLEAR(targetingPuzzle.cells);
-
-	// TODO: generate a proper puzzle ... this is a placeholder
-	uint8 numCells = targetingPuzzle.width * targetingPuzzle.width;
-	targetingPuzzle.startCell = FMath::RandRange(0, numCells - 1);
-	for (uint8 i = 0; i < numCells; i++)
-		SETADD(targetingPuzzle.cells, FMath::RandRange(0, 10) != 0);
 }
 
 FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)
@@ -267,6 +418,7 @@ FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty
 void UWeaponSystem::ClearPuzzle()
 {
 	targetingPuzzle.width = 0;
+	targetingPuzzle.height = 0;
 	CLEAR(targetingPuzzle.cells);
 	targetingPuzzle.startCell = 0;
 }

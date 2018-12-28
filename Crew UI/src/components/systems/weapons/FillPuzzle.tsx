@@ -6,6 +6,7 @@ import './FillPuzzle.scss';
 interface IProps {
     text: TextLocalisation;
     width: number;
+    height: number;
     startCell: number;
     cells: boolean[];
     onCompleted: (cellIndices: number[]) => void;
@@ -25,7 +26,12 @@ export class FillPuzzle extends React.PureComponent<IProps, IState> {
     }
 
     public componentWillUpdate(nextProps: IProps, nextState: IState) {
-        if (this.state.filledCells.length !== nextState.filledCells.length && this.state.filledCells.length >= this.props.cells.filter(c => c).length) {
+        if (this.props.startCell !== nextProps.startCell) {
+            this.setState({
+                filledCells: [ nextProps.startCell ],
+            });
+        }
+        else if (this.state.filledCells.length !== nextState.filledCells.length && this.state.filledCells.length >= this.props.cells.filter(c => c).length) {
             this.props.onCompleted(this.state.filledCells);
         }
     }
@@ -85,7 +91,8 @@ export class FillPuzzle extends React.PureComponent<IProps, IState> {
 
         let classes = 'weapons__puzzle fillPuzzle';
         
-        classes += ` fillPuzzle--size${this.props.width}`;
+        classes += ` fillPuzzle--width${this.props.width}`;
+        classes += ` fillPuzzle--height${this.props.height}`;
 
         return <div className={classes}>
             {cells}

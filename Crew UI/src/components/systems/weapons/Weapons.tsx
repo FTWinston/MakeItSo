@@ -100,6 +100,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 <FillPuzzle
                     text={this.props.text}
                     width={this.props.puzzleWidth}
+                    height={this.props.puzzleHeight}
                     startCell={this.props.puzzleStartCell}
                     cells={this.props.puzzleCells}
                     onCompleted={sendFire}
