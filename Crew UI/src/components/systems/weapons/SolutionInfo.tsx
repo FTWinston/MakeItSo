@@ -5,11 +5,11 @@ import './SolutionInfo.scss';
 
 interface IProps {
     text: TextLocalisation;
-    solutionType: TargetingSolutionType;
+    solutionType?: TargetingSolutionType;
     select?: () => void;
     className?: string;
-    baseDifficulty: TargetingDifficulty;
-    bestFacing: TargetingFace;
+    baseDifficulty?: TargetingDifficulty;
+    bestFacing?: TargetingFace;
     currentlyFacing: TargetingFace;
     showCurrentlyFacing: boolean;
 }
@@ -28,6 +28,21 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
             classes += ' ' + this.props.className;
         }
 
+        const name = text === null
+            ? undefined
+            : <div className="solutionInfo__name">{text.name}</div>
+
+        const desc = text === null
+            ? <div className="solutionInfo__prompt">{this.props.text.systems.weapons.solutionPrompt}</div>
+            : <div className="solutionInfo__desc">{text.desc}</div>
+
+        const difficulty = this.getDifficulty();
+        const difficultyDisplay = difficulty === null
+            ? undefined
+            : <div className="solutionInfo__difficulty">
+                <span className="solutionInfo__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionInfo__value">{difficulty}</span>
+            </div>
+
         const currentlyFacing = this.props.showCurrentlyFacing
             ? <div className="solutionInfo__currentlyFacing">
                 <span className="solutionInfo__label">{this.props.text.systems.weapons.currentlyFacingPrefix}</span> <span className="solutionInfo__value">{this.getFacingName(this.props.currentlyFacing)}</span>
@@ -42,20 +57,26 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
             facingClasses += ' soluionInfo__facingVal--worst';
         }
 
-        return <div className={classes} onClick={select}>
-            <div className="solutionInfo__name">{text.name}</div>
-            <div className="solutionInfo__desc">{text.desc}</div>
-            <div className="solutionInfo__difficulty">
-                <span className="solutionInfo__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionInfo__value">{this.getDifficulty()}</span>
-            </div>
-            <div className="solutionInfo__bestFacing">
+        const bestFacing = this.props.bestFacing === undefined
+            ? undefined
+            : <div className="solutionInfo__bestFacing">
                 <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{this.getFacingName(this.props.bestFacing)}</span>
             </div>
+
+        return <div className={classes} onClick={select}>
+            {name}
+            {desc}
+            {difficultyDisplay}
+            {bestFacing}
             {currentlyFacing}
         </div>
     }
 
     private getSolutionNameAndDesc() {
+        if (this.props.solutionType === undefined) {
+            return null;
+        }
+
         const solutions = this.props.text.systems.weapons.solutions;
         switch (this.props.solutionType) {
             case TargetingSolutionType.Misc:
@@ -94,6 +115,10 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
     }
     
     private getDifficulty() {
+        if (this.props.baseDifficulty === undefined) {
+            return null;
+        }
+
         const difficultyText = this.props.text.systems.weapons.difficulty;
 
         const actualDifficulty = this.getModifiedDifficulty(this.props.baseDifficulty);
@@ -115,10 +140,10 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
 
     private getModifiedDifficulty(baseDifficulty: TargetingDifficulty) {
         if (this.props.bestFacing === this.props.currentlyFacing) {
-            return Math.max(TargetingDifficulty.VeryEasy, this.props.baseDifficulty - 1);
+            return Math.max(TargetingDifficulty.VeryEasy, baseDifficulty - 1);
         }
         else if (this.props.bestFacing === -this.props.currentlyFacing) {
-            return Math.min(TargetingDifficulty.Impossible, this.props.baseDifficulty + 1);
+            return Math.min(TargetingDifficulty.Impossible, baseDifficulty + 1);
         }
         else {
             return baseDifficulty;

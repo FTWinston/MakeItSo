@@ -25,7 +25,12 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
         />
 
         const solution = this.props.solution === undefined
-            ? <div className="weapons__solutionPrompt">{this.props.text.systems.weapons.solutionPrompt}</div>
+            ? <SolutionInfo
+                text={this.props.text}
+                className="weapons__solutionDisplay"
+                currentlyFacing={this.props.currentlyFacing}
+                showCurrentlyFacing={true}
+            />
             : <SolutionInfo
                 text={this.props.text}
                 solutionType={this.props.solution.type}
