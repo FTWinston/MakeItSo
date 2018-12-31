@@ -57,6 +57,9 @@ export interface WeaponState {
     selectedTargetingSolution?: TargetingSolution;
 
     currentlyFacing: TargetingFace;
+    targetPitch: number;
+    targetYaw: number;
+    targetRoll: number;
 
     puzzleWidth: number;
     puzzleHeight: number;
@@ -96,10 +99,17 @@ interface SetCurrentlyFacingAction {
     face: TargetingFace;
 }
 
+interface SetTargetOrientationAction {
+    type: 'WPN_ORIENT';
+    pitch: number;
+    yaw: number;
+    roll: number;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetSelectedTargetingSolutionAction
-    | SetPuzzleAction | SetCurrentlyFacingAction;
+    | SetPuzzleAction | SetCurrentlyFacingAction | SetTargetOrientationAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -129,6 +139,12 @@ export const actionCreators = {
         type: 'WPN_FACE',
         face: face,
     },
+    setTargetOrientation: (pitch: number, yaw: number, roll: number) => <SetTargetOrientationAction>{
+        type: 'WPN_ORIENT',
+        pitch: pitch,
+        yaw: yaw,
+        roll: roll,
+    }
 };
 
 // ----------------
@@ -138,6 +154,9 @@ const unloadedState: WeaponState = {
     selectedTargetID: 0,
     targetingSolutions: [],
     currentlyFacing: TargetingFace.None,
+    targetPitch: 0,
+    targetYaw: 0,
+    targetRoll: 0,
     puzzleWidth: 0,
     puzzleHeight: 0,
     puzzleStartCell: 0,
@@ -182,7 +201,15 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
             return {
                 ...state,
                 currentlyFacing: action.face,
-            }
+            };
+        }
+        case 'WPN_ORIENT': {
+            return {
+                ...state,
+                targetPitch: action.pitch,
+                targetYaw: action.yaw,
+                targetRoll: action.roll,
+            };
         }
         default:
             exhaustiveActionCheck(action);

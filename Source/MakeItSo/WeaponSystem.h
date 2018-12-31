@@ -113,6 +113,7 @@ public:
 	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Weapons; }
@@ -146,6 +147,10 @@ private:
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CurrentlyFacing)
 	FWeaponTargetingSolution::ETargetingFace currentlyFacing;
 	void OnReplicated_CurrentlyFacing(FWeaponTargetingSolution::ETargetingFace beforeChange) { SendFacing(); }
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetOrientation)
+	FRotator targetOrientation;
+	void OnReplicated_TargetOrientation(FRotator beforeChange) { SendOrientation(); }
 
 	UFUNCTION(Client, Reliable)
 	void SendSelectedTarget()
@@ -184,6 +189,14 @@ private:
 #ifdef WEB_SERVER_TEST
 	{ SendFacing_Implementation(); }
 	void SendFacing_Implementation();
+#endif
+	;
+
+	UFUNCTION(Client, Reliable)
+	void SendOrientation()
+#ifdef WEB_SERVER_TEST
+	{ SendOrientation_Implementation(); }
+	void SendOrientation_Implementation();
 #endif
 	;
 

@@ -438,6 +438,15 @@ void USensorSystem::RemoveTarget(AActor *target)
 	}
 }
 
+AActor *USensorSystem::GetTarget(uint16 targetID)
+{
+	if (targetID == 0 || !MAPCONTAINS(sensorTargets, targetID))
+		return nullptr;
+
+	auto targetInfo = sensorTargets[targetID];
+	return WEAK_PTR_GET(targetInfo->actor);
+}
+
 void USensorSystem::PopulateCells(USensorTargetInfo *target)
 {
 	EMPTY(revealQueue);

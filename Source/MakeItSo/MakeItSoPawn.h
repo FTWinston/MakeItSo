@@ -62,10 +62,6 @@ private:
 	UPROPERTY(Category = Ship, EditAnywhere)
 	float MaxTurnSpeed;
 
-#ifdef WEB_SERVER_TEST
-	FRotator actorRotation;
-#endif
-
 public:
 #ifndef WEB_SERVER_TEST
 	/** Returns ShipMesh subobject **/
@@ -81,9 +77,4 @@ public:
 
 	/** Current rotation speed about each axis */
 	FRotator AngularVelocity;
-
-#ifdef WEB_SERVER_TEST
-	FRotator GetActorRotation() { return actorRotation; }
-	void AddActorLocalRotation(FRotator rotation) { actorRotation = actorRotation + rotation; }
-#endif
 };

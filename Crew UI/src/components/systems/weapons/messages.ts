@@ -46,6 +46,15 @@ export function receiveMessage(cmd: string, data: string) {
             const face = parseInt(data) as TargetingFace;
             store.dispatch(actionCreators.setCurrentlyFacing(face));
         }
+        case 'wpn_orientation': {
+            const vals = data.split(' ');
+
+            const pitch = parseInt(vals[0]);
+            const yaw = parseInt(vals[1]);
+            const roll = parseInt(vals[2]);
+
+            store.dispatch(actionCreators.setTargetOrientation(pitch, yaw, roll));
+        }
         default:
             return false;
     }

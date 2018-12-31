@@ -1,5 +1,32 @@
 #include "stdafx.h"
 
+FQuat::FQuat(FRotator r)
+{
+	*this = r.Quaternion();
+}
+
+FQuat FVector::ToOrientationQuat()
+{
+	// Essentially an optimized Vector->Rotator->Quat made possible by knowing Roll == 0, and avoiding radians->degrees->radians.
+	// This is done to avoid adding any roll (which our API states as a constraint).
+	const float YawRad = FMath::Atan2(Y, X);
+	const float PitchRad = FMath::Atan2(Z, sqrt(X*X + Y * Y));
+
+	const float DIVIDE_BY_2 = 0.5f;
+	float SP, SY;
+	float CP, CY;
+
+	FMath::SinCos(&SP, &CP, PitchRad * DIVIDE_BY_2);
+	FMath::SinCos(&SY, &CY, YawRad * DIVIDE_BY_2);
+
+	FQuat RotationQuat;
+	RotationQuat.X = SP * SY;
+	RotationQuat.Y = -SP * CY;
+	RotationQuat.Z = CP * SY;
+	RotationQuat.W = CP * CY;
+	return RotationQuat;
+}
+
 FRotator FQuat::Rotator() const
 {
 	const float SingularityTest = Z * X - W * Y;

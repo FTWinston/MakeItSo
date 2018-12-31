@@ -57,6 +57,7 @@ public:
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	void AddTarget(AActor *target);
 	void RemoveTarget(AActor *target);
+	AActor* GetTarget(uint16 targetID);
 
 #ifndef WEB_SERVER_TEST
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;

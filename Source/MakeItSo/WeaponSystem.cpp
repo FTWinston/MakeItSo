@@ -7,11 +7,14 @@
 
 #include "UIConnectionInfo.h"
 #include "CrewManager.h"
+#include "MakeItSoPawn.h"
+#include "SensorSystem.h"
 
 UWeaponSystem::UWeaponSystem()
 {
-	// TODO: make this tick and recalculate currentlyFacing when there's a target
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.2f;
+	PrimaryComponentTick.SetTickFunctionEnable(true);
 }
 
 void UWeaponSystem::ResetData()
@@ -21,6 +24,60 @@ void UWeaponSystem::ResetData()
 	currentlyFacing = FWeaponTargetingSolution::ETargetingFace::NoFace;
 	CLEAR(targetingSolutions);
 	ClearPuzzle();
+}
+
+void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	if (selectedTargetID == 0)
+		return;
+
+	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
+	if (sensorSystem == nullptr)
+		return;
+
+	auto target = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+
+	if (target == nullptr)
+	{
+		selectedTargetID = 0;
+		if (ISCLIENT())
+			SendSelectedTarget();
+		return;
+	}
+
+	// update the angle of the target we are currently facing
+	auto towardsTarget = (target->GetActorLocation() - crewManager->GetShipPawn()->GetActorLocation());
+	towardsTarget.Normalize(1);
+
+	auto facingTarget = towardsTarget.ToOrientationQuat();
+	// TODO: should this be the other way around?
+	targetOrientation = (facingTarget - target->GetActorQuat())
+		.Rotator();
+
+	auto prevFacing = currentlyFacing;
+	// TODO: ensure these aren't all the wrong way round
+	if (targetOrientation.Pitch > 45.f)
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Bottom;
+	else if (targetOrientation.Pitch < 45.f)
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Top;
+	else if (targetOrientation.Yaw < -135.f)
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Front;
+	else if (targetOrientation.Yaw < -45.f)
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Left;
+	else if (targetOrientation.Yaw < 45.f)
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Rear;
+	else if (targetOrientation.Yaw < 135.f)
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Right;
+	else
+		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Front;
+
+	if (ISCLIENT())
+	{
+		if (prevFacing != currentlyFacing)
+			SendFacing();
+
+		SendOrientation();
+	}
 }
 
 bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
@@ -38,9 +95,12 @@ bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 	}
 	else if (STARTS_WITH(msg, "wpn_fire "))
 	{
-		// TODO: parse parameters, populate solutionSteps
+		TArray<FString> parts = SplitParts(msg, sizeof("dmg_roll "));
 		TArray<FWeaponPuzzleData::EDirection> solutionSteps;
 
+		for (auto part : parts)
+			SETADD(solutionSteps, (FWeaponPuzzleData::EDirection)STOI(part));
+		
 		Fire(solutionSteps);
 	}
 	else
@@ -123,6 +183,18 @@ void UWeaponSystem::SendFacing_Implementation()
 	SendSystem(output);
 }
 
+void UWeaponSystem::SendOrientation_Implementation()
+{
+	FString output = TEXT("wpn_orientation ");
+
+	APPENDINT(output, targetOrientation.Pitch);
+	output += TEXT(" ");
+	APPENDINT(output, targetOrientation.Yaw);
+	output += TEXT(" ");
+	APPENDINT(output, targetOrientation.Roll);
+
+	SendSystem(output);
+}
 
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 {

@@ -140,6 +140,7 @@ public:
 };
 
 struct FRotator;
+struct FQuat;
 
 struct FVector {
 	FVector() {}
@@ -196,6 +197,20 @@ struct FVector {
 			|| this->Z != Q.Z;
 	}
 
+	bool Normalize(float Tolerance)
+	{
+		const float SquareSum = X * X + Y * Y + Z * Z;
+		if (SquareSum > Tolerance)
+		{
+			const float Scale = FMath::InvSqrt(SquareSum);
+			X *= Scale; Y *= Scale; Z *= Scale;
+			return true;
+		}
+		return false;
+	}
+
+	FQuat ToOrientationQuat();
+
 	static float DistSquared(const FVector &a, const FVector &b)
 	{
 		return (a.X - b.X) * (a.X - b.X)
@@ -217,6 +232,8 @@ struct FQuat {
 public:
 	FQuat() {}
 	FQuat(float x, float y, float z, float w) { W = w; X = x; Y = y; Z = z; }
+	FQuat(FRotator r);
+
 	float W, X, Y, Z;
 
 	FQuat operator*(const FQuat& Q) const {
@@ -248,6 +265,36 @@ public:
 			W = 1;
 			X = Y = Z = 0;
 		}
+	}
+
+	FQuat operator+(const FQuat& Q) const
+	{
+		return FQuat(X + Q.X, Y + Q.Y, Z + Q.Z, W + Q.W);
+	}
+
+	FQuat operator+=(const FQuat& Q)
+	{
+		this->X += Q.X;
+		this->Y += Q.Y;
+		this->Z += Q.Z;
+		this->W += Q.W;
+
+		return *this;
+	}
+
+	FQuat operator-(const FQuat& Q) const
+	{
+		return FQuat(X - Q.X, Y - Q.Y, Z - Q.Z, W - Q.W);
+	}
+
+	FQuat operator-=(const FQuat& Q)
+	{
+		this->X -= Q.X;
+		this->Y -= Q.Y;
+		this->Z -= Q.Z;
+		this->W -= Q.W;
+
+		return *this;
 	}
 
 	FRotator Rotator() const;
@@ -349,8 +396,15 @@ class AActor : public UObject
 public:
 	FVector GetActorLocation() { return location; }
 	void SetActorLocation(FVector loc) { location = loc; }
+
+	FRotator GetActorRotation() { return quat.Rotator(); }
+	void AddActorLocalRotation(FRotator rotation) { quat = quat + FQuat(rotation); }
+
+	FQuat GetActorQuat() { return quat; }
+
 private:
 	FVector location = FVector::ZeroVector;
+	FQuat quat = FQuat(0, 0, 0, 1);
 };
 
 class APawn : public AActor
