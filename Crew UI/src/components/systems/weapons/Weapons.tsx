@@ -73,6 +73,9 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     target={this.state.selectedTarget}
                     deselectTarget={clearTarget}
                     currentlyFacing={this.props.currentlyFacing}
+                    relPitch={this.props.targetPitch}
+                    relYaw={this.props.targetYaw}
+                    relRoll={this.props.targetRoll}
                 />
                 <SolutionList
                     text={this.props.text}
@@ -96,6 +99,9 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     solution={this.props.selectedTargetingSolution}
                     deselectSolution={clearSolution}
                     currentlyFacing={this.props.currentlyFacing}
+                    relPitch={this.props.targetPitch}
+                    relYaw={this.props.targetYaw}
+                    relRoll={this.props.targetRoll}
                 />
                 <FillPuzzle
                     text={this.props.text}

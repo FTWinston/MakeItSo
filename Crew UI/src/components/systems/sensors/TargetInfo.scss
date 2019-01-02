@@ -49,3 +49,7 @@
 .targetInfo__positionElement + .targetInfo__positionElement::before {
     content: ', ';
 }
+
+.targetInfo__id, .targetInfo__positionElement {
+    font-weight: bold;
+}

@@ -45,6 +45,7 @@ export function receiveMessage(cmd: string, data: string) {
         case 'wpn_facing': {
             const face = parseInt(data) as TargetingFace;
             store.dispatch(actionCreators.setCurrentlyFacing(face));
+            break;
         }
         case 'wpn_orientation': {
             const vals = data.split(' ');
@@ -54,6 +55,7 @@ export function receiveMessage(cmd: string, data: string) {
             const roll = parseInt(vals[2]);
 
             store.dispatch(actionCreators.setTargetOrientation(pitch, yaw, roll));
+            break;
         }
         default:
             return false;

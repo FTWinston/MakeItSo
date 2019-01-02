@@ -58,7 +58,7 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// TODO: ensure these aren't all the wrong way round
 	if (targetOrientation.Pitch > 45.f)
 		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Bottom;
-	else if (targetOrientation.Pitch < 45.f)
+	else if (targetOrientation.Pitch < -45.f)
 		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Top;
 	else if (targetOrientation.Yaw < -135.f)
 		currentlyFacing = FWeaponTargetingSolution::ETargetingFace::Front;

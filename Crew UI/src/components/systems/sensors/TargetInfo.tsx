@@ -25,8 +25,7 @@ export class TargetInfo extends React.PureComponent<IProps, {}> {
                 <span className="targetInfo__type">{type}</span>: <span className="targetInfo__id">{target.id}</span>
             </div>
             <div className="targetInfo__position">
-                Position: 
-                <span className="targetInfo__positionElement">{target.position.x}</span>
+                Position: <span className="targetInfo__positionElement">{target.position.x}</span>
                 <span className="targetInfo__positionElement">{target.position.y}</span>
                 <span className="targetInfo__positionElement">{target.position.z}</span>
             </div>
