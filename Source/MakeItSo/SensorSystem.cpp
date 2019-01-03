@@ -315,13 +315,11 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 		? target->maxInfoLevels[system]
 		: 255;
 
-	if (maxInfoLevel <= infoLevel)
-		return; // can't increase this any more, as it is maxed out
-
-	// this system was picked by the user, increase its info level
-	infoLevel++;
-
-	target->systemInfoLevels[system] = infoLevel;
+	if (infoLevel < maxInfoLevel)
+	{
+		infoLevel++;
+		target->systemInfoLevels[system] = infoLevel;
+	}
 
 	switch (target->type)
 	{
@@ -329,12 +327,9 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 	case ETargetType::Type_Station:
 		if (infoLevel >= 3)
 		{
-			if (MAPCONTAINS(target->systemVulnerabilities, system))
-				++target->systemVulnerabilities[system];
-			else
-				target->systemVulnerabilities[system] = 1;
-
-			// TODO: record an actual vulnerability, pass it on to the weapons system
+			auto vulnerabilitity = GetVulnerabilityForSystem(system);
+			if (!SETCONTAINS(target->targetingSolutions, vulnerability)) // TODO: ah this checks the wrong type!
+				SETADD(target->targetingSolutions, vulnerability);
 		}
 		break;
 	default:
@@ -345,7 +340,7 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 
 	if (infoLevel >= maxInfoLevel)
 	{
-		// TODO: inform user that this info level has now maxed out
+		// TODO: inform user that this info level has now maxed out ... also reduce the info level if a vulnerability is "consumed"?
 	}
 
 	UpdateTargetData(openTargetID, target);
@@ -416,6 +411,18 @@ void USensorSystem::AddTarget(AActor *target)
 
 	MAPADD(targetInfo->systemHealth, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
 
+
+	// TODO: decide available targeting solutions based on target type and sensor data
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Easy, FWeaponTargetingSolution::NoFace));
+
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Engines, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Rear));
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Warp, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Bottom));
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Weapons, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Front));
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Sensors, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Left));
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::PowerManagement, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Top));
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControl, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
+	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
+
 	MAPADD(sensorTargets, nextTargetID, targetInfo, uint16, USensorTargetInfo*);
 }
 
@@ -438,13 +445,12 @@ void USensorSystem::RemoveTarget(AActor *target)
 	}
 }
 
-AActor *USensorSystem::GetTarget(uint16 targetID)
+USensorTargetInfo *USensorSystem::GetTarget(uint16 targetID)
 {
 	if (targetID == 0 || !MAPCONTAINS(sensorTargets, targetID))
 		return nullptr;
 
-	auto targetInfo = sensorTargets[targetID];
-	return WEAK_PTR_GET(targetInfo->actor);
+	return sensorTargets[targetID];
 }
 
 void USensorSystem::PopulateCells(USensorTargetInfo *target)
@@ -568,6 +574,12 @@ int32 USensorSystem::PickEmptyCell()
 	} while (targetCells[cellIndex]);
 
 	return cellIndex;
+}
+
+FWeaponTargetingSolution::ETargetingSolutionType USensorSystem::GetVulnerabilityForSystem(ESensorSystem system)
+{
+	// TODO: do this properly!
+	return FWeaponTargetingSolution::ETargetingSolutionType::EngineVulnerability;
 }
 
 void USensorSystem::OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange)

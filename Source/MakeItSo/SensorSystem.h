@@ -7,6 +7,7 @@
 #include "ShipSystem.h"
 #include "CrewManager.h"
 #include "SensorSystem.Generated.h"
+#include "WeaponSystem.h"
 
 class USensorTargetInfo;
 
@@ -57,7 +58,7 @@ public:
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	void AddTarget(AActor *target);
 	void RemoveTarget(AActor *target);
-	AActor* GetTarget(uint16 targetID);
+	USensorTargetInfo* GetTarget(uint16 targetID);
 
 #ifndef WEB_SERVER_TEST
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty> &OutLifetimeProps) const;
@@ -73,6 +74,7 @@ private:
 	uint8 PlaceTarget(uint8 targetSize, ESensorSystem system);
 	bool TryPlaceTarget(uint8 targetSize, ESensorSystem system);
 	int32 PickEmptyCell();
+	FWeaponTargetingSolution::ETargetingSolutionType GetVulnerabilityForSystem(ESensorSystem system);
 
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
@@ -180,7 +182,7 @@ public:
 	TMap<USensorSystem::ESensorSystem, uint8> systemPower;
 
 	UPROPERTY(Replicated) // TODO: replicatedUsing?
-	TMap<USensorSystem::ESensorSystem, uint8> systemVulnerabilities;
+	TSet<FWeaponTargetingSolution> targetingSolutions;
 
 	// The actor in question may not be visible in the scene, so the client doesn't use it directly.
 	WEAK_PTR_DECLARE(AActor) actor;

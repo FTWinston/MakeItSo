@@ -61,7 +61,8 @@ struct FWeaponTargetingSolution {
 		MIN_STANDARD_SYSTEM = Engines,
 		MAX_STANDARD_SYSTEM = Communications,
 		MIN_SYSTEM_VULNERABILITY = EngineVulnerability,
-		MAX_SYSTEM_VULNERABILITY = DamageControlVulnerability
+		MAX_SYSTEM_VULNERABILITY = DamageControlVulnerability,
+		MIN_VULNERABILITY = MiscVulnerability,
 	};
 
 	enum ESolutionDifficulty : uint8 {
@@ -126,6 +127,7 @@ private:
 	bool IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzleSolution);
 	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
+	void RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SelectedTargetID)

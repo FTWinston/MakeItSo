@@ -30,11 +30,14 @@ export class ButtonSet extends React.Component<IButtonSetProps, {}> {
             classes += ' ' + this.props.className;
         
         const childrenWithProps = React.Children.map(this.props.children, child => {
-            if (typeof child === 'string' || typeof child === 'number' || child === null)
+            if (typeof child === 'string' || typeof child === 'number' || child === null) {
                 return child;
+            }
 
-            if (child.type !== PushButton && child.type !== ToggleButton && child.type !== HeldButton && child.type !== ConfirmButton)
+            // This doesn't work with react-hot-loader: https://github.com/gaearon/react-hot-loader/issues/304
+            if (child.type !== PushButton && child.type !== ToggleButton && child.type !== HeldButton && child.type !== ConfirmButton) {
                 return child;
+            }
 
             let childHasColor = child.props.color !== undefined;
             let childProps: Partial<IBaseButtonProps> = {

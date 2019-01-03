@@ -35,7 +35,8 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	if (sensorSystem == nullptr)
 		return;
 
-	auto target = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+	auto targetInfo = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+	auto target = targetInfo == nullptr ? nullptr : WEAK_PTR_GET(targetInfo->actor);
 
 	if (target == nullptr)
 	{
@@ -44,6 +45,9 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			SendSelectedTarget();
 		return;
 	}
+
+	// update targeting solutions
+	targetingSolutions = targetInfo->targetingSolutions;
 
 	// update the angle of the target we are currently facing
 	auto towardsTarget = (target->GetActorLocation() - crewManager->GetShipPawn()->GetActorLocation());
@@ -77,6 +81,9 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			SendFacing();
 
 		SendOrientation();
+
+		if (selectedTargetingSolution == -1) // only need to force-resend if the list is visible
+			SendTargetingSolutions();
 	}
 }
 
@@ -230,6 +237,8 @@ void UWeaponSystem::SelectTargetingSolution_Implementation(int8 solutionIndex)
 		if (ISCLIENT())
 			SendPuzzle();
 	}
+	else if (ISCLIENT())
+		SendTargetingSolutions();
 }
 
 void UWeaponSystem::Fire_Implementation(TArray<FWeaponPuzzleData::EDirection> puzzleSolution)
@@ -247,9 +256,38 @@ void UWeaponSystem::Fire_Implementation(TArray<FWeaponPuzzleData::EDirection> pu
 	auto targetSystem = GetSystemForSolution(solution.type);
 	auto damage = GetDamageForSolution(solution.type);
 
+	if (solution.type >= FWeaponTargetingSolution::MIN_VULNERABILITY)
+	{
+		// Targeting a vulnerability "consumes" it, so remove it from the list
+		RemoveVulnerability(solution.type);
+
+		// This solution will no longer be valid, so clear it
+		selectedTargetingSolution = -1;
+		if (ISCLIENT())
+		{
+			SendTargetingSolutions();
+			SendSelectedTargetingSolution();
+		}
+	}
+
 	// TODO: actually fire ... deal damage to targetSystem
 
 	ClearPuzzle();
+}
+
+void UWeaponSystem::RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolutionType solutionType)
+{
+	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
+	if (sensorSystem == nullptr)
+		return;
+
+	auto targetInfo = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+
+	if (targetInfo == nullptr)
+		return;
+
+	SETREMOVEVAL(targetInfo->targetingSolutions, solutionType);
+	targetingSolutions = targetInfo->targetingSolutions;
 }
 
 void UWeaponSystem::DetermineTargetingSolutions()
@@ -259,18 +297,16 @@ void UWeaponSystem::DetermineTargetingSolutions()
 	if (selectedTargetID == 0)
 		return;
 
-	// TODO: decide available targeting solutions based on target type and sensor data
-	// TODO: in particular, sensors needs to make vulnerabilities available here 
+	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
+	if (sensorSystem == nullptr)
+		return;
 
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Easy, FWeaponTargetingSolution::NoFace));
+	auto targetInfo = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
 
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Engines, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Rear));
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Warp, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Bottom));
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Weapons, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Front));
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Sensors, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Left));
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::PowerManagement, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Top));
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControl, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
-	SETADD(targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
+	if (targetInfo == nullptr)
+		return;
+
+	targetingSolutions = targetInfo->targetingSolutions;
 }
 
 void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty difficulty)
