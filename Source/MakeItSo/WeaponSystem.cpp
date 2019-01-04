@@ -28,14 +28,7 @@ void UWeaponSystem::ResetData()
 
 void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	if (selectedTargetID == 0)
-		return;
-
-	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
-	if (sensorSystem == nullptr)
-		return;
-
-	auto targetInfo = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+	auto targetInfo = GetSelectedTarget();
 	auto target = targetInfo == nullptr ? nullptr : WEAK_PTR_GET(targetInfo->actor);
 
 	if (target == nullptr)
@@ -270,18 +263,23 @@ void UWeaponSystem::Fire_Implementation(TArray<FWeaponPuzzleData::EDirection> pu
 		}
 	}
 
-	// TODO: actually fire ... deal damage to targetSystem
-
 	ClearPuzzle();
+
+
+	auto targetInfo = GetSelectedTarget();
+	if (targetInfo == nullptr)
+		return;
+
+	auto target = WEAK_PTR_GET(targetInfo->actor);
+	if (target == nullptr)
+		return;
+
+	// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
 }
 
 void UWeaponSystem::RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolutionType solutionType)
 {
-	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
-	if (sensorSystem == nullptr)
-		return;
-
-	auto targetInfo = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+	auto targetInfo = GetSelectedTarget();
 
 	if (targetInfo == nullptr)
 		return;
@@ -296,19 +294,24 @@ void UWeaponSystem::RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolu
 	targetingSolutions = targetInfo->targetingSolutions;
 }
 
+USensorTargetInfo *UWeaponSystem::GetSelectedTarget()
+{
+	if (selectedTargetID == 0)
+		return nullptr;
+
+	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
+	if (sensorSystem == nullptr)
+		return nullptr;
+
+	return ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
+}
+
 void UWeaponSystem::DetermineTargetingSolutions()
 {
 	CLEAR(targetingSolutions);
 
-	if (selectedTargetID == 0)
-		return;
-
-	auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
-	if (sensorSystem == nullptr)
-		return;
-
-	auto targetInfo = ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
-
+	auto targetInfo = GetSelectedTarget();
+	
 	if (targetInfo == nullptr)
 		return;
 
@@ -500,7 +503,7 @@ FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty
 {
 	uint8 iDifficulty = baseDifficulty;
 
-	// Adjust difficulty to account for facing in the right / wrong direction
+	// Adjust difficulty to account for the target's best / worst face being the one pointed at the ship
 	if (bestFacing == currentlyFacing)
 	{
 		if (iDifficulty > FWeaponTargetingSolution::VeryEasy)

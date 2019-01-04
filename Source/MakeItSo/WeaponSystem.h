@@ -7,6 +7,8 @@
 #include "ShipSystem.h"
 #include "WeaponSystem.Generated.h"
 
+class USensorTargetInfo;
+
 USTRUCT()
 struct FWeaponPuzzleData
 {
@@ -129,6 +131,7 @@ private:
 	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	void RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
+	USensorTargetInfo *GetSelectedTarget();
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SelectedTargetID)
