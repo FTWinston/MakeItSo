@@ -57,11 +57,12 @@ struct FWeaponTargetingSolution {
 		SensorVulnerability,
 		PowerVulnerability,
 		DamageControlVulnerability,
+		CommunicationVulnerability,
 
 		MIN_STANDARD_SYSTEM = Engines,
 		MAX_STANDARD_SYSTEM = Communications,
 		MIN_SYSTEM_VULNERABILITY = EngineVulnerability,
-		MAX_SYSTEM_VULNERABILITY = DamageControlVulnerability,
+		MAX_SYSTEM_VULNERABILITY = CommunicationVulnerability,
 		MIN_VULNERABILITY = MiscVulnerability,
 	};
 

@@ -314,6 +314,10 @@ let words: TextLocalisation = {
                     name: 'Vulnerability: damage control',
                     desc: 'Inflict more significant damage.',
                 },
+                commsVulnerability: {
+                    name: 'Vulnerability: communications',
+                    desc: 'Inflict more significant damage.',
+                },
             }
         },
         sensors: {

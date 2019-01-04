@@ -24,6 +24,7 @@ export const enum TargetingSolutionType {
     SensorVulnerability,
     PowerVulnerability,
     DamageControlVulnerability,
+    CommunicationVulnerability,
 }
 
 export const enum TargetingFace { // These are numbered stupidly to easily identify opposite faces

@@ -14,6 +14,11 @@
 #define NUM_TARGET_CELLS (TARGET_GRID_WIDTH * TARGET_GRID_HEIGHT)
 #define MAX_INITIAL_REVEAL_FRACTION 0.33f
 
+#define INFO_LEVEL_TARGETING 1
+#define INFO_LEVEL_HEALTH 2
+#define INFO_LEVEL_POWER 3
+#define INFO_LEVEL_VULNERABILITY 4
+
 #define CELLINDEX(x, y) (y * TARGET_GRID_WIDTH + x)
 
 USensorSystem::USensorSystem()
@@ -212,14 +217,14 @@ void USensorSystem::UpdateTargetData(uint16 targetID, USensorTargetInfo *targetI
 		ESensorSystem system = PAIRKEY(pair);
 		uint8 infoLevel = PAIRVALUE(pair);
 
-		if (infoLevel >= 1)
+		if (infoLevel >= INFO_LEVEL_POWER)
 		{
 			// TODO: get actual system power level
 			targetInfo->systemPower[system] = 100;
 
 			// TODO: send system power if it has changed (and send it in the first place)
 		}
-		if (infoLevel >= 2)
+		if (infoLevel >= INFO_LEVEL_HEALTH)
 		{
 			// TODO: get actual system health
 			targetInfo->systemHealth[system] = 100;
@@ -325,10 +330,10 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 	{
 	case ETargetType::Type_Ship:
 	case ETargetType::Type_Station:
-		if (infoLevel >= 3)
+		if (infoLevel >= INFO_LEVEL_VULNERABILITY)
 		{
-			auto vulnerabilitity = GetVulnerabilityForSystem(system);
-			if (!SETCONTAINS(target->targetingSolutions, vulnerability)) // TODO: ah this checks the wrong type!
+			auto vulnerability = GetTargetingSolutionForSystem(system, true);
+			if (!HasTargetingSolutionOfType(target, vulnerability.type))
 				SETADD(target->targetingSolutions, vulnerability);
 		}
 		break;
@@ -340,7 +345,7 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 
 	if (infoLevel >= maxInfoLevel)
 	{
-		// TODO: inform user that this info level has now maxed out ... also reduce the info level if a vulnerability is "consumed"?
+		// TODO: inform user that this info level has now maxed out
 	}
 
 	UpdateTargetData(openTargetID, target);
@@ -389,39 +394,48 @@ void USensorSystem::AddTarget(AActor *target)
 	targetInfo->location = target->GetActorLocation();
 
 	// TODO: get sensor data from actor ... perhaps have a "sensor data" component on it?
+	// TODO: system info levels should never start at 0 if you've already scanned a system on the same class of ship
 
 	targetInfo->relationship = ETargetRelationship::Rel_None;
 	targetInfo->type = ETargetType::Type_Misc;
 	
-	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Power, 1, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Power, INFO_LEVEL_HEALTH, ESensorSystem, uint8);
 	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Helm, 0, ESensorSystem, uint8);
 	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Weapons, 0, ESensorSystem, uint8);
-	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Sensors, 1, ESensorSystem, uint8);
-	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Warp, 2, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Sensors, INFO_LEVEL_HEALTH, ESensorSystem, uint8);
+	MAPADD(targetInfo->systemInfoLevels, ESensorSystem::Sensor_Warp, INFO_LEVEL_POWER, ESensorSystem, uint8);
 
-	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Power, 3, ESensorSystem, uint8);
-	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Helm, 3, ESensorSystem, uint8);
-	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Weapons, 3, ESensorSystem, uint8);
-	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Sensors, 3, ESensorSystem, uint8);
-	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Warp, 3, ESensorSystem, uint8);
-
-	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Power, 100, ESensorSystem, uint8);
-	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Sensors, 100, ESensorSystem, uint8);
-	MAPADD(targetInfo->systemPower, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
-
-	MAPADD(targetInfo->systemHealth, ESensorSystem::Sensor_Warp, 100, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Power, INFO_LEVEL_VULNERABILITY, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Helm, INFO_LEVEL_VULNERABILITY, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Weapons, INFO_LEVEL_VULNERABILITY, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Sensors, INFO_LEVEL_VULNERABILITY, ESensorSystem, uint8);
+	MAPADD(targetInfo->maxInfoLevels, ESensorSystem::Sensor_Warp, INFO_LEVEL_VULNERABILITY, ESensorSystem, uint8);
 
 
-	// TODO: decide available targeting solutions based on target type and sensor data
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Easy, FWeaponTargetingSolution::NoFace));
+	SETADD(targetInfo->targetingSolutions, GetTargetingSolutionForSystem(ESensorSystem::Sensor_None, false));
 
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Engines, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Rear));
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Warp, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Bottom));
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Weapons, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Front));
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Sensors, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Left));
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::PowerManagement, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Top));
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControl, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
-	SETADD(targetInfo->targetingSolutions, FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right));
+	// set up health data, power data, and weapon targeting solutions based on the curent info levels
+	for (auto iSystem = ESensorSystem::Sensor_None + 1; iSystem <= NUM_SENSOR_SYSTEMS; iSystem++)
+	{
+		ESensorSystem system = (ESensorSystem)iSystem;
+
+		if (!MAPCONTAINS(targetInfo->systemInfoLevels, system))
+			continue;
+
+		auto infoLevel = targetInfo->systemInfoLevels[system];
+
+		if (infoLevel >= INFO_LEVEL_HEALTH)
+			MAPADD(targetInfo->systemHealth, system, 100, ESensorSystem, uint8); // TODO: get actual health value
+
+		if (infoLevel >= INFO_LEVEL_POWER)
+			MAPADD(targetInfo->systemPower, system, 100, ESensorSystem, uint8); // TODO: get actual power value
+
+		if (infoLevel >= INFO_LEVEL_TARGETING)
+			SETADD(targetInfo->targetingSolutions, GetTargetingSolutionForSystem(system, false));
+		
+		if (infoLevel >= INFO_LEVEL_VULNERABILITY)
+			SETADD(targetInfo->targetingSolutions, GetTargetingSolutionForSystem(system, true));
+	}
 
 	MAPADD(sensorTargets, nextTargetID, targetInfo, uint16, USensorTargetInfo*);
 }
@@ -479,9 +493,9 @@ void USensorSystem::PopulateCells(USensorTargetInfo *target)
 		if (level >= maxInfoLevel)
 			continue;
 
-		uint8 size = level >= 3
+		uint8 size = level >= 4
 			? 2
-			: 5 - level;
+			: 6 - level;
 		
 		size = PlaceTarget(size, system);
 		systemCellsRemaining[system] = size;
@@ -576,10 +590,59 @@ int32 USensorSystem::PickEmptyCell()
 	return cellIndex;
 }
 
-FWeaponTargetingSolution::ETargetingSolutionType USensorSystem::GetVulnerabilityForSystem(ESensorSystem system)
+FWeaponTargetingSolution USensorSystem::GetTargetingSolutionForSystem(ESensorSystem system, bool isVulnerability)
 {
-	// TODO: do this properly!
-	return FWeaponTargetingSolution::ETargetingSolutionType::EngineVulnerability;
+	switch (system)
+	{
+		case Sensor_Power:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::PowerVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Top)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::PowerManagement, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Top);
+		case Sensor_Helm:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::EngineVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Engines, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right);
+		case Sensor_Warp:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::WarpVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Bottom)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Warp, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Bottom);
+		case Sensor_Weapons:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::WeaponVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Rear)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Weapons, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Rear);
+		case Sensor_Sensors:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::SensorVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Left)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Sensors, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Left);
+		/*
+		case Sensor_Shields:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::ShieldVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Shields, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right);
+		*/
+		case Sensor_DamageControl:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControlVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControl, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right);
+		case Sensor_Comms:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::CommunicationVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::Right);
+		case Sensor_None:
+		default:
+			return isVulnerability
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::MiscVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::NoFace)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::NoFace);
+	}
+}
+
+bool USensorSystem::HasTargetingSolutionOfType(USensorTargetInfo *target, FWeaponTargetingSolution::ETargetingSolutionType type)
+{
+	for (auto solution : target->targetingSolutions)
+		if (solution.type == type)
+			return true;
+
+	return false;
 }
 
 void USensorSystem::OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange)

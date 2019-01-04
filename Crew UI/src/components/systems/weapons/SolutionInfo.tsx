@@ -109,6 +109,8 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
                 return solutions.powerVulnerability;
             case TargetingSolutionType.DamageControlVulnerability:
                 return solutions.damageVulnerability;
+            case TargetingSolutionType.CommunicationVulnerability:
+                return solutions.commsVulnerability;
             default:
                 return solutions.misc;
         }
@@ -177,6 +179,7 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
             case TargetingSolutionType.SensorVulnerability:
             case TargetingSolutionType.PowerVulnerability:
             case TargetingSolutionType.DamageControlVulnerability:
+            case TargetingSolutionType.CommunicationVulnerability:
             case TargetingSolutionType.MiscVulnerability:
                 return true;
             default:

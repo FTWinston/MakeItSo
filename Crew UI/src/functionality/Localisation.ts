@@ -248,6 +248,10 @@ export interface TextLocalisation {
                     name: string;
                     desc: string;
                 },
+                commsVulnerability: {
+                    name: string;
+                    desc: string;
+                },
             }
         },
         sensors: {

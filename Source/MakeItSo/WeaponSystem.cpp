@@ -286,7 +286,13 @@ void UWeaponSystem::RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolu
 	if (targetInfo == nullptr)
 		return;
 
-	SETREMOVEVAL(targetInfo->targetingSolutions, solutionType);
+	for (auto iSolution = 0; iSolution < SIZENUM(targetInfo->targetingSolutions); iSolution++)
+		if (targetInfo->targetingSolutions[iSolution].type == solutionType)
+		{
+			SETREMOVEAT(targetInfo->targetingSolutions, iSolution);
+			break;
+		}
+	
 	targetingSolutions = targetInfo->targetingSolutions;
 }
 
