@@ -126,12 +126,12 @@ void UHelmSystem::SendAllData_Implementation()
 	auto pawn = crewManager->GetShipPawn();
 	lastSentOrientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
 	lastSentAngularVelocity = pawn == nullptr ? FRotator::ZeroRotator : pawn->AngularVelocity;
-	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+	crewManager->SendSystem(UShipSystem::ESystem::UseShipOrientation, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
 		lastSentOrientation.Pitch, lastSentOrientation.Yaw, lastSentOrientation.Roll,
 		lastSentAngularVelocity.Pitch, lastSentAngularVelocity.Yaw, lastSentAngularVelocity.Roll);
 
 	lastSentVelocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
-	crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
+	crewManager->SendSystem(UShipSystem::ESystem::UseShipPosition, "helm_translation_rates %.2f %.2f %.2f",
 		lastSentVelocity.X, lastSentVelocity.Y, lastSentVelocity.Z);
 
 	nextSendSeconds = helmSendInterval;
@@ -144,6 +144,7 @@ void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	// update rotation rates
 	auto angularVelocity = pawn->AngularVelocity;
 
+	// TODO: should be using quaternions here!
 	float adjustmentAmount = rotationAccel * DeltaTime;
 	if (stopRotation)
 	{
@@ -199,7 +200,7 @@ void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	{
 		lastSentAngularVelocity = angularVelocity;
 		lastSentOrientation = orientation;
-		crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+		crewManager->SendSystem(UShipSystem::ESystem::UseShipOrientation, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
 			orientation.Pitch, orientation.Yaw, orientation.Roll,
 			angularVelocity.Pitch, angularVelocity.Yaw, angularVelocity.Roll);
 	}
@@ -207,7 +208,7 @@ void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	if (velocity != lastSentVelocity)
 	{
 		lastSentVelocity = velocity;
-		crewManager->SendSystem(UShipSystem::ESystem::Helm, "helm_translation_rates %.2f %.2f %.2f",
+		crewManager->SendSystem(UShipSystem::ESystem::UseShipPosition, "helm_translation_rates %.2f %.2f %.2f",
 			velocity.X, velocity.Y, velocity.Z);
 	}
 }

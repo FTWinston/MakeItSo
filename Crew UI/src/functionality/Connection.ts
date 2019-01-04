@@ -110,6 +110,16 @@ export class Connection {
             case 'env_clear': {
                 store.dispatch(environmentActions.removeAllTargets());
             }
+            case 'ship_pos': {
+                const vals = data.split(' ').map(v => parseInt(v));
+                store.dispatch(environmentActions.setShipPosition(vals[0], vals[1], vals[2]));
+                store.dispatch(environmentActions.setShipVelocity(vals[3], vals[4], vals[5]));
+            }
+            case 'ship_rot': {
+                const vals = data.split(' ').map(v => parseInt(v));
+                store.dispatch(environmentActions.setShipOrientation(vals[0], vals[1], vals[2]));
+                store.dispatch(environmentActions.setShipOrientationRate(vals[3], vals[4], vals[5]));
+            }
             default:
                 if (cmd.startsWith(helmPrefix))
                 {

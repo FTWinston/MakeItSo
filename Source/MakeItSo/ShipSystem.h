@@ -61,6 +61,8 @@ public:
 
 		All = Helm + Warp + Weapons + Sensors + PowerManagement + DamageControl + ViewScreen + Communications,
 		UseSensorData = Warp + Weapons + Sensors,
+		UseShipPosition = Helm + Warp + Weapons + Sensors,
+		UseShipOrientation = Helm + Weapons,
 		None = 0,
 	};
 
