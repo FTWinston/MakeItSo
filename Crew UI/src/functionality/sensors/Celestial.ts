@@ -1,4 +1,4 @@
-import { CanvasBounds3D } from '~/functionality';
+import { CanvasBounds } from '~/functionality';
 import { SensorTarget, SensorTargetType } from './SensorTarget';
 import { Vector2, Vector3 } from '~/functionality/math'; 
 import texture from './sphere_shade.png';
@@ -11,9 +11,9 @@ export class Celestial extends SensorTarget {
         super(id, type, position);
     }
 
-    protected getShadowRadius(display: CanvasBounds3D) { return this.radius * 0.85; }
+    protected getShadowRadius(display: CanvasBounds) { return this.radius * 0.85; }
 
-    protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D) {
+    drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds) {
         ctx.fillStyle = this.color;
         ctx.beginPath();
         ctx.arc(screenPos.x, screenPos.y, this.radius, 0, Math.PI * 2);

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TouchArea } from './TouchArea';
-import { SensorTarget, Vector3, Rotator, CanvasBounds, Vector2, CanvasBounds3D } from '~/functionality';
+import { SensorTarget, Vector3, Rotator, CanvasBounds, Vector2 } from '~/functionality';
 
 interface IProps {
     className?: string;
@@ -48,30 +48,33 @@ export class RadarView extends React.PureComponent<IProps, {}> {
         const centerX = width / 2;
         const centerY = height / 2;
         const r = Math.min(centerX, centerY);
-        /*
-        const minX = centerX - r;
-        const maxX = centerX + r;
-        const minY = centerY - r;
-        const maxY = centerY + r;
-        */
+        const midR = r * 0.65;
+
+        const display: CanvasBounds = {
+            minX: centerX - r,
+            maxX: centerX + r,
+            minY: centerY - r,
+            maxY: centerY + r,
+            onePixel: 1,
+        };
 
         ctx.clearRect(0, 0, width, height);
 
-        this.drawBackground(ctx, centerX, centerY, r);
+        this.drawBackground(ctx, centerX, centerY, r, midR);
 
         ctx.save();
 
-        const display: CanvasBounds3D = undefined; // TODO: what is this?
+        const forward = this.props.shipOrientation.toVector();
 
         for (let target of this.props.targets) {
-            const screenPos = new Vector2(0, 0); // TODO: calculate based on offset from ship and angle of ship
-            target.draw(ctx, display, screenPos, 0); // TODO: disable marker drawing
+            const drawPos = this.determineDrawPosition(target.position, forward, centerX, centerY, r, midR);
+            target.drawTarget(ctx, drawPos, display);
         }
 
         ctx.restore();
     }
 
-    private drawBackground(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, radius: number) {
+    private drawBackground(ctx: CanvasRenderingContext2D, centerX: number, centerY: number, fullRadius: number, midRadius: number) {
         ctx.lineWidth = 1;
 
         // an outline
@@ -79,7 +82,7 @@ export class RadarView extends React.PureComponent<IProps, {}> {
         ctx.fillStyle = '#333';
         ctx.beginPath();
 
-        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, fullRadius, 0, Math.PI * 2);
 
         ctx.fill();
         ctx.stroke();
@@ -88,7 +91,7 @@ export class RadarView extends React.PureComponent<IProps, {}> {
         ctx.fillStyle = '#000';
         ctx.beginPath();
 
-        const targetingRadius = this.props.maxTargetingAngleRadians / radius / Math.PI;
+        const targetingRadius = this.props.maxTargetingAngleRadians / fullRadius / Math.PI;
 
         ctx.arc(centerX, centerY, targetingRadius, 0, Math.PI * 2);
 
@@ -100,40 +103,28 @@ export class RadarView extends React.PureComponent<IProps, {}> {
         ctx.globalAlpha = 0.333;
         ctx.beginPath();
 
-        ctx.arc(centerX, centerY, radius * 0.5, 0, Math.PI * 2);
+        ctx.arc(centerX, centerY, midRadius, 0, Math.PI * 2);
 
         // crosshairs
-        ctx.moveTo(centerX, centerY - radius);
-        ctx.lineTo(centerX, centerY + radius);
+        ctx.moveTo(centerX, centerY - fullRadius);
+        ctx.lineTo(centerX, centerY + fullRadius);
         
-        ctx.moveTo(centerX - radius, centerY);
-        ctx.lineTo(centerX + radius, centerY);
+        ctx.moveTo(centerX - fullRadius, centerY);
+        ctx.lineTo(centerX + fullRadius, centerY);
 
         ctx.stroke();
         ctx.globalAlpha = 1;
     }
     
-/*
-    private drawRotationMarker(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, gridZ: number) {
-        let worldPos = new Vector3(this.state.center.x, this.state.center.y, gridZ);
-        let screenPos = display.transform(worldPos).position;
-        
-        ctx.globalAlpha = 0.4;
-        ctx.strokeStyle = '#c00';
-        ctx.lineWidth = display.onePixel * 4;
-        let length = display.onePixel * 12;
-
-        // TODO: skew this to fit perspective
-        ctx.beginPath();
-        ctx.moveTo(screenPos.x - length, screenPos.y - length);
-        ctx.lineTo(screenPos.x + length, screenPos.y + length);
-        ctx.moveTo(screenPos.x - length, screenPos.y + length);
-        ctx.lineTo(screenPos.x + length, screenPos.y - length);
-        ctx.stroke();
-
-        ctx.globalAlpha = 1;
+    private determineDrawPosition(targetPosition: Vector3, forward: Vector3, centerX: number, centerY: number, fullRadius: number, midRadius: number) {
+        /*
+        const toTarget = targetPosition.clone().normalize();
+        const dot = forward.dot(toTarget);
+        */
+       
+        return new Vector2(centerX, centerY);// TODO: calculate based on offset from ship and angle of ship
     }
-*/
+
     private setupTouch(area: TouchArea) {
 
     }

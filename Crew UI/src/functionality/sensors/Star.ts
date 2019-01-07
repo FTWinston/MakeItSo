@@ -1,4 +1,4 @@
-import { CanvasBounds3D } from '~/functionality';
+import { CanvasBounds } from '~/functionality';
 import { Celestial } from './Celestial';
 import { Vector2, Vector3 } from '~/functionality/math';
 import { SensorTargetType } from './SensorTarget';
@@ -8,7 +8,7 @@ export class Star extends Celestial {
         super(id, SensorTargetType.Star, position, color, radius);
     }
 
-    protected drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D) {
+    drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds) {
         (ctx as any).filter = 'blur(8px)';
         ctx.fillStyle = this.color;
         ctx.beginPath();

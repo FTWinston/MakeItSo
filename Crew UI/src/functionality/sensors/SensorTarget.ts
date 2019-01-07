@@ -1,4 +1,4 @@
-import { CanvasBounds3D } from '~/functionality';
+import { CanvasBounds3D, CanvasBounds } from '~/functionality';
 import { Vector2, Vector3 } from '~/functionality/math';
 
 export const enum SensorTargetType {
@@ -27,11 +27,11 @@ export abstract class SensorTarget {
         return this.position.isBetween(min, max);
     }
 
-    protected abstract drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds3D): void;
+    abstract drawTarget(ctx: CanvasRenderingContext2D, screenPos: Vector2, display: CanvasBounds): void;
 
-    protected abstract getShadowRadius(display: CanvasBounds3D): number;
+    protected abstract getShadowRadius(display: CanvasBounds): number;
 
-    protected drawShadow(ctx: CanvasRenderingContext2D, display: CanvasBounds3D, floorPos: Vector2) {
+    protected drawShadow(ctx: CanvasRenderingContext2D, display: CanvasBounds, floorPos: Vector2) {
         let radius = this.getShadowRadius(display);
         if (radius <= 0) {
             return;
@@ -54,7 +54,7 @@ export abstract class SensorTarget {
         ctx.restore();
     }
 
-    protected drawIndicator(ctx: CanvasRenderingContext2D, targetPos: Vector2, display: CanvasBounds3D, floorPos: Vector2) {
+    protected drawIndicator(ctx: CanvasRenderingContext2D, targetPos: Vector2, display: CanvasBounds, floorPos: Vector2) {
         // draw a depth indicator, showing Z height against axis more clearly
         ctx.globalAlpha = 0.8;
         ctx.strokeStyle = '#fff';

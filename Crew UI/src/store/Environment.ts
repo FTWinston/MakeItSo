@@ -1,6 +1,7 @@
 import { Action, Reducer } from 'redux';
-import { SensorTarget, Vector3 } from '~/functionality';
+import { SensorTarget } from '~/functionality';
 import { exhaustiveActionCheck } from './exhaustiveActionCheck';
+import { Vector3 } from '~/functionality/math/Vector3';
 import { Rotator } from '~/functionality/math/Rotator';
 
 // -----------------

@@ -60,6 +60,23 @@ export class Vector3 implements Vector<Vector3> {
         this.y = this.y * cosa - prevX * sina;
         return this;
     }
+
+    normalize() {
+        const length = this.length();
+
+        if (length > 0) {
+            this.scale(1 / length);
+        }
+        else {
+            this.x = 1; this.y = 0; this.z = 0;
+        }
+        
+        return this;
+    }
+
+    length() {
+        return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
+    }
     
     dot(other: Vector3) {
         return this.x * other.x + this.y * other.y + this.z * other.z;
