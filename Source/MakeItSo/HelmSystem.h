@@ -29,7 +29,7 @@ private:
 	float moveForward, moveBackward, strafeLeft, strafeRight, strafeUp, strafeDown;
 	bool stopRotation, stopStrafing, stopForwardBack;
 
-	FVector lastSentVelocity;
+	FVector lastSentPosition;
 	FRotator lastSentOrientation, lastSentAngularVelocity;
 	float nextSendSeconds;
 

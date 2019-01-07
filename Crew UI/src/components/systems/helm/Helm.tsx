@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
-import { TextLocalisation, InputMode, OrientationCube } from '~/functionality';
+import { TextLocalisation, InputMode, OrientationCube, Rotator, Vector3 } from '~/functionality';
 import { HelmState as HelmBaseProps } from './store';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { ButtonHelm } from './ButtonHelm';
@@ -11,10 +11,18 @@ import './Helm.scss';
 interface HelmProps extends HelmBaseProps {
     text: TextLocalisation;
     inputMode: InputMode;
+    shipPos: Vector3;
+    shipVel: Vector3;
+    shipRot: Rotator;
+    shipRotRate: Rotator;
 }
 
 export interface TypedHelmProps extends HelmBaseProps {
     text: TextLocalisation;
+    shipPos: Vector3;
+    shipVel: Vector3;
+    shipRot: Rotator;
+    shipRotRate: Rotator;
     drawOrientation: (ctx: CanvasRenderingContext2D, width: number, height: number) => void;
 }
 
@@ -62,7 +70,7 @@ export class Helm extends ShipSystemComponent<HelmProps, {}> {
         ctx.clearRect(0, 0, width, height);
         ctx.translate(halfWidth, halfHeight);
         ctx.fillStyle = '#0c0';
-        this.orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.pitch, this.props.yaw, this.props.roll);
+        this.orientation.draw(ctx, Math.min(halfWidth, halfHeight) * 0.65, this.props.shipRot.pitch, this.props.shipRot.yaw, this.props.shipRot.roll);
         ctx.translate(-halfWidth, -halfHeight);
     }
 
@@ -88,6 +96,10 @@ const mapStateToProps: (state: ApplicationState) => HelmProps = (state) => {
     return {
         ...state.helm,
         text: state.user.text,
+        shipPos: state.environment.shipPos,
+        shipVel: state.environment.shipVel,
+        shipRot: state.environment.shipRotation,
+        shipRotRate: state.environment.shipRotationRate,
         inputMode: state.user.inputMode,
     }
 };

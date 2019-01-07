@@ -126,13 +126,15 @@ void UHelmSystem::SendAllData_Implementation()
 	auto pawn = crewManager->GetShipPawn();
 	lastSentOrientation = pawn == nullptr ? FRotator::ZeroRotator : pawn->GetActorRotation();
 	lastSentAngularVelocity = pawn == nullptr ? FRotator::ZeroRotator : pawn->AngularVelocity;
-	crewManager->SendSystem(UShipSystem::ESystem::UseShipOrientation, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+	crewManager->SendSystem(UShipSystem::ESystem::UseShipOrientation, "ship_rot %.2f %.2f %.2f %.2f %.2f %.2f",
 		lastSentOrientation.Pitch, lastSentOrientation.Yaw, lastSentOrientation.Roll,
 		lastSentAngularVelocity.Pitch, lastSentAngularVelocity.Yaw, lastSentAngularVelocity.Roll);
 
-	lastSentVelocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
-	crewManager->SendSystem(UShipSystem::ESystem::UseShipPosition, "helm_translation_rates %.2f %.2f %.2f",
-		lastSentVelocity.X, lastSentVelocity.Y, lastSentVelocity.Z);
+	lastSentPosition = pawn == nullptr ? FVector::ZeroVector : pawn->GetActorLocation();
+	auto velocity = pawn == nullptr ? FVector::ZeroVector : pawn->LocalVelocity;
+	crewManager->SendSystem(UShipSystem::ESystem::UseShipPosition, "ship_pos %.2f %.2f %.2f %.2f %.2f %.2f",
+		lastSentPosition.X, lastSentPosition.Y, lastSentPosition.Z,
+		velocity.X, velocity.Y, velocity.Z);
 
 	nextSendSeconds = helmSendInterval;
 }
@@ -160,8 +162,10 @@ void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	}
 	pawn->AngularVelocity = angularVelocity;
 
+
 	// update strafing and movement rates
 	FVector velocity = pawn->LocalVelocity; // TODO: save this locally, so that if something outwith the system updates it, change is still sent
+	FVector position = pawn->GetActorLocation();
 
 	adjustmentAmount = strafeAccel * DeltaTime;
 	if (stopStrafing)
@@ -186,6 +190,7 @@ void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	}
 
 	pawn->LocalVelocity = velocity;
+
 	
 	nextSendSeconds -= DeltaTime;
 	if (nextSendSeconds > 0.f)
@@ -200,15 +205,16 @@ void UHelmSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 	{
 		lastSentAngularVelocity = angularVelocity;
 		lastSentOrientation = orientation;
-		crewManager->SendSystem(UShipSystem::ESystem::UseShipOrientation, "helm_rotation %.2f %.2f %.2f %.2f %.2f %.2f",
+		crewManager->SendSystem(UShipSystem::ESystem::UseShipOrientation, "ship_rot %.2f %.2f %.2f %.2f %.2f %.2f",
 			orientation.Pitch, orientation.Yaw, orientation.Roll,
 			angularVelocity.Pitch, angularVelocity.Yaw, angularVelocity.Roll);
 	}
 
-	if (velocity != lastSentVelocity)
+	if (position != lastSentPosition)
 	{
-		lastSentVelocity = velocity;
-		crewManager->SendSystem(UShipSystem::ESystem::UseShipPosition, "helm_translation_rates %.2f %.2f %.2f",
+		lastSentPosition = position;
+		crewManager->SendSystem(UShipSystem::ESystem::UseShipPosition, "ship_pos %.2f %.2f %.2f %.2f %.2f %.2f",
+			lastSentPosition.X, lastSentPosition.Y, lastSentPosition.Z,
 			velocity.X, velocity.Y, velocity.Z);
 	}
 }

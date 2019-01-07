@@ -23,26 +23,6 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setSpeedLimits(forwardMax, revMax));
             break;
         }
-        case 'helm_rotation': {
-            let vals = data.split(' ');
-            let pitch = parseFloat(vals[0]);
-            let yaw = parseFloat(vals[1]);
-            let roll = parseFloat(vals[2]);
-            let pitchRate = parseFloat(vals[3]);
-            let yawRate = parseFloat(vals[4]);
-            let rollRate = parseFloat(vals[5]);
-            store.dispatch(actionCreators.setOrientation(pitch, yaw, roll));
-            store.dispatch(actionCreators.setRotationRates(pitchRate, yawRate, rollRate));
-            break;
-        }
-        case 'helm_translation_rates': {
-            let vals = data.split(' ');
-            let forward = parseFloat(vals[0]);
-            let horiz = parseFloat(vals[1]);
-            let vert = parseFloat(vals[2]);
-            store.dispatch(actionCreators.setTranslationRates(horiz, vert, forward));
-            break;
-        }
         default:
             return false;
     }

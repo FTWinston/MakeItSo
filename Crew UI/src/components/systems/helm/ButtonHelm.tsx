@@ -12,23 +12,27 @@ export class ButtonHelm extends React.PureComponent<TypedHelmProps, {}> {
         let words = this.props.text.systems.helm;
         let iconSize = "1.5em";
 
+        const forwardSpeed = 5; // TODO: calculate this
+        const lateralSpeed = 0; // TODO: calculate this
+        const verticalSpeed = 0; // TODO: calculate this
+
         return <div className="system helm helm--buttonInput">
             <FieldGroup
                 className="fieldGroup--buttons fieldGroup--3x1 fieldGroup--unpadded"
             >
-                <HeadingReadout text={this.props.text} pitch={this.props.pitch} yaw={this.props.yaw} roll={this.props.roll} />
+                <HeadingReadout text={this.props.text} pitch={this.props.shipRot.pitch} yaw={this.props.shipRot.yaw} roll={this.props.shipRot.roll} />
                 <FlexibleCanvas draw={(ctx, w, h) => this.props.drawOrientation(ctx, w, h)} />
                 <SpeedReadout
                     text={this.props.text}
-                    forwardSpeed={this.props.translationRateForward}
-                    horizontalSideSpeed={this.props.translationRateForward}
-                    verticalSideSpeed={this.props.translationRateForward}
+                    forwardSpeed={forwardSpeed}
+                    horizontalSideSpeed={lateralSpeed}
+                    verticalSideSpeed={verticalSpeed}
                 />
             </FieldGroup>
 
             <FeedbackGroup
                 label={words.forwardBackward}
-                x={this.props.translationRateForward / this.props.translationRateForwardMax}
+                x={forwardSpeed / this.props.translationRateForwardMax}
                 xMin={-this.props.translationRateReverseMax / this.props.translationRateForwardMax}
                 className="fieldGroup--buttons fieldGroup--3x1"
             >
@@ -39,8 +43,8 @@ export class ButtonHelm extends React.PureComponent<TypedHelmProps, {}> {
 
             <FeedbackGroup
                 label={words.rotation}
-                x={this.props.yawRate / this.props.yawRateMax}
-                y={this.props.pitchRate / this.props.pitchRateMax}
+                x={this.props.shipRotRate.yaw / this.props.yawRateMax}
+                y={this.props.shipRotRate.pitch / this.props.pitchRateMax}
                 className="fieldGroup--buttons fieldGroup--3x3"
             >
                 <HeldButton className="fieldGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotateUp} color={ButtonColor.Secondary} hotkey="W" pressCommand="pitchUp 1" releaseCommand="pitchUp 0" />
@@ -54,8 +58,8 @@ export class ButtonHelm extends React.PureComponent<TypedHelmProps, {}> {
             
             <FeedbackGroup
                 label={words.strafe}
-                x={this.props.translationRateHorizontal / this.props.translationRateHorizontalMax}
-                y={this.props.translationRateVertical / this.props.translationRateVerticalMax}
+                x={lateralSpeed / this.props.translationRateHorizontalMax}
+                y={verticalSpeed / this.props.translationRateVerticalMax}
                 className="fieldGroup--buttons fieldGroup--3x3"
             >
                 <HeldButton className="fieldGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.strafeUp} color={ButtonColor.Tertiary} hotkey="I" pressCommand="strafeUp 1" releaseCommand="strafeUp 0" />

@@ -19,26 +19,31 @@ interface TouchFeedback {
 export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
     render() {
         let words = this.props.text.systems.helm;
+
+        const forwardSpeed = 5; // TODO: calculate this
+        const lateralSpeed = 0; // TODO: calculate this
+        const verticalSpeed = 0; // TODO: calculate this
+
         return <div className="system helm helm--touchInput">
             <FieldGroup
                 className="helm--touchInput__info fieldGroup--1x3 fieldGroup--unpadded"
             >
-                <HeadingReadout text={this.props.text} pitch={this.props.pitch} yaw={this.props.yaw} roll={this.props.roll} />
+                <HeadingReadout text={this.props.text} pitch={this.props.shipRot.pitch} yaw={this.props.shipRot.yaw} roll={this.props.shipRot.roll} />
                 <FlexibleCanvas draw={(ctx, w, h) => this.props.drawOrientation(ctx, w, h)} />
                 <SpeedReadout
                     text={this.props.text}
-                    forwardSpeed={this.props.translationRateForward}
-                    horizontalSideSpeed={this.props.translationRateForward}
-                    verticalSideSpeed={this.props.translationRateForward}
+                    forwardSpeed={forwardSpeed}
+                    horizontalSideSpeed={lateralSpeed}
+                    verticalSideSpeed={verticalSpeed}
                 />
             </FieldGroup>
             <FeedbackGroup
                 ref={g => this.rotGroup = g}
                 label={words.rotation}
-                x={this.props.yawRate / this.props.yawRateMax}
-                y={this.props.pitchRate / this.props.pitchRateMax}
-                x2={this.props.translationRateHorizontal / this.props.translationRateHorizontalMax}
-                y2={this.props.translationRateVertical / this.props.translationRateVerticalMax}
+                x={this.props.shipRotRate.yaw / this.props.yawRateMax}
+                y={this.props.shipRotRate.pitch / this.props.pitchRateMax}
+                x2={lateralSpeed / this.props.translationRateHorizontalMax}
+                y2={verticalSpeed / this.props.translationRateVerticalMax}
                 drawExtra={ctx => this.drawRotationFeedback(ctx)}
                 className="helm--touchInput__rotation fieldGroup--1x1"
             >
@@ -47,7 +52,7 @@ export class TouchHelm extends React.PureComponent<TypedHelmProps, {}> {
             <FeedbackGroup
                 ref={g => this.speedGroup = g}
                 label={words.forwardBackward}
-                x={this.props.translationRateForward / this.props.translationRateForwardMax}
+                x={forwardSpeed / this.props.translationRateForwardMax}
                 xMin={-this.props.translationRateReverseMax / this.props.translationRateForwardMax}
                 drawExtra={ctx => this.drawSpeedFeedback(ctx)}
                 className="helm--touchInput__speed fieldGroup--1x1"
