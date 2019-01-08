@@ -74,6 +74,10 @@ export class Vector3 implements Vector<Vector3> {
         return this;
     }
 
+    lengthSq() {
+        return this.x * this.x + this.y * this.y + this.z * this.z;
+    }
+
     length() {
         return Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
     }

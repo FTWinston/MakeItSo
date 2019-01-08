@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TouchArea } from './TouchArea';
-import { SensorTarget, Vector3, Rotator, CanvasBounds, Vector2 } from '~/functionality';
+import { SensorTarget, Vector3, Rotator, CanvasBounds, Vector2, Quaternion } from '~/functionality';
 
 interface IProps {
     className?: string;
@@ -117,12 +117,22 @@ export class RadarView extends React.PureComponent<IProps, {}> {
     }
     
     private determineDrawPosition(targetPosition: Vector3, forward: Vector3, centerX: number, centerY: number, fullRadius: number, midRadius: number) {
-        /*
-        const toTarget = targetPosition.clone().normalize();
-        const dot = forward.dot(toTarget);
-        */
+        const toTarget = targetPosition.clone().subtract(this.props.shipPosition);
+        const rotation = Quaternion.findBetween(forward, toTarget).toRotator();
+
+        const xoffset = fullRadius * rotation.yaw / 180;
+        const yoffset = fullRadius * rotation.pitch / 180;
+
+        // TODO: convert these from values that would fit on a square screen to ones that would fit on a circular screen
+        
+
+        const x = centerX + xoffset;
+        const y = centerY + yoffset;
+
+
+        // TODO: if dot product is less than zero, scale to fit "outer" ring, otherwise scale to fit "inner" ring
        
-        return new Vector2(centerX, centerY);// TODO: calculate based on offset from ship and angle of ship
+        return new Vector2(x, y); // TODO: calculate based on offset from ship and angle of ship
     }
 
     private setupTouch(area: TouchArea) {
