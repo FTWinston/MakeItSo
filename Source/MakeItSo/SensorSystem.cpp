@@ -631,8 +631,8 @@ FWeaponTargetingSolution USensorSystem::GetTargetingSolutionForSystem(ESensorSys
 		case Sensor_None:
 		default:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::MiscVulnerability, FWeaponTargetingSolution::Hard, FWeaponTargetingSolution::NoFace)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::NoFace);
+				? FWeaponTargetingSolution(FWeaponTargetingSolution::MiscVulnerability, FWeaponTargetingSolution::Medium, FWeaponTargetingSolution::NoFace)
+				: FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, FWeaponTargetingSolution::Easy, FWeaponTargetingSolution::NoFace);
 	}
 }
 

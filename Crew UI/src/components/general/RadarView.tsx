@@ -10,7 +10,7 @@ interface IProps {
     maxTargetingAngleRadians: number;
 }
 
-export class RadarView extends React.PureComponent<IProps, {}> {
+export class RadarView extends React.Component<IProps, {}> {
     private touch: TouchArea;
     private mounted: boolean = false;
 

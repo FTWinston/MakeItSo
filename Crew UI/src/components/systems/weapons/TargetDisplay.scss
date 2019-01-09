@@ -1,0 +1,42 @@
+@import '../../general/mixins';
+
+.targetDisplay {
+    display: flex;
+    flex-direction: column;
+}
+
+.targetDisplay__solution {
+    margin: 1em 0;
+}
+
+@include landscape() {
+    .targetDisplay__actions {
+        text-align: center;
+    }
+
+    & > * + * {
+        margin-left: 2em;
+    }
+}
+
+.targetDisplay__graphics {
+    display: flex;
+    min-height: 200px;
+    flex-grow: 1;
+}
+
+.targetDisplay__orientation, .targetDisplay__position {
+    flex-grow: 1;
+}
+
+@media(max-height: 700px) {
+    .targetDisplay__graphics {
+        min-height: unset;
+        height: 20vh;
+    }
+}
+@media(max-height: 500px) {
+    .targetDisplay__graphics {
+        display: none;
+    }
+}

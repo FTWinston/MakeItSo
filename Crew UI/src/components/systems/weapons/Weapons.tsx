@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
-import { SensorTarget, TextLocalisation } from '~/functionality';
+import { SensorTarget, TextLocalisation, Vector3, Rotator } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Weapons.scss';
 import { SensorView } from '~/components/general/SensorView';
@@ -15,6 +15,8 @@ import { FillPuzzle } from './FillPuzzle';
 interface IProps extends WeaponState {
     text: TextLocalisation;
     allTargets: SensorTarget[];
+    shipPosition: Vector3;
+    shipOrientation: Rotator;
 }
 
 interface IState {
@@ -76,6 +78,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     relPitch={this.props.targetPitch}
                     relYaw={this.props.targetYaw}
                     relRoll={this.props.targetRoll}
+                    shipPosition={this.props.shipPosition}
+                    shipOrientation={this.props.shipOrientation}
                 />
                 <SolutionList
                     text={this.props.text}
@@ -102,6 +106,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     relPitch={this.props.targetPitch}
                     relYaw={this.props.targetYaw}
                     relRoll={this.props.targetRoll}
+                    shipPosition={this.props.shipPosition}
+                    shipOrientation={this.props.shipOrientation}
                 />
                 <FillPuzzle
                     text={this.props.text}
@@ -122,6 +128,8 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
         ...state.weapons,
         text: state.user.text,
         allTargets: state.environment.targets,
+        shipPosition: state.environment.shipPos,
+        shipOrientation: state.environment.shipRotation,
     }
 };
 

@@ -45,46 +45,10 @@
 }
 
 .weapons__targetDisplay {
-    display: flex;
-    flex-direction: column;
-}
-
-@include landscape() {
-    .weapons__targetActions {
-        text-align: center;
-    }
-
-    & > * + * {
-        margin-left: 2em;
-    }
-}
-
-.weapons__targetDisplay {
     grid-area: info;
 }
 
 .weapons__solutionList,
 .weapons__puzzle {
     grid-area: controls;
-}
-
-.weapons__solutionDisplay {
-    margin: 1em 0;
-}
-
-.weapons__targetOrientation {
-    min-height: 200px;
-    flex-grow: 1;
-}
-
-@media(max-height: 700px) {
-    .weapons__targetOrientation {
-        min-height: unset;
-        height: 20vh;
-    }
-}
-@media(max-height: 500px) {
-    .weapons__targetOrientation {
-        display: none;
-    }
 }
