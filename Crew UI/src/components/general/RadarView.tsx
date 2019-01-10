@@ -27,6 +27,10 @@ export class RadarView extends React.Component<IProps, {}> {
         this.mounted = true;
     }
 
+    componentWillUnmount() {
+        this.mounted = false;
+    }
+
     componentDidUpdate(prevProps: IProps, prevState: {}) {
         this.touch.redraw();
     }
@@ -38,10 +42,6 @@ export class RadarView extends React.Component<IProps, {}> {
             setupTouch={a => this.setupTouch(a)}
             ref={t => { if (t !== null) { this.touch = t }}}
         />;
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
     }
 
     private drawRadar(ctx: CanvasRenderingContext2D, width: number, height: number) {
@@ -120,8 +120,15 @@ export class RadarView extends React.Component<IProps, {}> {
         const toTarget = targetPosition.clone().subtract(this.props.shipPosition);
         const rotation = Quaternion.findBetween(forward, toTarget).toRotator();
 
+        console.log(`forward is ${forward.x}, ${forward.y}, ${forward.z}`);
+        console.log(`targetPosition is ${targetPosition.x}, ${targetPosition.y}, ${targetPosition.z}`);
+        console.log(`toTarget is ${toTarget.x}, ${toTarget.y}, ${toTarget.z}`);
+        console.log(`rotation is ${rotation.pitch}, ${rotation.yaw}, ${rotation.roll}`);
+
         const xoffset = fullRadius * rotation.yaw / 180;
         const yoffset = fullRadius * rotation.pitch / 180;
+
+        console.log(`offsets are ${xoffset} and ${yoffset}`);
 
         // TODO: convert these from values that would fit on a square screen to ones that would fit on a circular screen
         
@@ -129,6 +136,8 @@ export class RadarView extends React.Component<IProps, {}> {
         const x = centerX + xoffset;
         const y = centerY + yoffset;
 
+
+        console.log(`draw coordinates are ${x}, ${y}`);
 
         // TODO: if dot product is less than zero, scale to fit "outer" ring, otherwise scale to fit "inner" ring
        
