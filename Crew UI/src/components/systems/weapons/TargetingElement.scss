@@ -1,0 +1,148 @@
+@import '../../general/mixins';
+
+.targetingElement {
+    width: 5%;
+    height: 5%;
+    border-radius: 2%;
+    cursor: pointer;
+    animation-timing-function: linear;
+}
+
+
+// colors
+
+.targetingElement--red {
+    background-color: red;
+}
+
+.targetingElement--yellow {
+    background-color: yellow;
+}
+
+.targetingElement--green {
+    background-color: green;
+}
+
+.targetingElement--blue {
+    background-color: cornflowerblue;
+}
+
+
+// shapes
+
+.targetingElement--star {
+    border-radius: 0;
+}
+
+.targetingElement--triangle { 
+    border-radius: 0;
+}
+
+.targetingElement--square {
+    border-radius: 0;
+}
+
+.targetingElement--pentagon {
+    border-radius: 0;
+}
+
+.targetingElement--hexagon {
+    border-radius: 0;
+}
+
+.targetingElement--octagon {
+    border-radius: 0;
+}
+
+.targetingElement--circle {
+    border-radius: 100%;
+}
+
+
+// movement animations
+
+.targetingElement--leftRight {
+    animation-name: targetingElement__anim--leftRight;
+}
+
+.targetingElement--upDown {
+    animation-name: targetingElement__anim--upDown;
+}
+
+
+// rotation animations
+
+.targetingElement--clockwise {
+    animation-name: targetingElement__anim--clockwise;
+}
+
+.targetingElement--anticlockwise {
+    animation-name: targetingElement__anim--anticlockwise;
+}
+
+
+// because we're using animation for movement and rotation, we need every pair combination too
+
+.targetingElement--leftRight.targetingElement--clockwise {
+    animation-name: targetingElement__anim--leftRight, targetingElement__anim--clockwise;
+}
+
+.targetingElement--leftRight.targetingElement--anticlockwise {
+    animation-name: targetingElement__anim--leftRight, targetingElement__anim--anticlockwise;
+}
+
+.targetingElement--upDown.targetingElement--clockwise {
+    animation-name: targetingElement__anim--upDown, targetingElement__anim--clockwise;
+}
+
+.targetingElement--upDown.targetingElement--anticlockwise {
+    animation-name: targetingElement__anim--upDown, targetingElement__anim--anticlockwise;
+}
+
+
+// movement key frames
+
+@keyframes targetingElement__anim--leftRight {
+    from {
+        left: 5%;
+    }
+    50% {
+        left: 95%;
+    }
+    to {
+        left: 5%;
+    }
+}
+
+@keyframes targetingElement__anim--upDown {
+    from {
+        top: 5%;
+    }
+    50% {
+        top: 95%;
+    }
+    to {
+        top: 5%;
+    }
+}
+
+
+// rotation key frames
+
+@keyframes targetingElement__anim--clockwise {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes targetingElement__anim--anticlockwise {
+    from {
+        transform: rotate(360deg);
+    }
+    to {
+        transform: rotate(0deg);
+    }
+}
