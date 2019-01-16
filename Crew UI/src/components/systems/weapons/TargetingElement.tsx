@@ -1,7 +1,7 @@
 import * as React from 'react';
-import './TargetElement.scss';
+import './TargetingElement.scss';
 
-export enum TargetingElementStatus {
+export enum Status {
     Clickable,
     Selected,
     Removing,
@@ -24,32 +24,28 @@ export enum Color {
     Blue,
 }
 
-enum MoveAnimation {
-    UpDown,
-    LeftRight,
-}
-
 enum RotationAnimation {
-    None,
     Clockwise,
     Anticlockwise,
 }
 
 interface IProps {
-    status: TargetingElementStatus;
+    status: Status;
     shape: Shape;
     color: Color;
     clicked: () => void;
 }
 
 interface IState {
-    moveAnimation: MoveAnimation;
     rotAnimation: RotationAnimation;
-    delay: number;
-    duration: number;
-    fixedAngle?: number;
-    fixedX?: number;
-    fixedY?: number
+    
+    leftRightDuration: number;
+    upDownDuration: number;
+    rotationDuration: number;
+
+    leftRightDelay: number;
+    upDownDelay: number;
+    rotationDelay: number;
 }
 
 export class TargetingElement extends React.PureComponent<IProps, IState> {
@@ -70,14 +66,13 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
 
     render() {
         let classes = 'targetingElement';
-        let rotation: string | undefined;
 
-        switch (this.state.moveAnimation) {
-            case MoveAnimation.LeftRight:
-                classes += ' targetingElement--leftRight';
+        switch (this.props.status) {
+            case Status.Selected:
+                classes += ' targetingElement--selected';
                 break;
-            case MoveAnimation.UpDown:
-                classes += ' targetingElement--upDown';
+            case Status.Removing:
+                classes += ' targetingElement--removing';
                 break;
         }
 
@@ -87,11 +82,6 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
                 break;
             case RotationAnimation.Anticlockwise:
                 classes += ' targetingElement--anticlockwise';
-                break;
-            case RotationAnimation.None:
-                if (this.state.fixedAngle !== undefined) {
-                    rotation = `rotate(${this.state.fixedAngle}deg)`;
-                }
                 break;
         }
 
@@ -135,10 +125,9 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
         }
 
         const style = {
-            animationDelay: `-${this.state.delay}ms`,
-            animatioDuration: `${this.state.duration}ms`,
+            animationDelay: `-${this.state.leftRightDelay}ms, -${this.state.upDownDelay}ms, -${this.state.rotationDelay}ms`,
+            animationDuration: `${this.state.leftRightDuration}ms, ${this.state.upDownDuration}ms, ${this.state.rotationDuration}ms`,
             animationIterationCount: 'infinite',
-            transform: rotation,
         };
         
         const clicked = () => this.props.clicked();
@@ -152,41 +141,22 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
     }
 
     private getNewState(): IState {
-        let animation: MoveAnimation;
-        let rotAnimation: RotationAnimation;
-        let fixedX: number | undefined;
-        let fixedY: number | undefined;
-        let fixedAngle: number | undefined;
+        const leftRightDuration = Math.round(Math.random() * 10000) + 5000; // 5000 - 15000
+        const upDownDuration = Math.round(Math.random() * 10000) + 5000; // 5000 - 15000
+        const rotationDuration = Math.round(Math.random() * 6000) + 3000; // 3000 - 9000
 
-        if (Math.random() < 0.5) {
-            animation = MoveAnimation.LeftRight;
-            fixedY = Math.round(Math.random() * 9000) / 100 + 5; // 5 - 95
-        }
-        else {
-            animation = MoveAnimation.UpDown;
-            fixedX = Math.round(Math.random() * 9000) / 100 + 5; // 5 - 95
-        }
-
-        const rotTest = Math.random();
-        if (rotTest < 0.4) {
-            rotAnimation = RotationAnimation.Clockwise;
-        }
-        else if (rotTest < 0.8) {
-            rotAnimation = RotationAnimation.Anticlockwise;
-        }
-        else {
-            rotAnimation = RotationAnimation.None
-            fixedAngle = Math.round(Math.random() * 360); // 0 - 360
-        }
+        const rotAnimation = Math.random() < 0.5
+            ? RotationAnimation.Clockwise
+            : RotationAnimation.Anticlockwise;
 
         return {
-            moveAnimation: animation,
             rotAnimation: rotAnimation,
-            delay: Math.round(Math.random() * 5000), // 0 - 5000 ms
-            duration: Math.round(Math.random() * 3000) + 2000, // 2000 - 5000 ms
-            fixedX: fixedX,
-            fixedY: fixedY,
-            fixedAngle: fixedAngle,
-        }
+            leftRightDuration: leftRightDuration,
+            leftRightDelay: Math.round(Math.random() * leftRightDuration),
+            upDownDuration: upDownDuration,
+            upDownDelay: Math.round(Math.random() * upDownDuration),
+            rotationDuration: rotationDuration,
+            rotationDelay: Math.round(Math.random() * rotationDuration),
+        };
     }
 }

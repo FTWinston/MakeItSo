@@ -10,7 +10,31 @@ import { WeaponState } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
 import { SolutionList } from './SolutionList';
-import { FillPuzzle } from './FillPuzzle';
+import { Targeting, ITarget } from './Targeting';
+import { Color, Shape } from './TargetingElement';
+
+const targets: ITarget[] = [
+    {
+        color: Color.Blue,
+        shape: Shape.Circle,
+        number: 3,
+    },
+    {
+        color: Color.Red,
+        shape: Shape.Hexagon,
+        number: 1,
+    },
+    {
+        color: Color.Yellow,
+        shape: Shape.Triangle,
+        number: 4,
+    },
+    {
+        color: Color.Green,
+        shape: Shape.Square,
+        number: 5,
+    }
+];
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
@@ -48,7 +72,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
     }
 
     public render() {
-        if (this.state.selectedTarget === undefined) {        
+        if (this.state.selectedTarget === undefined) {
             const selectTarget = (target: SensorTarget) => connection.send(`wpn_target ${target.id}`);
 
             return <div className="system weapons weapons--targetSelection">
@@ -93,12 +117,13 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
         {
             const clearTarget = () => connection.send(`wpn_target 0`);
             const clearSolution = () => connection.send(`wpn_solution -1`);
-            const sendFire = (indices: number[]) => connection.send(`wpn_fire ${indices.join(' ')}`);
+            const sendSelection = (target: ITarget) => connection.send(`wpn_misfire ${target./*index*/number}`);
+            const sendMisSelection = () => connection.send('wpn_misfire');
 
             return <div className="system weapons weapons--targeting">
                 <TargetDisplay
                     text={this.props.text}
-                    target={this.state.selectedTarget}
+                    target={this.state.selectedTarget!}
                     deselectTarget={clearTarget}
                     solution={this.props.selectedTargetingSolution}
                     deselectSolution={clearSolution}
@@ -109,13 +134,11 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     shipPosition={this.props.shipPosition}
                     shipOrientation={this.props.shipOrientation}
                 />
-                <FillPuzzle
-                    text={this.props.text}
-                    width={this.props.puzzleWidth}
-                    height={this.props.puzzleHeight}
-                    startCell={this.props.puzzleStartCell}
-                    cells={this.props.puzzleCells}
-                    onCompleted={sendFire}
+                <Targeting
+                    className="weapons__targeting"
+                    targetSelected={sendSelection}
+                    misSelection={sendMisSelection}
+                    targets={targets}
                 />
             </div>
         }

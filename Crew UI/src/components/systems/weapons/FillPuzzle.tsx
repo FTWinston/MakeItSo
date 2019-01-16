@@ -89,7 +89,7 @@ export class FillPuzzle extends React.PureComponent<IProps, IState> {
             />
         });
 
-        let classes = 'weapons__puzzle fillPuzzle';
+        let classes = 'fillPuzzle';
         
         classes += ` fillPuzzle--width${this.props.width}`;
         classes += ` fillPuzzle--height${this.props.height}`;
