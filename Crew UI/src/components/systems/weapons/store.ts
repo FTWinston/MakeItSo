@@ -38,12 +38,12 @@ export const enum TargetingFace { // These are numbered stupidly to easily ident
 };
 
 export const enum TargetingDifficulty {
-    VeryEasy = 0,
+    Impossible = 0,
+    VeryEasy = 2,
     Easy,
     Medium,
     Hard,
     VeryHard,
-    Impossible,
 }
 
 export interface TargetingSolution {

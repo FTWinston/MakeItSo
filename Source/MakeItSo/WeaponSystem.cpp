@@ -3,6 +3,10 @@
 #else
 #include "stdafx.h"
 #include "WeaponSystem.h"
+
+#include <algorithm>    // std::shuffle
+#include <random>       // std::default_random_engine
+#include <chrono>       // std::chrono::system_clock
 #endif
 
 #include "UIConnectionInfo.h"
@@ -20,10 +24,13 @@ UWeaponSystem::UWeaponSystem()
 void UWeaponSystem::ResetData()
 {
 	selectedTargetID = 0;
-	selectedTargetingSolution = -1;
 	currentlyFacing = FWeaponTargetingSolution::ETargetingFace::NoFace;
+	CLEAR(targetingElements);
+	CLEAR(targetingElementInput);
 	CLEAR(targetingSolutions);
-	ClearPuzzle();
+
+	for (uint8 i = 0; i < NUM_TARGETING_SYMBOL_OPTIONS; i++)
+		SETADD(targetingElements, i);
 }
 
 void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -75,8 +82,7 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 		SendOrientation();
 
-		if (selectedTargetingSolution == -1) // only need to force-resend if the list is visible
-			SendTargetingSolutions();
+		SendTargetingSolutions();
 	}
 }
 
@@ -87,21 +93,10 @@ bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 		uint8 targetID = ExtractInt(msg, sizeof("wpn_target "));
 		SelectTarget(targetID);
 	}
-
-	if (STARTS_WITH(msg, "wpn_solution "))
+	else if (STARTS_WITH(msg, "wpn_input "))
 	{
-		int8 solutionIndex = ExtractInt(msg, sizeof("wpn_solution "));
-		SelectTargetingSolution(solutionIndex);
-	}
-	else if (STARTS_WITH(msg, "wpn_fire "))
-	{
-		TArray<FString> parts = SplitParts(msg, sizeof("dmg_roll "));
-		TArray<FWeaponPuzzleData::EDirection> solutionSteps;
-
-		for (auto part : parts)
-			SETADD(solutionSteps, (FWeaponPuzzleData::EDirection)STOI(part));
-		
-		Fire(solutionSteps);
+		uint8 value = ExtractInt(msg, sizeof("wpn_input "));
+		InputValue(value);
 	}
 	else
 		return false;
@@ -113,11 +108,10 @@ void UWeaponSystem::SendAllData_Implementation()
 {
 	SendSelectedTarget();
 	SendTargetingSolutions();
-	SendSelectedTargetingSolution();
 	SendFacing();
 
-	if (selectedTargetID != 0 && selectedTargetingSolution != -1)
-		SendPuzzle();
+	if (selectedTargetID != 0)
+		SendTargetingElements();
 }
 
 
@@ -147,28 +141,14 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 	SendSystem(output);
 }
 
-void UWeaponSystem::SendSelectedTargetingSolution_Implementation()
+void UWeaponSystem::SendTargetingElements_Implementation()
 {
-	FString output = TEXT("wpn_solution ");
+	FString output = TEXT("wpn_targeting");
 
-	APPENDINT(output, (int8)selectedTargetingSolution);
-
-	SendSystem(output);
-}
-
-void UWeaponSystem::SendPuzzle_Implementation()
-{
-	FString output = TEXT("wpn_puzzle ");
-
-	APPENDINT(output, targetingPuzzle.width);
-	output += TEXT(" ");
-	APPENDINT(output, targetingPuzzle.height);
-	output += TEXT(" ");
-	APPENDINT(output, targetingPuzzle.startCell);
-
-	for (auto cell : targetingPuzzle.cells)
+	for (auto element : targetingElements)
 	{
-		output += cell ? TEXT(" 1") : TEXT(" 0");
+		output += TEXT(" ");
+		APPENDINT(output, element);
 	}
 
 	SendSystem(output);
@@ -199,85 +179,101 @@ void UWeaponSystem::SendOrientation_Implementation()
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 {
 	selectedTargetID = targetID;
-	selectedTargetingSolution = -1;
+	AllocateTargetingElements();
 
 	DetermineTargetingSolutions();
 
 	if (ISCLIENT())
 	{
 		SendSelectedTarget();
-		SendSelectedTargetingSolution();
+		SendTargetingElements();
 		SendTargetingSolutions();
 	}
 }
 
-void UWeaponSystem::SelectTargetingSolution_Implementation(int8 solutionIndex)
+void UWeaponSystem::InputValue_Implementation(uint8 inputValue)
 {
-	if (selectedTargetID == 0 || solutionIndex < -1 || solutionIndex >= SIZENUM(targetingSolutions))
-		return; // invalid value, or invalid time
+	if (selectedTargetID == 0 || inputValue >= NUM_TARGETING_SYMBOL_OPTIONS)
+		return;
 
-	selectedTargetingSolution = solutionIndex;
-	if (ISCLIENT())
-		SendSelectedTargetingSolution();
+	SETADD(targetingElementInput, inputValue);
 
-	if (solutionIndex > -1)
+	bool anyPartialMatch = false;
+	bool anyFullMatch = false;
+
+	for (auto solution : targetingSolutions)
 	{
-		auto solution = targetingSolutions[solutionIndex];
-
 		auto difficulty = DetermineDifficulty(solution.baseDifficulty, solution.bestFacing);
 
-		GeneratePuzzle(difficulty);
-		if (ISCLIENT())
-			SendPuzzle();
-	}
-	else if (ISCLIENT())
-		SendTargetingSolutions();
-}
+		if (difficulty == FWeaponTargetingSolution::ESolutionDifficulty::Impossible)
+			continue;
 
-void UWeaponSystem::Fire_Implementation(TArray<FWeaponPuzzleData::EDirection> puzzleSolution)
-{
-	if (selectedTargetID == 0
-		|| selectedTargetingSolution < 0
-		|| selectedTargetingSolution >= SIZENUM(targetingSolutions)
-		|| targetingPuzzle.width == 0
-		|| !IsValidSolution(puzzleSolution)
-	)
-		return;
+		// Determine whether this solution is a full or partial match for the current input
+		uint8 sequenceMatchLength = (uint8)difficulty;
+		uint8 partialMatchLength = FMath::Min((uint8)SIZENUM(targetingElementInput), sequenceMatchLength);
 
-	auto solution = targetingSolutions[selectedTargetingSolution];
+		bool isPartialMatch = true;
+		bool isFullMatch;
+		
+		for (auto i = 0; i < partialMatchLength; i++)
+			if (targetingElementInput[i] != solution.symbolSequence[i])
+			{
+				isPartialMatch = false;
+				break;
+			}
 
-	auto targetSystem = GetSystemForSolution(solution.type);
-	auto damage = GetDamageForSolution(solution.type);
+		if (isPartialMatch)
+			isFullMatch = partialMatchLength == sequenceMatchLength;
+		else
+			isFullMatch = false;
 
-	if (solution.type >= FWeaponTargetingSolution::MIN_VULNERABILITY)
-	{
-		// Targeting a vulnerability "consumes" it, so remove it from the list
-		RemoveVulnerability(solution.type);
+		anyPartialMatch |= isPartialMatch;
+		anyFullMatch |= isFullMatch;
 
-		// This solution will no longer be valid, so clear it
-		selectedTargetingSolution = -1;
-		if (ISCLIENT())
+		if (!isFullMatch)
+			continue;
+
+		// Only continue if this is a full match
+		CLEAR(targetingElementInput);
+
+		auto targetSystem = GetSystemForSolution(solution.type);
+		auto damage = GetDamageForSolution(solution.type);
+		
+		if (solution.type >= FWeaponTargetingSolution::MIN_VULNERABILITY)
 		{
-			SendTargetingSolutions();
-			SendSelectedTargetingSolution();
+			// Vulnerabilities are consumed when they are used
+			RemoveTargetingSolution(solution.type);
 		}
+		else
+		{
+			// Other solutions just need a new sequence allocated
+			AllocateSequence(solution);
+		}
+
+		if (ISCLIENT())
+			SendTargetingSolutions();
+
+		auto targetInfo = GetSelectedTarget();
+		if (targetInfo == nullptr)
+			continue;
+
+		auto target = WEAK_PTR_GET(targetInfo->actor);
+		if (target == nullptr)
+			continue;
+
+		// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
 	}
 
-	ClearPuzzle();
-
-
-	auto targetInfo = GetSelectedTarget();
-	if (targetInfo == nullptr)
-		return;
-
-	auto target = WEAK_PTR_GET(targetInfo->actor);
-	if (target == nullptr)
-		return;
-
-	// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
+	// If there's no partial match, this was an invalid input. Abort and reset
+	if (!anyPartialMatch && !anyFullMatch)
+	{
+		// TODO: fire a "miss" at the target
+		// TODO: send "miss" back to client
+		CLEAR(targetingElementInput);
+	}
 }
 
-void UWeaponSystem::RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolutionType solutionType)
+void UWeaponSystem::RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType)
 {
 	auto targetInfo = GetSelectedTarget();
 
@@ -306,6 +302,11 @@ USensorTargetInfo *UWeaponSystem::GetSelectedTarget()
 	return ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
 }
 
+void UWeaponSystem::AllocateTargetingElements()
+{
+	SHUFFLE(targetingElements, uint8);
+}
+
 void UWeaponSystem::DetermineTargetingSolutions()
 {
 	CLEAR(targetingSolutions);
@@ -316,187 +317,14 @@ void UWeaponSystem::DetermineTargetingSolutions()
 		return;
 
 	targetingSolutions = targetInfo->targetingSolutions;
+
+	for (auto solution : targetingSolutions)
+		AllocateSequence(solution);
 }
 
-void UWeaponSystem::GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty difficulty)
+void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution solution)
 {
-	CLEAR(targetingPuzzle.cells);
-
-	switch (difficulty)
-	{
-	case FWeaponTargetingSolution::VeryEasy:
-		targetingPuzzle.width = 3;
-		targetingPuzzle.height = 3;
-
-		for (uint8 y = 0; y < targetingPuzzle.height; y++)
-			for (uint8 x = 0; x < targetingPuzzle.width; x++)
-				SETADD(targetingPuzzle.cells, true);
-
-		switch (FMath::RandRange(1, 4))
-		{
-		case 1:
-			targetingPuzzle.cells[0] = false;
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.startCell = 2;
-			return;
-		case 2:
-			targetingPuzzle.cells[0] = false;
-			targetingPuzzle.cells[8] = false;
-			targetingPuzzle.startCell = 5;
-			return;
-		case 3:
-			targetingPuzzle.cells[2] = false;
-			targetingPuzzle.startCell = 8;
-			return;
-		case 4:
-			targetingPuzzle.cells[0] = false;
-			targetingPuzzle.cells[2] = false;
-			targetingPuzzle.startCell = 6;
-			return;
-		// TODO: more variants
-		}
-	case FWeaponTargetingSolution::Easy:
-		targetingPuzzle.width = 4;
-		targetingPuzzle.height = 3;
-
-		for (uint8 y = 0; y<targetingPuzzle.height; y++)
-			for (uint8 x = 0; x < targetingPuzzle.width; x++)
-				SETADD(targetingPuzzle.cells, true);
-
-		switch (FMath::RandRange(1, 3))
-		{
-		case 1:
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.cells[7] = false;
-			targetingPuzzle.cells[8] = false;
-			targetingPuzzle.startCell = 4;
-			return;
-		case 2:
-			targetingPuzzle.cells[9] = false;
-			targetingPuzzle.cells[10] = false;
-			targetingPuzzle.startCell = 8;
-			return;
-		case 3:
-			targetingPuzzle.cells[2] = false;
-			targetingPuzzle.startCell = 1;
-			return;
-		// TODO: more variants
-		}
-	case FWeaponTargetingSolution::Medium:
-		targetingPuzzle.width = 4;
-		targetingPuzzle.height = 4;
-
-		for (uint8 y = 0; y<targetingPuzzle.height; y++)
-			for (uint8 x = 0; x < targetingPuzzle.width; x++)
-				SETADD(targetingPuzzle.cells, true);
-
-		switch (FMath::RandRange(1, 6))
-		{
-		case 1:
-			targetingPuzzle.cells[0] = false;
-			targetingPuzzle.cells[1] = false;
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.startCell = 9;
-			return;
-		case 2:
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.cells[4] = false;
-			targetingPuzzle.cells[7] = false;
-			targetingPuzzle.startCell = 8;
-			return;
-		case 3:
-			targetingPuzzle.cells[12] = false;
-			targetingPuzzle.cells[13] = false;
-			targetingPuzzle.cells[15] = false;
-			targetingPuzzle.startCell = 3;
-			return;
-		case 4:
-			targetingPuzzle.cells[7] = false;
-			targetingPuzzle.cells[9] = false;
-			targetingPuzzle.startCell = 10;
-			return;
-		case 5:
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.cells[8] = false;
-			targetingPuzzle.startCell = 0;
-			return;
-		case 6:
-			targetingPuzzle.cells[1] = false;
-			targetingPuzzle.startCell = 13;
-			return;
-		// TODO: more variants
-		}
-	case FWeaponTargetingSolution::Hard:
-		targetingPuzzle.width = 5;
-		targetingPuzzle.height = 4;
-
-		for (uint8 y = 0; y<targetingPuzzle.height; y++)
-			for (uint8 x = 0; x < targetingPuzzle.width; x++)
-				SETADD(targetingPuzzle.cells, true);
-
-		switch (FMath::RandRange(1, 3))
-		{
-		case 1:
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.cells[4] = false;
-			targetingPuzzle.cells[9] = false;
-			targetingPuzzle.cells[14] = false;
-			targetingPuzzle.cells[16] = false;
-			targetingPuzzle.startCell = 15;
-			return;
-		case 2:
-			targetingPuzzle.cells[0] = false;
-			targetingPuzzle.cells[4] = false;
-			targetingPuzzle.cells[9] = false;
-			targetingPuzzle.cells[10] = false;
-			targetingPuzzle.cells[15] = false;
-			targetingPuzzle.startCell = 13;
-			return;
-		case 3:
-			targetingPuzzle.cells[5] = false;
-			targetingPuzzle.cells[10] = false;
-			targetingPuzzle.cells[11] = false;
-			targetingPuzzle.cells[15] = false;
-			targetingPuzzle.cells[16] = false;
-			targetingPuzzle.startCell = 14;
-			return;
-		// TODO: more variants
-		}
-	case FWeaponTargetingSolution::VeryHard:
-		targetingPuzzle.width = 5;
-		targetingPuzzle.height = 5;
-
-		for (uint8 y = 0; y<targetingPuzzle.height; y++)
-			for (uint8 x = 0; x < targetingPuzzle.width; x++)
-				SETADD(targetingPuzzle.cells, true);
-
-		switch (FMath::RandRange(1, 2))
-		{
-		case 1: // 1-96
-			targetingPuzzle.cells[3] = false;
-			targetingPuzzle.cells[4] = false;
-			targetingPuzzle.cells[18] = false;
-			targetingPuzzle.cells[19] = false;
-			targetingPuzzle.cells[24] = false;
-			targetingPuzzle.startCell = 12;
-			return;
-		case 2: // 1-97
-			targetingPuzzle.cells[2] = false;
-			targetingPuzzle.cells[8] = false;
-			targetingPuzzle.cells[17] = false;
-			targetingPuzzle.cells[23] = false;
-			targetingPuzzle.cells[24] = false;
-			targetingPuzzle.startCell = 22;
-			return;
-		// TODO: more variants
-		}
-	case FWeaponTargetingSolution::Impossible:
-	default:
-		targetingPuzzle.width = 0;
-		targetingPuzzle.height = 0;
-		targetingPuzzle.startCell = 0;
-		return;
-	}
+	// TODO: apply a sequence!
 }
 
 FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)
@@ -510,7 +338,7 @@ FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty
 			iDifficulty --;
 	}
 	else if (bestFacing == -currentlyFacing) {
-		iDifficulty++;
+		iDifficulty += 2;
 	}
 
 	// Adjust difficulty based on health
@@ -526,69 +354,10 @@ FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty
 	else if (health < 90)
 		iDifficulty += 1;
 
-	if (iDifficulty >= FWeaponTargetingSolution::Impossible)
+	if (iDifficulty > FWeaponTargetingSolution::MAX_POSSIBLE_DIFFICULTY)
 		return FWeaponTargetingSolution::Impossible;
 
 	return (FWeaponTargetingSolution::ESolutionDifficulty)iDifficulty;
-}
-
-void UWeaponSystem::ClearPuzzle()
-{
-	targetingPuzzle.width = 0;
-	targetingPuzzle.height = 0;
-	CLEAR(targetingPuzzle.cells);
-	targetingPuzzle.startCell = 0;
-}
-
-bool UWeaponSystem::IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzleSolution)
-{
-	if (targetingPuzzle.width == 0)
-		return false; // Cannot fire if we have no targeting solution
-	
-	// Check that the solution contains the right number of steps
-	int32 numSolutionCells = SIZENUM(puzzleSolution);
-	int32 numPuzzleCells = 0;
-	for (auto cell : targetingPuzzle.cells)
-		if (cell)
-			numPuzzleCells++;
-
-	if (numSolutionCells != numPuzzleCells)
-		return false;
-
-	// Check that the solution starts with the start cell
-	if (puzzleSolution[0] != targetingPuzzle.startCell)
-		return false;
-
-	TSet<uint8> usedCells;
-	SETADD(usedCells, targetingPuzzle.startCell);
-	
-	auto prevCell = targetingPuzzle.startCell;
-	auto currentCell = prevCell;
-
-	for (auto i = 1; i < numSolutionCells; i++)
-	{
-		prevCell = currentCell;
-		currentCell = puzzleSolution[i];
-
-		// Ensure no cell index is repeated
-		if (SETCONTAINS(usedCells, currentCell))
-			return false;
-		SETADD(usedCells, currentCell);
-
-		// Check that each cell really is adjacent to the previous one
-		if (currentCell == prevCell - 1)
-			continue;
-		if (currentCell == prevCell + 1)
-			continue;
-		if (currentCell == prevCell - targetingPuzzle.width)
-			continue;
-		if (currentCell == prevCell + targetingPuzzle.width)
-			continue;
-
-		return false;
-	}
-
-	return true;
 }
 
 UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solution)

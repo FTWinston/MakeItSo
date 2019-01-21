@@ -52,6 +52,7 @@
 #define WEAK_PTR_DECLARE(type) TWeakPtr<type>
 #define WEAK_PTR_VALID(ptr) ptr.IsValid()
 #define WEAK_PTR_GET(ptr) ptr.Pin()
+#define SHUFFLE(arr, type) arr.Sort([this](const type item1, const type item2) { return FMath::FRand() < 0.5f; })
 #else
 #define CHARARR(str) str.c_str()
 #define EMPTY(set) set.empty()
@@ -87,6 +88,8 @@
 #define WEAK_PTR_DECLARE(type) type*
 #define WEAK_PTR_VALID(ptr) (ptr != nullptr)
 #define WEAK_PTR_GET(ptr) ptr
+#define SHUFFLE(arr, type) unsigned int seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count(); \
+std::shuffle(arr.begin(), arr.end(), std::default_random_engine(seed));
 #endif
 
 #define STARTS_WITH(msg, text) msg->size > sizeof(text) - 1 && !memcmp(msg->data, text, sizeof(text) - 1)

@@ -9,31 +9,7 @@
 
 class USensorTargetInfo;
 
-USTRUCT()
-struct FWeaponPuzzleData
-{
-	enum EDirection : uint8
-	{
-		Up = 1,
-		Down = 2,
-		Left = 3,
-		Right = 4,
-	};
-
-	GENERATED_BODY()
-
-	UPROPERTY(Replicated)
-	uint8 width;
-
-	UPROPERTY(Replicated)
-	uint8 height;
-
-	UPROPERTY(Replicated)
-	TArray<bool> cells;
-
-	UPROPERTY(Replicated)
-	uint8 startCell;
-};
+#define NUM_TARGETING_SYMBOL_OPTIONS 100
 
 USTRUCT()
 struct FWeaponTargetingSolution {
@@ -69,12 +45,14 @@ struct FWeaponTargetingSolution {
 	};
 
 	enum ESolutionDifficulty : uint8 {
-		VeryEasy = 0,
+		Impossible = 0,
+		VeryEasy = 2,
 		Easy,
 		Medium,
 		Hard,
 		VeryHard,
-		Impossible,
+
+		MAX_POSSIBLE_DIFFICULTY = VeryHard
 	};
 
 	enum ETargetingFace : int8 { // These are numbered stupidly to easily identify opposite faces
@@ -106,6 +84,9 @@ struct FWeaponTargetingSolution {
 
 	UPROPERTY(Replicated)
 	ETargetingFace bestFacing;
+
+	UPROPERTY(Replicated)
+	TArray<uint8> symbolSequence;
 };
 
 UCLASS()
@@ -123,14 +104,13 @@ protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Weapons; }
 
 private:
+	void AllocateTargetingElements();
 	void DetermineTargetingSolutions();
-	void ClearPuzzle();
+	void AllocateSequence(FWeaponTargetingSolution solution);
 	FWeaponTargetingSolution::ESolutionDifficulty DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
-	void GeneratePuzzle(FWeaponTargetingSolution::ESolutionDifficulty difficulty);
-	bool IsValidSolution(TArray<FWeaponPuzzleData::EDirection> puzzleSolution);
 	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
-	void RemoveVulnerability(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
+	void RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	USensorTargetInfo *GetSelectedTarget();
 
 
@@ -138,17 +118,16 @@ private:
 	uint16 selectedTargetID;
 	void OnReplicated_SelectedTargetID(uint16 beforeChange) { SendSelectedTarget(); }
 
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingElements)
+	TArray<uint8> targetingElements;
+	void OnReplicated_TargetingElements(uint8 beforeChange) { SendTargetingElements(); }
+
+	UPROPERTY()
+	TArray<uint8> targetingElementInput;
+
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSolutions)
 	TSet<FWeaponTargetingSolution> targetingSolutions;
 	void OnReplicated_TargetingSolutions(TSet<FWeaponTargetingSolution> beforeChange) { SendTargetingSolutions(); }
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SelectedTargetingSolution)
-	int8 selectedTargetingSolution;
-	void OnReplicated_SelectedTargetingSolution(int8 beforeChange) { SendSelectedTargetingSolution(); }
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingPuzzle)
-	FWeaponPuzzleData targetingPuzzle;
-	void OnReplicated_TargetingPuzzle(FWeaponPuzzleData beforeChange) { SendPuzzle(); }
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CurrentlyFacing)
 	FWeaponTargetingSolution::ETargetingFace currentlyFacing;
@@ -175,18 +154,10 @@ private:
 	;
 
 	UFUNCTION(Client, Reliable)
-	void SendSelectedTargetingSolution()
+	void SendTargetingElements()
 #ifdef WEB_SERVER_TEST
-	{ SendSelectedTargetingSolution_Implementation(); }
-	void SendSelectedTargetingSolution_Implementation();
-#endif
-	;
-
-	UFUNCTION(Client, Reliable)
-	void SendPuzzle()
-#ifdef WEB_SERVER_TEST
-	{ SendPuzzle_Implementation(); }
-	void SendPuzzle_Implementation();
+	{ SendTargetingElements_Implementation(); }
+	void SendTargetingElements_Implementation();
 #endif
 	;
 
@@ -216,18 +187,10 @@ private:
 	;
 
 	UFUNCTION(Server, Reliable)
-	void SelectTargetingSolution(int8 solutionIndex)
+	void InputValue(uint8 sequenceElement)
 #ifdef WEB_SERVER_TEST
-	{ SelectTargetingSolution_Implementation(solutionIndex); }
-	void SelectTargetingSolution_Implementation(int8 solutionIndex);
-#endif
-	;
-
-	UFUNCTION(Server, Reliable)
-	void Fire(TArray<FWeaponPuzzleData::EDirection> puzzleSolution)
-#ifdef WEB_SERVER_TEST
-	{ Fire_Implementation(puzzleSolution); }
-	void Fire_Implementation(TArray<FWeaponPuzzleData::EDirection> puzzleSolution);
+	{ InputValue_Implementation(sequenceElement); }
+	void InputValue_Implementation(uint8 sequenceElement);
 #endif
 	;
 };

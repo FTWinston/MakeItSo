@@ -655,14 +655,7 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, TArray<uint8> values, FKenK
 {
 	if (groupOperator > FKenKenData::MAX_UNORDERED_OPERATOR)
 	{
-#ifdef WEB_SERVER_TEST
-		unsigned int seed = (unsigned int)std::chrono::system_clock::now().time_since_epoch().count();
-		std::shuffle(group.begin(), group.end(), std::default_random_engine(seed));
-#else
-		group.Sort([this](const uint8 item1, const uint8 item2) {
-			return FMath::FRand() < 0.5f;
-		});
-#endif
+		SHUFFLE(group, uint8);
 	}
 
 	return ResolveGroup(values, group, groupOperator, groupTarget);
