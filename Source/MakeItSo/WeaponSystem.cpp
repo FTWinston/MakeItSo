@@ -176,6 +176,11 @@ void UWeaponSystem::SendOrientation_Implementation()
 	SendSystem(output);
 }
 
+void UWeaponSystem::SendFire_Implementation(bool success)
+{
+	SendSystemFixed(success ? "wpn_fire 1" : "wpn_fire 0");
+}
+
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 {
 	selectedTargetID = targetID;
@@ -191,12 +196,14 @@ void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 	}
 }
 
-void UWeaponSystem::InputValue_Implementation(uint8 inputValue)
+void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 {
-	if (selectedTargetID == 0 || inputValue >= NUM_TARGETING_SYMBOL_OPTIONS)
+	if (selectedTargetID == 0 || elementIndex >= NUM_TARGETING_SYMBOL_OPTIONS)
 		return;
 
-	SETADD(targetingElementInput, inputValue);
+	auto elementValue = targetingElements[elementIndex];
+
+	SETADD(targetingElementInput, elementValue);
 
 	bool anyPartialMatch = false;
 	bool anyFullMatch = false;
@@ -268,9 +275,11 @@ void UWeaponSystem::InputValue_Implementation(uint8 inputValue)
 	if (!anyPartialMatch && !anyFullMatch)
 	{
 		// TODO: fire a "miss" at the target
-		// TODO: send "miss" back to client
+
 		CLEAR(targetingElementInput);
 	}
+
+	SendFire(anyFullMatch); // Tell the client that we fired, and whether it was successful or not
 }
 
 void UWeaponSystem::RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType)
@@ -324,7 +333,26 @@ void UWeaponSystem::DetermineTargetingSolutions()
 
 void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution solution)
 {
-	// TODO: apply a sequence!
+	CLEAR(solution.symbolSequence);
+
+	for (auto i = 0; i < FWeaponTargetingSolution::ESolutionDifficulty::MAX_POSSIBLE_DIFFICULTY; i++)
+	{
+		uint8 symbol;
+		bool isDuplicate;
+
+		do {
+			isDuplicate = false;
+			symbol = FMath::RandRange(0, NUM_TARGETING_SYMBOL_OPTIONS - 1);
+
+			for (auto j = 0; j < i; j++)
+			{
+				isDuplicate = true;
+				break;
+			}
+		} while (isDuplicate);
+
+		SETADD(solution.symbolSequence, symbol);
+	}
 }
 
 FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)

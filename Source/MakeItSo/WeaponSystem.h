@@ -177,6 +177,14 @@ private:
 #endif
 	;
 
+	UFUNCTION(Client, Reliable)
+	void SendFire(bool success)
+#ifdef WEB_SERVER_TEST
+	{ SendFire_Implementation(success); }
+	void SendFire_Implementation(bool success);
+#endif
+	;
+
 
 	UFUNCTION(Server, Reliable)
 	void SelectTarget(uint16 targetID)
@@ -187,10 +195,10 @@ private:
 	;
 
 	UFUNCTION(Server, Reliable)
-	void InputValue(uint8 sequenceElement)
+	void InputValue(uint8 elementIndex)
 #ifdef WEB_SERVER_TEST
-	{ InputValue_Implementation(sequenceElement); }
-	void InputValue_Implementation(uint8 sequenceElement);
+	{ InputValue_Implementation(elementIndex); }
+	void InputValue_Implementation(uint8 elementIndex);
 #endif
 	;
 };
