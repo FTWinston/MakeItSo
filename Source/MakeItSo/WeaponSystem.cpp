@@ -128,14 +128,31 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 {
 	FString output = TEXT("wpn_solutions");
 
+	bool first = true;
+
 	for (auto solution : targetingSolutions)
 	{
-		output += TEXT(" ");
+		if (first)
+		{
+			first = false;
+			output += TEXT(" ");
+		}
+		else
+		{
+			output += TEXT("/");
+		}
+		
 		APPENDINT(output, (uint8)solution.type);
 		output += TEXT(" ");
 		APPENDINT(output, (uint8)solution.baseDifficulty);
 		output += TEXT(" ");
 		APPENDINT(output, (int8)solution.bestFacing);
+		
+		for (auto symbol : solution.symbolSequence)
+		{
+			output += TEXT(" ");
+			APPENDINT(output, symbol);
+		}
 	}
 
 	SendSystem(output);
@@ -222,7 +239,7 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		bool isPartialMatch = true;
 		bool isFullMatch;
 		
-		for (auto i = 0; i < partialMatchLength; i++)
+		for (uint8 i = 0; i < partialMatchLength; i++)
 			if (targetingElementInput[i] != solution.symbolSequence[i])
 			{
 				isPartialMatch = false;

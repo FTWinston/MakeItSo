@@ -11,35 +11,32 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'wpn_solutions': {
-            const vals = data === ''
-                ? [] : data.split(' ').map(v => parseInt(v));
+            const solutionVals = data === ''
+                ? [] : data.split('/').map(s => s.split(' ').map(v => parseInt(v)));
 
             const solutions = [];
-            for (let i=2; i<vals.length; i += 3) {
+            for (const solution of solutionVals) {
+                
                 solutions.push({
-                    type: vals[i-2] as TargetingSolutionType,
-                    difficulty: vals[i-1] as TargetingDifficulty,
-                    bestFacing: vals[i] as TargetingFace,
-                })
+                    type: solution[0] as TargetingSolutionType,
+                    difficulty: solution[1] as TargetingDifficulty,
+                    bestFacing: solution[2] as TargetingFace,
+                    sequence: solution.slice(3),
+                });
             }
 
             store.dispatch(actionCreators.setTargetingSolutions(solutions));
             break;
         }
-        case 'wpn_solution': {
-            const index = parseInt(data);
-            store.dispatch(actionCreators.setSelectedTargetingSolution(index));
+        case 'wpn_targeting': {
+            const vals = data.split(' ').map(v => parseInt(v));
+            store.dispatch(actionCreators.setTargetingElements(vals));
             break;
         }
-        case 'wpn_puzzle': {
-            const vals = data.split(' ');
+        case 'wpn_fire': {
+            const success = data === '1';
 
-            const width = parseInt(vals[0]);
-            const height = parseInt(vals[1]);
-            const startCell = parseInt(vals[2]);
-            const cells = vals.slice(3).map(v => v === '1');
-
-            store.dispatch(actionCreators.setTargetingPuzzle(width, height, startCell, cells));
+            // TODO: dispatch "fire" effect and reset anything that needs to
             break;
         }
         case 'wpn_facing': {

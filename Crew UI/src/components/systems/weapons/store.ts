@@ -50,12 +50,13 @@ export interface TargetingSolution {
     type: TargetingSolutionType;
     difficulty: TargetingDifficulty;
     bestFacing: TargetingFace;
+    sequence: number[];
 }
 
 export interface WeaponState {
     selectedTargetID: number;
+    targetingElements: number[];
     targetingSolutions: TargetingSolution[];
-    selectedTargetingSolution?: TargetingSolution;
 
     currentlyFacing: TargetingFace;
     targetPitch: number;
@@ -82,9 +83,9 @@ interface SetTargetingSolutionsAction {
     solutions: TargetingSolution[];
 }
 
-interface SetSelectedTargetingSolutionAction {
-    type: 'WPN_SOLUTION';
-    solutionIndex: number | undefined;
+interface SetTargetingElementsAction {
+    type: 'WPN_ELEMENTS';
+    elementSymbols: number[];
 }
 
 interface SetPuzzleAction {
@@ -109,7 +110,7 @@ interface SetTargetOrientationAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetSelectedTargetingSolutionAction
+type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetTargetingElementsAction
     | SetPuzzleAction | SetCurrentlyFacingAction | SetTargetOrientationAction;
 
 // ----------------
@@ -125,16 +126,9 @@ export const actionCreators = {
         type: 'WPN_SOLUTIONS',
         solutions: solutions,
     },
-    setSelectedTargetingSolution: (index?: number) => <SetSelectedTargetingSolutionAction>{
-        type: 'WPN_SOLUTION',
-        solutionIndex: index,
-    },
-    setTargetingPuzzle: (width: number, height: number, startCell: number, cells: boolean[]) => <SetPuzzleAction>{
-        type: 'WPN_PUZZLE',
-        width: width,
-        height: height,
-        startCell: startCell,
-        cells: cells,
+    setTargetingElements: (elements: number[]) => <SetTargetingElementsAction>{
+        type: 'WPN_ELEMENTS',
+        elementSymbols: elements,
     },
     setCurrentlyFacing: (face: TargetingFace) => <SetCurrentlyFacingAction>{
         type: 'WPN_FACE',
@@ -153,6 +147,7 @@ export const actionCreators = {
 
 const unloadedState: WeaponState = {
     selectedTargetID: 0,
+    targetingElements: [],
     targetingSolutions: [],
     currentlyFacing: TargetingFace.None,
     targetPitch: 0,
@@ -179,14 +174,10 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
                 targetingSolutions: action.solutions,
             };
         }
-        case 'WPN_SOLUTION': {
-            const solution = action.solutionIndex !== undefined && action.solutionIndex < state.targetingSolutions.length
-                ? state.targetingSolutions[action.solutionIndex]
-                : undefined;
-
+        case 'WPN_ELEMENTS': {
             return {
                 ...state,
-                selectedTargetingSolution: solution,
+                targetingElements: action.elementSymbols,
             };
         }
         case 'WPN_PUZZLE': {
