@@ -1,5 +1,5 @@
 import { store } from '~/index';
-import { actionCreators, TargetingFace, TargetingSolutionType, TargetingDifficulty } from './store';
+import { actionCreators, TargetingFace, TargetingSolutionType, TargetingDifficulty, ElementColor, ElementShape } from './store';
 
 export const msgPrefix = 'wpn_';
 
@@ -21,7 +21,7 @@ export function receiveMessage(cmd: string, data: string) {
                     type: solution[0] as TargetingSolutionType,
                     difficulty: solution[1] as TargetingDifficulty,
                     bestFacing: solution[2] as TargetingFace,
-                    sequence: solution.slice(3),
+                    sequence: solution.slice(3).map(i => parseTargetingElement(i)),
                 });
             }
 
@@ -29,12 +29,12 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'wpn_targeting': {
-            const vals = data.split(' ').map(v => parseInt(v));
+            const vals = data.split(' ').map(v => parseTargetingElement(parseInt(v)));
             store.dispatch(actionCreators.setTargetingElements(vals));
             break;
         }
         case 'wpn_fire': {
-            const success = data === '1';
+            // const success = data === '1';
 
             // TODO: dispatch "fire" effect and reset anything that needs to
             break;
@@ -59,4 +59,11 @@ export function receiveMessage(cmd: string, data: string) {
     }
 
     return true;
+}
+
+function parseTargetingElement(index: number) {
+    return {
+        color: Math.floor(index / ElementColor.NUM_COLORS) as ElementColor,
+        shape: (index % ElementShape.NUM_SHAPES) as ElementShape,
+    }
 }

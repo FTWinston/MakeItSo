@@ -1,27 +1,11 @@
 import * as React from 'react';
 import './TargetingElement.scss';
+import { ElementColor, ElementShape } from './store';
 
 export enum Status {
     Clickable,
     Selected,
     Removing,
-}
-
-export enum Shape {
-    Star,
-    Triangle,
-    Square,
-    Pentagon,
-    Hexagon,
-    Octagon,
-    Circle,
-}
-
-export enum Color {
-    Red,
-    Yellow,
-    Green,
-    Blue,
 }
 
 enum RotationAnimation {
@@ -31,8 +15,8 @@ enum RotationAnimation {
 
 interface IProps {
     status: Status;
-    shape: Shape;
-    color: Color;
+    shape: ElementShape;
+    color: ElementColor;
     clicked: () => void;
 }
 
@@ -86,40 +70,40 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
         }
 
         switch (this.props.shape) {
-            case Shape.Star:
+            case ElementShape.Star:
                 classes += ' targetingElement--star';
                 break;
-            case Shape.Triangle:
+            case ElementShape.Triangle:
                 classes += ' targetingElement--triangle';
                 break;
-            case Shape.Square:
+            case ElementShape.Square:
                 classes += ' targetingElement--square';
                 break;
-            case Shape.Pentagon:
+            case ElementShape.Pentagon:
                 classes += ' targetingElement--pentagon';
                 break;
-            case Shape.Hexagon:
+            case ElementShape.Hexagon:
                 classes += ' targetingElement--hexagon';
                 break;
-            case Shape.Octagon:
+            case ElementShape.Octagon:
                 classes += ' targetingElement--octagon';
                 break;
-            case Shape.Circle:
+            case ElementShape.Circle:
                 classes += ' targetingElement--circle';
                 break;
         }
 
         switch (this.props.color) {
-            case Color.Red:
+            case ElementColor.Red:
                 classes += ' targetingElement--red';
                 break;
-            case Color.Yellow:
+            case ElementColor.Yellow:
                     classes += ' targetingElement--yellow';
                     break;
-            case Color.Green:
+            case ElementColor.Green:
                 classes += ' targetingElement--green';
                 break;
-            case Color.Blue:
+            case ElementColor.Blue:
                 classes += ' targetingElement--blue';
                 break;
         }

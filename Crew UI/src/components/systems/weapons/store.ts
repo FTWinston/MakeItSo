@@ -46,17 +46,55 @@ export const enum TargetingDifficulty {
     VeryHard,
 }
 
-export interface TargetingSolution {
+export enum ElementShape {
+    Star = 0,
+    Triangle,
+    Square,
+    Pentagon,
+    Hexagon,
+    Octagon,
+    Circle,
+    
+    NUM_SHAPES
+}
+
+export enum ElementColor {
+    Red = 0,
+    Yellow,
+    Green,
+    Blue,
+
+    Orange,
+    Purple,
+    Lime,
+    Teal,
+    Brown,
+    Mauve,
+    Violet,
+    Black,
+    White,
+    LightGrey,
+    DarkGrey,
+
+    NUM_COLORS
+}
+
+export interface ITargetingSymbol {
+    shape: ElementShape;
+    color: ElementColor;
+}
+
+export interface ITargetingSolution {
     type: TargetingSolutionType;
     difficulty: TargetingDifficulty;
     bestFacing: TargetingFace;
-    sequence: number[];
+    sequence: ITargetingSymbol[];
 }
 
 export interface WeaponState {
     selectedTargetID: number;
-    targetingElements: number[];
-    targetingSolutions: TargetingSolution[];
+    targetingSymbols: ITargetingSymbol[];
+    targetingSolutions: ITargetingSolution[];
 
     currentlyFacing: TargetingFace;
     targetPitch: number;
@@ -80,12 +118,12 @@ interface SetSelectedTargetAction {
 
 interface SetTargetingSolutionsAction {
     type: 'WPN_SOLUTIONS';
-    solutions: TargetingSolution[];
+    solutions: ITargetingSolution[];
 }
 
 interface SetTargetingElementsAction {
     type: 'WPN_ELEMENTS';
-    elementSymbols: number[];
+    elementSymbols: ITargetingSymbol[];
 }
 
 interface SetPuzzleAction {
@@ -122,11 +160,11 @@ export const actionCreators = {
         type: 'WPN_TARGET',
         targetID: targetID,
     },
-    setTargetingSolutions: (solutions: TargetingSolution[]) => <SetTargetingSolutionsAction>{
+    setTargetingSolutions: (solutions: ITargetingSolution[]) => <SetTargetingSolutionsAction>{
         type: 'WPN_SOLUTIONS',
         solutions: solutions,
     },
-    setTargetingElements: (elements: number[]) => <SetTargetingElementsAction>{
+    setTargetingElements: (elements: ITargetingSymbol[]) => <SetTargetingElementsAction>{
         type: 'WPN_ELEMENTS',
         elementSymbols: elements,
     },
@@ -147,7 +185,7 @@ export const actionCreators = {
 
 const unloadedState: WeaponState = {
     selectedTargetID: 0,
-    targetingElements: [],
+    targetingSymbols: [],
     targetingSolutions: [],
     currentlyFacing: TargetingFace.None,
     targetPitch: 0,
@@ -177,7 +215,7 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
         case 'WPN_ELEMENTS': {
             return {
                 ...state,
-                targetingElements: action.elementSymbols,
+                targetingSymbols: action.elementSymbols,
             };
         }
         case 'WPN_PUZZLE': {

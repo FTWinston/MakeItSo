@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { TargetingSolution, TargetingFace } from './store';
+import { ITargetingSolution, TargetingFace } from './store';
 import { SolutionInfo } from './SolutionInfo';
 
 interface IProps {
     text: TextLocalisation;
-    solutions: TargetingSolution[];
+    solutions: ITargetingSolution[];
     currentlyFacing: TargetingFace;
     select: (solutionIndex: number) => void;
 }

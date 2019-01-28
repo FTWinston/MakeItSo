@@ -6,35 +6,10 @@ import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Weapons.scss';
 import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from '../sensors/TargetList';
-import { WeaponState } from './store';
+import { WeaponState, ITargetingSymbol } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
-import { SolutionList } from './SolutionList';
-import { Targeting, ITarget } from './Targeting';
-import { Color, Shape } from './TargetingElement';
-
-const targets: ITarget[] = [
-    {
-        color: Color.Blue,
-        shape: Shape.Circle,
-        number: 3,
-    },
-    {
-        color: Color.Red,
-        shape: Shape.Hexagon,
-        number: 1,
-    },
-    {
-        color: Color.Yellow,
-        shape: Shape.Triangle,
-        number: 4,
-    },
-    {
-        color: Color.Green,
-        shape: Shape.Square,
-        number: 5,
-    }
-];
+import { Targeting } from './Targeting';
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
@@ -88,45 +63,16 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 />
             </div>
         }
-        else if (this.props.selectedTargetingSolution === undefined)
-        {
-            const selectSolution = (solutionIndex: number) => connection.send(`wpn_solution ${solutionIndex}`);
-            const clearTarget = () => connection.send(`wpn_target 0`);
-
-            return <div className="system weapons weapons--solutionSelection">
-                <TargetDisplay
-                    text={this.props.text}
-                    target={this.state.selectedTarget}
-                    deselectTarget={clearTarget}
-                    currentlyFacing={this.props.currentlyFacing}
-                    relPitch={this.props.targetPitch}
-                    relYaw={this.props.targetYaw}
-                    relRoll={this.props.targetRoll}
-                    shipPosition={this.props.shipPosition}
-                    shipOrientation={this.props.shipOrientation}
-                />
-                <SolutionList
-                    text={this.props.text}
-                    solutions={this.props.targetingSolutions}
-                    select={selectSolution}
-                    currentlyFacing={this.props.currentlyFacing}
-                />
-            </div>
-        }
         else 
         {
             const clearTarget = () => connection.send(`wpn_target 0`);
-            const clearSolution = () => connection.send(`wpn_solution -1`);
-            const sendSelection = (target: ITarget) => connection.send(`wpn_misfire ${target./*index*/number}`);
-            const sendMisSelection = () => connection.send('wpn_misfire');
+            const sendSelection = (symbol: ITargetingSymbol) => connection.send(`wpn_input ${this.props.targetingSymbols.indexOf(symbol)}`);
 
             return <div className="system weapons weapons--targeting">
                 <TargetDisplay
                     text={this.props.text}
                     target={this.state.selectedTarget!}
                     deselectTarget={clearTarget}
-                    solution={this.props.selectedTargetingSolution}
-                    deselectSolution={clearSolution}
                     currentlyFacing={this.props.currentlyFacing}
                     relPitch={this.props.targetPitch}
                     relYaw={this.props.targetYaw}
@@ -136,9 +82,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 />
                 <Targeting
                     className="weapons__targeting"
-                    targetSelected={sendSelection}
-                    misSelection={sendMisSelection}
-                    targets={targets}
+                    symbols={this.props.targetingSymbols}
+                    symbolSelected={sendSelection}
                 />
             </div>
         }
