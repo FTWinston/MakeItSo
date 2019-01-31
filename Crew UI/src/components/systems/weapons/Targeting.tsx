@@ -11,6 +11,7 @@ interface ITargetingElement {
 interface IProps {
     className?: string;
     symbols: ITargetingSymbol[];
+    selectedSymbols: ITargetingSymbol[];
     symbolSelected: (symbol: ITargetingSymbol) => void;
 }
 

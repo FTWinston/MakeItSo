@@ -1,21 +1,21 @@
 import * as React from 'react';
-import { SensorTarget, TextLocalisation, OrientationCube, Vector3, Rotator } from '~/functionality';
+import { SensorTarget, TextLocalisation, OrientationCube } from '~/functionality';
 import { PushButton, FlexibleCanvas, ButtonColor } from '~/components/general';
-import { TargetingFace } from './store';
+import { TargetingFace, ITargetingSolution, ITargetingSymbol } from './store';
 import { TargetInfo } from '../sensors/TargetInfo';
-import { RadarView } from '~/components/general/RadarView';
 import './TargetDisplay.scss';
+import { SolutionList } from './SolutionList';
 
 interface IProps {
     text: TextLocalisation;
     target: SensorTarget;
     currentlyFacing: TargetingFace;
+    solutions: ITargetingSolution[];
+    selectedSymbols: ITargetingSymbol[];
     deselectTarget: () => void;
     relPitch: number;
     relYaw: number;
     relRoll: number;
-    shipPosition: Vector3;
-    shipOrientation: Rotator;
 }
 
 export class TargetDisplay extends React.PureComponent<IProps, {}> {
@@ -31,6 +31,8 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
         />
 
         // TODO: show this.props.currentlyFacing somewhere
+        
+        // TODO: show targeting solution list!
 
         const cubeRadius = 100; // TODO: could this be calculated?
 
@@ -42,15 +44,15 @@ export class TargetDisplay extends React.PureComponent<IProps, {}> {
                     draw={(ctx, w, h) => this.cube.draw(ctx, cubeRadius, this.props.relPitch, this.props.relYaw, this.props.relRoll)}
                     className="targetDisplay__orientation"
                 />
-
-                <RadarView
-                    maxTargetingAngleRadians={2}
-                    shipOrientation={this.props.shipOrientation}
-                    shipPosition={this.props.shipPosition}
-                    targets={[this.props.target]}
-                    className="targetDisplay__position"
-                />
             </div>
+
+            <SolutionList
+                className="targetDisplay__solutions"
+                currentlyFacing={this.props.currentlyFacing}
+                solutions={this.props.solutions}
+                selectedSymbols={this.props.selectedSymbols}
+                text={this.props.text}
+            />
             
             <div className="targetDisplay__actions">
                 <PushButton clicked={goBack} text={this.props.text.systems.weapons.changeTarget} color={ButtonColor.Quaternary} />

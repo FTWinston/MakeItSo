@@ -4,18 +4,19 @@ import { ApplicationState } from '~/store';
 import { SensorTarget, TextLocalisation, Vector3, Rotator } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Weapons.scss';
-import { SensorView } from '~/components/general/SensorView';
 import { TargetList } from '../sensors/TargetList';
-import { WeaponState, ITargetingSymbol } from './store';
+import { WeaponState, ITargetingSymbol, actionCreators } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
 import { Targeting } from './Targeting';
+import { RadarView } from '~/components/general/RadarView';
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
     allTargets: SensorTarget[];
     shipPosition: Vector3;
     shipOrientation: Rotator;
+    selectSymbol: (symbol: ITargetingSymbol) => void;
 }
 
 interface IState {
@@ -51,9 +52,12 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const selectTarget = (target: SensorTarget) => connection.send(`wpn_target ${target.id}`);
 
             return <div className="system weapons weapons--targetSelection">
-                <SensorView
-                    className="weapons__targetSelect"
+                <RadarView
+                    maxTargetingAngleRadians={2}
+                    shipOrientation={this.props.shipOrientation}
+                    shipPosition={this.props.shipPosition}
                     targets={this.props.allTargets}
+                    className="weapons__targetSelect"
                 />
                 <TargetList
                     text={this.props.text}
@@ -66,24 +70,28 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
         else 
         {
             const clearTarget = () => connection.send(`wpn_target 0`);
-            const sendSelection = (symbol: ITargetingSymbol) => connection.send(`wpn_input ${this.props.targetingSymbols.indexOf(symbol)}`);
+            const selectSymbol = (symbol: ITargetingSymbol) => {
+                this.props.selectSymbol(symbol);
+                connection.send(`wpn_input ${this.props.targetingSymbols.indexOf(symbol)}`);
+            };
 
             return <div className="system weapons weapons--targeting">
                 <TargetDisplay
                     text={this.props.text}
                     target={this.state.selectedTarget!}
                     deselectTarget={clearTarget}
+                    solutions={this.props.targetingSolutions}
+                    selectedSymbols={this.props.selectedSymbols}
                     currentlyFacing={this.props.currentlyFacing}
                     relPitch={this.props.targetPitch}
                     relYaw={this.props.targetYaw}
                     relRoll={this.props.targetRoll}
-                    shipPosition={this.props.shipPosition}
-                    shipOrientation={this.props.shipOrientation}
                 />
                 <Targeting
                     className="weapons__targeting"
                     symbols={this.props.targetingSymbols}
-                    symbolSelected={sendSelection}
+                    selectedSymbols={this.props.selectedSymbols}
+                    symbolSelected={selectSymbol}
                 />
             </div>
         }
@@ -98,13 +106,14 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
         allTargets: state.environment.targets,
         shipPosition: state.environment.shipPos,
         shipOrientation: state.environment.shipRotation,
+        selectSymbol: actionCreators.selectSymbol,
     }
 };
 
 // Wire up the React component to the Redux store
 export default connect(
     mapStateToProps,
-    {},
+    actionCreators,
     null,
     { withRef: true },
 )(Weapons);

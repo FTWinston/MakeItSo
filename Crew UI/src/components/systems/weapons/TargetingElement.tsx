@@ -17,7 +17,7 @@ interface IProps {
     status: Status;
     shape: ElementShape;
     color: ElementColor;
-    clicked: () => void;
+    clicked?: () => void;
 }
 
 interface IState {
@@ -114,7 +114,9 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
             animationIterationCount: 'infinite',
         };
         
-        const clicked = () => this.props.clicked();
+        const clicked = this.props.clicked === undefined
+            ? undefined
+            : () => this.props.clicked!();
 
         return <div
             className={classes}

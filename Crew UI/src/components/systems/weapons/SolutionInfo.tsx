@@ -1,24 +1,47 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { TargetingSolutionType, TargetingFace, TargetingDifficulty } from './store';
+import { TargetingSolutionType, TargetingFace, TargetingDifficulty, ITargetingSymbol } from './store';
 import './SolutionInfo.scss';
+import { TargetingElement, Status as ElementStatus } from './TargetingElement';
 
 interface IProps {
     text: TextLocalisation;
     solutionType?: TargetingSolutionType;
-    select?: () => void;
     className?: string;
-    baseDifficulty?: TargetingDifficulty;
-    bestFacing?: TargetingFace;
+    baseDifficulty: TargetingDifficulty;
     currentlyFacing: TargetingFace;
-    showCurrentlyFacing: boolean;
+    bestFacing?: TargetingFace;
+    fullSequence: ITargetingSymbol[];
+    selectedElements: number;
 }
 
-export class SolutionInfo extends React.PureComponent<IProps, {}> {
+interface IState {
+    sequence: ITargetingSymbol[];
+}
+
+export class SolutionInfo extends React.PureComponent<IProps, IState> {
+    constructor(props: IProps) {
+        super(props);
+
+        this.state = {
+            sequence: this.calculateDisplaySequence(props),
+        }
+    }
+
+    public componentWillReceiveProps(nextProps: IProps) {
+        if (this.props.currentlyFacing !== nextProps.currentlyFacing
+            || this.props.bestFacing !== nextProps.bestFacing
+            || this.props.fullSequence !== nextProps.fullSequence
+            || this.props.baseDifficulty !== nextProps.baseDifficulty
+        ) {
+           this.setState({
+                sequence: this.calculateDisplaySequence(nextProps),
+           });
+        }
+    }
+
     public render() {
         const text = this.getSolutionNameAndDesc();
-        const select = this.props.select === undefined
-            ? undefined : () => this.props.select!();
 
         let classes = 'solutionInfo';
         if (this.isVulnerability()) {
@@ -36,18 +59,12 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
             ? <div className="solutionInfo__prompt">{this.props.text.systems.weapons.solutionPrompt}</div>
             : <div className="solutionInfo__desc">{text.desc}</div>
 
-        const difficulty = this.getDifficulty();
+        const difficulty = this.getDifficultyName();
         const difficultyDisplay = difficulty === null
             ? undefined
             : <div className="solutionInfo__difficulty">
                 <span className="solutionInfo__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionInfo__value">{difficulty}</span>
             </div>
-
-        const currentlyFacing = this.props.showCurrentlyFacing
-            ? <div className="solutionInfo__currentlyFacing">
-                <span className="solutionInfo__label">{this.props.text.systems.weapons.currentlyFacingPrefix}</span> <span className="solutionInfo__value">{this.getFacingName(this.props.currentlyFacing)}</span>
-            </div>
-            : undefined;
 
         let facingClasses = 'solutionInfo__value soluionInfo__facingVal';
         if (this.props.bestFacing === this.props.currentlyFacing) {
@@ -63,12 +80,21 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
                 <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{this.getFacingName(this.props.bestFacing)}</span>
             </div>
 
-        return <div className={classes} onClick={select}>
+        const symbols = this.state.sequence.map((s, i) => <TargetingElement
+            key={i}
+            color={s.color}
+            shape={s.shape}
+            status={i < this.props.selectedElements ? ElementStatus.Selected : ElementStatus.Clickable}
+        />);
+
+        return <div className={classes}>
             {name}
             {desc}
             {difficultyDisplay}
             {bestFacing}
-            {currentlyFacing}
+            <div className="solutionInfo__sequence">
+                {symbols}
+            </div>
         </div>
     }
 
@@ -116,14 +142,26 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
         }
     }
     
-    private getDifficulty() {
+    private calculateDisplaySequence(props: IProps): ITargetingSymbol[] {
+        const difficulty = this.getModifiedDifficulty(props);
+
+        if (difficulty === TargetingDifficulty.Impossible) {
+            return [];
+        }
+
+        const length = Math.min(difficulty, props.fullSequence.length);
+
+        return props.fullSequence.slice(0, length);
+    }
+    
+    private getDifficultyName() {
         if (this.props.baseDifficulty === undefined) {
             return null;
         }
 
         const difficultyText = this.props.text.systems.weapons.difficulty;
 
-        const actualDifficulty = this.getModifiedDifficulty(this.props.baseDifficulty);
+        const actualDifficulty = this.getModifiedDifficulty(this.props);
 
         switch (actualDifficulty) {
             case TargetingDifficulty.VeryEasy:
@@ -140,15 +178,15 @@ export class SolutionInfo extends React.PureComponent<IProps, {}> {
         }
     }
 
-    private getModifiedDifficulty(baseDifficulty: TargetingDifficulty) {
-        if (this.props.bestFacing === this.props.currentlyFacing) {
-            return Math.max(TargetingDifficulty.VeryEasy, baseDifficulty - 1);
+    private getModifiedDifficulty(props: IProps) {
+        if (props.bestFacing === props.currentlyFacing) {
+            return Math.max(TargetingDifficulty.VeryEasy, props.baseDifficulty - 1);
         }
         else if (this.props.bestFacing === -this.props.currentlyFacing) {
-            return Math.min(TargetingDifficulty.Impossible, baseDifficulty + 1);
+            return Math.min(TargetingDifficulty.Impossible, props.baseDifficulty + 1);
         }
         else {
-            return baseDifficulty;
+            return props.baseDifficulty;
         }
     }
 

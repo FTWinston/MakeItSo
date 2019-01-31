@@ -355,18 +355,11 @@ void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution solution)
 	for (auto i = 0; i < FWeaponTargetingSolution::ESolutionDifficulty::MAX_POSSIBLE_DIFFICULTY; i++)
 	{
 		uint8 symbol;
-		bool isDuplicate;
 
-		do {
-			isDuplicate = false;
+		do
+		{
 			symbol = FMath::RandRange(0, NUM_TARGETING_SYMBOL_OPTIONS - 1);
-
-			for (auto j = 0; j < i; j++)
-			{
-				isDuplicate = true;
-				break;
-			}
-		} while (isDuplicate);
+		} while (SETCONTAINS(solution.symbolSequence, symbol));
 
 		SETADD(solution.symbolSequence, symbol);
 	}

@@ -23,6 +23,7 @@ export class Connection {
     }
     
     send(cmd: string) {
+        console.log('sent', cmd);
         this.socket.send(cmd);
     }
 
