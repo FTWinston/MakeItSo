@@ -9,8 +9,6 @@
 
 class USensorTargetInfo;
 
-#define NUM_TARGETING_SYMBOL_OPTIONS 100
-
 USTRUCT()
 struct FWeaponTargetingSolution {
 
@@ -106,7 +104,7 @@ protected:
 private:
 	void AllocateTargetingElements();
 	void DetermineTargetingSolutions();
-	void AllocateSequence(FWeaponTargetingSolution solution);
+	void AllocateSequence(FWeaponTargetingSolution &solution);
 	FWeaponTargetingSolution::ESolutionDifficulty DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
 	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
 	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);

@@ -1,10 +1,19 @@
 @import '../../general/mixins';
 
 .targetingElement {
-    position: absolute;
     width: 5%;
     height: 5%;
     border-radius: 2%;
+    transition: background-color 1s;
+}
+
+.targetingElement--static {
+    position: relative;
+    width: 2em; height: 2em;
+}
+
+.targetingElement:not(.targetingElement--static) {
+    position: absolute;
     cursor: pointer;
     animation-timing-function: ease-in-out, ease-in-out, linear;
     user-select: none;

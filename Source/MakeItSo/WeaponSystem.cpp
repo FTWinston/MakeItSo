@@ -14,6 +14,8 @@
 #include "MakeItSoPawn.h"
 #include "SensorSystem.h"
 
+#define NUM_TARGETING_SYMBOL_OPTIONS 50
+
 UWeaponSystem::UWeaponSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -271,7 +273,7 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		else
 		{
 			// Other solutions just need a new sequence allocated
-			AllocateSequence(solution);
+			AllocateSequence(solution); // TODO: this won't work, as this local copy will be overwritten by the target info's copy
 		}
 
 		if (ISCLIENT())
@@ -342,13 +344,13 @@ void UWeaponSystem::DetermineTargetingSolutions()
 	if (targetInfo == nullptr)
 		return;
 
-	targetingSolutions = targetInfo->targetingSolutions;
+	for (auto i = SIZENUM(targetInfo->targetingSolutions) - 1; i >= 0; i--)
+		AllocateSequence(targetInfo->targetingSolutions[i]);
 
-	for (auto solution : targetingSolutions)
-		AllocateSequence(solution);
+	targetingSolutions = targetInfo->targetingSolutions;
 }
 
-void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution solution)
+void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution &solution)
 {
 	CLEAR(solution.symbolSequence);
 
@@ -373,27 +375,17 @@ FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty
 	if (bestFacing == currentlyFacing)
 	{
 		if (iDifficulty > FWeaponTargetingSolution::VeryEasy)
-			iDifficulty --;
+			iDifficulty -= 2;
 	}
 	else if (bestFacing == -currentlyFacing) {
 		iDifficulty += 2;
 	}
 
-	// Adjust difficulty based on health
-	auto health = GetHealthLevel();
-	if (health == 0)
-		iDifficulty = FWeaponTargetingSolution::Impossible; // cannot fire
-	else if (health < 10)
-		iDifficulty += 4;
-	else if (health < 35)
-		iDifficulty += 3;
-	else if (health < 75)
-		iDifficulty += 2;
-	else if (health < 90)
-		iDifficulty += 1;
-
 	if (iDifficulty > FWeaponTargetingSolution::MAX_POSSIBLE_DIFFICULTY)
 		return FWeaponTargetingSolution::Impossible;
+
+	if (iDifficulty < FWeaponTargetingSolution::VeryEasy)
+		return FWeaponTargetingSolution::VeryEasy;
 
 	return (FWeaponTargetingSolution::ESolutionDifficulty)iDifficulty;
 }

@@ -5,7 +5,6 @@
     border-radius: 0.25em;
     background-color: $fadedColor;
     color: white;
-    cursor: pointer;
 }
 
 .weapons__solutionListItem + .weapons__solutionListItem {
@@ -37,4 +36,12 @@
 
 .soluionInfo__facingVal--worst {
     color: $colorBadLight;
+}
+
+.solutionInfo__sequence {
+    display: flex;
+}
+
+.solutionInfo__sequence > *:not(:first-child) {
+    margin-left: 1em;
 }

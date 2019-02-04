@@ -32,7 +32,7 @@ export class Targeting extends React.PureComponent<IProps, IState> {
         // if symbol list changes, recreate all elements
         if (this.props.symbols !== nextProps.symbols) {
             this.setState({
-                elements: this.props.symbols.map(s => this.createElement(s)),
+                elements: nextProps.symbols.map(s => this.createElement(s)),
             });
         }
     }
@@ -47,6 +47,7 @@ export class Targeting extends React.PureComponent<IProps, IState> {
             
             return <TargetingElement
                 key={i}
+                animate={true}
                 status={e.status}
                 color={e.symbol.color}
                 shape={e.symbol.shape}

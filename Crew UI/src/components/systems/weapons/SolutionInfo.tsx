@@ -59,13 +59,6 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
             ? <div className="solutionInfo__prompt">{this.props.text.systems.weapons.solutionPrompt}</div>
             : <div className="solutionInfo__desc">{text.desc}</div>
 
-        const difficulty = this.getDifficultyName();
-        const difficultyDisplay = difficulty === null
-            ? undefined
-            : <div className="solutionInfo__difficulty">
-                <span className="solutionInfo__label">{this.props.text.systems.weapons.difficultyPrefix}</span> <span className="solutionInfo__value">{difficulty}</span>
-            </div>
-
         let facingClasses = 'solutionInfo__value soluionInfo__facingVal';
         if (this.props.bestFacing === this.props.currentlyFacing) {
             facingClasses += ' soluionInfo__facingVal--best';
@@ -82,6 +75,7 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
 
         const symbols = this.state.sequence.map((s, i) => <TargetingElement
             key={i}
+            animate={false}
             color={s.color}
             shape={s.shape}
             status={i < this.props.selectedElements ? ElementStatus.Selected : ElementStatus.Clickable}
@@ -90,7 +84,6 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
         return <div className={classes}>
             {name}
             {desc}
-            {difficultyDisplay}
             {bestFacing}
             <div className="solutionInfo__sequence">
                 {symbols}
@@ -154,36 +147,12 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
         return props.fullSequence.slice(0, length);
     }
     
-    private getDifficultyName() {
-        if (this.props.baseDifficulty === undefined) {
-            return null;
-        }
-
-        const difficultyText = this.props.text.systems.weapons.difficulty;
-
-        const actualDifficulty = this.getModifiedDifficulty(this.props);
-
-        switch (actualDifficulty) {
-            case TargetingDifficulty.VeryEasy:
-            case TargetingDifficulty.Easy:
-                return difficultyText.easy;
-            case TargetingDifficulty.Medium:
-                return difficultyText.medium;
-            case TargetingDifficulty.Hard:
-            case TargetingDifficulty.VeryHard:
-                return difficultyText.hard;
-            case TargetingDifficulty.Impossible:
-            default:
-                return difficultyText.impossible;
-        }
-    }
-
     private getModifiedDifficulty(props: IProps) {
         if (props.bestFacing === props.currentlyFacing) {
-            return Math.max(TargetingDifficulty.VeryEasy, props.baseDifficulty - 1);
+            return Math.max(TargetingDifficulty.VeryEasy, props.baseDifficulty - 2);
         }
         else if (this.props.bestFacing === -this.props.currentlyFacing) {
-            return Math.min(TargetingDifficulty.Impossible, props.baseDifficulty + 1);
+            return Math.min(TargetingDifficulty.Impossible, props.baseDifficulty + 2);
         }
         else {
             return props.baseDifficulty;

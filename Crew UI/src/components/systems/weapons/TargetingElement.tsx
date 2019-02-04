@@ -17,6 +17,7 @@ interface IProps {
     status: Status;
     shape: ElementShape;
     color: ElementColor;
+    animate: boolean;
     clicked?: () => void;
 }
 
@@ -36,14 +37,27 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        this.state = this.getNewState();
+        if (props.animate) {
+            this.state = this.getNewState();
+        }
+        else {
+            this.state = {
+                rotAnimation: RotationAnimation.Clockwise,
+                leftRightDuration: 0,
+                upDownDuration: 0,
+                rotationDuration: 0,
+                leftRightDelay: 0,
+                upDownDelay: 0,
+                rotationDelay: 0,
+            };
+        }
     }
 
     componentWillUpdate(nextProps: IProps, nextState: IState) {
         // Recalcuate internals only if shape or color change.
         // Don't recalculate if only state changes.
 
-        if (nextProps.color !== this.props.color || nextProps.shape !== this.props.shape) {
+        if (nextProps.animate && nextProps.color !== this.props.color || nextProps.shape !== this.props.shape) {
             this.setState(this.getNewState());
         }
     }
@@ -60,13 +74,18 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
                 break;
         }
 
-        switch (this.state.rotAnimation) {
-            case RotationAnimation.Clockwise:
-                classes += ' targetingElement--clockwise';
-                break;
-            case RotationAnimation.Anticlockwise:
-                classes += ' targetingElement--anticlockwise';
-                break;
+        if (this.props.animate) {
+            switch (this.state.rotAnimation) {
+                case RotationAnimation.Clockwise:
+                    classes += ' targetingElement--clockwise';
+                    break;
+                case RotationAnimation.Anticlockwise:
+                    classes += ' targetingElement--anticlockwise';
+                    break;
+            }
+        }
+        else {
+            classes += ' targetingElement--static';
         }
 
         switch (this.props.shape) {
@@ -108,11 +127,13 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
                 break;
         }
 
-        const style = {
-            animationDelay: `-${this.state.leftRightDelay}ms, -${this.state.upDownDelay}ms, -${this.state.rotationDelay}ms`,
-            animationDuration: `${this.state.leftRightDuration}ms, ${this.state.upDownDuration}ms, ${this.state.rotationDuration}ms`,
-            animationIterationCount: 'infinite',
-        };
+        const style = this.props.animate
+            ? {
+                animationDelay: `-${this.state.leftRightDelay}ms, -${this.state.upDownDelay}ms, -${this.state.rotationDelay}ms`,
+                animationDuration: `${this.state.leftRightDuration}ms, ${this.state.upDownDuration}ms, ${this.state.rotationDuration}ms`,
+                animationIterationCount: 'infinite',
+            }
+            : undefined;
         
         const clicked = this.props.clicked === undefined
             ? undefined
@@ -127,9 +148,9 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
     }
 
     private getNewState(): IState {
-        const leftRightDuration = Math.round(Math.random() * 10000) + 5000; // 5000 - 15000
-        const upDownDuration = Math.round(Math.random() * 10000) + 5000; // 5000 - 15000
-        const rotationDuration = Math.round(Math.random() * 6000) + 3000; // 3000 - 9000
+        const leftRightDuration = Math.round(Math.random() * 30000) + 15000; // 15000 - 45000
+        const upDownDuration = Math.round(Math.random() * 30000) + 15000; // 15000 - 45000
+        const rotationDuration = Math.round(Math.random() * 15000) + 10000; // 10000 - 25000
 
         const rotAnimation = Math.random() < 0.5
             ? RotationAnimation.Clockwise

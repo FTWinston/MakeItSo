@@ -231,15 +231,6 @@ let words: TextLocalisation = {
         },
         weapons: {
             changeTarget: 'Change target',
-            difficultyPrefix: 'Difficulty:',
-            difficulty: {
-                vEasy: 'Very easy',
-                easy: 'Easy',
-                medium: 'Medium',
-                hard: 'Hard',
-                vHard: 'Very hard',
-                impossible: 'Impossible',
-            },
             facingPrefix: 'Easiest when facing:',
             currentlyFacingPrefix: 'Currently facing:',
             face: {

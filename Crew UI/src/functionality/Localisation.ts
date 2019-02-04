@@ -165,15 +165,6 @@ export interface TextLocalisation {
         },
         weapons: {
             changeTarget: string;
-            difficultyPrefix: string;
-            difficulty: {
-                vEasy: string;
-                easy: string;
-                medium: string;
-                hard: string;
-                vHard: string;
-                impossible: string;
-            },
             facingPrefix: string;
             currentlyFacingPrefix: string;
             face: {
