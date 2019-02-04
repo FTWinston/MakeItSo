@@ -15,6 +15,8 @@
 #include "SensorSystem.h"
 
 #define NUM_TARGETING_SYMBOL_OPTIONS 50
+#define MIN_TARGETING_SEQUENCE_LENGTH 2
+#define MAX_TARGETING_SEQUENCE_LENGTH 8
 
 UWeaponSystem::UWeaponSystem()
 {
@@ -144,12 +146,13 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 			output += TEXT("/");
 		}
 		
-		APPENDINT(output, (uint8)solution.type);
+		APPENDINT(output, (uint8)solution.identifier);
 		output += TEXT(" ");
-		APPENDINT(output, (uint8)solution.baseDifficulty);
+		APPENDINT(output, solution.baseSequenceLength);
 		output += TEXT(" ");
 		APPENDINT(output, (int8)solution.bestFacing);
 		
+
 		for (auto symbol : solution.symbolSequence)
 		{
 			output += TEXT(" ");
@@ -229,9 +232,9 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 
 	for (auto solution : targetingSolutions)
 	{
-		auto difficulty = DetermineDifficulty(solution.baseDifficulty, solution.bestFacing);
+		auto difficulty = DetermineDifficulty(solution.baseSequenceLength, solution.bestFacing);
 
-		if (difficulty == FWeaponTargetingSolution::ESolutionDifficulty::Impossible)
+		if (difficulty == 0)
 			continue;
 
 		// Determine whether this solution is a full or partial match for the current input
@@ -262,13 +265,13 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		// Only continue if this is a full match
 		CLEAR(targetingElementInput);
 
-		auto targetSystem = GetSystemForSolution(solution.type);
-		auto damage = GetDamageForSolution(solution.type);
+		auto targetSystem = GetSystemForSolution(solution.identifier);
+		auto damage = GetDamageForSolution(solution.identifier);
 		
-		if (solution.type >= FWeaponTargetingSolution::MIN_VULNERABILITY)
+		if (solution.identifier >= FWeaponTargetingSolution::MIN_VULNERABILITY)
 		{
 			// Vulnerabilities are consumed when they are used
-			RemoveTargetingSolution(solution.type);
+			RemoveTargetingSolution(solution.identifier);
 		}
 		else
 		{
@@ -301,7 +304,7 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 	SendFire(anyFullMatch); // Tell the client that we fired, and whether it was successful or not
 }
 
-void UWeaponSystem::RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType)
+void UWeaponSystem::RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType)
 {
 	auto targetInfo = GetSelectedTarget();
 
@@ -309,7 +312,7 @@ void UWeaponSystem::RemoveTargetingSolution(FWeaponTargetingSolution::ETargeting
 		return;
 
 	for (auto iSolution = 0; iSolution < SIZENUM(targetInfo->targetingSolutions); iSolution++)
-		if (targetInfo->targetingSolutions[iSolution].type == solutionType)
+		if (targetInfo->targetingSolutions[iSolution].identifier == solutionType)
 		{
 			SETREMOVEAT(targetInfo->targetingSolutions, iSolution);
 			break;
@@ -354,7 +357,7 @@ void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution &solution)
 {
 	CLEAR(solution.symbolSequence);
 
-	for (auto i = 0; i < FWeaponTargetingSolution::ESolutionDifficulty::MAX_POSSIBLE_DIFFICULTY; i++)
+	for (auto i = 0; i < MAX_TARGETING_SEQUENCE_LENGTH; i++)
 	{
 		uint8 symbol;
 
@@ -367,30 +370,30 @@ void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution &solution)
 	}
 }
 
-FWeaponTargetingSolution::ESolutionDifficulty UWeaponSystem::DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)
+uint8 UWeaponSystem::DetermineDifficulty(uint8 baseSequenceLength, FWeaponTargetingSolution::ETargetingFace bestFacing)
 {
-	uint8 iDifficulty = baseDifficulty;
+	uint8 sequenceLength = baseSequenceLength;
 
 	// Adjust difficulty to account for the target's best / worst face being the one pointed at the ship
 	if (bestFacing == currentlyFacing)
 	{
-		if (iDifficulty > FWeaponTargetingSolution::VeryEasy)
-			iDifficulty -= 2;
+		if (sequenceLength > MIN_TARGETING_SEQUENCE_LENGTH)
+			sequenceLength -= 2;
 	}
 	else if (bestFacing == -currentlyFacing) {
-		iDifficulty += 2;
+		sequenceLength += 2;
 	}
 
-	if (iDifficulty > FWeaponTargetingSolution::MAX_POSSIBLE_DIFFICULTY)
-		return FWeaponTargetingSolution::Impossible;
+	if (sequenceLength > MAX_TARGETING_SEQUENCE_LENGTH)
+		return 0;
 
-	if (iDifficulty < FWeaponTargetingSolution::VeryEasy)
-		return FWeaponTargetingSolution::VeryEasy;
+	if (sequenceLength < MIN_TARGETING_SEQUENCE_LENGTH)
+		return MIN_TARGETING_SEQUENCE_LENGTH;
 
-	return (FWeaponTargetingSolution::ESolutionDifficulty)iDifficulty;
+	return sequenceLength;
 }
 
-UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solution)
+UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solution)
 {
 	switch (solution)
 	{
@@ -449,7 +452,7 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolutio
 	}
 }
 
-uint8 UWeaponSystem::GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solution)
+uint8 UWeaponSystem::GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solution)
 {
 	float damage = 0; 
 

@@ -78,7 +78,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             return <div className="system weapons weapons--targeting">
                 <TargetDisplay
                     text={this.props.text}
-                    target={this.state.selectedTarget!}
+                    target={this.state.selectedTarget}
                     deselectTarget={clearTarget}
                     solutions={this.props.targetingSolutions}
                     selectedSymbols={this.props.selectedSymbols}

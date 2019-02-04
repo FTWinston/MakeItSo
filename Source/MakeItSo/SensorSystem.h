@@ -75,7 +75,7 @@ private:
 	bool TryPlaceTarget(uint8 targetSize, ESensorSystem system);
 	int32 PickEmptyCell();
 	FWeaponTargetingSolution GetTargetingSolutionForSystem(ESensorSystem system, bool isVulnerability);
-	bool HasTargetingSolutionOfType(USensorTargetInfo *target, FWeaponTargetingSolution::ETargetingSolutionType type);
+	bool HasTargetingSolutionOfType(USensorTargetInfo *target, FWeaponTargetingSolution::ETargetingSolutionIdentifier identifier);
 
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)

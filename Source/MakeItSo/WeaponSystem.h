@@ -12,7 +12,7 @@ class USensorTargetInfo;
 USTRUCT()
 struct FWeaponTargetingSolution {
 
-	enum ETargetingSolutionType : uint8
+	enum ETargetingSolutionIdentifier : uint8
 	{
 		None = 0,
 
@@ -42,17 +42,6 @@ struct FWeaponTargetingSolution {
 		MIN_VULNERABILITY = MiscVulnerability,
 	};
 
-	enum ESolutionDifficulty : uint8 {
-		Impossible = 0,
-		VeryEasy = 2,
-		Easy,
-		Medium,
-		Hard,
-		VeryHard,
-
-		MAX_POSSIBLE_DIFFICULTY = VeryHard
-	};
-
 	enum ETargetingFace : int8 { // These are numbered stupidly to easily identify opposite faces
 		NoFace = 0,
 		Front = 1,
@@ -67,24 +56,21 @@ struct FWeaponTargetingSolution {
 
 	FWeaponTargetingSolution() {}
 	
-	FWeaponTargetingSolution(ETargetingSolutionType type, ESolutionDifficulty difficulty, ETargetingFace bestFace)
+	FWeaponTargetingSolution(ETargetingSolutionIdentifier identifier, uint8 sequenceLength, ETargetingFace bestFace)
 	{
-		this->type = type;
-		this->baseDifficulty = difficulty;
+		this->identifier = identifier;
+		this->baseSequenceLength = sequenceLength;
 		this->bestFacing = bestFace;
 	}
 
 	UPROPERTY(Replicated)
-	ETargetingSolutionType type;
+	ETargetingSolutionIdentifier identifier;
 
 	UPROPERTY(Replicated)
-	ESolutionDifficulty baseDifficulty;
+	uint8 baseSequenceLength;
 
 	UPROPERTY(Replicated)
 	ETargetingFace bestFacing;
-
-	UPROPERTY(Replicated)
-	TArray<uint8> symbolSequence;
 };
 
 UCLASS()
@@ -105,10 +91,10 @@ private:
 	void AllocateTargetingElements();
 	void DetermineTargetingSolutions();
 	void AllocateSequence(FWeaponTargetingSolution &solution);
-	FWeaponTargetingSolution::ESolutionDifficulty DetermineDifficulty(FWeaponTargetingSolution::ESolutionDifficulty baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
-	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
-	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
-	void RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionType solutionType);
+	uint8 DetermineDifficulty(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
+	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType);
+	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType);
+	void RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType);
 	USensorTargetInfo *GetSelectedTarget();
 
 
@@ -123,9 +109,15 @@ private:
 	UPROPERTY()
 	TArray<uint8> targetingElementInput;
 
+
+	
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSolutions)
 	TSet<FWeaponTargetingSolution> targetingSolutions;
 	void OnReplicated_TargetingSolutions(TSet<FWeaponTargetingSolution> beforeChange) { SendTargetingSolutions(); }
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSequences)
+	TMap<uint8, TArray<uint8>> targetingSequences;
+	void OnReplicated_TargetingSequences(TMap<uint8, TArray<FWeaponTargetingSolution>> beforeChange) { SendTargetingSolutions(); } // TODO: calling this from both places sucks
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CurrentlyFacing)
 	FWeaponTargetingSolution::ETargetingFace currentlyFacing;
