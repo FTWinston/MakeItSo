@@ -9,39 +9,39 @@
 
 class USensorTargetInfo;
 
+enum ETargetingSolutionIdentifier : uint8
+{
+	None = 0,
+
+	Misc,
+
+	Engines,
+	Warp,
+	Weapons,
+	Sensors,
+	PowerManagement,
+	DamageControl,
+	Communications,
+
+	MiscVulnerability,
+	EngineVulnerability,
+	WarpVulnerability,
+	WeaponVulnerability,
+	SensorVulnerability,
+	PowerVulnerability,
+	DamageControlVulnerability,
+	CommunicationVulnerability,
+
+	MIN_STANDARD_SYSTEM = Engines,
+	MAX_STANDARD_SYSTEM = Communications,
+	MIN_SYSTEM_VULNERABILITY = EngineVulnerability,
+	MAX_SYSTEM_VULNERABILITY = CommunicationVulnerability,
+	MIN_VULNERABILITY = MiscVulnerability,
+};
+
 USTRUCT()
-struct FWeaponTargetingSolution {
-
-	enum ETargetingSolutionIdentifier : uint8
-	{
-		None = 0,
-
-		Misc,
-
-		Engines,
-		Warp,
-		Weapons,
-		Sensors,
-		PowerManagement,
-		DamageControl,
-		Communications,
-
-		MiscVulnerability,
-		EngineVulnerability,
-		WarpVulnerability,
-		WeaponVulnerability,
-		SensorVulnerability,
-		PowerVulnerability,
-		DamageControlVulnerability,
-		CommunicationVulnerability,
-
-		MIN_STANDARD_SYSTEM = Engines,
-		MAX_STANDARD_SYSTEM = Communications,
-		MIN_SYSTEM_VULNERABILITY = EngineVulnerability,
-		MAX_SYSTEM_VULNERABILITY = CommunicationVulnerability,
-		MIN_VULNERABILITY = MiscVulnerability,
-	};
-
+struct FWeaponTargetingSolution
+{
 	enum ETargetingFace : int8 { // These are numbered stupidly to easily identify opposite faces
 		NoFace = 0,
 		Front = 1,
@@ -56,15 +56,11 @@ struct FWeaponTargetingSolution {
 
 	FWeaponTargetingSolution() {}
 	
-	FWeaponTargetingSolution(ETargetingSolutionIdentifier identifier, uint8 sequenceLength, ETargetingFace bestFace)
+	FWeaponTargetingSolution(uint8 sequenceLength, ETargetingFace bestFace)
 	{
-		this->identifier = identifier;
 		this->baseSequenceLength = sequenceLength;
 		this->bestFacing = bestFace;
 	}
-
-	UPROPERTY(Replicated)
-	ETargetingSolutionIdentifier identifier;
 
 	UPROPERTY(Replicated)
 	uint8 baseSequenceLength;
@@ -72,6 +68,13 @@ struct FWeaponTargetingSolution {
 	UPROPERTY(Replicated)
 	ETargetingFace bestFacing;
 };
+
+USTRUCT()
+struct FWeaponTargetingSolutionDetail : public FWeaponTargetingSolution
+{
+	TArray<uint8> symbolSequence;
+};
+
 
 UCLASS()
 class MAKEITSO_API UWeaponSystem : public UShipSystem
@@ -90,11 +93,12 @@ protected:
 private:
 	void AllocateTargetingElements();
 	void DetermineTargetingSolutions();
-	void AllocateSequence(FWeaponTargetingSolution &solution);
+	void AddTargetingSolution(ETargetingSolutionIdentifier identifier, FWeaponTargetingSolution &solution);
+	void AllocateSequence(FWeaponTargetingSolutionDetail &solution);
 	uint8 DetermineDifficulty(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
-	UShipSystem::ESystem GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType);
-	uint8 GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType);
-	void RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType);
+	UShipSystem::ESystem GetSystemForSolution(ETargetingSolutionIdentifier solution);
+	uint8 GetDamageForSolution(ETargetingSolutionIdentifier solution);
+	void RemoveTargetingSolution(ETargetingSolutionIdentifier solution);
 	USensorTargetInfo *GetSelectedTarget();
 
 
@@ -112,12 +116,8 @@ private:
 
 	
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSolutions)
-	TSet<FWeaponTargetingSolution> targetingSolutions;
-	void OnReplicated_TargetingSolutions(TSet<FWeaponTargetingSolution> beforeChange) { SendTargetingSolutions(); }
-
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSequences)
-	TMap<uint8, TArray<uint8>> targetingSequences;
-	void OnReplicated_TargetingSequences(TMap<uint8, TArray<FWeaponTargetingSolution>> beforeChange) { SendTargetingSolutions(); } // TODO: calling this from both places sucks
+	TMap<ETargetingSolutionIdentifier, FWeaponTargetingSolutionDetail> targetingSolutions;
+	void OnReplicated_TargetingSolutions(TMap<uint8, FWeaponTargetingSolutionDetail> beforeChange) { SendTargetingSolutions(); }
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CurrentlyFacing)
 	FWeaponTargetingSolution::ETargetingFace currentlyFacing;

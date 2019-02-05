@@ -75,7 +75,6 @@ private:
 	bool TryPlaceTarget(uint8 targetSize, ESensorSystem system);
 	int32 PickEmptyCell();
 	FWeaponTargetingSolution GetTargetingSolutionForSystem(ESensorSystem system, bool isVulnerability);
-	bool HasTargetingSolutionOfType(USensorTargetInfo *target, FWeaponTargetingSolution::ETargetingSolutionIdentifier identifier);
 
 	// Replicated properties
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SensorTargets)
@@ -183,7 +182,7 @@ public:
 	TMap<USensorSystem::ESensorSystem, uint8> systemPower;
 
 	UPROPERTY(Replicated) // TODO: replicatedUsing?
-	TSet<FWeaponTargetingSolution> targetingSolutions;
+	TMap<ETargetingSolutionIdentifier, FWeaponTargetingSolution> targetingSolutions;
 
 	// The actor in question may not be visible in the scene, so the client doesn't use it directly.
 	WEAK_PTR_DECLARE(AActor) actor;

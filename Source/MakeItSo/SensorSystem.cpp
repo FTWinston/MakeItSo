@@ -333,7 +333,8 @@ void USensorSystem::RevealSystem_Implementation(ESensorSystem system)
 		if (infoLevel >= INFO_LEVEL_VULNERABILITY)
 		{
 			auto vulnerability = GetTargetingSolutionForSystem(system, true);
-			if (!HasTargetingSolutionOfType(target, vulnerability.identifier))
+			
+			if (!MAPCONTAINS(target->targetingSolutions, vulnerability.identifier))
 				SETADD(target->targetingSolutions, vulnerability);
 		}
 		break;
@@ -596,53 +597,44 @@ FWeaponTargetingSolution USensorSystem::GetTargetingSolutionForSystem(ESensorSys
 	{
 		case Sensor_Power:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::PowerVulnerability, 7, FWeaponTargetingSolution::Top)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::PowerManagement, 4, FWeaponTargetingSolution::Top);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::PowerVulnerability, 7, FWeaponTargetingSolution::Top)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::PowerManagement, 4, FWeaponTargetingSolution::Top);
 		case Sensor_Helm:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::EngineVulnerability, 7, FWeaponTargetingSolution::Right)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Engines, 4, FWeaponTargetingSolution::Right);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::EngineVulnerability, 7, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Engines, 4, FWeaponTargetingSolution::Right);
 		case Sensor_Warp:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::WarpVulnerability, 7, FWeaponTargetingSolution::Bottom)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Warp, 4, FWeaponTargetingSolution::Bottom);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::WarpVulnerability, 7, FWeaponTargetingSolution::Bottom)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Warp, 4, FWeaponTargetingSolution::Bottom);
 		case Sensor_Weapons:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::WeaponVulnerability, 7, FWeaponTargetingSolution::Rear)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Weapons, 4, FWeaponTargetingSolution::Rear);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::WeaponVulnerability, 7, FWeaponTargetingSolution::Rear)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Weapons, 4, FWeaponTargetingSolution::Rear);
 		case Sensor_Sensors:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::SensorVulnerability, 7, FWeaponTargetingSolution::Left)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Sensors, 4, FWeaponTargetingSolution::Left);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::SensorVulnerability, 7, FWeaponTargetingSolution::Left)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Sensors, 4, FWeaponTargetingSolution::Left);
 		/*
 		case Sensor_Shields:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::ShieldVulnerability, 7, FWeaponTargetingSolution::Right)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Shields, 4, FWeaponTargetingSolution::Right);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::ShieldVulnerability, 7, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Shields, 4, FWeaponTargetingSolution::Right);
 		*/
 		case Sensor_DamageControl:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControlVulnerability, 7, FWeaponTargetingSolution::Right)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::DamageControl, 4, FWeaponTargetingSolution::Right);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::DamageControlVulnerability, 7, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::DamageControl, 4, FWeaponTargetingSolution::Right);
 		case Sensor_Comms:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::CommunicationVulnerability, 7, FWeaponTargetingSolution::Right)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Communications, 4, FWeaponTargetingSolution::Right);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::CommunicationVulnerability, 7, FWeaponTargetingSolution::Right)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Communications, 4, FWeaponTargetingSolution::Right);
 		case Sensor_None:
 		default:
 			return isVulnerability
-				? FWeaponTargetingSolution(FWeaponTargetingSolution::MiscVulnerability, 4, FWeaponTargetingSolution::NoFace)
-				: FWeaponTargetingSolution(FWeaponTargetingSolution::Misc, 3, FWeaponTargetingSolution::NoFace);
+				? FWeaponTargetingSolution(ETargetingSolutionIdentifier::MiscVulnerability, 4, FWeaponTargetingSolution::NoFace)
+				: FWeaponTargetingSolution(ETargetingSolutionIdentifier::Misc, 3, FWeaponTargetingSolution::NoFace);
 	}
-}
-
-bool USensorSystem::HasTargetingSolutionOfType(USensorTargetInfo *target, FWeaponTargetingSolution::ETargetingSolutionIdentifier identifier)
-{
-	for (auto solution : target->targetingSolutions)
-		if (solution.identifier == identifier)
-			return true;
-
-	return false;
 }
 
 void USensorSystem::OnReplicated_SensorTargets(TArray<USensorTargetInfo*> beforeChange)

@@ -50,8 +50,34 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		return;
 	}
 
-	// update targeting solutions
-	targetingSolutions = targetInfo->targetingSolutions;
+	// Add any new targeting solutions
+	for (auto& solution : targetInfo->targetingSolutions)
+	{
+		auto identifier = PAIRKEY(solution);
+		if (!MAPCONTAINS(targetingSolutions, identifier))
+			AddTargetingSolution(identifier, PAIRVALUE(solution));
+	}
+
+	// Remove any removed ones
+#ifdef WEB_SERVER_TEST
+	for (auto it = targetingSolutions.cbegin(); it != targetingSolutions.cend(); )
+	{
+		auto identifier = it->first;
+#else
+	for (auto it = targetingSolutions.CreateIterator(); it;)
+	{
+		auto identifier = PAIRKEY(it);
+#endif
+
+		if (MAPCONTAINS(targetInfo->targetingSolutions, identifier))
+			++it;
+		else
+#ifdef WEB_SERVER_TEST
+			it = targetingSolutions.erase(it);
+#else
+			it.RemoveCurrent();
+#endif
+	}
 
 	// update the angle of the target we are currently facing
 	auto towardsTarget = (target->GetActorLocation() - crewManager->GetShipPawn()->GetActorLocation());
@@ -134,7 +160,7 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 
 	bool first = true;
 
-	for (auto solution : targetingSolutions)
+	for (auto& solution : targetingSolutions)
 	{
 		if (first)
 		{
@@ -146,14 +172,15 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 			output += TEXT("/");
 		}
 		
-		APPENDINT(output, (uint8)solution.identifier);
+		APPENDINT(output, (uint8)PAIRKEY(solution));
 		output += TEXT(" ");
-		APPENDINT(output, solution.baseSequenceLength);
-		output += TEXT(" ");
-		APPENDINT(output, (int8)solution.bestFacing);
-		
 
-		for (auto symbol : solution.symbolSequence)
+		auto details = PAIRVALUE(solution);
+		APPENDINT(output, details.baseSequenceLength);
+		output += TEXT(" ");
+		APPENDINT(output, (int8)details.bestFacing);
+		
+		for (auto symbol : details.symbolSequence)
 		{
 			output += TEXT(" ");
 			APPENDINT(output, symbol);
@@ -230,9 +257,12 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 	bool anyPartialMatch = false;
 	bool anyFullMatch = false;
 
-	for (auto solution : targetingSolutions)
+	for (auto& solution : targetingSolutions)
 	{
-		auto difficulty = DetermineDifficulty(solution.baseSequenceLength, solution.bestFacing);
+		auto identifier = PAIRKEY(solution);
+		auto details = PAIRVALUE(solution);
+
+		auto difficulty = DetermineDifficulty(details.baseSequenceLength, details.bestFacing);
 
 		if (difficulty == 0)
 			continue;
@@ -245,7 +275,7 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		bool isFullMatch;
 		
 		for (uint8 i = 0; i < partialMatchLength; i++)
-			if (targetingElementInput[i] != solution.symbolSequence[i])
+			if (targetingElementInput[i] != details.symbolSequence[i])
 			{
 				isPartialMatch = false;
 				break;
@@ -265,18 +295,18 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		// Only continue if this is a full match
 		CLEAR(targetingElementInput);
 
-		auto targetSystem = GetSystemForSolution(solution.identifier);
-		auto damage = GetDamageForSolution(solution.identifier);
+		auto targetSystem = GetSystemForSolution(identifier);
+		auto damage = GetDamageForSolution(identifier);
 		
-		if (solution.identifier >= FWeaponTargetingSolution::MIN_VULNERABILITY)
+		if (identifier >= ETargetingSolutionIdentifier::MIN_VULNERABILITY)
 		{
 			// Vulnerabilities are consumed when they are used
-			RemoveTargetingSolution(solution.identifier);
+			RemoveTargetingSolution(identifier);
 		}
 		else
 		{
 			// Other solutions just need a new sequence allocated
-			AllocateSequence(solution); // TODO: this won't work, as this local copy will be overwritten by the target info's copy
+			AllocateSequence(details); // TODO: this won't work, as this local copy will be overwritten by the target info's copy
 		}
 
 		if (ISCLIENT())
@@ -304,21 +334,16 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 	SendFire(anyFullMatch); // Tell the client that we fired, and whether it was successful or not
 }
 
-void UWeaponSystem::RemoveTargetingSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solutionType)
+void UWeaponSystem::RemoveTargetingSolution(ETargetingSolutionIdentifier identifier)
 {
+	MAPREMOVE(targetingSolutions, identifier);
+
 	auto targetInfo = GetSelectedTarget();
 
 	if (targetInfo == nullptr)
 		return;
 
-	for (auto iSolution = 0; iSolution < SIZENUM(targetInfo->targetingSolutions); iSolution++)
-		if (targetInfo->targetingSolutions[iSolution].identifier == solutionType)
-		{
-			SETREMOVEAT(targetInfo->targetingSolutions, iSolution);
-			break;
-		}
-	
-	targetingSolutions = targetInfo->targetingSolutions;
+	MAPREMOVE(targetInfo->targetingSolutions, identifier);
 }
 
 USensorTargetInfo *UWeaponSystem::GetSelectedTarget()
@@ -344,16 +369,23 @@ void UWeaponSystem::DetermineTargetingSolutions()
 
 	auto targetInfo = GetSelectedTarget();
 	
-	if (targetInfo == nullptr)
-		return;
-
-	for (auto i = SIZENUM(targetInfo->targetingSolutions) - 1; i >= 0; i--)
-		AllocateSequence(targetInfo->targetingSolutions[i]);
-
-	targetingSolutions = targetInfo->targetingSolutions;
+	if (targetInfo != nullptr)
+		for (auto& solution : targetInfo->targetingSolutions)
+			AddTargetingSolution(PAIRKEY(solution), PAIRVALUE(solution));
 }
 
-void UWeaponSystem::AllocateSequence(FWeaponTargetingSolution &solution)
+void UWeaponSystem::AddTargetingSolution(ETargetingSolutionIdentifier identifier, FWeaponTargetingSolution &solution)
+{
+	FWeaponTargetingSolutionDetail details;
+	details.baseSequenceLength = solution.baseSequenceLength;
+	details.bestFacing = solution.bestFacing;
+
+	AllocateSequence(details);
+
+	MAPADD(targetingSolutions, identifier, details, ETargetingSolutionIdentifier, FWeaponTargetingSolutionDetail);
+}
+
+void UWeaponSystem::AllocateSequence(FWeaponTargetingSolutionDetail &solution)
 {
 	CLEAR(solution.symbolSequence);
 
@@ -393,12 +425,12 @@ uint8 UWeaponSystem::DetermineDifficulty(uint8 baseSequenceLength, FWeaponTarget
 	return sequenceLength;
 }
 
-UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solution)
+UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolutionIdentifier solution)
 {
 	switch (solution)
 	{
-	case FWeaponTargetingSolution::Misc:
-	case FWeaponTargetingSolution::MiscVulnerability:
+	case ETargetingSolutionIdentifier::Misc:
+	case ETargetingSolutionIdentifier::MiscVulnerability:
 		switch (FMath::RandRange(1, 7))
 		{
 		case 1:
@@ -419,31 +451,31 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolutio
 			return UShipSystem::ESystem::None;
 		}
 
-	case FWeaponTargetingSolution::Engines:
-	case FWeaponTargetingSolution::EngineVulnerability:
+	case ETargetingSolutionIdentifier::Engines:
+	case ETargetingSolutionIdentifier::EngineVulnerability:
 		return UShipSystem::Helm;
 
-	case FWeaponTargetingSolution::Warp:
-	case FWeaponTargetingSolution::WarpVulnerability:
+	case ETargetingSolutionIdentifier::Warp:
+	case ETargetingSolutionIdentifier::WarpVulnerability:
 		return UShipSystem::Warp;
 
-	case FWeaponTargetingSolution::Weapons:
-	case FWeaponTargetingSolution::WeaponVulnerability:
+	case ETargetingSolutionIdentifier::Weapons:
+	case ETargetingSolutionIdentifier::WeaponVulnerability:
 		return UShipSystem::Weapons;
 
-	case FWeaponTargetingSolution::Sensors:
-	case FWeaponTargetingSolution::SensorVulnerability:
+	case ETargetingSolutionIdentifier::Sensors:
+	case ETargetingSolutionIdentifier::SensorVulnerability:
 		return UShipSystem::Sensors;
 
-	case FWeaponTargetingSolution::PowerManagement:
-	case FWeaponTargetingSolution::PowerVulnerability:
+	case ETargetingSolutionIdentifier::PowerManagement:
+	case ETargetingSolutionIdentifier::PowerVulnerability:
 		return UShipSystem::PowerManagement;
 
-	case FWeaponTargetingSolution::DamageControl:
-	case FWeaponTargetingSolution::DamageControlVulnerability:
+	case ETargetingSolutionIdentifier::DamageControl:
+	case ETargetingSolutionIdentifier::DamageControlVulnerability:
 		return UShipSystem::DamageControl;
 
-	case FWeaponTargetingSolution::Communications:
+	case ETargetingSolutionIdentifier::Communications:
 		return UShipSystem::Communications;
 
 	default:
@@ -452,17 +484,17 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(FWeaponTargetingSolutio
 	}
 }
 
-uint8 UWeaponSystem::GetDamageForSolution(FWeaponTargetingSolution::ETargetingSolutionIdentifier solution)
+uint8 UWeaponSystem::GetDamageForSolution(ETargetingSolutionIdentifier solution)
 {
 	float damage = 0; 
 
-	if (solution == FWeaponTargetingSolution::Misc)
+	if (solution == ETargetingSolutionIdentifier::Misc)
 		damage = FMath::FRandRange(15, 30);
-	else if (solution == FWeaponTargetingSolution::MiscVulnerability)
+	else if (solution == ETargetingSolutionIdentifier::MiscVulnerability)
 		damage = FMath::FRandRange(35, 55);
-	else if (solution >= FWeaponTargetingSolution::MIN_STANDARD_SYSTEM && solution <= FWeaponTargetingSolution::MAX_STANDARD_SYSTEM)
+	else if (solution >= ETargetingSolutionIdentifier::MIN_STANDARD_SYSTEM && solution <= ETargetingSolutionIdentifier::MAX_STANDARD_SYSTEM)
 		damage = FMath::FRandRange(20, 40);
-	else if (solution >= FWeaponTargetingSolution::MIN_SYSTEM_VULNERABILITY && solution <= FWeaponTargetingSolution::MAX_SYSTEM_VULNERABILITY)
+	else if (solution >= ETargetingSolutionIdentifier::MIN_SYSTEM_VULNERABILITY && solution <= ETargetingSolutionIdentifier::MAX_SYSTEM_VULNERABILITY)
 		damage = FMath::FRandRange(55, 75);
 
 	// scale damage should by system power
