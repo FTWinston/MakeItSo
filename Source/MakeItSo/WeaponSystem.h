@@ -95,7 +95,7 @@ private:
 	void DetermineTargetingSolutions();
 	void AddTargetingSolution(ETargetingSolutionIdentifier identifier, FWeaponTargetingSolution &solution);
 	void AllocateSequence(FWeaponTargetingSolutionDetail &solution);
-	uint8 DetermineDifficulty(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
+	uint8 DetermineSequenceLength(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
 	UShipSystem::ESystem GetSystemForSolution(ETargetingSolutionIdentifier solution);
 	uint8 GetDamageForSolution(ETargetingSolutionIdentifier solution);
 	void RemoveTargetingSolution(ETargetingSolutionIdentifier solution);

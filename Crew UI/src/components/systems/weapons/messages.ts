@@ -34,9 +34,8 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'wpn_fire': {
-            // const success = data === '1';
-
-            // TODO: dispatch "fire" effect and reset anything that needs to
+            const success = data === '1';
+            store.dispatch(actionCreators.resetTargeting(success));
             break;
         }
         case 'wpn_facing': {

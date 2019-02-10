@@ -122,13 +122,14 @@ interface SetTargetingElementsAction {
     elementSymbols: ITargetingSymbol[];
 }
 
+interface ResetTargetingAction {
+    type: 'WPN_RESET';
+    success: boolean;
+}
+
 interface SelectSymbolAction {
     type: 'WPN_SYMBOL';
     symbol: ITargetingSymbol;
-}
-
-interface ClearSelectedSymbolsAction {
-    type: 'WPN_SYMBOL_CLEAR';
 }
 
 interface SetCurrentlyFacingAction {
@@ -146,7 +147,7 @@ interface SetTargetOrientationAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetTargetingElementsAction
-    | SelectSymbolAction | ClearSelectedSymbolsAction | SetCurrentlyFacingAction | SetTargetOrientationAction;
+    | SelectSymbolAction | SetCurrentlyFacingAction | SetTargetOrientationAction | ResetTargetingAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -165,12 +166,13 @@ export const actionCreators = {
         type: 'WPN_ELEMENTS',
         elementSymbols: elements,
     },
+    resetTargeting: (success: boolean) => <ResetTargetingAction>{
+        type: 'WPN_RESET',
+        success: success,
+    },
     selectSymbol: (symbol: ITargetingSymbol) => <SelectSymbolAction>{
         type: 'WPN_SYMBOL',
         symbol: symbol,
-    },
-    clearSymbolSelection: () => <ClearSelectedSymbolsAction>{
-        type: 'WPN_SYMBOL_CLEAR',
     },
     setCurrentlyFacing: (face: TargetingFace) => <SetCurrentlyFacingAction>{
         type: 'WPN_FACE',
@@ -219,17 +221,18 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
                 targetingSymbols: action.elementSymbols,
             };
         }
+        case 'WPN_RESET': {
+            return {
+                ...state, // TODO: success / failure? be better to indicate successful solution index...
+                selectedSymbols: [],
+                targetingSymbols: [...state.targetingSymbols], // recreate the list, to trigger repositioning
+            };
+        }
         case 'WPN_SYMBOL': {
             return {
                 ...state,
                 selectedSymbols: [...state.selectedSymbols, action.symbol],
             };
-        }
-        case 'WPN_SYMBOL_CLEAR': {
-            return {
-                ...state,
-                selectedSymbols: [],
-            }
         }
         case 'WPN_FACE': {
             return {

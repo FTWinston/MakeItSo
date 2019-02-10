@@ -262,13 +262,13 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		auto identifier = PAIRKEY(solution);
 		auto details = PAIRVALUE(solution);
 
-		auto difficulty = DetermineDifficulty(details.baseSequenceLength, details.bestFacing);
+		auto sequenceLength = DetermineSequenceLength(details.baseSequenceLength, details.bestFacing);
 
-		if (difficulty == 0)
+		if (sequenceLength == 0)
 			continue;
 
 		// Determine whether this solution is a full or partial match for the current input
-		uint8 sequenceMatchLength = (uint8)difficulty;
+		uint8 sequenceMatchLength = (uint8)sequenceLength;
 		uint8 partialMatchLength = FMath::Min((uint8)SIZENUM(targetingElementInput), sequenceMatchLength);
 
 		bool isPartialMatch = true;
@@ -323,15 +323,19 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
 	}
 
-	// If there's no partial match, this was an invalid input. Abort and reset
-	if (!anyPartialMatch && !anyFullMatch)
+	if (anyFullMatch)
 	{
+		SendFire(true); // Tell the client to reset the sequence input
+	}
+	else if (!anyPartialMatch)
+	{
+		// If there's no partial match, this was an invalid input. Abort and reset
+
 		// TODO: fire a "miss" at the target
 
+		SendFire(false); // Tell the client to reset the sequence input
 		CLEAR(targetingElementInput);
 	}
-
-	SendFire(anyFullMatch); // Tell the client that we fired, and whether it was successful or not
 }
 
 void UWeaponSystem::RemoveTargetingSolution(ETargetingSolutionIdentifier identifier)
@@ -402,7 +406,7 @@ void UWeaponSystem::AllocateSequence(FWeaponTargetingSolutionDetail &solution)
 	}
 }
 
-uint8 UWeaponSystem::DetermineDifficulty(uint8 baseSequenceLength, FWeaponTargetingSolution::ETargetingFace bestFacing)
+uint8 UWeaponSystem::DetermineSequenceLength(uint8 baseSequenceLength, FWeaponTargetingSolution::ETargetingFace bestFacing)
 {
 	uint8 sequenceLength = baseSequenceLength;
 
