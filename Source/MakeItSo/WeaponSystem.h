@@ -168,10 +168,10 @@ private:
 	;
 
 	UFUNCTION(Client, Reliable)
-	void SendFire(bool success)
+	void SendFire(ETargetingSolutionIdentifier solution)
 #ifdef WEB_SERVER_TEST
-	{ SendFire_Implementation(success); }
-	void SendFire_Implementation(bool success);
+	{ SendFire_Implementation(solution); }
+	void SendFire_Implementation(ETargetingSolutionIdentifier solution);
 #endif
 	;
 

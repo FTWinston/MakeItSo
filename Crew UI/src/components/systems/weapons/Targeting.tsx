@@ -11,12 +11,15 @@ interface ITargetingElement {
 interface IProps {
     className?: string;
     symbols: ITargetingSymbol[];
+    lastFireTime: number;
+    lastFireWasSuccess: boolean;
     selectedSymbols: ITargetingSymbol[];
     symbolSelected: (symbol: ITargetingSymbol) => void;
 }
 
 interface IState {
     elements: ITargetingElement[];
+    flashing?: boolean;
 }
 
 export class Targeting extends React.PureComponent<IProps, IState> {
@@ -30,7 +33,18 @@ export class Targeting extends React.PureComponent<IProps, IState> {
 
     componentWillReceiveProps(nextProps: IProps) {
         // if symbol list changes, recreate all elements
-        if (this.props.symbols !== nextProps.symbols) {
+        let recreateElements = this.props.symbols !== nextProps.symbols;
+
+        if (nextProps.lastFireTime !== this.props.lastFireTime) {
+            recreateElements = true;
+            
+            // flash the state on, and turn it off again after a second
+            this.setState({ flashing: nextProps.lastFireWasSuccess });
+
+            setTimeout(() => this.setState({ flashing: undefined }), 1000);
+        }
+
+        if (recreateElements) {
             this.setState({
                 elements: nextProps.symbols.map(s => this.createElement(s)),
             });
@@ -38,9 +52,16 @@ export class Targeting extends React.PureComponent<IProps, IState> {
     }
 
     render() {
-        const classes = this.props.className === undefined
+        let classes = this.props.className === undefined
             ? 'targeting'
             : this.props.className + ' targeting';
+
+        if (this.state.flashing === true) {
+            classes += ' targeting--success';
+        }
+        else if (this.state.flashing === false) {
+            classes += ' targeting--failure';
+        }
 
         const symbols = this.state.elements.map((e, i) => {
             const clicked = () => this.elementClicked(e);

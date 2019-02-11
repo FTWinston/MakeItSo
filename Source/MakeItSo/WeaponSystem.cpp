@@ -225,9 +225,11 @@ void UWeaponSystem::SendOrientation_Implementation()
 	SendSystem(output);
 }
 
-void UWeaponSystem::SendFire_Implementation(bool success)
+void UWeaponSystem::SendFire_Implementation(ETargetingSolutionIdentifier solution)
 {
-	SendSystemFixed(success ? "wpn_fire 1" : "wpn_fire 0");
+	FString output = TEXT("wpn_fire ");
+	APPENDINT(output, (uint8)solution);
+	SendSystem(output);
 }
 
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
@@ -255,7 +257,7 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 	SETADD(targetingElementInput, elementValue);
 
 	bool anyPartialMatch = false;
-	bool anyFullMatch = false;
+	ETargetingSolutionIdentifier fullMatchIdentifier = ETargetingSolutionIdentifier::None;
 
 	for (auto& solution : targetingSolutions)
 	{
@@ -287,10 +289,12 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 			isFullMatch = false;
 
 		anyPartialMatch |= isPartialMatch;
-		anyFullMatch |= isFullMatch;
-
+		
 		if (!isFullMatch)
 			continue;
+
+		if (fullMatchIdentifier == ETargetingSolutionIdentifier::None)
+			fullMatchIdentifier = identifier;
 
 		// Only continue if this is a full match
 		CLEAR(targetingElementInput);
@@ -323,9 +327,9 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 		// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
 	}
 
-	if (anyFullMatch)
+	if (fullMatchIdentifier != ETargetingSolutionIdentifier::None)
 	{
-		SendFire(true); // Tell the client to reset the sequence input
+		SendFire(fullMatchIdentifier); // Tell the client to reset the sequence input
 	}
 	else if (!anyPartialMatch)
 	{
@@ -333,7 +337,8 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 
 		// TODO: fire a "miss" at the target
 
-		SendFire(false); // Tell the client to reset the sequence input
+		SendFire(ETargetingSolutionIdentifier::None); // Tell the client to reset the sequence input
+
 		CLEAR(targetingElementInput);
 	}
 }

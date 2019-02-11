@@ -96,6 +96,8 @@ export interface WeaponState {
     targetingSymbols: ITargetingSymbol[];
     targetingSolutions: ITargetingSolution[];
     selectedSymbols: ITargetingSymbol[];
+    lastUsedSolution: TargetingSolutionType;
+    lastFireTime: number;
 
     currentlyFacing: TargetingFace;
     targetPitch: number;
@@ -122,9 +124,10 @@ interface SetTargetingElementsAction {
     elementSymbols: ITargetingSymbol[];
 }
 
-interface ResetTargetingAction {
-    type: 'WPN_RESET';
-    success: boolean;
+interface FireAction {
+    type: 'WPN_FIRE';
+    solution: TargetingSolutionType;
+    fireTime: number;
 }
 
 interface SelectSymbolAction {
@@ -147,7 +150,7 @@ interface SetTargetOrientationAction {
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
 type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetTargetingElementsAction
-    | SelectSymbolAction | SetCurrentlyFacingAction | SetTargetOrientationAction | ResetTargetingAction;
+    | SelectSymbolAction | SetCurrentlyFacingAction | SetTargetOrientationAction | FireAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -166,9 +169,10 @@ export const actionCreators = {
         type: 'WPN_ELEMENTS',
         elementSymbols: elements,
     },
-    resetTargeting: (success: boolean) => <ResetTargetingAction>{
-        type: 'WPN_RESET',
-        success: success,
+    fire: (lastSolution: TargetingSolutionType) => <FireAction>{
+        type: 'WPN_FIRE',
+        solution: lastSolution,
+        fireTime: Date.now(),
     },
     selectSymbol: (symbol: ITargetingSymbol) => <SelectSymbolAction>{
         type: 'WPN_SYMBOL',
@@ -193,6 +197,8 @@ const unloadedState: WeaponState = {
     selectedTargetID: 0,
     targetingSymbols: [],
     targetingSolutions: [],
+    lastFireTime: Date.now(),
+    lastUsedSolution: TargetingSolutionType.None,
     selectedSymbols: [],
     currentlyFacing: TargetingFace.None,
     targetPitch: 0,
@@ -221,11 +227,12 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
                 targetingSymbols: action.elementSymbols,
             };
         }
-        case 'WPN_RESET': {
+        case 'WPN_FIRE': {
             return {
-                ...state, // TODO: success / failure? be better to indicate successful solution index...
+                ...state,
+                lastFireTime: action.fireTime,
+                lastSolution: action.solution,
                 selectedSymbols: [],
-                targetingSymbols: [...state.targetingSymbols], // recreate the list, to trigger repositioning
             };
         }
         case 'WPN_SYMBOL': {

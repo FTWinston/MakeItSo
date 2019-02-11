@@ -34,8 +34,8 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'wpn_fire': {
-            const success = data === '1';
-            store.dispatch(actionCreators.resetTargeting(success));
+            const solution = parseInt(data) as TargetingSolutionType;
+            store.dispatch(actionCreators.fire(solution));
             break;
         }
         case 'wpn_facing': {

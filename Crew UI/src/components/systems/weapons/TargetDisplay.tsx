@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { SensorTarget, TextLocalisation, OrientationCube } from '~/functionality';
 import { PushButton, FlexibleCanvas, ButtonColor } from '~/components/general';
-import { TargetingFace, ITargetingSolution, ITargetingSymbol } from './store';
+import { TargetingFace, ITargetingSolution, ITargetingSymbol, TargetingSolutionType } from './store';
 import { TargetInfo } from '../sensors/TargetInfo';
 import './TargetDisplay.scss';
 import { SolutionList } from './SolutionList';
@@ -12,6 +12,8 @@ interface IProps {
     currentlyFacing: TargetingFace;
     solutions: ITargetingSolution[];
     selectedSymbols: ITargetingSymbol[];
+    lastFireTime: number;
+    lastUsedSolution: TargetingSolutionType;
     deselectTarget: () => void;
     relPitch: number;
     relYaw: number;
@@ -20,6 +22,18 @@ interface IProps {
 
 export class TargetDisplay extends React.PureComponent<IProps, {}> {
     private cube: OrientationCube = new OrientationCube();
+
+    public componentWillReceiveProps(nextProps: IProps) {
+        if (nextProps.lastFireTime !== this.props.lastFireTime) {
+            // TODO: trigger animation on solution.
+            if (nextProps.lastUsedSolution === TargetingSolutionType.None) {
+                // flash all red?
+            }
+            else {
+                // flash the solution that was used                 
+            }
+        }
+    }
 
     public render() {
         const goBack = () => this.props.deselectTarget();

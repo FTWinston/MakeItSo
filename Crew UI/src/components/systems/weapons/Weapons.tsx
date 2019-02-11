@@ -5,7 +5,7 @@ import { SensorTarget, TextLocalisation, Vector3, Rotator } from '~/functionalit
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Weapons.scss';
 import { TargetList } from '../sensors/TargetList';
-import { WeaponState, ITargetingSymbol, actionCreators } from './store';
+import { WeaponState, ITargetingSymbol, actionCreators, TargetingSolutionType } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
 import { Targeting } from './Targeting';
@@ -74,6 +74,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 this.props.selectSymbol(symbol);
                 connection.send(`wpn_input ${this.props.targetingSymbols.indexOf(symbol)}`);
             };
+            const lastFireSuccess = this.props.lastUsedSolution !== TargetingSolutionType.None;
 
             return <div className="system weapons weapons--targeting">
                 <TargetDisplay
@@ -83,6 +84,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     solutions={this.props.targetingSolutions}
                     selectedSymbols={this.props.selectedSymbols}
                     currentlyFacing={this.props.currentlyFacing}
+                    lastFireTime={this.props.lastFireTime}
+                    lastUsedSolution={this.props.lastUsedSolution}
                     relPitch={this.props.targetPitch}
                     relYaw={this.props.targetYaw}
                     relRoll={this.props.targetRoll}
@@ -92,6 +95,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                     symbols={this.props.targetingSymbols}
                     selectedSymbols={this.props.selectedSymbols}
                     symbolSelected={selectSymbol}
+                    lastFireTime={this.props.lastFireTime}
+                    lastFireWasSuccess={lastFireSuccess}
                 />
             </div>
         }
