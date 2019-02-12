@@ -61,8 +61,22 @@ export function receiveMessage(cmd: string, data: string) {
 }
 
 function parseTargetingElement(index: number) {
+    const shape = (index % ElementShape.NUM_SHAPES) as ElementShape;
+    
+    const color: ElementColor = index < ElementShape.NUM_SHAPES
+        ? ElementColor.Red
+        : index < ElementShape.NUM_SHAPES * 2
+            ? ElementColor.Yellow
+            : index < ElementShape.NUM_SHAPES * 3
+                ? ElementColor.Green
+                : index < ElementShape.NUM_SHAPES * 4
+                    ? ElementColor.Blue
+                    : index < ElementShape.NUM_SHAPES * 5
+                        ? ElementColor.Purple
+                        : ElementColor.Lime;
+
     return {
-        color: Math.floor(index / ElementColor.NUM_COLORS) as ElementColor,
-        shape: (index % ElementShape.NUM_SHAPES) as ElementShape,
+        color,
+        shape,
     }
 }

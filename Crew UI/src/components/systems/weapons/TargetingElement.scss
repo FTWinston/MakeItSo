@@ -3,7 +3,7 @@
 .targetingElement {
     width: 5%;
     height: 5%;
-    border-radius: 2%;
+    border-radius: 0;
     transition: background-color 1s;
     box-sizing: border-box;
 }
@@ -39,13 +39,8 @@
 }
 
 .targetingElement--blue {
-    border-color: cornflowerblue;
-    background-color: cornflowerblue;
-}
-
-.targetingElement--orange {
-    border-color: orangered;
-    background-color: orangered;
+    border-color: dodgerblue;
+    background-color: dodgerblue;
 }
 
 .targetingElement--purple {
@@ -58,43 +53,42 @@
     background-color: lime;
 }
 
-.targetingElement--teal {
-    border-color: teal;
-    background-color: teal;
-}
-
-.targetingElement--brown {
-    border-color: saddlebrown;
-    background-color: saddlebrown;
-}
-
-.targetingElement--fuchsia {
-    border-color: fuchsia;
-    background-color: fuchsia;
-}
-
 
 // shapes
 
-.targetingElement--square {
+.targetingElement--noRound {
     border-radius: 0;
 }
 
-.targetingElement--circle {
+.targetingElement--oneRound {
+    border-top-left-radius: 100%;
+}
+
+.targetingElement--threeRound {
     border-radius: 100%;
+    border-top-left-radius: 0;
+}
+
+.targetingElement--allRound {
+    border-radius: 100%;
+}
+
+.targetingElement--oppositeRound {
+    border-top-left-radius: 100%;
+    border-bottom-right-radius: 100%;
+}
+
+.targetingElement--adjacentRound {
+    border-top-left-radius: 100%;
+    border-bottom-left-radius: 100%;
 }
 
 
 // styles
-.targetingElement--outline {
-    border-width: 1px;
-    border-style: solid;
-    background-color: transparent;
-}
 
-.targetingElement--dashed {
-    border-width: 1px;
-    border-style: dotted;
+.targetingElement--outline {
+    border-width: 0.3em;
+    border-style: solid;
     background-color: transparent;
 }
 
@@ -113,6 +107,7 @@
 // states
 
 .targetingElement--selected {
+    border-color: white;
     background-color: white;
 }
 

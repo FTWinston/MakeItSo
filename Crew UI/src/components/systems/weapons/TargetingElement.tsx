@@ -89,23 +89,41 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
         }
 
         switch (this.props.shape) {
-            case ElementShape.FilledCircle:
-                classes += ' targetingElement--circle targetingElement--filled';
+            case ElementShape.FilledNoRounded:
+                classes += ' targetingElement--noRound targetingElement--filled';
                 break;
-            case ElementShape.FilledSquare:
-                classes += ' targetingElement--square targetingElement--filled';
+            case ElementShape.FilledOneRounded:
+                classes += ' targetingElement--oneRound targetingElement--filled';
                 break;
-            case ElementShape.DashedCircle:
-                classes += ' targetingElement--circle targetingElement--dashed';
+            case ElementShape.FilledThreeRounded:
+                classes += ' targetingElement--threeRound targetingElement--filled';
                 break;
-            case ElementShape.DashedSquare:
-                classes += ' targetingElement--square targetingElement--dashed';
+            case ElementShape.FilledAllRounded:
+                classes += ' targetingElement--allRound targetingElement--filled';
                 break;
-            case ElementShape.OutlineCircle:
-                classes += ' targetingElement--circle targetingElement--outline';
+            case ElementShape.FilledRoundedOpposite:
+                classes += ' targetingElement--oppositeRound targetingElement--filled';
                 break;
-            case ElementShape.OutlineSquare:
-                classes += ' targetingElement--square targetingElement--outline';
+            case ElementShape.FilledRoundedAdjacent:
+                classes += ' targetingElement--adjacentRound targetingElement--filled';
+                break;
+            case ElementShape.OutlineNoRounded:
+                classes += ' targetingElement--noRound targetingElement--outline';
+                break;
+            case ElementShape.OutlineOneRounded:
+                classes += ' targetingElement--oneRound targetingElement--outline';
+                break;
+            case ElementShape.OutlineThreeRounded:
+                classes += ' targetingElement--threeRound targetingElement--outline';
+                break;
+            case ElementShape.OutlineAllRounded:
+                classes += ' targetingElement--allRound targetingElement--outline';
+                break;
+            case ElementShape.OutlineRoundedOpposite:
+                classes += ' targetingElement--oppositeRound targetingElement--outline';
+                break;
+            case ElementShape.OutlineRoundedAdjacent:
+                classes += ' targetingElement--adjacentRound targetingElement--outline';
                 break;
         }
 
@@ -122,23 +140,11 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
             case ElementColor.Blue:
                 classes += ' targetingElement--blue';
                 break;
-            case ElementColor.Orange:
-                classes += ' targetingElement--orange';
-                break;
             case ElementColor.Purple:
                 classes += ' targetingElement--purple';
                 break;
             case ElementColor.Lime:
                 classes += ' targetingElement--lime';
-                break;
-            case ElementColor.Teal:
-                classes += ' targetingElement--teal';
-                break;
-            case ElementColor.Brown:
-                classes += ' targetingElement--brown';
-                break;
-            case ElementColor.Fuchsia:
-                classes += ' targetingElement--fuchsia';
                 break;
         }
 

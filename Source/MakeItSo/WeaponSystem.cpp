@@ -14,7 +14,7 @@
 #include "MakeItSoPawn.h"
 #include "SensorSystem.h"
 
-#define NUM_TARGETING_SYMBOL_OPTIONS 50
+#define NUM_TARGETING_SYMBOL_OPTIONS 72
 #define MIN_TARGETING_SEQUENCE_LENGTH 2
 #define MAX_TARGETING_SEQUENCE_LENGTH 8
 

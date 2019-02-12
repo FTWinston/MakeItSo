@@ -47,13 +47,19 @@ export const enum TargetingDifficulty {
 }
 
 export enum ElementShape {
-    FilledSquare = 0,
-    FilledCircle,
-    DashedCircle,
-    DashedSquare,
-    OutlineCircle,
-    OutlineSquare,
-    
+    FilledNoRounded = 0,
+    FilledOneRounded,
+    FilledThreeRounded,
+    FilledAllRounded,
+    FilledRoundedOpposite,
+    FilledRoundedAdjacent,
+    OutlineNoRounded,
+    OutlineOneRounded,
+    OutlineThreeRounded,
+    OutlineAllRounded,
+    OutlineRoundedOpposite,
+    OutlineRoundedAdjacent,
+
     NUM_SHAPES
 }
 
@@ -62,12 +68,8 @@ export enum ElementColor {
     Yellow,
     Green,
     Blue,
-    Orange,
     Purple,
     Lime,
-    Teal,
-    Brown,
-    Fuchsia,
     
     NUM_COLORS
 }
@@ -224,7 +226,7 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
             return {
                 ...state,
                 lastFireTime: action.fireTime,
-                lastSolution: action.solution,
+                lastUsedSolution: action.solution,
                 selectedSymbols: [],
             };
         }
