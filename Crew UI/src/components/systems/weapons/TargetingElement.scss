@@ -5,6 +5,7 @@
     height: 5%;
     border-radius: 2%;
     transition: background-color 1s;
+    box-sizing: border-box;
 }
 
 .targetingElement--static {
@@ -23,50 +24,78 @@
 // colors
 
 .targetingElement--red {
+    border-color: red;
     background-color: red;
 }
 
 .targetingElement--yellow {
+    border-color: sandybrown;
     background-color: sandybrown;
 }
 
 .targetingElement--green {
+    border-color: green;
     background-color: green;
 }
 
 .targetingElement--blue {
+    border-color: cornflowerblue;
     background-color: cornflowerblue;
+}
+
+.targetingElement--orange {
+    border-color: orangered;
+    background-color: orangered;
+}
+
+.targetingElement--purple {
+    border-color: purple;
+    background-color: purple;
+}
+
+.targetingElement--lime {
+    border-color: lime;
+    background-color: lime;
+}
+
+.targetingElement--teal {
+    border-color: teal;
+    background-color: teal;
+}
+
+.targetingElement--brown {
+    border-color: saddlebrown;
+    background-color: saddlebrown;
+}
+
+.targetingElement--fuchsia {
+    border-color: fuchsia;
+    background-color: fuchsia;
 }
 
 
 // shapes
 
-.targetingElement--star {
-    border-radius: 0;
-}
-
-.targetingElement--triangle { 
-    border-radius: 0;
-}
-
 .targetingElement--square {
-    border-radius: 0;
-}
-
-.targetingElement--pentagon {
-    border-radius: 0;
-}
-
-.targetingElement--hexagon {
-    border-radius: 0;
-}
-
-.targetingElement--octagon {
     border-radius: 0;
 }
 
 .targetingElement--circle {
     border-radius: 100%;
+}
+
+
+// styles
+.targetingElement--outline {
+    border-width: 1px;
+    border-style: solid;
+    background-color: transparent;
+}
+
+.targetingElement--dashed {
+    border-width: 1px;
+    border-style: dotted;
+    background-color: transparent;
 }
 
 

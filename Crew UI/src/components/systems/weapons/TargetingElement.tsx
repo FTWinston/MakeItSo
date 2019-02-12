@@ -89,26 +89,23 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
         }
 
         switch (this.props.shape) {
-            case ElementShape.Star:
-                classes += ' targetingElement--star';
+            case ElementShape.FilledCircle:
+                classes += ' targetingElement--circle targetingElement--filled';
                 break;
-            case ElementShape.Triangle:
-                classes += ' targetingElement--triangle';
+            case ElementShape.FilledSquare:
+                classes += ' targetingElement--square targetingElement--filled';
                 break;
-            case ElementShape.Square:
-                classes += ' targetingElement--square';
+            case ElementShape.DashedCircle:
+                classes += ' targetingElement--circle targetingElement--dashed';
                 break;
-            case ElementShape.Pentagon:
-                classes += ' targetingElement--pentagon';
+            case ElementShape.DashedSquare:
+                classes += ' targetingElement--square targetingElement--dashed';
                 break;
-            case ElementShape.Hexagon:
-                classes += ' targetingElement--hexagon';
+            case ElementShape.OutlineCircle:
+                classes += ' targetingElement--circle targetingElement--outline';
                 break;
-            case ElementShape.Octagon:
-                classes += ' targetingElement--octagon';
-                break;
-            case ElementShape.Circle:
-                classes += ' targetingElement--circle';
+            case ElementShape.OutlineSquare:
+                classes += ' targetingElement--square targetingElement--outline';
                 break;
         }
 
@@ -117,13 +114,31 @@ export class TargetingElement extends React.PureComponent<IProps, IState> {
                 classes += ' targetingElement--red';
                 break;
             case ElementColor.Yellow:
-                    classes += ' targetingElement--yellow';
-                    break;
+                classes += ' targetingElement--yellow';
+                break;
             case ElementColor.Green:
                 classes += ' targetingElement--green';
                 break;
             case ElementColor.Blue:
                 classes += ' targetingElement--blue';
+                break;
+            case ElementColor.Orange:
+                classes += ' targetingElement--orange';
+                break;
+            case ElementColor.Purple:
+                classes += ' targetingElement--purple';
+                break;
+            case ElementColor.Lime:
+                classes += ' targetingElement--lime';
+                break;
+            case ElementColor.Teal:
+                classes += ' targetingElement--teal';
+                break;
+            case ElementColor.Brown:
+                classes += ' targetingElement--brown';
+                break;
+            case ElementColor.Fuchsia:
+                classes += ' targetingElement--fuchsia';
                 break;
         }
 

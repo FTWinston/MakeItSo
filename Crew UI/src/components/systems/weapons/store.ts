@@ -47,13 +47,12 @@ export const enum TargetingDifficulty {
 }
 
 export enum ElementShape {
-    Star = 0,
-    Triangle,
-    Square,
-    Pentagon,
-    Hexagon,
-    Octagon,
-    Circle,
+    FilledSquare = 0,
+    FilledCircle,
+    DashedCircle,
+    DashedSquare,
+    OutlineCircle,
+    OutlineSquare,
     
     NUM_SHAPES
 }
@@ -63,19 +62,13 @@ export enum ElementColor {
     Yellow,
     Green,
     Blue,
-
     Orange,
     Purple,
     Lime,
     Teal,
     Brown,
-    Mauve,
-    Violet,
-    Black,
-    White,
-    LightGrey,
-    DarkGrey,
-
+    Fuchsia,
+    
     NUM_COLORS
 }
 
