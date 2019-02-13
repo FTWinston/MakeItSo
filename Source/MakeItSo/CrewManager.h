@@ -165,10 +165,8 @@ private:
 	int32 GetNewUniqueIdentifier();
 	void HandleWebsocketMessage(UIConnectionInfo *info, websocket_message *msg);
 	void StartGame(websocket_message *msg);
-	void ShipSystemChanged(UIConnectionInfo *info, int32 systemFlags);
 	UShipSystem::ESystem GetDistinctSystem(int systemFlags);
 	UIConnectionInfo *GetConnectionViewing(UShipSystem::ESystem system);
-	void AllocateViewSystems();
 
 	mg_mgr *mgr;
 	AShipPlayerController *controller;

@@ -64,22 +64,9 @@ class GameMenu extends React.PureComponent<IProps> {
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
-    let player = state.crew.players.find(p => p.id === state.crew.localPlayerID)!;
-    
-    let inUse: ShipSystem = 0;
-    for (let other of state.crew.players) {
-        if (other.id !== state.crew.localPlayerID && other.activeSystem !== undefined) {
-            inUse |= other.activeSystem;
-        }
-    }
-
-    const activeSystem = player.activeSystem;
-    const selectableSystems = player.selectedSystems & ~inUse;
-    
     return {
         text: state.user.text,
-        activeSystem,
-        selectableSystems,
+        playersBySystem: state.crew.playersBySystem,
         showSystemHelp: actionCreators.showSystemHelp,
         getSystemHealth: (system?: ShipSystem) => getSystemHealth(system, state),
         getSystemPower: (system?: ShipSystem) => getSystemPower(system, state),

@@ -193,7 +193,7 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
     }
 
     private cancel() {
-        this.props.showSystemSelection();
+        this.props.showWaitingForPlayers();
     }
 
     private startGame() {

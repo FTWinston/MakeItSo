@@ -196,7 +196,6 @@ void UCrewManager::PauseGame(bool state)
 	else
 	{
 		crewState = ECrewState::Active;
-		AllocateViewSystems();
 		SendAllFixed("game+");
 		SendAllCrewData();
 	}
@@ -272,7 +271,7 @@ void UCrewManager::SetupConnection(mg_connection *conn)
 		if (other->hasName)
 		{
 			Send(conn, "player %i %S", other->identifier, CHARARR(other->name));
-			Send(conn, "playersys %i %i", other->identifier, other->shipSystemFlags);
+			Send(conn, "playersys %i %i", other->identifier, other->viewingSystem);
 		}
 	}
 
@@ -325,18 +324,8 @@ void UCrewManager::EndConnection(mg_connection *conn)
 		SendAllFixed("setup-");
 	}
 
-	// if there are no connections in currentConnections with any ship system set, automatically pause the game
-	bool anySystems = false;
-	for (auto& other : currentConnections)
-	{
-		if (other->shipSystemFlags != 0)
-		{
-			anySystems = true;
-			break;
-		}
-	}
-
-	if (!anySystems && crewState == ECrewState::Active)
+	// if there are no connections left, automatically pause the game
+	if (EMPTY(currentConnections) && crewState == ECrewState::Active)
 	{
 		PauseGame(true);
 	}
@@ -413,26 +402,10 @@ void UCrewManager::HandleWebsocketMessage(UIConnectionInfo *info, websocket_mess
 		
 		SendAll("player %i %S", info->identifier, CHARARR(info->name));
 	}
-	else if (STARTS_WITH(msg, "sys+ "))
-	{
-		int32 systemFlag = ExtractInt(msg, sizeof("sys+ "));
-		UShipSystem::ESystem system = GetDistinctSystem(systemFlag);
-		ShipSystemChanged(info, info->shipSystemFlags | system);
-	}
-	else if (STARTS_WITH(msg, "sys- "))
-	{
-		int32 systemFlag = ExtractInt(msg, sizeof("sys- "));
-		UShipSystem::ESystem system = GetDistinctSystem(systemFlag);
-		ShipSystemChanged(info, info->shipSystemFlags & ~system);
-	}
 	else if (STARTS_WITH(msg, "viewsys "))
 	{
 		int32 systemFlag = ExtractInt(msg, sizeof("viewsys "));
 		UShipSystem::ESystem system = GetDistinctSystem(systemFlag);
-
-		// check this system is one that they have selected
-		if ((info->shipSystemFlags & system) == 0)
-			return;
 
 		// check that no one else is viewing this system
 		auto viewing = GetConnectionViewing(system);
@@ -441,7 +414,7 @@ void UCrewManager::HandleWebsocketMessage(UIConnectionInfo *info, websocket_mess
 
 		// mark that they're viewing this system, and tell everyone
 		info->viewingSystem = system;
-		SendAll("viewsys %i %i", info->identifier, system);
+		SendAll("playersys %i %i", info->identifier, system);
 	}
 	else if (MATCHES(msg, "+setup"))
 	{
@@ -486,7 +459,7 @@ void UCrewManager::HandleWebsocketMessage(UIConnectionInfo *info, websocket_mess
 	}
 	else if (MATCHES(msg, "pause"))
 	{
-		if (crewState != ECrewState::Active || info->shipSystemFlags == 0) // if you have no systems, you're not in the game, so can't pause it
+		if (crewState != ECrewState::Active)
 			return;
 
 		PauseGame(true); //actually pause the game!
@@ -589,35 +562,6 @@ void UCrewManager::StartGame(websocket_message *msg)
 	PauseGame(false); // unpausing the game (though it isn't paused now) does all the remaining setup we need
 }
 
-void UCrewManager::AllocateViewSystems()
-{
-	int32 alreadyAllocated = UShipSystem::ESystem::None;
-
-	// check what system players are currently viewing. If it's one they (still) have selected, let them keep that.
-	for (auto& connection : currentConnections)
-	{
-		if ((connection->shipSystemFlags & connection->viewingSystem) != 0)
-			alreadyAllocated |= connection->viewingSystem;
-		else
-			connection->viewingSystem = UShipSystem::ESystem::None;
-	}
-
-	// for every player that doesn't have a system, see if there's one they have selected that isn't already allocated
-	for (auto& connection : currentConnections)
-	{
-		if (connection->viewingSystem == UShipSystem::ESystem::None)
-		{
-			UShipSystem::ESystem viewSystem = GetDistinctSystem(connection->shipSystemFlags & ~alreadyAllocated);
-			alreadyAllocated |= viewSystem;
-
-			connection->viewingSystem = viewSystem;
-		}
-
-		// regardless of if it has changed or not, tell everyone what they're now viewing
-		SendAll("viewsys %i %i", connection->identifier, connection->viewingSystem);
-	}
-}
-
 TArray<FString> UCrewManager::SplitParts(websocket_message *msg, int offset)
 {
 	char buffer[128];
@@ -640,16 +584,6 @@ TArray<FString> UCrewManager::SplitParts(websocket_message *msg, int offset)
 #endif
 
 	return parts;
-}
-
-void UCrewManager::ShipSystemChanged(UIConnectionInfo *info, int32 systemFlags)
-{
-	if (crewState == ECrewState::Active)
-		return;
-
-	info->shipSystemFlags = systemFlags;
-
-	SendAll("playersys %i %i", info->identifier, systemFlags);
 }
 
 UShipSystem::ESystem UCrewManager::GetDistinctSystem(int systemFlags)
@@ -795,7 +729,7 @@ void UCrewManager::SendSystemFixed(UShipSystem::ESystem system, const char *mess
 
 	for (auto& other : currentConnections)
 	{
-		if (other->shipSystemFlags & systemFlags)
+		if (other->viewingSystem & systemFlags)
 			mg_send_websocket_frame(other->connection, WEBSOCKET_OP_TEXT, message, len);
 	}
 }

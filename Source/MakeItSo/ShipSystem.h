@@ -48,7 +48,7 @@ class MAKEITSO_API UShipSystem : public UActorComponent
 public:
 	UShipSystem();
 
-	enum ESystem
+	enum ESystem : uint8
 	{
 		Helm = 1,
 		Warp = 2,

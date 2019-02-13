@@ -7,6 +7,7 @@ import { exhaustiveActionCheck } from './exhaustiveActionCheck';
 
 export interface CrewState {
     players: CrewPlayer[];
+    playersBySystem: { [key: number]: CrewPlayer };
     localPlayerID?: number;
     playerInSetup?: number;
 }
@@ -14,7 +15,6 @@ export interface CrewState {
 export interface CrewPlayer {
     id: number;
     name: string;
-    selectedSystems: ShipSystem;
     activeSystem?: ShipSystem;
 }
 
@@ -22,21 +22,15 @@ export interface CrewPlayer {
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface RemovePlayerAction {
-    type: 'REMOVE_PLAYER';
-    playerID: number;
-}
-
-interface UpdatePlayerAction {
-    type: 'UPDATE_PLAYER';
+interface AddPlayerAction {
+    type: 'ADD_PLAYER';
     playerID: number;
     name: string;
 }
 
-interface SetPlayerSystemsAction {
-    type: 'SET_PLAYER_SYSTEMS';
+interface RemovePlayerAction {
+    type: 'REMOVE_PLAYER';
     playerID: number;
-    systems: ShipSystem;
 }
 
 interface SetLocalPlayerAction {
@@ -49,60 +43,49 @@ interface SetSetupPlayerAction {
     playerID?: number;
 }
 
-interface SetActiveSystemAction {
-    type: 'SET_ACTIVE_SYSTEM';
+interface SetPlayerSystemAction {
+    type: 'SET_PLAYER_SYSTEM';
     playerID: number;
     system: ShipSystem;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RemovePlayerAction | UpdatePlayerAction | SetPlayerSystemsAction | SetLocalPlayerAction | SetSetupPlayerAction | SetActiveSystemAction;
+type KnownAction = AddPlayerAction | RemovePlayerAction | SetPlayerSystemAction | SetLocalPlayerAction | SetSetupPlayerAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    updatePlayer: (playerID: number, name: string) => <UpdatePlayerAction>{ type: 'UPDATE_PLAYER', playerID: playerID, name: name },
+    addPlayer: (playerID: number, name: string) => <AddPlayerAction>{ type: 'ADD_PLAYER', playerID: playerID, name: name },
     removePlayer: (playerID: number) => <RemovePlayerAction>{ type: 'REMOVE_PLAYER', playerID: playerID },
-    setPlayerSystems: (playerID: number, systems: ShipSystem) => <SetPlayerSystemsAction>{ type: 'SET_PLAYER_SYSTEMS', playerID: playerID, systems: systems },
     setLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
     setSetupPlayer: (playerID?: number) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
-    setActiveSystem: (playerID: number, system?: ShipSystem) => <SetActiveSystemAction>{ type: 'SET_ACTIVE_SYSTEM', playerID: playerID, system: system },
+    setPlayerSystem: (playerID: number, system?: ShipSystem) => <SetPlayerSystemAction>{ type: 'SET_PLAYER_SYSTEM', playerID: playerID, system: system },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: CrewState = {
-    players: []
+    players: [],
+    playersBySystem: {},
 };
 
 export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownAction) => {
     switch (action.type) {
-        case 'REMOVE_PLAYER':
-            return {
-                ...state,
-                players: state.players.filter(p => p.id !== action.playerID),
-            };
-        case 'UPDATE_PLAYER':
-            let existing = false;
-            let players = state.players.map((player, index) => {
-                if (player.id === action.playerID) {
-                    existing = true;
-                    return Object.assign({}, player, {
-                        name: action.name
-                    });
-                }
-                return player;
-            });
+        case 'ADD_PLAYER': {
+            const players = state.players.slice();
 
-            if (!existing) {
+            const existingIndex = players.findIndex(p => p.id === action.playerID);
+            if (existingIndex !== -1) {
+                players[existingIndex] = Object.assign({}, players[existingIndex], { name: action.name });
+            }
+            else {
                 players.push({
                     id: action.playerID,
                     name: action.name,
-                    selectedSystems: 0,
                 });
             }
 
@@ -110,18 +93,30 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 ...state,
                 players: players,
             };
-        case 'SET_PLAYER_SYSTEMS':
+        }
+        case 'REMOVE_PLAYER': {
+            const playerIndex = state.players.findIndex(p => p.id === action.playerID);
+            if (playerIndex === -1) {
+                return state;
+            }
+
+            const player = state.players[playerIndex];
+            let playersBySystem;
+
+            if (player.activeSystem === undefined) {
+                playersBySystem = state.playersBySystem;
+            }
+            else {
+                playersBySystem = {...state.playersBySystem};
+                delete playersBySystem[player.activeSystem];
+            }
+
             return {
                 ...state,
-                players: state.players.map((player, index) => {
-                    if (player.id === action.playerID) {
-                        return Object.assign({}, player, {
-                            selectedSystems: action.systems
-                        });
-                    }
-                    return player;
-                }),
+                players: state.players.slice().splice(playerIndex, 1),
+                playersBySystem: playersBySystem,
             };
+        }
         case 'SET_LOCAL_PLAYER':
             return {
                 ...state,
@@ -132,18 +127,33 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 ...state,
                 playerInSetup: action.playerID,
             };
-        case 'SET_ACTIVE_SYSTEM':
+        case 'SET_PLAYER_SYSTEM': {
+            const players = state.players.slice();
+            const playerIndex = players.findIndex(p => p.id === action.playerID);
+
+            if (playerIndex === -1) {
+                return state;
+            }
+
+            const prevPlayer = players[playerIndex];
+            const newPlayer = Object.assign({}, prevPlayer, { activeSystem: action.system });
+
+            players[playerIndex] = newPlayer;
+
+            const playersBySystem = {...state.playersBySystem};
+
+            if (prevPlayer.activeSystem !== undefined) {
+                delete playersBySystem[prevPlayer.activeSystem];
+            }
+            
+            playersBySystem[newPlayer.activeSystem] = newPlayer;
+
             return {
                 ...state,
-                players: state.players.map((player, index) => {
-                    if (player.id === action.playerID) {
-                        return Object.assign({}, player, {
-                            activeSystem: action.system
-                        });
-                    }
-                    return player;
-                }),
-            }
+                players: players,
+                playersBySystem: playersBySystem,
+            };
+        }
         default:
             exhaustiveActionCheck(action);
             break;

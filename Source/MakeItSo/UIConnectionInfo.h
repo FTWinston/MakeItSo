@@ -15,14 +15,12 @@ public:
 	{
 		connection = conn;
 		identifier = id;
-		shipSystemFlags = 0;
 		viewingSystem = UShipSystem::ESystem::None;
 		hasName = false;
 	}
 
 	mg_connection *connection;
 	int32 identifier;
-	int32 shipSystemFlags;
 	UShipSystem::ESystem viewingSystem;
 	FString name;
 	bool hasName;

@@ -1,0 +1,18 @@
+@import '../general/mixins';
+
+.playerList {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.playerList__Item {
+    font-weight: bold;
+    font-size: 1.2em;
+    color: $textColor;
+    transform: rotate(5deg);
+}
+
+.playerList__item--self {
+    color: $colorQuaternary;
+}

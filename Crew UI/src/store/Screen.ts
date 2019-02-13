@@ -19,13 +19,12 @@ export interface ScreenState {
 
 export enum ClientScreen {
     Connecting,
-    UserSettings,
-    SelectingSystems,
+    NameEntry,
+    WaitingForPlayers,
     SetupGame,
     SystemView,
     SystemHelp,
     GameMenu,
-    WaitingForGame,
     Finished,
     Error,
 }
@@ -58,11 +57,10 @@ type KnownAction = ShowScreenAction | SetGameStateAction | ShowErrorAction;
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    showUserSettings: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.UserSettings },
-    showSystemSelection: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SelectingSystems },
+    showUserSettings: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.NameEntry },
+    showWaitingForPlayers: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForPlayers },
     showGameSetup: () => { /* sendEnterSetup(); */ return <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SetupGame }},
     showSystemView: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SystemView },
-    showWaitingForGame: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.WaitingForGame },
     showFinish: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.Finished },
     showGameMenu: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.GameMenu },
     showSystemHelp: () => <ShowScreenAction>{ type: 'SHOW_SCREEN', display: ClientScreen.SystemHelp },

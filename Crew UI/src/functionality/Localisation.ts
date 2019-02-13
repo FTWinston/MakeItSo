@@ -35,27 +35,21 @@ export interface TextLocalisation {
         connecting: {
             connecting: string;
         }
-        settings: {
+        nameEntry: {
             intro: string;
             userName: string;
             userNamePlaceholder: string;
             userNameDescription: string;
-            inputMode: string;
-            inputModePrompt: string;
-            inputModeKeyboard: string;
-            inputModeTouch: string;
-            inputModeGamepad: string;
-            inputModeDescriptionKeyboard: string;
-            inputModeDescriptionTouch: string;
-            inputModeDescriptionGamepad: string;
+            joinFullScreen: string;
+            joinWindowed: string;
         },
         waiting: {
             intro: string;
             players: string;
         },
-        systemSelection: {
+        lobby: {
             intro: string,
-            suggestionPrompt: string,
+            playerList: string,
             setupGame: string,
             resumeGame: string,
         },

@@ -100,7 +100,7 @@ const mapStateToProps: (state: ApplicationState) => HelmProps = (state) => {
         shipVel: state.environment.shipVel,
         shipRot: state.environment.shipRotation,
         shipRotRate: state.environment.shipRotationRate,
-        inputMode: state.user.inputMode,
+        inputMode: InputMode.KeyboardAndMouse, // TODO: this should be configurable from within the helm
     }
 };
 

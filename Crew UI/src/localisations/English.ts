@@ -20,27 +20,21 @@ let words: TextLocalisation = {
         connecting: {
             connecting: 'Connecting to your ship...',
         },
-        settings: {
+        nameEntry: {
             intro: 'Enter your name, and choose an input mode:',
             userName: 'Your name',
             userNamePlaceholder: 'Enter your name...',
             userNameDescription: 'This is only visible to your crewmates.',
-            inputMode: 'Input mode',
-            inputModePrompt: 'Some ship systems will display differently depending on your selection.',
-            inputModeKeyboard: 'Mouse and keyboard',
-            inputModeTouch: 'Touchscreen',
-            inputModeGamepad: 'Game controller',
-            inputModeDescriptionKeyboard: 'On-screen buttons with keyboard shortcuts',
-            inputModeDescriptionTouch: 'Use Multi-touch controls',
-            inputModeDescriptionGamepad: 'Use an attached game controller',
+            joinFullScreen: 'Join (full-screen)',
+            joinWindowed: 'Join (windowed)',
         },
         waiting: {
             intro: 'Please wait for all of your crew to join, then click \'Ready\'',
             players: 'Current players:',
         },
-        systemSelection: {
+        lobby: {
             intro: 'Select the ship systems you will control:',
-            suggestionPrompt: 'The symbols on the left show suggested system groupings.',
+            playerList: 'These players are in your crew. Wait for everyone to join!',
             setupGame: 'Setup game',
             resumeGame: 'Resume game',
         },

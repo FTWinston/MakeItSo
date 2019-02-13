@@ -47,22 +47,14 @@ export class Connection {
                 pos = data.indexOf(' ');
                 let playerID = parseInt(data.substr(0, pos));
                 let playerName = data.substr(pos + 1);
-                store.dispatch(crewActions.updatePlayer(playerID, playerName));
+                store.dispatch(crewActions.addPlayer(playerID, playerName));
                 break;
             }
             case 'playersys': {
                 pos = data.indexOf(' ');
                 let playerID = parseInt(data.substr(0, pos));
-                let systems = parseInt(data.substr(pos + 1)) as ShipSystem;
-                store.dispatch(crewActions.setPlayerSystems(playerID, systems));
-                break;
-            }
-            case 'viewsys': {
-                pos = data.indexOf(' ');
-                let playerID = parseInt(data.substr(0, pos));
                 let system = parseInt(data.substr(pos + 1)) as ShipSystem;
-                store.dispatch(screenActions.showSystemView());
-                store.dispatch(crewActions.setActiveSystem(playerID, system === 0 ? undefined : system));
+                store.dispatch(crewActions.setPlayerSystem(playerID, system === 0 ? undefined : system));
                 break;
             }
             case 'disconnect':
@@ -82,18 +74,18 @@ export class Connection {
             case 'game+':
                 store.dispatch(crewActions.setSetupPlayer(undefined));
                 store.dispatch(screenActions.setGameActive());
-                if (store.getState().screen.display !== ClientScreen.UserSettings) {
+                if (store.getState().screen.display !== ClientScreen.NameEntry) {
                     store.dispatch(screenActions.showSystemView());
                 }
                 break;
             case 'game-':
                 store.dispatch(screenActions.setGameFinished());
-                store.dispatch(screenActions.showSystemSelection());
+                store.dispatch(screenActions.showWaitingForPlayers());
                 break;
             case 'pause':
                 store.dispatch(screenActions.setGamePaused());
-                if (store.getState().screen.display !== ClientScreen.UserSettings) {
-                    store.dispatch(screenActions.showSystemSelection());
+                if (store.getState().screen.display !== ClientScreen.NameEntry) {
+                    store.dispatch(screenActions.showWaitingForPlayers());
                 }
                 break;
 
