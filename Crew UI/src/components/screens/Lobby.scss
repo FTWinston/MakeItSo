@@ -2,15 +2,14 @@
 
 .playerList {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: column;
+
 }
 
-.playerList__Item {
+.playerList__item {
     font-weight: bold;
     font-size: 1.2em;
     color: $textColor;
-    transform: rotate(5deg);
 }
 
 .playerList__item--self {

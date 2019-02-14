@@ -49,6 +49,9 @@ export interface TextLocalisation {
         },
         lobby: {
             intro: string,
+            waitThenSetup: string;
+            setupInProgress: string;
+            gameInProgress: string;
             setupGame: string,
             resumeGame: string,
         },

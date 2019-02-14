@@ -62,9 +62,8 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
 
         if (this.state.gameType === GameType.Join) {
             joinAddress = (
-            <Field labelText={words.joinAddress} labelBehaviour={true}>
+            <Field labelText={words.joinAddress} labelBehaviour={true} description={words.joinAddressDescription}>
                 <Textbox color={ButtonColor.Tertiary} text={this.state.joinAddress} placeholder={words.joinAddressPlaceholder} textChanged={address => this.setState({ joinAddress: address })} />
-                <div className="description">{words.joinAddressDescription}</div>
             </Field>
             );
         }
@@ -97,9 +96,8 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
 
                 if (this.state.gameType === GameType.Host) {
                     hostName = (
-                    <Field labelText={words.serverName} labelBehaviour={true}>
+                    <Field labelText={words.serverName} labelBehaviour={true} description={words.serverNameDescription}>
                         <Textbox color={ButtonColor.Tertiary} text={this.state.serverName} placeholder={words.serverNamePlaceholder} textChanged={name => this.setState({ serverName: name })} />
-                        <div className="description">{words.serverNameDescription}</div>
                     </Field>
                     );
                 }
@@ -107,12 +105,11 @@ class GameSetup extends React.Component<GameSetupProps, IGameSetupState> {
         }
 
         return <Screen heading={words.intro} pageLayout={true}>
-            <Field labelText={words.shipName} labelBehaviour={true}>
+            <Field labelText={words.shipName} labelBehaviour={true} description={words.shipNameDescription}>
                 <div className="field__contentRow">
                     <Textbox color={ButtonColor.Tertiary} text={this.state.shipName} textChanged={name => this.setState({ shipName: name })} />
                     <PushButton color={ButtonColor.Tertiary} noBorder={true} icon={Icon.Refresh} clicked={() => this.randomizeName()} title={words.shipNameRandom} />
                 </div>
-                <div className="description">{words.shipNameDescription}</div>
             </Field>
             
             <Field labelText={words.gameType}>

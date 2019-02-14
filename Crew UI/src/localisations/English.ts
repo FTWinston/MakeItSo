@@ -21,7 +21,7 @@ let words: TextLocalisation = {
             connecting: 'Connecting to your ship...',
         },
         nameEntry: {
-            intro: 'Enter your name, and choose an input mode:',
+            intro: 'Enter your name to join this crew',
             userName: 'Your name',
             userNamePlaceholder: 'Enter your name...',
             userNameDescription: 'This is only visible to your crewmates.',
@@ -33,7 +33,10 @@ let words: TextLocalisation = {
             players: 'Current players:',
         },
         lobby: {
-            intro: 'These players are in your crew. Wait for everyone to join!',
+            intro: 'These players are in your crew:',
+            waitThenSetup: 'Wait for everyone to join, then click "Setup game" to get started.',
+            setupInProgress: '{PLAYER} is setting up a game. Please wait...',
+            gameInProgress: 'Your crew is connected to a game. Click "Resume game" to jump back in.',
             setupGame: 'Setup game',
             resumeGame: 'Resume game',
         },

@@ -25,19 +25,18 @@ class NameEntry extends React.Component<SettingsProps, {}> {
         let words = this.props.text.screens.nameEntry;
         let hasUserName = this.props.userName.trim().length > 0;
 
-        return <Screen heading={words.intro} pageLayout={true}>
-            <Field labelText={words.userName} labelBehaviour={true}>
+        return <Screen heading={words.intro} centered={true}>
+            <Field labelBehaviour={true} centered={true} description={words.userNameDescription}>
                 <Textbox
                     color={ButtonColor.Primary}
                     text={this.props.userName}
                     textChanged={t => this.nameChanged(t)}
                     placeholder={words.userNamePlaceholder}
                 />
-                <div className="description">{words.userNameDescription}</div>
             </Field>
             
             <Field centered={true} displayAsRow={true}>
-                <PushButton color={ButtonColor.Tertiary} disabled={!hasUserName} clicked={() => this.close(true)} text={words.joinFullScreen} />
+                <PushButton color={ButtonColor.Secondary} disabled={!hasUserName} clicked={() => this.close(true)} text={words.joinFullScreen} />
                 <PushButton color={ButtonColor.Tertiary} disabled={!hasUserName} clicked={() => this.close(false)} text={words.joinWindowed} />
             </Field>
         </Screen>;

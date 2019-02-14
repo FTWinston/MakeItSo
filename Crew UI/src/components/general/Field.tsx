@@ -27,27 +27,31 @@ export class Field extends React.Component<IFieldProps, {}> {
             contentClasses += ' field__content--row';
         }
 
-        let label;
-        if (this.props.labelText !== undefined) {
-            label = <div className="field__label">{this.props.labelText}</div>;
-        }
+        const label = this.props.labelText === undefined
+            ? undefined
+            : <div className="field__label">{this.props.labelText}</div>
+
+        const description = this.props.description === undefined
+            ? undefined
+            : <div className="field__description">{this.props.description}</div>
+
+        const content = <div className={contentClasses}>
+            {this.props.children}
+            {description}
+        </div>
 
         if (this.props.labelBehaviour) {
             return (
                 <label className='field'>
                     {label}
-                    <div className={contentClasses}>
-                        {this.props.children}
-                    </div>
+                    {content}
                 </label>
             );
         } else {
             return (
                 <div className='field' role="group">
                     {label}
-                    <div className={contentClasses}>
-                        {this.props.children}
-                    </div>
+                    {content}
                 </div>
             );
         }

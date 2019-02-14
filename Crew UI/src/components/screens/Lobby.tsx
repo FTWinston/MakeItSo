@@ -9,7 +9,7 @@ import './Lobby.scss';
 interface IDataProps {
     playerNames: string[];
     localPlayerIndex: number;
-    canEnterSetup: boolean;
+    setupPlayerIndex?: number;
     gameInProgress: boolean;
     text: TextLocalisation;
 }
@@ -21,39 +21,41 @@ class Lobby extends React.Component<IProps, {}> {
     public render() {
         let words = this.props.text.screens.lobby;
 
-        let setupButton: JSX.Element | undefined, resumeButton: JSX.Element | undefined;
-
-        if (this.props.gameInProgress) {
-            resumeButton = <PushButton
+        let actionButton = this.props.gameInProgress
+            ? <PushButton
                 color={ButtonColor.Secondary}
                 text={words.resumeGame}
                 command="resume"
-            />;
-        } else {
-            setupButton = <PushButton
+            />
+            : <PushButton
                 color={ButtonColor.Secondary}
                 text={words.setupGame}
                 command="+setup"
-                disabled={this.props.canEnterSetup}
-            />;
-        }
+                disabled={this.props.setupPlayerIndex !== undefined}
+            />
 
         const players = this.props.playerNames.map((name, index) => {
             const classes = index === this.props.localPlayerIndex
                 ? 'playerList__item playerList__item--self'
                 : 'playerList__item';
-            return <div className={classes} key={index}>{name}</div>
+            return <li className={classes} key={index}>{name}</li>
         });
 
-        return <Screen heading={words.intro} pageLayout={true}>
+        const prompt = this.props.gameInProgress
+            ? words.gameInProgress
+            : this.props.setupPlayerIndex === undefined
+                ? words.waitThenSetup
+                : words.setupInProgress.replace('{PLAYER}', this.props.playerNames[this.props.setupPlayerIndex])
+
+        return <Screen heading={words.intro} pageLayout={true} centered={true}>
+            <p>{prompt}</p>
             <Field centered={true}>
-                <div className="playerList">
+                <ol className="playerList">
                     {players}
-                </div>
+                </ol>
             </Field>
             <Field centered={true} displayAsRow={true}>
-                {setupButton}
-                {resumeButton}
+                {actionButton}
             </Field>
         </Screen>;
     }
@@ -64,8 +66,10 @@ const mapStateToProps: (state: ApplicationState) => IDataProps = (state) => {
     return {
         playerNames: state.crew.players.map(p => p.name),
         localPlayerIndex: state.crew.players.findIndex(p => p.id === state.crew.localPlayerID),
+        setupPlayerIndex: state.crew.playerInSetup !== undefined && state.crew.playerInSetup !== state.crew.localPlayerID
+            ? state.crew.players.findIndex(p => p.id === state.crew.playerInSetup)
+            : undefined,
         text: state.user.text,
-        canEnterSetup: state.crew.playerInSetup !== undefined && state.crew.playerInSetup !== state.crew.localPlayerID,
         gameInProgress: state.screen.gameState === ScreenStore.GameState.Paused,
     };
 };
