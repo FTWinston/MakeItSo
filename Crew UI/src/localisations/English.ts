@@ -33,8 +33,7 @@ let words: TextLocalisation = {
             players: 'Current players:',
         },
         lobby: {
-            intro: 'Select the ship systems you will control:',
-            playerList: 'These players are in your crew. Wait for everyone to join!',
+            intro: 'These players are in your crew. Wait for everyone to join!',
             setupGame: 'Setup game',
             resumeGame: 'Resume game',
         },

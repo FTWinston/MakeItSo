@@ -49,7 +49,6 @@ export interface TextLocalisation {
         },
         lobby: {
             intro: string,
-            playerList: string,
             setupGame: string,
             resumeGame: string,
         },

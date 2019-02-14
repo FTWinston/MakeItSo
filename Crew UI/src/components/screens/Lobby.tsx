@@ -47,7 +47,6 @@ class Lobby extends React.Component<IProps, {}> {
 
         return <Screen heading={words.intro} pageLayout={true}>
             <Field centered={true}>
-                <p>{words.playerList}</p>
                 <div className="playerList">
                     {players}
                 </div>

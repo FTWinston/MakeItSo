@@ -6,8 +6,6 @@ import { SystemHealth, SystemPower, Icon, renderIcon } from '~/components/genera
 
 interface IProps {
     system: ShipSystem;
-    icon: Icon;
-    isActiveSystem: boolean;
     canSelect: boolean;
     power?: number;
     health?: number;
@@ -20,11 +18,10 @@ export class SystemMenuItem extends React.PureComponent<IProps> {
         if (this.props.canSelect) {
             classes += ' systemMenuItem--selectable';
         }
-        if (this.props.isActiveSystem) {
-            classes += ' systemMenuItem--active';
-        }
 
         const name = getSystemName(this.props.system, this.props.text);
+
+        const icon = renderIcon(this.determineIcon(this.props.system));
 
         const health = this.props.health === undefined
             ? undefined
@@ -45,7 +42,7 @@ export class SystemMenuItem extends React.PureComponent<IProps> {
             : undefined;
 
         return <div className={classes} onClick={clicked}>
-            {renderIcon(this.props.icon)}
+            {icon}
             <div className="systemMenuItem__name">
                 {name}
             </div>
@@ -53,18 +50,27 @@ export class SystemMenuItem extends React.PureComponent<IProps> {
             {power}
         </div>
     }
-    /*
-    private renderSystemIcon(system: ShipSystem, icon: Icon) {
-        let color = this.props.activeSystem === system ? ButtonColor.Quandry : undefined;
-        let disabled = (this.props.selectableSystems & system) === 0;
-        let clicked = this.props.activeSystem === system
-            ? () => this.setState({ showingHelp: false, showingOptions: false })
-            : () => { this.setState({ showingHelp: false, showingOptions: false }); connection.send(`viewsys ${system}`); };
 
-        // TODO: render health, power
-        return <div key={system}>
-            <PushButton text={getSystemName(system, this.props.text)} noBorder={true} icon={icon} disabled={disabled} color={color} clicked={clicked} />
-        </div>
+    private determineIcon(system: ShipSystem) {
+        switch (system) {
+            case ShipSystem.Helm:
+                return Icon.Helm;
+            case ShipSystem.Warp:
+                return Icon.Warp;
+            case ShipSystem.Sensors:
+                return Icon.Sensors;
+            case ShipSystem.Weapons:
+                return Icon.Weapons;
+            case ShipSystem.PowerManagement:
+                return Icon.PowerManagement;
+            case ShipSystem.DamageControl:
+                return Icon.DamageControl;
+            case ShipSystem.Communications:
+                return Icon.Communications;
+            case ShipSystem.ViewScreen:
+                return Icon.ViewScreen;
+            default:
+                return Icon.X;
+        }
     }
-    */
 }

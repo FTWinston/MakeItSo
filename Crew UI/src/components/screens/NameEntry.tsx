@@ -36,7 +36,7 @@ class NameEntry extends React.Component<SettingsProps, {}> {
                 <div className="description">{words.userNameDescription}</div>
             </Field>
             
-            <Field centered={true}>
+            <Field centered={true} displayAsRow={true}>
                 <PushButton color={ButtonColor.Tertiary} disabled={!hasUserName} clicked={() => this.close(true)} text={words.joinFullScreen} />
                 <PushButton color={ButtonColor.Tertiary} disabled={!hasUserName} clicked={() => this.close(false)} text={words.joinWindowed} />
             </Field>
