@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SystemHealth, SystemPower } from '../../general/Icons';
+import { Icon, renderIcon } from '../../general/Icons';
 import './SystemHeader.scss';
 
 interface IProps {
@@ -14,14 +14,14 @@ export class SystemHeader extends React.PureComponent<IProps> {
         const power = this.props.power === undefined
             ? undefined
             : <div className="systemHeader__power">
-                <SystemPower width="20" height="20" />
+                {renderIcon(Icon.SystemPower, 20)}
                 {this.props.power}
             </div>
 
         const health = this.props.health === undefined
             ? undefined
             : <div className="systemHeader__health">
-                <SystemHealth width="20" height="20" />
+                {renderIcon(Icon.SystemHealth, 20)}
                 {this.props.health}
             </div>
 

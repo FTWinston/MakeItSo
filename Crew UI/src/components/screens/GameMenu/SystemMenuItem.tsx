@@ -2,11 +2,11 @@ import * as React from 'react';
 import { ShipSystem, getSystemName, TextLocalisation } from '~/functionality';
 import { connection } from '../../..';
 import './SystemMenuItem.scss';
-import { SystemHealth, SystemPower, Icon, renderIcon } from '~/components/general/Icons';
+import { Icon, renderIcon } from '~/components/general/Icons';
 
 interface IProps {
     system: ShipSystem;
-    canSelect: boolean;
+    occupiedBy?: string;
     power?: number;
     health?: number;
     text: TextLocalisation;
@@ -15,40 +15,87 @@ interface IProps {
 export class SystemMenuItem extends React.PureComponent<IProps> {
     render() {
         let classes = 'systemMenuItem';
-        if (this.props.canSelect) {
-            classes += ' systemMenuItem--selectable';
+        
+        if (this.props.occupiedBy !== undefined) {
+            classes += ' systemMenuItem--occupied';
         }
 
-        const name = getSystemName(this.props.system, this.props.text);
+        const name = <div className="systemMenuItem__name">
+            {getSystemName(this.props.system, this.props.text)}
+        </div>
 
-        const icon = renderIcon(this.determineIcon(this.props.system));
+        const player = this.props.occupiedBy === undefined
+            ? undefined
+            : <div className="systemMenuItem__player">{renderIcon(Icon.User, 16)} {this.props.occupiedBy}</div>
+
+        const icon = renderIcon(this.determineIcon(this.props.system), 28, 'systemMenuItem__icon');
 
         const health = this.props.health === undefined
             ? undefined
-            : <div className="systemMenuItem__health">
-                <SystemHealth width="20" height="20" />
+            : <div className={this.getHealthClasses(this.props.health)}>
+                {renderIcon(Icon.SystemHealth, 16)}
                 {this.props.health}
             </div>
 
         const power = this.props.power === undefined
             ? undefined
-            : <div className="systemMenuItem__power">
-                <SystemPower width="20" height="20" />
+            : <div className={this.getPowerClasses(this.props.power)}>
+                {renderIcon(Icon.SystemPower, 16)}
                 {this.props.power}
             </div>
 
-        const clicked = this.props.canSelect
+        const clicked = this.props.occupiedBy === undefined
             ? () => connection.send(`viewsys ${this.props.system}`)
             : undefined;
 
         return <div className={classes} onClick={clicked}>
             {icon}
-            <div className="systemMenuItem__name">
-                {name}
-            </div>
+            {name}
+            {player}
             {health}
             {power}
         </div>
+    }
+
+    private getHealthClasses(value: number) {
+        let classes = 'systemMenuItem__health';
+
+        if (value <= 0) {
+            classes += ' systemMenuItem__health--empty';
+        }
+        else if (value <= 25) {
+            classes += ' systemMenuItem__health--veryLow';
+        }
+        else if (value <= 50) {
+            classes += ' systemMenuItem__health--low';
+        }
+        else if (value <= 75) {
+            classes += ' systemMenuItem__health--moderate';
+        }
+
+        return classes;
+    }
+
+    private getPowerClasses(value: number) {
+        let classes = 'systemMenuItem__power';
+
+        if (value <= 0) {
+            classes += ' systemMenuItem__power--empty';
+        }
+        else if (value <= 50) {
+            classes += ' systemMenuItem__power--low';
+        }
+        else if (value <= 100) {
+            classes += ' systemMenuItem__power--normal';
+        }
+        else if (value <= 150) {
+            classes += ' systemMenuItem__power--high';
+        }
+        else {
+            classes += ' systemMenuItem__power--veryHigh';
+        }
+
+        return classes;
     }
 
     private determineIcon(system: ShipSystem) {

@@ -30,16 +30,18 @@ class GameMenu extends React.PureComponent<IProps> {
                 key={index}
                 system={info.system}
                 text={this.props.text}
-                canSelect={info.playerName === undefined}
+                occupiedBy={info.playerName}
                 health={info.health}
                 power={info.power}
             />
         );
 
-        return <Screen centered={true} pageLayout={true}>
-            <div className="gameMenu">
+        return <Screen className="gameMenu">
+            <div className="gameMenu__systems">
                 {systems}
-                <div className="gameMenu__separator" />
+            </div>
+            <div className="gameMenu__separator" />
+            <div className="gameMenu__buttons">
                 <PushButton
                     text={this.props.text.common.help}
                     noBorder={true}

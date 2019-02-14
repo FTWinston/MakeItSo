@@ -1,16 +1,40 @@
 @import '../../general/mixins';
 
-.gameMenu {
-    display: flex;
-    flex-direction: column;
+.screen.gameMenu {
+    @include landscape() {
+        flex-direction: row;
+    }
 }
 
-.gameMenu > * {
-    margin: 0.25em 0;
+.gameMenu__systems {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow-y: auto;
+}
+
+.gameMenu__buttons {
+    display: flex;
+    justify-content: space-evenly;
+
+    @include landscape() {
+        width: 5em;
+        flex-direction: column;
+    }
 }
 
 .gameMenu__separator {
     height: 0.1em;
     border-radius: 0.05em;
+    margin-bottom: 0.5em;
+
+    @include landscape() {
+        width: 0.1em;
+        height: unset;
+        margin-bottom: unset;
+        margin-right: 0.5em;
+    }
+
     background-color: $colorPrimary;
 }

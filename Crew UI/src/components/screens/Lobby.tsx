@@ -48,12 +48,12 @@ class Lobby extends React.Component<IProps, {}> {
                 : words.setupInProgress.replace('{PLAYER}', this.props.playerNames[this.props.setupPlayerIndex])
 
         return <Screen heading={words.intro} pageLayout={true} centered={true}>
-            <p>{prompt}</p>
             <Field centered={true}>
                 <ol className="playerList">
                     {players}
                 </ol>
             </Field>
+            <p>{prompt}</p>
             <Field centered={true} displayAsRow={true}>
                 {actionButton}
             </Field>

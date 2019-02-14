@@ -21,7 +21,7 @@ let words: TextLocalisation = {
             connecting: 'Connecting to your ship...',
         },
         nameEntry: {
-            intro: 'Enter your name to join this crew',
+            intro: 'Enter your name',
             userName: 'Your name',
             userNamePlaceholder: 'Enter your name...',
             userNameDescription: 'This is only visible to your crewmates.',

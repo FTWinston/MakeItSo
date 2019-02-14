@@ -7,6 +7,12 @@ $buttonRadius: 0.8em;
     cursor: pointer;
     vertical-align: baseline;
     border-radius: $buttonRadius;
+    display: flex;
+    align-items: center;
+}
+
+.button svg {
+    margin-right: 0.25em;
 }
 
 .button--primary { @include ui-color($colorPrimary) }

@@ -67,6 +67,7 @@ export class Connection {
             case 'setup+': {
                 let playerID = parseInt(data);
                 store.dispatch(crewActions.setSetupPlayer(playerID));
+                
                 if (playerID === store.getState().crew.localPlayerID) {
                     store.dispatch(screenActions.showGameSetup());
                 }

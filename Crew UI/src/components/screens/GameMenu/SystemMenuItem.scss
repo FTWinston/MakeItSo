@@ -1,21 +1,111 @@
 @import '../../general/mixins';
 
 .systemMenuItem {
-    display: flex;
-    color: $fadedColor;
+    display: grid;
+    grid-template-rows: 4fr 3fr;
+    grid-template-columns: 28px 1fr 3em 3em;
+    grid-row-gap: 0;
+    grid-column-gap: 0.75em;
     align-items: center;
+    height: 3em;
+
+    grid-template-areas:
+        "icon name health power"
+        "icon name health power";
+
+    color: white;
+    font-size: 1.2em;
+    
+    background-image: linear-gradient(transparent, #444, transparent);
 }
 
-.systemMenuItem--selectable {
-    color: white;
+.systemMenuItem--occupied {
+    color: $textColor;
+    cursor: not-allowed;
+
+    grid-template-areas:
+        "icon name health power"
+        "icon player health power";
+
+    @include portrait() {
+        .systemMenuItem__name {
+            align-self: end;
+        }
+    }
+    
+    @include landscape() {
+        grid-template-rows: 1fr;
+        grid-template-columns: 28px 1fr 1fr 3em 3em;
+        
+        grid-template-areas:
+            "icon name player health power";
+    }
+}
+
+.systemMenuItem__icon {
+    grid-area: icon;
+    color: $colorPrimary;
 }
 
 .systemMenuItem__name {
-    margin-left: 0.5em;
-    width: 8em;
+    grid-area: name;
+}
+
+.systemMenuItem__player {
+    grid-area: player;
+    color: $fadedColor;
+    
+    @include portrait() {
+        align-self: start;
+        font-size: 0.9em;
+    }
+}
+
+.systemMenuItem__health {
+    grid-area: health;
+}
+
+.systemMenuItem__power {
+    grid-area: power;
 }
 
 .systemMenuItem__health,
 .systemMenuItem__power {
-    margin-left: 0.5em;
+    transition: color 1s;
+}
+
+.systemMenuItem__health--empty {
+    color: #996666;
+}
+
+.systemMenuItem__health--veryLow {
+    color: #ff0000;
+}
+
+.systemMenuItem__health--low {
+    color: #ff6666;
+}
+
+.systemMenuItem__health--moderate {
+    color: #ffcccc;
+}
+
+.systemMenuItem__power--empty {
+    color: #888888;
+}
+
+.systemMenuItem__power--low {
+    color: #cccccc;
+}
+
+.systemMenuItem__power--normal {
+    color: #ffffff;
+}
+
+.systemMenuItem__power--high {
+    color: #99ff99;
+}
+
+.systemMenuItem__power--veryHigh {
+    color: #00ff00;
 }

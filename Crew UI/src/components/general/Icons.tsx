@@ -13,6 +13,9 @@ const ArrowRight: any = require('-!svg-react-loader?name=Icon!feather-icons/dist
 const RotateCCW: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/rotate-ccw.svg');
 const RotateCW: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/rotate-cw.svg');
 const Settings: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/settings.svg');
+const SystemPower: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zap.svg');
+const SystemHealth: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/heart.svg');
+const User: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/user.svg');
 
 const HelmIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/navigation.svg');
 const WarpIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/compass.svg');
@@ -23,8 +26,6 @@ const DamageIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist
 const ViewScreenIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/video.svg');
 const CommunicationsIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/phone-call.svg');
 
-export const SystemPower: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zap.svg');
-export const SystemHealth: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/heart.svg');
 
 export enum Icon {
     Help,
@@ -40,6 +41,9 @@ export enum Icon {
     RotateCCW,
     RotateCW,
     Settings,
+    SystemPower,
+    SystemHealth,
+    User,
 
     Helm,
     Warp,
@@ -51,8 +55,9 @@ export enum Icon {
     Communications,
 }
 
-export function renderIcon(icon: Icon, size: number | string = 24) {
+export function renderIcon(icon: Icon, size: number | string = 24, className?: string) {
     let props = {
+        className,
         width: size,
         height: size,
     };
@@ -84,6 +89,12 @@ export function renderIcon(icon: Icon, size: number | string = 24) {
             return <RotateCW {...props} />;
         case Icon.Settings:
             return <Settings {...props} />;
+        case Icon.SystemPower:
+            return <SystemPower {...props} />;
+        case Icon.SystemHealth:
+            return <SystemHealth {...props} />;
+        case Icon.User:
+            return <User {...props} />;
 
         case Icon.Helm:
             return <HelmIcon {...props} />;
