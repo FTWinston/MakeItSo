@@ -181,7 +181,7 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
     return state || unloadedState;
 };
 
-export function getSystemHealth(system: ShipSystem | undefined, state: ApplicationState) {
+export function getSystemHealth(system: ShipSystem, state: ApplicationState) {
     let damageSystem: DamageSystemType;
 
     switch (system) {

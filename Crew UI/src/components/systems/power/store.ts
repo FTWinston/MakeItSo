@@ -517,7 +517,7 @@ export function getPowerCardInfo(card: PowerCard, text: TextLocalisation): Power
     }
 }
 
-export function getSystemPower(system: ShipSystem | undefined, state: ApplicationState) {
+export function getSystemPower(system: ShipSystem, state: ApplicationState) {
     let powerSystem: PowerSystemType;
 
     switch (system) {

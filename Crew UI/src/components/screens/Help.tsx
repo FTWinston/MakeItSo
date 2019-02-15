@@ -8,7 +8,7 @@ import { PushButton, ButtonColor, Screen, Field } from '~/components/general';
 interface IProps {
     text: TextLocalisation;
     system?: ShipSystem;
-    showSystemView: () => void;
+    showGameActive: () => void;
 }
 
 class Help extends React.Component<IProps> {
@@ -23,7 +23,7 @@ class Help extends React.Component<IProps> {
             </div>  
 
             <Field centered={true} displayAsRow={true}>
-                <PushButton color={ButtonColor.Quaternary} clicked={() => this.props.showSystemView()} text={this.props.text.common.cancel} />
+                <PushButton color={ButtonColor.Quaternary} clicked={() => this.props.showGameActive()} text={this.props.text.common.cancel} />
             </Field>
         </Screen>;
     }
@@ -60,7 +60,7 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
     return {
         text: state.user.text,
         system: activeSystem,
-        showSystemView: actionCreators.showSystemView,
+        showGameActive: actionCreators.showGameActive,
     }
 };
 

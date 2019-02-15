@@ -15,7 +15,7 @@ export interface CrewState {
 export interface CrewPlayer {
     id: number;
     name: string;
-    activeSystem?: ShipSystem;
+    activeSystem: ShipSystem;
 }
 
 // -----------------
@@ -49,9 +49,14 @@ interface SetPlayerSystemAction {
     system: ShipSystem;
 }
 
+interface SetLocalSystemAction {
+    type: 'SET_LOCAL_SYSTEM';
+    system: ShipSystem;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = AddPlayerAction | RemovePlayerAction | SetPlayerSystemAction | SetLocalPlayerAction | SetSetupPlayerAction;
+type KnownAction = AddPlayerAction | RemovePlayerAction | SetPlayerSystemAction | SetLocalPlayerAction | SetSetupPlayerAction | SetLocalSystemAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -62,7 +67,8 @@ export const actionCreators = {
     removePlayer: (playerID: number) => <RemovePlayerAction>{ type: 'REMOVE_PLAYER', playerID: playerID },
     setLocalPlayer: (playerID: number) => <SetLocalPlayerAction>{ type: 'SET_LOCAL_PLAYER', playerID: playerID },
     setSetupPlayer: (playerID?: number) => <SetSetupPlayerAction>{ type: 'SET_SETUP_PLAYER', playerID: playerID },
-    setPlayerSystem: (playerID: number, system?: ShipSystem) => <SetPlayerSystemAction>{ type: 'SET_PLAYER_SYSTEM', playerID: playerID, system: system },
+    setPlayerSystem: (playerID: number, system: ShipSystem) => <SetPlayerSystemAction>{ type: 'SET_PLAYER_SYSTEM', playerID: playerID, system: system },
+    setLocalPlayerSystem: (system: ShipSystem) => <SetLocalSystemAction>{ type: 'SET_LOCAL_SYSTEM', system: system },
 };
 
 // ----------------
@@ -86,6 +92,7 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 players.push({
                     id: action.playerID,
                     name: action.name,
+                    activeSystem: ShipSystem.None,
                 });
             }
 
@@ -128,31 +135,18 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
                 playerInSetup: action.playerID,
             };
         case 'SET_PLAYER_SYSTEM': {
-            const players = state.players.slice();
-            const playerIndex = players.findIndex(p => p.id === action.playerID);
-
+            const playerIndex = state.players.findIndex(p => p.id === action.playerID);
             if (playerIndex === -1) {
                 return state;
-            }
-
-            const prevPlayer = players[playerIndex];
-            const newPlayer = Object.assign({}, prevPlayer, { activeSystem: action.system });
-
-            players[playerIndex] = newPlayer;
-
-            const playersBySystem = {...state.playersBySystem};
-
-            if (prevPlayer.activeSystem !== undefined) {
-                delete playersBySystem[prevPlayer.activeSystem];
-            }
-            
-            playersBySystem[newPlayer.activeSystem] = newPlayer;
-
-            return {
-                ...state,
-                players: players,
-                playersBySystem: playersBySystem,
-            };
+            }        
+            return setPlayerSystem(state, playerIndex, action.system);
+        }
+        case 'SET_LOCAL_SYSTEM': {
+            const playerIndex = state.players.findIndex(p => p.id === state.localPlayerID);
+            if (playerIndex === -1) {
+                return state;
+            }        
+            return setPlayerSystem(state, playerIndex, action.system);
         }
         default:
             exhaustiveActionCheck(action);
@@ -161,3 +155,27 @@ export const reducer: Reducer<CrewState> = (state: CrewState, action: KnownActio
 
     return state || unloadedState;
 };
+
+function setPlayerSystem(state: CrewState, playerIndex: number, system: ShipSystem) {
+    const players = state.players.slice();
+    const prevPlayer = players[playerIndex];
+    const newPlayer = Object.assign({}, prevPlayer, { activeSystem: system });
+
+    players[playerIndex] = newPlayer;
+
+    const playersBySystem = {...state.playersBySystem};
+
+    if (prevPlayer.activeSystem !== ShipSystem.None) {
+        delete playersBySystem[prevPlayer.activeSystem];
+    }
+    
+    if (newPlayer.activeSystem !== ShipSystem.None) {
+        playersBySystem[newPlayer.activeSystem] = newPlayer;
+    }
+
+    return {
+        ...state,
+        players: players,
+        playersBySystem: playersBySystem,
+    };
+}

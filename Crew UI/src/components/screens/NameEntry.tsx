@@ -54,7 +54,7 @@ class NameEntry extends React.Component<SettingsProps, {}> {
         }
 
         if (this.props.gameInProgress) {
-            this.props.showGameMenu();
+            this.props.showGameActive();
         } else {
             this.props.showWaitingForPlayers();
         }

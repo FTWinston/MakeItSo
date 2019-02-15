@@ -54,11 +54,7 @@ export class Connection {
                 pos = data.indexOf(' ');
                 let playerID = parseInt(data.substr(0, pos));
                 let system = parseInt(data.substr(pos + 1)) as ShipSystem;
-                store.dispatch(crewActions.setPlayerSystem(playerID, system === 0 ? undefined : system));
-
-                if (playerID === store.getState().crew.localPlayerID) {
-                    store.dispatch(screenActions.showSystemView());
-                }
+                store.dispatch(crewActions.setPlayerSystem(playerID, system));
                 break;
             }
             case 'disconnect':
@@ -80,7 +76,7 @@ export class Connection {
                 store.dispatch(crewActions.setSetupPlayer(undefined));
                 store.dispatch(screenActions.setGameActive());
                 if (store.getState().screen.display !== ClientScreen.NameEntry) {
-                    store.dispatch(screenActions.showGameMenu());
+                    store.dispatch(screenActions.showGameActive());
                 }
                 break;
             case 'game-':

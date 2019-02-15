@@ -4,36 +4,40 @@ import { ApplicationState } from '~/store';
 import { TextLocalisation, ShipSystem, getSystemName } from '~/functionality';
 import { Screen } from '~/components/general';
 import * as Systems from '~/components/systems';
-import './SystemView.scss';
+import './GameActive.scss';
 import { SystemHeader } from './SystemHeader';
 import { getSystemHealth } from '../../systems/damage/store';
 import { getSystemPower } from '../../systems/power/store';
-import { actionCreators } from '~/store/Screen';
+import { actionCreators } from '~/store/Crew';
+import GameMenu from './GameMenu';
+import { connection } from '~/index';
 
 interface IProps {
-    activeSystem?: ShipSystem;
+    activeSystem: ShipSystem;
     text: TextLocalisation;
     systemPower?: number;
     systemHealth?: number;
-    showGameMenu: () => void;
+    selectSystem: (system: ShipSystem) => void;
 }
 
 class GameActive extends React.Component<IProps> {
     system: Systems.BaseSystemComponent | null = null;
 
     public render() {
-        let activeSystemName = this.props.activeSystem === undefined ? undefined : getSystemName(this.props.activeSystem, this.props.text);
-
-        let system = this.renderSystem(this.props.activeSystem);
+        if (this.props.activeSystem === ShipSystem.None) {
+            return <GameMenu />
+        }
 
         return <Screen>
             <SystemHeader
-                name={activeSystemName}
+                name={getSystemName(this.props.activeSystem, this.props.text)}
                 health={this.props.systemHealth}
                 power={this.props.systemPower}
-                onClick={() => this.props.showGameMenu()}
+                onClick={() => { connection.send('viewsys 0'); this.props.selectSystem(ShipSystem.None) }}
             />
-            <div className="systemWrapper">{system}</div>
+            <div className="systemWrapper">
+                {this.renderSystem(this.props.activeSystem)}
+            </div>
         </Screen>
     }
 
@@ -78,7 +82,7 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
         activeSystem: activeSystem,
         systemHealth: getSystemHealth(activeSystem, state),
         systemPower: getSystemPower(activeSystem, state),
-        showGameMenu: actionCreators.showGameMenu,
+        selectSystem: actionCreators.setLocalPlayerSystem,
     }
 };
 
