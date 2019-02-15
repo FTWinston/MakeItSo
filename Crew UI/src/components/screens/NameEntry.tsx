@@ -49,10 +49,10 @@ class NameEntry extends React.Component<SettingsProps, {}> {
     private close(startFullscreen: boolean) {
         connection.send(`name ${this.props.userName.trim()}`);
 
-        if (startFullscreen) {
-            // TODO: trigger fullscreen
+        if (startFullscreen && !(document as any).fullscreenElement) {
+            document.documentElement!.requestFullscreen();
         }
-
+        
         if (this.props.gameInProgress) {
             this.props.showGameActive();
         } else {

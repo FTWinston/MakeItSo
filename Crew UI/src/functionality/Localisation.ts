@@ -90,6 +90,8 @@ export interface TextLocalisation {
         },
         active: {
             pause: string;
+            fullscreenToggle: string;
+            fullscreenToggleDesc: string;
         },
         error: {
             heading: string;

@@ -156,6 +156,8 @@ let words: TextLocalisation = {
         },
         active: {
             pause: 'Pause',
+            fullscreenToggle: 'Full-screen',
+            fullscreenToggleDesc: 'Enter or exit full-screen mode',
         },
         error: {
             heading: 'An error has occurred',

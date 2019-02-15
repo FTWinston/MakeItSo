@@ -16,6 +16,7 @@ const Settings: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/i
 const SystemPower: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zap.svg');
 const SystemHealth: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/heart.svg');
 const User: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/user.svg');
+const Fullscreen: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/monitor.svg');
 
 const HelmIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/navigation.svg');
 const WarpIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/compass.svg');
@@ -44,6 +45,7 @@ export enum Icon {
     SystemPower,
     SystemHealth,
     User,
+    Fullscreen,
 
     Helm,
     Warp,
@@ -95,6 +97,8 @@ export function renderIcon(icon: Icon, size: number | string = 24, className?: s
             return <SystemHealth {...props} />;
         case Icon.User:
             return <User {...props} />;
+        case Icon.Fullscreen:
+            return <Fullscreen {...props} />;
 
         case Icon.Helm:
             return <HelmIcon {...props} />;

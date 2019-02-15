@@ -19,7 +19,7 @@
     justify-content: space-evenly;
 
     @include landscape() {
-        width: 5em;
+        width: 6em;
         flex-direction: column;
     }
 }

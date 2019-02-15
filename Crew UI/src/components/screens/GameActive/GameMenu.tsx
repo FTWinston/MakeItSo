@@ -54,8 +54,24 @@ class GameMenu extends React.PureComponent<IProps> {
                     icon={Icon.Pause}
                     command="pause"
                 />
+                <PushButton
+                    text={this.props.text.screens.active.fullscreenToggle}
+                    noBorder={true}
+                    icon={Icon.Fullscreen}
+                    clicked={() => this.toggleFullscreen()}
+                    title={this.props.text.screens.active.fullscreenToggleDesc}
+                />
             </div>
         </Screen>;
+    }
+
+    private toggleFullscreen() {
+        if ((document as any).fullscreenElement) {
+            document.exitFullscreen();
+        }
+        else {
+            document.documentElement!.requestFullscreen();
+        }
     }
 }
 
