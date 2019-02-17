@@ -18,17 +18,17 @@ UDamageControlSystem::UDamageControlSystem()
 #ifndef WEB_SERVER_TEST
 	dice.AddZeroed(NUM_DICE);
 	systemHealth.AddZeroed(MAX_DAMAGE_SYSTEMS);
-	systemCombos.AddZeroed(MAX_DAMAGE_SYSTEMS);
 #else
 	dice.assign(NUM_DICE, 0);
 	systemHealth.assign(NUM_DAMAGE_SYSTEMS, 0);
-	systemCombos.assign(NUM_DAMAGE_SYSTEMS, Dice_None);
 #endif
 }
 
 void UDamageControlSystem::ResetData()
 {
 	ResetDice();
+	selectedSystem = EDamageSystem::Damage_None;
+	CLEAR(availableCombos);
 
 	for (uint8 i = 0; i < NUM_DAMAGE_SYSTEMS; i++)
 	{
@@ -38,7 +38,6 @@ void UDamageControlSystem::ResetData()
 		auto health = damageSystem != nullptr ? damageSystem->GetHealthLevel() : 0;
 
 		systemHealth[i] = health;
-		systemCombos[i] = damageSystem == nullptr ? Dice_None : SelectCombo(system, systemCombos[i], health);
 	}
 }
 
@@ -58,15 +57,22 @@ bool UDamageControlSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_
 			RollDice(roll1, roll2, roll3, roll4, roll5);
 		}
 	}
-	else if (MATCHES(msg, "dmg_discard"))
-	{
-		ResetDice();
-	}
 	else if (STARTS_WITH(msg, "dmg_system "))
 	{
 		uint8 systemNum = ExtractInt(msg, sizeof("dmg_system "));
-		ApplyDiceToSystem((EDamageSystem)systemNum);
+		SelectSystem((EDamageSystem)systemNum);
 	}
+	else if (STARTS_WITH(msg, "dmg_combo "))
+	{
+		uint8 comboNum = ExtractInt(msg, sizeof("dmg_combo "));
+		ApplyDiceToCombo(comboNum);
+	}
+	else if (STARTS_WITH(msg, "dmg_power "))
+	{
+		uint8 onOff = ExtractInt(msg, sizeof("dmg_power "));
+		ToggleSystemPower(onOff == 1);
+	}
+
 	else
 		return false;
 
@@ -78,11 +84,9 @@ void UDamageControlSystem::SendAllData_Implementation()
 {
 	SendDice();
 	SendRollsRemaining();
-
-	for (uint8 i = 0; i < NUM_DAMAGE_SYSTEMS; i++)
-	{
-		SendSystemState((EDamageSystem)i, systemHealth[i], systemCombos[i]);
-	}
+	SendSystemHealth();
+	SendSelectedSystem();
+	SendAvailableCombos();
 }
 
 
@@ -92,23 +96,8 @@ void UDamageControlSystem::SetSystemHealth(UShipSystem::ESystem system, uint8 he
 	if (damageSystem == Damage_None)
 		return;
 
-	auto combo = SelectCombo(damageSystem, systemCombos[damageSystem], health);
 	systemHealth[damageSystem] = health;
-	systemCombos[damageSystem] = combo;
-
-	SendSystemState(damageSystem, health, combo);
 }
-
-
-void UDamageControlSystem::OnReplicated_Dice(TArray<uint8> beforeChange)
-{
-	SendDice();
-}
-
-
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendDice() { SendDice_Implementation(); }
-#endif
 
 void UDamageControlSystem::SendDice_Implementation()
 {
@@ -132,11 +121,6 @@ void UDamageControlSystem::SendDice_Implementation()
 	SendSystem(output);
 }
 
-
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendRollsRemaining() { SendRollsRemaining_Implementation(); }
-#endif
-
 void UDamageControlSystem::SendRollsRemaining_Implementation()
 {
 	FString output = TEXT("dmg_rolls ");
@@ -144,29 +128,53 @@ void UDamageControlSystem::SendRollsRemaining_Implementation()
 	SendSystem(output);
 }
 
+void UDamageControlSystem::SendSystemHealth_Implementation()
+{
+	FString output = TEXT("dmg_health");
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::SendSystemState(EDamageSystem system, uint8 health, EDiceCombo combo) { SendSystemState_Implementation(system, health, combo); }
-#endif
+	for (auto health : systemHealth)
+	{
+		output += TEXT(" ");
+		APPENDINT(output, health);
+	}
 
-void UDamageControlSystem::SendSystemState_Implementation(EDamageSystem system, uint8 health, EDiceCombo combo)
+	SendAll(output);
+}
+
+void UDamageControlSystem::SendSelectedSystem_Implementation()
 {
 	FString output = TEXT("dmg_system ");
-	APPENDINT(output, system);
-	output += TEXT(" ");
-	APPENDINT(output, health);
-	output += TEXT(" ");
-	APPENDINT(output, combo);
+
+	APPENDINT(output, (uint8)selectedSystem);
+
+	SendAll(output);
+}
+
+void UDamageControlSystem::SendAvailableCombos_Implementation()
+{
+	FString output = TEXT("dmg_combos");
+
+	for (auto combo : availableCombos)
+	{
+		output += TEXT(" ");
+		APPENDINT(output, (uint8)combo);
+	}
+
 	SendAll(output);
 }
 
 
-
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::RollDice(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5) { RollDice_Implementation(roll1, roll2, roll3, roll4, roll5); }
-#endif
 void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool roll3, bool roll4, bool roll5)
 {
+	// Can only roll if a system is selected
+	if (selectedSystem == EDamageSystem::Damage_None)
+		return;
+
+	// Can only roll if that system has no power
+	auto system = LookupSystem(selectedSystem);
+	if (system == nullptr || system->GetPowerLevel() > 0)
+		return;
+
 	uint8 numRollable = GetNumRollableDice(GetHealthLevel());
 
 	if (roll1 && numRollable < 1)
@@ -214,6 +222,45 @@ void UDamageControlSystem::RollDice_Implementation(bool roll1, bool roll2, bool 
 		SendDice();
 		SendRollsRemaining();
 	}
+}
+
+void UDamageControlSystem::SelectSystem_Implementation(EDamageSystem system)
+{
+	if (selectedSystem == system && SIZENUM(availableCombos) > 0)
+	{
+		SendSelectedSystem();
+		SendDice();
+		SendRollsRemaining();
+		return;
+	}
+
+	selectedSystem = system;
+	ResetDice();
+	AllocateCombos(systemHealth[system]);
+		
+	if (ISCLIENT())
+	{
+		SendSelectedSystem();
+		SendAvailableCombos();
+	}
+}
+
+void UDamageControlSystem::ToggleSystemPower_Implementation(bool enabled)
+{
+	if (selectedSystem == EDamageSystem::Damage_None)
+		return;
+
+	auto system = LookupSystem(selectedSystem);
+	if (system == nullptr)
+		return;
+
+	auto existingPower = system->GetPowerLevel();
+
+	// TODO: this should account for the system's capacity in the power management system, and restore it back to that.
+	if (existingPower > 0)
+		system->SetPowerLevel(0);
+	else
+		system->SetPowerLevel(100);
 }
 
 uint8 UDamageControlSystem::Roll()
@@ -449,10 +496,7 @@ uint8 UDamageControlSystem::SumOfAKind(uint8 number)
 }
 
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::ResetDice() { ResetDice_Implementation(); }
-#endif
-void UDamageControlSystem::ResetDice_Implementation()
+void UDamageControlSystem::ResetDice()
 {
 	rollsRemaining = GetNumRerolls();
 	for (uint8 i = 0; i < NUM_DICE; i++)
@@ -465,20 +509,30 @@ void UDamageControlSystem::ResetDice_Implementation()
 	}
 }
 
-#ifdef WEB_SERVER_TEST
-void UDamageControlSystem::ApplyDiceToSystem(EDamageSystem system) { ApplyDiceToSystem_Implementation(system); }
-#endif
-void UDamageControlSystem::ApplyDiceToSystem_Implementation(EDamageSystem system)
+
+void UDamageControlSystem::ApplyDiceToCombo_Implementation(uint8 comboIndex)
 {
-	auto combo = systemCombos[system];
+	// Must have a system to repair and have selected a valid combo
+	if (selectedSystem == EDamageSystem::Damage_None || comboIndex >= SIZENUM(availableCombos))
+		return;
+
+	// Cannot repair a powered system
+	auto system = LookupSystem(selectedSystem);
+	if (system == nullptr || system->GetPowerLevel() > 0)
+		return;
+
+	auto combo = availableCombos[comboIndex];
+	if (combo == EDiceCombo::Dice_None)
+		return;
+
 	uint8 healingAmount = GetDiceScore(combo);
 
-	// To ensure that we don't stick with the current combo solely because it's still valid for the new damage level, clear it.
-	systemCombos[system] = Dice_None;
+	// Once a combo has been used, it can't be reused
+	availableCombos[comboIndex] = Dice_None;
 
 	ResetDice();
 
-	RestoreDamage(system, healingAmount);
+	RestoreDamage(selectedSystem, healingAmount);
 }
 
 
@@ -500,8 +554,6 @@ UShipSystem *UDamageControlSystem::LookupSystem(EDamageSystem system)
 	//	  return crewManager->GetSystem(UShipSystem::ESystem::Shields);
 	case Damage_Comms:
 		return crewManager->GetSystem(UShipSystem::ESystem::Communications);
-	case Damage_DamageControl:
-		return crewManager->GetSystem(UShipSystem::ESystem::DamageControl);
 	default:
 		return nullptr;
 	}
@@ -525,8 +577,6 @@ UDamageControlSystem::EDamageSystem UDamageControlSystem::GetDamageSystem(UShipS
 	//	  return Damage_Shields;
 	case UShipSystem::ESystem::Communications:
 		return Damage_Comms;
-	case UShipSystem::ESystem::DamageControl:
-		return Damage_DamageControl;
 	default:
 		return Damage_None;
 	}
@@ -545,326 +595,91 @@ bool UDamageControlSystem::RestoreDamage(EDamageSystem system, uint8 amount)
 	return true;
 }
 
-UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectCombo(EDamageSystem system, EDiceCombo currentCombo, uint8 systemHealth)
-{
-	return system == EDamageSystem::Damage_DamageControl
-		? SelectComboForDamageControl(currentCombo, systemHealth)
-		: SelectComboForOtherSystem(currentCombo, systemHealth);
-}
 
-UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectComboForOtherSystem(EDiceCombo currentCombo, uint8 systemHealth)
+void UDamageControlSystem::AllocateCombos(uint8 systemHealth)
 {
+	CLEAR(availableCombos);
+
 	if (systemHealth >= 100)
-		return Dice_None;
+		return;
 
-	if (systemHealth == 0)
-		return Dice_Yahtzee;
-	
-	// Determine if the current combo is valid for the current system health value.
-	// Combos are valid for a wider "health" range than they are selectable for,
-	// to avoid frequently changing combos that the user is trying to get.
-
-	// Note that all the health range numbers used here are derived from the following:
-	// https://docs.google.com/spreadsheets/d/1za88_ZAMghhpvxSFiYDpOpMLkk5pqCQaZE8nFel_yQA/edit?usp=sharing
-
-	switch (currentCombo)
-	{
-		case Dice_Aces:
-			if (systemHealth >= 70)
-				return currentCombo;
-			break;
-		case Dice_Twos:
-			if (systemHealth >= 65)
-				return currentCombo;
-			break;
-		case Dice_Threes:
-			if (systemHealth >= 60)
-				return currentCombo;
-			break;
-		case Dice_Fours:
-			if (systemHealth >= 50)
-				return currentCombo;
-			break;
-		case Dice_Fives:
-			if (systemHealth >= 40)
-				return currentCombo;
-			break;
-		case Dice_Sixes:
-			if (systemHealth >= 30)
-				return currentCombo;
-			break;
-		case Dice_ThreeOfAKind:
-			if (systemHealth >= 25)
-				return currentCombo;
-			break;
-		case Dice_FourOfAKind:
-			if (systemHealth >= 15 && systemHealth <= 75)
-				return currentCombo;
-			break;
-		case Dice_FullHouse:
-			if (systemHealth <= 75)
-				return currentCombo;
-			break;
-		case Dice_SmallStraight:
-			if (systemHealth <= 65)
-				return currentCombo;
-			break;
-		case Dice_LargeStraight:
-			if (systemHealth <= 50)
-				return currentCombo;
-			break;
-		case Dice_Yahtzee:
-			if (systemHealth <= 10)
-				return currentCombo;
-			break;
-		case Dice_Chance:
-			if (systemHealth >= 15 && systemHealth <= 75)
-				return currentCombo;
-			break;
-	}
-
-	if (systemHealth > 96)
-		return Dice_Aces;
-
-	if (systemHealth > 92)
-		switch (FMath::RandRange(1, 2))
-		{
-		case 1:
-			return Dice_Aces;
-		default:
-			return Dice_Twos;
-		}
-
-	if (systemHealth > 88)
-		switch (FMath::RandRange(1, 3))
-		{
-		case 1:
-			return Dice_Aces;
-		case 2:
-			return Dice_Twos;
-		default:
-			return Dice_Threes;
-		}
-
-	if (systemHealth > 82)
-		switch (FMath::RandRange(1, 4))
-		{
-		case 1:
-			return Dice_Aces;
-		case 2:
-			return Dice_Twos;
-		case 3:
-			return Dice_Threes;
-		default:
-			return Dice_Fours;
-		}
-
-	if (systemHealth > 79)
-		switch (FMath::RandRange(1, 5))
-		{
-		case 1:
-			return Dice_Aces;
-		case 2:
-			return Dice_Twos;
-		case 3:
-			return Dice_Threes;
-		case 4:
-			return Dice_Fours;
-		default:
-			return Dice_Fives;
-		}
-
-	if (systemHealth > 74)
-		switch (FMath::RandRange(1, 4))
-		{
-		case 1:
-			return Dice_Twos;
-		case 2:
-			return Dice_Threes;
-		case 3:
-			return Dice_Fours;
-		default:
-			return Dice_Fives;
-		}
-
-	if (systemHealth > 67)
-		switch (FMath::RandRange(1, 4))
-		{
-		case 1:
-			return Dice_Threes;
-		case 2:
-			return Dice_Fours;
-		case 3:
-			return Dice_Fives;
-		default:
-			return Dice_Sixes;
-		}
-
-	if (systemHealth > 59)
-		switch (FMath::RandRange(1, 5))
-		{
-		case 1:
-			return Dice_Fours;
-		case 2:
-			return Dice_Fives;
-		case 3:
-			return Dice_Sixes;
-		case 4:
-			return Dice_ThreeOfAKind;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 49)
-		switch (FMath::RandRange(1, 5))
-		{
-		case 1:
-			return Dice_Fives;
-		case 2:
-			return Dice_Sixes;
-		case 3:
-			return Dice_ThreeOfAKind;
-		case 4:
-			return Dice_FourOfAKind;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 40)
-		switch (FMath::RandRange(1, 5))
-		{
-		case 1:
-			return Dice_Sixes;
-		case 2:
-			return Dice_ThreeOfAKind;
-		case 3:
-			return Dice_FourOfAKind;
-		case 4:
-			return Dice_FullHouse;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 34)
-		switch (FMath::RandRange(1, 5))
-		{
-		case 1:
-			return Dice_ThreeOfAKind;
-		case 2:
-			return Dice_FourOfAKind;
-		case 3:
-			return Dice_FullHouse;
-		case 4:
-			return Dice_SmallStraight;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 30)
-		switch (FMath::RandRange(1, 4))
-		{
-		case 1:
-			return Dice_FourOfAKind;
-		case 2:
-			return Dice_FullHouse;
-		case 3:
-			return Dice_SmallStraight;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 24)
-		switch (FMath::RandRange(1, 5))
-		{
-		case 1:
-			return Dice_FourOfAKind;
-		case 2:
-			return Dice_FullHouse;
-		case 3:
-			return Dice_SmallStraight;
-		case 4:
-			return Dice_LargeStraight;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 19)
-		switch (FMath::RandRange(1, 4))
-		{
-		case 1:
-			return Dice_FullHouse;
-		case 2:
-			return Dice_SmallStraight;
-		case 3:
-			return Dice_LargeStraight;
-		default:
-			return Dice_Chance;
-		}
-
-	if (systemHealth > 14)
-		switch (FMath::RandRange(1, 3))
-		{
-		case 1:
-			return Dice_FullHouse;
-		case 2:
-			return Dice_SmallStraight;
-		default:
-			return Dice_LargeStraight;
-		}
-
-	if (systemHealth > 9)
-		switch (FMath::RandRange(1, 2))
-		{
-		case 1:
-			return Dice_SmallStraight;
-		default:
-			return Dice_LargeStraight;
-		}
-
-	return Dice_LargeStraight;
-}
-
-UDamageControlSystem::EDiceCombo UDamageControlSystem::SelectComboForDamageControl(EDiceCombo currentCombo, uint8 systemHealth)
-{
-	if (systemHealth >= 100)
-		return Dice_None;
-
-	if (systemHealth == 0)
-		return Dice_ThreeOfAKind;
-
-	if (currentCombo != Dice_None)
-		return currentCombo;
-
-	// Initially, greater damage needs greater repair
+	// TODO: These combos aren't terribly well thought through. Reconsider them.
 
 	if (systemHealth > 90)
-		return Dice_Aces;
-
-	if (systemHealth > 80)
-		return Dice_Twos;
-
-	if (systemHealth > 70)
-		return Dice_Threes;
-
-	if (systemHealth > 60)
-		return Dice_Fours;
-
-	if (systemHealth > 50)
-		return Dice_Fives;
-
-	if (systemHealth > 40)
-		return Dice_Sixes;
-
-	// This system doesn't use harder combos at lower health, instead it uses lower-scoring ones.
-
-	if (systemHealth > 30)
-		return Dice_Fives;
-
-	if (systemHealth > 20)
-		return Dice_Fours;
-
-	if (systemHealth > 10)
-		return Dice_Threes;
-
-	return Dice_Twos;
+	{
+		SETADD(availableCombos, Dice_Aces);
+		SETADD(availableCombos, Dice_Twos);
+		SETADD(availableCombos, Dice_Threes);
+		SETADD(availableCombos, Dice_Chance);
+	}
+	else if (systemHealth > 80)
+	{
+		SETADD(availableCombos, Dice_Twos);
+		SETADD(availableCombos, Dice_Threes);
+		SETADD(availableCombos, Dice_ThreeOfAKind);
+		SETADD(availableCombos, Dice_Chance);
+	}
+	else if (systemHealth > 70)
+	{
+		SETADD(availableCombos, Dice_Threes);
+		SETADD(availableCombos, Dice_Fours);
+		SETADD(availableCombos, Dice_ThreeOfAKind);
+		SETADD(availableCombos, Dice_Chance);
+	}
+	else if (systemHealth > 60)
+	{
+		SETADD(availableCombos, Dice_Fours);
+		SETADD(availableCombos, Dice_Fives);
+		SETADD(availableCombos, Dice_ThreeOfAKind);
+		SETADD(availableCombos, Dice_SmallStraight);
+	}
+	else if (systemHealth > 50)
+	{
+		SETADD(availableCombos, Dice_Fives);
+		SETADD(availableCombos, Dice_Sixes);
+		SETADD(availableCombos, Dice_FourOfAKind);
+		SETADD(availableCombos, Dice_SmallStraight);
+	}
+	else if (systemHealth > 40)
+	{
+		SETADD(availableCombos, Dice_Threes);
+		SETADD(availableCombos, Dice_FullHouse);
+		SETADD(availableCombos, Dice_FourOfAKind);
+		SETADD(availableCombos, Dice_SmallStraight);
+	}
+	else if (systemHealth > 30)
+	{
+		SETADD(availableCombos, Dice_Twos);
+		SETADD(availableCombos, Dice_FullHouse);
+		SETADD(availableCombos, Dice_FourOfAKind);
+		SETADD(availableCombos, Dice_SmallStraight);
+	}
+	else if (systemHealth > 20)
+	{
+		SETADD(availableCombos, Dice_Aces);
+		SETADD(availableCombos, Dice_SmallStraight);
+		SETADD(availableCombos, Dice_ThreeOfAKind);
+		SETADD(availableCombos, Dice_FourOfAKind);
+	}
+	else if (systemHealth > 10)
+	{
+		SETADD(availableCombos, Dice_SmallStraight);
+		SETADD(availableCombos, Dice_FullHouse);
+		SETADD(availableCombos, Dice_ThreeOfAKind);
+		SETADD(availableCombos, Dice_FourOfAKind);
+	}
+	else if (systemHealth > 0)
+	{
+		SETADD(availableCombos, Dice_SmallStraight);
+		SETADD(availableCombos, Dice_LargeStraight);
+		SETADD(availableCombos, Dice_FullHouse);
+		SETADD(availableCombos, Dice_Yahtzee);
+	}
+	else
+	{
+		SETADD(availableCombos, Dice_FourOfAKind);
+		SETADD(availableCombos, Dice_FullHouse);
+		SETADD(availableCombos, Dice_LargeStraight);
+		SETADD(availableCombos, Dice_Yahtzee);
+	}
 }
