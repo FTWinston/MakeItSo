@@ -5,7 +5,7 @@ import { TextLocalisation, Hotkey } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import { DamageState, actionCreators, DamageSystemType, DiceComboType } from './store';
 import './DamageControl.scss';
-import { DamageSystem } from './DamageSystem';
+import { DamageSystemListItem } from './DamageSystemListItem';
 import { Dice } from './Dice';
 import { PushButton, ButtonColor } from '~/components/general';
 import { connection } from '~/index';
@@ -24,16 +24,15 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
     }
 
     public render() {
-        const systems = this.props.systems.map((s, i) => {
-            const select = () => this.selectSystem(s.type);
+        const systems = this.props.systemHealth.map((health, i) => {
+            const system = i as DamageSystemType;
+            const select = () => this.selectSystem(system);
 
-            return <DamageSystem
+            return <DamageSystemListItem
                 key={i}
                 text={this.props.text}
-                system={s.type}
-                health={s.health}
-                combo={s.combo}
-                healAmount={this.getDiceScore(s.combo)}
+                system={system}
+                health={health}
                 select={select}
             />
         });

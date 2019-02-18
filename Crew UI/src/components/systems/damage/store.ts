@@ -14,6 +14,7 @@ export const enum DamageSystemType {
     Shields,
     Comms,
     DamageControl,
+    None,
 }
 
 export const enum DiceComboType {
@@ -33,14 +34,11 @@ export const enum DiceComboType {
     Chance,
 }
 
-export interface DamageSystem {
-    type: DamageSystemType;
-    health: number;
-    combo: DiceComboType;
-}
-
 export interface DamageState {
-    systems: DamageSystem[];
+    systemHealth: number[];
+    selectedSystem: DamageSystemType;
+    availableCombos: DiceComboType[];
+
     dice: [number, number, number, number, number];
     lockedDice: [boolean, boolean, boolean, boolean, boolean];
     fixedDice: [boolean, boolean, boolean, boolean, boolean];
@@ -71,16 +69,24 @@ interface UnlockDiceAction {
     type: 'UNLOCK_ALL';
 }
 
-interface SetSystemDamageAction {
+interface SetHealthAction {
+    type: 'SET_HEALTH';
+    systemValues: number[];
+}
+
+interface SetCombosAction {
+    type: 'SET_COMBOS';
+    combos: DiceComboType[];
+}
+
+interface SetSelectedSystemAction {
     type: 'SET_SYSTEM';
     system: DamageSystemType;
-    health: number;
-    combo: DiceComboType;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetDiceAction | SetRollsAction | ToggleDiceLockAction | UnlockDiceAction | SetSystemDamageAction;
+type KnownAction = SetDiceAction | SetRollsAction | ToggleDiceLockAction | UnlockDiceAction | SetHealthAction | SetCombosAction | SetSelectedSystemAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -103,11 +109,17 @@ export const actionCreators = {
     unlockDice: () => <UnlockDiceAction>{
         type: 'UNLOCK_ALL',
     },
-    setSystem: (system: DamageSystemType, health: number, combo: DiceComboType | undefined) => <SetSystemDamageAction>{
+    setHealth: (systemValues: number[]) => <SetHealthAction>{
+        type: 'SET_HEALTH',
+        systemValues: systemValues,
+    },
+    setAvailableCombos: (combos: DiceComboType[]) => <SetCombosAction>{
+        type: 'SET_COMBOS',
+        combos: combos,
+    },
+    setSelectedSystem: (system: DamageSystemType) => <SetSelectedSystemAction>{
         type: 'SET_SYSTEM',
         system,
-        health,
-        combo,
     }
 };
 
@@ -115,16 +127,9 @@ export const actionCreators = {
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
 const unloadedState: DamageState = {
-    systems: [
-        { type: DamageSystemType.Power, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Helm, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Warp, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Weapons, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Sensors, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Shields, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.Comms, health: 0, combo: DiceComboType.None },
-        { type: DamageSystemType.DamageControl, health: 0, combo: DiceComboType.None },
-    ],
+    systemHealth: [0, 0, 0, 0, 0, 0, 0, 0],
+    selectedSystem: DamageSystemType.None,
+    availableCombos: [],
     dice: [0, 0, 0, 0, 0],
     lockedDice: [false, false, false, false, false],
     fixedDice: [false, false, false, false, false],
@@ -140,13 +145,13 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
                 ...state,
                 dice: action.values,
                 fixedDice: action.fixed,
-            }
+            };
         }
         case 'SET_ROLLS': {
             return {
                 ...state,
                 numReRolls: action.rollsRemaining,
-            }
+            };
         }
         case 'LOCK_DICE': {
             const lockedDice = state.lockedDice.slice() as [boolean, boolean, boolean, boolean, boolean];
@@ -154,24 +159,31 @@ export const reducer: Reducer<DamageState> = (state: DamageState, rawAction: Act
             return {
                 ...state,
                 lockedDice,
-            }
+            };
         }
         case 'UNLOCK_ALL': {
             return {
                 ...state,
                 lockedDice: [false, false, false, false, false],
-            }
+            };
         }
-        case 'SET_SYSTEM': {
-            const systems = state.systems.slice();
-            const system = systems[action.system];
-            system.health = action.health;
-            system.combo = action.combo;
-
+        case 'SET_HEALTH': {
             return {
                 ...state,
-                systems,
+                systemHealth: action.systemValues,
             }
+        }
+        case 'SET_COMBOS': {
+            return {
+                ...state,
+                availableCombos: action.combos,
+            };
+        }
+        case 'SET_SYSTEM': {
+            return {
+                ...state,
+                selectedSystem: action.system,
+            };
         }
         default:
             exhaustiveActionCheck(action);
@@ -215,5 +227,5 @@ export function getSystemHealth(system: ShipSystem, state: ApplicationState) {
             return undefined;
     }
 
-    return state.damage.systems.find(s => s.type === damageSystem)!.health;
+    return state.damage.systemHealth[damageSystem];
 }

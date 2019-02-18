@@ -6,12 +6,18 @@ export const msgPrefix = 'dmg_';
 export function receiveMessage(cmd: string, data: string) {
     switch (cmd) {
         case 'dmg_system': {
-            const vals = data.split(' ');
-            const system = parseInt(vals[0]) as DamageSystemType;
-            const damage = parseInt(vals[1]);
-            const combo = parseInt(vals[2]) as DiceComboType;
-
-            store.dispatch(actionCreators.setSystem(system, damage, combo));
+            const system = parseInt(data) as DamageSystemType;
+            store.dispatch(actionCreators.setSelectedSystem(system));
+            break;
+        }
+        case 'dmg_health': {
+            const values = data.split(' ').map(v => parseInt(v));
+            store.dispatch(actionCreators.setHealth(values));
+            break;
+        }
+        case 'dmg_combos': {
+            const combos = data.split(' ').map(v => parseInt(v) as DiceComboType);
+            store.dispatch(actionCreators.setAvailableCombos(combos));
             break;
         }
         case 'dmg_dice': {

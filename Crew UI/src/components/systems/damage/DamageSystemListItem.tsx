@@ -1,18 +1,16 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import './DamageSystem.scss';
+import './DamageSystemListItem.scss';
 import { DamageSystemType, DiceComboType } from './store';
 
 interface IProps {
     text: TextLocalisation;
     system: DamageSystemType;
     health: number;
-    combo: DiceComboType;
-    healAmount: number;
     select: () => void;
 }
 
-export class DamageSystem extends React.PureComponent<IProps> {
+export class DamageSystemListItem extends React.PureComponent<IProps> {
     public render() {
         const clicked = this.props.healAmount > 0
             ? () => this.props.select()
