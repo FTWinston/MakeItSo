@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
-import { TextLocalisation, Hotkey } from '~/functionality';
+import { TextLocalisation } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
-import { DamageState, actionCreators, DamageSystemType, DiceComboType } from './store';
+import { DamageState, actionCreators, DamageSystemType } from './store';
 import './DamageControl.scss';
 import { DamageSystemListItem } from './DamageSystemListItem';
-import { Dice } from './Dice';
-import { PushButton, ButtonColor } from '~/components/general';
 import { connection } from '~/index';
+import { ExpandedSystem } from './ExpandedSystem';
 
 interface DamageControlProps extends DamageState {
     text: TextLocalisation;
@@ -17,13 +16,17 @@ interface DamageControlProps extends DamageState {
 }
 
 class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
-    name() { return 'power'; }
+    name() { return 'damage'; }
 
     protected getOptionLabels() {
         return this.props.text.systems.helm; // obviously wrong
     }
 
     public render() {
+        const classes = this.props.selectedSystem === DamageSystemType.None
+            ? 'system damageControl damageControl--notSelected'
+            : 'system damageControl damageControl--selected';
+
         const systems = this.props.systemHealth.map((health, i) => {
             const system = i as DamageSystemType;
             const select = () => this.selectSystem(system);
@@ -31,214 +34,37 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
             return <DamageSystemListItem
                 key={i}
                 text={this.props.text}
-                system={system}
+                systemName={this.getSystemName(system)}
                 health={health}
+                selected={system === this.props.selectedSystem}
+                powered={true} /* TODO: get this */
                 select={select}
             />
         });
 
-        const canLockAny = this.props.dice[0] !== 0;
-        const dice = this.props.dice.map((d, i) => {
-            let canLock: boolean;
-            let locked: boolean;
-
-            if (this.props.fixedDice[i]) {
-                canLock = false;
-                locked = true;
-            }
-            else {
-                canLock = canLockAny;
-                locked = this.props.lockedDice[i]
-            }
-
-            return <Dice
-                key={i}
-                value={d}
-                canToggle={canLock}
-                locked={locked}
-                toggle={() => this.props.toggleDice(i)}
-                hotkey={(i + 1).toString() as Hotkey}
+        const selectedSystem = this.props.selectedSystem === DamageSystemType.None
+            ? undefined
+            : <ExpandedSystem
+                text={this.props.text}
+                systemName={this.getSystemName(this.props.selectedSystem)}
+                health={this.props.systemHealth[this.props.selectedSystem]}
+                powered={true} /* TODO: get this */
+                availableCombos={this.props.availableCombos}
+                dice={this.props.dice}
+                fixedDice={this.props.fixedDice}
+                lockedDice={this.props.lockedDice}
+                numReRolls={this.props.numReRolls}
+                rollDice={() => this.rollDice()}
+                toggleDice={i => this.props.toggleDice(i)}
+                unlockDice={() => this.props.unlockDice()}
             />
-        });
 
-        const rollText = `${this.props.text.systems.damage.roll} (${this.props.numReRolls})`;
-
-        const disableRoll = this.props.numReRolls === 0 || this.props.lockedDice.every(b => b);
-        const roll = () => this.rollDice();
-        const unlock = () => this.props.unlockDice();
-
-        return <div className="system damageControl">
+        return <div className={classes}>
+            {selectedSystem}
             <div className="damageControl__systemList">
                 {systems}
             </div>
-            <div className="damageControl__diceList">
-                {dice}
-            </div>
-            <div className="damageControl__diceActions">
-                <PushButton
-                    disabled={disableRoll}
-                    color={ButtonColor.Primary}
-                    text={rollText}
-                    clicked={roll}
-                    hotkey="space"
-                />
-
-                <PushButton
-                    disabled={this.props.dice[0] === 0}
-                    color={ButtonColor.Tertiary}
-                    text={this.props.text.systems.damage.discard}
-                    command="dmg_discard"
-                    clicked={unlock}
-                    hotkey="D"
-                />
-            </div>
         </div>
-    }
-
-    private getDiceScore(combo: DiceComboType) {
-        if (this.props.dice[0] === 0) {
-            return 0;
-        }
-
-        switch (combo) {
-            case DiceComboType.Aces:
-                return this.props.dice
-                    .filter(d => d === 1)
-                    .reduce((tot, val) => tot + val, 0);
-
-            case DiceComboType.Twos:
-                return this.props.dice
-                    .filter(d => d === 2)
-                    .reduce((tot, val) => tot + val, 0);
-
-            case DiceComboType.Threes:
-                return this.props.dice
-                    .filter(d => d === 3)
-                    .reduce((tot, val) => tot + val, 0);
-
-            case DiceComboType.Fours:
-                return this.props.dice
-                    .filter(d => d === 4)
-                    .reduce((tot, val) => tot + val, 0);
-
-            case DiceComboType.Fives:
-                return this.props.dice
-                    .filter(d => d === 5)
-                    .reduce((tot, val) => tot + val, 0);
-
-            case DiceComboType.Sixes:
-                return this.props.dice
-                    .filter(d => d === 6)
-                    .reduce((tot, val) => tot + val, 0);
-
-            case DiceComboType.ThreeOfAKind: {
-                if (this.props.dice.filter(d => d === 1).length < 3
-                    && this.props.dice.filter(d => d === 2).length < 3
-                    && this.props.dice.filter(d => d === 3).length < 3
-                    && this.props.dice.filter(d => d === 4).length < 3
-                    && this.props.dice.filter(d => d === 5).length < 3
-                    && this.props.dice.filter(d => d === 6).length < 3)
-                    return 0;
-                    
-                return this.props.dice
-                    .reduce((tot, val) => tot + val, 0);
-            }
-            case DiceComboType.FourOfAKind: {
-                if (this.props.dice.filter(d => d === 1).length < 4
-                    && this.props.dice.filter(d => d === 2).length < 4
-                    && this.props.dice.filter(d => d === 3).length < 4
-                    && this.props.dice.filter(d => d === 4).length < 4
-                    && this.props.dice.filter(d => d === 5).length < 4
-                    && this.props.dice.filter(d => d === 6).length < 4)
-                    return 0;
-                    
-                return this.props.dice
-                    .reduce((tot, val) => tot + val, 0);
-            }
-            case DiceComboType.FullHouse: {
-                const sorted = this.props.dice.sort();
-                if (sorted[0] === sorted[4]) {
-                    return 0;
-                }
-
-                if (sorted[1] !== sorted[0] || sorted[3] !== sorted[4] ) {
-                    return 0;
-                }
-
-                if (sorted[2] !== sorted[1] && sorted[2] !== sorted[3]) {
-                    return 0;
-                }
-
-                return 25;
-            }
-            case DiceComboType.SmallStraight: {
-                const sorted = this.props.dice.sort();
-                let prevVal = sorted[0];
-                let sequenceLength = 1;
-
-                for (let i = 1; i < 4; i++) {
-                    if (sorted[i] === prevVal) {
-                        break;
-                    }
-
-                    prevVal ++;
-                    sequenceLength ++;
-                }
-
-                if (sequenceLength >= 4) {
-                    return 30;
-                }
-
-
-                prevVal = sorted[0];
-                sequenceLength = 1;
-
-                for (let i = 2; i < 5; i++) {
-                    if (sorted[i] === prevVal) {
-                        break;
-                    }
-
-                    prevVal ++;
-                    sequenceLength ++;
-                }
-
-                if (sequenceLength >= 4) {
-                    return 30;
-                }
-
-                return 0;
-            }
-            case DiceComboType.LargeStraight: {
-                const sorted = this.props.dice.sort();
-                let prevVal = sorted[0];
-
-                for (let i = 1; i < sorted.length; i++) {
-                    if (sorted[i] !== prevVal) {
-                        return 0;
-                    }
-
-                    prevVal ++;
-                }
-
-                return 40;
-            }
-            case DiceComboType.Yahtzee: {
-                const first = this.props.dice[0];
-                for (let dice of this.props.dice) {
-                    if (dice !== first) {
-                        return 0;
-                    }
-                }
-
-                return 50;
-            }
-            case DiceComboType.Chance:
-                return this.props.dice
-                    .reduce((tot, val) => tot + val, 0);
-            
-            default:
-                return 0;
-        }
     }
 
     private rollDice() {
@@ -251,9 +77,36 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
         connection.send(msg);
     }
     
-    private selectSystem(type: DamageSystemType) {
-        connection.send(`dmg_system ${type}`);
+    private selectSystem(system: DamageSystemType) {
+        if (system === this.props.selectedSystem) {
+            system = DamageSystemType.None;
+        }
+
+        connection.send(`dmg_system ${system}`);
         this.props.unlockDice();
+    }
+    
+    private getSystemName(system: DamageSystemType) {
+        switch (system) {
+            case DamageSystemType.Power:
+                return this.props.text.systemNames.power;
+            case DamageSystemType.Helm:
+                return this.props.text.systemNames.helm;
+            case DamageSystemType.Warp:
+                return this.props.text.systemNames.warp;
+            case DamageSystemType.Weapons:
+                return this.props.text.systemNames.weapons;
+            case DamageSystemType.Sensors:
+                return this.props.text.systemNames.sensors;
+            case DamageSystemType.Shields:
+                return this.props.text.systemNames.shields;
+            case DamageSystemType.Comms:
+                return this.props.text.systemNames.comms;
+            case DamageSystemType.DamageControl:
+                return this.props.text.systemNames.damage;
+            default:
+                return '';
+        }
     }
 }
 
