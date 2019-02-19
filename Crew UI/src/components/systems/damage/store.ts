@@ -13,7 +13,6 @@ export const enum DamageSystemType {
     Sensors,
     Shields,
     Comms,
-    DamageControl,
     None,
 }
 
@@ -214,9 +213,6 @@ export function getSystemHealth(system: ShipSystem, state: ApplicationState) {
             break;
         case ShipSystem.Communications:
             damageSystem = DamageSystemType.Comms;
-            break;
-        case ShipSystem.DamageControl:
-            damageSystem = DamageSystemType.DamageControl;
             break;
         /*
         case ShipSystem.Shields:

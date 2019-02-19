@@ -16,7 +16,7 @@ export class DamageSystemListItem extends React.PureComponent<IProps> {
         const clicked = () => this.props.select();
 
         return <div className={this.determineClasses()} onClick={clicked}>
-            <h2 className="damageSystem__name">{this.props.systemName}</h2>
+            <div className="damageSystem__name">{this.props.systemName}</div>
             <div className="damageSystem__health">{this.props.health}%</div>
         </div>
     }
@@ -24,6 +24,10 @@ export class DamageSystemListItem extends React.PureComponent<IProps> {
     private determineClasses() {
         let classes = 'damageSystem';
 
+        classes += this.props.powered
+            ? 'damageSystem--online'
+            : 'damageSystem--offline';
+        
         if (this.props.health < 1) {
             classes += ' damageSystem--destroyed';
         }

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { DiceComboType } from './store';
+import './ComboDisplay.scss';
 
 interface IProps {
     text: TextLocalisation;

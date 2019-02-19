@@ -8,6 +8,7 @@
     grid-column-gap: 0.75em;
     align-items: center;
     height: 3em;
+    cursor: pointer;
 
     grid-template-areas:
         "icon name health power"

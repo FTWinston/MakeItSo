@@ -1,46 +1,17 @@
 @import '../../general/mixins';
 
 .damageSystem {
-    display: grid;
-    grid-gap: 0.25em;
-
-    grid-template-rows: 3fr 2fr 2fr;
-    grid-template-columns: 1fr 4.5em;
-    grid-template-areas:
-        "title health"
-        "combo heal"
-        "desc desc";
-
-    align-items: center;
-
-    border: solid #ccc 1px;
+    display: flex;
     padding: 0.5em;
-    margin: 0 1em 1em 0;
-    
-    cursor: not-allowed;
-
-    width: 18em;
-    height: 10em;
-    border-radius: 0.25em;
+    margin: 0.5em;
 }
 
 .damageSystem__name {
-    grid-area: title;
     font-size: 1.5em;
     margin: 0;
+    flex-grow: 1;
 
     text-align: center;
-}
-
-.damageSystem__comboName {
-    grid-area: combo;
-    font-size: 1.25em;
-    padding-left: 0.5rem;
-}
-
-.damageSystem__comboDesc {
-    grid-area: desc;
-    padding-left: 0.5rem;
 }
 
 .damageSystem__health {
@@ -48,30 +19,10 @@
     color: #cccccc;
 }
 
-.damageSystem__heal {
-    grid-area: heal;
-    color: #ffffff;
-    /*
-    background-color: green;
-    padding: 0 0.25em;
-    border-radius: 0.25em;
-    */
-}
-
-.damageSystem__health, .damageSystem__heal {
+.damageSystem__health {
     font-size: 1.5em;
     justify-self: right;
     padding-right: 0.25em;
-}
-
-.damageSystem--applicable:not(.damageSystem--perfect) {
-    border-color: #ffffff;
-    cursor: pointer;
-    background-color: #006600;
-}
-
-.damageSystem--perfect {
-    background-color: transparent;
 }
 
 .damageSystem--destroyed .damageSystem__health {
@@ -88,22 +39,4 @@
 
 .damageSystem--perfect .damageSystem__health {
     color: #ffffff;
-}
-
-
-@include portrait() {
-    @media(max-width: 599px) {
-        .damageSystem {
-            grid-template-rows: 1fr 1fr 1em;
-            grid-template-columns: 1fr 4.5em;
-            grid-template-areas:
-                "title health"
-                "combo heal"
-                "desc desc";
-            
-            min-height: 6em;
-            width: auto;
-            height: auto;
-        }
-    }
 }
