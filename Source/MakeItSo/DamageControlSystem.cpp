@@ -236,7 +236,7 @@ void UDamageControlSystem::SelectSystem_Implementation(EDamageSystem system)
 
 	selectedSystem = system;
 	ResetDice();
-	AllocateCombos(systemHealth[system]);
+	AllocateCombos(system == EDamageSystem::Damage_None ? 0 : systemHealth[system]);
 		
 	if (ISCLIENT())
 	{
@@ -600,7 +600,7 @@ void UDamageControlSystem::AllocateCombos(uint8 systemHealth)
 {
 	CLEAR(availableCombos);
 
-	if (systemHealth >= 100)
+	if (selectedSystem == EDamageSystem::Damage_None || systemHealth >= 100)
 		return;
 
 	// TODO: These combos aren't terribly well thought through. Reconsider them.

@@ -25,9 +25,13 @@ export class DamageSystemListItem extends React.PureComponent<IProps> {
         let classes = 'damageSystem';
 
         classes += this.props.powered
-            ? 'damageSystem--online'
-            : 'damageSystem--offline';
+            ? ' damageSystem--online'
+            : ' damageSystem--offline';
         
+        if (this.props.selected) {
+            classes += ' damageSystem--selected';
+        }
+
         if (this.props.health < 1) {
             classes += ' damageSystem--destroyed';
         }

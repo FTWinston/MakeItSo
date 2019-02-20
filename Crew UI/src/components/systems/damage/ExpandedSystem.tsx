@@ -4,6 +4,7 @@ import { DiceComboType } from './store';
 import { Dice } from './Dice';
 import { PushButton, ButtonColor } from '~/components/general';
 import { ComboDisplay } from './ComboDisplay';
+import './ExpandedSystem.scss';
 
 interface IProps {
     text: TextLocalisation;
@@ -68,18 +69,18 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
         const unlock = () => this.props.unlockDice();
 
         // TODO: show health & power on/off
-        
-        return <div className="expandedDamageSystem">
-            <div className="damageControl__name">
+
+        return <div className="expandedDamage damageControl__expanded">
+            <div className="expandedDamage__name">
                 {this.props.systemName}
             </div>
-            <div className="damageControl__comboList">
+            <div className="expandedDamage__comboList">
                 {combos}
             </div>
-            <div className="damageControl__diceList">
+            <div className="expandedDamage__diceList">
                 {dice}
             </div>
-            <div className="damageControl__diceActions">
+            <div className="expandedDamage__diceActions">
                 <PushButton
                     disabled={disableRoll}
                     color={ButtonColor.Primary}

@@ -4,6 +4,7 @@
     display: flex;
     padding: 0.5em;
     margin: 0.5em;
+    border: solid grey 1px;
 }
 
 .damageSystem__name {
@@ -23,6 +24,14 @@
     font-size: 1.5em;
     justify-self: right;
     padding-right: 0.25em;
+}
+
+.damageSystem--online {
+    opacity: 0.8;
+}
+
+.damageSystem--selected {
+    border-color: white;
 }
 
 .damageSystem--destroyed .damageSystem__health {
