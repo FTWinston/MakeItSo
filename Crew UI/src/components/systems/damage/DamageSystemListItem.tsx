@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import './DamageSystemListItem.scss';
+import { renderIcon, Icon } from '~/components/general';
 
 interface IProps {
     text: TextLocalisation;
@@ -14,8 +15,10 @@ interface IProps {
 export class DamageSystemListItem extends React.PureComponent<IProps> {
     public render() {
         const clicked = () => this.props.select();
+        const powerIcon = renderIcon(Icon.Zap, undefined, 'damageSystem__power');
 
         return <div className={this.determineClasses()} onClick={clicked}>
+            {powerIcon}
             <div className="damageSystem__name">{this.props.systemName}</div>
             <div className="damageSystem__health">{this.props.health}%</div>
         </div>

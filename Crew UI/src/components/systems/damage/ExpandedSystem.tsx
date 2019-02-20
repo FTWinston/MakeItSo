@@ -20,7 +20,6 @@ interface IProps {
     
     rollDice: () => void;
     toggleDice: (index: number) => void;
-    unlockDice: () => void;
 }
 
 export class ExpandedSystem extends React.PureComponent<IProps, {}> {
@@ -66,7 +65,6 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
 
         const disableRoll = this.props.numReRolls === 0 || this.props.lockedDice.every(b => b);
         const roll = () => this.props.rollDice();
-        const unlock = () => this.props.unlockDice();
 
         // TODO: show health & power on/off
 
@@ -87,15 +85,6 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
                     text={rollText}
                     clicked={roll}
                     hotkey="space"
-                />
-
-                <PushButton
-                    disabled={this.props.dice[0] === 0}
-                    color={ButtonColor.Tertiary}
-                    text={this.props.text.systems.damage.discard}
-                    command="dmg_discard"
-                    clicked={unlock}
-                    hotkey="D"
                 />
             </div>
         </div>

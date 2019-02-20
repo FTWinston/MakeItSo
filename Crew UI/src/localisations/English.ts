@@ -435,9 +435,9 @@ let words: TextLocalisation = {
         },
         damage: {
             roll: 'Roll',
-            discard: 'Discard',
+            noSystemBlurb: `Select a damaged system to try to repair it.
 
-            
+You can only repair a system when it is unpowered.`,
             comboNames: {
                 aces: 'Aces',
                 twos: 'Twos',

@@ -2,17 +2,27 @@
 
 .damageSystem {
     display: flex;
-    padding: 0.5em;
+    padding: 0.5em 0.5em 0.5em 0.1em;
     margin: 0.5em;
     border: solid grey 1px;
+    align-items: center;
+    border-radius: 0.2em;
 }
 
 .damageSystem__name {
     font-size: 1.5em;
-    margin: 0;
+    margin: 0 0.5em 0 0;
     flex-grow: 1;
 
     text-align: center;
+}
+
+.damageSystem__power {
+    color: $colorQuandry;
+}
+
+.damageSystem--offline .damageSystem__power {
+    visibility: hidden;
 }
 
 .damageSystem__health {
@@ -26,12 +36,8 @@
     padding-right: 0.25em;
 }
 
-.damageSystem--online {
-    opacity: 0.8;
-}
-
 .damageSystem--selected {
-    border-color: white;
+    border-color: $colorHighlight;
 }
 
 .damageSystem--destroyed .damageSystem__health {
@@ -48,4 +54,8 @@
 
 .damageSystem--perfect .damageSystem__health {
     color: #ffffff;
+}
+
+.damageControl--selected .damageSystem:not(.damageSystem--selected) {
+    opacity: 0.6;
 }

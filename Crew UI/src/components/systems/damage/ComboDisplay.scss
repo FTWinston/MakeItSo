@@ -1,6 +1,17 @@
 @import '../../general/mixins';
 
 .damageCombo {
-    margin: 0.5em;
+    padding: 0.25em;
     border: solid grey 1px;
+    border-radius: 0.2em;
+    flex-grow: 1;
+}
+
+.damageCombo__name {
+    font-weight: bold;
+    color: $colorHighlight;
+}
+
+.damageCombo:not(:last-child) {
+    margin-bottom: 0.5em;
 }

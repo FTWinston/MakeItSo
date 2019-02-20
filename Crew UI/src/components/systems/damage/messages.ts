@@ -16,7 +16,7 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'dmg_combos': {
-            const combos = data.split(' ').map(v => parseInt(v) as DiceComboType);
+            const combos = data === '' ? [] : data.split(' ').map(v => parseInt(v) as DiceComboType);
             store.dispatch(actionCreators.setAvailableCombos(combos));
             break;
         }

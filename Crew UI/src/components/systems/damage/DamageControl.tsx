@@ -43,7 +43,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
         });
 
         const selectedSystem = this.props.selectedSystem === DamageSystemType.None
-            ? undefined
+            ? <div className="damageControl__blurb">{this.props.text.systems.damage.noSystemBlurb}</div>
             : <ExpandedSystem
                 text={this.props.text}
                 systemName={this.getSystemName(this.props.selectedSystem)}
@@ -56,7 +56,6 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                 numReRolls={this.props.numReRolls}
                 rollDice={() => this.rollDice()}
                 toggleDice={i => this.props.toggleDice(i)}
-                unlockDice={() => this.props.unlockDice()}
             />
 
         return <div className={classes}>
