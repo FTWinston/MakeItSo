@@ -45,20 +45,22 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
 
         const selectedSystem = this.props.selectedSystem === DamageSystemType.None
             ? <div className="damageControl__blurb">{this.props.text.systems.damage.noSystemBlurb}</div>
-            : <ExpandedSystem
-                text={this.props.text}
-                systemName={this.getSystemName(this.props.selectedSystem)}
-                health={this.props.systemHealth[this.props.selectedSystem]}
-                powered={this.props.systemPower[this.props.selectedSystem]}
-                availableCombos={this.props.availableCombos}
-                dice={this.props.dice}
-                fixedDice={this.props.fixedDice}
-                lockedDice={this.props.lockedDice}
-                numReRolls={this.props.numReRolls}
-                rollDice={() => this.rollDice()}
-                toggleDice={i => this.props.toggleDice(i)}
-                selectCombo={i => this.selectCombo(i)}
-            />
+            : this.props.systemPower[this.props.selectedSystem]
+                ? <div className="damageControl__blurb">{this.props.text.systems.damage.poweredSystemBlurb}</div>
+                : <ExpandedSystem
+                    text={this.props.text}
+                    systemName={this.getSystemName(this.props.selectedSystem)}
+                    health={this.props.systemHealth[this.props.selectedSystem]}
+                    powered={this.props.systemPower[this.props.selectedSystem]}
+                    availableCombos={this.props.availableCombos}
+                    dice={this.props.dice}
+                    fixedDice={this.props.fixedDice}
+                    lockedDice={this.props.lockedDice}
+                    numReRolls={this.props.numReRolls}
+                    rollDice={() => this.rollDice()}
+                    toggleDice={i => this.props.toggleDice(i)}
+                    selectCombo={i => this.selectCombo(i)}
+                />
 
         return <div className={classes}>
             {selectedSystem}

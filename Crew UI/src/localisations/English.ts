@@ -438,6 +438,9 @@ let words: TextLocalisation = {
             noSystemBlurb: `Select a damaged system to try to repair it.
 
 You can only repair a system when it is unpowered.`,
+poweredSystemBlurb: `This system cannot be repaired as it is powered.
+
+The power management system can deactivate it.`,
             comboNames: {
                 aces: 'Aces',
                 twos: 'Twos',

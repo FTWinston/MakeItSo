@@ -370,6 +370,7 @@ export interface TextLocalisation {
         damage: {
             roll: string;
             noSystemBlurb: string;
+            poweredSystemBlurb: string;
             comboNames: {
                 aces: string;
                 twos: string;
