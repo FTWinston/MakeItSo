@@ -75,3 +75,9 @@ $systemHeight: calc(100% - $usedVerticalSpace);
     justify-content: center;
     align-items: center;
 }
+
+@mixin headerSideways() { // TODO: perhaps this should be based on aspect ratio instead?
+    @media (orientation:landscape) and (max-height: 450px) {
+        @content;
+    }   
+}

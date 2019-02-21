@@ -28,7 +28,7 @@ class GameActive extends React.Component<IProps> {
             return <GameMenu />
         }
 
-        return <Screen>
+        return <Screen className="screen--gameActive">
             <SystemHeader
                 name={getSystemName(this.props.activeSystem, this.props.text)}
                 health={this.props.systemHealth}

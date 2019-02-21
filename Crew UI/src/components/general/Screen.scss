@@ -38,6 +38,7 @@
 }
 
 .screen--gameActive {
-    justify-content: flex-start;
-    align-content: stretch;
+    @include headerSideways() {
+        flex-direction: row;
+    }
 }

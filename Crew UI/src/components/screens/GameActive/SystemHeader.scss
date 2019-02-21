@@ -13,6 +13,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+
+    @include headerSideways() {
+        flex-direction: column-reverse;
+        height: unset;
+        width: 2rem;
+        margin: 0 1rem 0 0;
+    }
 }
 
 .systemHeader__name{ 
@@ -21,8 +28,17 @@
 
     font-size: 2em;
     background-color: $backgroundColor;
-    padding: 0em 0.25em;
-    margin: 0 0 0 0.5em;
+    padding: 0 0.125rem;
+    margin: 0 0 0 1rem;
+
+    @include headerSideways() {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+        
+        padding: 0.125rem 0;
+        margin: 0 0 1.5rem 0;
+    }
 }
 
 .systemHeader__power,
@@ -30,6 +46,12 @@
     font-size: 1.5em;
     color: white;
     text-align: right;
+    
+    @include headerSideways() {
+        writing-mode: vertical-rl;
+        text-orientation: mixed;
+        transform: rotate(180deg);
+    }
 }
 
 .systemHeader__power:after,
@@ -45,33 +67,10 @@
 
     .systemHeader__power {
         width: 5em;
+
+        @include headerSideways() {
+            width: unset;
+            height: 5em;
+        }
     }
 }
-
-/*
-.systemHeader__systemIcons {
-    flex-grow: 1;
-    flex-shrink: 1;
-
-    display: flex;
-
-    & > * {
-        flex-grow: 1;
-        flex-shrink: 1;
-        
-        max-width: 6em;
-        min-width: calc(24px + 0.2em);
-    }
-}
-
-.systemHeader__commonIcons {
-    padding-left: 0.5em;
-    flex-shrink: 0;
-    flex-grow: 0;
-}
-
-.systemHeader__separator {
-    width: 2px;
-    background-color: $backgroundColor;
-}
-*/
