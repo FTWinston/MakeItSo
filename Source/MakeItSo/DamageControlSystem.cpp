@@ -121,14 +121,14 @@ void UDamageControlSystem::SendDice_Implementation()
 	for (i; i < NUM_DICE; i++)
 		output += TEXT(" 0");
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 void UDamageControlSystem::SendRollsRemaining_Implementation()
 {
 	FString output = TEXT("dmg_rolls ");
 	APPENDINT(output, rollsRemaining);
-	SendSystem(output);
+	SendAll(output);
 }
 
 void UDamageControlSystem::SendSystemHealth_Implementation()

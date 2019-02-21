@@ -334,7 +334,7 @@ void UPowerSystem::SendOverallPower_Implementation(uint16 overallPower)
 {
 	FString output = TEXT("power_all ");
 	APPENDINT(output, overallPower / NUM_POWER_SYSTEMS);
-	SendSystem(output);
+	SendAll(output);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -352,7 +352,7 @@ void UPowerSystem::SendCardChoice() { SendCardChoice_Implementation(); }
 void UPowerSystem::SendCardChoice_Implementation()
 {
 	auto command = CombineIDs(TEXT("power_choice "), cardChoice);
-	SendSystem(command);
+	SendAll(command);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -362,7 +362,7 @@ void UPowerSystem::SendQueueSize_Implementation()
 {
 	FString output = TEXT("power_choices ");
 	APPENDINT(output, choiceQueueSize);
-	SendSystem(output);
+	SendAll(output);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -374,7 +374,7 @@ void UPowerSystem::SendGeneration_Implementation()
 	uint8 percent = 100 * auxPowerGenerationProgress / CHOICE_GENERATION_AUX_AMOUNT;
 
 	APPENDINT(output, percent);
-	SendSystem(output);
+	SendAll(output);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -383,7 +383,7 @@ void UPowerSystem::SendWholeHand() { SendWholeHand_Implementation(); }
 void UPowerSystem::SendWholeHand_Implementation()
 {
 	auto command = CombineIDs(TEXT("power_hand "), cardHand);
-	SendSystem(command);
+	SendAll(command);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -410,7 +410,7 @@ void UPowerSystem::SendSystemEffects_Implementation(EPowerSystem system, uint8 n
 	output += TEXT(" ");
 	APPENDINT(output, numEffects);
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -421,7 +421,7 @@ void UPowerSystem::SendAddCardToHand_Implementation(uint8 cardID)
 	FString output = TEXT("power_add ");
 	APPENDINT(output, cardID);
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 #ifdef WEB_SERVER_TEST
@@ -432,7 +432,7 @@ void UPowerSystem::SendRemoveCardFromHand_Implementation(uint8 handPosition)
 	FString output = TEXT("power_rem ");
 	APPENDINT(output, handPosition);
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 
