@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
 import { TextLocalisation } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
-import { DamageState, actionCreators, DamageSystemType } from './store';
+import { DamageState, actionCreators, DamageSystemType, getDamageSystem } from './store';
 import './DamageControl.scss';
 import { DamageSystemListItem } from './DamageSystemListItem';
 import { connection } from '~/index';
@@ -11,6 +11,7 @@ import { ExpandedSystem } from './ExpandedSystem';
 
 interface DamageControlProps extends DamageState {
     text: TextLocalisation;
+    systemPower: boolean[];
     toggleDice: (index: number) => void;
     unlockDice: () => void;
 }
@@ -37,7 +38,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                 systemName={this.getSystemName(system)}
                 health={health}
                 selected={system === this.props.selectedSystem}
-                powered={true} /* TODO: get this */
+                powered={this.props.systemPower[i]}
                 select={select}
             />
         });
@@ -48,7 +49,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                 text={this.props.text}
                 systemName={this.getSystemName(this.props.selectedSystem)}
                 health={this.props.systemHealth[this.props.selectedSystem]}
-                powered={true} /* TODO: get this */
+                powered={this.props.systemPower[this.props.selectedSystem]}
                 availableCombos={this.props.availableCombos}
                 dice={this.props.dice}
                 fixedDice={this.props.fixedDice}
@@ -56,6 +57,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
                 numReRolls={this.props.numReRolls}
                 rollDice={() => this.rollDice()}
                 toggleDice={i => this.props.toggleDice(i)}
+                selectCombo={i => this.selectCombo(i)}
             />
 
         return <div className={classes}>
@@ -75,7 +77,7 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
 
         connection.send(msg);
     }
-    
+
     private selectSystem(system: DamageSystemType) {
         if (system === this.props.selectedSystem) {
             system = DamageSystemType.None;
@@ -84,7 +86,11 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
         connection.send(`dmg_system ${system}`);
         this.props.unlockDice();
     }
-    
+
+    private selectCombo(index: number) {
+        connection.send(`dmg_combo ${index}`);
+    }
+        
     private getSystemName(system: DamageSystemType) {
         switch (system) {
             case DamageSystemType.Power:
@@ -109,10 +115,20 @@ class DamageControl extends ShipSystemComponent<DamageControlProps, {}> {
 
 // Selects which state properties are merged into the component's props
 const mapStateToProps: (state: ApplicationState) => DamageControlProps = (state) => {
+    const systemPower = [];
+    for (const powerSystem of state.power.systems) {
+        const damageSystem = getDamageSystem(powerSystem.type);
+        if (damageSystem !== DamageSystemType.None) {
+            systemPower[damageSystem] = powerSystem.power > 0;
+        }
+    }
+    systemPower[DamageSystemType.Power] = state.power.overallPower > 0;
+
     return {
         text: state.user.text,
         toggleDice: actionCreators.toggleDice,
         unlockDice: actionCreators.unlockDice,
+        systemPower: systemPower, 
         ...state.damage,
     }
 };

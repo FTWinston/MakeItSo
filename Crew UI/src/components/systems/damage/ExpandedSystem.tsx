@@ -20,6 +20,7 @@ interface IProps {
     
     rollDice: () => void;
     toggleDice: (index: number) => void;
+    selectCombo: (index: number) => void;
 }
 
 export class ExpandedSystem extends React.PureComponent<IProps, {}> {
@@ -49,7 +50,7 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
         });
 
         const combos = this.props.availableCombos.map((c, i) => {
-            const select = () => {}; // TODO: do something when a combo is selected!
+            const select = () => this.props.selectCombo(i);
             
             return <ComboDisplay
                 key={i}
@@ -151,7 +152,7 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
                     .reduce((tot, val) => tot + val, 0);
             }
             case DiceComboType.FullHouse: {
-                const sorted = this.props.dice.sort();
+                const sorted = this.props.dice.slice().sort();
                 if (sorted[0] === sorted[4]) {
                     return 0;
                 }
@@ -167,12 +168,12 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
                 return 25;
             }
             case DiceComboType.SmallStraight: {
-                const sorted = this.props.dice.sort();
+                const sorted = this.props.dice.slice().sort();
                 let prevVal = sorted[0];
                 let sequenceLength = 1;
 
                 for (let i = 1; i < 4; i++) {
-                    if (sorted[i] === prevVal) {
+                    if (sorted[i] !== prevVal + 1) {
                         break;
                     }
 
@@ -189,7 +190,7 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
                 sequenceLength = 1;
 
                 for (let i = 2; i < 5; i++) {
-                    if (sorted[i] === prevVal) {
+                    if (sorted[i] !== prevVal + 1) {
                         break;
                     }
 
@@ -204,7 +205,7 @@ export class ExpandedSystem extends React.PureComponent<IProps, {}> {
                 return 0;
             }
             case DiceComboType.LargeStraight: {
-                const sorted = this.props.dice.sort();
+                const sorted = this.props.dice.slice().sort();
                 let prevVal = sorted[0];
 
                 for (let i = 1; i < sorted.length; i++) {

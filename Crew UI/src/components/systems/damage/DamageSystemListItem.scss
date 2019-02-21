@@ -48,6 +48,10 @@
     color: #ff0000;
 } 
 
+.damageSystem--badlyDamaged .damageSystem__health {
+    color: #ff6666;
+} 
+
 .damageSystem--damaged .damageSystem__health {
     color: #ff9999;
 }

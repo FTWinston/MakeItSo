@@ -39,7 +39,7 @@ export class ComboDisplay extends React.PureComponent<IProps, {}> {
             ? undefined
             : <div className="damageCombo__heal">+{this.props.currentScore}%</div>
 
-        return <div className={classes} style={style}>
+        return <div className={classes} style={style} onClick={() => this.props.select()}>
             <div className="damageCombo__name">
                 {this.getComboName(this.props.combo)}
             </div>

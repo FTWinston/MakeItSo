@@ -97,6 +97,9 @@ void UDamageControlSystem::SetSystemHealth(UShipSystem::ESystem system, uint8 he
 		return;
 
 	systemHealth[damageSystem] = health;
+
+	if (ISCLIENT())
+		SendSystemHealth();
 }
 
 void UDamageControlSystem::SendDice_Implementation()
@@ -287,6 +290,8 @@ uint8 UDamageControlSystem::GetNumRerolls()
 
 uint8 UDamageControlSystem::GetNumRollableDice(uint8 health)
 {
+	return NUM_DICE;
+	/*
 	if (health >= 100)
 		return NUM_DICE;
 	if (health >= 80)
@@ -299,6 +304,7 @@ uint8 UDamageControlSystem::GetNumRollableDice(uint8 health)
 		return 1;
 
 	return 0;
+	*/
 }
 
 void UDamageControlSystem::ApplySystemDamage(uint8 prevValue, uint8 newValue)

@@ -1,6 +1,9 @@
 @import '../../general/mixins';
 
 .damageCombo {
+    position: relative;
+    display: flex;
+    flex-direction: column;
     padding: 0.25em;
     border: solid grey 1px;
     border-radius: 0.2em;
@@ -14,4 +17,11 @@
 
 .damageCombo:not(:last-child) {
     margin-bottom: 0.5em;
+}
+
+.damageCombo__heal {
+    position: absolute;
+    top: 0;
+    right: 0.1em;
+    font-size: 1.5em;
 }
