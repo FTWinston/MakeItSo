@@ -269,13 +269,16 @@ void USensorSystem::OpenTarget(uint8 targetID) { OpenTarget_Implementation(targe
 
 void USensorSystem::OpenTarget_Implementation(uint8 targetID)
 {
-	if (targetID == 0 || !MAPCONTAINS(sensorTargets, targetID))
+	if (targetID != 0 && !MAPCONTAINS(sensorTargets, targetID))
 		return;
 
 	openTargetID = targetID;
 
-	auto target = sensorTargets[targetID];
-	PopulateCells(target);
+	if (targetID != 0)
+	{
+		auto target = sensorTargets[targetID];
+		PopulateCells(target);
+	}
 
 	if (ISCLIENT())
 		SendTargetSelection(targetID);
