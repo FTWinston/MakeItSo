@@ -182,6 +182,7 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
             return {
                 ...state,
                 selectedTargetID: action.targetID,
+                targetingSolutions: [],
             }
         }
         case 'WPN_SOLUTIONS': {
@@ -190,24 +191,40 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
                 targetingSolutions: action.solutions,
             };
         }
-        case 'WPN_ELEMENTS': {
+        case 'WPN_SOLUTION_SET': {
+            const targetingSolutions = state.targetingSolutions
+                .filter(s => s.type !== action.solution.type);
+            targetingSolutions.push(action.solution);
+
             return {
                 ...state,
-                targetingSymbols: action.elementSymbols,
+                targetingSolutions,
             };
+        }
+        case 'WPN_SOLUTION_REM': {
+            const targetingSolutions = state.targetingSolutions
+                .filter(s => s.type !== action.solutionType);
+
+            return {
+                ...state,
+                targetingSolutions,
+            };
+        }
+        case 'WPN_SOLUTION_SELECT': {
+            const selectedSolution = state.targetingSolutions
+                .find(s => s.type === action.solutionType);
+
+            return {
+                ...state,
+                selectedSolution,
+            }
         }
         case 'WPN_FIRE': {
+            // TODO: something with x1 y1 x2 y2?
+            // Display the numbers, at least briefly ...
+            // Perhaps that doesn't ever reach the store.
             return {
                 ...state,
-                lastFireTime: action.fireTime,
-                lastUsedSolution: action.solution,
-                selectedSymbols: [],
-            };
-        }
-        case 'WPN_SYMBOL': {
-            return {
-                ...state,
-                selectedSymbols: [...state.selectedSymbols, action.symbol],
             };
         }
         case 'WPN_FACE': {

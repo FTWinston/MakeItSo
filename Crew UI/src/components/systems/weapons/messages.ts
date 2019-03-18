@@ -1,5 +1,5 @@
 import { store } from '~/index';
-import { actionCreators, TargetingFace, TargetingSolutionType, TargetingDifficulty, ElementColor, ElementShape } from './store';
+import { actionCreators, TargetingFace, TargetingSolutionType, TargetingDifficulty, ITargetingSolution } from './store';
 
 export const msgPrefix = 'wpn_';
 
@@ -11,31 +11,32 @@ export function receiveMessage(cmd: string, data: string) {
             break;
         }
         case 'wpn_solutions': {
-            const solutionVals = data === ''
-                ? [] : data.split('/').map(s => s.split(' ').map(v => parseInt(v)));
-
-            const solutions = [];
-            for (const solution of solutionVals) {
-                
-                solutions.push({
-                    type: solution[0] as TargetingSolutionType,
-                    difficulty: solution[1] as TargetingDifficulty,
-                    bestFacing: solution[2] as TargetingFace,
-                    sequence: solution.slice(3).map(i => parseTargetingElement(i)),
-                });
-            }
+            const solutions = data === ''
+                ? []
+                : data
+                    .split('/')
+                    .map(s => s.split(' ').map(v => parseInt(v)))
+                    .map(s => parseSolution(s));
 
             store.dispatch(actionCreators.setTargetingSolutions(solutions));
             break;
         }
-        case 'wpn_targeting': {
-            const vals = data.split(' ').map(v => parseTargetingElement(parseInt(v)));
-            store.dispatch(actionCreators.setTargetingElements(vals));
+        case 'wpn_solution_add': {
+            const solution = parseSolution(data.split(' ').map(v => parseInt(v)));
+            store.dispatch(actionCreators.setTargetingSolution(solution));
             break;
         }
-        case 'wpn_fire': {
-            const solution = parseInt(data) as TargetingSolutionType;
-            store.dispatch(actionCreators.fire(solution));
+        case 'wpn_solution_rem': {
+            const type = parseInt(data) as TargetingSolutionType;
+            store.dispatch(actionCreators.removeTargetingSolution(type));
+            break;
+        }
+        case 'wpn_solution': {
+            const type = data === ''
+                ? TargetingSolutionType.None
+                : parseInt(data) as TargetingSolutionType;
+
+            store.dispatch(actionCreators.selectTargetingSolution(type));
             break;
         }
         case 'wpn_facing': {
@@ -60,23 +61,11 @@ export function receiveMessage(cmd: string, data: string) {
     return true;
 }
 
-function parseTargetingElement(index: number) {
-    const shape = (index % ElementShape.NUM_SHAPES) as ElementShape;
-    
-    const color: ElementColor = index < ElementShape.NUM_SHAPES
-        ? ElementColor.Red
-        : index < ElementShape.NUM_SHAPES * 2
-            ? ElementColor.Yellow
-            : index < ElementShape.NUM_SHAPES * 3
-                ? ElementColor.Green
-                : index < ElementShape.NUM_SHAPES * 4
-                    ? ElementColor.Blue
-                    : index < ElementShape.NUM_SHAPES * 5
-                        ? ElementColor.Purple
-                        : ElementColor.Lime;
-
+function parseSolution(vals: number[]): ITargetingSolution {
     return {
-        color,
-        shape,
-    }
+        type: vals[0] as TargetingSolutionType,
+        difficulty: vals[1] as TargetingDifficulty,
+        bestFacing: vals[2] as TargetingFace,
+        polygonsByFace: determineTheseSomehow,
+    };
 }
