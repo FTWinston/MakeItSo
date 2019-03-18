@@ -1,5 +1,6 @@
 import { Action, Reducer } from 'redux';
 import { exhaustiveActionCheck } from '~/store';
+import { Polygon } from './Polygon';
 
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
@@ -46,53 +47,17 @@ export const enum TargetingDifficulty {
     VeryHard,
 }
 
-export enum ElementShape {
-    FilledNoRounded = 0,
-    FilledOneRounded,
-    FilledThreeRounded,
-    FilledAllRounded,
-    FilledRoundedOpposite,
-    FilledRoundedAdjacent,
-    OutlineNoRounded,
-    OutlineOneRounded,
-    OutlineThreeRounded,
-    OutlineAllRounded,
-    OutlineRoundedOpposite,
-    OutlineRoundedAdjacent,
-
-    NUM_SHAPES
-}
-
-export enum ElementColor {
-    Red = 0,
-    Yellow,
-    Green,
-    Blue,
-    Purple,
-    Lime,
-    
-    NUM_COLORS
-}
-
-export interface ITargetingSymbol {
-    shape: ElementShape;
-    color: ElementColor;
-}
-
 export interface ITargetingSolution {
     type: TargetingSolutionType;
     difficulty: TargetingDifficulty;
     bestFacing: TargetingFace;
-    sequence: ITargetingSymbol[];
+    polygonsByFace: { [key: number]: Polygon };
 }
 
 export interface WeaponState {
     selectedTargetID: number;
-    targetingSymbols: ITargetingSymbol[];
+    selectedSolution?: ITargetingSolution;
     targetingSolutions: ITargetingSolution[];
-    selectedSymbols: ITargetingSymbol[];
-    lastUsedSolution: TargetingSolutionType;
-    lastFireTime: number;
 
     currentlyFacing: TargetingFace;
     targetPitch: number;
@@ -114,20 +79,27 @@ interface SetTargetingSolutionsAction {
     solutions: ITargetingSolution[];
 }
 
-interface SetTargetingElementsAction {
-    type: 'WPN_ELEMENTS';
-    elementSymbols: ITargetingSymbol[];
+interface SetSingleTargetingSolutionAction {
+    type: 'WPN_SOLUTION_SET';
+    solution: ITargetingSolution;
+}
+
+interface RemoveTargetingSolutionAction {
+    type: 'WPN_SOLUTION_REM';
+    solutionType: TargetingSolutionType;
+}
+
+interface SetSelectedTargetingSolutionAction {
+    type: 'WPN_SOLUTION_SELECT';
+    solutionType: TargetingSolutionType;
 }
 
 interface FireAction {
     type: 'WPN_FIRE';
-    solution: TargetingSolutionType;
-    fireTime: number;
-}
-
-interface SelectSymbolAction {
-    type: 'WPN_SYMBOL';
-    symbol: ITargetingSymbol;
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
 }
 
 interface SetCurrentlyFacingAction {
@@ -144,8 +116,8 @@ interface SetTargetOrientationAction {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetTargetingElementsAction
-    | SelectSymbolAction | SetCurrentlyFacingAction | SetTargetOrientationAction | FireAction;
+type KnownAction = SetSelectedTargetAction | SetTargetingSolutionsAction | SetSingleTargetingSolutionAction | RemoveTargetingSolutionAction
+    | SetSelectedTargetingSolutionAction | SetCurrentlyFacingAction | SetTargetOrientationAction | FireAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -160,18 +132,24 @@ export const actionCreators = {
         type: 'WPN_SOLUTIONS',
         solutions: solutions,
     },
-    setTargetingElements: (elements: ITargetingSymbol[]) => <SetTargetingElementsAction>{
-        type: 'WPN_ELEMENTS',
-        elementSymbols: elements,
+    setTargetingSolution: (solution: ITargetingSolution) => <SetSingleTargetingSolutionAction>{
+        type: 'WPN_SOLUTION_SET',
+        solution: solution,
     },
-    fire: (lastSolution: TargetingSolutionType) => <FireAction>{
+    removeTargetingSolution: (type: TargetingSolutionType) => <RemoveTargetingSolutionAction>{
+        type: 'WPN_SOLUTION_REM',
+        solutionType: type,
+    },
+    selectTargetingSolution: (type: TargetingSolutionType) => <SetSelectedTargetingSolutionAction>{
+        type: 'WPN_SOLUTION_SELECT',
+        solutionType: type,
+    },
+    fire: (x1: number, y1: number, x2: number, y2: number) => <FireAction>{
         type: 'WPN_FIRE',
-        solution: lastSolution,
-        fireTime: Date.now(),
-    },
-    selectSymbol: (symbol: ITargetingSymbol) => <SelectSymbolAction>{
-        type: 'WPN_SYMBOL',
-        symbol: symbol,
+        x1: x1,
+        y1: y1,
+        x2: x2,
+        y2: y2,
     },
     setCurrentlyFacing: (face: TargetingFace) => <SetCurrentlyFacingAction>{
         type: 'WPN_FACE',
@@ -190,11 +168,7 @@ export const actionCreators = {
 
 const unloadedState: WeaponState = {
     selectedTargetID: 0,
-    targetingSymbols: [],
     targetingSolutions: [],
-    lastFireTime: Date.now(),
-    lastUsedSolution: TargetingSolutionType.None,
-    selectedSymbols: [],
     currentlyFacing: TargetingFace.None,
     targetPitch: 0,
     targetYaw: 0,
