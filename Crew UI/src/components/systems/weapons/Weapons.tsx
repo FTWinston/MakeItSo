@@ -5,7 +5,7 @@ import { SensorTarget, TextLocalisation, Vector3, Rotator } from '~/functionalit
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './Weapons.scss';
 import { TargetList } from '../sensors/TargetList';
-import { WeaponState, ITargetingSymbol, actionCreators, TargetingSolutionType } from './store';
+import { WeaponState, actionCreators, TargetingSolutionType, ITargetingSolution } from './store';
 import { connection } from '~/index';
 import { TargetDisplay } from './TargetDisplay';
 import { Targeting } from './Targeting';
@@ -16,7 +16,7 @@ interface IProps extends WeaponState {
     allTargets: SensorTarget[];
     shipPosition: Vector3;
     shipOrientation: Rotator;
-    selectSymbol: (symbol: ITargetingSymbol) => void;
+    selectTargetingSolution: (solution: ITargetingSolution) => void;
 }
 
 interface IState {
@@ -76,7 +76,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             };
             const lastFireSuccess = this.props.lastUsedSolution !== TargetingSolutionType.None;
 
-            return <div className="system weapons weapons--targeting">
+            return <div className="system weapons weapons--solutionSelection">
                 <TargetDisplay
                     text={this.props.text}
                     target={this.state.selectedTarget}
@@ -111,7 +111,7 @@ const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
         allTargets: state.environment.targets,
         shipPosition: state.environment.shipPos,
         shipOrientation: state.environment.shipRotation,
-        selectSymbol: actionCreators.selectSymbol,
+        selectTargetingSolution: actionCreators.selectTargetingSolution,
     }
 };
 
