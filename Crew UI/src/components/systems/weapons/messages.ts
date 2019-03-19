@@ -1,5 +1,6 @@
 import { store } from '~/index';
 import { actionCreators, TargetingFace, TargetingSolutionType, TargetingDifficulty, ITargetingSolution } from './store';
+import { Polygon } from './Polygon';
 
 export const msgPrefix = 'wpn_';
 
@@ -15,14 +16,13 @@ export function receiveMessage(cmd: string, data: string) {
                 ? []
                 : data
                     .split('/')
-                    .map(s => s.split(' ').map(v => parseInt(v)))
                     .map(s => parseSolution(s));
 
             store.dispatch(actionCreators.setTargetingSolutions(solutions));
             break;
         }
         case 'wpn_solution_add': {
-            const solution = parseSolution(data.split(' ').map(v => parseInt(v)));
+            const solution = parseSolution(data);
             store.dispatch(actionCreators.setTargetingSolution(solution));
             break;
         }
@@ -61,11 +61,81 @@ export function receiveMessage(cmd: string, data: string) {
     return true;
 }
 
-function parseSolution(vals: number[]): ITargetingSolution {
+function parseSolution(data: string): ITargetingSolution {
+    var parts = data.split('|');
+
+    const vals = parts.shift()!
+        .split(' ')
+        .map(v => parseInt(v));
+
+    const type = vals[0] as TargetingSolutionType;
+    const difficulty = vals[1] as TargetingDifficulty;
+    const bestFacing = vals[2] as TargetingFace;
+
+    // each value remaining in parts is a polygon
+    const allPolygons = parts.map(p => parsePolygon(p));
+
+    const polygonsByFace: { [key: number]: Polygon } = {};
+
+    if (bestFacing === TargetingFace.None && allPolygons.length >= 1) {
+        // all the same
+        polygonsByFace[TargetingFace.Front] = 
+        polygonsByFace[TargetingFace.Rear] = 
+        polygonsByFace[TargetingFace.Top] = 
+        polygonsByFace[TargetingFace.Bottom] = 
+        polygonsByFace[TargetingFace.Left] = 
+        polygonsByFace[TargetingFace.Right] = allPolygons[0];
+    }
+    else if (allPolygons.length === 0) {
+        // this shouldn't happen, but do nothing cos that's all we can do
+    }
+    else if (allPolygons.length === 1) {
+        // only the best face can be targeted
+        polygonsByFace[bestFacing] = allPolygons[0];
+    }
+    else {
+        // initially all the the second polygon
+        polygonsByFace[TargetingFace.Front] = 
+        polygonsByFace[TargetingFace.Rear] = 
+        polygonsByFace[TargetingFace.Top] = 
+        polygonsByFace[TargetingFace.Bottom] = 
+        polygonsByFace[TargetingFace.Left] = 
+        polygonsByFace[TargetingFace.Right] = allPolygons[1];
+
+        // then set the best face to the first one
+        polygonsByFace[bestFacing] = allPolygons[0];
+
+        if (allPolygons.length === 2) {
+            // unset the "opposite" one
+            delete polygonsByFace[-bestFacing]
+        }
+        else {
+            // use the third for the "opposite" face
+            polygonsByFace[-bestFacing] = allPolygons[2];
+        }
+    }
+
     return {
-        type: vals[0] as TargetingSolutionType,
-        difficulty: vals[1] as TargetingDifficulty,
-        bestFacing: vals[2] as TargetingFace,
-        polygonsByFace: determineTheseSomehow,
+        type,
+        difficulty,
+        bestFacing,
+        polygonsByFace,
     };
+}
+
+function parsePolygon(data: string) {
+    const numbers = data
+        .split(' ')
+        .map(s => parseInt(s));
+
+    const poly = new Polygon();
+
+    for (let i = 1; i < numbers.length; i++) {
+        poly.points.push({
+            x: numbers[i - 1],
+            y: numbers[i],
+        });
+    }
+
+    return poly;
 }
