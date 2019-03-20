@@ -10,6 +10,8 @@ import { connection } from '~/index';
 import { TargetOverview } from './TargetOverview';
 import { RadarView } from '~/components/general/RadarView';
 import { SolutionList } from './SolutionList';
+import { SolutionInfo } from './SolutionInfo';
+import { Targeting } from './Targeting';
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
@@ -39,6 +41,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 selectedTarget: target,
             });
         }
+
+        // TODO: decide if we're no longer pointing sufficiently "at" the target and need to deselect it
     }
 
     name() { return 'weapons'; }
@@ -88,12 +92,21 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const deselectSolution = () => this.props.selectTargetingSolution(TargetingSolutionType.None);
             const fire = (x1: number, y1: number, x2: number, y2: number) => connection.send(`wpn_fire ${x1} ${y1} ${x2} ${y2}`);
 
+            const polygon = this.props.selectedSolution.polygonsByFace[this.props.currentlyFacing];
+
             return <div className="system weapons weapons--firingSolution">
                 {this.renderTargetOverview(deselectSolution)}
 
-                <Targeting
+                <SolutionInfo
                     text={this.props.text}
-                    solution={this.props.selectedSolution}
+                    currentlyFacing={this.props.currentlyFacing}
+                    bestFacing={this.props.selectedSolution.bestFacing}
+                    solutionType={this.props.selectedSolution.type}
+                    baseDifficulty={this.props.selectedSolution.difficulty}
+                />
+                
+                <Targeting
+                    polygon={polygon}
                     fire={fire}
                 />
             </div>
@@ -103,12 +116,8 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
     private renderTargetOverview(backClicked: () => void) {
         return <TargetOverview
             text={this.props.text}
-            target={this.state.selectedTarget}
-            solutions={this.props.targetingSolutions}
-            selectedSymbols={this.props.selectedSymbols}
+            target={this.state.selectedTarget!}
             currentlyFacing={this.props.currentlyFacing}
-            lastFireTime={this.props.lastFireTime}
-            lastUsedSolution={this.props.lastUsedSolution}
             relPitch={this.props.targetPitch}
             relYaw={this.props.targetYaw}
             relRoll={this.props.targetRoll}

@@ -1,25 +1,19 @@
 import * as React from 'react';
 import './Targeting.scss';
-import { TargetingElement, Status } from './TargetingElement';
-import { ITargetingSymbol } from './store';
-
-interface ITargetingElement {
-    symbol: ITargetingSymbol;
-    status: Status;
-}
+import { Polygon } from './Polygon';
+import { FlexibleCanvas } from '~/components/general';
 
 interface IProps {
-    className?: string;
-    symbols: ITargetingSymbol[];
-    lastFireTime: number;
-    lastFireWasSuccess: boolean;
-    selectedSymbols: ITargetingSymbol[];
-    symbolSelected: (symbol: ITargetingSymbol) => void;
+    polygon?: Polygon;
+    fire: (x1: number, y1: number, x2: number, y2: number) => void;
 }
 
 interface IState {
-    elements: ITargetingElement[];
-    flashing?: boolean;
+    prevPolygon?: Polygon;
+    x1?: number;
+    y1?: number;
+    x2?: number;
+    y2?: number;
 }
 
 export class Targeting extends React.PureComponent<IProps, IState> {
@@ -27,75 +21,38 @@ export class Targeting extends React.PureComponent<IProps, IState> {
         super(props);
 
         this.state = {
-            elements: props.symbols.map(s => this.createElement(s)),
+            prevPolygon: props.polygon,
         };
     }
 
     componentWillReceiveProps(nextProps: IProps) {
-        // if symbol list changes, recreate all elements
-        let recreateElements = this.props.symbols !== nextProps.symbols;
-
-        if (nextProps.lastFireTime !== this.props.lastFireTime) {
-            recreateElements = true;
-            
-            // flash the state on, and turn it off again after a second
-            this.setState({ flashing: nextProps.lastFireWasSuccess });
-
-            setTimeout(() => this.setState({ flashing: undefined }), 1000);
-        }
-
-        if (recreateElements) {
-            this.setState({
-                elements: nextProps.symbols.map(s => this.createElement(s)),
-            });
+        if (nextProps.polygon !== this.props.polygon) {
+            this.setState({ prevPolygon: this.props.polygon });
         }
     }
 
     render() {
-        let classes = this.props.className === undefined
-            ? 'targeting'
-            : this.props.className + ' targeting';
+        let classes = 'targeting';
 
+        /*
         if (this.state.flashing === true) {
             classes += ' targeting--success';
         }
         else if (this.state.flashing === false) {
             classes += ' targeting--failure';
         }
+        */
 
-        const symbols = this.state.elements.map((e, i) => {
-            const clicked = () => this.elementClicked(e);
-            
-            return <TargetingElement
-                key={i}
-                animate={true}
-                status={e.status}
-                color={e.symbol.color}
-                shape={e.symbol.shape}
-                clicked={clicked}
-            />
-        })
+        // TODO: handle mouse interaction, animating intersection as mouse moves, calling fire
+        const draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => this.draw(ctx, w, h);
 
-        return <div className={classes}>
-            {symbols}
-        </div>;
+        return <FlexibleCanvas
+            className={classes}
+            draw={draw}
+        />;
     }
 
-    private createElement(symbol: ITargetingSymbol) {
-        return {
-            symbol: symbol,
-            status: Status.Clickable,
-        };
-    }
-
-    private elementClicked(element: ITargetingElement) {
-        element.status = Status.Selected;
-
-        // re-set the elements, so that this status change is displayed
-        this.setState({
-            elements: this.state.elements,
-        })
-
-        this.props.symbolSelected(element.symbol);
+    private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
+        // TODO: decide how to size the shape, draw background and draw shape
     }
 }
