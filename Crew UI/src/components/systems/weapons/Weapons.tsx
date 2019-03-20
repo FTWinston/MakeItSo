@@ -7,16 +7,16 @@ import './Weapons.scss';
 import { TargetList } from '../sensors/TargetList';
 import { WeaponState, actionCreators, TargetingSolutionType, ITargetingSolution } from './store';
 import { connection } from '~/index';
-import { TargetDisplay } from './TargetDisplay';
-import { Targeting } from './Targeting';
+import { TargetOverview } from './TargetOverview';
 import { RadarView } from '~/components/general/RadarView';
+import { SolutionList } from './SolutionList';
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
     allTargets: SensorTarget[];
     shipPosition: Vector3;
     shipOrientation: Rotator;
-    selectTargetingSolution: (solution: ITargetingSolution) => void;
+    selectTargetingSolution: (solution: TargetingSolutionType) => void;
 }
 
 interface IState {
@@ -67,39 +67,53 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 />
             </div>
         }
-        else 
+        else if (this.props.selectedSolution === undefined)
         {
             const clearTarget = () => connection.send(`wpn_target 0`);
-            const selectSymbol = (symbol: ITargetingSymbol) => {
-                this.props.selectSymbol(symbol);
-                connection.send(`wpn_input ${this.props.targetingSymbols.indexOf(symbol)}`);
-            };
-            const lastFireSuccess = this.props.lastUsedSolution !== TargetingSolutionType.None;
+
+            const selectSolution = (solution: ITargetingSolution) => this.props.selectTargetingSolution(solution.type);
 
             return <div className="system weapons weapons--solutionSelection">
-                <TargetDisplay
+                {this.renderTargetOverview(clearTarget)}
+                
+                <SolutionList
                     text={this.props.text}
-                    target={this.state.selectedTarget}
-                    deselectTarget={clearTarget}
                     solutions={this.props.targetingSolutions}
-                    selectedSymbols={this.props.selectedSymbols}
+                    solutionSelected={selectSolution}
                     currentlyFacing={this.props.currentlyFacing}
-                    lastFireTime={this.props.lastFireTime}
-                    lastUsedSolution={this.props.lastUsedSolution}
-                    relPitch={this.props.targetPitch}
-                    relYaw={this.props.targetYaw}
-                    relRoll={this.props.targetRoll}
-                />
-                <Targeting
-                    className="weapons__targeting"
-                    symbols={this.props.targetingSymbols}
-                    selectedSymbols={this.props.selectedSymbols}
-                    symbolSelected={selectSymbol}
-                    lastFireTime={this.props.lastFireTime}
-                    lastFireWasSuccess={lastFireSuccess}
                 />
             </div>
         }
+        else {
+            const deselectSolution = () => this.props.selectTargetingSolution(TargetingSolutionType.None);
+            const fire = (x1: number, y1: number, x2: number, y2: number) => connection.send(`wpn_fire ${x1} ${y1} ${x2} ${y2}`);
+
+            return <div className="system weapons weapons--firingSolution">
+                {this.renderTargetOverview(deselectSolution)}
+
+                <Targeting
+                    text={this.props.text}
+                    solution={this.props.selectedSolution}
+                    fire={fire}
+                />
+            </div>
+        }
+    }
+
+    private renderTargetOverview(backClicked: () => void) {
+        return <TargetOverview
+            text={this.props.text}
+            target={this.state.selectedTarget}
+            solutions={this.props.targetingSolutions}
+            selectedSymbols={this.props.selectedSymbols}
+            currentlyFacing={this.props.currentlyFacing}
+            lastFireTime={this.props.lastFireTime}
+            lastUsedSolution={this.props.lastUsedSolution}
+            relPitch={this.props.targetPitch}
+            relYaw={this.props.targetYaw}
+            relRoll={this.props.targetRoll}
+            backClicked={backClicked}
+        />
     }
 }
 

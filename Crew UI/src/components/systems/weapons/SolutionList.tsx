@@ -1,28 +1,30 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { ITargetingSolution, TargetingFace, ITargetingSymbol } from './store';
-import { SolutionInfo } from './SolutionInfo';
+import { ITargetingSolution, TargetingFace } from './store';
+import { SolutionListItem } from './SolutionListItem';
 
 interface IProps {
     className?: string;
     text: TextLocalisation;
     solutions: ITargetingSolution[];
-    selectedSymbols: ITargetingSymbol[];
     currentlyFacing: TargetingFace;
+    solutionSelected: (solution: ITargetingSolution) => void;
 }
 
 export class SolutionList extends React.PureComponent<IProps, {}> {
     public render() {
         const items = this.props.solutions.map((sol, index) => {
-            return <SolutionInfo
+            const selected = () => this.props.solutionSelected(sol);
+
+            return <SolutionListItem
                 text={this.props.text}
                 solutionType={sol.type}
                 bestFacing={sol.bestFacing}
                 baseDifficulty={sol.difficulty}
-                fullSequence={sol.sequence}
                 currentlyFacing={this.props.currentlyFacing}
-                selectedElements={this.calculateNumSelected(this.props.selectedSymbols, sol.sequence)}
+                polygonsByFace={sol.polygonsByFace}
                 key={index}
+                selected={selected}
                 className="weapons__solutionListItem"
             />
         });
@@ -34,21 +36,5 @@ export class SolutionList extends React.PureComponent<IProps, {}> {
         return <div className={classes}>
             {items}
         </div>
-    }
-    
-    private calculateNumSelected(selected: ITargetingSymbol[], sequence: ITargetingSymbol[]) {
-        const maxIndex = Math.min(selected.length, sequence.length);
-        let iIndex = 0;
-
-        for (iIndex; iIndex < maxIndex; iIndex ++) {
-            const a = selected[iIndex];
-            const b = sequence[iIndex];
-
-            if (a.color !== b.color || a.shape !== b.shape) {
-                break;
-            }
-        }
-
-        return iIndex;
     }
 }

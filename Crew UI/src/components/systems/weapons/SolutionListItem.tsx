@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
-import { TargetingSolutionType, TargetingFace, TargetingDifficulty, ITargetingSymbol } from './store';
-import './SolutionInfo.scss';
-import { TargetingElement, Status as ElementStatus } from './TargetingElement';
+import { TargetingSolutionType, TargetingFace, TargetingDifficulty } from './store';
+import './SolutionListItem.scss';
+import { Polygon } from './Polygon';
 
 interface IProps {
     text: TextLocalisation;
@@ -11,31 +11,29 @@ interface IProps {
     baseDifficulty: TargetingDifficulty;
     currentlyFacing: TargetingFace;
     bestFacing?: TargetingFace;
-    fullSequence: ITargetingSymbol[];
-    selectedElements: number;
+    polygonsByFace: { [key: number]: Polygon };
+    selected: () => void;
 }
 
 interface IState {
-    sequence: ITargetingSymbol[];
+    displayPolygon?: Polygon;
 }
 
-export class SolutionInfo extends React.PureComponent<IProps, IState> {
+export class SolutionListItem extends React.PureComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
         this.state = {
-            sequence: this.calculateDisplaySequence(props),
+            displayPolygon: props.polygonsByFace[props.currentlyFacing]
         }
     }
 
     public componentWillReceiveProps(nextProps: IProps) {
         if (this.props.currentlyFacing !== nextProps.currentlyFacing
-            || this.props.bestFacing !== nextProps.bestFacing
-            || this.props.fullSequence !== nextProps.fullSequence
-            || this.props.baseDifficulty !== nextProps.baseDifficulty
+            || this.props.polygonsByFace !== nextProps.polygonsByFace
         ) {
            this.setState({
-                sequence: this.calculateDisplaySequence(nextProps),
+                displayPolygon: nextProps.polygonsByFace[nextProps.currentlyFacing]
            });
         }
     }
@@ -43,6 +41,8 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
     public render() {
         const text = this.getSolutionNameAndDesc();
 
+        const selected = () => this.props.selected;
+        
         let classes = 'solutionInfo';
         if (this.isVulnerability()) {
             classes += ' solutionInfo--vulnerability';
@@ -72,22 +72,13 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
             : <div className="solutionInfo__bestFacing">
                 <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{this.getFacingName(this.props.bestFacing)}</span>
             </div>
+            
+        // TODO: render this.state.displayPolygon as a background thing if it isn't undefined. If it is.
 
-        const symbols = this.state.sequence.map((s, i) => <TargetingElement
-            key={i}
-            animate={false}
-            color={s.color}
-            shape={s.shape}
-            status={i < this.props.selectedElements ? ElementStatus.Selected : ElementStatus.Clickable}
-        />);
-
-        return <div className={classes}>
+        return <div className={classes} onClick={selected}>
             {name}
             {desc}
             {bestFacing}
-            <div className="solutionInfo__sequence">
-                {symbols}
-            </div>
         </div>
     }
 
@@ -133,18 +124,6 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
             default:
                 return solutions.misc;
         }
-    }
-    
-    private calculateDisplaySequence(props: IProps): ITargetingSymbol[] {
-        const difficulty = this.getModifiedDifficulty(props);
-
-        if (difficulty === TargetingDifficulty.Impossible) {
-            return [];
-        }
-
-        const length = Math.min(difficulty, props.fullSequence.length);
-
-        return props.fullSequence.slice(0, length);
     }
     
     private getModifiedDifficulty(props: IProps) {

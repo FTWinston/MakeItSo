@@ -1,9 +1,9 @@
 import * as React from 'react';
 import { SensorTarget, TextLocalisation, OrientationCube } from '~/functionality';
 import { PushButton, FlexibleCanvas, ButtonColor } from '~/components/general';
-import { TargetingFace, ITargetingSolution, ITargetingSymbol, TargetingSolutionType } from './store';
+import { TargetingFace, ITargetingSolution, TargetingSolutionType } from './store';
 import { TargetInfo } from '../sensors/TargetInfo';
-import './TargetDisplay.scss';
+import './TargetOverview.scss';
 import { SolutionList } from './SolutionList';
 
 interface IProps {
@@ -11,7 +11,6 @@ interface IProps {
     target: SensorTarget;
     currentlyFacing: TargetingFace;
     solutions: ITargetingSolution[];
-    selectedSymbols: ITargetingSymbol[];
     lastFireTime: number;
     lastUsedSolution: TargetingSolutionType;
     deselectTarget: () => void;
@@ -20,7 +19,7 @@ interface IProps {
     relRoll: number;
 }
 
-export class TargetDisplay extends React.PureComponent<IProps, {}> {
+export class TargetOverview extends React.PureComponent<IProps, {}> {
     private cube: OrientationCube = new OrientationCube();
 
     public componentWillReceiveProps(nextProps: IProps) {
