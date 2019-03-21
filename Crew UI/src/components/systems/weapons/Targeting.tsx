@@ -229,29 +229,176 @@ export class Targeting extends React.PureComponent<IProps, IState> {
     }
 
     private getClippingInfo(width: number, height: number) {
-        // TODO: actually return proper data here
+        // determine the "full length" version of the clipping line,
+        // plus two clipping paths to use to separate each "half" of the polygon, based on that line
+        
+        let x1 = this.state.x1!;
+        let y1 = this.state.y1!;
+        let x2 = this.state.x2!;
+        let y2 = this.state.y2!;
+
+        let bounds1;
+        let bounds2;
+
+        if (x1 === x2) {
+            y1 = 0;
+            y2 = height
+
+            bounds1 = [
+                { x: 0, y: 0 },
+                { x: x1, y: 0 },
+                { x: x2, y: height },
+                { x: 0, y: height },
+            ];
+
+            bounds2 = [
+                { x: x1, y: 0 },
+                { x: width, y: 0 },
+                { x: width, y: height },
+                { x: x2, y: height },
+            ];
+        }
+        else {
+            // ensure that 1 is left of 2
+            if (x1 > x2) {
+                [x1, x2] = [x2, x1];
+                [y1, y2] = [y2, y1];
+            }
+
+            const gradient = (y2 - y1) / (x2 - x1);
+            // y = mx + c
+            // c = y - mx
+            const yIntercept = y2 - gradient * x2;
+
+            // x = (y - c) / m
+            const xIntercept = (0 - yIntercept) / gradient;
+            const xTopIntercept = (height - yIntercept) / gradient;
+
+            if (gradient >= 0) {
+                if (xIntercept >= 0) {
+                    // left end touches y=0
+                    x1 = xIntercept;
+                    y1 = 0;
+
+                    bounds1 = [ // anticlockwise
+                        { x: x1, y: y1 },
+                        { x: 0, y: 0 },
+                        { x: 0, y: height },
+                    ];
+
+                    bounds2 = [ // clockwise
+                        { x: x1, y: y1 },
+                        { x: width, y: 0 },
+                    ]
+                }
+                else {
+                    // left end touches the left
+                    x1 = 0;
+                    y1 = yIntercept;
+
+                    bounds1 = [ // anticlockwise
+                        { x: x1, y: y1 },
+                        { x: 0, y: height },
+                    ];
+
+                    bounds2 = [ // clockwise
+                        { x: x1, y: y1 },
+                        { x: 0, y: 0 },
+                        { x: width, y: 0 },
+                    ];
+                }
+
+                if (xTopIntercept <= width) {
+                    // right end touches y = height
+                    x2 = xTopIntercept;
+                    y2 = height;
+
+                    bounds1.push({ x: x2, y: y2 }); // anticlockwise
+
+                    bounds2.push({ x: width, y: height }); // clockwise
+                    bounds2.push({ x: x2, y: y2 });
+                }
+                else {
+                    // right end touches the right
+                    x2 = width;
+                    y2 = gradient * width + yIntercept;
+
+                    bounds1.push({ x: width, y: height }); // anticlockwise
+                    bounds1.push({ x: x2, y: y2 });
+
+                    bounds2.push({ x: x2, y: y2 }); // clockwise
+                }
+            }
+            else {
+                if (xTopIntercept >= 0) {
+                    // left end touches y = height
+                    x1 = xTopIntercept;
+                    y1 = height;
+
+                    bounds1 = [ // clockwise
+                        { x: x1, y: y1 },
+                        { x: 0, y: height },
+                        { x: 0, y: 0 },
+                    ];
+
+                    bounds2 = [ // anticlockwise
+                        { x: x1, y: y1 },
+                        { x: width, y: height },
+                    ];
+                }
+                else {
+                    // left end touches the left
+                    x1 = 0;
+                    y1 = yIntercept;
+
+                    bounds1 = [ // clockwise
+                        { x: x1, y: y1 },
+                        { x: 0, y: 0 },
+                    ];
+
+                    bounds2 = [ // anticlockwise
+                        { x: x1, y: y1 },
+                        { x: 0, y: height },
+                        { x: width, y: height },
+                    ];
+                }
+
+                if (xIntercept <= width) {
+                    // right end touches y = 0
+                    x2 = xTopIntercept;
+                    y2 = 0;
+
+                    bounds1.push({ x: x2, y: y2 }); // clockwise
+
+                    bounds2.push({ x: width, y: 0 }); // anticlockwise
+                    bounds2.push({ x: x2, y: y2 });
+                }
+                else {
+                    // right end touches the right
+                    x2 = width;
+                    y2 = gradient * width + yIntercept;
+
+                    bounds2.push({ x: width, y: 0 }); // clockwise
+                    bounds1.push({ x: x2, y: y2 });
+
+                    bounds2.push({ x: x2, y: y2 }); // anticlockwise
+                }
+            }
+        }
 
         return {
             extendedLine: {
-                x1: 0,
-                y1: 0,
-                x2: 1,
-                y2: 1,
+                x1,
+                y1,
+                x2,
+                y2,
             },
-            bounds1: [
-                { x: 0, y: 0 },
-                { x: width, y: 0 },
-                { x: 0, y: height },
-            ],
-            bounds2: [
-                { x: width, y: 0 },
-                { x: width, y: height },
-                { x: 0, y: height },
-            ]
+            bounds1,
+            bounds2,
         }
     }
 
-    private clipPath(ctx: CanvasRenderingContext2D, bounds: { x: number; y: number; }[]) {
+    private clipPath(ctx: CanvasRenderingContext2D, bounds: Array<{ x: number; y: number; }>) {
         ctx.beginPath();
 
         const first = bounds.shift()!;
