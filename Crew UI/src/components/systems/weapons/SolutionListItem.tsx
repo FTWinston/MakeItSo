@@ -6,7 +6,7 @@ import { Polygon } from './Polygon';
 
 interface IProps {
     text: TextLocalisation;
-    solutionType?: TargetingSolutionType;
+    solutionType: TargetingSolutionType;
     className?: string;
     baseDifficulty: TargetingDifficulty;
     currentlyFacing: TargetingFace;
@@ -51,14 +51,6 @@ export class SolutionListItem extends React.PureComponent<IProps, IState> {
             classes += ' ' + this.props.className;
         }
 
-        const name = text === null
-            ? undefined
-            : <div className="solutionInfo__name">{text.name}</div>
-
-        const desc = text === null
-            ? <div className="solutionInfo__prompt">{this.props.text.systems.weapons.solutionPrompt}</div>
-            : <div className="solutionInfo__desc">{text.desc}</div>
-
         let facingClasses = 'solutionInfo__value soluionInfo__facingVal';
         if (this.props.bestFacing === this.props.currentlyFacing) {
             facingClasses += ' soluionInfo__facingVal--best';
@@ -76,17 +68,13 @@ export class SolutionListItem extends React.PureComponent<IProps, IState> {
         // TODO: render this.state.displayPolygon as a background thing if it isn't undefined. If it is.
 
         return <div className={classes} onClick={selected}>
-            {name}
-            {desc}
+            <div className="solutionInfo__name">{text.name}</div>
+            <div className="solutionInfo__desc">{text.desc}</div>
             {bestFacing}
         </div>
     }
 
     private getSolutionNameAndDesc() {
-        if (this.props.solutionType === undefined) {
-            return null;
-        }
-
         const solutions = this.props.text.systems.weapons.solutions;
         switch (this.props.solutionType) {
             case TargetingSolutionType.Misc:
@@ -126,18 +114,6 @@ export class SolutionListItem extends React.PureComponent<IProps, IState> {
         }
     }
     
-    private getModifiedDifficulty(props: IProps) {
-        if (props.bestFacing === props.currentlyFacing) {
-            return Math.max(TargetingDifficulty.VeryEasy, props.baseDifficulty - 2);
-        }
-        else if (this.props.bestFacing === -this.props.currentlyFacing) {
-            return Math.min(TargetingDifficulty.Impossible, props.baseDifficulty + 2);
-        }
-        else {
-            return props.baseDifficulty;
-        }
-    }
-
     private getFacingName(face: TargetingFace) {
         switch (face) {
             case TargetingFace.Front:

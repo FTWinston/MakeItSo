@@ -4,14 +4,34 @@ import { TargetingSolutionType, TargetingFace, TargetingDifficulty } from './sto
 
 interface IProps {
     text: TextLocalisation;
-    solutionType?: TargetingSolutionType;
+    solutionType: TargetingSolutionType;
     className?: string;
     baseDifficulty: TargetingDifficulty;
     currentlyFacing: TargetingFace;
     bestFacing?: TargetingFace;
 }
 
-export class SolutionInfo extends React.PureComponent<IProps> {
+interface IState {
+    currentDifficulty: TargetingDifficulty;
+}
+
+export class SolutionInfo extends React.PureComponent<IProps, IState> {
+    constructor(props: IProps) {
+        super(props);
+
+        this.state = {
+            currentDifficulty: this.getModifiedDifficulty(props),
+        };
+    }
+
+    componentWillReceiveProps(newProps: IProps) {
+        if (newProps.currentlyFacing !== this.props.currentlyFacing || newProps.baseDifficulty !== this.props.baseDifficulty) {
+            this.setState({
+                currentDifficulty: this.getModifiedDifficulty(newProps),
+            });
+        }
+    }
+
     public render() {
         const text = this.getSolutionNameAndDesc();
 
@@ -22,14 +42,6 @@ export class SolutionInfo extends React.PureComponent<IProps> {
         if (this.props.className !== undefined) {
             classes += ' ' + this.props.className;
         }
-
-        const name = text === null
-            ? undefined
-            : <div className="solutionInfo__name">{text.name}</div>
-
-        const desc = text === null
-            ? <div className="solutionInfo__prompt">{this.props.text.systems.weapons.solutionPrompt}</div>
-            : <div className="solutionInfo__desc">{text.desc}</div>
 
         let facingClasses = 'solutionInfo__value soluionInfo__facingVal';
         if (this.props.bestFacing === this.props.currentlyFacing) {
@@ -48,17 +60,14 @@ export class SolutionInfo extends React.PureComponent<IProps> {
         // TODO: render this.state.displayPolygon as a background thing if it isn't undefined. If it is.
 
         return <div className={classes}>
-            {name}
-            {desc}
+            <div className="solutionInfo__name">{text.name}</div>
+            <div className="solutionInfo__desc">{text.desc}</div>
+            <div className="solutionInfo__difficulty">{this.getDifficultyName(this.state.currentDifficulty)}</div>
             {bestFacing}
         </div>
     }
 
     private getSolutionNameAndDesc() {
-        if (this.props.solutionType === undefined) {
-            return null;
-        }
-
         const solutions = this.props.text.systems.weapons.solutions;
         switch (this.props.solutionType) {
             case TargetingSolutionType.Misc:
@@ -103,7 +112,10 @@ export class SolutionInfo extends React.PureComponent<IProps> {
             return Math.max(TargetingDifficulty.VeryEasy, props.baseDifficulty - 2);
         }
         else if (this.props.bestFacing === -this.props.currentlyFacing) {
-            return Math.min(TargetingDifficulty.Impossible, props.baseDifficulty + 2);
+            const newDifficulty = props.baseDifficulty + 2;
+            return newDifficulty > TargetingDifficulty.VeryHard
+                ? TargetingDifficulty.Impossible
+                : newDifficulty;
         }
         else {
             return props.baseDifficulty;
@@ -142,6 +154,23 @@ export class SolutionInfo extends React.PureComponent<IProps> {
                 return true;
             default:
                 return false;
+        }
+    }
+
+    private getDifficultyName(difficulty: TargetingDifficulty) {
+        switch (difficulty) {
+            case TargetingDifficulty.Impossible:
+                return this.props.text.systems.weapons.difficulties.impossible;
+            case TargetingDifficulty.VeryEasy:
+                return this.props.text.systems.weapons.difficulties.veryEasy;
+            case TargetingDifficulty.Easy:
+                return this.props.text.systems.weapons.difficulties.easy;
+            case TargetingDifficulty.Medium:
+                return this.props.text.systems.weapons.difficulties.medium;
+            case TargetingDifficulty.Hard:
+                return this.props.text.systems.weapons.difficulties.hard;
+            case TargetingDifficulty.VeryHard:
+                return this.props.text.systems.weapons.difficulties.veryHard;
         }
     }
 }

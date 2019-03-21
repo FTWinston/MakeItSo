@@ -62,7 +62,7 @@ export function receiveMessage(cmd: string, data: string) {
 }
 
 function parseSolution(data: string): ITargetingSolution {
-    var parts = data.split('|');
+    const parts = data.split('|');
 
     const vals = parts.shift()!
         .split(' ')

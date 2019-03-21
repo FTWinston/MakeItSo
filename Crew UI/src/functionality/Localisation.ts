@@ -176,6 +176,14 @@ export interface TextLocalisation {
             },
             solutionPrompt: string;
             changeSolution: string;
+            difficulties: {
+                impossible: string;
+                veryEasy: string;
+                easy: string;
+                medium: string;
+                hard: string;
+                veryHard: string;
+            },
             solutions: {
                 misc: {
                     name: string;

@@ -61,7 +61,7 @@ export class Polygon {
             const currentIsAbove = isAboveBisector(currentPoint);
 
             // if this segment crossed the bisection line, add the point that happens at to both sets and continue (adding to the other set now)
-            if (currentIsAbove != prevIsAbove) {
+            if (currentIsAbove !== prevIsAbove) {
                 const [gradientSegment, yInterceptSegment] = Polygon.getEquation(prevPoint, currentPoint);
                 const intersection = Polygon.getIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment);
 
@@ -85,7 +85,7 @@ export class Polygon {
         let gradient: number;
         let yIntercept: number;
 
-        if (p2.x == p1.x) {
+        if (p2.x === p1.x) {
             gradient = Number.POSITIVE_INFINITY;
             yIntercept = p1.x; // this is a bit of a hack but it's only used in the next function so that's ok-ish
         }
@@ -101,7 +101,7 @@ export class Polygon {
 
     private static getIntersection(m1: number, c1: number, m2: number, c2: number): IPoint {
         if (m1 === m2) {
-            if (m1 == Number.POSITIVE_INFINITY)
+            if (m1 === Number.POSITIVE_INFINITY)
             {
                 return {
                     x: c1,
@@ -115,28 +115,29 @@ export class Polygon {
                 }
             }
         }
-        else if (m1 == Number.POSITIVE_INFINITY) {
+        else if (m1 === Number.POSITIVE_INFINITY) {
             const x = c1;
             const y = m2 * x + c2;
             return { x, y };
         }
-        else if (m2 == Number.POSITIVE_INFINITY) {
+        else if (m2 === Number.POSITIVE_INFINITY) {
             const x = c2;
             const y = m1 * x + c1;
             return { x, y };
         }
+        else {
+            // y = m1 x + c1
+            // y = m2 x + c2
 
-        // y = m1 x + c1
-        // y = m2 x + c2
+            // m1 x + c1 = m2 x + c2
+            // m1 x - m2 x + c1 = c2
+            // m1 x - m2 x = c2 - c1
+            // m1 - m2 = (c2 - c1) / x
 
-        // m1 x + c1 = m2 x + c2
-        // m1 x - m2 x + c1 = c2
-        // m1 x - m2 x = c2 - c1
-        // m1 - m2 = (c2 - c1) / x
+            const x = (c2 - c1) / (m1 - m2)
+            const y = m1 * x + c1;
 
-        const x = (c2 - c1) / (m1 - m2)
-        const y = m1 * x + c1;
-
-        return { x, y };
+            return { x, y };
+        }
     }
 }

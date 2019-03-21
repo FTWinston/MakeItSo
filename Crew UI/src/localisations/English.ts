@@ -242,6 +242,14 @@ let words: TextLocalisation = {
             },
             solutionPrompt: 'Select a targeting solution to continue.',
             changeSolution: 'Change targeting solution',
+            difficulties: {
+                impossible: 'Impossible',
+                veryEasy: 'Very easy',
+                easy: 'Easy',
+                medium: 'Medium',
+                hard: 'Hard',
+                veryHard: 'Very hard',
+            },
             solutions: {
                 misc: {
                     name: 'General',

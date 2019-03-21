@@ -1,10 +1,9 @@
 import * as React from 'react';
 import { SensorTarget, TextLocalisation, OrientationCube } from '~/functionality';
 import { PushButton, FlexibleCanvas, ButtonColor } from '~/components/general';
-import { TargetingFace, TargetingSolutionType } from './store';
+import { TargetingFace } from './store';
 import { TargetInfo } from '../sensors/TargetInfo';
 import './TargetOverview.scss';
-import { SolutionList } from './SolutionList';
 
 interface IProps {
     text: TextLocalisation;
