@@ -1,7 +1,7 @@
 import * as React from 'react';
 import './Targeting.scss';
 import { Polygon } from './Polygon';
-import { FlexibleCanvas } from '~/components/general';
+import { FlexibleCanvas, TouchArea } from '~/components/general';
 
 interface IProps {
     polygon?: Polygon;
@@ -102,12 +102,13 @@ export class Targeting extends React.PureComponent<IProps, IState> {
         }
         */
 
-        // TODO: handle mouse interaction, animating intersection as mouse moves, calling fire
         const draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => this.draw(ctx, w, h);
+        const setupTouch = (a: TouchArea) => this.setupTouch(a);
 
-        return <FlexibleCanvas
+        return <TouchArea
             className={classes}
             draw={draw}
+            setupTouch={setupTouch}
         />;
     }
 
@@ -411,5 +412,40 @@ export class Targeting extends React.PureComponent<IProps, IState> {
 
         // ctx.lineTo(first.x, first.y);
         ctx.clip();
+    }
+
+    private setupTouch(area: TouchArea) {
+        area.createPan2D(
+            'pan',
+            1,
+            1,
+            false,
+            () => { }, // do nothing with the offset, we only care about the start & end
+            (startX, startY, endX, endY) => this.updateSlice(startX, startY, endX, endY),
+            undefined,
+            () => this.sliceFinished()
+        );
+    }
+
+    private updateSlice(startX: number, startY: number, endX: number, endY: number) {
+        // TODO: these positions need rounded to the nearest grid values
+
+        this.setState({
+            x1: startX,
+            y1: startY,
+            x2: endX,
+            y2: endY,
+        });
+    }
+
+    private sliceFinished() {
+        if (this.state.x1 === undefined || this.state.y1 === undefined || this.state.x2 === undefined || this.state.y2 === undefined) {
+            return;
+        }
+
+        // TODO: the state values need scaled from screen to "grid" coordinates
+        this.props.fire(this.state.x1, this.state.y1, this.state.x2, this.state.y2);
+
+        // TODO: display results, temporarily ignore input
     }
 }
