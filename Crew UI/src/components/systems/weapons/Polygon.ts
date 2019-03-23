@@ -28,9 +28,24 @@ export class Polygon {
         return (firstTot - secondTot) / 2;
     }
 
-    public getBisectedAreas(p1: IPoint, p2: IPoint): [number, number] {
+    public get centroid(): IPoint {
+        let sumX = 0;
+        let sumY = 0;
+
+        for (const point of this.points) {
+            sumX += point.x;
+            sumY += point.y;
+        }
+
+        return {
+            x: sumX / this.points.length,
+            y: sumY / this.points.length,
+        };
+    }
+
+    public bisect(p1: IPoint, p2: IPoint): Polygon[] {
         if (this.points.length < 3) {
-            return [0, 0];
+            return [];
         }
 
         const [gradientBisector, yInterceptBisector] = Polygon.getEquation(p1, p2);
@@ -78,7 +93,16 @@ export class Polygon {
             prevIsAbove = currentIsAbove;
         }
 
-        return [above.area, below.area];
+        const results = [];
+
+        if (above.points.length >= 3) {
+            results.push(above);
+        }
+        if (below.points.length >= 3) {
+            results.push(below);
+        }
+
+        return results;
     }
     
     private static getEquation(p1: IPoint, p2: IPoint): [number, number] {
