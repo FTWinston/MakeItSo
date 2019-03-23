@@ -14,10 +14,6 @@
 #include "MakeItSoPawn.h"
 #include "SensorSystem.h"
 
-#define NUM_TARGETING_SYMBOL_OPTIONS 72
-#define MIN_TARGETING_SEQUENCE_LENGTH 2
-#define MAX_TARGETING_SEQUENCE_LENGTH 8
-
 UWeaponSystem::UWeaponSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -29,12 +25,7 @@ void UWeaponSystem::ResetData()
 {
 	selectedTargetID = 0;
 	currentlyFacing = FWeaponTargetingSolution::ETargetingFace::NoFace;
-	CLEAR(targetingElements);
-	CLEAR(targetingElementInput);
 	CLEAR(targetingSolutions);
-
-	for (uint8 i = 0; i < NUM_TARGETING_SYMBOL_OPTIONS; i++)
-		SETADD(targetingElements, i);
 }
 
 void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -51,11 +42,12 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	}
 
 	// Add any new targeting solutions
-	for (auto& solution : targetInfo->targetingSolutions)
+	for (auto identifier : targetInfo->targetingSolutions)
 	{
-		auto identifier = PAIRKEY(solution);
-		if (!MAPCONTAINS(targetingSolutions, identifier))
-			AddTargetingSolution(identifier, PAIRVALUE(solution));
+		if (MAPCONTAINS(targetingSolutions, identifier))
+			continue;
+
+		AddTargetingSolution(identifier);
 	}
 
 	// Remove any removed ones
@@ -69,7 +61,7 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		auto identifier = PAIRKEY(it);
 #endif
 
-		if (MAPCONTAINS(targetInfo->targetingSolutions, identifier))
+		if (SETCONTAINS(targetInfo->targetingSolutions, identifier))
 			++it;
 		else
 #ifdef WEB_SERVER_TEST
@@ -123,10 +115,20 @@ bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 		uint8 targetID = ExtractInt(msg, sizeof("wpn_target "));
 		SelectTarget(targetID);
 	}
-	else if (STARTS_WITH(msg, "wpn_input "))
+	else if (STARTS_WITH(msg, "wpn_fire "))
 	{
-		uint8 value = ExtractInt(msg, sizeof("wpn_input "));
-		InputValue(value);
+		TArray<FString> parts = SplitParts(msg, sizeof("wpn_fire "));
+
+		if (SIZENUM(parts) >= 5)
+		{
+			auto identifier = (ETargetingSolutionIdentifier)STOI(parts[0]);
+			uint8 x1 = STOI(parts[1]);
+			uint8 y1 = STOI(parts[2]);
+			uint8 x2 = STOI(parts[3]);
+			uint8 y2 = STOI(parts[4]);
+
+			FireSolution(identifier, x1, y1, x2, y2);
+		}
 	}
 	else
 		return false;
@@ -139,9 +141,6 @@ void UWeaponSystem::SendAllData_Implementation()
 	SendSelectedTarget();
 	SendTargetingSolutions();
 	SendFacing();
-
-	if (selectedTargetID != 0)
-		SendTargetingElements();
 }
 
 
@@ -171,7 +170,9 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 		{
 			output += TEXT("/");
 		}
-		
+	
+		// TODO: implement what's needed for this
+		/*
 		APPENDINT(output, (uint8)PAIRKEY(solution));
 		output += TEXT(" ");
 
@@ -185,19 +186,7 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 			output += TEXT(" ");
 			APPENDINT(output, symbol);
 		}
-	}
-
-	SendSystem(output);
-}
-
-void UWeaponSystem::SendTargetingElements_Implementation()
-{
-	FString output = TEXT("wpn_targeting");
-
-	for (auto element : targetingElements)
-	{
-		output += TEXT(" ");
-		APPENDINT(output, element);
+		*/
 	}
 
 	SendSystem(output);
@@ -235,24 +224,22 @@ void UWeaponSystem::SendFire_Implementation(ETargetingSolutionIdentifier solutio
 void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 {
 	selectedTargetID = targetID;
-	AllocateTargetingElements();
-
 	DetermineTargetingSolutions();
 
 	if (ISCLIENT())
 	{
 		SendSelectedTarget();
-		SendTargetingElements();
 		SendTargetingSolutions();
 	}
 }
 
-void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
+void UWeaponSystem::FireSolution_Implementation(ETargetingSolutionIdentifier solution, uint8 x1, uint8 y1, uint8 x2, uint8 y2)
 {
-	if (selectedTargetID == 0 || elementIndex >= NUM_TARGETING_SYMBOL_OPTIONS)
+	if (selectedTargetID == 0 || !SETCONTAINS(targetingSolutions, solution))
 		return;
 
-	auto elementValue = targetingElements[elementIndex];
+	// TODO: implement bisecting and firing
+	/*
 
 	SETADD(targetingElementInput, elementValue);
 
@@ -341,6 +328,7 @@ void UWeaponSystem::InputValue_Implementation(uint8 elementIndex)
 
 		CLEAR(targetingElementInput);
 	}
+	*/
 }
 
 void UWeaponSystem::RemoveTargetingSolution(ETargetingSolutionIdentifier identifier)
@@ -352,7 +340,7 @@ void UWeaponSystem::RemoveTargetingSolution(ETargetingSolutionIdentifier identif
 	if (targetInfo == nullptr)
 		return;
 
-	MAPREMOVE(targetInfo->targetingSolutions, identifier);
+	SETREMOVEVAL(targetInfo->targetingSolutions, identifier);
 }
 
 USensorTargetInfo *UWeaponSystem::GetSelectedTarget()
@@ -367,71 +355,95 @@ USensorTargetInfo *UWeaponSystem::GetSelectedTarget()
 	return ((USensorSystem*)sensorSystem)->GetTarget(selectedTargetID);
 }
 
-void UWeaponSystem::AllocateTargetingElements()
-{
-	SHUFFLE(targetingElements, uint8);
-}
-
 void UWeaponSystem::DetermineTargetingSolutions()
 {
 	CLEAR(targetingSolutions);
 
 	auto targetInfo = GetSelectedTarget();
-	
+
 	if (targetInfo != nullptr)
-		for (auto& solution : targetInfo->targetingSolutions)
-			AddTargetingSolution(PAIRKEY(solution), PAIRVALUE(solution));
+		for (auto identifier : targetInfo->targetingSolutions)
+			AddTargetingSolution(identifier);
 }
 
-void UWeaponSystem::AddTargetingSolution(ETargetingSolutionIdentifier identifier, FWeaponTargetingSolution &solution)
+void UWeaponSystem::AddTargetingSolution(ETargetingSolutionIdentifier identifier)
 {
-	FWeaponTargetingSolutionDetail details;
-	details.baseSequenceLength = solution.baseSequenceLength;
-	details.bestFacing = solution.bestFacing;
+	FWeaponTargetingSolution solution;
+	solution.baseDifficulty = GetSolutionDifficulty(identifier);
+	solution.bestFacing = GetSolutionBestFace(identifier);
+	CreatePolygons(solution);
 
-	AllocateSequence(details);
-
-	MAPADD(targetingSolutions, identifier, details, ETargetingSolutionIdentifier, FWeaponTargetingSolutionDetail);
+	MAPADD(targetingSolutions, identifier, solution, ETargetingSolutionIdentifier, FWeaponTargetingSolution);
 }
 
-void UWeaponSystem::AllocateSequence(FWeaponTargetingSolutionDetail &solution)
+FWeaponTargetingSolution::ETargetingFace UWeaponSystem::GetSolutionBestFace(ETargetingSolutionIdentifier solution)
 {
-	CLEAR(solution.symbolSequence);
-
-	for (auto i = 0; i < MAX_TARGETING_SEQUENCE_LENGTH; i++)
+	switch (solution)
 	{
-		uint8 symbol;
-
-		do
-		{
-			symbol = FMath::RandRange(0, NUM_TARGETING_SYMBOL_OPTIONS - 1);
-		} while (SETCONTAINS(solution.symbolSequence, symbol));
-
-		SETADD(solution.symbolSequence, symbol);
+	case ETargetingSolutionIdentifier::Engines:
+	case ETargetingSolutionIdentifier::EngineVulnerability:
+		return FWeaponTargetingSolution::Rear;
+	case ETargetingSolutionIdentifier::Warp:
+	case ETargetingSolutionIdentifier::WarpVulnerability:
+		return FWeaponTargetingSolution::Bottom;
+	case ETargetingSolutionIdentifier::Weapons:
+	case ETargetingSolutionIdentifier::WeaponVulnerability:
+		return FWeaponTargetingSolution::Front;
+	case ETargetingSolutionIdentifier::Sensors:
+	case ETargetingSolutionIdentifier::SensorVulnerability:
+		return FWeaponTargetingSolution::Left;
+	case ETargetingSolutionIdentifier::PowerManagement:
+	case ETargetingSolutionIdentifier::PowerVulnerability:
+		return FWeaponTargetingSolution::Top;
+	case ETargetingSolutionIdentifier::DamageControl:
+	case ETargetingSolutionIdentifier::DamageControlVulnerability:
+		return FWeaponTargetingSolution::Right;
+	case ETargetingSolutionIdentifier::Communications:
+	case ETargetingSolutionIdentifier::CommunicationVulnerability:
+		return FWeaponTargetingSolution::Right;
+	default:
+		return FWeaponTargetingSolution::NoFace;
 	}
 }
 
-uint8 UWeaponSystem::DetermineSequenceLength(uint8 baseSequenceLength, FWeaponTargetingSolution::ETargetingFace bestFacing)
+int8 UWeaponSystem::GetSolutionDifficulty(ETargetingSolutionIdentifier solution)
 {
-	uint8 sequenceLength = baseSequenceLength;
+	if (solution >= ETargetingSolutionIdentifier::MIN_SYSTEM_VULNERABILITY && solution <= ETargetingSolutionIdentifier::MAX_SYSTEM_VULNERABILITY)
+		return 7;
+
+	if (solution >= ETargetingSolutionIdentifier::MIN_STANDARD_SYSTEM && solution <= ETargetingSolutionIdentifier::MAX_STANDARD_SYSTEM)
+		return 4;
+
+	if (solution == ETargetingSolutionIdentifier::MiscVulnerability)
+		return 5;
+
+	if (solution == ETargetingSolutionIdentifier::Misc)
+		return 3;
+
+	return 0;
+}
+
+uint8 UWeaponSystem::DetermineDifficulty(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)
+{
+	uint8 difficulty = baseDifficulty;
 
 	// Adjust difficulty to account for the target's best / worst face being the one pointed at the ship
 	if (bestFacing == currentlyFacing)
 	{
-		if (sequenceLength > MIN_TARGETING_SEQUENCE_LENGTH)
-			sequenceLength -= 2;
+		if (difficulty > MIN_TARGETING_SEQUENCE_LENGTH)
+			difficulty -= 2;
 	}
 	else if (bestFacing == -currentlyFacing) {
-		sequenceLength += 2;
+		difficulty += 2;
 	}
 
-	if (sequenceLength > MAX_TARGETING_SEQUENCE_LENGTH)
+	if (difficulty > MAX_TARGETING_SEQUENCE_LENGTH)
 		return 0;
 
-	if (sequenceLength < MIN_TARGETING_SEQUENCE_LENGTH)
+	if (difficulty < MIN_TARGETING_SEQUENCE_LENGTH)
 		return MIN_TARGETING_SEQUENCE_LENGTH;
 
-	return sequenceLength;
+	return difficulty;
 }
 
 UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolutionIdentifier solution)
@@ -493,7 +505,7 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolutionIdent
 	}
 }
 
-uint8 UWeaponSystem::GetDamageForSolution(ETargetingSolutionIdentifier solution)
+uint8 UWeaponSystem::GetDamageForSolution(ETargetingSolutionIdentifier solution, float firstHalfPercentage)
 {
 	float damage = 0; 
 
@@ -505,6 +517,10 @@ uint8 UWeaponSystem::GetDamageForSolution(ETargetingSolutionIdentifier solution)
 		damage = FMath::FRandRange(20, 40);
 	else if (solution >= ETargetingSolutionIdentifier::MIN_SYSTEM_VULNERABILITY && solution <= ETargetingSolutionIdentifier::MAX_SYSTEM_VULNERABILITY)
 		damage = FMath::FRandRange(55, 75);
+
+	// TODO: account (non-linearly) for how close firstHalfPercentage is to 50
+
+	// TODO: possibly reduce the scale of the randomness here?
 
 	// scale damage should by system power
 	return (uint8)(damage * GetPowerLevel() / 100.f);

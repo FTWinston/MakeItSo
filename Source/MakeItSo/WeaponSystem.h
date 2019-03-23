@@ -56,23 +56,20 @@ struct FWeaponTargetingSolution
 
 	FWeaponTargetingSolution() {}
 	
-	FWeaponTargetingSolution(uint8 sequenceLength, ETargetingFace bestFace)
+	FWeaponTargetingSolution(uint8 baseDifficulty, ETargetingFace bestFace)
 	{
-		this->baseSequenceLength = sequenceLength;
+		this->baseDifficulty = baseDifficulty;
 		this->bestFacing = bestFace;
 	}
 
 	UPROPERTY(Replicated)
-	uint8 baseSequenceLength;
+	ETargetingFace bestFacing;
 
 	UPROPERTY(Replicated)
-	ETargetingFace bestFacing;
-};
+	uint8 baseDifficulty;
 
-USTRUCT()
-struct FWeaponTargetingSolutionDetail : public FWeaponTargetingSolution
-{
-	TArray<uint8> symbolSequence;
+	UPROPERTY(Replicated)
+	TArray<TArray<uint8>> polygons;
 };
 
 
@@ -91,33 +88,26 @@ protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Weapons; }
 
 private:
-	void AllocateTargetingElements();
 	void DetermineTargetingSolutions();
-	void AddTargetingSolution(ETargetingSolutionIdentifier identifier, FWeaponTargetingSolution &solution);
-	void AllocateSequence(FWeaponTargetingSolutionDetail &solution);
-	uint8 DetermineSequenceLength(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing);
+	void AddTargetingSolution(ETargetingSolutionIdentifier identifier);
+	void CreatePolygons(FWeaponTargetingSolution &solution);
+	float BisectPolygon(TArray<uint8> points);
 	UShipSystem::ESystem GetSystemForSolution(ETargetingSolutionIdentifier solution);
-	uint8 GetDamageForSolution(ETargetingSolutionIdentifier solution);
+	uint8 GetDamageForSolution(ETargetingSolutionIdentifier solution, float firstHalfPercentage);
 	void RemoveTargetingSolution(ETargetingSolutionIdentifier solution);
 	USensorTargetInfo *GetSelectedTarget();
+	
+	FWeaponTargetingSolution::ETargetingFace GetSolutionBestFace(ETargetingSolutionIdentifier solution);
+	int8 GetSolutionDifficulty(ETargetingSolutionIdentifier solution);
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SelectedTargetID)
 	uint16 selectedTargetID;
 	void OnReplicated_SelectedTargetID(uint16 beforeChange) { SendSelectedTarget(); }
 
-	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingElements)
-	TArray<uint8> targetingElements;
-	void OnReplicated_TargetingElements(uint8 beforeChange) { SendTargetingElements(); }
-
-	UPROPERTY()
-	TArray<uint8> targetingElementInput;
-
-
-	
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_TargetingSolutions)
-	TMap<ETargetingSolutionIdentifier, FWeaponTargetingSolutionDetail> targetingSolutions;
-	void OnReplicated_TargetingSolutions(TMap<uint8, FWeaponTargetingSolutionDetail> beforeChange) { SendTargetingSolutions(); }
+	TMap<ETargetingSolutionIdentifier, FWeaponTargetingSolution> targetingSolutions;
+	void OnReplicated_TargetingSolutions(TMap<uint8, FWeaponTargetingSolution> beforeChange) { SendTargetingSolutions(); }
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_CurrentlyFacing)
 	FWeaponTargetingSolution::ETargetingFace currentlyFacing;
@@ -140,14 +130,6 @@ private:
 	{ SendTargetingSolutions_Implementation(); }
 #ifdef WEB_SERVER_TEST
 	void SendTargetingSolutions_Implementation();
-#endif
-	;
-
-	UFUNCTION(Client, Reliable)
-	void SendTargetingElements()
-#ifdef WEB_SERVER_TEST
-	{ SendTargetingElements_Implementation(); }
-	void SendTargetingElements_Implementation();
 #endif
 	;
 
@@ -185,10 +167,10 @@ private:
 	;
 
 	UFUNCTION(Server, Reliable)
-	void InputValue(uint8 elementIndex)
+	void FireSolution(ETargetingSolutionIdentifier solution, uint8 x1, uint8 y1, uint8 x2, uint8 y2)
 #ifdef WEB_SERVER_TEST
-	{ InputValue_Implementation(elementIndex); }
-	void InputValue_Implementation(uint8 elementIndex);
+	{ FireSolution_Implementation(solution, x1, y1, x2, y2); }
+	void FireSolution_Implementation(ETargetingSolutionIdentifier solution, uint8 x1, uint8 y1, uint8 x2, uint8 y2);
 #endif
 	;
 };
