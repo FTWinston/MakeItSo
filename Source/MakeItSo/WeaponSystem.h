@@ -91,6 +91,7 @@ private:
 	void DetermineTargetingSolutions();
 	void AddTargetingSolution(ETargetingSolutionIdentifier identifier);
 	void CreatePolygons(FWeaponTargetingSolution &solution);
+	void CreatePolygon(FWeaponTargetingSolution &solution, uint8 difficulty);
 	float BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uint8 x2, uint8 y2);
 	TArray<uint8> GetPolygonForCurrentlyFacing(FWeaponTargetingSolution &solution);
 	UShipSystem::ESystem GetSystemForSolution(ETargetingSolutionIdentifier solution);

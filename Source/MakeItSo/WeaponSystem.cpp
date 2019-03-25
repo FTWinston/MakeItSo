@@ -14,6 +14,8 @@
 #include "MakeItSoPawn.h"
 #include "SensorSystem.h"
 
+#define MAX_SOLUTION_DIFFICULTY 10
+
 UWeaponSystem::UWeaponSystem()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -257,7 +259,7 @@ void UWeaponSystem::FireSolution_Implementation(ETargetingSolutionIdentifier ide
 	else
 	{
 		// Regular solutions just need new shapes to be calculated
-		// TODO: allocate a new sequence for this solution identifier
+		CreatePolygons(solution);
 	}
 
 
@@ -324,7 +326,75 @@ void UWeaponSystem::AddTargetingSolution(ETargetingSolutionIdentifier identifier
 
 void UWeaponSystem::CreatePolygons(FWeaponTargetingSolution &solution)
 {
-	// TODO: this
+	CLEAR(solution.polygons);
+
+	// always have one polygon that uses the solution's base difficulty
+	CreatePolygon(solution, solution.baseDifficulty);
+
+	if (solution.bestFacing == FWeaponTargetingSolution::ETargetingFace::NoFace)
+		return;
+
+
+	uint8 sideDifficulty = solution.baseDifficulty + 2;
+	if (sideDifficulty > MAX_SOLUTION_DIFFICULTY)
+		return;
+
+	CreatePolygon(solution, sideDifficulty);
+
+
+	uint8 oppositeDifficulty = sideDifficulty + 4;
+	if (oppositeDifficulty > MAX_SOLUTION_DIFFICULTY)
+		return;
+
+	CreatePolygon(solution, oppositeDifficulty);
+}
+
+void UWeaponSystem::CreatePolygon(FWeaponTargetingSolution &solution, uint8 difficulty)
+{
+	TArray<uint8> polygon;
+
+	// TODO: either use a big list of predefined shapes or calculate these on the fly
+
+	if (difficulty <= 1)
+	{
+		// a simple square
+		SETADD(polygon, 1);
+		SETADD(polygon, 1);
+		SETADD(polygon, 6);
+		SETADD(polygon, 1);
+		SETADD(polygon, 6);
+		SETADD(polygon, 6);
+		SETADD(polygon, 6);
+		SETADD(polygon, 1);
+	}
+	else if (difficulty <= 2)
+	{
+		// a bit squigglier
+		SETADD(polygon, 1);
+		SETADD(polygon, 1);
+		SETADD(polygon, 3);
+		SETADD(polygon, 1);
+		SETADD(polygon, 6);
+		SETADD(polygon, 5);
+		SETADD(polygon, 6);
+		SETADD(polygon, 2);
+	}
+	else
+	{
+		// some nonsense
+		SETADD(polygon, 1);
+		SETADD(polygon, 1);
+		SETADD(polygon, 3);
+		SETADD(polygon, 1);
+		SETADD(polygon, 6);
+		SETADD(polygon, 5);
+		SETADD(polygon, 6);
+		SETADD(polygon, 2);
+		SETADD(polygon, 3);
+		SETADD(polygon, 4);
+	}
+
+	SETADD(solution.polygons, polygon);
 }
 
 TArray<uint8> UWeaponSystem::GetPolygonForCurrentlyFacing(FWeaponTargetingSolution &solution)
@@ -334,8 +404,12 @@ TArray<uint8> UWeaponSystem::GetPolygonForCurrentlyFacing(FWeaponTargetingSoluti
 	if (numPolygons < 2 || solution.bestFacing == FWeaponTargetingSolution::ETargetingFace::NoFace || currentlyFacing == solution.bestFacing)
 		return solution.polygons[0];
 
-	if (currentlyFacing == -solution.bestFacing && numPolygons > 2)
-		return solution.polygons[2];
+	if (currentlyFacing == -solution.bestFacing)
+		if (numPolygons > 2)
+			return solution.polygons[2];
+		else {
+			// TODO: return ... null? empty array?
+		}
 
 	return solution.polygons[1];
 }
