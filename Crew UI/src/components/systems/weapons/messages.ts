@@ -21,6 +21,7 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.setTargetingSolutions(solutions));
             break;
         }
+        /*
         case 'wpn_solution_add': {
             const solution = parseSolution(data);
             store.dispatch(actionCreators.setTargetingSolution(solution));
@@ -31,14 +32,7 @@ export function receiveMessage(cmd: string, data: string) {
             store.dispatch(actionCreators.removeTargetingSolution(type));
             break;
         }
-        case 'wpn_solution': {
-            const type = data === ''
-                ? TargetingSolutionType.None
-                : parseInt(data) as TargetingSolutionType;
-
-            store.dispatch(actionCreators.selectTargetingSolution(type));
-            break;
-        }
+        */
         case 'wpn_facing': {
             const face = parseInt(data) as TargetingFace;
             store.dispatch(actionCreators.setCurrentlyFacing(face));

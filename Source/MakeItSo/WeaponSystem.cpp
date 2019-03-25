@@ -170,23 +170,26 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 		{
 			output += TEXT("/");
 		}
-	
-		// TODO: implement what's needed for this
-		/*
+
+		// read by parseSolution
+		auto details = PAIRVALUE(solution);
+
 		APPENDINT(output, (uint8)PAIRKEY(solution));
 		output += TEXT(" ");
-
-		auto details = PAIRVALUE(solution);
-		APPENDINT(output, details.baseSequenceLength);
+		APPENDINT(output, details.baseDifficulty);
 		output += TEXT(" ");
 		APPENDINT(output, (int8)details.bestFacing);
-		
-		for (auto symbol : details.symbolSequence)
+
+		for (auto polygon : details.polygons)
 		{
-			output += TEXT(" ");
-			APPENDINT(output, symbol);
+			output += TEXT("|");
+
+			// read by parsePolygon
+			for (uint8 coord : polygon) {
+				output += TEXT(" ");
+				APPENDINT(output, coord);
+			}
 		}
-		*/
 	}
 
 	SendSystem(output);
@@ -233,102 +236,45 @@ void UWeaponSystem::SelectTarget_Implementation(uint16 targetID)
 	}
 }
 
-void UWeaponSystem::FireSolution_Implementation(ETargetingSolutionIdentifier solution, uint8 x1, uint8 y1, uint8 x2, uint8 y2)
+void UWeaponSystem::FireSolution_Implementation(ETargetingSolutionIdentifier identifier, uint8 x1, uint8 y1, uint8 x2, uint8 y2)
 {
-	if (selectedTargetID == 0 || !SETCONTAINS(targetingSolutions, solution))
+	if (selectedTargetID == 0 || !MAPCONTAINS(targetingSolutions, identifier))
 		return;
 
-	// TODO: implement bisecting and firing
-	/*
+	auto solution = targetingSolutions[identifier];
+	auto polygon = GetPolygonForCurrentlyFacing(solution);
 
-	SETADD(targetingElementInput, elementValue);
+	float segmentPercentage = BisectPolygon(polygon, x1, y1, x2, y2);
 
-	bool anyPartialMatch = false;
-	ETargetingSolutionIdentifier fullMatchIdentifier = ETargetingSolutionIdentifier::None;
+	auto targetSystem = GetSystemForSolution(identifier);
+	auto damageToDeal = GetDamageForSolution(identifier, segmentPercentage);
 
-	for (auto& solution : targetingSolutions)
+	if (identifier >= ETargetingSolutionIdentifier::MIN_VULNERABILITY)
 	{
-		auto identifier = PAIRKEY(solution);
-		auto details = PAIRVALUE(solution);
-
-		auto sequenceLength = DetermineSequenceLength(details.baseSequenceLength, details.bestFacing);
-
-		if (sequenceLength == 0)
-			continue;
-
-		// Determine whether this solution is a full or partial match for the current input
-		uint8 sequenceMatchLength = (uint8)sequenceLength;
-		uint8 partialMatchLength = FMath::Min((uint8)SIZENUM(targetingElementInput), sequenceMatchLength);
-
-		bool isPartialMatch = true;
-		bool isFullMatch;
-		
-		for (uint8 i = 0; i < partialMatchLength; i++)
-			if (targetingElementInput[i] != details.symbolSequence[i])
-			{
-				isPartialMatch = false;
-				break;
-			}
-
-		if (isPartialMatch)
-			isFullMatch = partialMatchLength == sequenceMatchLength;
-		else
-			isFullMatch = false;
-
-		anyPartialMatch |= isPartialMatch;
-		
-		if (!isFullMatch)
-			continue;
-
-		if (fullMatchIdentifier == ETargetingSolutionIdentifier::None)
-			fullMatchIdentifier = identifier;
-
-		// Only continue if this is a full match
-		CLEAR(targetingElementInput);
-
-		auto targetSystem = GetSystemForSolution(identifier);
-		auto damage = GetDamageForSolution(identifier);
-		
-		if (identifier >= ETargetingSolutionIdentifier::MIN_VULNERABILITY)
-		{
-			// Vulnerabilities are consumed when they are used
-			RemoveTargetingSolution(identifier);
-		}
-		else
-		{
-			// Other solutions just need a new sequence allocated
-			AllocateSequence(details); // TODO: this won't work, as this local copy will be overwritten by the target info's copy
-		}
-
-		if (ISCLIENT())
-			SendTargetingSolutions();
-
-		auto targetInfo = GetSelectedTarget();
-		if (targetInfo == nullptr)
-			continue;
-
-		auto target = WEAK_PTR_GET(targetInfo->actor);
-		if (target == nullptr)
-			continue;
-
-		// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
+		// Vulnerabilities are consumed when they are used
+		RemoveTargetingSolution(identifier);
+	}
+	else
+	{
+		// Regular solutions just need new shapes to be calculated
+		// TODO: allocate a new sequence for this solution identifier
 	}
 
-	if (fullMatchIdentifier != ETargetingSolutionIdentifier::None)
-	{
-		SendFire(fullMatchIdentifier); // Tell the client to reset the sequence input
-	}
-	else if (!anyPartialMatch)
-	{
-		// If there's no partial match, this was an invalid input. Abort and reset
 
-		// TODO: fire a "miss" at the target
+	if (ISCLIENT())
+		SendTargetingSolutions(); // TODO: replace this with specific calls to add/remove ... yeah? is that worth having if it can't affect non-local clients?
 
-		SendFire(ETargetingSolutionIdentifier::None); // Tell the client to reset the sequence input
 
-		CLEAR(targetingElementInput);
-	}
-	*/
+	auto targetInfo = GetSelectedTarget();
+	if (targetInfo == nullptr)
+		return;
+
+	auto target = WEAK_PTR_GET(targetInfo->actor);
+	if (target == nullptr)
+		return;
+
+	// TODO: actually fire ... deal damage to targetSystem of target ... probably need a "targetable thing" base class between AActor and AMakeItSoShipPawn
+
 }
 
 void UWeaponSystem::RemoveTargetingSolution(ETargetingSolutionIdentifier identifier)
@@ -374,6 +320,30 @@ void UWeaponSystem::AddTargetingSolution(ETargetingSolutionIdentifier identifier
 	CreatePolygons(solution);
 
 	MAPADD(targetingSolutions, identifier, solution, ETargetingSolutionIdentifier, FWeaponTargetingSolution);
+}
+
+void UWeaponSystem::CreatePolygons(FWeaponTargetingSolution &solution)
+{
+	// TODO: this
+}
+
+TArray<uint8> UWeaponSystem::GetPolygonForCurrentlyFacing(FWeaponTargetingSolution &solution)
+{
+	auto numPolygons = SIZENUM(solution.polygons);
+
+	if (numPolygons < 2 || solution.bestFacing == FWeaponTargetingSolution::ETargetingFace::NoFace || currentlyFacing == solution.bestFacing)
+		return solution.polygons[0];
+
+	if (currentlyFacing == -solution.bestFacing && numPolygons > 2)
+		return solution.polygons[2];
+
+	return solution.polygons[1];
+}
+
+float UWeaponSystem::BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uint8 x2, uint8 y2)
+{
+	// TODO: this
+	return 50.f;
 }
 
 FWeaponTargetingSolution::ETargetingFace UWeaponSystem::GetSolutionBestFace(ETargetingSolutionIdentifier solution)
@@ -423,6 +393,7 @@ int8 UWeaponSystem::GetSolutionDifficulty(ETargetingSolutionIdentifier solution)
 	return 0;
 }
 
+/*
 uint8 UWeaponSystem::DetermineDifficulty(uint8 baseDifficulty, FWeaponTargetingSolution::ETargetingFace bestFacing)
 {
 	uint8 difficulty = baseDifficulty;
@@ -445,6 +416,7 @@ uint8 UWeaponSystem::DetermineDifficulty(uint8 baseDifficulty, FWeaponTargetingS
 
 	return difficulty;
 }
+*/
 
 UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolutionIdentifier solution)
 {
