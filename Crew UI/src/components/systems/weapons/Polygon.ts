@@ -85,9 +85,9 @@ export class Polygon {
             }
 
             if (currentIsAbove)
-                above.points.push(prevPoint);
+                above.points.push(currentPoint);
             else
-                below.points.push(prevPoint);
+                below.points.push(currentPoint);
 
             prevPoint = currentPoint;
             prevIsAbove = currentIsAbove;
