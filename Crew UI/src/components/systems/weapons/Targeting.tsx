@@ -27,7 +27,7 @@ interface IState {
     }>
 }
 
-export class Targeting extends React.PureComponent<IProps, IState> {
+export class Targeting extends React.Component<IProps, IState> {
     private touch: TouchArea;
     private autoClear?: NodeJS.Timer;
 
@@ -217,6 +217,10 @@ export class Targeting extends React.PureComponent<IProps, IState> {
         // first, fill the background
         ctx.fillStyle = '#000';
         ctx.fillRect(0, 0, width, height);
+
+        if (unitSize <= 1) {
+            return;
+        }
 
         // determine where to draw the top left point
         const startX = this.scaleCoord(Math.ceil(this.state.minX), unitSize, this.state.minX);

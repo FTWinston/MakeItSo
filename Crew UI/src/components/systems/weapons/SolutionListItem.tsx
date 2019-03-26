@@ -41,7 +41,7 @@ export class SolutionListItem extends React.PureComponent<IProps, IState> {
     public render() {
         const text = this.getSolutionNameAndDesc();
 
-        const selected = () => this.props.selected;
+        const selected = () => this.props.selected();
         
         let classes = 'solutionInfo';
         if (this.isVulnerability()) {
