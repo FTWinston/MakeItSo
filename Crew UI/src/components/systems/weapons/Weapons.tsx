@@ -114,6 +114,7 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
                 />
 
                 <Targeting
+                    className="weapons__targeting"
                     polygon={polygon}
                     fire={fire}
                 />

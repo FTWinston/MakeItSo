@@ -43,6 +43,8 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		return;
 	}
 
+	bool solutionsChanged = false;
+
 	// Add any new targeting solutions
 	for (auto identifier : targetInfo->targetingSolutions)
 	{
@@ -50,6 +52,7 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 			continue;
 
 		AddTargetingSolution(identifier);
+		solutionsChanged = true;
 	}
 
 	// Remove any removed ones
@@ -66,11 +69,14 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 		if (SETCONTAINS(targetInfo->targetingSolutions, identifier))
 			++it;
 		else
+		{
 #ifdef WEB_SERVER_TEST
 			it = targetingSolutions.erase(it);
 #else
 			it.RemoveCurrent();
 #endif
+			solutionsChanged = true;
+		}
 	}
 
 	// update the angle of the target we are currently facing
@@ -106,7 +112,8 @@ void UWeaponSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 		SendOrientation();
 
-		SendTargetingSolutions();
+		if (solutionsChanged)
+			SendTargetingSolutions();
 	}
 }
 
@@ -141,8 +148,11 @@ bool UWeaponSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message
 void UWeaponSystem::SendAllData_Implementation()
 {
 	SendSelectedTarget();
-	SendTargetingSolutions();
+	if (selectedTargetID != 0)
+		SendTargetingSolutions();
+
 	SendFacing();
+	SendOrientation();
 }
 
 
@@ -186,9 +196,15 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 		{
 			output += TEXT("|");
 
+			bool firstCoord = true;
+
 			// read by parsePolygon
 			for (uint8 coord : polygon) {
-				output += TEXT(" ");
+				if (firstCoord)
+					firstCoord = false;
+				else
+					output += TEXT(" ");
+
 				APPENDINT(output, coord);
 			}
 		}

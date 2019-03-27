@@ -124,7 +124,7 @@ function parsePolygon(data: string) {
 
     const poly = new Polygon();
 
-    for (let i = 1; i < numbers.length; i++) {
+    for (let i = 1; i < numbers.length; i+=2) {
         poly.points.push({
             x: numbers[i - 1],
             y: numbers[i],

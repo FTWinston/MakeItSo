@@ -4,6 +4,7 @@ import { Polygon } from './Polygon';
 import { TouchArea } from '~/components/general';
 
 interface IProps {
+    className?: string;
     polygon?: Polygon;
     fire: (x1: number, y1: number, x2: number, y2: number) => void;
 }
@@ -49,18 +50,16 @@ export class Targeting extends React.Component<IProps, IState> {
         }
     }
 
-    shouldComponentUpdate(nextProps: IProps, nextState: IState) {
-        if (nextState.x2 !== this.state.x2
-            || nextState.y2 !== this.state.y2
-            || nextState.x1 !== this.state.x1
-            || nextState.y1 !== this.state.y1
-            || nextState.sliceResultNumbers !== this.state.sliceResultNumbers
-            || nextProps.polygon !== this.props.polygon
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        if (prevState.x2 !== this.state.x2
+            || prevState.y2 !== this.state.y2
+            || prevState.x1 !== this.state.x1
+            || prevState.y1 !== this.state.y1
+            || prevState.sliceResultNumbers !== this.state.sliceResultNumbers
+            || prevProps.polygon !== this.props.polygon
         ) {
             this.touch.redraw();
         }
-
-        return false;
     }
 
     componentWillUnmount() {
@@ -118,16 +117,9 @@ export class Targeting extends React.Component<IProps, IState> {
     }
 
     render() {
-        let classes = 'targeting';
-
-        /*
-        if (this.state.flashing === true) {
-            classes += ' targeting--success';
-        }
-        else if (this.state.flashing === false) {
-            classes += ' targeting--failure';
-        }
-        */
+        const classes = this.props.className === undefined
+            ? 'targeting'
+            : 'targeting ' + this.props.className;
 
         const draw = (ctx: CanvasRenderingContext2D, w: number, h: number) => this.draw(ctx, w, h);
         const setupTouch = (a: TouchArea) => this.setupTouch(a);
@@ -235,6 +227,7 @@ export class Targeting extends React.Component<IProps, IState> {
 
         for (let x = startX; x < width; x += unitSize) {
             for (let y = startY; y < height; y += unitSize) {
+                ctx.moveTo(x, y);
                 ctx.arc(x, y, radius, 0, twoPi);
             }
         }
@@ -261,7 +254,9 @@ export class Targeting extends React.Component<IProps, IState> {
 
         ctx.lineTo(startX, startY);
 
+        ctx.globalAlpha = 0.8;
         ctx.fill();
+        ctx.globalAlpha = 1;
         ctx.stroke();
     }
 
@@ -499,6 +494,7 @@ export class Targeting extends React.Component<IProps, IState> {
             || this.state.x2 === undefined || this.state.y2 === undefined
             || this.props.polygon === undefined || this.state.sliceResultNumbers !== undefined
         ) {
+            this.clearResults();
             return;
         }
 

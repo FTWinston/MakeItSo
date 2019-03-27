@@ -38,7 +38,7 @@ export class TargetOverview extends React.PureComponent<IProps, {}> {
             </div>
             : undefined;
 
-        return <div className="weapons__targetDisplay targetOverview">
+        return <div className="weapons__targetOverview targetOverview">
             <div className="targetOverview__field">
                 <span className="targetOverview__label">{type}</span>: <span className="targetOverview__id targetOverview__value">{target.id}</span>
             </div>

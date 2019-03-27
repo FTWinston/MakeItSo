@@ -38,7 +38,7 @@ export class TargetFiringOverview extends React.PureComponent<IProps, {}> {
             facingClasses += ' targetOverview__facingVal--worst';
         }
 
-        return <div className="weapons__targetDisplay targetOverview targetOverview--firing">
+        return <div className="weapons__targetOverview targetOverview targetOverview--firing">
             <div className="targetOverview__field">
                 <span className="targetOverview__label">{type}</span>: <span className="targetOverview__id targetOverview__value">{target.id}</span>
             </div>
