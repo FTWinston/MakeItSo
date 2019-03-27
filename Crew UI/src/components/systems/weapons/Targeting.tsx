@@ -502,9 +502,6 @@ export class Targeting extends React.Component<IProps, IState> {
             return;
         }
 
-        // TODO: the state values need scaled from screen to "grid" coordinates
-        this.props.fire(this.state.x1, this.state.y1, this.state.x2, this.state.y2);
-
         // Determine areas of bisected "halfs"
         const parts = this.props.polygon.bisect({ x: this.state.x1, y: this.state.y1 }, { x: this.state.x2, y: this.state.y2 });
 
@@ -519,6 +516,15 @@ export class Targeting extends React.Component<IProps, IState> {
             };
         })
 
+        const firstPercent = sliceResultNumbers[0].percent;
+        if (firstPercent < 0.01 || firstPercent > 99.99) {
+            this.clearResults();
+            return; // if slice was entirely outside the shape, do nothing
+        }
+
+        // TODO: the state values need scaled from screen to "grid" coordinates
+        this.props.fire(this.state.x1, this.state.y1, this.state.x2, this.state.y2);
+
         this.setState({
             sliceResultNumbers,
         });
@@ -527,15 +533,15 @@ export class Targeting extends React.Component<IProps, IState> {
     }
 
     private clearResults() {
-        if (this.autoClear !== undefined) {
-            this.setState({
-                x1: undefined,
-                y1: undefined,
-                x2: undefined,
-                y2: undefined,
-                sliceResultNumbers: undefined,
-            })
+        this.setState({
+            x1: undefined,
+            y1: undefined,
+            x2: undefined,
+            y2: undefined,
+            sliceResultNumbers: undefined,
+        })
 
+        if (this.autoClear !== undefined) {
             clearTimeout(this.autoClear);
             this.autoClear = undefined;
         }

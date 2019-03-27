@@ -356,48 +356,503 @@ void UWeaponSystem::CreatePolygon(FWeaponTargetingSolution &solution, uint8 diff
 {
 	TArray<uint8> polygon;
 
-	// TODO: either use a big list of predefined shapes or calculate these on the fly
-
-	if (difficulty <= 1)
+	switch (difficulty)
 	{
-		// a simple square
-		SETADD(polygon, 1);
-		SETADD(polygon, 1);
-		SETADD(polygon, 6);
-		SETADD(polygon, 1);
-		SETADD(polygon, 6);
-		SETADD(polygon, 6);
-		SETADD(polygon, 6);
-		SETADD(polygon, 1);
-	}
-	else if (difficulty <= 2)
-	{
-		// a bit squigglier
-		SETADD(polygon, 1);
-		SETADD(polygon, 1);
-		SETADD(polygon, 3);
-		SETADD(polygon, 1);
-		SETADD(polygon, 6);
-		SETADD(polygon, 5);
-		SETADD(polygon, 6);
-		SETADD(polygon, 2);
-	}
-	else
-	{
-		// some nonsense
-		SETADD(polygon, 1);
-		SETADD(polygon, 1);
-		SETADD(polygon, 3);
-		SETADD(polygon, 1);
-		SETADD(polygon, 6);
-		SETADD(polygon, 5);
-		SETADD(polygon, 6);
-		SETADD(polygon, 2);
-		SETADD(polygon, 3);
-		SETADD(polygon, 4);
+	case 2:
+		CreatePolygonDifficulty2(polygon);
+		break;
+	case 3:
+		CreatePolygonDifficulty3(polygon);
+		break;
+	case 4:
+		CreatePolygonDifficulty4(polygon);
+		break;
+	case 5:
+		CreatePolygonDifficulty5(polygon);
+		break;
+	case 6:
+		CreatePolygonDifficulty6(polygon);
+		break;
+	case 7:
+		CreatePolygonDifficulty7(polygon);
+		break;
+	case 8:
+		CreatePolygonDifficulty8(polygon);
+		break;
+	case 9:
+		CreatePolygonDifficulty9(polygon);
+		break;
+	case 10:
+		CreatePolygonDifficulty10(polygon);
+		break;
+	default:
+		CreatePolygonDifficulty1(polygon);
+		break;
 	}
 
 	SETADD(solution.polygons, polygon);
+}
+
+#define MIN_POLY_X 5
+#define MIN_POLY_Y 5
+
+void UWeaponSystem::CreatePolygonDifficulty1(TArray<uint8> &polygon)
+{
+	// An orthogonal rectangle
+
+	uint8 x1 = MIN_POLY_X;
+	uint8 y1 = MIN_POLY_Y;
+
+	uint8 x2 = FMath::RandRange(x1 + 3, x1 + 8);
+	uint8 y2 = FMath::RandRange(y1 + 3, y1 + 8);
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y2);
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y2);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty2(TArray<uint8> &polygon)
+{
+	// A parallelogram, skewed on either axis in either direction
+
+	uint8 x1 = MIN_POLY_X;
+	uint8 y1 = MIN_POLY_Y;
+
+	uint8 x2 = FMath::RandRange(x1 + 3, x1 + 6);
+	uint8 y2 = FMath::RandRange(y1 + 3, y1 + 5);
+
+	uint8 skew = FMath::RandRange(1, 4);
+
+	uint8 topX1 = x1, topX2 = x2, bottomX1 = x1, bottomX2 = x2;
+	uint8 leftY1 = y1, leftY2 = y2, rightY1 = y1, rightY2 = y2;
+
+	switch (FMath::RandRange(0, 3))
+	{
+	case 0:
+		topX1 += skew;
+		topX2 += skew;
+		break;
+	case 1:
+		bottomX1 += skew;
+		bottomX2 += skew;
+		break;
+	case 2:
+		leftY1 += skew;
+		leftY2 += skew;
+		break;
+	case 3:
+		rightY1 += skew;
+		rightY2 += skew;
+		break;
+	}
+
+	SETADD(polygon, topX1);
+	SETADD(polygon, leftY1);
+
+	SETADD(polygon, topX2);
+	SETADD(polygon, rightY1);
+
+	SETADD(polygon, bottomX2);
+	SETADD(polygon, rightY2);
+
+	SETADD(polygon, bottomX1);
+	SETADD(polygon, leftY2);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty3(TArray<uint8> &polygon)
+{
+	// A non-symmetrical trapezeum
+
+	uint8 xmin = MIN_POLY_X;
+	uint8 ymin = MIN_POLY_Y;
+
+	uint8 xmax = FMath::RandRange(xmin + 5, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 5, ymin + 8);
+
+	uint8 x1 = xmin, y1 = ymin;
+	uint8 x2 = xmax, y2 = ymin;
+	uint8 x3 = xmax, y3 = ymax;
+	uint8 x4 = xmin, y4 = ymax;
+	uint8 skew1, skew2;
+
+	// Pick one face to shrink
+	switch (FMath::RandRange(0, 3))
+	{
+	case 0: // top
+		skew1 = FMath::RandRange(1, (xmax - xmin - 1) / 2);
+		skew2 = FMath::RandRange(1, (xmax - xmin - 1) / 2);
+		if (skew1 == skew2)
+			skew2--;
+
+		x1 += skew1;
+		x2 -= skew2;
+		break;
+	case 1: // bottom
+		skew1 = FMath::RandRange(1, (xmax - xmin - 1) / 2);
+		skew2 = FMath::RandRange(1, (xmax - xmin - 1) / 2);
+		if (skew1 == skew2)
+			skew2--;
+
+		x4 += skew1;
+		x3 -= skew2;
+		break;
+	case 2: // left
+		skew1 = FMath::RandRange(1, (ymax - ymin - 1) / 2);
+		skew2 = FMath::RandRange(1, (ymax - ymin - 1) / 2);
+		if (skew1 == skew2)
+			skew2--;
+
+		y2 += skew1;
+		y3 -= skew2;
+		break;
+	case 3: // right
+		skew1 = FMath::RandRange(1, (ymax - ymin - 1) / 2);
+		skew2 = FMath::RandRange(1, (ymax - ymin - 1) / 2);
+		if (skew1 == skew2)
+			skew2--;
+
+		y1 += skew1;
+		y4 -= skew2;
+		break;
+	}
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y2);
+
+	SETADD(polygon, x3);
+	SETADD(polygon, y3);
+
+	SETADD(polygon, x4);
+	SETADD(polygon, y4);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty4(TArray<uint8> &polygon)
+{
+	// An orthogonal rectangle with two vertices offset differently
+
+	uint8 xmin = MIN_POLY_X + 2;
+	uint8 ymin = MIN_POLY_Y + 2;
+
+	uint8 xmax = FMath::RandRange(xmin + 4, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 4, ymin + 8);
+
+	uint8 x1 = xmin, y1 = ymin;
+	uint8 x2 = xmax, y2 = ymin;
+	uint8 x3 = xmax, y3 = ymax;
+	uint8 x4 = xmin, y4 = ymax;
+
+	// TODO: this
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y2);
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y2);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty5(TArray<uint8> &polygon)
+{
+	// An orthogonal rectangle with four vertices offset
+#define OFFSET_MAX 3
+
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 4, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 4, ymin + 8);
+
+	uint8 x1 = xmin, y1 = ymin;
+	uint8 x2 = xmax, y2 = ymin;
+	uint8 x3 = xmax, y3 = ymax;
+	uint8 x4 = xmin, y4 = ymax;
+
+
+	// Pick two corners to offset
+	uint8 offsetCorner1 = FMath::RandRange(0, 3);
+	uint8 offsetCorner2;
+	do {
+		offsetCorner2 = FMath::RandRange(0, 3);
+	} while (offsetCorner2 != offsetCorner1);
+
+
+	uint8 &offsetX = x1;
+	uint8 &offsetY = y1;
+
+
+	// Apply offset to first corner
+	switch (offsetCorner1)
+	{
+	case 0:
+		offsetX = x1;
+		offsetY = y1;
+		break;
+	case 1:
+		offsetX = x2;
+		offsetY = y2;
+		break;
+	case 2:
+		offsetX = x3;
+		offsetY = y3;
+		break;
+	case 3:
+		offsetX = x4;
+		offsetY = y4;
+		break;
+	}
+
+	int8 dx, dy;
+	do {
+		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+	} while (dx != 0 || dy != 0);
+
+	offsetX += dx;
+	offsetY += dy;
+
+
+	// Apply offset to second corner
+	switch (offsetCorner2)
+	{
+	case 0:
+		offsetX = x1;
+		offsetY = y1;
+		break;
+	case 1:
+		offsetX = x2;
+		offsetY = y2;
+		break;
+	case 2:
+		offsetX = x3;
+		offsetY = y3;
+		break;
+	case 3:
+		offsetX = x4;
+		offsetY = y4;
+		break;
+	}
+
+	do {
+		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+	} while (dx != 0 || dy != 0);
+
+	offsetX += dx;
+	offsetY += dy;
+
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y2);
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y2);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty6(TArray<uint8> &polygon)
+{
+	// An orthogonal rectangle with four vertices offset
+#define OFFSET_MAX 3
+
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 4, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 4, ymin + 8);
+
+	uint8 x1 = xmin, y1 = ymin;
+	uint8 x2 = xmax, y2 = ymin;
+	uint8 x3 = xmax, y3 = ymax;
+	uint8 x4 = xmin, y4 = ymax;
+
+
+	// Pick two corners to offset
+	uint8 offsetCorner1, offsetCorner2, offsetCorner3;
+	
+	switch (FMath::RandRange(0, 3))
+	{
+	case 0:
+		offsetCorner1 = 0;
+		offsetCorner2 = 1;
+		offsetCorner3 = 2;
+		break;
+	case 1:
+		offsetCorner1 = 1;
+		offsetCorner2 = 2;
+		offsetCorner3 = 3;
+		break;
+	case 2:
+		offsetCorner1 = 2;
+		offsetCorner2 = 3;
+		offsetCorner3 = 0;
+		break;
+	case 3:
+		offsetCorner1 = 3;
+		offsetCorner2 = 0;
+		offsetCorner3 = 1;
+		break;
+	}
+
+	uint8 &offsetX = x1;
+	uint8 &offsetY = y1;
+
+
+	// Apply offset to first corner
+	switch (offsetCorner1)
+	{
+	case 0:
+		offsetX = x1;
+		offsetY = y1;
+		break;
+	case 1:
+		offsetX = x2;
+		offsetY = y2;
+		break;
+	case 2:
+		offsetX = x3;
+		offsetY = y3;
+		break;
+	case 3:
+		offsetX = x4;
+		offsetY = y4;
+		break;
+	}
+
+	int8 dx, dy;
+	do {
+		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+	} while (dx != 0 || dy != 0);
+
+	offsetX += dx;
+	offsetY += dy;
+
+
+	// Apply offset to second corner
+	switch (offsetCorner2)
+	{
+	case 0:
+		offsetX = x1;
+		offsetY = y1;
+		break;
+	case 1:
+		offsetX = x2;
+		offsetY = y2;
+		break;
+	case 2:
+		offsetX = x3;
+		offsetY = y3;
+		break;
+	case 3:
+		offsetX = x4;
+		offsetY = y4;
+		break;
+	}
+
+	do {
+		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+	} while (dx != 0 || dy != 0);
+
+	offsetX += dx;
+	offsetY += dy;
+
+
+	// Apply offset to third corner
+	switch (offsetCorner3)
+	{
+	case 0:
+		offsetX = x1;
+		offsetY = y1;
+		break;
+	case 1:
+		offsetX = x2;
+		offsetY = y2;
+		break;
+	case 2:
+		offsetX = x3;
+		offsetY = y3;
+		break;
+	case 3:
+		offsetX = x4;
+		offsetY = y4;
+		break;
+	}
+
+	do {
+		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+	} while (dx != 0 || dy != 0);
+
+	offsetX += dx;
+	offsetY += dy;
+
+
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y1);
+
+	SETADD(polygon, x2);
+	SETADD(polygon, y2);
+
+	SETADD(polygon, x1);
+	SETADD(polygon, y2);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty7(TArray<uint8> &polygon)
+{
+	// A pentagon with all its vertices offset
+
+	// TODO: this
+	CreatePolygonDifficulty1(polygon);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty8(TArray<uint8> &polygon)
+{
+	// A hexagon with all its vertices offset
+
+	// TODO: this
+	CreatePolygonDifficulty1(polygon);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty9(TArray<uint8> &polygon)
+{
+	// A heptagon with all its vertices offset
+
+	// TODO: this
+	CreatePolygonDifficulty1(polygon);
+}
+
+void UWeaponSystem::CreatePolygonDifficulty10(TArray<uint8> &polygon)
+{
+	// An octagon with all its vertices offset
+
+	// TODO: this
+	CreatePolygonDifficulty1(polygon);
 }
 
 TArray<uint8> emptyPoly;

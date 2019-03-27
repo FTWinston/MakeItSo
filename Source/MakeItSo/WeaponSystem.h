@@ -92,6 +92,17 @@ private:
 	void AddTargetingSolution(ETargetingSolutionIdentifier identifier);
 	void CreatePolygons(FWeaponTargetingSolution &solution);
 	void CreatePolygon(FWeaponTargetingSolution &solution, uint8 difficulty);
+	void CreatePolygonDifficulty1(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty2(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty3(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty4(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty5(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty6(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty7(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty8(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty9(TArray<uint8> &polygon);
+	void CreatePolygonDifficulty10(TArray<uint8> &polygon);
+
 	float BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uint8 x2, uint8 y2);
 	static float GetArea(TArray<float> points);
 	static void GetLineEquation(float x1, float y1, float x2, float y2, float &gradient, float &yIntercept);
