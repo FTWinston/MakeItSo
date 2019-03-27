@@ -2,6 +2,7 @@ import * as React from 'react';
 import { TextLocalisation } from '~/functionality';
 import { ITargetingSolution, TargetingFace } from './store';
 import { SolutionListItem } from './SolutionListItem';
+import './SolutionList.scss';
 
 interface IProps {
     className?: string;

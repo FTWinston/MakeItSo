@@ -231,6 +231,7 @@ let words: TextLocalisation = {
             changeTarget: 'Change target',
             facingPrefix: 'Easiest when facing:',
             currentlyFacingPrefix: 'Currently facing:',
+            solution: 'Targeting solution:',
             face: {
                 any: 'Any',
                 front: 'Front',

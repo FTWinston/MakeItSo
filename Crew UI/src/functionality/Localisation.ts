@@ -165,6 +165,7 @@ export interface TextLocalisation {
             changeTarget: string;
             facingPrefix: string;
             currentlyFacingPrefix: string;
+            solution: string;
             face: {
                 any: string;
                 front: string;

@@ -3,6 +3,7 @@ import { TextLocalisation } from '~/functionality';
 import { TargetingSolutionType, TargetingFace, TargetingDifficulty } from './store';
 import './SolutionListItem.scss';
 import { Polygon } from './Polygon';
+import { SolutionInfo } from './SolutionInfo';
 
 interface IProps {
     text: TextLocalisation;
@@ -62,7 +63,7 @@ export class SolutionListItem extends React.PureComponent<IProps, IState> {
         const bestFacing = this.props.bestFacing === undefined
             ? undefined
             : <div className="solutionInfo__bestFacing">
-                <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{this.getFacingName(this.props.bestFacing)}</span>
+                <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{SolutionInfo.getFaceName(this.props.bestFacing, this.props.text)}</span>
             </div>
             
         // TODO: render this.state.displayPolygon as a background thing if it isn't undefined. If it is.
@@ -111,25 +112,6 @@ export class SolutionListItem extends React.PureComponent<IProps, IState> {
                 return solutions.commsVulnerability;
             default:
                 return solutions.misc;
-        }
-    }
-    
-    private getFacingName(face: TargetingFace) {
-        switch (face) {
-            case TargetingFace.Front:
-                return this.props.text.systems.weapons.face.front;
-            case TargetingFace.Rear:
-                return this.props.text.systems.weapons.face.rear;
-            case TargetingFace.Left:
-                return this.props.text.systems.weapons.face.left;
-            case TargetingFace.Right:
-                return this.props.text.systems.weapons.face.right;
-            case TargetingFace.Top:
-                return this.props.text.systems.weapons.face.top;
-            case TargetingFace.Bottom:
-                return this.props.text.systems.weapons.face.bottom;
-            default:
-                return this.props.text.systems.weapons.face.any;
         }
     }
 

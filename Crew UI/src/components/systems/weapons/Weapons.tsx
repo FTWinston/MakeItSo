@@ -10,8 +10,8 @@ import { connection } from '~/index';
 import { TargetOverview } from './TargetOverview';
 import { RadarView } from '~/components/general/RadarView';
 import { SolutionList } from './SolutionList';
-import { SolutionInfo } from './SolutionInfo';
 import { Targeting } from './Targeting';
+import { TargetFiringOverview } from './TargetFiringOverview';
 
 interface IProps extends WeaponState {
     text: TextLocalisation;
@@ -78,7 +78,15 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const selectSolution = (solution: ITargetingSolution) => this.props.selectTargetingSolution(solution.type);
 
             return <div className="system weapons weapons--solutionSelection">
-                {this.renderTargetOverview(clearTarget)}
+                <TargetOverview
+                    text={this.props.text}
+                    target={this.state.selectedTarget!}
+                    currentlyFacing={this.props.currentlyFacing}
+                    relPitch={this.props.targetPitch}
+                    relYaw={this.props.targetYaw}
+                    relRoll={this.props.targetRoll}
+                    backClicked={clearTarget}
+                />
                 
                 <SolutionList
                     text={this.props.text}
@@ -95,34 +103,22 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
             const polygon = this.props.selectedSolution.polygonsByFace[this.props.currentlyFacing];
 
             return <div className="system weapons weapons--firingSolution">
-                {this.renderTargetOverview(deselectSolution)}
-
-                <SolutionInfo
+                <TargetFiringOverview
                     text={this.props.text}
+                    target={this.state.selectedTarget!}
                     currentlyFacing={this.props.currentlyFacing}
                     bestFacing={this.props.selectedSolution.bestFacing}
                     solutionType={this.props.selectedSolution.type}
                     baseDifficulty={this.props.selectedSolution.difficulty}
+                    backClicked={deselectSolution}
                 />
-                
+
                 <Targeting
                     polygon={polygon}
                     fire={fire}
                 />
             </div>
         }
-    }
-
-    private renderTargetOverview(backClicked: () => void) {
-        return <TargetOverview
-            text={this.props.text}
-            target={this.state.selectedTarget!}
-            currentlyFacing={this.props.currentlyFacing}
-            relPitch={this.props.targetPitch}
-            relYaw={this.props.targetYaw}
-            relRoll={this.props.targetRoll}
-            backClicked={backClicked}
-        />
     }
 }
 

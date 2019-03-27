@@ -33,7 +33,7 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
     }
 
     public render() {
-        const text = this.getSolutionNameAndDesc();
+        const text = SolutionInfo.getSolutionNameAndDesc(this.props.solutionType, this.props.text);
 
         let classes = 'solutionInfo';
         if (this.isVulnerability()) {
@@ -54,7 +54,7 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
         const bestFacing = this.props.bestFacing === undefined
             ? undefined
             : <div className="solutionInfo__bestFacing">
-                <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{this.getFacingName(this.props.bestFacing)}</span>
+                <span className="solutionInfo__label">{this.props.text.systems.weapons.facingPrefix}</span> <span className={facingClasses}>{SolutionInfo.getFaceName(this.props.bestFacing, this.props.text)}</span>
             </div>
             
         // TODO: render this.state.displayPolygon as a background thing if it isn't undefined. If it is.
@@ -67,9 +67,9 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
         </div>
     }
 
-    private getSolutionNameAndDesc() {
-        const solutions = this.props.text.systems.weapons.solutions;
-        switch (this.props.solutionType) {
+    public static getSolutionNameAndDesc(solutionType: TargetingSolutionType, text: TextLocalisation) {
+        const solutions = text.systems.weapons.solutions;
+        switch (solutionType) {
             case TargetingSolutionType.Misc:
                 return solutions.misc;
             case TargetingSolutionType.Engines:
@@ -106,7 +106,7 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
                 return solutions.misc;
         }
     }
-    
+
     private getModifiedDifficulty(props: IProps) {
         if (props.bestFacing === props.currentlyFacing) {
             return Math.max(TargetingDifficulty.VeryEasy, props.baseDifficulty - 2);
@@ -122,22 +122,22 @@ export class SolutionInfo extends React.PureComponent<IProps, IState> {
         }
     }
 
-    private getFacingName(face: TargetingFace) {
+    public static getFaceName(face: TargetingFace, text: TextLocalisation) {
         switch (face) {
             case TargetingFace.Front:
-                return this.props.text.systems.weapons.face.front;
+                return text.systems.weapons.face.front;
             case TargetingFace.Rear:
-                return this.props.text.systems.weapons.face.rear;
+                return text.systems.weapons.face.rear;
             case TargetingFace.Left:
-                return this.props.text.systems.weapons.face.left;
+                return text.systems.weapons.face.left;
             case TargetingFace.Right:
-                return this.props.text.systems.weapons.face.right;
+                return text.systems.weapons.face.right;
             case TargetingFace.Top:
-                return this.props.text.systems.weapons.face.top;
+                return text.systems.weapons.face.top;
             case TargetingFace.Bottom:
-                return this.props.text.systems.weapons.face.bottom;
+                return text.systems.weapons.face.bottom;
             default:
-                return this.props.text.systems.weapons.face.any;
+                return text.systems.weapons.face.any;
         }
     }
 
