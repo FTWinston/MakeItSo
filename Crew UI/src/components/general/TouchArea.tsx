@@ -71,6 +71,9 @@ export class TouchArea extends React.Component<TouchAreaProps, {}> {
         let prevAmount = 0;
         this.hammer.add(pan);
 
+        let startX = 0;
+        let startY = 0;
+
         this.hammer.on(name,  (ev: Hammer.Input) => {
             if (clamp) {
                 let panAmount = direction === Hammer.DIRECTION_HORIZONTAL
@@ -88,16 +91,7 @@ export class TouchArea extends React.Component<TouchAreaProps, {}> {
             }
 
             if (feedback !== undefined) {
-                let parent = this._element.parentElement;
-                let cx, cy;
-                if (parent === null) {
-                    cx = cy = 0;
-                } else {
-                    cx = parent.offsetWidth / 2;
-                    cy = parent.offsetHeight / 2;
-                }
-
-                feedback(cx, cy, cx + ev.deltaX, cy + ev.deltaY);
+                feedback(startX, startY, startX + ev.deltaX, startY + ev.deltaY);
             }
         });
         
@@ -118,10 +112,15 @@ export class TouchArea extends React.Component<TouchAreaProps, {}> {
                 finish();
             }
         });
+            
+        this.hammer.on(name + 'start', (ev: Hammer.Input) => {
+            startX = ev.center.x - this._element.offsetLeft;
+            startY = ev.center.y - this._element.offsetTop;
 
-        if (start !== undefined) {
-            this.hammer.on(name + 'start', (ev: Hammer.Input) => start());
-        }
+            if (start !== undefined) {
+                start();
+            }
+        });
 
         return pan;
     }
@@ -146,6 +145,9 @@ export class TouchArea extends React.Component<TouchAreaProps, {}> {
         let pan = new Hammer.Pan(params);
         this.hammer.add(pan);
 
+        let startX = 0;
+        let startY = 0;
+
         let prevX = 0, prevY = 0;
         this.hammer.on(name,  (ev: Hammer.Input) => {
             let dx = ev.deltaX * eventScale;
@@ -162,16 +164,7 @@ export class TouchArea extends React.Component<TouchAreaProps, {}> {
             }
 
             if (feedback !== undefined) {
-                let parent = this._element.parentElement;
-                let cx, cy;
-                if (parent === null) {
-                    cx = cy = 0;
-                } else {
-                    cx = parent.offsetWidth / 2;
-                    cy = parent.offsetHeight / 2;
-                }
-
-                feedback(cx, cy, cx + ev.deltaX, cy + ev.deltaY);
+                feedback(startX, startY, startX + ev.deltaX, startY + ev.deltaY);
             }
         });
         
@@ -193,9 +186,15 @@ export class TouchArea extends React.Component<TouchAreaProps, {}> {
             }
         });
 
-        if (start !== undefined) {
-            this.hammer.on(name + 'start', (ev: Hammer.Input) => start());
-        }
+        this.hammer.on(name + 'start', (ev: Hammer.Input) => {
+            startX = ev.center.x - this._element.offsetLeft;
+            startY = ev.center.y - this._element.offsetTop;
+
+
+            if (start !== undefined) {
+                start()
+            }
+        });
 
         return pan;
     }
