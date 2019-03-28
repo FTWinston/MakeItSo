@@ -219,7 +219,7 @@ void UWeaponSystem::SendFacing_Implementation()
 
 	APPENDINT(output, (int8)currentlyFacing);
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 void UWeaponSystem::SendOrientation_Implementation()
