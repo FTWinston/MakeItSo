@@ -132,20 +132,21 @@ export class Targeting extends React.Component<IProps, IState> {
         />;
     }
 
+    private unitSize: number;
     private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
-        const unitSize = Math.min(width / (this.state.maxX - this.state.minX), height / (this.state.maxY - this.state.minY));
+        this.unitSize = Math.min(width / (this.state.maxX - this.state.minX), height / (this.state.maxY - this.state.minY));
 
-        this.drawBackground(ctx, unitSize, width, height);
+        this.drawBackground(ctx, this.unitSize, width, height);
 
         if (this.props.polygon !== undefined && this.props.polygon.points.length > 0) {
-            this.drawPolygon(ctx, unitSize, width, height);
+            this.drawPolygon(ctx, this.unitSize, width, height);
         }
         else {
             // TODO: some sort of message about facing the wrong face
         }
 
         if (this.state.sliceResultNumbers !== undefined) {
-            this.drawResults(ctx, unitSize);
+            this.drawResults(ctx, this.unitSize);
         }
     }
 
@@ -155,13 +156,13 @@ export class Targeting extends React.Component<IProps, IState> {
 
         if (this.state.x2 === undefined || this.state.y2 === undefined || (this.state.x2 === this.state.x1 && this.state.y2 === this.state.y1)) {
             ctx.fillStyle = '#c00';
-            this.drawSinglePolygon(ctx, unitSize, width, height, this.props.polygon!);
+            this.drawSinglePolygon(ctx, this.props.polygon!);
 
             if (this.state.x1 !== undefined && this.state.y1 !== undefined) {
                 // draw "start point" for what will become the clipping line
-                ctx.strokeStyle = '#fff';
+                ctx.fillStyle = '#fff';
                 ctx.beginPath();
-                ctx.arc(this.state.x1, this.state.y1, unitSize * 0.2, 0, Math.PI * 2);
+                ctx.arc(this.gridToScreen(this.state.x1, this.state.minX), this.gridToScreen(this.state.y1, this.state.minY), unitSize * 0.2, 0, Math.PI * 2);
                 ctx.fill();
             }
             return;
@@ -173,14 +174,14 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.save();
         this.clipPath(ctx, clippingInfo.bounds1);
         ctx.fillStyle = '#f90';
-        this.drawSinglePolygon(ctx, unitSize, width, height, this.props.polygon!);
+        this.drawSinglePolygon(ctx, this.props.polygon!);
         ctx.restore();
 
         // clip on the other side of line and draw the polygon in another color
         ctx.save();
         this.clipPath(ctx, clippingInfo.bounds2);
         ctx.fillStyle = '#0cf';
-        this.drawSinglePolygon(ctx, unitSize, width, height, this.props.polygon!);
+        this.drawSinglePolygon(ctx, this.props.polygon!);
         ctx.restore();
         
         // draw "extended" clipping line thinly
@@ -195,12 +196,12 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.lineWidth = unitSize * 0.2;
         ctx.beginPath();
         ctx.moveTo(
-            this.scaleCoord(this.state.x1!, unitSize, this.state.minX),
-            this.scaleCoord(this.state.y1!, unitSize, this.state.minY)
+            this.gridToScreen(this.state.x1!, this.state.minX),
+            this.gridToScreen(this.state.y1!, this.state.minY)
         )
         ctx.lineTo(
-            this.scaleCoord(this.state.x2!, unitSize, this.state.minX),
-            this.scaleCoord(this.state.y2!, unitSize, this.state.minY)
+            this.gridToScreen(this.state.x2!, this.state.minX),
+            this.gridToScreen(this.state.y2!, this.state.minY)
         )
         ctx.stroke();
     }
@@ -215,8 +216,8 @@ export class Targeting extends React.Component<IProps, IState> {
         }
 
         // determine where to draw the top left point
-        const startX = this.scaleCoord(Math.ceil(this.state.minX), unitSize, this.state.minX);
-        const startY = this.scaleCoord(Math.ceil(this.state.minY), unitSize, this.state.minY);
+        const startX = this.gridToScreen(Math.ceil(this.state.minX), this.state.minX);
+        const startY = this.gridToScreen(Math.ceil(this.state.minY), this.state.minY);
 
         // draw a grid of points
         ctx.fillStyle = '#999';
@@ -235,20 +236,20 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.fill();
     }
 
-    private drawSinglePolygon(ctx: CanvasRenderingContext2D, unitSize: number, width: number, height: number, polygon: Polygon) {
+    private drawSinglePolygon(ctx: CanvasRenderingContext2D, polygon: Polygon) {
         // assume color and clip already set; just fill then stroke the shape
 
         ctx.beginPath();
 
         const firstPoint = polygon.points[0];
 
-        const startX = this.scaleCoord(firstPoint.x, unitSize, this.state.minX);
-        const startY = this.scaleCoord(firstPoint.y, unitSize, this.state.minY);
+        const startX = this.gridToScreen(firstPoint.x, this.state.minX);
+        const startY = this.gridToScreen(firstPoint.y, this.state.minY);
         ctx.moveTo(startX, startY);
 
         for (const point of polygon.points) {
-            const x = this.scaleCoord(point.x, unitSize, this.state.minX);
-            const y = this.scaleCoord(point.y, unitSize, this.state.minY);
+            const x = this.gridToScreen(point.x, this.state.minX);
+            const y = this.gridToScreen(point.y, this.state.minY);
             ctx.lineTo(x, y);
         }
 
@@ -266,24 +267,28 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.globalAlpha = 0.75;
 
         for (const result of this.state.sliceResultNumbers!) {
-            ctx.fillText(result.percent.toString(), result.x, result.y);
+            ctx.fillText(result.percent.toString(), this.gridToScreen(result.x, this.state.minX), this.gridToScreen(result.y, this.state.minY));
         }
 
         ctx.globalAlpha = 1;
     }
 
-    private scaleCoord(val: number, unitSize: number, offset: number) {
-        return (val - offset) * unitSize;
+    private screenToGrid(val: number, offset: number) {
+        return Math.round(val / this.unitSize + offset);
+    }
+
+    private gridToScreen(val: number, offset: number) {
+        return (val - offset) * this.unitSize;
     }
 
     private getClippingInfo(width: number, height: number) {
         // determine the "full length" version of the clipping line,
         // plus two clipping paths to use to separate each "half" of the polygon, based on that line
         
-        let x1 = this.state.x1!;
-        let y1 = this.state.y1!;
-        let x2 = this.state.x2!;
-        let y2 = this.state.y2!;
+        let x1 = this.gridToScreen(this.state.x1!, this.state.minX);
+        let y1 = this.gridToScreen(this.state.y1!, this.state.minY);
+        let x2 = this.gridToScreen(this.state.x2!, this.state.minX);
+        let y2 = this.gridToScreen(this.state.y2!, this.state.minY);
 
         let bounds1;
         let bounds2;
@@ -413,7 +418,7 @@ export class Targeting extends React.Component<IProps, IState> {
 
                 if (xIntercept <= width) {
                     // right end touches y = 0
-                    x2 = xTopIntercept;
+                    x2 = xIntercept;
                     y2 = 0;
 
                     bounds1.push({ x: x2, y: y2 }); // clockwise
@@ -479,14 +484,14 @@ export class Targeting extends React.Component<IProps, IState> {
             return; // no slicing while results are showing
         }
 
-        // TODO: these positions need rounded to the nearest grid values
-
         this.setState({
-            x1: startX,
-            y1: startY,
-            x2: endX,
-            y2: endY,
+            x1: this.screenToGrid(startX, this.state.minX),
+            y1: this.screenToGrid(startY, this.state.minY),
+            x2: this.screenToGrid(endX, this.state.minX),
+            y2: this.screenToGrid(endY, this.state.minY),
         });
+
+        console.log(`slicing in grid coordinates from ${this.screenToGrid(startX, this.state.minX)}, ${this.screenToGrid(startY, this.state.minY)} to ${this.screenToGrid(endX, this.state.minX)}, ${this.screenToGrid(endY, this.state.minY)}`);
     }
 
     private sliceFinished() {
@@ -507,7 +512,7 @@ export class Targeting extends React.Component<IProps, IState> {
             const centroid = part.centroid;
             return {
                 percent: Math.round(1000 * part.area / totArea) / 10,
-                x: centroid.x, // TODO: scale these from "grid" to screen coordinates
+                x: centroid.x,
                 y: centroid.y,
             };
         })
@@ -525,7 +530,7 @@ export class Targeting extends React.Component<IProps, IState> {
             sliceResultNumbers,
         });
 
-        this.autoClear = setTimeout(() => this.clearResults(), 1500);
+        this.autoClear = setTimeout(() => this.clearResults(), 2000);
     }
 
     private clearResults() {
