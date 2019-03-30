@@ -1046,11 +1046,12 @@ float UWeaponSystem::GetArea(TArray<float> points)
 
 	float prevX = points[0];
 	float prevY = points[1];
+	float currentX, currentY;
 
 	for (auto i = 3; i < length; i += 2)
 	{
-		float currentX = points[i - 1];
-		float currentY = points[i];
+		currentX = points[i - 1];
+		currentY = points[i];
 
 		firstTot += prevX * currentY;
 		secondTot += prevY * currentX;
@@ -1058,6 +1059,12 @@ float UWeaponSystem::GetArea(TArray<float> points)
 		prevX = currentX;
 		prevY = currentY;
 	}
+
+	currentX = points[0];
+	currentY = points[1];
+
+	firstTot += prevX * currentY;
+	secondTot += prevY * currentX;
 
 	return (firstTot - secondTot) / 2.f;
 }

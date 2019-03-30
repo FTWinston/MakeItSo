@@ -15,15 +15,20 @@ export class Polygon {
         let secondTot = 0;
 
         let prev = this.points[0];
+        let current;
 
         for (let i = 1; i < this.points.length; i++) {
-            const current = this.points[i];
+            current = this.points[i];
 
             firstTot += prev.x * current.y;
             secondTot += prev.y * current.x;
 
             prev = current;
         }
+
+        current = this.points[0];
+        firstTot += prev.x * current.y;
+        secondTot += prev.y * current.x;
 
         return (firstTot - secondTot) / 2;
     }
