@@ -430,8 +430,7 @@ export class Targeting extends React.Component<IProps, IState> {
                     // right end touches the right
                     x2 = width;
                     y2 = gradient * width + yIntercept;
-
-                    bounds2.push({ x: width, y: 0 }); // clockwise
+                    bounds1.push({ x: width, y: 0 }); // clockwise
                     bounds1.push({ x: x2, y: y2 });
 
                     bounds2.push({ x: x2, y: y2 }); // anticlockwise
@@ -490,8 +489,6 @@ export class Targeting extends React.Component<IProps, IState> {
             x2: this.screenToGrid(endX, this.state.minX),
             y2: this.screenToGrid(endY, this.state.minY),
         });
-
-        console.log(`slicing in grid coordinates from ${this.screenToGrid(startX, this.state.minX)}, ${this.screenToGrid(startY, this.state.minY)} to ${this.screenToGrid(endX, this.state.minX)}, ${this.screenToGrid(endY, this.state.minY)}`);
     }
 
     private sliceFinished() {
