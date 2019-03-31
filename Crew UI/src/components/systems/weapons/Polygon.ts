@@ -83,7 +83,21 @@ export class Polygon {
             currentPoint = this.points[i];
             currentIsAbove = isAboveBisector(currentPoint);
 
-            this.processSegmentForBisection(currentIsAbove, prevIsAbove, prevPoint, currentPoint, gradientBisector, yInterceptBisector, above, below);
+            if (currentIsAbove !== prevIsAbove) {
+                const intersection = Polygon.getBisectorIntersection(prevPoint, currentPoint, gradientBisector, yInterceptBisector);
+                
+                if (intersection !== null) {
+                    Polygon.tryAddNotMatchingLast(above.points, intersection);
+                    Polygon.tryAddNotMatchingLast(below.points, intersection);
+                }
+            }
+
+            if (currentIsAbove) {
+                Polygon.tryAddNotMatchingLast(above.points, currentPoint);
+            }
+            else {
+                Polygon.tryAddNotMatchingLast(below.points, currentPoint);
+            }
 
             prevPoint = currentPoint;
             prevIsAbove = currentIsAbove;
@@ -91,7 +105,14 @@ export class Polygon {
 
         currentPoint = this.points[0];
         currentIsAbove = isAboveBisector(currentPoint);
-        this.processSegmentForBisection(currentIsAbove, prevIsAbove, prevPoint, currentPoint, gradientBisector, yInterceptBisector, above, below);
+        if (currentIsAbove !== prevIsAbove) {
+            const intersection = Polygon.getBisectorIntersection(prevPoint, currentPoint, gradientBisector, yInterceptBisector);
+            
+            if (intersection !== null) {
+                Polygon.tryAddNotMatchingLast(above.points, intersection);
+                Polygon.tryAddNotMatchingLast(below.points, intersection);
+            }
+        }
 
         const results = [];
 
@@ -105,21 +126,36 @@ export class Polygon {
         return results;
     }
     
-    private processSegmentForBisection(currentIsAbove: boolean, prevIsAbove: boolean, prevPoint: IPoint, currentPoint: IPoint, gradientBisector: number, yInterceptBisector: number, above: Polygon, below: Polygon) {
+    private static getBisectorIntersection(prevPoint: IPoint, currentPoint: IPoint, gradientBisector: number, yInterceptBisector: number) {
         // if this segment crossed the bisection line, add the point that happens at to both sets and continue (adding to the other set now)
-        if (currentIsAbove !== prevIsAbove) {
-            const [gradientSegment, yInterceptSegment] = Polygon.getEquation(prevPoint, currentPoint);
-            const intersection = Polygon.getIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment);
-            above.points.push(intersection);
-            below.points.push(intersection);
+        const [gradientSegment, yInterceptSegment] = Polygon.getEquation(prevPoint, currentPoint);
+        const intersection = Polygon.getIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment);
+        return intersection;
+    }
+
+    private static tryAddNotMatchingLast(points: IPoint[], newPoint: IPoint) {
+        if (points.length === 0) {
+            return;
+        }
+        
+        const last = points[points.length - 1];
+        if (Polygon.nearEqual(last, newPoint)) {
+            return;
         }
 
-        if (currentIsAbove) {
-            above.points.push(currentPoint);
+        points.push(newPoint);
+    }
+    
+    private static nearEqual(a: IPoint, b: IPoint) {
+        if (a.x < b.x - 0.001 || a.x > b.x + 0.001) {
+            return false;
         }
-        else {
-            below.points.push(currentPoint);
+
+        if (a.y < b.y - 0.001 || a.y > b.y + 0.001) {
+            return false;
         }
+
+        return true;
     }
 
     private static getEquation(p1: IPoint, p2: IPoint): [number, number] {

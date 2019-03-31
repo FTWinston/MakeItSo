@@ -920,12 +920,14 @@ float UWeaponSystem::BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uin
 		SETADD(pointsBelow, prevY);
 	}
 
+	float currentX, currentY;
+	bool currentIsAbove;
+
 	for (auto i = 3; i < length; i += 2)
 	{
-		float currentX = (float)points[i - 1];
-		float currentY = (float)points[i];
-
-		bool currentIsAbove = IsAboveBisector(currentX, currentY, gradientBisector, yInterceptBisector, x1, x2);
+		currentX = (float)points[i - 1];
+		currentY = (float)points[i];
+		currentIsAbove = IsAboveBisector(currentX, currentY, gradientBisector, yInterceptBisector, x1, x2);
 
 		// if this segment crossed the bisection line, add the point that happens at to both sets and continue (adding to the other set now)
 		if (currentIsAbove != prevIsAbove)
@@ -959,6 +961,11 @@ float UWeaponSystem::BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uin
 		prevY = currentY;
         prevIsAbove = currentIsAbove;
 	}
+
+	currentX = (float)points[0];
+	currentY = (float)points[1];
+	currentIsAbove = IsAboveBisector(currentX, currentY, gradientBisector, yInterceptBisector, x1, x2);
+	// TODO: handle final "loop" segment too
 
 	float areaAbove = GetArea(pointsAbove);
 	float areaBelow = GetArea(pointsBelow);
