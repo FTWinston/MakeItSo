@@ -76,27 +76,22 @@ export class Polygon {
         else
             below.points.push(prevPoint);
 
+        let currentPoint: IPoint;
+        let currentIsAbove: boolean;
+
         for (let i = 1; i < this.points.length; i++) {
-            const currentPoint = this.points[i];
-            const currentIsAbove = isAboveBisector(currentPoint);
+            currentPoint = this.points[i];
+            currentIsAbove = isAboveBisector(currentPoint);
 
-            // if this segment crossed the bisection line, add the point that happens at to both sets and continue (adding to the other set now)
-            if (currentIsAbove !== prevIsAbove) {
-                const [gradientSegment, yInterceptSegment] = Polygon.getEquation(prevPoint, currentPoint);
-                const intersection = Polygon.getIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment);
-
-                above.points.push(intersection);
-                below.points.push(intersection);
-            }
-
-            if (currentIsAbove)
-                above.points.push(currentPoint);
-            else
-                below.points.push(currentPoint);
+            this.processSegmentForBisection(currentIsAbove, prevIsAbove, prevPoint, currentPoint, gradientBisector, yInterceptBisector, above, below);
 
             prevPoint = currentPoint;
             prevIsAbove = currentIsAbove;
         }
+
+        currentPoint = this.points[0];
+        currentIsAbove = isAboveBisector(currentPoint);
+        this.processSegmentForBisection(currentIsAbove, prevIsAbove, prevPoint, currentPoint, gradientBisector, yInterceptBisector, above, below);
 
         const results = [];
 
@@ -110,6 +105,23 @@ export class Polygon {
         return results;
     }
     
+    private processSegmentForBisection(currentIsAbove: boolean, prevIsAbove: boolean, prevPoint: IPoint, currentPoint: IPoint, gradientBisector: number, yInterceptBisector: number, above: Polygon, below: Polygon) {
+        // if this segment crossed the bisection line, add the point that happens at to both sets and continue (adding to the other set now)
+        if (currentIsAbove !== prevIsAbove) {
+            const [gradientSegment, yInterceptSegment] = Polygon.getEquation(prevPoint, currentPoint);
+            const intersection = Polygon.getIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment);
+            above.points.push(intersection);
+            below.points.push(intersection);
+        }
+
+        if (currentIsAbove) {
+            above.points.push(currentPoint);
+        }
+        else {
+            below.points.push(currentPoint);
+        }
+    }
+
     private static getEquation(p1: IPoint, p2: IPoint): [number, number] {
         let gradient: number;
         let yIntercept: number;
