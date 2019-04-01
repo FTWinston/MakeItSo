@@ -932,13 +932,9 @@ float UWeaponSystem::BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uin
 		// if this segment crossed the bisection line, add the point that happens at to both sets and continue (adding to the other set now)
 		if (currentIsAbove != prevIsAbove)
 		{
-			float gradientSegment;
-			float yInterceptSegment;
-			GetLineEquation(prevX, prevY, currentX, currentY, gradientSegment, yInterceptSegment);
-
 			float intersectX;
 			float intersectY;
-			GetLineIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment, intersectX, intersectY);
+			GetBisectorIntersection(prevX, prevY, currentX, currentY, gradientBisector, yInterceptBisector, intersectX, intersectY);
 
 			SETADD(pointsAbove, intersectX);
 			SETADD(pointsAbove, intersectY);
@@ -965,7 +961,17 @@ float UWeaponSystem::BisectPolygon(TArray<uint8> points, uint8 x1, uint8 y1, uin
 	currentX = (float)points[0];
 	currentY = (float)points[1];
 	currentIsAbove = IsAboveBisector(currentX, currentY, gradientBisector, yInterceptBisector, x1, x2);
-	// TODO: handle final "loop" segment too
+	if (currentIsAbove != prevIsAbove)
+	{
+		float intersectX;
+		float intersectY;
+		GetBisectorIntersection(prevX, prevY, currentX, currentY, gradientBisector, yInterceptBisector, intersectX, intersectY);
+
+		SETADD(pointsAbove, intersectX);
+		SETADD(pointsAbove, intersectY);
+		SETADD(pointsBelow, intersectX);
+		SETADD(pointsBelow, intersectY);
+	}
 
 	float areaAbove = GetArea(pointsAbove);
 	float areaBelow = GetArea(pointsBelow);
@@ -998,6 +1004,15 @@ void UWeaponSystem::GetLineEquation(float x1, float y1, float x2, float y2, floa
 		// c = y - mx
 		yIntercept = y2 - gradient * x2;
 	}
+}
+
+void UWeaponSystem::GetBisectorIntersection(float prevX, float prevY, float currentX, float currentY, float gradientBisector, float yInterceptBisector, float &intersectX, float &intersectY)
+{
+	float gradientSegment;
+	float yInterceptSegment;
+	GetLineEquation(prevX, prevY, currentX, currentY, gradientSegment, yInterceptSegment);
+
+	GetLineIntersection(gradientBisector, yInterceptBisector, gradientSegment, yInterceptSegment, intersectX, intersectY);
 }
 
 void UWeaponSystem::GetLineIntersection(float gradient1, float yIntercept1, float gradient2, float yIntercept2, float &x, float &y)

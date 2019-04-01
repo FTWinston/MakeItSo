@@ -107,6 +107,7 @@ private:
 	static float GetArea(TArray<float> points);
 	static void GetLineEquation(float x1, float y1, float x2, float y2, float &gradient, float &yIntercept);
 	static void GetLineIntersection(float gradient1, float yIntercept1, float gradient2, float yIntercept2, float &x, float &y);
+	static void GetBisectorIntersection(float prevX, float prevY, float currentX, float currentY, float gradientBisector, float yInterceptBisector, float &intersectX, float &intersectY);
 	static bool IsAboveBisector(float x, float y, float gradient, float yIntercept, uint8 x1, uint8 x2);
 	TArray<uint8> GetPolygonForCurrentlyFacing(FWeaponTargetingSolution &solution);
 	UShipSystem::ESystem GetSystemForSolution(ETargetingSolutionIdentifier solution);

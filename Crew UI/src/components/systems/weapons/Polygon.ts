@@ -85,11 +85,8 @@ export class Polygon {
 
             if (currentIsAbove !== prevIsAbove) {
                 const intersection = Polygon.getBisectorIntersection(prevPoint, currentPoint, gradientBisector, yInterceptBisector);
-                
-                if (intersection !== null) {
-                    Polygon.tryAddNotMatchingLast(above.points, intersection);
-                    Polygon.tryAddNotMatchingLast(below.points, intersection);
-                }
+                Polygon.tryAddNotMatchingLast(above.points, intersection);
+                Polygon.tryAddNotMatchingLast(below.points, intersection);
             }
 
             if (currentIsAbove) {
@@ -107,11 +104,8 @@ export class Polygon {
         currentIsAbove = isAboveBisector(currentPoint);
         if (currentIsAbove !== prevIsAbove) {
             const intersection = Polygon.getBisectorIntersection(prevPoint, currentPoint, gradientBisector, yInterceptBisector);
-            
-            if (intersection !== null) {
-                Polygon.tryAddNotMatchingLast(above.points, intersection);
-                Polygon.tryAddNotMatchingLast(below.points, intersection);
-            }
+            Polygon.tryAddNotMatchingLast(above.points, intersection);
+            Polygon.tryAddNotMatchingLast(below.points, intersection);
         }
 
         const results = [];
@@ -134,13 +128,12 @@ export class Polygon {
     }
 
     private static tryAddNotMatchingLast(points: IPoint[], newPoint: IPoint) {
-        if (points.length === 0) {
-            return;
-        }
-        
-        const last = points[points.length - 1];
-        if (Polygon.nearEqual(last, newPoint)) {
-            return;
+        if (points.length !== 0) {
+            const last = points[points.length - 1];
+
+            if (Polygon.nearEqual(last, newPoint)) {
+                return;
+            }
         }
 
         points.push(newPoint);
