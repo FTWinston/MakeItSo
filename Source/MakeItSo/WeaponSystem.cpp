@@ -162,7 +162,7 @@ void UWeaponSystem::SendSelectedTarget_Implementation()
 
 	APPENDINT(output, selectedTargetID);
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 void UWeaponSystem::SendTargetingSolutions_Implementation()
@@ -210,7 +210,7 @@ void UWeaponSystem::SendTargetingSolutions_Implementation()
 		}
 	}
 
-	SendSystem(output);
+	SendAll(output);
 }
 
 void UWeaponSystem::SendFacing_Implementation()
@@ -556,43 +556,13 @@ void UWeaponSystem::CreatePolygonDifficulty3(TArray<uint8> &polygon)
 void UWeaponSystem::CreatePolygonDifficulty4(TArray<uint8> &polygon)
 {
 	// An orthogonal rectangle with two vertices offset differently
-
-	uint8 xmin = MIN_POLY_X + 2;
-	uint8 ymin = MIN_POLY_Y + 2;
-
-	uint8 xmax = FMath::RandRange(xmin + 4, xmin + 8);
-	uint8 ymax = FMath::RandRange(ymin + 4, ymin + 8);
-
-	uint8 x1 = xmin, y1 = ymin;
-	uint8 x2 = xmax, y2 = ymin;
-	uint8 x3 = xmax, y3 = ymax;
-	uint8 x4 = xmin, y4 = ymax;
-
-	// TODO: this
-
-	SETADD(polygon, x1);
-	SETADD(polygon, y1);
-
-	SETADD(polygon, x2);
-	SETADD(polygon, y1);
-
-	SETADD(polygon, x2);
-	SETADD(polygon, y2);
-
-	SETADD(polygon, x1);
-	SETADD(polygon, y2);
-}
-
-void UWeaponSystem::CreatePolygonDifficulty5(TArray<uint8> &polygon)
-{
-	// An orthogonal rectangle with four vertices offset
 #define OFFSET_MAX 3
 
 	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
 	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
 
-	uint8 xmax = FMath::RandRange(xmin + 4, xmin + 8);
-	uint8 ymax = FMath::RandRange(ymin + 4, ymin + 8);
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
 
 	uint8 x1 = xmin, y1 = ymin;
 	uint8 x2 = xmax, y2 = ymin;
@@ -686,6 +656,52 @@ void UWeaponSystem::CreatePolygonDifficulty5(TArray<uint8> &polygon)
 	SETADD(polygon, y2);
 }
 
+void UWeaponSystem::CreatePolygonDifficulty5(TArray<uint8> &polygon)
+{
+	// An orthogonal rectangle with three vertices offset
+#define OFFSET_MAX 3
+
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymax);
+
+
+	// Pick one corner NOT to offset
+	uint8 ignoreCornerIndex = FMath::RandRange(0, 3) * 2 + 1;
+
+	for (uint8 i = 1; i < SIZENUM(polygon); i += 2)
+	{
+		if (i == ignoreCornerIndex)
+			continue;
+
+		uint8 &x = polygon[i - 1];
+		uint8 &y = polygon[i];
+
+		int8 dx, dy;
+		do {
+			dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+			dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		} while (dx != 0 || dy != 0);
+
+		x += dx;
+		y += dy;
+	}
+}
+
 void UWeaponSystem::CreatePolygonDifficulty6(TArray<uint8> &polygon)
 {
 	// An orthogonal rectangle with four vertices offset
@@ -694,181 +710,237 @@ void UWeaponSystem::CreatePolygonDifficulty6(TArray<uint8> &polygon)
 	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
 	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
 
-	uint8 xmax = FMath::RandRange(xmin + 4, xmin + 8);
-	uint8 ymax = FMath::RandRange(ymin + 4, ymin + 8);
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
 
-	uint8 x1 = xmin, y1 = ymin;
-	uint8 x2 = xmax, y2 = ymin;
-	uint8 x3 = xmax, y3 = ymax;
-	uint8 x4 = xmin, y4 = ymax;
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymax);
 
 
-	// Pick two corners to offset
-	uint8 offsetCorner1, offsetCorner2, offsetCorner3;
-	
-	switch (FMath::RandRange(0, 3))
+	for (uint8 i = 1; i < SIZENUM(polygon); i += 2)
 	{
-	case 0:
-		offsetCorner1 = 0;
-		offsetCorner2 = 1;
-		offsetCorner3 = 2;
-		break;
-	case 1:
-		offsetCorner1 = 1;
-		offsetCorner2 = 2;
-		offsetCorner3 = 3;
-		break;
-	case 2:
-		offsetCorner1 = 2;
-		offsetCorner2 = 3;
-		offsetCorner3 = 0;
-		break;
-	case 3:
-		offsetCorner1 = 3;
-		offsetCorner2 = 0;
-		offsetCorner3 = 1;
-		break;
+		uint8 &x = polygon[i - 1];
+		uint8 &y = polygon[i];
+
+		int8 dx, dy;
+		do {
+			dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+			dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		} while (dx != 0 || dy != 0);
+
+		x += dx;
+		y += dy;
 	}
-
-	uint8 &offsetX = x1;
-	uint8 &offsetY = y1;
-
-
-	// Apply offset to first corner
-	switch (offsetCorner1)
-	{
-	case 0:
-		offsetX = x1;
-		offsetY = y1;
-		break;
-	case 1:
-		offsetX = x2;
-		offsetY = y2;
-		break;
-	case 2:
-		offsetX = x3;
-		offsetY = y3;
-		break;
-	case 3:
-		offsetX = x4;
-		offsetY = y4;
-		break;
-	}
-
-	int8 dx, dy;
-	do {
-		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
-		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
-	} while (dx != 0 || dy != 0);
-
-	offsetX += dx;
-	offsetY += dy;
-
-
-	// Apply offset to second corner
-	switch (offsetCorner2)
-	{
-	case 0:
-		offsetX = x1;
-		offsetY = y1;
-		break;
-	case 1:
-		offsetX = x2;
-		offsetY = y2;
-		break;
-	case 2:
-		offsetX = x3;
-		offsetY = y3;
-		break;
-	case 3:
-		offsetX = x4;
-		offsetY = y4;
-		break;
-	}
-
-	do {
-		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
-		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
-	} while (dx != 0 || dy != 0);
-
-	offsetX += dx;
-	offsetY += dy;
-
-
-	// Apply offset to third corner
-	switch (offsetCorner3)
-	{
-	case 0:
-		offsetX = x1;
-		offsetY = y1;
-		break;
-	case 1:
-		offsetX = x2;
-		offsetY = y2;
-		break;
-	case 2:
-		offsetX = x3;
-		offsetY = y3;
-		break;
-	case 3:
-		offsetX = x4;
-		offsetY = y4;
-		break;
-	}
-
-	do {
-		dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
-		dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
-	} while (dx != 0 || dy != 0);
-
-	offsetX += dx;
-	offsetY += dy;
-
-
-
-	SETADD(polygon, x1);
-	SETADD(polygon, y1);
-
-	SETADD(polygon, x2);
-	SETADD(polygon, y1);
-
-	SETADD(polygon, x2);
-	SETADD(polygon, y2);
-
-	SETADD(polygon, x1);
-	SETADD(polygon, y2);
 }
 
 void UWeaponSystem::CreatePolygonDifficulty7(TArray<uint8> &polygon)
 {
 	// A pentagon with all its vertices offset
+#define OFFSET_MAX 2
 
-	// TODO: this
-	CreatePolygonDifficulty1(polygon);
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
+
+	SETADD(polygon, (xmin + xmax) / 2);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymin + (ymin + ymax) * 2 / 7);
+
+	SETADD(polygon, xmax - (xmin + xmax) / 4);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin + (xmin + xmax) / 4);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymin + (ymin + ymax) * 2 / 7);
+
+
+	for (uint8 i = 1; i < SIZENUM(polygon); i += 2)
+	{
+		uint8 &x = polygon[i - 1];
+		uint8 &y = polygon[i];
+
+		int8 dx, dy;
+		do {
+			dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+			dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		} while (dx != 0 || dy != 0);
+
+		x += dx;
+		y += dy;
+	}
 }
 
 void UWeaponSystem::CreatePolygonDifficulty8(TArray<uint8> &polygon)
 {
 	// A hexagon with all its vertices offset
+#define OFFSET_MAX 2
 
-	// TODO: this
-	CreatePolygonDifficulty1(polygon);
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
+
+	uint8 yinset = (ymin + ymax) / 4;
+
+	SETADD(polygon, (xmin + xmax) / 2);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymin + yinset);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymax - yinset);
+
+	SETADD(polygon, (xmin + xmax) / 2);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymax - yinset);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymin + yinset);
+
+
+	for (uint8 i = 1; i < SIZENUM(polygon); i += 2)
+	{
+		uint8 &x = polygon[i - 1];
+		uint8 &y = polygon[i];
+
+		int8 dx, dy;
+		do {
+			dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+			dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		} while (dx != 0 || dy != 0);
+
+		x += dx;
+		y += dy;
+	}
 }
 
 void UWeaponSystem::CreatePolygonDifficulty9(TArray<uint8> &polygon)
 {
 	// A heptagon with all its vertices offset
+#define OFFSET_MAX 2
 
-	// TODO: this
-	CreatePolygonDifficulty1(polygon);
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
+
+	uint8 xinset = (xmin + xmax) / 3;
+	uint8 yinset = (ymin + ymax) / 3;
+	uint8 hexinset = (ymin + ymax) / 4;
+
+	// top from the octagon, bottom from the hexagon
+
+	SETADD(polygon, xmin + xinset); // oct
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax - xinset); // oct
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymin + yinset); // oct
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymax - hexinset); // hex
+
+	SETADD(polygon, (xmin + xmax) / 2);  // hex
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymax - hexinset); // hex
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymin + yinset); // oct
+
+
+	for (uint8 i = 1; i < SIZENUM(polygon); i += 2)
+	{
+		uint8 &x = polygon[i - 1];
+		uint8 &y = polygon[i];
+
+		int8 dx, dy;
+		do {
+			dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+			dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		} while (dx != 0 || dy != 0);
+
+		x += dx;
+		y += dy;
+	}
 }
 
 void UWeaponSystem::CreatePolygonDifficulty10(TArray<uint8> &polygon)
 {
 	// An octagon with all its vertices offset
+#define OFFSET_MAX 2
 
-	// TODO: this
-	CreatePolygonDifficulty1(polygon);
+	uint8 xmin = MIN_POLY_X + OFFSET_MAX;
+	uint8 ymin = MIN_POLY_Y + OFFSET_MAX;
+
+	uint8 xmax = FMath::RandRange(xmin + 6, xmin + 8);
+	uint8 ymax = FMath::RandRange(ymin + 6, ymin + 8);
+
+	uint8 xinset = (xmin + xmax) / 3;
+	uint8 yinset = (ymin + ymax) / 3;
+
+	SETADD(polygon, xmin + xinset);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax - xinset);
+	SETADD(polygon, ymin);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymin + yinset);
+
+	SETADD(polygon, xmax);
+	SETADD(polygon, ymax - yinset);
+
+	SETADD(polygon, xmax - xinset);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin + xinset);
+	SETADD(polygon, ymax);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymax - yinset);
+
+	SETADD(polygon, xmin);
+	SETADD(polygon, ymin + yinset);
+
+
+	for (uint8 i = 1; i < SIZENUM(polygon); i += 2)
+	{
+		uint8 &x = polygon[i - 1];
+		uint8 &y = polygon[i];
+
+		int8 dx, dy;
+		do {
+			dx = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+			dy = FMath::RandRange(-OFFSET_MAX, OFFSET_MAX);
+		} while (dx != 0 || dy != 0);
+
+		x += dx;
+		y += dy;
+	}
 }
 
 TArray<uint8> emptyPoly;
@@ -1217,7 +1289,7 @@ UShipSystem::ESystem UWeaponSystem::GetSystemForSolution(ETargetingSolutionIdent
 		return UShipSystem::Communications;
 
 	default:
-		// TODO: determine how to handle targeting non-ships. Still use "misc" solution, but don't pick an actual ship system?
+		// TODO: determine how to handle targeting non-ships. Still use "misc" solution, and have some "special" solution identifiers that don't reference ship systems?
 		return UShipSystem::ESystem::None;
 	}
 }
