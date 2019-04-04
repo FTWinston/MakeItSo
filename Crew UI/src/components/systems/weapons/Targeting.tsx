@@ -137,38 +137,29 @@ export class Targeting extends React.Component<IProps, IState> {
         const centerX = (this.state.maxRequiredX + this.state.minRequiredX) / 2;
         const centerY = (this.state.maxRequiredY + this.state.minRequiredY) / 2;
 
-        const requiredExtentX = this.state.maxRequiredX - this.state.minRequiredX;
-        const requiredExtentY = this.state.maxRequiredY - this.state.minRequiredY;
+        let xExtent = this.state.maxRequiredX - this.state.minRequiredX;
+        let yExtent = this.state.maxRequiredY - this.state.minRequiredY;
 
-        const requiredRatio = requiredExtentX / requiredExtentY;
+        const requiredRatio = xExtent / yExtent;
         const displayRatio = width / height;
 
-        let maxX, maxY;
+        if (requiredRatio < displayRatio) {
+            // fit to height, extend X space
+            this.unitSize = height / yExtent;
 
-        if (requiredRatio > displayRatio) {
-            // extend X space
-            const yExtent = centerY - this.state.minRequiredY;
-            const xExtent = yExtent * requiredRatio / displayRatio;
-
-            this.minX = centerX - xExtent;
-            maxX = centerX + xExtent;
-            
-            this.minY = this.state.minRequiredY;
-            maxY = this.state.maxRequiredY;
+            const requiredWidth = xExtent * this.unitSize;
+            xExtent *= width / requiredWidth;
         }
         else {
-            // extend Y space
-            const xExtent = centerX - this.state.minRequiredX;
-            const yExtent = xExtent * displayRatio / requiredRatio;
+            // fit to width, extend Y space
+            this.unitSize = width / xExtent;
 
-            this.minY = centerY - yExtent;
-            maxY = centerY + yExtent;
-
-            this.minX = this.state.minRequiredX;
-            maxX = this.state.maxRequiredX;
+            const requiredHeight = yExtent * this.unitSize;
+            yExtent *= height / requiredHeight;
         }
 
-        this.unitSize = Math.min(width / (maxX - this.minX), height / (maxY - this.minY));
+        this.minX = centerX - xExtent / 2;
+        this.minY = centerY - yExtent / 2;
     }
 
     private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {

@@ -29,7 +29,10 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         
+        const target = this.props.allTargets.find(t => t.id === props.selectedTargetID);
+        
         this.state = {
+            selectedTarget: target,
         }
     }
 
