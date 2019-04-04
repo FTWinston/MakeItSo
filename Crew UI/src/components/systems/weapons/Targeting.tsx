@@ -294,6 +294,7 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.fillStyle = '#fff';
         ctx.font = `${Math.round(unitSize)}px Georgia`;
         ctx.globalAlpha = 0.75;
+        ctx.textAlign = 'center';
 
         for (const result of this.state.sliceResultNumbers!) {
             ctx.fillText(result.percent.toString(), this.gridToScreen(result.x, this.minX), this.gridToScreen(result.y, this.minY));
