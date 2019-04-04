@@ -16,10 +16,10 @@ interface IState {
     x2?: number;
     y2?: number;
 
-    minX: number;
-    maxX: number;
-    minY: number;
-    maxY: number;
+    minRequiredX: number;
+    maxRequiredX: number;
+    minRequiredY: number;
+    maxRequiredY: number;
 
     sliceResultNumbers?: Array<{
         percent: number;
@@ -35,7 +35,7 @@ export class Targeting extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
 
-        const newState = this.determineBounds(props.polygon)
+        const newState = this.determinePolygonBounds(props.polygon)
         newState.prevPolygon = props.polygon;
 
         this.state = newState;
@@ -43,7 +43,7 @@ export class Targeting extends React.Component<IProps, IState> {
 
     componentWillReceiveProps(nextProps: IProps) {
         if (nextProps.polygon !== this.props.polygon) {
-            const newState = this.determineBounds(this.props.polygon)
+            const newState = this.determinePolygonBounds(this.props.polygon)
             newState.prevPolygon = this.props.polygon;
 
             this.setState(newState);
@@ -66,53 +66,48 @@ export class Targeting extends React.Component<IProps, IState> {
         this.clearResults();
     }
 
-    private determineBounds(polygon: Polygon | undefined): IState {
+    private determinePolygonBounds(polygon: Polygon | undefined): IState {
         if (polygon === undefined) {
             return {
-                minX: 0,
-                maxX: 12,
-                minY: 0,
-                maxY: 12,
+                minRequiredX: 0,
+                maxRequiredX: 8,
+                minRequiredY: 0,
+                maxRequiredY: 8,
             };
         }
 
         // determine the extent of the polygon itself
-        let minX = Number.MAX_SAFE_INTEGER;
-        let minY = Number.MAX_SAFE_INTEGER;
-        let maxX = Number.MIN_SAFE_INTEGER;
-        let maxY = Number.MIN_SAFE_INTEGER;
+        let minRequiredX = Number.MAX_SAFE_INTEGER;
+        let minRequiredY = Number.MAX_SAFE_INTEGER;
+        let maxRequiredX = Number.MIN_SAFE_INTEGER;
+        let maxRequiredY = Number.MIN_SAFE_INTEGER;
 
         for (const point of polygon.points) {
-            if (point.x < minX) {
-                minX = point.x;
+            if (point.x < minRequiredX) {
+                minRequiredX = point.x;
             }
-            if (point.x > maxX) {
-                maxX = point.x;
+            if (point.x > maxRequiredX) {
+                maxRequiredX = point.x;
             }
 
-            if (point.y < minY) {
-                minY = point.y;
+            if (point.y < minRequiredY) {
+                minRequiredY = point.y;
             }
-            if (point.y > maxY) {
-                maxY = point.y;
+            if (point.y > maxRequiredY) {
+                maxRequiredY = point.y;
             }
         }
 
-        // then add some padding
-        const xRange = maxX - minX;
-        const yRange = maxY - minY;
-
-        // TODO: we ought to account for the aspect ratio of the display here
-        minX -= xRange * 0.25;
-        maxX += xRange * 0.25;
-        minY -= yRange * 0.25;
-        maxY += yRange * 0.25;
+        minRequiredX -= Targeting.gridPadding;
+        maxRequiredX += Targeting.gridPadding;
+        minRequiredY -= Targeting.gridPadding;
+        maxRequiredY += Targeting.gridPadding;
 
         return {
-            minX,
-            maxX,
-            minY,
-            maxY,
+            minRequiredX,
+            maxRequiredX,
+            minRequiredY,
+            maxRequiredY,
         };
     }
 
@@ -131,10 +126,53 @@ export class Targeting extends React.Component<IProps, IState> {
             ref={t => { if (t !== null) { this.touch = t }}}
         />;
     }
-
+    
+    private static readonly gridPadding = 3;
     private unitSize: number;
+    private minX: number;
+    private minY: number;
+    
+    private updateScaleAndOffset(width: number, height: number) {
+        // X or Y bounds will probably be larger than required so as to keep the polygon in the center
+        const centerX = (this.state.maxRequiredX + this.state.minRequiredX) / 2;
+        const centerY = (this.state.maxRequiredY + this.state.minRequiredY) / 2;
+
+        const requiredExtentX = this.state.maxRequiredX - this.state.minRequiredX;
+        const requiredExtentY = this.state.maxRequiredY - this.state.minRequiredY;
+
+        const requiredRatio = requiredExtentX / requiredExtentY;
+        const displayRatio = width / height;
+
+        let maxX, maxY;
+
+        if (requiredRatio > displayRatio) {
+            // extend X space
+            const yExtent = centerY - this.state.minRequiredY;
+            const xExtent = yExtent * requiredRatio / displayRatio;
+
+            this.minX = centerX - xExtent;
+            maxX = centerX + xExtent;
+            
+            this.minY = this.state.minRequiredY;
+            maxY = this.state.maxRequiredY;
+        }
+        else {
+            // extend Y space
+            const xExtent = centerX - this.state.minRequiredX;
+            const yExtent = xExtent * displayRatio / requiredRatio;
+
+            this.minY = centerY - yExtent;
+            maxY = centerY + yExtent;
+
+            this.minX = this.state.minRequiredX;
+            maxX = this.state.maxRequiredX;
+        }
+
+        this.unitSize = Math.min(width / (maxX - this.minX), height / (maxY - this.minY));
+    }
+
     private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
-        this.unitSize = Math.min(width / (this.state.maxX - this.state.minX), height / (this.state.maxY - this.state.minY));
+        this.updateScaleAndOffset(width, height);
 
         this.drawBackground(ctx, this.unitSize, width, height);
 
@@ -162,7 +200,7 @@ export class Targeting extends React.Component<IProps, IState> {
                 // draw "start point" for what will become the clipping line
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
-                ctx.arc(this.gridToScreen(this.state.x1, this.state.minX), this.gridToScreen(this.state.y1, this.state.minY), unitSize * 0.2, 0, Math.PI * 2);
+                ctx.arc(this.gridToScreen(this.state.x1, this.minX), this.gridToScreen(this.state.y1, this.minY), unitSize * 0.2, 0, Math.PI * 2);
                 ctx.fill();
             }
             return;
@@ -196,12 +234,12 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.lineWidth = unitSize * 0.2;
         ctx.beginPath();
         ctx.moveTo(
-            this.gridToScreen(this.state.x1!, this.state.minX),
-            this.gridToScreen(this.state.y1!, this.state.minY)
+            this.gridToScreen(this.state.x1!, this.minX),
+            this.gridToScreen(this.state.y1!, this.minY)
         )
         ctx.lineTo(
-            this.gridToScreen(this.state.x2!, this.state.minX),
-            this.gridToScreen(this.state.y2!, this.state.minY)
+            this.gridToScreen(this.state.x2!, this.minX),
+            this.gridToScreen(this.state.y2!, this.minY)
         )
         ctx.stroke();
     }
@@ -216,8 +254,8 @@ export class Targeting extends React.Component<IProps, IState> {
         }
 
         // determine where to draw the top left point
-        const startX = this.gridToScreen(Math.ceil(this.state.minX), this.state.minX);
-        const startY = this.gridToScreen(Math.ceil(this.state.minY), this.state.minY);
+        const startX = this.gridToScreen(Math.ceil(this.minX), this.minX);
+        const startY = this.gridToScreen(Math.ceil(this.minY), this.minY);
 
         // draw a grid of points
         ctx.fillStyle = '#999';
@@ -226,8 +264,8 @@ export class Targeting extends React.Component<IProps, IState> {
 
         ctx.beginPath();
 
-        for (let x = startX; x < width; x += unitSize) {
-            for (let y = startY; y < height; y += unitSize) {
+        for (let x = startX; x <= width; x += unitSize) {
+            for (let y = startY; y <= height; y += unitSize) {
                 ctx.moveTo(x, y);
                 ctx.arc(x, y, radius, 0, twoPi);
             }
@@ -243,13 +281,13 @@ export class Targeting extends React.Component<IProps, IState> {
 
         const firstPoint = polygon.points[0];
 
-        const startX = this.gridToScreen(firstPoint.x, this.state.minX);
-        const startY = this.gridToScreen(firstPoint.y, this.state.minY);
+        const startX = this.gridToScreen(firstPoint.x, this.minX);
+        const startY = this.gridToScreen(firstPoint.y, this.minY);
         ctx.moveTo(startX, startY);
 
         for (const point of polygon.points) {
-            const x = this.gridToScreen(point.x, this.state.minX);
-            const y = this.gridToScreen(point.y, this.state.minY);
+            const x = this.gridToScreen(point.x, this.minX);
+            const y = this.gridToScreen(point.y, this.minY);
             ctx.lineTo(x, y);
         }
 
@@ -267,7 +305,7 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.globalAlpha = 0.75;
 
         for (const result of this.state.sliceResultNumbers!) {
-            ctx.fillText(result.percent.toString(), this.gridToScreen(result.x, this.state.minX), this.gridToScreen(result.y, this.state.minY));
+            ctx.fillText(result.percent.toString(), this.gridToScreen(result.x, this.minX), this.gridToScreen(result.y, this.minY));
         }
 
         ctx.globalAlpha = 1;
@@ -285,10 +323,10 @@ export class Targeting extends React.Component<IProps, IState> {
         // determine the "full length" version of the clipping line,
         // plus two clipping paths to use to separate each "half" of the polygon, based on that line
         
-        let x1 = this.gridToScreen(this.state.x1!, this.state.minX);
-        let y1 = this.gridToScreen(this.state.y1!, this.state.minY);
-        let x2 = this.gridToScreen(this.state.x2!, this.state.minX);
-        let y2 = this.gridToScreen(this.state.y2!, this.state.minY);
+        let x1 = this.gridToScreen(this.state.x1!, this.minX);
+        let y1 = this.gridToScreen(this.state.y1!, this.minY);
+        let x2 = this.gridToScreen(this.state.x2!, this.minX);
+        let y2 = this.gridToScreen(this.state.y2!, this.minY);
 
         let bounds1;
         let bounds2;
@@ -484,10 +522,10 @@ export class Targeting extends React.Component<IProps, IState> {
         }
 
         this.setState({
-            x1: this.screenToGrid(startX, this.state.minX),
-            y1: this.screenToGrid(startY, this.state.minY),
-            x2: this.screenToGrid(endX, this.state.minX),
-            y2: this.screenToGrid(endY, this.state.minY),
+            x1: this.screenToGrid(startX, this.minX),
+            y1: this.screenToGrid(startY, this.minY),
+            x2: this.screenToGrid(endX, this.minX),
+            y2: this.screenToGrid(endY, this.minY),
         });
     }
 
