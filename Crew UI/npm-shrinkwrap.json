@@ -10519,6 +10519,11 @@
         "setimmediate": "^1.0.4"
       }
     },
+    "tinyqueue": {
+      "version": "2.0.1",
+      "resolved": "https://registry.npmjs.org/tinyqueue/-/tinyqueue-2.0.1.tgz",
+      "integrity": "sha512-7KuuEGo3XezCTqf9GBwKgx3SrkKObvNHwRhSTA/0zR2we0/tisX3VQAydOS1BuEmDB6DvpNfxxzreUVPm+Lrxg=="
+    },
     "tmp": {
       "version": "0.0.33",
       "resolved": "https://registry.npmjs.org/tmp/-/tmp-0.0.33.tgz",

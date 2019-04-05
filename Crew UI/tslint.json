@@ -28,6 +28,7 @@
     "no-angle-bracket-type-assertion": false,
     "radix": false,
     "forin": false,
+    "max-classes-per-file": false,
     "arrow-return-shorthand": false
   }
 }

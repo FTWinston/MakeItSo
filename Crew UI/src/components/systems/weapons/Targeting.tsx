@@ -77,37 +77,13 @@ export class Targeting extends React.Component<IProps, IState> {
         }
 
         // determine the extent of the polygon itself
-        let minRequiredX = Number.MAX_SAFE_INTEGER;
-        let minRequiredY = Number.MAX_SAFE_INTEGER;
-        let maxRequiredX = Number.MIN_SAFE_INTEGER;
-        let maxRequiredY = Number.MIN_SAFE_INTEGER;
-
-        for (const point of polygon.points) {
-            if (point.x < minRequiredX) {
-                minRequiredX = point.x;
-            }
-            if (point.x > maxRequiredX) {
-                maxRequiredX = point.x;
-            }
-
-            if (point.y < minRequiredY) {
-                minRequiredY = point.y;
-            }
-            if (point.y > maxRequiredY) {
-                maxRequiredY = point.y;
-            }
-        }
-
-        minRequiredX -= Targeting.gridPadding;
-        maxRequiredX += Targeting.gridPadding;
-        minRequiredY -= Targeting.gridPadding;
-        maxRequiredY += Targeting.gridPadding;
+        const polyBounds = polygon.bounds;
 
         return {
-            minRequiredX,
-            maxRequiredX,
-            minRequiredY,
-            maxRequiredY,
+            minRequiredX: polyBounds.minX - Targeting.gridPadding,
+            minRequiredY: polyBounds.minY - Targeting.gridPadding,
+            maxRequiredX: polyBounds.maxX + Targeting.gridPadding,
+            maxRequiredY: polyBounds.maxY + Targeting.gridPadding,
         };
     }
 
@@ -532,15 +508,16 @@ export class Targeting extends React.Component<IProps, IState> {
 
         // Determine areas of bisected "halfs"
         const parts = this.props.polygon.bisect({ x: this.state.x1, y: this.state.y1 }, { x: this.state.x2, y: this.state.y2 });
-
+        console.log('bisected', parts);
+        
         const totArea = parts.reduce((accumulator, part) => accumulator + part.area, 0);
 
         const sliceResultNumbers = parts.map(part => {
-            const centroid = part.centroid;
+            const labePosition = part.pointFurthestFromEdge;
             return {
                 percent: Math.round(1000 * part.area / totArea) / 10,
-                x: centroid.x,
-                y: centroid.y,
+                x: labePosition.x,
+                y: labePosition.y,
             };
         })
 
