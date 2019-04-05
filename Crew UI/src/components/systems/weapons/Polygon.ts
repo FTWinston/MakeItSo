@@ -100,7 +100,7 @@ export class Polygon {
         let h = cellSize / 2;
 
         // a priority queue of cells in order of their "potential" (max distance to polygon)
-        const cellQueue = new Queue<Cell>(undefined, ((a: Cell, b: Cell) => b.max - a.max) as any);
+        const cellQueue = new Queue<Cell>(undefined, (a: Cell, b: Cell) => b.max - a.max);
 
         // cover polygon with initial cells
         for (let x = minX; x < maxX; x += cellSize) {
