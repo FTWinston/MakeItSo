@@ -101,10 +101,11 @@ class Weapons extends ShipSystemComponent<IProps, IState> {
         }
         else {
             const deselectSolution = () => this.props.selectTargetingSolution(TargetingSolutionType.None);
-            const fire = (x1: number, y1: number, x2: number, y2: number) => connection.send(`wpn_fire ${x1} ${y1} ${x2} ${y2}`);
+            const fire = (x1: number, y1: number, x2: number, y2: number) => connection.send(`wpn_fire ${this.props.selectedSolution!.type} ${x1} ${y1} ${x2} ${y2}`);
 
             const polygon = this.props.selectedSolution.polygonsByFace[this.props.currentlyFacing];
 
+            // NOTE: when new solutions are received, the poly displaying in this doesn't update until you reopen it
             return <div className="system weapons weapons--firingSolution">
                 <TargetFiringOverview
                     text={this.props.text}
