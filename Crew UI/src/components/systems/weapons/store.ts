@@ -186,8 +186,13 @@ export const reducer: Reducer<WeaponState> = (state: WeaponState, rawAction: Act
             }
         }
         case 'WPN_SOLUTIONS': {
+            const selectedSolution = state.selectedSolution === undefined
+                ? undefined
+                : action.solutions.find(s => s.type === state.selectedSolution!.type);
+
             return {
                 ...state,
+                selectedSolution,
                 targetingSolutions: action.solutions,
             };
         }

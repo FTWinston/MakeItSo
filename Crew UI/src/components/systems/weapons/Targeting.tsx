@@ -10,7 +10,7 @@ interface IProps {
 }
 
 interface IState {
-    prevPolygon?: Polygon;
+    displayPolygon?: Polygon;
     x1?: number;
     y1?: number;
     x2?: number;
@@ -36,15 +36,16 @@ export class Targeting extends React.Component<IProps, IState> {
         super(props);
 
         const newState = this.determinePolygonBounds(props.polygon)
-        newState.prevPolygon = props.polygon;
+        newState.displayPolygon = props.polygon;
 
         this.state = newState;
     }
 
     componentWillReceiveProps(nextProps: IProps) {
-        if (nextProps.polygon !== this.props.polygon) {
-            const newState = this.determinePolygonBounds(this.props.polygon)
-            newState.prevPolygon = this.props.polygon;
+        // Only update the polygon being displayed if we're not displaying results, otherwise hold the old one
+        if (nextProps.polygon !== this.state.displayPolygon && this.state.sliceResultNumbers === undefined) {
+            const newState = this.determinePolygonBounds(nextProps.polygon)
+            newState.displayPolygon = nextProps.polygon;
 
             this.setState(newState);
         }
@@ -56,7 +57,7 @@ export class Targeting extends React.Component<IProps, IState> {
             || prevState.x1 !== this.state.x1
             || prevState.y1 !== this.state.y1
             || prevState.sliceResultNumbers !== this.state.sliceResultNumbers
-            || prevProps.polygon !== this.props.polygon
+            || prevState.displayPolygon !== this.state.displayPolygon
         ) {
             this.touch.redraw();
         }
@@ -140,11 +141,13 @@ export class Targeting extends React.Component<IProps, IState> {
 
     private draw(ctx: CanvasRenderingContext2D, width: number, height: number) {
         this.updateScaleAndOffset(width, height);
-
+        
         this.drawBackground(ctx, this.unitSize, width, height);
 
-        if (this.props.polygon !== undefined && this.props.polygon.points.length > 0) {
-            this.drawPolygon(ctx, this.unitSize, width, height);
+        const polygon = this.state.displayPolygon;
+
+        if (polygon !== undefined && polygon.points.length > 0) {
+            this.drawPolygon(ctx, polygon, this.unitSize, width, height);
         }
         else {
             // TODO: some sort of message about facing the wrong face
@@ -155,13 +158,13 @@ export class Targeting extends React.Component<IProps, IState> {
         }
     }
 
-    private drawPolygon(ctx: CanvasRenderingContext2D, unitSize: number, width: number, height: number) {
+    private drawPolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, unitSize: number, width: number, height: number) {
         ctx.strokeStyle = '#ccc';
         ctx.lineWidth = unitSize * 0.1;
 
         if (this.state.x2 === undefined || this.state.y2 === undefined || (this.state.x2 === this.state.x1 && this.state.y2 === this.state.y1)) {
             ctx.fillStyle = '#c00';
-            this.drawSinglePolygon(ctx, this.props.polygon!);
+            this.drawSinglePolygon(ctx, polygon);
 
             if (this.state.x1 !== undefined && this.state.y1 !== undefined) {
                 // draw "start point" for what will become the clipping line
@@ -179,14 +182,14 @@ export class Targeting extends React.Component<IProps, IState> {
         ctx.save();
         this.clipPath(ctx, clippingInfo.bounds1);
         ctx.fillStyle = '#f90';
-        this.drawSinglePolygon(ctx, this.props.polygon!);
+        this.drawSinglePolygon(ctx, polygon);
         ctx.restore();
 
         // clip on the other side of line and draw the polygon in another color
         ctx.save();
         this.clipPath(ctx, clippingInfo.bounds2);
         ctx.fillStyle = '#0cf';
-        this.drawSinglePolygon(ctx, this.props.polygon!);
+        this.drawSinglePolygon(ctx, polygon);
         ctx.restore();
         
         // draw "extended" clipping line thinly
@@ -500,15 +503,14 @@ export class Targeting extends React.Component<IProps, IState> {
     private sliceFinished() {
         if (this.state.x1 === undefined || this.state.y1 === undefined
             || this.state.x2 === undefined || this.state.y2 === undefined
-            || this.props.polygon === undefined || this.state.sliceResultNumbers !== undefined
+            || this.state.displayPolygon === undefined || this.state.sliceResultNumbers !== undefined
         ) {
             this.clearResults();
             return;
         }
 
         // Determine areas of bisected "halfs"
-        const parts = this.props.polygon.bisect({ x: this.state.x1, y: this.state.y1 }, { x: this.state.x2, y: this.state.y2 });
-        console.log('bisected', parts);
+        const parts = this.state.displayPolygon.bisect({ x: this.state.x1, y: this.state.y1 }, { x: this.state.x2, y: this.state.y2 });
         
         const totArea = parts.reduce((accumulator, part) => accumulator + part.area, 0);
 
@@ -545,6 +547,14 @@ export class Targeting extends React.Component<IProps, IState> {
             y2: undefined,
             sliceResultNumbers: undefined,
         })
+
+        // Hold on to the polygon being displayed until the results are cleared, then switch it
+        if (this.props.polygon !== this.state.displayPolygon) {
+            const newState = this.determinePolygonBounds(this.props.polygon)
+            newState.displayPolygon = this.props.polygon;
+
+            this.setState(newState);
+        }
 
         if (this.autoClear !== undefined) {
             clearTimeout(this.autoClear);
