@@ -103,6 +103,14 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 		PerformWarpJump(solution);
 		return true;
 	}
+	else if (STARTS_WITH(msg, "warp_save "))
+	{
+		// TODO: call this
+	}
+	else if (STARTS_WITH(msg, "warp_remove "))
+	{
+		// TODO: call this
+	}
 
 	return false;
 }
@@ -125,10 +133,6 @@ void UWarpSystem::SendAllData_Implementation()
 }
 
 
-
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::CalculateJump(FVector targetPos) { CalculateJump_Implementation(targetPos); }
-#endif
 
 void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 {
@@ -154,10 +158,6 @@ void UWarpSystem::CalculateJump_Implementation(FVector targetPos)
 }
 
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::CancelJump() { CancelJump_Implementation(); }
-#endif
-
 void UWarpSystem::CancelJump_Implementation()
 {
 	if (jumpState == EJumpState::Idle)
@@ -172,10 +172,6 @@ void UWarpSystem::CancelJump_Implementation()
 	}
 }
 
-
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::PerformWarpJump(TArray<uint8> solution) { PerformWarpJump_Implementation(solution); }
-#endif
 
 void UWarpSystem::PerformWarpJump_Implementation(TArray<uint8> solution)
 {
@@ -662,9 +658,6 @@ bool UWarpSystem::TryPickTarget(TArray<uint8> group, TArray<uint8> values, FKenK
 }
 
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendShipLocation() { SendShipLocation_Implementation(); }
-#endif
 void UWarpSystem::SendShipLocation_Implementation()
 {
 	FString output = TEXT("warp_ship_pos ");
@@ -689,9 +682,6 @@ void UWarpSystem::OnReplicated_Puzzle(FKenKenData beforeChange)
 	SendPuzzleData();
 }
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendJumpCharge() { SendJumpCharge_Implementation(); }
-#endif
 void UWarpSystem::SendJumpCharge_Implementation()
 {
 	uint8 progress = (uint8)(100 * jumpCharge / jumpRequiredCharge);
@@ -701,9 +691,6 @@ void UWarpSystem::SendJumpCharge_Implementation()
 	SendSystem(output);
 }
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendJumpDuration(float duration) { SendJumpDuration_Implementation(duration); }
-#endif
 void UWarpSystem::SendJumpDuration_Implementation(float duration)
 {
 	FString output = TEXT("warp_duration ");
@@ -711,9 +698,6 @@ void UWarpSystem::SendJumpDuration_Implementation(float duration)
 	SendSystem(output);
 }
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendJumpPositions(FVector start, FVector target) { SendJumpPositions_Implementation(start, target); }
-#endif
 void UWarpSystem::SendJumpPositions_Implementation(FVector start, FVector target)
 {
 	FString output = TEXT("warp_positions ");
@@ -733,14 +717,28 @@ void UWarpSystem::SendJumpPositions_Implementation(FVector start, FVector target
 	SendSystem(output);
 }
 
+
+void UWarpSystem::OnReplicated_SavedPositions(TMap<FString, FVector> beforeChange)
+{
+	// TODO: SendSavedPositions();
+}
+
+void UWarpSystem::AddSavedPosition_Implementation(FVector pos, FString name)
+{
+	MAPADD(savedPositions, name, pos, FString, FVector);
+}
+
+void UWarpSystem::RemoveSavedPosition_Implementation(FString name)
+{
+	MAPREMOVE(savedPositions, name);
+}
+
+
 void UWarpSystem::OnReplicated_JumpState(EJumpState beforeChange)
 {
 	SendJumpState();
 }
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendJumpState() { SendJumpState_Implementation(); }
-#endif
 void UWarpSystem::SendJumpState_Implementation()
 {
 	FString output = TEXT("warp_state ");
@@ -748,9 +746,6 @@ void UWarpSystem::SendJumpState_Implementation()
 	SendSystem(output);
 }
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendPuzzleData() { SendPuzzleData_Implementation(); }
-#endif
 void UWarpSystem::SendPuzzleData_Implementation()
 {
 	FString output = TEXT("warp_puzzle ");
@@ -802,9 +797,6 @@ void UWarpSystem::SendPuzzleData_Implementation()
 	SendSystem(output);
 }
 
-#ifdef WEB_SERVER_TEST
-void UWarpSystem::SendPuzzleResults(TArray<bool> results) { SendPuzzleResults_Implementation(results); }
-#endif
 void UWarpSystem::SendPuzzleResults_Implementation(TArray<bool> results)
 {
 	FString output = TEXT("warp_results");

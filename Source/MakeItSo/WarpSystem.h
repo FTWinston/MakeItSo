@@ -86,6 +86,10 @@ private:
 	bool TryPickTarget(TArray<uint8> group, TArray<uint8> solution, FKenKenData::EOperator groupOperator, int16 &groupTarget);
 
 
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SavedPositions)
+	TMap<FString, FVector> savedPositions;
+	void OnReplicated_SavedPositions(TMap<FString, FVector> beforeChange);
+
 	UPROPERTY()
 	float jumpTimeRemaining;
 
@@ -118,64 +122,97 @@ private:
 
 	// Client functions, that can be called from the server
 	UFUNCTION(Client, Reliable)
-	void SendShipLocation();
+	void SendShipLocation()
 #ifdef WEB_SERVER_TEST
+	{ SendShipLocation_Implementation(); }
 	void SendShipLocation_Implementation();
 #endif
+	;
 
 	UFUNCTION(Client, Reliable)
-	void SendJumpState();
+	void SendJumpState()
 #ifdef WEB_SERVER_TEST
+	{ SendJumpState_Implementation();}
 	void SendJumpState_Implementation();
 #endif
+	;
 
 	UFUNCTION(Client, Reliable)
-	void SendJumpCharge();
+	void SendJumpCharge()
 #ifdef WEB_SERVER_TEST
+	{ SendJumpCharge_Implementation(); }
 	void SendJumpCharge_Implementation();
 #endif
+	;
 
 	UFUNCTION(Client, Reliable)
-	void SendJumpDuration(float duration);
+	void SendJumpDuration(float duration)
 #ifdef WEB_SERVER_TEST
+	{ SendJumpDuration_Implementation(duration); }
 	void SendJumpDuration_Implementation(float duration);
 #endif
+	;
 
 	UFUNCTION(Client, Reliable)
-	void SendJumpPositions(FVector startPos, FVector targetPos);
+	void SendJumpPositions(FVector startPos, FVector targetPos)
 #ifdef WEB_SERVER_TEST
+	{ SendJumpPositions_Implementation(startPos, targetPos); }
 	void SendJumpPositions_Implementation(FVector startPos, FVector targetPos);
 #endif
+	;
 
 	UFUNCTION(Client, Reliable)
-	void SendPuzzleData();
+	void SendPuzzleData()
 #ifdef WEB_SERVER_TEST
+	{ SendPuzzleData_Implementation(); }
 	void SendPuzzleData_Implementation();
 #endif
+	;
 
 	UFUNCTION(Client, Reliable)
-	void SendPuzzleResults(TArray<bool> results);
+	void SendPuzzleResults(TArray<bool> results)
 #ifdef WEB_SERVER_TEST
+	{ SendPuzzleResults_Implementation(results); }
 	void SendPuzzleResults_Implementation(TArray<bool> results);
 #endif
-
+	;
 
 	// Server functions, that can be called from the client
 	UFUNCTION(Server, Reliable)
-	void CalculateJump(FVector targetPos);
+	void CalculateJump(FVector targetPos)
 #ifdef WEB_SERVER_TEST
+	{ CalculateJump_Implementation(targetPos); }
 	void CalculateJump_Implementation(FVector targetPos);
 #endif
+	;
 
 	UFUNCTION(Server, Reliable)
-	void CancelJump();
+	void CancelJump()
 #ifdef WEB_SERVER_TEST
+	{ CancelJump_Implementation(); }
 	void CancelJump_Implementation();
 #endif
+	;
 
 	UFUNCTION(Server, Reliable)
 	void PerformWarpJump(TArray<uint8> solution);
 #ifdef WEB_SERVER_TEST
 	void PerformWarpJump_Implementation(TArray<uint8> solution);
 #endif
+
+	UFUNCTION(Server, Reliable)
+	void AddSavedPosition(FVector pos, FString name)
+#ifdef WEB_SERVER_TEST
+	{ AddSavedPosition_Implementation(pos, name); }
+	void AddSavedPosition_Implementation(FVector pos, FString name);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void RemoveSavedPosition(FString name)
+#ifdef WEB_SERVER_TEST
+	{ RemoveSavedPosition_Implementation(name); }
+	void RemoveSavedPosition_Implementation(FString name);
+#endif
+	;
 };

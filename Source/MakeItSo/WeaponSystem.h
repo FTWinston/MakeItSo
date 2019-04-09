@@ -145,8 +145,8 @@ private:
 
 	UFUNCTION(Client, Reliable)
 	void SendTargetingSolutions()
-	{ SendTargetingSolutions_Implementation(); }
 #ifdef WEB_SERVER_TEST
+	{ SendTargetingSolutions_Implementation(); }
 	void SendTargetingSolutions_Implementation();
 #endif
 	;
