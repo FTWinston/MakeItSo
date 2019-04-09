@@ -8,6 +8,7 @@ import * as Power from '~/components/systems/power/store';
 import * as Sensors from '~/components/systems/sensors/store';
 import * as Warp from '~/components/systems/warp/store';
 import * as Weapons from '~/components/systems/weapons/store';
+import * as Viewscreen from '~/components/systems/viewscreen/store';
 
 // The top-level state object
 export interface ApplicationState {
@@ -21,6 +22,7 @@ export interface ApplicationState {
     environment: Environment.EnvironmentState;
     warp: Warp.WarpState;
     weapons: Weapons.WeaponState;
+    view: Viewscreen.ViewscreenState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -37,6 +39,7 @@ export const reducers = {
     environment: Environment.reducer,
     warp: Warp.reducer,
     weapons: Weapons.reducer,
+    wiewscreen: Viewscreen.reducer,
 };
 
 export { exhaustiveActionCheck } from './exhaustiveActionCheck';

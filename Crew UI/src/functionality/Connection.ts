@@ -9,6 +9,7 @@ import { msgPrefix as damagePrefix, receiveMessage as damageMessage } from '~/co
 import { msgPrefix as powerPrefix, receiveMessage as powerMessage } from '~/components/systems/power'
 import { msgPrefix as warpPrefix, receiveMessage as warpMessage } from '~/components/systems/warp'
 import { msgPrefix as weaponPrefix, receiveMessage as weaponMessage } from '~/components/systems/weapons'
+import { msgPrefix as viewscreenPrefix, receiveMessage as viewscreenMessage } from '~/components/systems/viewscreen'
 
 export class Connection {
     private socket: WebSocket;
@@ -151,6 +152,12 @@ export class Connection {
                 else if (cmd.startsWith(damagePrefix))
                 {
                     if (damageMessage(cmd, data)) {
+                        break;
+                    }
+                }
+                else if (cmd.startsWith(viewscreenPrefix))
+                {
+                    if (viewscreenMessage(cmd, data)) {
                         break;
                     }
                 }

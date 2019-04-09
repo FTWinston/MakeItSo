@@ -20,10 +20,94 @@ protected:
 private:
 	void DetermineViewTarget(const char* targetIdentifier);
 	void DetermineTargetAngles();
+
 	void SendViewAngles();
-	void SendViewZoomDist();
-	float viewPitch, viewYaw, viewZoom, viewChaseDist;
-	bool viewComms, viewChase;
-	UObject *viewTarget;
-	const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
+	void SendViewZoom();
+	void SendChase();
+
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ViewAngle)
+	FRotator viewAngle;
+	void OnReplicated_ViewAngle(FRotator beforeChange) { SendViewAngles(); }
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ViewAngle)
+	float viewZoom;
+	void OnReplicated_ViewZoom(float beforeChange) { SendViewZoom(); }
+	
+	UPROPERTY(Replicated)
+	float viewChaseDist;
+
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ViewChase)
+	bool viewChase;
+	void OnReplicated_ViewChase(bool beforeChange) { SendChase(); }
+
+	// bool viewComms;
+
+	UPROPERTY(Replicated)
+	AActor *viewTarget;
+
+
+	UFUNCTION(Server, Reliable)
+	void AdjustAngle(float pitch, float yaw)
+#ifdef WEB_SERVER_TEST
+	{ AdjustAngle_Implementation(pitch, yaw); }
+	void AdjustAngle_Implementation(float pitch, float yaw);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void SetAngle(float pitch, float yaw)
+#ifdef WEB_SERVER_TEST
+	{ SetAngle_Implementation(pitch, yaw); }
+	void SetAngle_Implementation(float pitch, float yaw);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void AdjustZoom(bool in)
+#ifdef WEB_SERVER_TEST
+	{ AdjustZoom_Implementation(in); }
+	void AdjustZoom_Implementation(bool in);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void SetZoom(float magnification)
+#ifdef WEB_SERVER_TEST
+	{ SetZoom_Implementation(magnification); }
+	void SetZoom_Implementation(float magnification);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void SetChase(bool chase)
+#ifdef WEB_SERVER_TEST
+	{ SetChase_Implementation(chase); }
+	void SetChase_Implementation(bool chase);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void LockOnTarget(FString identifier)
+#ifdef WEB_SERVER_TEST
+	{ LockOnTarget_Implementation(identifier); }
+	void LockOnTarget_Implementation(FString identifier);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void ClearTarget()
+#ifdef WEB_SERVER_TEST
+	{ ClearTarget_Implementation(); }
+	void ClearTarget_Implementation();
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void Reset()
+#ifdef WEB_SERVER_TEST
+	{ Reset_Implementation(); }
+	void Reset_Implementation();
+#endif
+	;
 };

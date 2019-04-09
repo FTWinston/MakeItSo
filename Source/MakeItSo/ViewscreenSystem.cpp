@@ -9,6 +9,8 @@
 #include "UIConnectionInfo.h"
 #include "MakeItSoPawn.h"
 
+const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
+
 bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
 	if (STARTS_WITH(msg, "viewdir "))
@@ -18,40 +20,17 @@ bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_mes
 
 		char dir = buffer[0];
 		if (dir == 'f')
-		{
-			viewPitch = 0;
-			viewYaw = 0;
-		}
+			SetAngle(0, 0);
 		else if (dir == 'b')
-		{
-			viewPitch = 0;
-			viewYaw = 180;
-		}
+			SetAngle(0, 180);
 		else if (dir == 'l')
-		{
-			viewPitch = 0;
-			viewYaw = 270;
-		}
+			SetAngle(0, 270);
 		else if (dir == 'r')
-		{
-			viewPitch = 0;
-			viewYaw = 90;
-		}
+			SetAngle(0, 90);
 		else if (dir == 'u')
-		{
-			viewPitch = 90;
-			viewYaw = 0;
-		}
+			SetAngle(90, 0);
 		else if (dir == 'd')
-		{
-			viewPitch = -90;
-			viewYaw = 0;
-		}
-		else
-		{
-			viewPitch = 42;
-			viewYaw = 42;
-		}
+			SetAngle(-90, 0);
 
 		viewTarget = nullptr;
 		SendViewAngles();
@@ -61,39 +40,111 @@ bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_mes
 		char buffer[20];
 		EXTRACT(msg, buffer, "viewtarget ");
 		DetermineViewTarget(buffer);
-		DetermineTargetAngles();
-		SendViewAngles();
-		SendViewZoomDist();
 	}
 	else if (MATCHES(msg, "viewup"))
-	{
-		viewPitch += viewAngleStep;
-		if (viewPitch > 90)
-			viewPitch = 90;
-		SendViewAngles();
-	}
+		AdjustAngle(viewAngleStep, 0);
 	else if (MATCHES(msg, "viewdown"))
-	{
-		viewPitch -= viewAngleStep;
-		if (viewPitch < -90)
-			viewPitch = -90;
-		SendViewAngles();
-	}
+		AdjustAngle(-viewAngleStep, 0);
 	else if (MATCHES(msg, "viewleft"))
-	{
-		viewYaw -= viewAngleStep;
-		if (viewYaw < 0)
-			viewYaw += 360;
-		SendViewAngles();
-	}
+		AdjustAngle(0, -viewAngleStep);
 	else if (MATCHES(msg, "viewright"))
-	{
-		viewYaw += viewAngleStep;
-		if (viewYaw >= 360)
-			viewYaw -= 360;
-		SendViewAngles();
-	}
+		AdjustAngle(0, viewAngleStep);
 	else if (MATCHES(msg, "viewin"))
+		AdjustZoom(true);
+	else if (MATCHES(msg, "viewout"))
+		AdjustZoom(false);
+	else if (MATCHES(msg, "+viewchase"))
+	{
+		SetChase(true);
+	}
+	else if (MATCHES(msg, "-viewchase"))
+	{
+		SetChase(false);
+	}
+	/*
+	else if (MATCHES(msg, "+viewcomms"))
+	{
+		viewComms = true;
+		crewManager->SendAllFixed("comms on");
+	}
+	else if (MATCHES(msg, "-viewcomms"))
+	{
+		viewComms = false;
+		crewManager->SendAllFixed("comms off");
+	}
+	*/
+	else
+		return false;
+
+	return true;
+}
+
+void UViewscreenSystem::SendAllData_Implementation()
+{
+	SendViewAngles();
+	SendViewZoom();
+	SendChase();
+
+	// TODO: send target ID or "clear target"
+}
+
+void UViewscreenSystem::DetermineViewTarget(const char* targetIdentifier)
+{
+	// TODO: lookup target
+	viewTarget = nullptr;
+}
+
+void UViewscreenSystem::DetermineTargetAngles()
+{
+	// TODO: calculate angle to viewTarget
+	viewAngle.Pitch = 22;
+	viewAngle.Yaw = 137;
+	viewZoom = 22.5;
+}
+
+void UViewscreenSystem::SendViewAngles()
+{
+	crewManager->SendAll("view %i %i", (int)viewAngle.Pitch, (int)viewAngle.Yaw);
+}
+
+void UViewscreenSystem::SendViewZoom()
+{
+	if (viewChase)
+	{
+		crewManager->SendAll("dist %i", (int)viewChaseDist);
+	}
+	else
+	{
+		crewManager->SendAll("zoom %.2f", viewZoom);
+	}
+}
+
+void UViewscreenSystem::SendChase()
+{
+	crewManager->SendAll(viewChase ? "view_chase 1" : "view_chase 0");
+}
+
+void UViewscreenSystem::AdjustAngle_Implementation(float pitch, float yaw)
+{
+	viewAngle.Pitch += pitch;
+	viewAngle.Yaw += yaw;
+
+	if (ISCLIENT())
+		SendViewAngles();
+}
+
+void UViewscreenSystem::SetAngle_Implementation(float pitch, float yaw)
+{
+	viewAngle.Pitch = pitch;
+	viewAngle.Yaw = yaw;
+
+	if (ISCLIENT())
+		SendViewAngles();
+}
+
+void UViewscreenSystem::AdjustZoom_Implementation(bool in)
+{
+	if (in)
 	{
 		if (viewChase)
 		{
@@ -107,10 +158,8 @@ bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_mes
 			if (viewZoom > maxZoomFactor)
 				viewZoom = maxZoomFactor;
 		}
-
-		SendViewZoomDist();
 	}
-	else if (MATCHES(msg, "viewout"))
+	else
 	{
 		if (viewChase)
 		{
@@ -124,69 +173,60 @@ bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_mes
 			if (viewZoom < minZoomFactor)
 				viewZoom = minZoomFactor;
 		}
+	}
 
-		SendViewZoomDist();
-	}
-	else if (MATCHES(msg, "+viewchase"))
-	{
-		viewChase = true;
-		crewManager->SendAllFixed("chase on");
-	}
-	else if (MATCHES(msg, "-viewchase"))
-	{
-		viewChase = false;
-		crewManager->SendAllFixed("chase off");
-	}
-	else if (MATCHES(msg, "+viewcomms"))
-	{
-		viewComms = true;
-		crewManager->SendAllFixed("comms on");
-	}
-	else if (MATCHES(msg, "-viewcomms"))
-	{
-		viewComms = false;
-		crewManager->SendAllFixed("comms off");
-	}
-	else
-		return false;
-
-	return true;
+	if (ISCLIENT())
+		SendViewZoom();
 }
 
-void UViewscreenSystem::SendAllData_Implementation()
+void UViewscreenSystem::SetZoom_Implementation(float magnification)
 {
-	SendViewAngles();
-	SendViewZoomDist();
-	// TODO: send all viewscreen targets
+	viewZoom = magnification;
+
+	if (ISCLIENT())
+		SendViewZoom();
 }
 
-void UViewscreenSystem::DetermineViewTarget(const char* targetIdentifier)
+void UViewscreenSystem::SetChase_Implementation(bool chase)
 {
-	// TODO: lookup target
+	if (viewChase == chase)
+		return;
+
+	viewChase = chase;
+
+	if (ISCLIENT())
+		SendChase();
+
+	if (!chase)
+	{
+		viewZoom = 1;
+
+		if (ISCLIENT())
+			SendViewZoom();
+	}
+}
+
+void UViewscreenSystem::LockOnTarget_Implementation(FString identifier)
+{
+	// TODO: lock onto target and indicate the identifier of the locked target
+
+	// TODO: send target ID
+}
+
+void UViewscreenSystem::ClearTarget_Implementation()
+{
 	viewTarget = nullptr;
+	
+	// TODO: send "clear target"
 }
 
-void UViewscreenSystem::DetermineTargetAngles()
+void UViewscreenSystem::Reset_Implementation()
 {
-	// TODO: calculate angle to viewTarget
-	viewPitch = 22;
-	viewYaw = 137;
-	viewZoom = 22.5;
-}
+	viewTarget = nullptr;
+	viewAngle.Pitch = 0;
+	viewAngle.Yaw = 0;
+	viewZoom = 1;
 
-void UViewscreenSystem::SendViewAngles()
-{
-	crewManager->SendAll("view %i %i", (int)viewYaw, (int)viewPitch);
-}
-
-void UViewscreenSystem::SendViewZoomDist()
-{
-	if (viewChase)
-	{
-		crewManager->SendAll("dist %i", (int)viewChaseDist);
-	}
-	else
-	{
-		crewManager->SendAll("zoom %.2f", viewZoom);
-	}
+	if (ISCLIENT())
+		SendAllData();
 }
