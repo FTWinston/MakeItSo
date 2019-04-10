@@ -69,7 +69,7 @@ protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::Sensors; }
 private:
 	void UpdateTargetData(uint16 targetID, USensorTargetInfo *targetInfo);
-	void SendTargetData(uint8 id, USensorTargetInfo *target);
+	void SendTargetData(uint16 id, USensorTargetInfo *target);
 	void PopulateCells(USensorTargetInfo *target);
 	uint8 PlaceTarget(uint8 targetSize, ESensorSystem system);
 	bool TryPlaceTarget(uint8 targetSize, ESensorSystem system);

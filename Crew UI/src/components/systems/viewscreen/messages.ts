@@ -6,7 +6,7 @@ export const msgPrefix = 'view_';
 export function receiveMessage(cmd: string, data: string) {
     switch (cmd) {
         case 'view_target': {
-            if(data === '') {
+            if(data === '' || data === '0') {
                 store.dispatch(actionCreators.clearLockedTarget());
             }
             else {

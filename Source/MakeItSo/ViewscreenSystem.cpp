@@ -8,15 +8,26 @@
 #include "CrewManager.h"
 #include "UIConnectionInfo.h"
 #include "MakeItSoPawn.h"
+#include "SensorSystem.h"
 
 const float viewAngleStep = 15, viewZoomStep = 1.5f, minZoomFactor = 1, maxZoomFactor = 1000000, minChaseDist = 10, maxChaseDist = 10000;
 
+void UViewscreenSystem::ResetData()
+{
+	viewTarget = nullptr;
+	viewTargetID = 0;
+	viewAngle.Pitch = 0;
+	viewAngle.Yaw = 0;
+	viewZoom = 1;
+	viewChaseDist = 100;
+}
+
 bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(msg, "viewdir "))
+	if (STARTS_WITH(msg, "view_dir "))
 	{
 		char buffer[2];
-		EXTRACT(msg, buffer, "viewdir ");
+		EXTRACT(msg, buffer, "view_dir ");
 
 		char dir = buffer[0];
 		if (dir == 'f')
@@ -35,44 +46,38 @@ bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_mes
 		viewTarget = nullptr;
 		SendViewAngles();
 	}
-	else if (STARTS_WITH(msg, "viewtarget "))
+	else if (STARTS_WITH(msg, "view_rot "))
 	{
-		char buffer[20];
-		EXTRACT(msg, buffer, "viewtarget ");
-		DetermineViewTarget(buffer);
+		char buffer[2];
+		EXTRACT(msg, buffer, "view_rot ");
+
+		char dir = buffer[0];
+		if (dir == 'u')
+			AdjustAngle(viewAngleStep, 0);
+		else if (dir == 'd')
+			AdjustAngle(-viewAngleStep, 0);
+		else if (dir == 'l')
+			AdjustAngle(0, -viewAngleStep);
+		else if (dir == 'r')
+			AdjustAngle(0, viewAngleStep);
 	}
-	else if (MATCHES(msg, "viewup"))
-		AdjustAngle(viewAngleStep, 0);
-	else if (MATCHES(msg, "viewdown"))
-		AdjustAngle(-viewAngleStep, 0);
-	else if (MATCHES(msg, "viewleft"))
-		AdjustAngle(0, -viewAngleStep);
-	else if (MATCHES(msg, "viewright"))
-		AdjustAngle(0, viewAngleStep);
-	else if (MATCHES(msg, "viewin"))
+	else if (MATCHES(msg, "view_cleartarget"))
+		ClearTarget();
+	else if (STARTS_WITH(msg, "view_target "))
+	{
+		uint16 targetID = ExtractInt(msg, sizeof("view_target "));
+		LockOnTarget(targetID);
+	}
+	else if (MATCHES(msg, "view_zoom 1"))
 		AdjustZoom(true);
-	else if (MATCHES(msg, "viewout"))
+	else if (MATCHES(msg, "view_zoom 0"))
 		AdjustZoom(false);
-	else if (MATCHES(msg, "+viewchase"))
-	{
+	else if (MATCHES(msg, "view_chase 1"))
 		SetChase(true);
-	}
-	else if (MATCHES(msg, "-viewchase"))
-	{
+	else if (MATCHES(msg, "view_chase 0"))
 		SetChase(false);
-	}
-	/*
-	else if (MATCHES(msg, "+viewcomms"))
-	{
-		viewComms = true;
-		crewManager->SendAllFixed("comms on");
-	}
-	else if (MATCHES(msg, "-viewcomms"))
-	{
-		viewComms = false;
-		crewManager->SendAllFixed("comms off");
-	}
-	*/
+	else if (MATCHES(msg, "view_reset"))
+		Reset();
 	else
 		return false;
 
@@ -84,14 +89,7 @@ void UViewscreenSystem::SendAllData_Implementation()
 	SendViewAngles();
 	SendViewZoom();
 	SendChase();
-
-	// TODO: send target ID or "clear target"
-}
-
-void UViewscreenSystem::DetermineViewTarget(const char* targetIdentifier)
-{
-	// TODO: lookup target
-	viewTarget = nullptr;
+	SendTarget();
 }
 
 void UViewscreenSystem::DetermineTargetAngles()
@@ -104,25 +102,39 @@ void UViewscreenSystem::DetermineTargetAngles()
 
 void UViewscreenSystem::SendViewAngles()
 {
-	crewManager->SendAll("view %i %i", (int)viewAngle.Pitch, (int)viewAngle.Yaw);
+	FString output = TEXT("view_angle ");
+	APPENDINT(output, (uint8)viewAngle.Pitch);
+	output += TEXT(" ");
+	APPENDINT(output, (uint8)viewAngle.Yaw);
+
+	crewManager->SendAll(output);
 }
 
 void UViewscreenSystem::SendViewZoom()
 {
-	if (viewChase)
-	{
-		crewManager->SendAll("dist %i", (int)viewChaseDist);
-	}
-	else
-	{
-		crewManager->SendAll("zoom %.2f", viewZoom);
-	}
+	FString output = TEXT("view_zoom ");
+	APPENDINT(output, (uint32)viewZoom);
+	crewManager->SendAll(output);
 }
 
 void UViewscreenSystem::SendChase()
 {
 	crewManager->SendAll(viewChase ? "view_chase 1" : "view_chase 0");
 }
+
+void UViewscreenSystem::SendTarget()
+{
+	if (viewTargetID == 0)
+	{
+		crewManager->SendAll("view_target");
+		return;
+	}
+
+	FString output = TEXT("view_target ");
+	APPENDINT(output, viewTargetID);
+	crewManager->SendAll(output);
+}
+
 
 void UViewscreenSystem::AdjustAngle_Implementation(float pitch, float yaw)
 {
@@ -206,26 +218,39 @@ void UViewscreenSystem::SetChase_Implementation(bool chase)
 	}
 }
 
-void UViewscreenSystem::LockOnTarget_Implementation(FString identifier)
+void UViewscreenSystem::LockOnTarget_Implementation(uint16 identifier)
 {
-	// TODO: lock onto target and indicate the identifier of the locked target
+	if (identifier == 0)
+	{
+		viewTarget = nullptr;
+	}
+	else
+	{
+		auto sensorSystem = crewManager->GetSystem(UShipSystem::ESystem::Sensors);
 
-	// TODO: send target ID
+		viewTarget = sensorSystem == nullptr
+			? nullptr
+			: ((USensorSystem*)sensorSystem)->GetTarget(identifier)->actor;
+	}
+
+	viewTargetID = identifier;
+
+	if (ISCLIENT())
+		SendTarget();
 }
 
 void UViewscreenSystem::ClearTarget_Implementation()
 {
 	viewTarget = nullptr;
-	
-	// TODO: send "clear target"
+	viewTargetID = 0;
+
+	if (ISCLIENT())
+		SendTarget();
 }
 
 void UViewscreenSystem::Reset_Implementation()
 {
-	viewTarget = nullptr;
-	viewAngle.Pitch = 0;
-	viewAngle.Yaw = 0;
-	viewZoom = 1;
+	ResetData();
 
 	if (ISCLIENT())
 		SendAllData();

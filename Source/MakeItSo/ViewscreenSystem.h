@@ -5,6 +5,7 @@
 #endif
 
 #include "ShipSystem.h"
+#include "CrewManager.h"
 #include "ViewscreenSystem.Generated.h"
 
 UCLASS()
@@ -13,17 +14,18 @@ class MAKEITSO_API UViewscreenSystem : public UShipSystem
 	GENERATED_BODY()
 
 public:
+	virtual void ResetData() override;
 	virtual bool ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg) override;
 	virtual void SendAllData_Implementation() override;
 protected:
 	virtual UShipSystem::ESystem GetSystem() override { return UShipSystem::ESystem::ViewScreen; }
 private:
-	void DetermineViewTarget(const char* targetIdentifier);
 	void DetermineTargetAngles();
 
 	void SendViewAngles();
 	void SendViewZoom();
 	void SendChase();
+	void SendTarget();
 
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ViewAngle)
@@ -41,10 +43,12 @@ private:
 	bool viewChase;
 	void OnReplicated_ViewChase(bool beforeChange) { SendChase(); }
 
-	// bool viewComms;
+	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_ViewTargetID)
+	uint16 viewTargetID;
+	void OnReplicated_ViewTargetID(uint16 beforeChange) { SendTarget(); }
 
 	UPROPERTY(Replicated)
-	AActor *viewTarget;
+	WEAK_PTR_DECLARE(AActor) viewTarget;
 
 
 	UFUNCTION(Server, Reliable)
@@ -88,10 +92,10 @@ private:
 	;
 
 	UFUNCTION(Server, Reliable)
-	void LockOnTarget(FString identifier)
+	void LockOnTarget(uint16 identifier)
 #ifdef WEB_SERVER_TEST
 	{ LockOnTarget_Implementation(identifier); }
-	void LockOnTarget_Implementation(FString identifier);
+	void LockOnTarget_Implementation(uint16 identifier);
 #endif
 	;
 

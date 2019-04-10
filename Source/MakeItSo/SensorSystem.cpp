@@ -123,7 +123,7 @@ void USensorSystem::SendAllData_Implementation()
 	SendTargetCells();
 }
 
-void USensorSystem::SendTargetData(uint8 id, USensorTargetInfo *target)
+void USensorSystem::SendTargetData(uint16 id, USensorTargetInfo *target)
 {
 	FString output = TEXT("env_target ");
 	APPENDINT(output, id);

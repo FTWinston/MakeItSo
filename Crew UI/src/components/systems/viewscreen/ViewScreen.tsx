@@ -28,6 +28,17 @@ class ViewScreen extends ShipSystemComponent<ViewScreenProps, {}> {
     }
 
     public render() {
+/*
+will send the following commands based on buttons etc
+view_dir f/b/k/r/u/d
+view_target targetID
+view_cleartarget
+view_rot u/d/l/r
+view_zoom 1/0
+view_chase 1/0
+view_reset
+*/
+
         // let words = this.props.text.systems.view;
 
         return <div className="system system--buttonInput">
