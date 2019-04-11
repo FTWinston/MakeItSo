@@ -485,7 +485,16 @@ The power management system can deactivate it.`,
 
         },
         view: {
-
+            rotate: 'Rotate view',
+            chase: 'Chase mode',
+            targetSelect: 'Target select',
+            rotUp: 'Rotate view up',
+            rotDown: 'Rotate view down',
+            rotLeft: 'Rotate view left',
+            rotRight: 'Rotate view right',
+            reset: 'Reset',
+            zoomIn: 'Zoom in',
+            zoomOut: 'Zoom out',
         },
     },
 };

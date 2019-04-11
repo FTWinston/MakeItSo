@@ -10,6 +10,8 @@ const ArrowUp: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/ic
 const ArrowDown: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/arrow-down.svg');
 const ArrowLeft: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/arrow-left.svg');
 const ArrowRight: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/arrow-right.svg');
+const Maximize: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/maximize-2.svg');
+const Minimize: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/minimize-2.svg');
 const RotateCCW: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/rotate-ccw.svg');
 const RotateCW: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/rotate-cw.svg');
 const Settings: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/settings.svg');
@@ -18,6 +20,8 @@ const SystemHealth: any = require('-!svg-react-loader?name=Icon!feather-icons/di
 const User: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/user.svg');
 const Fullscreen: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/monitor.svg');
 const Zap: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zap.svg');
+const ZoomIn: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zoom-in.svg');
+const ZoomOut: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/zoom-out.svg');
 
 const HelmIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/navigation.svg');
 const WarpIcon: any = require('-!svg-react-loader?name=Icon!feather-icons/dist/icons/compass.svg');
@@ -40,6 +44,8 @@ export enum Icon {
     ArrowDown,
     ArrowLeft,
     ArrowRight,
+    Maximize,
+    Minimize,
     RotateCCW,
     RotateCW,
     Settings,
@@ -48,6 +54,8 @@ export enum Icon {
     User,
     Fullscreen,
     Zap,
+    ZoomIn,
+    ZoomOut,
 
     Helm,
     Warp,
@@ -87,6 +95,10 @@ export function renderIcon(icon: Icon, size: number | string = 24, className?: s
             return <ArrowLeft {...props} />;
         case Icon.ArrowRight:
             return <ArrowRight {...props} />;
+        case Icon.Maximize:
+            return <Maximize {...props} />;
+        case Icon.Minimize:
+            return <Minimize {...props} />;
         case Icon.RotateCCW:
             return <RotateCCW {...props} />;
         case Icon.RotateCW:
@@ -103,6 +115,10 @@ export function renderIcon(icon: Icon, size: number | string = 24, className?: s
             return <Fullscreen {...props} />;
         case Icon.Zap:
             return <Zap {...props} />;
+        case Icon.ZoomIn:
+            return <ZoomIn {...props} />;
+        case Icon.ZoomOut:
+            return <ZoomOut {...props} />;
 
         case Icon.Helm:
             return <HelmIcon {...props} />;

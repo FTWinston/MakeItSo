@@ -20,46 +20,25 @@ void UViewscreenSystem::ResetData()
 	viewAngle.Yaw = 0;
 	viewZoom = 1;
 	viewChaseDist = 100;
+	viewChase = false;
 }
 
 bool UViewscreenSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *msg)
 {
-	if (STARTS_WITH(msg, "view_dir "))
-	{
-		char buffer[2];
-		EXTRACT(msg, buffer, "view_dir ");
-
-		char dir = buffer[0];
-		if (dir == 'f')
-			SetAngle(0, 0);
-		else if (dir == 'b')
-			SetAngle(0, 180);
-		else if (dir == 'l')
-			SetAngle(0, 270);
-		else if (dir == 'r')
-			SetAngle(0, 90);
-		else if (dir == 'u')
-			SetAngle(90, 0);
-		else if (dir == 'd')
-			SetAngle(-90, 0);
-
-		viewTarget = nullptr;
-		SendViewAngles();
-	}
-	else if (STARTS_WITH(msg, "view_rot "))
+	if (STARTS_WITH(msg, "view_rot "))
 	{
 		char buffer[2];
 		EXTRACT(msg, buffer, "view_rot ");
 
 		char dir = buffer[0];
 		if (dir == 'u')
-			AdjustAngle(viewAngleStep, 0);
+			AdjustAngle(viewAngleStep / viewZoom, 0);
 		else if (dir == 'd')
-			AdjustAngle(-viewAngleStep, 0);
+			AdjustAngle(-viewAngleStep / viewZoom, 0);
 		else if (dir == 'l')
-			AdjustAngle(0, -viewAngleStep);
+			AdjustAngle(0, -viewAngleStep / viewZoom);
 		else if (dir == 'r')
-			AdjustAngle(0, viewAngleStep);
+			AdjustAngle(0, viewAngleStep / viewZoom);
 	}
 	else if (MATCHES(msg, "view_cleartarget"))
 		ClearTarget();
@@ -250,7 +229,11 @@ void UViewscreenSystem::ClearTarget_Implementation()
 
 void UViewscreenSystem::Reset_Implementation()
 {
-	ResetData();
+	viewTarget = nullptr;
+	viewTargetID = 0;
+	viewAngle.Pitch = 0;
+	viewAngle.Yaw = 0;
+	viewZoom = 1;
 
 	if (ISCLIENT())
 		SendAllData();

@@ -415,7 +415,16 @@ export interface TextLocalisation {
 
         },
         view: {
-
+            rotate: string;
+            chase: string;
+            targetSelect: string;
+            rotUp: string;
+            rotDown: string;
+            rotLeft: string;
+            rotRight: string;
+            reset: string;
+            zoomIn: string;
+            zoomOut: string;
         },
     },
 }
