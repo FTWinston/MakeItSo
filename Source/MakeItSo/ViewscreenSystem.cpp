@@ -117,8 +117,8 @@ void UViewscreenSystem::SendTarget()
 
 void UViewscreenSystem::AdjustAngle_Implementation(float pitch, float yaw)
 {
-	viewAngle.Pitch += pitch;
-	viewAngle.Yaw += yaw;
+	viewAngle.Pitch = FRotator::ClampAxis(viewAngle.Pitch + pitch);
+	viewAngle.Yaw = FRotator::ClampAxis(viewAngle.Yaw + yaw);
 
 	if (ISCLIENT())
 		SendViewAngles();
@@ -126,8 +126,8 @@ void UViewscreenSystem::AdjustAngle_Implementation(float pitch, float yaw)
 
 void UViewscreenSystem::SetAngle_Implementation(float pitch, float yaw)
 {
-	viewAngle.Pitch = pitch;
-	viewAngle.Yaw = yaw;
+	viewAngle.Pitch = FRotator::ClampAxis(pitch);
+	viewAngle.Yaw = FRotator::ClampAxis(yaw);
 
 	if (ISCLIENT())
 		SendViewAngles();

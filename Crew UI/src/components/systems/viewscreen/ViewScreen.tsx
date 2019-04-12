@@ -74,37 +74,53 @@ ok so can we have buttons like:
                 <PushButton icon={Icon.ZoomOut} iconSize={iconSize} title={words.zoomOut} color={ButtonColor.Secondary} hotkey="F" command="view_zoom 0" />
             </div>
 
-        return <div className="viewSystem">
-            <div className="viewSystem__rotators">
-                <FieldGroup
-                    label={words.rotate}
-                    className="fieldGroup--buttons fieldGroup--3x3"
-                >
-                    <PushButton className="fieldGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotUp} color={ButtonColor.Tertiary} hotkey="W" command="view_rot u" />
-                    <PushButton className="fieldGroup--3x3__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.rotDown} color={ButtonColor.Tertiary} hotkey="S" command="view_rot d" />
-                    <PushButton className="fieldGroup--3x3__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.rotLeft} color={ButtonColor.Tertiary} hotkey="A" command="view_rot l" />
-                    <PushButton className="fieldGroup--3x3__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.rotRight} color={ButtonColor.Tertiary} hotkey="D" command="view_rot r" />
-                    <PushButton className="fieldGroup--3x3__center" iconSize={iconSize} text={words.reset} color={ButtonColor.Primary} hotkey="space" command="view_reset" />
-                </FieldGroup>
+        const magnification = this.props.chase
+            ? undefined
+            : <div className="viewSystem__valueField">
+                Magnification: <span className="viewSystem__value">{this.props.zoom}</span>x
             </div>
 
-            {zoomOrDistance}
+        return <div className="viewSystem">
+            <div className="viewSystem__main">
+                <div className="viewSystem__rotators">
+                    <FieldGroup
+                        label={words.rotate}
+                        className="fieldGroup--buttons fieldGroup--3x3"
+                    >
+                        <PushButton className="fieldGroup--3x3__topMid" icon={Icon.ArrowUp} iconSize={iconSize} title={words.rotUp} color={ButtonColor.Tertiary} hotkey="W" command="view_rot u" />
+                        <PushButton className="fieldGroup--3x3__botMid" icon={Icon.ArrowDown} iconSize={iconSize} title={words.rotDown} color={ButtonColor.Tertiary} hotkey="S" command="view_rot d" />
+                        <PushButton className="fieldGroup--3x3__midLeft" icon={Icon.ArrowLeft} iconSize={iconSize} title={words.rotLeft} color={ButtonColor.Tertiary} hotkey="A" command="view_rot l" />
+                        <PushButton className="fieldGroup--3x3__midRight" icon={Icon.ArrowRight} iconSize={iconSize} title={words.rotRight} color={ButtonColor.Tertiary} hotkey="D" command="view_rot r" />
+                        <PushButton className="fieldGroup--3x3__center" iconSize={iconSize} text={words.reset} color={ButtonColor.Primary} hotkey="space" command="view_reset" />
+                    </FieldGroup>
+                </div>
 
-            <div className="viewSystem__pushButtons">
-                <ToggleButton
-                    className="viewSystem__chaseButton"
-                    color={ButtonColor.Secondary}
-                    text={words.chase}
-                    deactivateCommand="view_chase 0"
-                    activateCommand="view_chase 1"
-                />
+                {zoomOrDistance}
 
-                <PushButton
-                    className="viewSystem__targetSelectButton"
-                    color={ButtonColor.Tertiary}
-                    text={words.targetSelect}
-                    clicked={showTargetSelect}
-                />
+                <div className="viewSystem__pushButtons">
+                    <ToggleButton
+                        className="viewSystem__chaseButton"
+                        startActive={this.props.chase}
+                        color={ButtonColor.Secondary}
+                        text={words.chase}
+                        deactivateCommand="view_chase 0"
+                        activateCommand="view_chase 1"
+                    />
+
+                    <PushButton
+                        className="viewSystem__targetSelectButton"
+                        color={ButtonColor.Tertiary}
+                        text={words.targetSelect}
+                        clicked={showTargetSelect}
+                    />
+                </div>
+            </div>
+
+            <div className="viewSystem__values">
+                <div className="viewSystem__valueField">
+                    Relative to ship: <span className="viewSystem__value">{this.props.yaw}</span> mk <span className="viewSystem__value">{this.props.pitch}</span>
+                </div>
+                {magnification}
             </div>
         </div>
     }
@@ -120,7 +136,7 @@ ok so can we have buttons like:
 const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
     return {
         text: state.user.text,
-        ...state.view,
+        ...state.viewscreen,
     }
 };
 

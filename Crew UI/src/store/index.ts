@@ -22,7 +22,7 @@ export interface ApplicationState {
     environment: Environment.EnvironmentState;
     warp: Warp.WarpState;
     weapons: Weapons.WeaponState;
-    view: Viewscreen.ViewscreenState;
+    viewscreen: Viewscreen.ViewscreenState;
 }
 
 // Whenever an action is dispatched, Redux will update each top-level application state property using
@@ -39,7 +39,7 @@ export const reducers = {
     environment: Environment.reducer,
     warp: Warp.reducer,
     weapons: Weapons.reducer,
-    wiewscreen: Viewscreen.reducer,
+    viewscreen: Viewscreen.reducer,
 };
 
 export { exhaustiveActionCheck } from './exhaustiveActionCheck';

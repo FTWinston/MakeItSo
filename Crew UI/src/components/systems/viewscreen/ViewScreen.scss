@@ -1,1 +1,45 @@
 @import '../../general/mixins';
+
+.viewSystem {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.viewSystem__main {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+
+.viewSystem__zoom,
+.viewSystem__distance,
+.viewSystem__pushButtons {
+    display: flex;
+    flex-direction: column;
+}
+
+.viewSystem__values {
+    display: flex;
+    justify-content: space-between;
+}
+
+.viewSystem__value {
+    color: $colorQuandry;
+    font-weight: bold;
+}
+
+@include portrait() {
+    .viewSystem__main, 
+    .viewSystem__values {
+        flex-direction: column;
+    }
+
+    .viewSystem__zoom,
+    .viewSystem__distance,
+    .viewSystem__pushButtons {
+        flex-direction: row;
+    }
+}
