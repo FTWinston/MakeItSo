@@ -1,15 +1,19 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { ApplicationState } from '~/store';
-import { TextLocalisation } from '~/functionality';
+import { TextLocalisation, SensorTarget } from '~/functionality';
 import { ShipSystemComponent } from '~/components/systems/ShipSystemComponent';
 import './ViewScreen.scss';
 import { ViewscreenState, actionCreators } from './store';
 import { ToggleButton, ButtonColor, PushButton, Icon } from '~/components/general';
 import { FieldGroup } from '../helm/FieldGroup';
+import { TargetList } from '../sensors/TargetList';
+import { connection } from '../../..';
 
 interface IProps extends ViewscreenState {
     text: TextLocalisation;
+    setLockedTarget: (targetID: number) => void;
+    allTargets: SensorTarget[];
 }
 
 interface IState {
@@ -36,13 +40,6 @@ class ViewScreen extends ShipSystemComponent<IProps, IState> {
     }
 
     public render() {
-/*
-still need buttons that will send the following commands
-view_target targetID
-view_cleartarget
-*/
-
-
 /*
 
 ok so can we have buttons like:
@@ -74,10 +71,18 @@ ok so can we have buttons like:
                 <PushButton icon={Icon.ZoomOut} iconSize={iconSize} title={words.zoomOut} color={ButtonColor.Secondary} hotkey="F" command="view_zoom 0" />
             </div>
 
-        const magnification = this.props.chase
+        const magnification = this.props.chase && this.props.lockedTargetID === undefined
             ? undefined
             : <div className="viewSystem__valueField">
                 Magnification: <span className="viewSystem__value">{this.props.zoom}</span>x
+            </div>
+
+        const headingOrTarget = this.props.lockedTargetID === undefined
+            ? <div className="viewSystem__valueField">
+                Relative to ship: <span className="viewSystem__value">{this.props.yaw}</span> mk <span className="viewSystem__value">{this.props.pitch}</span>
+            </div>
+            : <div className="viewSystem__valueField">
+                View locked on target: <span className="viewSystem__value">{this.props.lockedTargetID}</span>
             </div>
 
         return <div className="viewSystem">
@@ -117,18 +122,25 @@ ok so can we have buttons like:
             </div>
 
             <div className="viewSystem__values">
-                <div className="viewSystem__valueField">
-                    Relative to ship: <span className="viewSystem__value">{this.props.yaw}</span> mk <span className="viewSystem__value">{this.props.pitch}</span>
-                </div>
+                {headingOrTarget}
                 {magnification}
             </div>
         </div>
     }
 
     private renderTargetSelect() {
-        return <div className="viewSystem viewSystem--targetSelect">
-            TODO: implement this
-        </div>
+        const selectTarget = (target: SensorTarget) => {
+            connection.send(`view_target ${target.id}`);
+            this.props.setLockedTarget(target.id);
+            this.setState({ selectingTarget: false })
+        };
+        
+        return <TargetList
+            text={this.props.text}
+            targets={this.props.allTargets}
+            selected={selectTarget}
+            className="viewSystem viewSystem--targetSelect targetList--viewSystem"
+        />
     }
 }
 
@@ -136,6 +148,8 @@ ok so can we have buttons like:
 const mapStateToProps: (state: ApplicationState) => IProps = (state) => {
     return {
         text: state.user.text,
+        allTargets: state.environment.targets,
+        setLockedTarget: actionCreators.setLockedTarget,
         ...state.viewscreen,
     }
 };
