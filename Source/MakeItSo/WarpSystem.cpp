@@ -45,6 +45,9 @@ void UWarpSystem::ResetData()
 	jumpRequiredCharge = 0;
 	jumpTimeRemaining = 0;
 
+	CLEAR(savedPositions);
+	maxSavedPositionID = 0;
+
 	CLEAR(puzzle.cellGroups);
 	CLEAR(puzzle.groupTargets);
 	CLEAR(puzzle.groupOperators);
@@ -105,11 +108,22 @@ bool UWarpSystem::ReceiveCrewMessage(UIConnectionInfo *info, websocket_message *
 	}
 	else if (STARTS_WITH(msg, "warp_save "))
 	{
-		// TODO: call this
+		TArray<FString> parts = SplitParts(msg, sizeof("warp_save "));
+
+		if (SIZENUM(parts) < 4)
+		{
+			uint16 id = (uint16)STOI(parts[0]);
+			FVector pos = FVector(STOF(parts[1]), STOF(parts[2]), STOF(parts[3]));
+			AddSavedPosition(pos, id);
+		}
+
+		return true;
 	}
 	else if (STARTS_WITH(msg, "warp_remove "))
 	{
-		// TODO: call this
+		uint16 posID = ExtractInt(msg, sizeof("warp_remove "));
+		RemoveSavedPosition(posID);
+		return true;
 	}
 
 	return false;
@@ -717,20 +731,53 @@ void UWarpSystem::SendJumpPositions_Implementation(FVector start, FVector target
 	SendSystem(output);
 }
 
-
-void UWarpSystem::OnReplicated_SavedPositions(TMap<FString, FVector> beforeChange)
+void UWarpSystem::SendSavedPositions_Implementation()
 {
-	// TODO: SendSavedPositions();
+	FString output = TEXT("warp_saved ");
+
+	bool first = true;
+	for (auto saved : savedPositions)
+	{
+		auto id = PAIRKEY(saved);
+		auto pos = PAIRVALUE(saved);
+
+		if (first)
+			first = false;
+		else
+			output += TEXT("|");
+
+		APPENDINT(output, id);
+		output += TEXT(" ");
+		APPENDINT(output, (uint8)pos.X);
+		output += TEXT(" ");
+		APPENDINT(output, (uint8)pos.Y);
+		output += TEXT(" ");
+		APPENDINT(output, (uint8)pos.Z);
+	}
+
+	SendSystem(output);
 }
 
-void UWarpSystem::AddSavedPosition_Implementation(FVector pos, FString name)
+
+void UWarpSystem::OnReplicated_SavedPositions(TMap<uint16, FVector> beforeChange)
 {
-	MAPADD(savedPositions, name, pos, FString, FVector);
+	SendSavedPositions();
 }
 
-void UWarpSystem::RemoveSavedPosition_Implementation(FString name)
+void UWarpSystem::AddSavedPosition_Implementation(FVector pos, uint16 id)
 {
-	MAPREMOVE(savedPositions, name);
+	MAPADD(savedPositions, id, pos, uint16, FVector);
+
+	if (ISCLIENT())
+		SendSavedPositions();
+}
+
+void UWarpSystem::RemoveSavedPosition_Implementation(uint16 id)
+{
+	MAPREMOVE(savedPositions, id);
+
+	if (ISCLIENT())
+		SendSavedPositions();
 }
 
 

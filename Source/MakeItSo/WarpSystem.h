@@ -85,10 +85,12 @@ private:
 	void AddUnallocatedNeighbouringCellIndices(uint8 cellIndex, TArray<uint8> &output, TSet<uint8> allocatedCells);
 	bool TryPickTarget(TArray<uint8> group, TArray<uint8> solution, FKenKenData::EOperator groupOperator, int16 &groupTarget);
 
+	UPROPERTY()
+	uint16 maxSavedPositionID;
 
 	UPROPERTY(Replicated, ReplicatedUsing = OnReplicated_SavedPositions)
-	TMap<FString, FVector> savedPositions;
-	void OnReplicated_SavedPositions(TMap<FString, FVector> beforeChange);
+	TMap<uint16, FVector> savedPositions;
+	void OnReplicated_SavedPositions(TMap<uint16, FVector> beforeChange);
 
 	UPROPERTY()
 	float jumpTimeRemaining;
@@ -162,6 +164,14 @@ private:
 	;
 
 	UFUNCTION(Client, Reliable)
+	void SendSavedPositions()
+#ifdef WEB_SERVER_TEST
+	{ SendSavedPositions_Implementation(); }
+	void SendSavedPositions_Implementation();
+#endif
+	;
+
+	UFUNCTION(Client, Reliable)
 	void SendPuzzleData()
 #ifdef WEB_SERVER_TEST
 	{ SendPuzzleData_Implementation(); }
@@ -195,24 +205,26 @@ private:
 	;
 
 	UFUNCTION(Server, Reliable)
-	void PerformWarpJump(TArray<uint8> solution);
+	void PerformWarpJump(TArray<uint8> solution)
 #ifdef WEB_SERVER_TEST
+	{ PerformWarpJump_Implementation(solution); }
 	void PerformWarpJump_Implementation(TArray<uint8> solution);
-#endif
-
-	UFUNCTION(Server, Reliable)
-	void AddSavedPosition(FVector pos, FString name)
-#ifdef WEB_SERVER_TEST
-	{ AddSavedPosition_Implementation(pos, name); }
-	void AddSavedPosition_Implementation(FVector pos, FString name);
 #endif
 	;
 
 	UFUNCTION(Server, Reliable)
-	void RemoveSavedPosition(FString name)
+	void AddSavedPosition(FVector pos, uint16 id)
 #ifdef WEB_SERVER_TEST
-	{ RemoveSavedPosition_Implementation(name); }
-	void RemoveSavedPosition_Implementation(FString name);
+	{ AddSavedPosition_Implementation(pos, id); }
+	void AddSavedPosition_Implementation(FVector pos, uint16 id);
+#endif
+	;
+
+	UFUNCTION(Server, Reliable)
+	void RemoveSavedPosition(uint16 id)
+#ifdef WEB_SERVER_TEST
+	{ RemoveSavedPosition_Implementation(id); }
+	void RemoveSavedPosition_Implementation(uint16 id);
 #endif
 	;
 };
