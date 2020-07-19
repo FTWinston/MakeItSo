@@ -1,0 +1,17 @@
+.splitScreen {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 100vmin 1fr;
+    gap: 1em;
+}
+
+.splitScreen__primary,
+.splitScreen__secondary {
+    position: relative;
+    overflow-y: auto;
+}
+
+.splitScreen__primary--padded,
+.splitScreen__secondary--padded {
+    padding: 1em;
+}

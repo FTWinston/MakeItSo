@@ -1,5 +1,6 @@
 import { addParameters } from '@storybook/react';
-import { INITIAL_VIEWPORTS, DEFAULT_VIEWPORT } from '@storybook/addon-viewport';
+import { INITIAL_VIEWPORTS } from '@storybook/addon-viewport';
+import '!style-loader!css-loader!sass-loader!./styles.scss';
 
 const viewports = {
   ...INITIAL_VIEWPORTS,
@@ -15,6 +16,6 @@ const viewports = {
 addParameters({
   viewport: {
     viewports,
-    defaultViewport: DEFAULT_VIEWPORT,
+    defaultViewport: 'pixel2',
   },
 });
