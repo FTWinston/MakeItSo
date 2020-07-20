@@ -1,24 +1,28 @@
 import React from 'react';
-import './Screen.scss';
+import { makeStyles, Container } from '@material-ui/core';
 
 interface Props {
     padded?: boolean;
     className?: string;
 }
 
-export const Screen: React.FC<Props> = props => {
-    let classes = 'screen';
-    if (props.padded) {
-        classes += ' screen--padded';
-    }
+const useStyles = makeStyles(theme => ({
+    main: (props: Props) => ({
+        minHeight: '100vh',
+        padding: props.padded ? '1em' : 0,
+    }),
+}));
 
-    if (props.className) {
-        classes = `${classes} ${props.className}`;
-    }
+export const Screen: React.FC<Props> = props => {
+    const classes = useStyles(props);
+
+    const className = props.className
+        ? `${classes.main} ${props.className}`
+        : classes.main;
 
     return (
-        <div className={classes}>
-            {props.children}
-        </div>
+        <Container className={className}>
+            {props.children!}
+        </Container>
     )
 }
