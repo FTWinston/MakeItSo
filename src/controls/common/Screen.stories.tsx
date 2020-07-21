@@ -1,6 +1,5 @@
 import React from 'react';
 import { Screen } from './Screen';
-import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 
 export default { title: 'Common/Screen' };

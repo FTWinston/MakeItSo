@@ -1,5 +1,4 @@
 import React, { useRef, useMemo, useLayoutEffect, useState } from 'react';
-// import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { Canvas } from './Canvas';
 import { makeStyles } from '@material-ui/core';
