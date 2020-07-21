@@ -31,10 +31,11 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         canvasRef = ref as React.RefObject<HTMLCanvasElement>;
     }
 
+    const { onClick, boundsChanged } = props;
+
     // TODO: replicate this for onMouseDown etc?
-    let onClick = useMemo(
+    const onCanvasClick = useMemo(
         () => {
-            const { onClick } = props;
             if (!onClick || !outerRef.current) {
                 return undefined;
             }
@@ -47,11 +48,8 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 onClick(x, y);
             }
         },
-        [props.onClick]
+        [onClick]
     );
-    if (!props.onClick) {
-        onClick = undefined;
-    }
 
     const [displaySizeStyle, setDisplaySizeStyle] = useState<CSSProperties>();
 
@@ -83,7 +81,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                         displayHeight
                     );
                     
-                    props.boundsChanged(bounds);
+                    boundsChanged(bounds);
                 }
             };
 
@@ -94,7 +92,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
 
             return () => resizeObserver.disconnect();
         },
-        [canvasRef.current, props.boundsChanged]
+        [boundsChanged]
     );
 
     const rootClasses = props.className
@@ -107,7 +105,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 className={classes.display}
                 style={displaySizeStyle}
                 ref={ref}
-                onClick={onClick}
+                onClick={onCanvasClick}
             />
         </div>
     );

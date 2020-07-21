@@ -1,5 +1,5 @@
 import React, { useRef, useMemo, useLayoutEffect, useState } from 'react';
-import { action } from '@storybook/addon-actions';
+// import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { Canvas } from './Canvas';
 import { makeStyles } from '@material-ui/core';
@@ -25,25 +25,23 @@ const Simple = () => {
         () => canvas.current
             ? canvas.current.getContext('2d')
             : null,
-        [canvas.current]
+        []
     );
 
     const [bounds, setBounds] = useState<DOMRect>(defaultBounds);
 
-    const redraw = () => {
-        if (!context) {
-            return;
-        }
-
-        context.translate(-bounds.x, -bounds.y);
-        context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
-
-        draw(context, bounds);
-        context.translate(bounds.x, bounds.y);
-    }
-
     useLayoutEffect(
-        () => redraw(),
+        () => {    
+            if (!context) {
+                return;
+            }
+
+            context.translate(-bounds.x, -bounds.y);
+            context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+            draw(context, bounds);
+            context.translate(bounds.x, bounds.y);
+        },
         [context, bounds]
     );
 
