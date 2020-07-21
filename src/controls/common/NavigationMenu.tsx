@@ -4,8 +4,13 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import PauseIcon from '@material-ui/icons/Pause';
 import ResumeIcon from '@material-ui/icons/PlayArrow';
 import EndGameIcon from '@material-ui/icons/CancelPresentation';
+import { System, allSystems } from '../../data/System';
+import { getIcon, getName } from '../../data/SystemData';
 
 interface Props {
+    currentSystem: System;
+    setCurrentSystem: (system: System) => void;
+
     isOpen: boolean;
     close: () => void;
 
@@ -26,7 +31,7 @@ export const NavigationMenu: React.FC<Props> = props => {
 
     const pauseOrResume = props.isPaused
         ? (
-            <ListItem button onClick={() => { props.setPaused(false); props.close(); }}>
+            <ListItem button onClick={() => { props.setPaused(false); props.close(); }} selected>
                 <ListItemIcon>
                     <ResumeIcon />
                 </ListItemIcon>
@@ -41,13 +46,24 @@ export const NavigationMenu: React.FC<Props> = props => {
             </ListItem>
         );
 
+    const systems = allSystems.map(system => (
+        <SystemItem
+            key={system}
+            system={system}
+            selected={props.currentSystem === system}
+            disabled={props.isPaused}
+            select={() => { props.setCurrentSystem(system); props.close(); }}
+        />
+    ));
+
     return (
         <Drawer anchor="left" open={props.isOpen} onClose={() => props.close()}>
             {/* show your name, name of the ship */}
 
             <List className={classes.list}>
                 <ListSubheader>Ship Systems</ListSubheader>
-                {/* list available systems ... highlight current */}
+
+                {systems}
             </List>
 
             <Divider />
@@ -71,4 +87,25 @@ export const NavigationMenu: React.FC<Props> = props => {
             </List>
         </Drawer>
     )
+}
+
+
+interface SystemProps {
+    system: System;
+    select: () => void;
+    selected: boolean;
+    disabled: boolean;
+}
+
+const SystemItem: React.FC<SystemProps> = props => {
+    const Icon = getIcon(props.system);
+
+    return (
+        <ListItem button onClick={props.select} disabled={props.disabled} selected={props.selected}>
+            <ListItemIcon>
+                <Icon />
+            </ListItemIcon>
+            <ListItemText primary={getName(props.system)} />
+        </ListItem>
+    );
 }

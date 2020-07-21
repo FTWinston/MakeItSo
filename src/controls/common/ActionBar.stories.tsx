@@ -7,15 +7,19 @@ import WarningIcon from '@material-ui/icons/Warning';
 import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { ActionBarPrimary } from './ActionBarPrimary';
+import { System } from '../../data/System';
 
 export default { title: 'Common/Action Bar' };
 
 const PrimaryWithState = () => {
     const [paused, setPaused] = useState(false);
+    const [system, setSystem] = useState(System.Helm);
 
     return (
         <Theme>
             <ActionBarPrimary
+                currentSystem={system}
+                setCurrentSystem={setSystem}
                 paused={paused}
                 setPaused={setPaused}
                 endGame={action('end game')}
@@ -36,10 +40,13 @@ const PrimaryWithState = () => {
 
 const NoPrimaryWithState = () => {
     const [paused, setPaused] = useState(false);
+    const [system, setSystem] = useState(System.Helm);
 
     return (
         <Theme>
             <ActionBar
+                currentSystem={system}
+                setCurrentSystem={setSystem}
                 paused={paused}
                 setPaused={setPaused}
                 endGame={action('end game')}

@@ -27,6 +27,8 @@ export const ActionBarPrimary: React.FC<Props> = props => {
 
     return (
         <ActionBar
+            currentSystem={props.currentSystem}
+            setCurrentSystem={props.setCurrentSystem}
             paused={props.paused}
             setPaused={props.setPaused}
             endGame={props.endGame}
