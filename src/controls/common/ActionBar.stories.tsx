@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { ActionBar } from './ActionBar';
@@ -11,10 +11,14 @@ import { ActionBarPrimary } from './ActionBarPrimary';
 export default { title: 'Common/Action Bar' };
 
 const PrimaryWithState = () => {
+    const [paused, setPaused] = useState(false);
+
     return (
         <Theme>
             <ActionBarPrimary
-                showNavigation={action('show navigation')}
+                paused={paused}
+                setPaused={setPaused}
+                endGame={action('end game')}
                 primaryAction={action('primary clicked')}
                 primaryLabel="primary action"
                 primaryIcon={() => <WarningIcon />}
@@ -31,10 +35,14 @@ const PrimaryWithState = () => {
 };
 
 const NoPrimaryWithState = () => {
+    const [paused, setPaused] = useState(false);
+
     return (
         <Theme>
             <ActionBar
-                showNavigation={action('show navigation')}
+                paused={paused}
+                setPaused={setPaused}
+                endGame={action('end game')}
             >
                 <IconButton color="inherit">
                     <SearchIcon />

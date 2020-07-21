@@ -1,10 +1,8 @@
 import React from 'react';
 import { makeStyles, Fab } from '@material-ui/core';
-import { ActionBar } from './ActionBar';
+import { ActionBar, Props as ActionBarProps } from './ActionBar';
 
-interface Props {
-    showNavigation: () => void;
-
+interface Props extends ActionBarProps {
     primaryAction: () => void;
     primaryLabel: string;
     primaryIcon: () => JSX.Element;
@@ -28,7 +26,11 @@ export const ActionBarPrimary: React.FC<Props> = props => {
     const classes = useStyles();
 
     return (
-        <ActionBar showNavigation={props.showNavigation}>
+        <ActionBar
+            paused={props.paused}
+            setPaused={props.setPaused}
+            endGame={props.endGame}
+        >
             <Fab
                 color="secondary"
                 className={classes.fab}

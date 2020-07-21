@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, AppBar, Toolbar, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
+import { NavigationMenu } from './NavigationMenu';
 
-interface Props {
-    showNavigation: () => void;
+export interface Props {
+    paused: boolean;
+    setPaused: (paused: boolean) => void;
+    endGame: () => void;
 }
 
 const useStyles = makeStyles({
@@ -19,17 +22,27 @@ const useStyles = makeStyles({
 export const ActionBar: React.FC<Props> = props => {
     const classes = useStyles();
 
+    const [showNav, setShowNav] = useState(false);
+    
     return (
         <AppBar position="fixed" color="primary" className={classes.appBar}>
             <Toolbar>
-                <IconButton edge="start" color="inherit" aria-label="open menu" onClick={props.showNavigation}>
+                <IconButton edge="start" color="inherit" aria-label="open menu" onClick={() => setShowNav(true)}>
                     <MenuIcon />
                 </IconButton>
 
                 <div className={classes.grow} />
-                
+
                 {props.children}
             </Toolbar>
+
+            <NavigationMenu
+                isOpen={showNav || props.paused}
+                close={() => setShowNav(false)}
+                endGame={props.endGame}
+                isPaused={props.paused}
+                setPaused={props.setPaused}
+            />
         </AppBar>
     )
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
+import { Drawer, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles, ListSubheader } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PauseIcon from '@material-ui/icons/Pause';
 import ResumeIcon from '@material-ui/icons/PlayArrow';
@@ -46,6 +46,7 @@ export const NavigationMenu: React.FC<Props> = props => {
             {/* show your name, name of the ship */}
 
             <List className={classes.list}>
+                <ListSubheader>Ship Systems</ListSubheader>
                 {/* list available systems ... highlight current */}
             </List>
 
