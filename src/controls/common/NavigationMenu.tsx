@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Drawer, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles, ListSubheader } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -6,6 +6,7 @@ import ResumeIcon from '@material-ui/icons/PlayArrow';
 import EndGameIcon from '@material-ui/icons/CancelPresentation';
 import { System, allSystems } from '../../data/System';
 import { getIcon, getName } from '../../data/SystemData';
+import { ConfirmDialog } from './ConfirmDialog';
 
 interface Props {
     currentSystem: System;
@@ -28,6 +29,7 @@ const useStyles = makeStyles({
 
 export const NavigationMenu: React.FC<Props> = props => {
     const classes = useStyles();
+    const [quitConfirm, showQuitConfirm] = useState(false);
 
     const pauseOrResume = props.isPaused
         ? (
@@ -57,7 +59,13 @@ export const NavigationMenu: React.FC<Props> = props => {
     ));
 
     return (
-        <Drawer anchor="left" open={props.isOpen} onClose={() => props.close()}>
+        <Drawer
+            anchor="left"
+            open={props.isOpen}
+            onClose={() => props.close()}
+            disableBackdropClick={props.isPaused}
+            disableEscapeKeyDown={props.isPaused}
+        >
             {/* show your name, name of the ship */}
 
             <List className={classes.list}>
@@ -78,13 +86,21 @@ export const NavigationMenu: React.FC<Props> = props => {
 
                 {pauseOrResume}
                 
-                <ListItem button onClick={props.endGame}> {/* TODO: a confirmation popup? */}
+                <ListItem button onClick={() => showQuitConfirm(true)}>
                     <ListItemIcon>
                         <EndGameIcon />
                     </ListItemIcon>
                     <ListItemText primary="End game" />
                 </ListItem>
             </List>
+
+            <ConfirmDialog
+                title="End the game?"
+                prompt="This will affect your whole crew, not just yourself."
+                isOpen={quitConfirm}
+                close={() => showQuitConfirm(false)}
+                confirm={props.endGame}
+            />
         </Drawer>
     )
 }
