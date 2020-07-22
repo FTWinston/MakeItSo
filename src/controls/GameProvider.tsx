@@ -1,36 +1,29 @@
-import React, { useState, useMemo } from 'react';
+import React from 'react';
 import { System } from '../data/System';
+import { PowerLevel } from '../data/PowerLevel';
 
-interface GameState {
+export interface GameState {
+    localPlayer: string;
     currentSystem: System;
-    setCurrentSystem: (system: System) => void;
+
+    systemOccupancy: Map<System, string>;
+    powerLevels: Map<System, PowerLevel>;
+
+    selectSystem: (system: System) => void;
 
     paused: boolean;
     setPaused: (paused: boolean) => void;
+    
     endGame: () => void;
 }
 
 export const GameContext = React.createContext<GameState>(undefined!);
 
-// TODO: add an actual GameProvider component, which is hooked up to ... something
-
-export const StoryGameProvider: React.FC = props => {
-    const [paused, setPaused] = useState(false);
-    const [currentSystem, setCurrentSystem] = useState(System.Helm);
-
-    const gameState = useMemo(
-        () => ({
-            currentSystem,
-            setCurrentSystem,
-            paused,
-            setPaused,
-            endGame: () => alert('game ended'),
-        }),
-        [paused, currentSystem]
-    );
+export const GameProvider: React.FC = props => {
+    // TODO: populate this component, which should be hooked up to ... something
 
     return (
-        <GameContext.Provider value={gameState}>
+        <GameContext.Provider value={undefined!}>
             {props.children}
         </GameContext.Provider>
     );

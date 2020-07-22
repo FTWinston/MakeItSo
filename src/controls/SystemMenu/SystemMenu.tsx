@@ -4,10 +4,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 import PauseIcon from '@material-ui/icons/Pause';
 import ResumeIcon from '@material-ui/icons/PlayArrow';
 import EndGameIcon from '@material-ui/icons/CancelPresentation';
-import { System, allSystems } from '../../data/System';
-import { getIcon, getName } from '../../data/SystemData';
-import { ConfirmDialog } from './ConfirmDialog';
+import { allSystems } from '../../data/System';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 import { GameContext } from '../GameProvider';
+import { SystemMenuItem } from './SystemMenuItem';
+import { PowerLevel } from '../../data/PowerLevel';
 
 interface Props {
     isOpen: boolean;
@@ -16,11 +17,10 @@ interface Props {
 
 const useStyles = makeStyles({
     list: {
-        minWidth: '14em',
     },
 });
 
-export const NavigationMenu: React.FC<Props> = props => {
+export const SystemMenu: React.FC<Props> = props => {
     const gameState = useContext(GameContext);
     
     const classes = useStyles();
@@ -44,12 +44,14 @@ export const NavigationMenu: React.FC<Props> = props => {
         );
 
     const systems = allSystems.map(system => (
-        <SystemItem
+        <SystemMenuItem
             key={system}
             system={system}
             selected={gameState.currentSystem === system}
-            disabled={gameState.paused}
-            select={() => { gameState.setCurrentSystem(system); props.close(); }}
+            disabled={gameState.paused || (gameState.currentSystem !== system && gameState.systemOccupancy.get(system) !== undefined)}
+            occupant={gameState.systemOccupancy.get(system)}
+            select={() => { gameState.selectSystem(system); props.close(); }}
+            power={gameState.powerLevels.get(system) ?? PowerLevel.Off}
         />
     ));
 
@@ -98,24 +100,4 @@ export const NavigationMenu: React.FC<Props> = props => {
             />
         </Drawer>
     )
-}
-
-interface SystemProps {
-    system: System;
-    select: () => void;
-    selected: boolean;
-    disabled: boolean;
-}
-
-const SystemItem: React.FC<SystemProps> = props => {
-    const Icon = getIcon(props.system);
-
-    return (
-        <ListItem button onClick={props.select} disabled={props.disabled} selected={props.selected}>
-            <ListItemIcon>
-                <Icon />
-            </ListItemIcon>
-            <ListItemText primary={getName(props.system)} />
-        </ListItem>
-    );
 }

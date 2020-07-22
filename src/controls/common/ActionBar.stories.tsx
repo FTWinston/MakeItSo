@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { ActionBar } from './ActionBar';
@@ -7,8 +7,7 @@ import WarningIcon from '@material-ui/icons/Warning';
 import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { ActionBarPrimary } from './ActionBarPrimary';
-import { System } from '../../data/System';
-import { StoryGameProvider } from '../GameProvider';
+import { StoryGameProvider } from '../StoryGameProvider';
 
 export default { title: 'Common/Action Bar' };
 
@@ -34,9 +33,6 @@ const PrimaryWithState = () => {
 };
 
 const NoPrimaryWithState = () => {
-    const [paused, setPaused] = useState(false);
-    const [system, setSystem] = useState(System.Helm);
-
     return (
         <Theme>
             <StoryGameProvider>

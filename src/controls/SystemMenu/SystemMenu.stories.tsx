@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
-import { NavigationMenu } from './NavigationMenu';
-import { StoryGameProvider } from '../GameProvider';
+import { SystemMenu } from './SystemMenu';
+import { StoryGameProvider } from '../StoryGameProvider';
 
-export default { title: 'Common/Navigation Menu' };
+export default { title: 'System Menu' };
 
 const WithState = () => {
     const [open, setOpen] = useState(false);
@@ -26,7 +26,7 @@ const WithState = () => {
     return (
         <Theme>
             <StoryGameProvider>
-                <NavigationMenu
+                <SystemMenu
                     isOpen={open}
                     close={close}
                 />

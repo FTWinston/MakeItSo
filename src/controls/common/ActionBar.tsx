@@ -1,8 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { makeStyles, AppBar, Toolbar, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import { NavigationMenu } from './NavigationMenu';
-import { GameContext } from '../GameProvider';
+import { SystemMenu } from '../SystemMenu/SystemMenu';
 
 export interface Props {
 }
@@ -34,7 +33,7 @@ export const ActionBar: React.FC<Props> = props => {
                 {props.children}
             </Toolbar>
 
-            <NavigationMenu
+            <SystemMenu
                 isOpen={showNav}
                 close={() => setShowNav(false)}
             />
