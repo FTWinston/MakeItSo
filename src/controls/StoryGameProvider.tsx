@@ -20,7 +20,7 @@ export const StoryGameProvider: React.FC = props => {
                 [System.FTL, PowerLevel.Low],
                 [System.Weapons, PowerLevel.Off],
                 [System.Sensors, PowerLevel.Full],
-                [System.Engineering, PowerLevel.High],
+                [System.Engineering, PowerLevel.Med],
                 [System.DamageControl, PowerLevel.High],
             ]),
             selectSystem: setCurrentSystem,

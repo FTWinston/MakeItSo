@@ -24,6 +24,7 @@ export const SystemMenu: React.FC<Props> = props => {
     const gameState = useContext(GameContext);
     
     const classes = useStyles();
+    
     const [quitConfirm, showQuitConfirm] = useState(false);
 
     const pauseOrResume = gameState.paused

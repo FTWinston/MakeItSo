@@ -1,9 +1,9 @@
 import React from 'react';
 import { ListItem, ListItemIcon, ListItemText, ListItemSecondaryAction, IconButton } from '@material-ui/core';
-import { System } from '../../data/System';
-import { PowerLevel } from '../../data/PowerLevel';
-import { getIcon as getSystemIcon, getName as getSystemName } from '../../data/SystemData';
-import { getIcon as getPowerIcon, getName as getPowerName } from '../../data/PowerData';
+import { System, getSystemName } from '../../data/System';
+import { PowerLevel, getPowerName } from '../../data/PowerLevel';
+import { PowerIcon } from '../common/PowerIcon';
+import { SystemIcon } from '../common/SystemIcon';
 
 interface Props {
     system: System;
@@ -15,9 +15,6 @@ interface Props {
 }
 
 export const SystemMenuItem: React.FC<Props> = props => {
-    const SystemIcon = getSystemIcon(props.system);
-    const PowerIcon = getPowerIcon(props.power);
-
     const secondaryTextProps = !props.disabled || props.occupant === undefined
         ? {
             color: "primary"
@@ -27,7 +24,7 @@ export const SystemMenuItem: React.FC<Props> = props => {
     return (
         <ListItem button onClick={props.select} disabled={props.disabled} selected={props.selected}>
             <ListItemIcon>
-                <SystemIcon />
+                <SystemIcon system={props.system} />
             </ListItemIcon>
             <ListItemText
                 primary={getSystemName(props.system)}
@@ -37,7 +34,7 @@ export const SystemMenuItem: React.FC<Props> = props => {
 
             <ListItemSecondaryAction>
                 <IconButton edge="end" aria-label={getPowerName(props.power)} disabled>
-                    <PowerIcon color={props.power === PowerLevel.Off ? "error" : "primary"} />
+                    <PowerIcon level={props.power} color={props.power === PowerLevel.Off ? 'error' : 'primary'} />
                 </IconButton>
             </ListItemSecondaryAction>
         </ListItem>

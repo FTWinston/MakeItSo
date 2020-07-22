@@ -16,3 +16,22 @@ export const allSystems = [
     System.Engineering,
     System.DamageControl,
 ];
+
+export function getSystemName(system: System) {
+    switch (system) {
+        case System.Helm:
+            return 'Helm';
+        case System.FTL:
+            return 'FTL';
+        case System.Weapons:
+            return 'Weapons';
+        case System.Sensors:
+            return 'Sensors';
+        case System.Engineering:
+            return 'Engineering';
+        case System.DamageControl:
+            return 'Damage Control';
+        default:
+            return '';
+    }
+}
