@@ -1,15 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { makeStyles, AppBar, Toolbar, IconButton } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import { NavigationMenu } from './NavigationMenu';
-import { System } from '../../data/System';
+import { GameContext } from '../GameProvider';
 
 export interface Props {
-    currentSystem: System;
-    setCurrentSystem: (system: System) => void;
-    paused: boolean;
-    setPaused: (paused: boolean) => void;
-    endGame: () => void;
 }
 
 const useStyles = makeStyles({
@@ -40,13 +35,8 @@ export const ActionBar: React.FC<Props> = props => {
             </Toolbar>
 
             <NavigationMenu
-                isOpen={showNav || props.paused}
+                isOpen={showNav}
                 close={() => setShowNav(false)}
-                currentSystem={props.currentSystem}
-                setCurrentSystem={props.setCurrentSystem}
-                endGame={props.endGame}
-                isPaused={props.paused}
-                setPaused={props.setPaused}
             />
         </AppBar>
     )

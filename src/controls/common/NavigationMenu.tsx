@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Drawer, Divider, List, ListItem, ListItemIcon, ListItemText, makeStyles, ListSubheader } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
 import PauseIcon from '@material-ui/icons/Pause';
@@ -7,18 +7,11 @@ import EndGameIcon from '@material-ui/icons/CancelPresentation';
 import { System, allSystems } from '../../data/System';
 import { getIcon, getName } from '../../data/SystemData';
 import { ConfirmDialog } from './ConfirmDialog';
+import { GameContext } from '../GameProvider';
 
 interface Props {
-    currentSystem: System;
-    setCurrentSystem: (system: System) => void;
-
     isOpen: boolean;
     close: () => void;
-
-    isPaused: boolean;
-    setPaused: (paused: boolean) => void;
-
-    endGame: () => void;
 }
 
 const useStyles = makeStyles({
@@ -28,19 +21,21 @@ const useStyles = makeStyles({
 });
 
 export const NavigationMenu: React.FC<Props> = props => {
+    const gameState = useContext(GameContext);
+    
     const classes = useStyles();
     const [quitConfirm, showQuitConfirm] = useState(false);
 
-    const pauseOrResume = props.isPaused
+    const pauseOrResume = gameState.paused
         ? (
-            <ListItem button onClick={() => { props.setPaused(false); props.close(); }} selected>
+            <ListItem button onClick={() => { gameState.setPaused(false); props.close(); }} selected>
                 <ListItemIcon>
                     <ResumeIcon />
                 </ListItemIcon>
                 <ListItemText primary="Resume game" />
             </ListItem>
         ) : (
-            <ListItem button onClick={() => props.setPaused(true)}>
+            <ListItem button onClick={() => gameState.setPaused(true)}>
                 <ListItemIcon>
                     <PauseIcon />
                 </ListItemIcon>
@@ -52,19 +47,19 @@ export const NavigationMenu: React.FC<Props> = props => {
         <SystemItem
             key={system}
             system={system}
-            selected={props.currentSystem === system}
-            disabled={props.isPaused}
-            select={() => { props.setCurrentSystem(system); props.close(); }}
+            selected={gameState.currentSystem === system}
+            disabled={gameState.paused}
+            select={() => { gameState.setCurrentSystem(system); props.close(); }}
         />
     ));
 
     return (
         <Drawer
             anchor="left"
-            open={props.isOpen}
+            open={props.isOpen || gameState.paused}
             onClose={() => props.close()}
-            disableBackdropClick={props.isPaused}
-            disableEscapeKeyDown={props.isPaused}
+            disableBackdropClick={gameState.paused}
+            disableEscapeKeyDown={gameState.paused}
         >
             {/* show your name, name of the ship */}
 
@@ -99,12 +94,11 @@ export const NavigationMenu: React.FC<Props> = props => {
                 prompt="This will affect your whole crew, not just yourself."
                 isOpen={quitConfirm}
                 close={() => showQuitConfirm(false)}
-                confirm={props.endGame}
+                confirm={gameState.endGame}
             />
         </Drawer>
     )
 }
-
 
 interface SystemProps {
     system: System;

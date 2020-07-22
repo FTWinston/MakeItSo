@@ -8,32 +8,27 @@ import SearchIcon from '@material-ui/icons/Search';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import { ActionBarPrimary } from './ActionBarPrimary';
 import { System } from '../../data/System';
+import { StoryGameProvider } from '../GameProvider';
 
 export default { title: 'Common/Action Bar' };
 
 const PrimaryWithState = () => {
-    const [paused, setPaused] = useState(false);
-    const [system, setSystem] = useState(System.Helm);
-
     return (
         <Theme>
-            <ActionBarPrimary
-                currentSystem={system}
-                setCurrentSystem={setSystem}
-                paused={paused}
-                setPaused={setPaused}
-                endGame={action('end game')}
-                primaryAction={action('primary clicked')}
-                primaryLabel="primary action"
-                primaryIcon={() => <WarningIcon />}
-            >
-                <IconButton color="inherit">
-                    <SearchIcon />
-                </IconButton>
-                <IconButton edge="end" color="inherit">
-                    <MoreIcon />
-                </IconButton>
-            </ActionBarPrimary>
+            <StoryGameProvider>
+                <ActionBarPrimary
+                    primaryAction={action('primary clicked')}
+                    primaryLabel="primary action"
+                    primaryIcon={() => <WarningIcon />}
+                >
+                    <IconButton color="inherit">
+                        <SearchIcon />
+                    </IconButton>
+                    <IconButton edge="end" color="inherit">
+                        <MoreIcon />
+                    </IconButton>
+                </ActionBarPrimary>
+            </StoryGameProvider>
         </Theme>
     );
 };
@@ -44,20 +39,16 @@ const NoPrimaryWithState = () => {
 
     return (
         <Theme>
-            <ActionBar
-                currentSystem={system}
-                setCurrentSystem={setSystem}
-                paused={paused}
-                setPaused={setPaused}
-                endGame={action('end game')}
-            >
-                <IconButton color="inherit">
-                    <SearchIcon />
-                </IconButton>
-                <IconButton edge="end" color="inherit">
-                    <MoreIcon />
-                </IconButton>
-            </ActionBar>
+            <StoryGameProvider>
+                <ActionBar>
+                    <IconButton color="inherit">
+                        <SearchIcon />
+                    </IconButton>
+                    <IconButton edge="end" color="inherit">
+                        <MoreIcon />
+                    </IconButton>
+                </ActionBar>
+            </StoryGameProvider>
         </Theme>
     );
 };
