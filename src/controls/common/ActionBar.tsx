@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { makeStyles, AppBar, Toolbar, IconButton } from '@material-ui/core';
+import { makeStyles, AppBar, Toolbar, IconButton, Button } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import { SystemMenu } from '../SystemMenu/SystemMenu';
 import { GameContext } from '../GameProvider';
@@ -18,7 +18,7 @@ const useStyles = makeStyles({
         flexGrow: 1,
     },
     powerIcon: {
-        color: 'rgba(0,0,0,0.55)',
+        color: 'rgba(0,0,0,0.55) !important',
     },
     powerIconDisabled: {
         color: 'rgba(160,0,0,0.55)',
@@ -41,12 +41,19 @@ export const ActionBar: React.FC<Props> = props => {
                     <MenuIcon />
                 </IconButton>
 
-                <IconButton color="inherit" disabled aria-label={getPowerName(powerLevel)}>
-                    <PowerIcon
+                <Button
+                    color="inherit"
+                    disabled
+                    className={classes.powerIcon}
+                    
+                    startIcon={<PowerIcon
                         level={powerLevel}
                         className={powerLevel === PowerLevel.Off ? classes.powerIconDisabled : classes.powerIcon}
-                    />
-                </IconButton>
+                        aria-label={getPowerName(powerLevel)}
+                    />}
+                >
+                    Power
+                </Button>
 
                 <div className={classes.grow} />
 
