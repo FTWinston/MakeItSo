@@ -17,6 +17,7 @@ interface Props {
 
 const useStyles = makeStyles({
     list: {
+        backgroundColor: 'inherit',
     },
 });
 
