@@ -1,8 +1,8 @@
 import React from 'react';
 import { PowerLevel } from '../../data/PowerLevel';
 import OffIcon from '@material-ui/icons/SignalCellularNull';
-import LowIcon from '@material-ui/icons/SignalCellular1Bar';
-import MedIcon from '@material-ui/icons/SignalCellular2Bar';
+import LowIcon from '@material-ui/icons/SignalCellular0Bar';
+import MedIcon from '@material-ui/icons/SignalCellular1Bar';
 import HighIcon from '@material-ui/icons/SignalCellular3Bar';
 import FullIcon from '@material-ui/icons/SignalCellular4Bar';
 
