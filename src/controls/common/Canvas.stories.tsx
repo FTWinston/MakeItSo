@@ -24,7 +24,7 @@ const Simple = () => {
         () => canvas.current
             ? canvas.current.getContext('2d')
             : null,
-        []
+        [canvas.current]
     );
 
     const [bounds, setBounds] = useState<DOMRect>(defaultBounds);
