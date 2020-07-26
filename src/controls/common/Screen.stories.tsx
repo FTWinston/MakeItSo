@@ -2,7 +2,7 @@ import React from 'react';
 import { Screen } from './Screen';
 import { Theme } from '../../style/theme';
 
-export default { title: 'Common/Screen' };
+export default { title: 'Common/Generic/Screen' };
 
 export const unpadded = () => (
     <Theme>

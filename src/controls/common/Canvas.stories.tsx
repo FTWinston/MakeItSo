@@ -3,7 +3,7 @@ import { Theme as ThemeProvider } from '../../style/theme';
 import { Canvas } from './Canvas';
 import { makeStyles, useTheme, Theme } from '@material-ui/core';
 
-export default { title: 'Common/Canvas' };
+export default { title: 'Common/Generic/Canvas' };
 
 const useStyles = makeStyles(theme => ({
     canvas: {
@@ -33,7 +33,7 @@ const Simple = () => {
     )
 }
 
-export const simple = () => (
+export const example = () => (
     <ThemeProvider>
         <Simple />
     </ThemeProvider>

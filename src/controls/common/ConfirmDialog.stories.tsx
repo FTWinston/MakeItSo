@@ -3,7 +3,7 @@ import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { ConfirmDialog } from './ConfirmDialog';
 
-export default { title: 'Common/Confirm Dialog' };
+export default { title: 'Common/Generic/Confirm Dialog' };
 
 const WithState = () => {
     const [open, setOpen] = useState(false);
