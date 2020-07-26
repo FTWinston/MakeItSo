@@ -1,11 +1,17 @@
-import React, { useMemo, useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
+import React, { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
 import { makeStyles } from '@material-ui/core';
 import ResizeObserver from 'resize-observer-polyfill';
 
 interface Props {
     className?: string;
     draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
-    onClick?: (x: number, y: number) => void;
+    onClick?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
+    onMouseDown?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
+    onMouseUp?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
+    onMouseMove?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
+    onTouchStart?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
+    onTouchEnd?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
+    onTouchMove?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
 }
 
 const defaultBounds = new DOMRect(0, 0, 1, 1);
@@ -37,7 +43,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
     
     const [context, setContext] = useState<CanvasRenderingContext2D>();
 
-    const { draw, onClick } = props;
+    const { draw } = props;
 
     useLayoutEffect(
         () => {    
@@ -46,31 +52,16 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 return;
             }
 
+            context.save();
+
             context.translate(-bounds.x, -bounds.y);
             context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
 
             draw(context, bounds);
-            context.translate(bounds.x, bounds.y);
+            
+            context.restore();
         },
         [draw, context, bounds]
-    );
-
-    // TODO: replicate this for onMouseDown etc?
-    const onCanvasClick = useMemo(
-        () => {
-            if (!onClick || !outerRef.current) {
-                return undefined;
-            }
-
-            const outer = outerRef.current;
-
-            return (e: React.MouseEvent<HTMLCanvasElement>) => {
-                const { x, y } = resolvePosition(e, outer);
-
-                onClick(x, y);
-            }
-        },
-        [onClick]
     );
 
     const [displaySizeStyle, setDisplaySizeStyle] = useState<CSSProperties>();
@@ -127,18 +118,14 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 className={classes.display}
                 style={displaySizeStyle}
                 ref={ref}
-                onClick={onCanvasClick}
+                onClick={props.onClick}
+                onMouseDown={props.onMouseDown}
+                onMouseUp={props.onMouseUp}
+                onMouseMove={props.onMouseMove}
+                onTouchStart={props.onTouchStart}
+                onTouchEnd={props.onTouchEnd}
+                onTouchMove={props.onTouchMove}
             />
         </div>
     );
 })
-
-function resolvePosition(e: React.MouseEvent<HTMLCanvasElement, MouseEvent>, outer: HTMLDivElement) {
-    const scroller = e.currentTarget;
-    const outerBounds = outer.getBoundingClientRect();
-    
-    return {
-        x: e.clientX - outerBounds.left + scroller.scrollLeft,
-        y: e.clientY - outerBounds.top + scroller.scrollTop,
-    };
-}

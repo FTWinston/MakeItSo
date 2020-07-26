@@ -9,6 +9,7 @@
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
+    "react-use-gesture": "^7.0.15",
     "resize-observer-polyfill": "^1.5.1"
   },
   "scripts": {
