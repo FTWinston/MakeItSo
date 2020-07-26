@@ -1,12 +1,14 @@
-import React, { useMemo, useRef, useEffect, forwardRef, useState, CSSProperties } from 'react';
+import React, { useMemo, useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
 import { makeStyles } from '@material-ui/core';
 import ResizeObserver from 'resize-observer-polyfill';
 
 interface Props {
     className?: string;
-    boundsChanged: (bounds: DOMRect) => void;
+    draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
     onClick?: (x: number, y: number) => void;
 }
+
+const defaultBounds = new DOMRect(0, 0, 1, 1);
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -30,8 +32,28 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
     if (ref) {
         canvasRef = ref as React.RefObject<HTMLCanvasElement>;
     }
+    
+    const [bounds, setBounds] = useState<DOMRect>(defaultBounds);
+    
+    const [context, setContext] = useState<CanvasRenderingContext2D>();
 
-    const { onClick, boundsChanged } = props;
+    const { draw, onClick } = props;
+
+    useLayoutEffect(
+        () => {    
+            if (!context) {
+                setContext(canvasRef.current?.getContext('2d') ?? undefined);
+                return;
+            }
+
+            context.translate(-bounds.x, -bounds.y);
+            context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+            draw(context, bounds);
+            context.translate(bounds.x, bounds.y);
+        },
+        [draw, context, bounds]
+    );
 
     // TODO: replicate this for onMouseDown etc?
     const onCanvasClick = useMemo(
@@ -81,7 +103,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                         displayHeight
                     );
                     
-                    boundsChanged(bounds);
+                    setBounds(bounds);
                 }
             };
 
@@ -92,7 +114,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
 
             return () => resizeObserver.disconnect();
         },
-        [boundsChanged]
+        []
     );
 
     const rootClasses = props.className
