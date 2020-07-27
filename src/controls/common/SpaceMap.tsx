@@ -4,8 +4,11 @@ import { useDrag } from 'react-use-gesture'
 import { Canvas } from './Canvas';
 import { Vector2D } from '../../data/Vector2D';
 
+type ColorName = 'primary' | 'secondary';
+
 interface Props {
     className?: string;
+    gridColor: ColorName;
 }
 
 export const SpaceMap: React.FC<Props> = props => {
@@ -19,9 +22,11 @@ export const SpaceMap: React.FC<Props> = props => {
 
     const theme = useTheme();
 
+    const { gridColor } = props;
+
     const draw = useCallback(
-        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawSpace(ctx, bounds, theme, cellRadius, offset),
-        [cellRadius, theme, offset]
+        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawSpace(ctx, bounds, theme, gridColor, cellRadius, offset),
+        [cellRadius, theme, offset, gridColor]
     );
 
     const bind = useDrag(({ movement: [mx, my] }) => {
@@ -46,7 +51,7 @@ export const SpaceMap: React.FC<Props> = props => {
 const packedWidthRatio = 1.7320508075688772;
 const packedHeightRatio = 1.5;
 
-function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, radius: number) {
+function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, color: ColorName, radius: number) {
     ctx.beginPath();
     
     let angle, x, y;
@@ -62,7 +67,7 @@ function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, radius: number) {
         }
     }
 
-    ctx.strokeStyle = theme.palette.secondary.main;
+    ctx.strokeStyle = theme.palette[color].main;
     ctx.stroke();
 
     ctx.fillStyle = theme.palette.primary.light;
@@ -104,6 +109,7 @@ function drawSpace(
     ctx: CanvasRenderingContext2D,
     viewBounds: DOMRect,
     theme: Theme,
+    gridColor: 'primary' | 'secondary',
     cellRadius: number,
     center: Vector2D,
 ) {
@@ -131,7 +137,7 @@ function drawSpace(
     while (currentCell.y < maxY) {
         while (currentCell.x < maxX) {
             ctx.translate(currentCell.x, currentCell.y);
-            drawHex(ctx, theme, cellRadius);
+            drawHex(ctx, theme, gridColor, cellRadius);
             ctx.translate(-currentCell.x, -currentCell.y);
 
             currentCell.x += packedWidthRatio * cellRadius;

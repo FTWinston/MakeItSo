@@ -16,7 +16,7 @@ const Simple = () => {
     const classes = useStyles();
     
     return (
-        <SpaceMap className={classes.map} />
+        <SpaceMap gridColor="primary" className={classes.map} />
     )
 }
 
