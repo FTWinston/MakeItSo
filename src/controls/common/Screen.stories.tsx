@@ -10,4 +10,8 @@ export const unpadded = () => (
     </Theme>
 );
 
-export const padded = () => <Screen padded={true}>blah</Screen>;
+export const padded = () => (
+    <Theme>
+        <Screen padded={true}>blah</Screen>
+    </Theme>
+);

@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, Fab, Zoom, useTheme } from '@material-ui/core';
-import { Screen } from '../common/Screen';
-import { SystemHeader } from '../common/SystemHeader';
 import AlphaIcon from '@material-ui/icons/SwapHoriz';
 import BetaIcon from '@material-ui/icons/RotateRight';
 import ManoeverIcon from '@material-ui/icons/OpenWith';
 import TravelIcon from '@material-ui/icons/Navigation';
 import EvasiveIcon from '@material-ui/icons/TrendingUp';
 import { SpaceMap } from '../common/SpaceMap';
+import { ShipSystem } from '../common/ShipSystem';
 
 interface Props {
     
@@ -54,9 +53,7 @@ export const Helm: React.FC<Props> = () => {
     };
 
     return (
-        <Screen>
-            <SystemHeader />
-
+        <ShipSystem>
             <SpaceMap
                 className={classes.map}
                 gridColor={maneuverMode ? 'secondary' : 'primary'}
@@ -135,6 +132,6 @@ export const Helm: React.FC<Props> = () => {
                     </ListItem>
                 </List>
             </Drawer>
-        </Screen>
+        </ShipSystem>
     )
 }

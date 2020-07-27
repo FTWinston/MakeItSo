@@ -8,6 +8,7 @@ import { PowerIcon } from './PowerIcon';
 import { getSystemName } from '../../data/System';
 
 export interface Props {
+    showMenu: () => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -30,8 +31,6 @@ export const SystemHeader: React.FC<Props> = props => {
     
     const classes = useStyles();
 
-    const [showNav, setShowNav] = useState(false);
-
     const powerLevel = gameState.powerLevels.get(gameState.currentSystem);
     
     return (
@@ -42,7 +41,7 @@ export const SystemHeader: React.FC<Props> = props => {
                     color="inherit"
                     aria-label="menu"
                     className={classes.menuButton}
-                    onClick={() => setShowNav(true)}
+                    onClick={props.showMenu}
                 >
                     <MenuIcon />
                 </IconButton>
@@ -67,11 +66,6 @@ export const SystemHeader: React.FC<Props> = props => {
 
                 {props.children}
             </Toolbar>
-
-            <SystemMenu
-                isOpen={showNav}
-                close={() => setShowNav(false)}
-            />
         </AppBar>
     )
 }

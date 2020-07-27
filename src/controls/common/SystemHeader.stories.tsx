@@ -11,7 +11,7 @@ export default { title: 'Common/System Header' };
 export const example = () => (
     <Theme>
         <StoryGameProvider>
-            <SystemHeader>
+            <SystemHeader showMenu={action('show menu')}>
                 <IconButton edge="end" color="inherit">
                     <MoreIcon />
                 </IconButton>
