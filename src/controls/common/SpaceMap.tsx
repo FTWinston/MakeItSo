@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useState } from 'react';
 import { Theme, useTheme } from '@material-ui/core';
-import { useDrag } from 'react-use-gesture'
+import { useGesture } from 'react-use-gesture'
 import { Canvas } from './Canvas';
 import { Vector2D } from '../../data/Vector2D';
 
@@ -11,14 +11,14 @@ interface Props {
     gridColor: ColorName;
 }
 
+let startDistance = 32;
+
 export const SpaceMap: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const [offset, setOffset] = useState<Vector2D>({ x: 0, y: 0 });
 
-    const cellRadius = canvas.current
-        ? parseFloat(window.getComputedStyle(canvas.current).fontSize) * 2
-        : 32;
+    const [cellRadius, setCellRadius] = useState(32);
 
     const theme = useTheme();
 
@@ -29,13 +29,24 @@ export const SpaceMap: React.FC<Props> = props => {
         [cellRadius, theme, offset, gridColor]
     );
 
-    const bind = useDrag(({ movement: [mx, my] }) => {
-        setOffset({
-            x: mx,
-            y: my,
-        });
+    const bind = useGesture({
+        onDrag: ({ movement: [mx, my] }) => {
+            setOffset({
+                x: mx,
+                y: my,
+            });
+        },
+        onPinchStart: ({ da: [distance] }) => {
+            startDistance = distance;
+        },
+        onPinch: ({ da: [distance] }) => {
+            const scale = distance / startDistance;
+            setCellRadius(Math.max(16, cellRadius * scale));
+        },
     }, {
-        initial: () => [offset.x, offset.y],
+        drag: {
+            initial: () => [offset.x, offset.y],
+        },
     });
 
     return (
