@@ -27,6 +27,24 @@ export const StoryGameProvider: React.FC<Props> = props => {
                 [System.Engineering, PowerLevel.Med],
                 [System.DamageControl, PowerLevel.High],
             ]),
+            power: {
+                systemOrder: [
+                    System.Helm,
+                    System.FTL,
+                    System.Weapons,
+                    System.Sensors,
+                    System.Engineering,
+                    System.DamageControl,
+                ],
+                positiveEffects: new Map([
+                    [System.Helm, 1],
+                    [System.Weapons, 2]
+                ]),
+                negativeEffects: new Map([
+                    [System.DamageControl, 3],
+                    [System.Weapons, 1]
+                ]),
+            },
             selectSystem: setCurrentSystem,
             paused,
             setPaused,

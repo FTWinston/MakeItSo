@@ -8,8 +8,13 @@ export interface GameState {
 
     systemOccupancy: Map<System, string>;
     powerLevels: Map<System, PowerLevel>;
-
     selectSystem: (system: System) => void;
+
+    power: {
+        systemOrder: System[];
+        positiveEffects: Map<System, number>;
+        negativeEffects: Map<System, number>;
+    }
 
     paused: boolean;
     setPaused: (paused: boolean) => void;
