@@ -3,9 +3,13 @@ import { System, allSystems } from '../data/System';
 import { GameState, GameContext } from './GameProvider';
 import { PowerLevel } from '../data/PowerLevel';
 
-export const StoryGameProvider: React.FC = props => {
+interface Props {
+    initialSystem: System;
+}
+
+export const StoryGameProvider: React.FC<Props> = props => {
     const [paused, setPaused] = useState(false);
-    const [currentSystem, setCurrentSystem] = useState(System.Helm);
+    const [currentSystem, setCurrentSystem] = useState(props.initialSystem);
 
     const gameState: GameState = useMemo(
         () => ({

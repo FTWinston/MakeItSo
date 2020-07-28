@@ -1,16 +1,16 @@
 import React from 'react';
 import { Theme } from '../../style/theme';
-import { Helm } from './Helm';
+import { Engineering } from './Engineering';
 import { StoryGameProvider } from '../StoryGameProvider';
 import { System } from '../../data/System';
 
-export default { title: 'Helm' };
+export default { title: 'Engineering' };
 
 const WithState = () => {
     return (
         <Theme>
-            <StoryGameProvider initialSystem={System.Helm}>
-                <Helm />
+            <StoryGameProvider initialSystem={System.Engineering}>
+                <Engineering />
             </StoryGameProvider>
         </Theme>
     );
