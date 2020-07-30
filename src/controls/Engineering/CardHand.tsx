@@ -1,6 +1,6 @@
 import React from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
-import { Paper, makeStyles } from '@material-ui/core';
+import { makeStyles, Typography } from '@material-ui/core';
 import { PowerCard } from './PowerCard';
 
 interface Props {
@@ -11,6 +11,8 @@ const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         height: '10em',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     cardWrapper: {
         overflow: 'hidden',
@@ -24,13 +26,18 @@ const useStyles = makeStyles(theme => ({
 export const CardHand: React.FC<Props> = props => {
     const classes = useStyles();
 
+    const empty = props.cards.length === 0
+        ? <Typography>You have no cards.</Typography>
+        : undefined;
+
     return (
-        <Paper className={classes.root}>
+        <div className={classes.root}>
             {props.cards.map((card, index) => (
                 <div className={classes.cardWrapper}>
                     <PowerCard {...card} key={index} />
                 </div>
             ))}
-        </Paper>
+            {empty}
+        </div>
     )
 }

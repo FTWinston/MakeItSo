@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
         width: '14em',
         height: '10em',
         transition: 'border-color 0.2s linear',
-        backgroundColor: grey[700],
+        backgroundColor: theme.palette.background.paper,
     },
     content: {
         paddingTop: 0,
