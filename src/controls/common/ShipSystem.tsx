@@ -5,6 +5,7 @@ import { SystemMenu } from '../SystemMenu/SystemMenu';
 
 interface Props {
     className?: string;
+    appBarContent?: JSX.Element;
 }
 
 export const ShipSystem: React.FC<Props> = props => {
@@ -14,7 +15,9 @@ export const ShipSystem: React.FC<Props> = props => {
         <Screen className={props.className} padded={false}>
             <SystemHeader
                 showMenu={() => setMenuOpen(true)}
-            />
+            >
+                {props.appBarContent}
+            </SystemHeader>
             
             <SystemMenu
                 isOpen={menuOpen}

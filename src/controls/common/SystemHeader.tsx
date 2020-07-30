@@ -63,9 +63,9 @@ export const SystemHeader: React.FC<Props> = props => {
                 >
                     Power
                 </Button>
-
-                {props.children}
             </Toolbar>
+
+            {props.children}
         </AppBar>
     )
 }

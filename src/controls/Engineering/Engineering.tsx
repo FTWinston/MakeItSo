@@ -33,42 +33,41 @@ export const Engineering: React.FC = props => {
     
     const [showingDraft, showDraft] = useState(1);
 
-    return (
-        <ShipSystem className={classes.root}>
-            <Tabs
-                value={showingDraft}
-                onChange={(e, newVal) => showDraft(newVal)}
-                indicatorColor="primary"
-                textColor="primary"
-                variant="fullWidth"
-                aria-label="full width tabs example"
-            >
-                <Tab
-                    label="Ship Systems"
-                    id="engineering-tab-systems"
-                    aria-controls="engineering-systems"
-                    value={0}
-                />
-                <Tab
-                    className={classes.draftTab}
-                    label={
-                        <Badge
-                            badgeContent={gameState.power.draftChoices.length}
-                            color="secondary"
-                            classes={{
-                                root: classes.draftBadgeRoot,
-                                badge: classes.draftBadge,
-                            }}
-                        >
-                            Draft Cards
-                        </Badge>
-                    }   
-                    id="engineering-tab-draft"
-                    aria-controls="engineering-draft"
-                    value={1}
-                />
-            </Tabs>
+    const tabs = (
+        <Tabs
+            value={showingDraft}
+            onChange={(e, newVal) => showDraft(newVal)}
+            variant="fullWidth"
+        >
+            <Tab
+                label="Ship Systems"
+                id="engineering-tab-systems"
+                aria-controls="engineering-systems"
+                value={0}
+            />
+            <Tab
+                className={classes.draftTab}
+                label={
+                    <Badge
+                        badgeContent={gameState.power.draftChoices.length}
+                        color="secondary"
+                        classes={{
+                            root: classes.draftBadgeRoot,
+                            badge: classes.draftBadge,
+                        }}
+                    >
+                        Draft Cards
+                    </Badge>
+                }   
+                id="engineering-tab-draft"
+                aria-controls="engineering-draft"
+                value={1}
+            />
+        </Tabs>
+    );
 
+    return (
+        <ShipSystem className={classes.root} appBarContent={tabs}>
             <div
                 role="tabpanel"
                 hidden={!showingDraft}
