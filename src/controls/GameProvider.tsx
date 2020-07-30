@@ -1,6 +1,7 @@
 import React from 'react';
 import { System } from '../data/System';
 import { PowerLevel } from '../data/PowerLevel';
+import { PowerCardInfo } from '../data/PowerCard';
 
 export interface GameState {
     localPlayer: string;
@@ -14,6 +15,7 @@ export interface GameState {
         systemOrder: System[];
         positiveEffects: Map<System, number>;
         negativeEffects: Map<System, number>;
+        hand: PowerCardInfo[];
     }
 
     paused: boolean;

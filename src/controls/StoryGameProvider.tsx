@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { System, allSystems } from '../data/System';
 import { GameState, GameContext } from './GameProvider';
 import { PowerLevel } from '../data/PowerLevel';
+import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
 
 interface Props {
     initialSystem: System;
@@ -44,6 +45,13 @@ export const StoryGameProvider: React.FC<Props> = props => {
                     [System.DamageControl, 3],
                     [System.Weapons, 1]
                 ]),
+                hand: [
+                    commonCard,
+                    commonCard,
+                    uncommonCard,
+                    rareCard,
+                    epicCard
+                ],
             },
             selectSystem: setCurrentSystem,
             paused,
