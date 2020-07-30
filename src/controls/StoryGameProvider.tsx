@@ -52,6 +52,10 @@ export const StoryGameProvider: React.FC<Props> = props => {
                     rareCard,
                     epicCard
                 ],
+                draftChoices: [
+                    [commonCard, commonCard, uncommonCard],
+                    [commonCard, rareCard, commonCard],
+                ],
             },
             selectSystem: setCurrentSystem,
             paused,

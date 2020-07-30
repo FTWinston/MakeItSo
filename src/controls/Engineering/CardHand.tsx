@@ -10,7 +10,8 @@ interface Props {
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
-        height: '10em',
+        height: '11em',
+        marginTop: '1em',
         alignItems: 'center',
         justifyContent: 'center',
     },

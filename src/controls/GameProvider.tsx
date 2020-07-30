@@ -16,7 +16,8 @@ export interface GameState {
         positiveEffects: Map<System, number>;
         negativeEffects: Map<System, number>;
         hand: PowerCardInfo[];
-    }
+        draftChoices: Array<PowerCardInfo[]>;
+    };
 
     paused: boolean;
     setPaused: (paused: boolean) => void;
