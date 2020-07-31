@@ -4,12 +4,13 @@ import { PowerLevel } from '../data/PowerLevel';
 import { PowerCardInfo } from '../data/PowerCard';
 
 export interface GameState {
+    update: (action: GameAction) => void;
+
     localPlayer: string;
     currentSystem: System;
 
     systemOccupancy: Map<System, string>;
     powerLevels: Map<System, PowerLevel>;
-    selectSystem: (system: System) => void;
 
     power: {
         systemOrder: System[];
@@ -20,9 +21,24 @@ export interface GameState {
     };
 
     paused: boolean;
-    setPaused: (paused: boolean) => void;
-    
-    endGame: () => void;
+}
+
+export type GameAction = {
+    type: 'pause';
+} | {
+    type: 'resume';
+} | {
+    type: 'end game';
+} | {
+    type: 'select system';
+    system: System;
+} | {
+    type: 'power draft';
+    index: number;
+} | {
+    type: 'power play';
+    cardIndex: number;
+    systemIndex: number;
 }
 
 export const GameContext = React.createContext<GameState>(undefined!);

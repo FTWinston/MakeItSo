@@ -30,14 +30,14 @@ export const SystemMenu: React.FC<Props> = props => {
 
     const pauseOrResume = gameState.paused
         ? (
-            <ListItem button onClick={() => { gameState.setPaused(false); props.close(); }} selected>
+            <ListItem button onClick={() => { gameState.update({ type: 'resume'}); props.close(); }} selected>
                 <ListItemIcon>
                     <ResumeIcon />
                 </ListItemIcon>
                 <ListItemText primary="Resume game" />
             </ListItem>
         ) : (
-            <ListItem button onClick={() => gameState.setPaused(true)}>
+            <ListItem button onClick={() => gameState.update({ type: 'pause'})}>
                 <ListItemIcon>
                     <PauseIcon />
                 </ListItemIcon>
@@ -52,7 +52,7 @@ export const SystemMenu: React.FC<Props> = props => {
             selected={gameState.currentSystem === system}
             disabled={gameState.paused || (gameState.currentSystem !== system && gameState.systemOccupancy.get(system) !== undefined)}
             occupant={gameState.systemOccupancy.get(system)}
-            select={() => { gameState.selectSystem(system); props.close(); }}
+            select={() => { gameState.update({ type: 'select system', system }); props.close(); }}
             power={gameState.powerLevels.get(system) ?? PowerLevel.Off}
         />
     ));
@@ -98,7 +98,7 @@ export const SystemMenu: React.FC<Props> = props => {
                 prompt="This will affect your whole crew, not just yourself."
                 isOpen={quitConfirm}
                 close={() => showQuitConfirm(false)}
-                confirm={gameState.endGame}
+                confirm={() => gameState.update({ type: 'end game'})}
             />
         </Drawer>
     )

@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { System, allSystems } from '../data/System';
-import { GameState, GameContext } from './GameProvider';
+import { GameState, GameContext, GameAction } from './GameProvider';
 import { PowerLevel } from '../data/PowerLevel';
 import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
 
@@ -12,8 +12,33 @@ export const StoryGameProvider: React.FC<Props> = props => {
     const [paused, setPaused] = useState(false);
     const [currentSystem, setCurrentSystem] = useState(props.initialSystem);
 
+    const update = useCallback((action: GameAction) => {
+        switch (action.type) {
+            case 'pause':
+                setPaused(true);
+                break;
+            case 'resume':
+                setPaused(false);
+                break;
+            case 'end game':
+                alert('game ended');
+                break;
+            case 'select system':
+                setCurrentSystem(action.system);
+                break;
+            case 'power draft':
+
+                break;
+            case 'power play':
+
+                break;
+        }
+    }, []);
+
     const gameState: GameState = useMemo(
         () => ({
+            update,
+            paused,
             localPlayer: 'Your Name',
             currentSystem,
             systemOccupancy: new Map([
@@ -57,10 +82,6 @@ export const StoryGameProvider: React.FC<Props> = props => {
                     [commonCard, rareCard, commonCard],
                 ],
             },
-            selectSystem: setCurrentSystem,
-            paused,
-            setPaused,
-            endGame: () => alert('game ended'),
         }),
         [paused, currentSystem]
     );

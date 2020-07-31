@@ -3,6 +3,7 @@ import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { SystemMenu } from './SystemMenu';
 import { StoryGameProvider } from '../StoryGameProvider';
+import { System } from '../../data/System';
 
 export default { title: 'System Menu' };
 
@@ -25,7 +26,7 @@ const WithState = () => {
 
     return (
         <Theme>
-            <StoryGameProvider>
+            <StoryGameProvider initialSystem={System.Helm}>
                 <SystemMenu
                     isOpen={open}
                     close={close}
