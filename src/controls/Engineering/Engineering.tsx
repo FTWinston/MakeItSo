@@ -84,7 +84,11 @@ export const Engineering: React.FC = props => {
             >
                 {!!showingDraft && (
                     <CardChoice
-                        cards={gameState.power.draftChoices[0]}
+                        cards={gameState.power.draftChoices[0] ?? []}
+                        choose={index => gameState.update({
+                            type: 'power draft',
+                            index,
+                        })}
                     />
                 )}
             </div>

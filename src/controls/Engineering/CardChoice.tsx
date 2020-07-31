@@ -5,6 +5,7 @@ import { PowerCard } from './PowerCard';
 
 interface Props {
     cards: PowerCardInfo[];
+    choose: (index: number) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -29,7 +30,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'center',
         position: 'relative',
-        zoom: 0.8,
+        transform: 'scale(0.8)',
     },
 }));
 
@@ -39,7 +40,7 @@ export const CardChoice: React.FC<Props> = props => {
     const prompt = props.cards.length === 0
         ? <Typography>No card choice available.<br/>Please wait...</Typography>
         : <Typography className={classes.prompt}>Choose one:</Typography>
-
+    
     return (
         <div className={classes.root}>
             {prompt}
@@ -47,6 +48,7 @@ export const CardChoice: React.FC<Props> = props => {
                 <div
                     className={classes.cardWrapper}
                     key={index}
+                    onClick={() => props.choose(index)}
                 >
                     <PowerCard {...card} key={index} />
                 </div>

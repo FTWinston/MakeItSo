@@ -3,6 +3,7 @@ import { System, allSystems } from '../data/System';
 import { GameState, GameContext, GameAction } from './GameProvider';
 import { PowerLevel } from '../data/PowerLevel';
 import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
+import { PowerCardInfo } from '../data/PowerCard';
 
 interface Props {
     initialSystem: System;
@@ -12,7 +13,20 @@ export const StoryGameProvider: React.FC<Props> = props => {
     const [paused, setPaused] = useState(false);
     const [currentSystem, setCurrentSystem] = useState(props.initialSystem);
 
-    const update = useCallback((action: GameAction) => {
+    const [powerHand, setPowerHand] = useState<PowerCardInfo[]>([
+        commonCard,
+        commonCard,
+        uncommonCard,
+        rareCard,
+        epicCard
+    ]);
+
+    const [powerDraftChoices, setPowerDraftChoices] = useState<Array<PowerCardInfo[]>>([
+        [commonCard, commonCard, uncommonCard],
+        [commonCard, rareCard, commonCard],
+    ]);
+
+    const update = (action: GameAction) => {
         switch (action.type) {
             case 'pause':
                 setPaused(true);
@@ -27,13 +41,21 @@ export const StoryGameProvider: React.FC<Props> = props => {
                 setCurrentSystem(action.system);
                 break;
             case 'power draft':
-
+                if (powerDraftChoices.length > 0) {
+                    const chosen = powerDraftChoices[0][action.index];
+                    setPowerHand(hand => [...hand, chosen]);
+                    setPowerDraftChoices(choices => {
+                        const newChoices = [...choices];
+                        newChoices.shift();
+                        return newChoices;
+                    })
+                }
                 break;
             case 'power play':
 
                 break;
         }
-    }, []);
+    }
 
     const gameState: GameState = useMemo(
         () => ({
@@ -70,20 +92,11 @@ export const StoryGameProvider: React.FC<Props> = props => {
                     [System.DamageControl, 3],
                     [System.Weapons, 1]
                 ]),
-                hand: [
-                    commonCard,
-                    commonCard,
-                    uncommonCard,
-                    rareCard,
-                    epicCard
-                ],
-                draftChoices: [
-                    [commonCard, commonCard, uncommonCard],
-                    [commonCard, rareCard, commonCard],
-                ],
+                hand: powerHand,
+                draftChoices: powerDraftChoices,
             },
         }),
-        [paused, currentSystem]
+        [paused, currentSystem, powerHand, powerDraftChoices]
     );
 
     return (
