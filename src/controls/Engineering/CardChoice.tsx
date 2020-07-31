@@ -14,9 +14,21 @@ const useStyles = makeStyles(theme => ({
         alignItems: 'center',
         justifyContent: 'space-around',
         flexGrow: 1,
+        position: 'relative',
+    },
+    prompt: {
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          transform: 'rotate(-90deg)',
+          transformOrigin: 'left top 0',
+          color: theme.palette.text.hint,
+          fontSize: '2em',
     },
     cardWrapper: {
-        display: 'inline-block',
+        display: 'flex',
+        justifyContent: 'center',
+        position: 'relative',
         zoom: 0.8,
     },
 }));
@@ -24,12 +36,13 @@ const useStyles = makeStyles(theme => ({
 export const CardChoice: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const empty = props.cards.length === 0
+    const prompt = props.cards.length === 0
         ? <Typography>No card choice available.<br/>Please wait...</Typography>
-        : undefined;
+        : <Typography className={classes.prompt}>Choose one:</Typography>
 
     return (
         <div className={classes.root}>
+            {prompt}
             {props.cards.map((card, index) => (
                 <div
                     className={classes.cardWrapper}
@@ -38,7 +51,6 @@ export const CardChoice: React.FC<Props> = props => {
                     <PowerCard {...card} key={index} />
                 </div>
             ))}
-            {empty}
         </div>
     )
 }
