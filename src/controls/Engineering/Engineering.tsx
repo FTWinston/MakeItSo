@@ -4,15 +4,21 @@ import { GameContext } from '../GameProvider';
 import { SystemList } from './SystemList';
 import { CardHand } from './CardHand';
 import { Tabs, Tab, Box, makeStyles, Badge } from '@material-ui/core';
+import { CardChoice } from './CardChoice';
 
 
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
+        maxHeight: '100vh',
     },
     tabContent: {
         flexGrow: 1,
+        overflow: 'hidden',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
     },
     draftTab: {
         postion: 'relative',
@@ -31,7 +37,7 @@ export const Engineering: React.FC = props => {
 
     const classes = useStyles();
     
-    const [showingDraft, showDraft] = useState(1);
+    const [showingDraft, showDraft] = useState(0);
 
     const tabs = (
         <Tabs
@@ -71,20 +77,22 @@ export const Engineering: React.FC = props => {
             <div
                 role="tabpanel"
                 hidden={!showingDraft}
+                style={!!showingDraft ? undefined : { display: 'none' }}
                 id="engineering-draft"
                 aria-labelledby="engineering-tab-draft"
                 className={classes.tabContent}
             >
                 {!!showingDraft && (
-                    <Box p={3}>
-                        blah
-                    </Box>
+                    <CardChoice
+                        cards={gameState.power.draftChoices[0]}
+                    />
                 )}
             </div>
 
             <div
                 role="tabpanel"
                 hidden={!!showingDraft}
+                style={!showingDraft ? undefined : { display: 'none' }}
                 id="engineering-systems"
                 aria-labelledby="engineering-tab-systems"
                 className={classes.tabContent}
