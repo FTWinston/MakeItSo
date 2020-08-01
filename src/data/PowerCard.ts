@@ -8,6 +8,7 @@ export enum CardRarity {
 }
 
 export interface PowerCardInfo {
+    id: number;
     name: string;
     description: string;
     rarity: CardRarity;

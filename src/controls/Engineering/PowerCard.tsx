@@ -5,7 +5,7 @@ import { blue, purple, grey } from '@material-ui/core/colors';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import UnknownIcon from '@material-ui/icons/HelpOutline';
 
-interface Props extends PowerCardInfo {
+interface Props extends Omit<PowerCardInfo, 'id'> {
 
 }
 

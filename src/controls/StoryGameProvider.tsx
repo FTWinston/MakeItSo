@@ -14,16 +14,19 @@ export const StoryGameProvider: React.FC<Props> = props => {
     const [currentSystem, setCurrentSystem] = useState(props.initialSystem);
 
     const [powerHand, setPowerHand] = useState<PowerCardInfo[]>([
-        commonCard,
-        commonCard,
-        uncommonCard,
-        rareCard,
-        epicCard
+        commonCard(),
+        commonCard(),
+        uncommonCard(),
+        rareCard(),
+        epicCard()
     ]);
 
     const [powerDraftChoices, setPowerDraftChoices] = useState<Array<PowerCardInfo[]>>([
-        [commonCard, commonCard, uncommonCard],
-        [commonCard, rareCard, commonCard],
+        [commonCard(), commonCard(), uncommonCard()],
+        [commonCard(), rareCard(), commonCard()],
+        [commonCard(), uncommonCard(), commonCard()],
+        [uncommonCard(), commonCard(), commonCard()],
+        [commonCard(), uncommonCard(), epicCard()],
     ]);
 
     const update = (action: GameAction) => {
@@ -42,13 +45,16 @@ export const StoryGameProvider: React.FC<Props> = props => {
                 break;
             case 'power draft':
                 if (powerDraftChoices.length > 0) {
-                    const chosen = powerDraftChoices[0][action.index];
-                    setPowerHand(hand => [...hand, chosen]);
-                    setPowerDraftChoices(choices => {
-                        const newChoices = [...choices];
-                        newChoices.shift();
-                        return newChoices;
-                    })
+                    const chosen = powerDraftChoices[0].find(card => card.id === action.card);
+
+                    if (chosen) {
+                        setPowerHand(hand => [...hand, chosen]);
+                        setPowerDraftChoices(choices => {
+                            const newChoices = [...choices];
+                            newChoices.shift();
+                            return newChoices;
+                        });
+                    }
                 }
                 break;
             case 'power play':

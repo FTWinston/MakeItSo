@@ -34,10 +34,10 @@ export type GameAction = {
     system: System;
 } | {
     type: 'power draft';
-    index: number;
+    card: number;
 } | {
     type: 'power play';
-    cardIndex: number;
+    card: number;
     systemIndex: number;
 }
 

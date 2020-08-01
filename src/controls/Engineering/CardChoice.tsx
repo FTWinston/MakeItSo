@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography, Zoom, useTheme, Slide } from '@material-ui/core';
 import { PowerCard } from './PowerCard';
 
 interface Props {
     cards: PowerCardInfo[];
-    choose: (index: number) => void;
+    choose: (card: PowerCardInfo) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -37,21 +37,78 @@ const useStyles = makeStyles(theme => ({
 export const CardChoice: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const prompt = props.cards.length === 0
+    const theme = useTheme();
+
+    const transitionDuration = {
+        enter: theme.transitions.duration.enteringScreen,
+        exit: 1000,
+    };
+
+    const [cards, setCards] = useState(props.cards);
+
+    const [selected, setSelected] = useState<PowerCardInfo>();
+
+    useEffect(
+        () => {
+            const newCards = props.cards;
+            const callback = () => {
+                setSelected(undefined);
+                setCards(newCards);
+            }
+
+            const id = setTimeout(callback, transitionDuration.exit);
+
+            return () => {
+                clearTimeout(id);
+            }
+        },
+        [props.cards]
+    );
+    
+    const [firstRender, setFirstRender] = useState(true);
+
+    useEffect(
+        () => {
+            setFirstRender(false);
+        },
+        []
+    );
+
+    const prompt = cards.length === 0
         ? <Typography>No card choice available.<br/>Please wait...</Typography>
         : <Typography className={classes.prompt}>Choose one:</Typography>
     
     return (
         <div className={classes.root}>
             {prompt}
-            {props.cards.map((card, index) => (
-                <div
-                    className={classes.cardWrapper}
-                    key={index}
-                    onClick={() => props.choose(index)}
+            {cards.map(card => (
+                <Zoom
+                    in={props.cards.indexOf(card) !== -1 || card === selected}
+                    timeout={transitionDuration}
+                    unmountOnExit
+                    key={card.id}
+                    appear={!firstRender}
                 >
-                    <PowerCard {...card} key={index} />
-                </div>
+                    <Slide
+                        in={props.cards.indexOf(card) !== -1 || card !== selected}
+                        timeout={transitionDuration}
+                        appear={false}
+                        direction="left"
+                        unmountOnExit
+                        key={card.id}
+                    >
+                        <div
+                            className={classes.cardWrapper}
+                            onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card); } }}
+                        >
+                            <PowerCard
+                                name={card.name}
+                                description={card.description}
+                                rarity={card.rarity}
+                            />
+                        </div>
+                    </Slide>
+                </Zoom>
             ))}
         </div>
     )
