@@ -2,6 +2,7 @@ import React from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
 import { makeStyles, Typography } from '@material-ui/core';
 import { ZoomableCard } from './ZoomableCard';
+import { cardWidth } from './PowerCard';
 
 interface Props {
     cards: PowerCardInfo[];
@@ -19,13 +20,13 @@ const useStyles = makeStyles(theme => ({
     handWrapper: {
         display: 'flex',
         flexGrow: 1,
-        margin: '0 2em',
         overflow: 'visible',
         position: 'relative',
     },
     cardWrapper: {
         position: 'absolute',
         top: '1em',
+        pointerEvents: 'none',
     },
 }));
 
@@ -53,19 +54,16 @@ export const CardHand: React.FC<Props> = props => {
                     return (
                         <div
                             className={classes.cardWrapper}
-                            key={index}
+                            key={card.id}
                             style={{
-                                left: `calc((100% - 14em) * ${fraction})`,
+                                left: `calc((100% - ${cardWidth}px) * ${fraction})`,
                             }}
                         >
                             <ZoomableCard
-                                key={index}
+                                key={card.id}
                                 name={card.name}
                                 description={card.description}
                                 rarity={card.rarity}
-                                style={{
-                                    transform: `rotate(${angle}deg)`, // d'oh, this blats the scale transform!
-                                }}
                             />
                         </div>
                     )

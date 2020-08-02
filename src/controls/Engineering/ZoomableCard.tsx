@@ -14,9 +14,11 @@ export const shrinkScale = 0.8;
 const useStyles = makeStyles(theme => ({
     root: {
         position: 'relative',
+        pointerEvents: 'none',
     },
     main: {
         transform: `scale(${shrinkScale})`,
+        pointerEvents: 'initial',
 
         '&:hover': {
             opacity: 0,
@@ -28,8 +30,7 @@ const useStyles = makeStyles(theme => ({
     zoom: {
         display: 'none',
         position: 'absolute',
-        pointerEvents: 'none',
-        top: 0,
+        bottom: 0,
         zIndex: 1,
     },
 }));
