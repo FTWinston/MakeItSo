@@ -26,6 +26,9 @@ const useStyles = makeStyles(theme => ({
           color: theme.palette.text.hint,
           fontSize: '2em',
     },
+    emptyPrompt: {
+        textAlign: 'center',
+    },
     cardWrapper: {
         display: 'flex',
         justifyContent: 'center',
@@ -75,7 +78,7 @@ export const CardChoice: React.FC<Props> = props => {
     );
 
     const prompt = cards.length === 0
-        ? <Typography>No card choice available.<br/>Please wait...</Typography>
+        ? <Typography className={classes.emptyPrompt}>No card choice available.<br/>Please wait...</Typography>
         : <Typography className={classes.prompt}>Choose one:</Typography>
     
     return (

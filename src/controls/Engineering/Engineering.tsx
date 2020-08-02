@@ -13,9 +13,15 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'column',
         maxHeight: '100vh',
     },
-    tabWrapper: {
+    tabsWrapper: {
         flexGrow: 1,
         overflow: 'hidden',
+    },
+    tabWrapper: {
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'stretch',
     },
     tabContent: {
         flexGrow: 1,
@@ -82,7 +88,8 @@ export const Engineering: React.FC = () => {
                 axis="x"
                 index={tabIndex}
                 onChangeIndex={setTabIndex}
-                className={classes.tabWrapper}
+                className={classes.tabsWrapper}
+                slideClassName={classes.tabWrapper}
             >
                 <div
                     role="tabpanel"
