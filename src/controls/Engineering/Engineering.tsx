@@ -1,17 +1,21 @@
 import React, { useContext, useState } from 'react';
+import { Tabs, Tab, makeStyles, Badge } from '@material-ui/core';
+import SwipeableViews from 'react-swipeable-views';
 import { ShipSystem } from '../common/ShipSystem';
 import { GameContext } from '../GameProvider';
 import { SystemList } from './SystemList';
 import { CardHand } from './CardHand';
-import { Tabs, Tab, Box, makeStyles, Badge } from '@material-ui/core';
 import { CardChoice } from './CardChoice';
-
 
 const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
         maxHeight: '100vh',
+    },
+    tabWrapper: {
+        flexGrow: 1,
+        overflow: 'hidden',
     },
     tabContent: {
         flexGrow: 1,
@@ -32,17 +36,17 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const Engineering: React.FC = props => {
+export const Engineering: React.FC = () => {
     const gameState = useContext(GameContext);
 
     const classes = useStyles();
     
-    const [showingDraft, showDraft] = useState(0);
+    const [tabIndex, setTabIndex] = useState(0);
 
     const tabs = (
         <Tabs
-            value={showingDraft}
-            onChange={(e, newVal) => showDraft(newVal)}
+            value={tabIndex}
+            onChange={(e, newVal) => setTabIndex(newVal)}
             variant="fullWidth"
         >
             <Tab
@@ -74,15 +78,34 @@ export const Engineering: React.FC = props => {
 
     return (
         <ShipSystem className={classes.root} appBarContent={tabs}>
-            <div
-                role="tabpanel"
-                hidden={!showingDraft}
-                style={!!showingDraft ? undefined : { display: 'none' }}
-                id="engineering-draft"
-                aria-labelledby="engineering-tab-draft"
-                className={classes.tabContent}
+            <SwipeableViews
+                axis="x"
+                index={tabIndex}
+                onChangeIndex={setTabIndex}
+                className={classes.tabWrapper}
             >
-                {!!showingDraft && (
+                <div
+                    role="tabpanel"
+                    hidden={tabIndex !== 0}
+                    id="engineering-systems"
+                    aria-labelledby="engineering-tab-systems"
+                    className={classes.tabContent}
+                >
+                    <SystemList
+                        powerLevels={gameState.powerLevels}
+                        systemOrder={gameState.power.systemOrder}
+                        positiveEffects={gameState.power.positiveEffects}
+                        negativeEffects={gameState.power.negativeEffects}
+                    />
+                </div>
+                
+                <div
+                    role="tabpanel"
+                    hidden={tabIndex !== 1}
+                    id="engineering-draft"
+                    aria-labelledby="engineering-tab-draft"
+                    className={classes.tabContent}
+                >
                     <CardChoice
                         cards={gameState.power.draftChoices[0] ?? []}
                         choose={card => gameState.update({
@@ -90,27 +113,9 @@ export const Engineering: React.FC = props => {
                             card: card.id,
                         })}
                     />
-                )}
-            </div>
-
-            <div
-                role="tabpanel"
-                hidden={!!showingDraft}
-                style={!showingDraft ? undefined : { display: 'none' }}
-                id="engineering-systems"
-                aria-labelledby="engineering-tab-systems"
-                className={classes.tabContent}
-            >
-                {!showingDraft && (
-                    <SystemList
-                        powerLevels={gameState.powerLevels}
-                        systemOrder={gameState.power.systemOrder}
-                        positiveEffects={gameState.power.positiveEffects}
-                        negativeEffects={gameState.power.negativeEffects}
-                    />
-                )}
-            </div>
-            
+                </div>
+            </SwipeableViews>
+                
             <CardHand
                 cards={gameState.power.hand}
             />
