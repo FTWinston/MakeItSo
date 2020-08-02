@@ -19,6 +19,7 @@ const useStyles = makeStyles(theme => ({
         height: cardHeight,
         transition: 'border-color 0.2s linear',
         backgroundColor: theme.palette.background.paper,
+        borderWidth: 2,
     },
     content: {
         paddingTop: 0,
