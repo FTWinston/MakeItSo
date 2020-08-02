@@ -62,7 +62,7 @@ export const CardChoice: React.FC<Props> = props => {
                 clearTimeout(id);
             }
         },
-        [props.cards]
+        [props.cards, transitionDuration.exit]
     );
     
     const [firstRender, setFirstRender] = useState(true);

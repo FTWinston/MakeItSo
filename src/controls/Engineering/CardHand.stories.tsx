@@ -5,23 +5,71 @@ import { uncommonCard, commonCard, rareCard, epicCard } from './PowerCard.exampl
 
 export default { title: 'Engineering/Card Hand' };
 
-export const example = () => (
+export const eight = () => (
     <Theme>
         <CardHand
-            cards={[uncommonCard, commonCard, rareCard, commonCard, epicCard]}
+            cards={[commonCard(), commonCard(), commonCard(), uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
         />
     </Theme>
 );
 
-export const single = () => (
+export const seven = () => (
     <Theme>
         <CardHand
-            cards={[uncommonCard]}
+            cards={[commonCard(), commonCard(), uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
         />
     </Theme>
 );
 
-export const empty = () => (
+export const six = () => (
+    <Theme>
+        <CardHand
+            cards={[commonCard(), uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
+        />
+    </Theme>
+);
+
+export const five = () => (
+    <Theme>
+        <CardHand
+            cards={[uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
+        />
+    </Theme>
+);
+
+export const four = () => (
+    <Theme>
+        <CardHand
+            cards={[commonCard(), rareCard(), commonCard(), epicCard()]}
+        />
+    </Theme>
+);
+
+export const three = () => (
+    <Theme>
+        <CardHand
+            cards={[uncommonCard(), commonCard(), commonCard()]}
+        />
+    </Theme>
+);
+
+export const two = () => (
+    <Theme>
+        <CardHand
+            cards={[commonCard(), commonCard()]}
+        />
+    </Theme>
+);
+
+export const one = () => (
+    <Theme>
+        <CardHand
+            cards={[uncommonCard()]}
+        />
+    </Theme>
+);
+
+export const zero = () => (
     <Theme>
         <CardHand
             cards={[]}

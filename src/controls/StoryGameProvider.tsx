@@ -29,39 +29,42 @@ export const StoryGameProvider: React.FC<Props> = props => {
         [commonCard(), uncommonCard(), epicCard()],
     ]);
 
-    const update = (action: GameAction) => {
-        switch (action.type) {
-            case 'pause':
-                setPaused(true);
-                break;
-            case 'resume':
-                setPaused(false);
-                break;
-            case 'end game':
-                alert('game ended');
-                break;
-            case 'select system':
-                setCurrentSystem(action.system);
-                break;
-            case 'power draft':
-                if (powerDraftChoices.length > 0) {
-                    const chosen = powerDraftChoices[0].find(card => card.id === action.card);
+    const update = useCallback(
+        (action: GameAction) => {
+            switch (action.type) {
+                case 'pause':
+                    setPaused(true);
+                    break;
+                case 'resume':
+                    setPaused(false);
+                    break;
+                case 'end game':
+                    alert('game ended');
+                    break;
+                case 'select system':
+                    setCurrentSystem(action.system);
+                    break;
+                case 'power draft':
+                    if (powerDraftChoices.length > 0) {
+                        const chosen = powerDraftChoices[0].find(card => card.id === action.card);
 
-                    if (chosen) {
-                        setPowerHand(hand => [...hand, chosen]);
-                        setPowerDraftChoices(choices => {
-                            const newChoices = [...choices];
-                            newChoices.shift();
-                            return newChoices;
-                        });
+                        if (chosen) {
+                            setPowerHand(hand => [...hand, chosen]);
+                            setPowerDraftChoices(choices => {
+                                const newChoices = [...choices];
+                                newChoices.shift();
+                                return newChoices;
+                            });
+                        }
                     }
-                }
-                break;
-            case 'power play':
+                    break;
+                case 'power play':
 
-                break;
-        }
-    }
+                    break;
+            }
+        },
+        [powerDraftChoices]
+    );
 
     const gameState: GameState = useMemo(
         () => ({
@@ -102,7 +105,7 @@ export const StoryGameProvider: React.FC<Props> = props => {
                 draftChoices: powerDraftChoices,
             },
         }),
-        [paused, currentSystem, powerHand, powerDraftChoices]
+        [paused, currentSystem, powerHand, powerDraftChoices, update]
     );
 
     return (

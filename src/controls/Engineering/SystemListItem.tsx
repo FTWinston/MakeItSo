@@ -1,6 +1,5 @@
 import React from 'react';
-import { ShipSystem } from '../common/ShipSystem';
-import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, IconButton, Switch, Badge } from '@material-ui/core';
+import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Switch, Badge } from '@material-ui/core';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
 

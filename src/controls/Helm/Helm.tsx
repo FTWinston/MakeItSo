@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles, useTheme } from '@material-ui/core';
-import AlphaIcon from '@material-ui/icons/SwapHoriz';
-import BetaIcon from '@material-ui/icons/RotateRight';
+import { makeStyles } from '@material-ui/core';
 import { SpaceMap } from '../common/SpaceMap';
 import { ShipSystem } from '../common/ShipSystem';
 import { ActionButtons } from './ActionButtons';

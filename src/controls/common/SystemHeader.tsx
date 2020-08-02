@@ -1,7 +1,6 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import { makeStyles, AppBar, Toolbar, IconButton, Button, Typography } from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
-import { SystemMenu } from '../SystemMenu/SystemMenu';
 import { GameContext } from '../GameProvider';
 import { getPowerName, PowerLevel } from '../../data/PowerLevel';
 import { PowerIcon } from './PowerIcon';
