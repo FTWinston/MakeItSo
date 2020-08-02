@@ -27,23 +27,25 @@ const useStyles = makeStyles(theme => ({
         position: 'absolute',
         top: '1em',
         pointerEvents: 'none',
+        transition: 'left 0.5s ease-in-out',
     },
+    empty: {
+        flexGrow: 1,
+        textAlign: 'center',
+    }
 }));
 
 export const CardHand: React.FC<Props> = props => {
     const classes = useStyles();
-
-    const empty = props.cards.length === 0
-        ? <Typography>You have no cards.</Typography>
-        : undefined;
 
     const angleStep = 4;
     let currentAngle = props.cards.length < 2 ? 0 : -((props.cards.length - 1) / 2) * angleStep;
     let fractionStep = props.cards.length < 2 ? 0 : 1 / (props.cards.length - 1);
     let currentFraction = 0;
 
-    return (
-        <div className={classes.root}>
+    const content = props.cards.length === 0
+        ? <Typography className={classes.empty}>You have no cards.</Typography>
+        : (
             <div className={classes.handWrapper}>
                 {props.cards.map((card, index) => {
                     const angle = currentAngle;
@@ -69,7 +71,11 @@ export const CardHand: React.FC<Props> = props => {
                     )
                 })}
             </div>
-            {empty}
+        )
+
+    return (
+        <div className={classes.root}>
+            {content}
         </div>
     )
 }
