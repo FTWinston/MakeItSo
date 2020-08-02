@@ -1,6 +1,6 @@
 import React from 'react';
 import { Theme } from '../../style/theme';
-import { PowerCard } from './PowerCard';
+import { ZoomableCard } from './ZoomableCard';
 import { commonCard, uncommonCard, rareCard, epicCard } from './PowerCard.examples';
 
 export default { title: 'Engineering/Card' };
@@ -8,7 +8,7 @@ export default { title: 'Engineering/Card' };
 export const common = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <PowerCard 
+            <ZoomableCard 
                 {...commonCard()}
             />
         </div>
@@ -18,7 +18,7 @@ export const common = () => (
 export const uncommon = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <PowerCard
+            <ZoomableCard
                 {...uncommonCard()}
             />
         </div>
@@ -28,7 +28,7 @@ export const uncommon = () => (
 export const rare = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <PowerCard 
+            <ZoomableCard 
                 {...rareCard()}
             />
         </div>
@@ -38,7 +38,7 @@ export const rare = () => (
 export const epic = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-            <PowerCard
+            <ZoomableCard
                 {...epicCard()}
             />
         </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
 import { makeStyles, Typography } from '@material-ui/core';
-import { PowerCard } from './PowerCard';
+import { ZoomableCard } from './ZoomableCard';
 
 interface Props {
     cards: PowerCardInfo[];
@@ -26,9 +26,6 @@ const useStyles = makeStyles(theme => ({
     cardWrapper: {
         position: 'absolute',
         top: '1em',
-        '&:hover': {
-            zIndex: 1,
-        }
     },
 }));
 
@@ -44,9 +41,6 @@ export const CardHand: React.FC<Props> = props => {
     let fractionStep = props.cards.length < 2 ? 0 : 1 / (props.cards.length - 1);
     let currentFraction = 0;
 
-    // Hearthstone's approach is to keep the cards overlapping,
-    // when a card is hovered, show a big, non-rotated copy of the card.
-
     return (
         <div className={classes.root}>
             <div className={classes.handWrapper}>
@@ -59,13 +53,20 @@ export const CardHand: React.FC<Props> = props => {
                     return (
                         <div
                             className={classes.cardWrapper}
+                            key={index}
                             style={{
                                 left: `calc((100% - 14em) * ${fraction})`,
-                                transform: `rotate(${angle}deg)`,
                             }}
-                            key={index}
                         >
-                            <PowerCard {...card} key={index} />
+                            <ZoomableCard
+                                key={index}
+                                name={card.name}
+                                description={card.description}
+                                rarity={card.rarity}
+                                style={{
+                                    transform: `rotate(${angle}deg)`, // d'oh, this blats the scale transform!
+                                }}
+                            />
                         </div>
                     )
                 })}

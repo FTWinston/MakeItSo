@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
 import { makeStyles, Typography, Zoom, useTheme, Slide } from '@material-ui/core';
-import { PowerCard } from './PowerCard';
+import { cardHeight } from './PowerCard';
+import { ZoomableCard, shrinkScale } from './ZoomableCard';
 
 interface Props {
     cards: PowerCardInfo[];
@@ -16,24 +17,31 @@ const useStyles = makeStyles(theme => ({
         justifyContent: 'space-around',
         flexGrow: 1,
         position: 'relative',
+        marginTop: 2,
     },
     prompt: {
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          transform: 'rotate(-90deg)',
-          transformOrigin: 'left top 0',
-          color: theme.palette.text.hint,
-          fontSize: '2em',
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        transform: 'rotate(-90deg)',
+        transformOrigin: 'left top 0',
+        color: theme.palette.text.hint,
+        fontSize: '2em',
+        transition: 'opacity 0.5s linear',
+    },
+    fadePrompt: {
+        opacity: 0,
     },
     emptyPrompt: {
         textAlign: 'center',
     },
     cardWrapper: {
+        position: 'relative',
         display: 'flex',
         justifyContent: 'center',
-        position: 'relative',
-        transform: 'scale(0.8)',
+        '& + $cardWrapper': {
+            marginTop: -(1 - shrinkScale) * cardHeight * 0.75,
+        },
     },
 }));
 
@@ -79,7 +87,13 @@ export const CardChoice: React.FC<Props> = props => {
 
     const prompt = cards.length === 0
         ? <Typography className={classes.emptyPrompt}>No card choice available.<br/>Please wait...</Typography>
-        : <Typography className={classes.prompt}>Choose one:</Typography>
+        : (
+            <Typography 
+                className={props.cards.length === 0 ? `${classes.prompt} ${classes.fadePrompt}` : classes.prompt}
+            >
+                Choose one:
+            </Typography>
+        );
     
     return (
         <div className={classes.root}>
@@ -104,7 +118,7 @@ export const CardChoice: React.FC<Props> = props => {
                             className={classes.cardWrapper}
                             onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card); } }}
                         >
-                            <PowerCard
+                            <ZoomableCard
                                 name={card.name}
                                 description={card.description}
                                 rarity={card.rarity}

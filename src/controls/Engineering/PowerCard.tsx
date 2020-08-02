@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import { PowerCardInfo, CardRarity, getRarityName } from '../../data/PowerCard';
 import { makeStyles, Card, CardContent, Typography, CardHeader, Avatar } from '@material-ui/core';
 import { blue, purple, grey } from '@material-ui/core/colors';
@@ -6,13 +6,17 @@ import { fade } from '@material-ui/core/styles/colorManipulator';
 import UnknownIcon from '@material-ui/icons/HelpOutline';
 
 interface Props extends Omit<PowerCardInfo, 'id'> {
-
+    className?: string;
+    style?: CSSProperties;
 }
+
+export const cardWidth = 224;
+export const cardHeight = 160;
 
 const useStyles = makeStyles(theme => ({
     root: {
-        width: '14em',
-        height: '10em',
+        width: cardWidth,
+        height: cardHeight,
         transition: 'border-color 0.2s linear',
         backgroundColor: theme.palette.background.paper,
     },
@@ -90,8 +94,12 @@ export const PowerCard: React.FC<Props> = props => {
             break;
     }
 
+    if (props.className) {
+        rootClass = `${rootClass} ${props.className}`;
+    }
+
     return (
-        <Card className={rootClass} variant="outlined">
+        <Card className={rootClass} style={props.style} variant="outlined">
             <CardHeader
                 avatar={
                 <Avatar
