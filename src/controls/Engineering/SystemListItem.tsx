@@ -79,7 +79,7 @@ export const SystemListItem: React.FC<Props> = props => {
                     tabIndex={-1}
                     className={classes.powerLevel}
                 >
-                    <PowerIcon level={props.power} />
+                    <PowerIcon level={props.power} color={props.power === PowerLevel.Off ? 'error' : undefined} />
                 </IconButton>
             </ListItemSecondaryAction>
         </ListItem>
