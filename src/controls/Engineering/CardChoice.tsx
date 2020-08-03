@@ -43,7 +43,12 @@ const useStyles = makeStyles(theme => ({
             marginTop: -(1 - shrinkScale) * cardHeight * 0.75,
         },
     },
+    selectedCardWrapper: {
+        zIndex: 1,
+    }
 }));
+
+export const exitDuration = 1000;
 
 export const CardChoice: React.FC<Props> = props => {
     const classes = useStyles();
@@ -52,7 +57,7 @@ export const CardChoice: React.FC<Props> = props => {
 
     const transitionDuration = {
         enter: theme.transitions.duration.enteringScreen,
-        exit: 1000,
+        exit: exitDuration,
     };
 
     const [cards, setCards] = useState(props.cards);
@@ -98,35 +103,41 @@ export const CardChoice: React.FC<Props> = props => {
     return (
         <div className={classes.root}>
             {prompt}
-            {cards.map(card => (
-                <Zoom
-                    in={props.cards.indexOf(card) !== -1 || card === selected}
-                    timeout={transitionDuration}
-                    unmountOnExit
-                    key={card.id}
-                    appear={!firstRender}
-                >
-                    <Slide
-                        in={props.cards.indexOf(card) !== -1 || card !== selected}
+            {cards.map(card => {
+                const wrapperClasses = card === selected
+                    ? `${classes.cardWrapper} ${classes.selectedCardWrapper}`
+                    : classes.cardWrapper;
+
+                return (
+                    <Zoom
+                        in={props.cards.indexOf(card) !== -1 || card === selected}
                         timeout={transitionDuration}
-                        appear={false}
-                        direction="left"
                         unmountOnExit
                         key={card.id}
+                        appear={!firstRender}
                     >
-                        <div
-                            className={classes.cardWrapper}
-                            onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card); } }}
+                        <Slide
+                            in={props.cards.indexOf(card) !== -1 || card !== selected}
+                            timeout={transitionDuration}
+                            appear={false}
+                            direction="left"
+                            unmountOnExit
+                            key={card.id}
                         >
-                            <ZoomableCard
-                                name={card.name}
-                                description={card.description}
-                                rarity={card.rarity}
-                            />
-                        </div>
-                    </Slide>
-                </Zoom>
-            ))}
+                            <div
+                                className={wrapperClasses}
+                                onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card); } }}
+                            >
+                                <ZoomableCard
+                                    name={card.name}
+                                    description={card.description}
+                                    rarity={card.rarity}
+                                />
+                            </div>
+                        </Slide>
+                    </Zoom>
+                );
+            })}
         </div>
     )
 }

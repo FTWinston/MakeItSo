@@ -10,6 +10,7 @@ const useStyles = makeStyles(theme => ({
     main: (props: Props) => ({
         minHeight: '100vh',
         padding: props.padded ? '1em' : 0,
+        overflowX: 'hidden',
     }),
 }));
 

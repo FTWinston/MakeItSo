@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
-import { makeStyles, Typography } from '@material-ui/core';
+import { makeStyles, Typography, Slide } from '@material-ui/core';
 import { ZoomableCard, shrinkScale } from './ZoomableCard';
 import { cardWidth, cardHeight } from './PowerCard';
+import { exitDuration } from './CardChoice';
 
 interface Props {
     cards: PowerCardInfo[];
@@ -42,31 +43,58 @@ const useStyles = makeStyles(theme => ({
 export const CardHand: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const angleStep = 4;
-    let currentAngle = props.cards.length < 2 ? 0 : -((props.cards.length - 1) / 2) * angleStep;
     let fractionStep = props.cards.length < 2 ? 0 : 1 / (props.cards.length - 1);
     let currentFraction = 0;
+
+    const transitionDuration = {
+        enter: 500,
+        exit: 0,
+    };
+    
+    const [firstRender, setFirstRender] = useState(true);
+
+    useEffect(
+        () => {
+            setFirstRender(false);
+        },
+        []
+    );
+
+    const [prevCards, setPrevCards] = useState(props.cards);
+    const [addingCards, setAddingCards] = useState<PowerCardInfo[]>([]);
+    
+    useEffect(
+        () => {
+            setAddingCards(
+                props.cards
+                    .filter(card => prevCards.indexOf(card) === -1)
+            );
+            setPrevCards(props.cards);
+
+            const id = setTimeout(() => setAddingCards([]), transitionDuration.enter + exitDuration);
+
+            return () => clearTimeout(id);
+        },
+        [props.cards, transitionDuration.enter]
+    );
 
     const content = props.cards.length === 0
         ? <Typography className={classes.empty}>You have no cards.</Typography>
         : (
             <div className={classes.handWrapper}>
                 {props.cards.map((card, index) => {
-                    const angle = currentAngle;
-                    currentAngle += angleStep;
-
                     const fraction = currentFraction;
                     currentFraction += fractionStep;
-                    return (
+
+                    const animateEntrance = addingCards.indexOf(card) !== -1;
+
+                    const cardDisplay = (
                         <div
                             className={classes.cardWrapper}
+                            style={{ left: `calc((100% - ${cardWidth}px) * ${fraction})` }}
                             key={card.id}
-                            style={{
-                                left: `calc((100% - ${cardWidth}px) * ${fraction})`,
-                            }}
                         >
                             <ZoomableCard
-                                key={card.id}
                                 name={card.name}
                                 description={card.description}
                                 rarity={card.rarity}
@@ -75,6 +103,24 @@ export const CardHand: React.FC<Props> = props => {
                             />
                         </div>
                     )
+
+                    return animateEntrance ? (
+                            <Slide
+                                in={true}
+                                timeout={transitionDuration}
+                                appear={!firstRender}
+                                enter={true}
+                                exit={false}
+                                direction="left"
+                                key={card.id}
+                                style={{
+                                    transitionDelay: `${exitDuration}ms`,
+                                }}
+                            >
+                                    {cardDisplay}
+                            </Slide>
+                        )
+                        : cardDisplay;
                 })}
             </div>
         )
