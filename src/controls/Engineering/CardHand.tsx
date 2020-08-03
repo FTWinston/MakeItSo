@@ -1,8 +1,8 @@
 import React from 'react';
 import { PowerCardInfo } from '../../data/PowerCard';
 import { makeStyles, Typography } from '@material-ui/core';
-import { ZoomableCard } from './ZoomableCard';
-import { cardWidth } from './PowerCard';
+import { ZoomableCard, shrinkScale } from './ZoomableCard';
+import { cardWidth, cardHeight } from './PowerCard';
 
 interface Props {
     cards: PowerCardInfo[];
@@ -15,12 +15,10 @@ const useStyles = makeStyles(theme => ({
         marginTop: '1em',
         alignItems: 'stretch',
         justifyContent: 'stretch',
-        overflow: 'hidden',
     },
     handWrapper: {
         display: 'flex',
         flexGrow: 1,
-        overflow: 'visible',
         position: 'relative',
     },
     cardWrapper: {
@@ -32,6 +30,12 @@ const useStyles = makeStyles(theme => ({
     empty: {
         flexGrow: 1,
         textAlign: 'center',
+    },
+    card: {
+        transformOrigin: 'bottom',
+    },
+    zoomCard: {
+        bottom: cardHeight * shrinkScale * 0.92,
     }
 }));
 
@@ -66,6 +70,8 @@ export const CardHand: React.FC<Props> = props => {
                                 name={card.name}
                                 description={card.description}
                                 rarity={card.rarity}
+                                mainClassName={classes.card}
+                                zoomClassName={classes.zoomCard}
                             />
                         </div>
                     )

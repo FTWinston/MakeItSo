@@ -4,9 +4,8 @@ import { PowerCard } from './PowerCard';
 import { PowerCardInfo } from '../../data/PowerCard';
 
 interface Props extends Omit<PowerCardInfo, 'id'> {
-    className?: string;
+    mainClassName?: string;
     zoomClassName?: string;
-    style?: CSSProperties;
 }
 
 export const shrinkScale = 0.8;
@@ -19,6 +18,7 @@ const useStyles = makeStyles(theme => ({
     main: {
         transform: `scale(${shrinkScale})`,
         pointerEvents: 'initial',
+        borderWidth: 2,
 
         '&:hover': {
             opacity: 0,
@@ -42,14 +42,17 @@ export const ZoomableCard: React.FC<Props> = props => {
         ? `${classes.zoom} ${props.zoomClassName}`
         : classes.zoom;
 
+    const mainClasses = props.mainClassName
+        ? `${classes.main} ${props.mainClassName}`
+        : classes.main;
+
     return (
         <div className={classes.root}>
             <PowerCard
                 name={props.name}
-                className={classes.main}
+                className={mainClasses}
                 description={props.description}
                 rarity={props.rarity}
-                style={props.style}
             />
             <PowerCard
                 name={props.name}
