@@ -132,6 +132,7 @@ export const CardChoice: React.FC<Props> = props => {
                                     name={card.name}
                                     description={card.description}
                                     rarity={card.rarity}
+                                    forceZoom={selected ? card === selected : undefined}
                                 />
                             </div>
                         </Slide>

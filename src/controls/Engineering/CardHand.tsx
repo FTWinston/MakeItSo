@@ -13,7 +13,6 @@ const useStyles = makeStyles(theme => ({
     root: {
         display: 'flex',
         height: '11em',
-        marginTop: '1em',
         alignItems: 'stretch',
         justifyContent: 'stretch',
     },
