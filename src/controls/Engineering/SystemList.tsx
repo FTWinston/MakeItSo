@@ -18,8 +18,7 @@ export const SystemList: React.FC<Props> = props => {
                 <SystemListItem
                     system={system}
                     key={system}
-                    enabled={props.powerLevels.get(system) !== PowerLevel.Off}
-                    toggle={enabled => {}} /* do something */
+                    power={props.powerLevels.get(system) ?? PowerLevel.Off}
                     positiveEffects={props.positiveEffects.get(system) ?? 0}
                     negativeEffects={props.negativeEffects.get(system) ?? 0}
                 />

@@ -1,12 +1,13 @@
 import React from 'react';
-import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Switch, Badge } from '@material-ui/core';
+import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Switch, Badge, IconButton } from '@material-ui/core';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
+import { PowerIcon } from '../common/PowerIcon';
+import { PowerLevel } from '../../data/PowerLevel';
 
 interface Props {
     system: System;
-    enabled: boolean;
-    toggle: (enabled: boolean) => void;
+    power: PowerLevel;
     positiveEffects: number;
     negativeEffects: number;
 }
@@ -29,6 +30,9 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.error.contrastText,
         backgroundColor: theme.palette.success.main,
     },
+    powerLevel: {
+        pointerEvents: 'none',
+    }
 }));
 
 export const SystemListItem: React.FC<Props> = props => {
@@ -66,22 +70,17 @@ export const SystemListItem: React.FC<Props> = props => {
             </ListItemAvatar>
             <ListItemText
                 primary={getSystemName(props.system)}
-                secondary="Power level, effect cooldown?"
+                secondary="Effect cooldowns?"
             />
-            
             <ListItemSecondaryAction>
-                <Switch
+                <IconButton
                     edge="end"
-                    color="default"
-                    onChange={e => props.toggle(e.currentTarget.checked)}
-                    checked={props.enabled}
-                    classes={{
-                      switchBase: classes.switchBase,
-                      track: classes.track,
-                      checked: classes.checked,
-                    }}
-                    /*inputProps={{ 'aria-labelledby': 'switch-list-label-wifi' }}*/
-                />
+                    aria-label="power level"
+                    tabIndex={-1}
+                    className={classes.powerLevel}
+                >
+                    <PowerIcon level={props.power} />
+                </IconButton>
             </ListItemSecondaryAction>
         </ListItem>
     )
