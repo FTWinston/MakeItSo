@@ -28,7 +28,6 @@ const useStyles = makeStyles(theme => ({
         overflow: 'hidden',
         display: 'flex',
         flexDirection: 'column',
-        alignItems: 'stretch',
     },
     draftTab: {
         postion: 'relative',

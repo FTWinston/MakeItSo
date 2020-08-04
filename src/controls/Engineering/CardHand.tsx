@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
         transformOrigin: 'bottom',
     },
     zoomCard: {
-        bottom: cardHeight * shrinkScale * 0.92,
+        bottom: cardHeight * shrinkScale * 0.6,
     }
 }));
 

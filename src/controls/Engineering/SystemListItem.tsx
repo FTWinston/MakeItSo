@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Switch, Badge, IconButton } from '@material-ui/core';
+import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Badge } from '@material-ui/core';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
 import { PowerIcon } from '../common/PowerIcon';
@@ -72,15 +72,9 @@ export const SystemListItem: React.FC<Props> = props => {
                 primary={getSystemName(props.system)}
                 secondary="Effect cooldowns?"
             />
+
             <ListItemSecondaryAction>
-                <IconButton
-                    edge="end"
-                    aria-label="power level"
-                    tabIndex={-1}
-                    className={classes.powerLevel}
-                >
-                    <PowerIcon level={props.power} color={props.power === PowerLevel.Off ? 'error' : undefined} />
-                </IconButton>
+                <PowerIcon level={props.power} color={props.power === PowerLevel.Off ? 'error' : undefined} />
             </ListItemSecondaryAction>
         </ListItem>
     )
