@@ -100,8 +100,7 @@ export const Engineering: React.FC = () => {
                     <SystemList
                         powerLevels={gameState.powerLevels}
                         systemOrder={gameState.power.systemOrder}
-                        positiveEffects={gameState.power.positiveEffects}
-                        negativeEffects={gameState.power.negativeEffects}
+                        effects={gameState.power.effects}
                     />
                 </div>
                 

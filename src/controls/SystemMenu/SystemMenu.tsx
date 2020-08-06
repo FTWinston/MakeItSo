@@ -50,10 +50,10 @@ export const SystemMenu: React.FC<Props> = props => {
             key={system}
             system={system}
             selected={gameState.currentSystem === system}
-            disabled={gameState.paused || (gameState.currentSystem !== system && gameState.systemOccupancy.get(system) !== undefined)}
-            occupant={gameState.systemOccupancy.get(system)}
+            disabled={gameState.paused || (gameState.currentSystem !== system && gameState.systemOccupancy[system] !== undefined)}
+            occupant={gameState.systemOccupancy[system]}
             select={() => { gameState.update({ type: 'select system', system }); props.close(); }}
-            power={gameState.powerLevels.get(system) ?? PowerLevel.Off}
+            power={gameState.powerLevels[system]}
         />
     ));
 

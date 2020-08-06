@@ -1,4 +1,5 @@
 import { System } from './System';
+import { ShipState } from './ShipState';
 
 export enum CardRarity {
     Common,
@@ -7,15 +8,24 @@ export enum CardRarity {
     Epic,
 }
 
+export enum PowerCardType {
+    Card1,
+    Card2,
+    Card3,
+    Card4,
+}
+
 export interface PowerCardInfo {
     id: number;
+    type: PowerCardType;
     name: string;
     description: string;
     rarity: CardRarity;
+    allowedSystems?: System;
 }
 
 export interface PowerCardData extends PowerCardInfo {
-    play: (system: System) => void;
+    play: (ship: ShipState, system: System) => void;
 }
 
 export function getRarityName(rarity: CardRarity) {

@@ -32,7 +32,7 @@ export const ActionBar: React.FC<Props> = props => {
 
     const [showNav, setShowNav] = useState(false);
 
-    const powerLevel = gameState.powerLevels.get(gameState.currentSystem);
+    const powerLevel = gameState.powerLevels[gameState.currentSystem];
     
     return (
         <AppBar position="fixed" color="primary" className={classes.appBar}>

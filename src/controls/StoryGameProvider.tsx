@@ -1,115 +1,96 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useReducer, useMemo } from 'react';
 import { System, allSystems } from '../data/System';
-import { GameState, GameContext, GameAction } from './GameProvider';
-import { PowerLevel } from '../data/PowerLevel';
+import { GameContext } from './GameProvider';
 import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
-import { PowerCardInfo } from '../data/PowerCard';
+import { clientActionReducer } from '../data/ClientActionReducer';
+import { GameState } from '../data/GameState';
+import { PowerLevel } from '../data/PowerLevel';
+import { ClientGameState } from '../data/ClientGameState';
 
 interface Props {
     initialSystem: System;
 }
 
-export const StoryGameProvider: React.FC<Props> = props => {
-    const [paused, setPaused] = useState(false);
-    const [currentSystem, setCurrentSystem] = useState(props.initialSystem);
+const localShipId = 1;
+const localPlayerName = 'Local player';
 
-    const [powerHand, setPowerHand] = useState<PowerCardInfo[]>([
-        commonCard(),
-        commonCard(),
-        uncommonCard(),
-        rareCard(),
-        epicCard()
-    ]);
-
-    const [powerDraftChoices, setPowerDraftChoices] = useState<Array<PowerCardInfo[]>>([
-        [commonCard(), commonCard(), uncommonCard()],
-        [commonCard(), rareCard(), commonCard()],
-        [commonCard(), uncommonCard(), commonCard()],
-        [uncommonCard(), commonCard(), commonCard()],
-        [commonCard(), uncommonCard(), epicCard()],
-    ]);
-
-    const update = useCallback(
-        (action: GameAction) => {
-            switch (action.type) {
-                case 'pause':
-                    setPaused(true);
-                    break;
-                case 'resume':
-                    setPaused(false);
-                    break;
-                case 'end game':
-                    alert('game ended');
-                    break;
-                case 'select system':
-                    setCurrentSystem(action.system);
-                    break;
-                case 'power draft':
-                    if (powerDraftChoices.length > 0) {
-                        const chosen = powerDraftChoices[0].find(card => card.id === action.card);
-
-                        if (chosen) {
-                            setPowerHand(hand => [...hand, chosen]);
-                            setPowerDraftChoices(choices => {
-                                const newChoices = [...choices];
-                                newChoices.shift();
-                                return newChoices;
-                            });
-                        }
-                    }
-                    break;
-                case 'power play':
-
-                    break;
-            }
-        },
-        [powerDraftChoices]
-    );
-
-    const gameState: GameState = useMemo(
-        () => ({
-            update,
-            paused,
-            localPlayer: 'Your Name',
-            currentSystem,
-            systemOccupancy: new Map([
-                [currentSystem, 'Your name'],
-                [getNextSystem(currentSystem), 'Someone else'],
-            ]),
-            powerLevels: new Map([
-                [System.Helm, PowerLevel.High],
-                [System.FTL, PowerLevel.Low],
-                [System.Weapons, PowerLevel.Off],
-                [System.Sensors, PowerLevel.Full],
-                [System.Engineering, PowerLevel.Med],
-                [System.DamageControl, PowerLevel.High],
-            ]),
-            power: {
-                systemOrder: [
-                    System.Helm,
-                    System.FTL,
-                    System.Weapons,
-                    System.Sensors,
-                    System.Engineering,
-                    System.DamageControl,
-                ],
-                positiveEffects: new Map([
-                    [System.Helm, 1],
-                    [System.Weapons, 2]
-                ]),
-                negativeEffects: new Map([
-                    [System.DamageControl, 3],
-                    [System.Weapons, 1]
-                ]),
-                hand: powerHand,
-                draftChoices: powerDraftChoices,
+function createInitialState(currentSystem: System): GameState {
+    return {
+        ships: {
+            [localShipId]: {
+                systemOccupancy: {
+                    [currentSystem]: 'Your name',
+                    [getNextSystem(currentSystem)]: 'Someone else',
+                },
+                powerLevels: {
+                    [System.Helm]: PowerLevel.High,
+                    [System.FTL]: PowerLevel.Low,
+                    [System.Weapons]: PowerLevel.Off,
+                    [System.Sensors]: PowerLevel.Full,
+                    [System.Engineering]: PowerLevel.Med,
+                    [System.DamageControl]: PowerLevel.High,
+                },
+                power: {
+                    systemOrder: [
+                        System.Helm,
+                        System.FTL,
+                        System.Weapons,
+                        System.Sensors,
+                        System.Engineering,
+                        System.DamageControl,
+                    ],
+                    effects: {    
+                        [System.Helm]: [],
+                        [System.FTL]: [],
+                        [System.Weapons]: [],
+                        [System.Sensors]: [],
+                        [System.Engineering]: [],
+                        [System.DamageControl]: [],
+                    },
+                    hand: [
+                        commonCard(),
+                        commonCard(),
+                        uncommonCard(),
+                        rareCard(),
+                        epicCard()
+                    ],
+                    draftChoices: [
+                        [commonCard(), commonCard(), uncommonCard()],
+                        [commonCard(), rareCard(), commonCard()],
+                        [commonCard(), uncommonCard(), commonCard()],
+                        [uncommonCard(), commonCard(), commonCard()],
+                        [commonCard(), uncommonCard(), epicCard()],
+                    ],
+                },
             },
-        }),
-        [paused, currentSystem, powerHand, powerDraftChoices, update]
+        },
+        shipsByClient: { [localPlayerName]: localShipId },
+        paused: false,
+    };
+}
+
+export const StoryGameProvider: React.FC<Props> = props => {
+    const [gameState, dispatch] = useReducer(clientActionReducer, props.initialSystem, createInitialState);
+
+    const clientGameState: ClientGameState = useMemo(
+        () => {
+            const localShipId = gameState.shipsByClient[localPlayerName];
+            const systemOccupancy = gameState.ships[localShipId].systemOccupancy;
+            const currentSystem = Object.keys(systemOccupancy)
+                .find(system => systemOccupancy[system as unknown as System] === localPlayerName) as unknown as System | undefined;
+
+            return {
+                ...gameState,
+                localPlayer: localPlayerName,
+                localShip: localShipId,
+                currentSystem,
+            };
+        },
+        [gameState]
     );
 
     return (
-        <GameContext.Provider value={gameState}>
+        <GameContext.Provider value={[clientGameState, dispatch]}>
             {props.children}
         </GameContext.Provider>
     );

@@ -30,7 +30,7 @@ export const SystemHeader: React.FC<Props> = props => {
     
     const classes = useStyles();
 
-    const powerLevel = gameState.powerLevels.get(gameState.currentSystem);
+    const powerLevel = gameState.powerLevels[gameState.currentSystem];
     
     return (
         <AppBar position="static" color="primary">

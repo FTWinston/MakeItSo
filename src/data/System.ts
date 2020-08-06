@@ -1,5 +1,4 @@
 export enum System {
-    None = 0,
     Helm = 1,
     FTL = 2,
     Weapons = 4,

@@ -3,12 +3,12 @@ import { List } from '@material-ui/core';
 import { SystemListItem } from './SystemListItem';
 import { PowerLevel } from '../../data/PowerLevel';
 import { System } from '../../data/System';
+import { PowerEffectInfo } from '../../data/PowerEffect';
 
 interface Props {
     systemOrder: System[];
-    powerLevels: Map<System, PowerLevel>;
-    positiveEffects: Map<System, number>;
-    negativeEffects: Map<System, number>;
+    powerLevels: Record<System, PowerLevel>;
+    effects: Record<System, PowerEffectInfo[]>;
 }
 
 export const SystemList: React.FC<Props> = props => {
@@ -18,9 +18,8 @@ export const SystemList: React.FC<Props> = props => {
                 <SystemListItem
                     system={system}
                     key={system}
-                    power={props.powerLevels.get(system) ?? PowerLevel.Off}
-                    positiveEffects={props.positiveEffects.get(system) ?? 0}
-                    negativeEffects={props.negativeEffects.get(system) ?? 0}
+                    power={props.powerLevels[system]}
+                    effects={props.effects[system]}
                 />
             ))}
         </List>

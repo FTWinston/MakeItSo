@@ -1,15 +1,15 @@
 import React from 'react';
-import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Badge } from '@material-ui/core';
+import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, Badge, ListItemIcon } from '@material-ui/core';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
 import { PowerIcon } from '../common/PowerIcon';
 import { PowerLevel } from '../../data/PowerLevel';
+import { PowerEffectInfo } from '../../data/PowerEffect';
 
 interface Props {
     system: System;
     power: PowerLevel;
-    positiveEffects: number;
-    negativeEffects: number;
+    effects: PowerEffectInfo[];
 }
 
 const useStyles = makeStyles(theme => ({
@@ -26,12 +26,14 @@ const useStyles = makeStyles(theme => ({
     },
     checked: {},
     track: {},
-    positiveBadge: {
-        color: theme.palette.error.contrastText,
-        backgroundColor: theme.palette.success.main,
+    text: {
+        flexGrow: 0,
     },
-    powerLevel: {
-        pointerEvents: 'none',
+    effectsContainer: {
+        flexGrow: 1,
+        display: 'flex',
+        justifyContent: 'space-evenly',
+        margin: `0 ${theme.spacing(2)}px`,
     }
 }));
 
@@ -41,37 +43,27 @@ export const SystemListItem: React.FC<Props> = props => {
     return (
         <ListItem className={classes.item}>
             <ListItemAvatar>
-                <Badge
-                    color="error"
-                    badgeContent={props.negativeEffects}
-                    overlap="circle"                  
-                    anchorOrigin={{
-                        vertical: 'bottom',
-                        horizontal: 'left',
-                    }}
-                >
-                    <Badge
-                        classes={{
-                            badge: classes.positiveBadge
-                        }}
-                        color="primary"
-                        badgeContent={props.positiveEffects}
-                        overlap="circle"                  
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'left',
-                        }}
-                    >
-                        <Avatar>
-                            <SystemIcon color="action" system={props.system} />
-                        </Avatar>
-                    </Badge>
-                </Badge>
+                <Avatar>
+                    <SystemIcon color="action" system={props.system} />
+                </Avatar>
             </ListItemAvatar>
             <ListItemText
                 primary={getSystemName(props.system)}
-                secondary="Effect cooldowns?"
+                secondary="No effects"
+                className={classes.text}
             />
+
+            <div className={classes.effectsContainer}>
+                {/*
+                <ListItemIcon>
+                    <PowerIcon level={props.power} />
+                </ListItemIcon>
+
+                <ListItemIcon>
+                    <PowerIcon level={props.power} />
+                </ListItemIcon>
+                */}
+            </div>
 
             <ListItemSecondaryAction>
                 <PowerIcon level={props.power} color={props.power === PowerLevel.Off ? 'error' : undefined} />

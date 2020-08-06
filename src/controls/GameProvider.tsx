@@ -1,47 +1,8 @@
 import React from 'react';
-import { System } from '../data/System';
-import { PowerLevel } from '../data/PowerLevel';
-import { PowerCardInfo } from '../data/PowerCard';
+import { ClientGameState } from '../data/ClientGameState';
+import { ClientAction } from '../data/ClientAction';
 
-export interface GameState {
-    update: (action: GameAction) => void;
-
-    localPlayer: string;
-    currentSystem: System;
-
-    systemOccupancy: Map<System, string>;
-    powerLevels: Map<System, PowerLevel>;
-
-    power: {
-        systemOrder: System[];
-        positiveEffects: Map<System, number>;
-        negativeEffects: Map<System, number>;
-        hand: PowerCardInfo[];
-        draftChoices: Array<PowerCardInfo[]>;
-    };
-
-    paused: boolean;
-}
-
-export type GameAction = {
-    type: 'pause';
-} | {
-    type: 'resume';
-} | {
-    type: 'end game';
-} | {
-    type: 'select system';
-    system: System;
-} | {
-    type: 'power draft';
-    card: number;
-} | {
-    type: 'power play';
-    card: number;
-    systemIndex: number;
-}
-
-export const GameContext = React.createContext<GameState>(undefined!);
+export const GameContext = React.createContext<[ClientGameState, (action: ClientAction) => void]>(undefined!);
 
 export const GameProvider: React.FC = props => {
     // TODO: populate this component, which should be hooked up to ... something
