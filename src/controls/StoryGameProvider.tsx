@@ -2,7 +2,7 @@ import React, { useReducer, useMemo } from 'react';
 import { System, allSystems } from '../data/System';
 import { GameContext } from './GameProvider';
 import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
-import { clientActionReducer } from '../data/clientActionReducer';
+import { clientActionReducer } from '../logic/clientActionReducer';
 import { GameState } from '../data/GameState';
 import { PowerLevel } from '../data/PowerLevel';
 import { ClientGameState } from '../data/ClientGameState';
