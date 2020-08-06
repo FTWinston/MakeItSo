@@ -4,7 +4,7 @@ import { PowerCardInfo } from './PowerCard';
 import { PowerEffectInfo } from './PowerEffect';
 
 export interface ClientShipState {
-    systemOccupancy: Partial<Record<System, string>>;
+    clientsBySystem: Partial<Record<System, string>>;
     powerLevels: Record<System, PowerLevel>;
 
     power: {

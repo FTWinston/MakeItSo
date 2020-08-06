@@ -16,7 +16,7 @@ export const allSystems = [
     System.DamageControl,
 ];
 
-export function getSystemName(system: System) {
+export function getSystemName(system?: System) {
     switch (system) {
         case System.Helm:
             return 'Helm';

@@ -22,7 +22,8 @@ const useStyles = makeStyles({
 });
 
 export const SystemMenu: React.FC<Props> = props => {
-    const gameState = useContext(GameContext);
+    const [gameState, dispatch] = useContext(GameContext);
+    const localShip = gameState.localShip;
     
     const classes = useStyles();
     
@@ -30,14 +31,14 @@ export const SystemMenu: React.FC<Props> = props => {
 
     const pauseOrResume = gameState.paused
         ? (
-            <ListItem button onClick={() => { gameState.update({ type: 'resume'}); props.close(); }} selected>
+            <ListItem button onClick={() => { dispatch({ type: 'resume'}); props.close(); }} selected>
                 <ListItemIcon>
                     <ResumeIcon />
                 </ListItemIcon>
                 <ListItemText primary="Resume game" />
             </ListItem>
         ) : (
-            <ListItem button onClick={() => gameState.update({ type: 'pause'})}>
+            <ListItem button onClick={() => dispatch({ type: 'pause'})}>
                 <ListItemIcon>
                     <PauseIcon />
                 </ListItemIcon>
@@ -45,17 +46,20 @@ export const SystemMenu: React.FC<Props> = props => {
             </ListItem>
         );
 
-    const systems = allSystems.map(system => (
-        <SystemMenuItem
-            key={system}
-            system={system}
-            selected={gameState.currentSystem === system}
-            disabled={gameState.paused || (gameState.currentSystem !== system && gameState.systemOccupancy[system] !== undefined)}
-            occupant={gameState.systemOccupancy[system]}
-            select={() => { gameState.update({ type: 'select system', system }); props.close(); }}
-            power={gameState.powerLevels[system]}
-        />
-    ));
+    const systems = allSystems.map(system => {
+        const occupant = localShip.clientsBySystem[system];
+        return (
+            <SystemMenuItem
+                key={system}
+                system={system}
+                selected={gameState.currentSystem === system}
+                disabled={gameState.paused || (gameState.currentSystem !== system && occupant !== undefined)}
+                occupant={occupant}
+                select={() => { dispatch({ type: 'select system', system }); props.close(); }}
+                power={localShip.powerLevels[system]}
+            />
+        )
+    });
 
     return (
         <Drawer
@@ -98,7 +102,7 @@ export const SystemMenu: React.FC<Props> = props => {
                 prompt="This will affect your whole crew, not just yourself."
                 isOpen={quitConfirm}
                 close={() => showQuitConfirm(false)}
-                confirm={() => gameState.update({ type: 'end game'})}
+                confirm={() => dispatch({ type: 'end game'})}
             />
         </Drawer>
     )

@@ -129,6 +129,7 @@ export const CardChoice: React.FC<Props> = props => {
                                 onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card); } }}
                             >
                                 <ZoomableCard
+                                    type={card.type}
                                     name={card.name}
                                     description={card.description}
                                     rarity={card.rarity}

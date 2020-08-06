@@ -93,12 +93,14 @@ export const ZoomableCard: React.FC<Props> = props => {
     return (
         <div className={classes.root}>
             <PowerCard
+                type={props.type}
                 name={props.name}
                 className={mainClasses}
                 description={props.description}
                 rarity={props.rarity}
             />
             <PowerCard
+                type={props.type}
                 name={props.name}
                 className={zoomClasses}
                 description={props.description}

@@ -26,11 +26,13 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const SystemHeader: React.FC<Props> = props => {
-    const gameState = useContext(GameContext);
+    const [gameState] = useContext(GameContext);
     
     const classes = useStyles();
 
-    const powerLevel = gameState.powerLevels[gameState.currentSystem];
+    const powerLevel = gameState.currentSystem === undefined
+        ? PowerLevel.Off
+        : gameState.localShip.powerLevels[gameState.currentSystem];
     
     return (
         <AppBar position="static" color="primary">

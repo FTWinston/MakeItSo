@@ -42,7 +42,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const Engineering: React.FC = () => {
-    const gameState = useContext(GameContext);
+    const [gameState, dispatch] = useContext(GameContext);
+    const localShip = gameState.localShip;
 
     const classes = useStyles();
     
@@ -64,7 +65,7 @@ export const Engineering: React.FC = () => {
                 className={classes.draftTab}
                 label={
                     <Badge
-                        badgeContent={gameState.power.draftChoices.length}
+                        badgeContent={localShip.power.draftChoices.length}
                         color="secondary"
                         classes={{
                             root: classes.draftBadgeRoot,
@@ -98,9 +99,9 @@ export const Engineering: React.FC = () => {
                     className={classes.tabContent}
                 >
                     <SystemList
-                        powerLevels={gameState.powerLevels}
-                        systemOrder={gameState.power.systemOrder}
-                        effects={gameState.power.effects}
+                        powerLevels={localShip.powerLevels}
+                        systemOrder={localShip.power.systemOrder}
+                        effects={localShip.power.effects}
                     />
                 </div>
                 
@@ -112,8 +113,8 @@ export const Engineering: React.FC = () => {
                     className={classes.tabContent}
                 >
                     <CardChoice
-                        cards={gameState.power.draftChoices[0] ?? []}
-                        choose={card => gameState.update({
+                        cards={gameState.localShip.power.draftChoices[0] ?? []}
+                        choose={card => dispatch({
                             type: 'power draft',
                             card: card.id,
                         })}
@@ -122,7 +123,7 @@ export const Engineering: React.FC = () => {
             </SwipeableViews>
                 
             <CardHand
-                cards={gameState.power.hand}
+                cards={gameState.localShip.power.hand}
             />
         </ShipSystem>
     )

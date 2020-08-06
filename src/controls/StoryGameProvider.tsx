@@ -2,26 +2,35 @@ import React, { useReducer, useMemo } from 'react';
 import { System, allSystems } from '../data/System';
 import { GameContext } from './GameProvider';
 import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
-import { clientActionReducer } from '../data/ClientActionReducer';
+import { clientActionReducer } from '../data/clientActionReducer';
 import { GameState } from '../data/GameState';
 import { PowerLevel } from '../data/PowerLevel';
 import { ClientGameState } from '../data/ClientGameState';
+import { ClientAction } from '../data/ClientAction';
 
 interface Props {
     initialSystem: System;
 }
 
 const localShipId = 1;
-const localPlayerName = 'Local player';
+const localClientName = 'Local player';
 
-function createInitialState(currentSystem: System): GameState {
+const localClientReducer = (state: GameState, action: ClientAction) => clientActionReducer(state, action, localClientName);
+
+function createInitialState(currentSystem?: System): GameState {
+    const clientsBySystem: Partial<Record<System, string>> = {};
+    const systemsByClient: Partial<Record<string, System>> = {};
+
+    if (currentSystem !== undefined) {
+        clientsBySystem[currentSystem] = localClientName;
+        systemsByClient[localClientName] = currentSystem;
+    }
+
     return {
         ships: {
             [localShipId]: {
-                systemOccupancy: {
-                    [currentSystem]: 'Your name',
-                    [getNextSystem(currentSystem)]: 'Someone else',
-                },
+                clientsBySystem,
+                systemsByClient,
                 powerLevels: {
                     [System.Helm]: PowerLevel.High,
                     [System.FTL]: PowerLevel.Low,
@@ -64,26 +73,24 @@ function createInitialState(currentSystem: System): GameState {
                 },
             },
         },
-        shipsByClient: { [localPlayerName]: localShipId },
+        shipsByClient: { [localClientName]: localShipId },
         paused: false,
     };
 }
 
 export const StoryGameProvider: React.FC<Props> = props => {
-    const [gameState, dispatch] = useReducer(clientActionReducer, props.initialSystem, createInitialState);
+    const [gameState, dispatch] = useReducer(localClientReducer, props.initialSystem, createInitialState);
 
     const clientGameState: ClientGameState = useMemo(
         () => {
-            const localShipId = gameState.shipsByClient[localPlayerName];
-            const systemOccupancy = gameState.ships[localShipId].systemOccupancy;
-            const currentSystem = Object.keys(systemOccupancy)
-                .find(system => systemOccupancy[system as unknown as System] === localPlayerName) as unknown as System | undefined;
+            const localShipId = gameState.shipsByClient[localClientName];
+            const localShip = gameState.ships[localShipId];
 
             return {
                 ...gameState,
-                localPlayer: localPlayerName,
-                localShip: localShipId,
-                currentSystem,
+                localPlayer: localClientName,
+                localShip: localShip,
+                currentSystem: localShip.systemsByClient[localClientName],
             };
         },
         [gameState]
@@ -96,7 +103,12 @@ export const StoryGameProvider: React.FC<Props> = props => {
     );
 };
 
-function getNextSystem(system: System) {
+function getNextSystem(system?: System) {
+    if (system === undefined)
+    {
+        return allSystems[0];
+    }
+
     let index = allSystems.indexOf(system) + 1;
 
     if (index >= allSystems.length) {

@@ -94,6 +94,7 @@ export const CardHand: React.FC<Props> = props => {
                             key={card.id}
                         >
                             <ZoomableCard
+                                type={card.type}
                                 name={card.name}
                                 description={card.description}
                                 rarity={card.rarity}
