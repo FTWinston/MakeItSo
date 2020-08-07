@@ -1,12 +1,14 @@
-import React, { useReducer, useMemo } from 'react';
+import React, { useReducer, useMemo, useState } from 'react';
+import { multiFilter } from 'filter-mirror';
 import { System, allSystems } from '../data/System';
 import { GameContext } from './GameProvider';
-import { commonCard, uncommonCard, rareCard, epicCard } from './Engineering/PowerCard.examples';
-import { clientActionReducer } from '../logic/clientActionReducer';
+import { clientActionExecutor } from '../logic/clientActionExecutor';
 import { GameState } from '../data/GameState';
 import { PowerLevel } from '../data/PowerLevel';
-import { ClientGameState } from '../data/ClientGameState';
+import { ClientGameState, EnhancedClientGameState, enhanceState } from '../data/ClientGameState';
 import { ClientAction } from '../data/ClientAction';
+import { createCard } from '../data/PowerCards';
+import { mapClientState } from '../logic/mapClientState';
 
 interface Props {
     initialSystem: System;
@@ -14,8 +16,6 @@ interface Props {
 
 const localShipId = 1;
 const localClientName = 'Local player';
-
-const localClientReducer = (state: GameState, action: ClientAction) => clientActionReducer(state, action, localClientName);
 
 function createInitialState(currentSystem?: System): GameState {
     const clientsBySystem: Partial<Record<System, string>> = {};
@@ -25,6 +25,8 @@ function createInitialState(currentSystem?: System): GameState {
         clientsBySystem[currentSystem] = localClientName;
         systemsByClient[localClientName] = currentSystem;
     }
+
+    let nextCardId = 1;
 
     return {
         ships: {
@@ -57,19 +59,18 @@ function createInitialState(currentSystem?: System): GameState {
                         [System.DamageControl]: [],
                     },
                     hand: [
-                        commonCard(),
-                        commonCard(),
-                        uncommonCard(),
-                        rareCard(),
-                        epicCard()
+                        createCard(nextCardId++),
+                        createCard(nextCardId++),
+                        createCard(nextCardId++),
+                        createCard(nextCardId++),
                     ],
                     draftChoices: [
-                        [commonCard(), commonCard(), uncommonCard()],
-                        [commonCard(), rareCard(), commonCard()],
-                        [commonCard(), uncommonCard(), commonCard()],
-                        [uncommonCard(), commonCard(), commonCard()],
-                        [commonCard(), uncommonCard(), epicCard()],
+                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
+                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
+                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
+                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
                     ],
+                    nextCardId,
                 },
             },
         },
@@ -78,26 +79,31 @@ function createInitialState(currentSystem?: System): GameState {
     };
 }
 
+
+
 export const StoryGameProvider: React.FC<Props> = props => {
-    const [gameState, dispatch] = useReducer(localClientReducer, props.initialSystem, createInitialState);
+    const [[gameState, clientGameState]] = useState<[GameState, ClientGameState]>(() => {
+        const rawState = createInitialState(props.initialSystem);
 
-    const clientGameState: ClientGameState = useMemo(
-        () => {
-            const localShipId = gameState.shipsByClient[localClientName];
-            const localShip = gameState.ships[localShipId];
+        const {
+            proxy,
+            createMirror,
+        } = multiFilter<GameState, ClientGameState, string>(rawState, mapClientState);
 
-            return {
-                ...gameState,
-                localPlayer: localClientName,
-                localShip: localShip,
-                currentSystem: localShip.systemsByClient[localClientName],
-            };
-        },
-        [gameState]
-    );
+        const clientMirror = createMirror(localClientName);
+
+        return [proxy, clientMirror];
+    })
+
+    const [enhancedClientState, setEnhancedClientState] = useState<EnhancedClientGameState>(() => enhanceState(clientGameState));
+
+    const actionExecutor = (action: ClientAction) => {
+        clientActionExecutor(gameState, action, localClientName);
+        setEnhancedClientState(enhanceState(clientGameState));
+    };
 
     return (
-        <GameContext.Provider value={[clientGameState, dispatch]}>
+        <GameContext.Provider value={[enhancedClientState, actionExecutor]}>
             {props.children}
         </GameContext.Provider>
     );

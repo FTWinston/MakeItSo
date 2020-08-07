@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
+    "filter-mirror": "git+https://github.com/FTWinston/filter-mirror.git",
     "peer-server": "^1.1.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",

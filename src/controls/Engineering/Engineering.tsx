@@ -43,7 +43,6 @@ const useStyles = makeStyles(theme => ({
 
 export const Engineering: React.FC = () => {
     const [gameState, dispatch] = useContext(GameContext);
-    const localShip = gameState.localShip;
 
     const classes = useStyles();
     
@@ -65,7 +64,7 @@ export const Engineering: React.FC = () => {
                 className={classes.draftTab}
                 label={
                     <Badge
-                        badgeContent={localShip.power.draftChoices.length}
+                        badgeContent={gameState.localShip.power.draftChoices.length}
                         color="secondary"
                         classes={{
                             root: classes.draftBadgeRoot,
@@ -99,9 +98,9 @@ export const Engineering: React.FC = () => {
                     className={classes.tabContent}
                 >
                     <SystemList
-                        powerLevels={localShip.powerLevels}
-                        systemOrder={localShip.power.systemOrder}
-                        effects={localShip.power.effects}
+                        powerLevels={gameState.localShip.powerLevels}
+                        systemOrder={gameState.localShip.power.systemOrder}
+                        effects={gameState.localShip.power.effects}
                     />
                 </div>
                 

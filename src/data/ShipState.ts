@@ -13,5 +13,6 @@ export interface ShipState {
         effects: Record<System, PowerEffectData[]>;
         hand: PowerCardData[];
         draftChoices: Array<PowerCardData[]>;
+        nextCardId: number;
     };
 }
