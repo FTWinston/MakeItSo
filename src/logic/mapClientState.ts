@@ -28,7 +28,7 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         }
                     },
                     draftChoices: {
-                        [anyOtherFields]: {
+                        [0]: {
                             [anyOtherFields]: {
                                 type: true,
                                 id: true,
@@ -37,8 +37,9 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                                 rarity: true,
                                 allowedSystems: true,
                             }
-                        }
-                    }, // be nice just to send the first choice and length, actually
+                        },
+                        [anyOtherFields]: {}
+                    },
                     systemOrder: true,
                     effects: {
                         [anyOtherFields]: true,
