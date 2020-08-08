@@ -8,7 +8,6 @@ import { allSystems } from '../../data/System';
 import { ConfirmDialog } from '../common/ConfirmDialog';
 import { GameContext } from '../GameProvider';
 import { SystemMenuItem } from './SystemMenuItem';
-import { PowerLevel } from '../../data/PowerLevel';
 
 interface Props {
     isOpen: boolean;

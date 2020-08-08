@@ -17,8 +17,28 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                 },
                 power: {
                     // [shouldMap]: power => power.client === client,
-                    hand: true,
-                    draftChoices: true, // be nice just to send the first choice and length, actually
+                    hand: {
+                        [anyOtherFields]: {
+                            type: true,
+                            id: true,
+                            name: true,
+                            description: true,
+                            rarity: true,
+                            allowedSystems: true,
+                        }
+                    },
+                    draftChoices: {
+                        [anyOtherFields]: {
+                            [anyOtherFields]: {
+                                type: true,
+                                id: true,
+                                name: true,
+                                description: true,
+                                rarity: true,
+                                allowedSystems: true,
+                            }
+                        }
+                    }, // be nice just to send the first choice and length, actually
                     systemOrder: true,
                     effects: {
                         [anyOtherFields]: true,

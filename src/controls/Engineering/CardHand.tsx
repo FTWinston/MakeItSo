@@ -61,7 +61,7 @@ export const CardHand: React.FC<Props> = props => {
 
     const [prevCards, setPrevCards] = useState(props.cards);
     const [addingCards, setAddingCards] = useState<PowerCardInfo[]>([]);
-    
+
     useEffect(
         () => {
             setAddingCards(
@@ -74,7 +74,7 @@ export const CardHand: React.FC<Props> = props => {
 
             return () => clearTimeout(id);
         },
-        [props.cards, transitionDuration.enter]
+        [props.cards, transitionDuration.enter] // eslint-disable-line react-hooks/exhaustive-deps
     );
 
     const content = props.cards.length === 0
@@ -86,6 +86,7 @@ export const CardHand: React.FC<Props> = props => {
                     currentFraction += fractionStep;
 
                     const animateEntrance = addingCards.indexOf(card) !== -1;
+                    //const animateEntrance = addingCards.findIndex(test => test.id === card.id) !== -1;
 
                     const cardDisplay = (
                         <div

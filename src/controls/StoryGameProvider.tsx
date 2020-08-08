@@ -1,6 +1,7 @@
-import React, { useReducer, useMemo, useState } from 'react';
+import React, { useState, Dispatch, useMemo } from 'react';
 import { multiFilter } from 'filter-mirror';
-import { System, allSystems } from '../data/System';
+import { apply_patch } from 'jsonpatch';
+import { System } from '../data/System';
 import { GameContext } from './GameProvider';
 import { clientActionExecutor } from '../logic/clientActionExecutor';
 import { GameState } from '../data/GameState';
@@ -79,47 +80,44 @@ function createInitialState(currentSystem?: System): GameState {
     };
 }
 
+function useGameStateReducer(initialSystem?: System): [EnhancedClientGameState, Dispatch<ClientAction>] {
+    const [clientState, setClientState] = useState<EnhancedClientGameState>(undefined!);
 
+    const gameState = useMemo(
+        () => {
+            const rawState = createInitialState(initialSystem);
 
-export const StoryGameProvider: React.FC<Props> = props => {
-    const [[gameState, clientGameState]] = useState<[GameState, ClientGameState]>(() => {
-        const rawState = createInitialState(props.initialSystem);
+            const {
+                proxy: gameStateProxy,
+                createMirror,
+            } = multiFilter<GameState, ClientGameState, string>(rawState, mapClientState);
 
-        const {
-            proxy,
-            createMirror,
-        } = multiFilter<GameState, ClientGameState, string>(rawState, mapClientState);
+            const clientMirror = createMirror(localClientName, patch => {
+                console.log('patch', patch);
+                setClientState(clientState => enhanceState(apply_patch(clientState, [patch])));
+            });
 
-        const clientMirror = createMirror(localClientName);
+            setClientState(enhanceState(JSON.parse(JSON.stringify(clientMirror))));
 
-        return [proxy, clientMirror];
-    })
-
-    const [enhancedClientState, setEnhancedClientState] = useState<EnhancedClientGameState>(() => enhanceState(clientGameState));
+            return gameStateProxy;
+        },
+        [initialSystem]
+    );
 
     const actionExecutor = (action: ClientAction) => {
         clientActionExecutor(gameState, action, localClientName);
-        setEnhancedClientState(enhanceState(clientGameState));
+        setClientState(clientState => enhanceState(clientState));
     };
 
+    return [clientState, actionExecutor];
+}
+
+export const StoryGameProvider: React.FC<Props> = props => {
+    const [clientGameState, actionExecutor] = useGameStateReducer(props.initialSystem);
+
     return (
-        <GameContext.Provider value={[enhancedClientState, actionExecutor]}>
+        <GameContext.Provider value={[clientGameState, actionExecutor]}>
             {props.children}
         </GameContext.Provider>
     );
 };
-
-function getNextSystem(system?: System) {
-    if (system === undefined)
-    {
-        return allSystems[0];
-    }
-
-    let index = allSystems.indexOf(system) + 1;
-
-    if (index >= allSystems.length) {
-        index = 0;
-    }
-
-    return allSystems[index];
-}

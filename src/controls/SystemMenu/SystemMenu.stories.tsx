@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { action } from '@storybook/addon-actions';
 import { Theme } from '../../style/theme';
 import { SystemMenu } from './SystemMenu';
 import { StoryGameProvider } from '../StoryGameProvider';
