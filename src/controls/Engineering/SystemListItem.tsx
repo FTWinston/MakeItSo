@@ -1,5 +1,6 @@
 import React from 'react';
 import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction } from '@material-ui/core';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
 import { PowerIcon } from '../common/PowerIcon';
@@ -10,22 +11,27 @@ interface Props {
     system: System;
     power: PowerLevel;
     effects: PowerEffectInfo[];
+    validDropTarget?: boolean;
 }
 
 const useStyles = makeStyles(theme => ({
     item: {
         paddingBottom: 0,
     },
-    switchBase: {
-        '&:not($checked)': {
-            color: theme.palette.error.dark,
-        },
-        '&:not($checked) + $track': {
-            backgroundColor: theme.palette.error.main,
-        },
+    itemValidDrop: {
+        paddingBottom: 0,
+        backgroundColor: fade(theme.palette.success.dark, 0.5),
+        '&:hover': {
+            backgroundColor: theme.palette.success.dark,
+        }
     },
-    checked: {},
-    track: {},
+    itemInvalidDrop: {
+        paddingBottom: 0,
+        opacity: 0.5,
+        '&:hover': {
+            backgroundColor: theme.palette.error.dark,
+        }
+    },
     text: {
         flexGrow: 0,
     },
@@ -40,8 +46,14 @@ const useStyles = makeStyles(theme => ({
 export const SystemListItem: React.FC<Props> = props => {
     const classes = useStyles();
 
+    const itemClass = props.validDropTarget === undefined
+        ? classes.item
+        : props.validDropTarget
+            ? classes.itemValidDrop
+            : classes.itemInvalidDrop;
+
     return (
-        <ListItem className={classes.item}>
+        <ListItem className={itemClass} data-system={props.system}>
             <ListItemAvatar>
                 <Avatar>
                     <SystemIcon color="action" system={props.system} />

@@ -15,5 +15,5 @@ export type ClientAction = {
 } | {
     type: 'power play';
     card: number;
-    systemIndex: number;
+    system: System;
 }

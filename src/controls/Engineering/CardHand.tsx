@@ -7,7 +7,8 @@ import { exitDuration } from './CardChoice';
 
 interface Props {
     cards: PowerCardInfo[];
-    draggable: boolean;
+    dragStart?: (card: PowerCardInfo) => void;
+    dragEnd?: (card: PowerCardInfo, x: number, y: number) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -78,6 +79,8 @@ export const CardHand: React.FC<Props> = props => {
         [props.cards, transitionDuration.enter] // eslint-disable-line react-hooks/exhaustive-deps
     );
 
+    const { dragStart, dragEnd } = props;
+
     const content = props.cards.length === 0
         ? <Typography className={classes.empty}>You have no cards.</Typography>
         : (
@@ -101,7 +104,8 @@ export const CardHand: React.FC<Props> = props => {
                                 rarity={card.rarity}
                                 mainClassName={classes.card}
                                 zoomClassName={classes.zoomCard}
-                                draggable={props.draggable}
+                                dragStart={() => dragStart(card)}
+                                dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
                             />
                         </div>
                     )

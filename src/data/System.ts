@@ -7,6 +7,13 @@ export enum System {
     DamageControl = 32,
 }
 
+export const anyEngineeringSystem = System.Helm
+    | System.FTL
+    | System.Weapons
+    | System.Sensors
+    | System.Engineering
+    | System.DamageControl;
+
 export const allSystems = [
     System.Helm,
     System.FTL,

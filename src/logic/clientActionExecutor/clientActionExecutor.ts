@@ -23,6 +23,10 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             draftCard(state, client, action.card);
             break;
 
+        case 'power play':
+            console.log(`played card #${action.card} on system ${action.system}`);
+            break;
+            
         default:
             return 1 as never;
     }

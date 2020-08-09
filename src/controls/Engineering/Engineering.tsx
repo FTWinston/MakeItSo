@@ -6,6 +6,8 @@ import { GameContext } from '../GameProvider';
 import { SystemList } from './SystemList';
 import { CardHand } from './CardHand';
 import { CardChoice } from './CardChoice';
+import { PowerCardInfo } from '../../data/PowerCard';
+import { System } from '../../data/System';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -46,12 +48,14 @@ export const Engineering: React.FC = () => {
 
     const classes = useStyles();
     
+    const [draggingCard, setDragging] = useState<PowerCardInfo>();
+    
     const [tabIndex, setTabIndex] = useState(0);
 
     const tabs = (
         <Tabs
             value={tabIndex}
-            onChange={(e, newVal) => setTabIndex(newVal)}
+            onChange={(_e, newVal) => setTabIndex(newVal)}
             variant="fullWidth"
         >
             <Tab
@@ -81,6 +85,34 @@ export const Engineering: React.FC = () => {
         </Tabs>
     );
 
+    const tryPlayCard = (card: PowerCardInfo, x: number, y: number) => {
+        setDragging(undefined);
+        
+        const elements: Element[] = document.elementsFromPoint
+            ? document.elementsFromPoint(x, y)
+            : (document as any).msElementsFromPoint(x, y);
+
+        for (let i=0; i<elements.length; i++) {
+            const element = elements[i];
+            const attrVal = element.getAttribute('data-system');
+            if (attrVal === null) {
+                continue;
+            }
+
+            const system = parseInt(attrVal) as System;
+
+            if (card.allowedSystems === undefined || (card.allowedSystems & system) !== 0) {
+                dispatch({
+                    type: 'power play',
+                    card: card.id,
+                    system,
+                });
+            }
+            
+            break;
+        }
+    }
+
     return (
         <ShipSystem className={classes.root} appBarContent={tabs}>
             <SwipeableViews
@@ -101,6 +133,7 @@ export const Engineering: React.FC = () => {
                         powerLevels={gameState.localShip.powerLevels}
                         systemOrder={gameState.localShip.power.systemOrder}
                         effects={gameState.localShip.power.effects}
+                        draggingCard={draggingCard}
                     />
                 </div>
                 
@@ -123,7 +156,8 @@ export const Engineering: React.FC = () => {
                 
             <CardHand
                 cards={gameState.localShip.power.hand}
-                draggable={tabIndex === 0}
+                dragStart={tabIndex === 0 ? setDragging : undefined}
+                dragEnd={tabIndex === 0 ? tryPlayCard : undefined}
             />
         </ShipSystem>
     )

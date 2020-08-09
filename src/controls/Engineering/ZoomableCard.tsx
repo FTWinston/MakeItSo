@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { useSpring, animated } from 'react-spring'
-import { useDrag } from 'react-use-gesture'
+import { useGesture } from 'react-use-gesture'
 import { PowerCard } from './PowerCard';
 import { PowerCardInfo } from '../../data/PowerCard';
 
@@ -9,7 +9,8 @@ interface Props extends Omit<PowerCardInfo, 'id'> {
     mainClassName?: string;
     zoomClassName?: string;
     forceZoom?: boolean;
-    draggable?: boolean;
+    dragStart?: () => void;
+    dragEnd?: (x: number, y: number) => void;
 }
 
 export const shrinkScale = 0.8;
@@ -51,6 +52,10 @@ const useStyles = makeStyles(theme => ({
         pointerEvents: 'initial',
         borderWidth: 2,
     },
+    forceOutMainDragging: {
+        transform: `scale(${shrinkScale})`,
+        borderWidth: 2,
+    },
     forceOutZoom: {
         display: 'none',
     }
@@ -78,15 +83,30 @@ export const ZoomableCard: React.FC<Props> = props => {
     const classes = useStyles();
 
     const [{ dragX, dragY }, setDragPos] = useSpring(() => ({ dragX: 0, dragY: 0 }))
-    const [mouseDown, setMouseDown] = useState(false);
+    const [dragging, setDragging] = useState(false);
 
     // Set the drag hook and define component movement based on gesture data
-    const bind = useDrag(({ down, movement: [mx, my] }) => {
-      setDragPos({ dragX: down ? mx : 0, dragY: down ? my : 0 });
-      setMouseDown(down);
-    })
+    const bind = useGesture({
+        onDrag: ({ down, movement: [mx, my] }) => {
+            setDragPos({ dragX: down ? mx : 0, dragY: down ? my : 0 });
+        },
+        onDragStart: () => {
+            setDragging(true);
+            if (props.dragStart) {
+                props.dragStart();
+            }
+        },
+        onDragEnd: (e) => {
+            setDragging(false);
+            if (props.dragEnd) {
+                props.dragEnd(e.xy[0], e.xy[1]);
+            }
+        },
+    }, {
+        drag: { threshold: 50 }
+    });
     
-    const forceZoom = props.draggable && mouseDown
+    const forceZoom = props.dragEnd && dragging
         ? false
         : props.forceZoom;
 
@@ -102,7 +122,7 @@ export const ZoomableCard: React.FC<Props> = props => {
         forceZoom,
         classes.main,
         classes.forceInMain,
-        classes.forceOutMain,
+        dragging ? classes.forceOutMainDragging : classes.forceOutMain,
         props.mainClassName
     );
     const mainCard = (
@@ -125,7 +145,7 @@ export const ZoomableCard: React.FC<Props> = props => {
         />
     )
 
-    return props.draggable
+    return props.dragEnd
         ? (
             <animated.div
                 className={classes.root}

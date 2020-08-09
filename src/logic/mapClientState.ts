@@ -28,7 +28,7 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         }
                     },
                     draftChoices: {
-                        [0]: {
+                        0: {
                             [anyOtherFields]: {
                                 type: true,
                                 id: true,
