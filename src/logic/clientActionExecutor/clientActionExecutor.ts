@@ -2,9 +2,8 @@ import { GameState } from '../../data/GameState';
 import { ClientAction } from '../../data/ClientAction';
 import { selectSystem } from './selectSystem';
 import { draftCard } from './draftCard';
+import { playCard } from './playCard';
 
-// It strikes me that the server state doesn't need updated like a reducer at all...
-// as long as we're using FilterMirror to produce client states. D'oh!
 export function clientActionExecutor(state: GameState, action: ClientAction, client: string) {
     switch (action.type) {
         case 'pause':
@@ -24,9 +23,9 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             break;
 
         case 'power play':
-            console.log(`played card #${action.card} on system ${action.system}`);
+            playCard(state, client, action.card, action.system)
             break;
-            
+
         default:
             return 1 as never;
     }

@@ -25,7 +25,7 @@ export interface PowerCardInfo {
 }
 
 export interface PowerCardData extends PowerCardInfo {
-    play: (ship: ShipState, system: System) => void;
+    play: (ship: ShipState, system: System) => void | false;
 }
 
 export function getRarityName(rarity: CardRarity) {

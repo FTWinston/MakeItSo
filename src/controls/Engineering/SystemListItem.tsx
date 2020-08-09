@@ -17,6 +17,7 @@ interface Props {
 const useStyles = makeStyles(theme => ({
     item: {
         paddingBottom: 0,
+        transition: 'background-color 0.5s ease-in-out',
     },
     itemValidDrop: {
         paddingBottom: 0,
