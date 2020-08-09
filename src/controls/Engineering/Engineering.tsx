@@ -123,6 +123,7 @@ export const Engineering: React.FC = () => {
                 
             <CardHand
                 cards={gameState.localShip.power.hand}
+                draggable={tabIndex === 0}
             />
         </ShipSystem>
     )

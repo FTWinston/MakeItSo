@@ -7,6 +7,7 @@ import { exitDuration } from './CardChoice';
 
 interface Props {
     cards: PowerCardInfo[];
+    draggable: boolean;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -86,7 +87,6 @@ export const CardHand: React.FC<Props> = props => {
                     currentFraction += fractionStep;
 
                     const animateEntrance = addingCards.indexOf(card) !== -1;
-                    //const animateEntrance = addingCards.findIndex(test => test.id === card.id) !== -1;
 
                     const cardDisplay = (
                         <div
@@ -101,11 +101,13 @@ export const CardHand: React.FC<Props> = props => {
                                 rarity={card.rarity}
                                 mainClassName={classes.card}
                                 zoomClassName={classes.zoomCard}
+                                draggable={props.draggable}
                             />
                         </div>
                     )
 
-                    return animateEntrance ? (
+                    return animateEntrance
+                        ? (
                             <Slide
                                 in={true}
                                 timeout={transitionDuration}
