@@ -1,11 +1,12 @@
 import React from 'react';
-import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction } from '@material-ui/core';
+import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, TableRow, TableCell, Paper } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
 import { PowerIcon } from '../common/PowerIcon';
 import { PowerLevel } from '../../data/PowerLevel';
 import { PowerEffectInfo } from '../../data/PowerEffect';
+import { SystemHealth } from './SystemHealth';
 
 interface Props {
     system: System;
@@ -16,7 +17,8 @@ interface Props {
 
 const useStyles = makeStyles(theme => ({
     item: {
-        transition: 'background-color 0.5s ease-in-out',
+        transition: 'background-color 0.5s ease-in-out, opacity 0.5s ease-in-out',
+        backgroundColor: theme.palette.background.paper,
     },
     itemValidDrop: {
         paddingBottom: 0,
@@ -32,17 +34,22 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.error.dark,
         }
     },
-    text: {
-        flexGrow: 0,
-        display: 'flex',
-        alignItems: 'center',
-        height: theme.spacing(6),
+    avatar: {
+        padding: `${theme.spacing(1.5)}px ${theme.spacing(1)}px`,
     },
-    effectsContainer: {
-        flexGrow: 1,
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        margin: `0 ${theme.spacing(2)}px`,
+    text: {
+        fontSize: '1rem',
+        paddingLeft: theme.spacing(1),
+    },
+    effectsCell: {
+        width: 72,
+    },
+    iconCell: {
+        paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
+        '&:last-child': {
+            paddingRight: 0,
+        }
     }
 }));
 
@@ -56,32 +63,28 @@ export const SystemListItem: React.FC<Props> = props => {
             : classes.itemInvalidDrop;
 
     return (
-        <ListItem className={itemClass} data-system={props.system}>
-            <ListItemAvatar>
+        <TableRow className={itemClass}>
+            <TableCell className={classes.avatar} data-system={props.system}>
                 <Avatar>
                     <SystemIcon color="action" system={props.system} />
                 </Avatar>
-            </ListItemAvatar>
-            <ListItemText
-                primary={getSystemName(props.system)}
-                className={classes.text}
-            />
+            </TableCell>
 
-            <div className={classes.effectsContainer}>
-                {/*
-                <ListItemIcon>
-                    <PowerIcon level={props.power} />
-                </ListItemIcon>
+            <TableCell component="th" scope="row" className={classes.text} data-system={props.system}>
+                {getSystemName(props.system)}
+            </TableCell>
 
-                <ListItemIcon>
-                    <PowerIcon level={props.power} />
-                </ListItemIcon>
-                */}
-            </div>
+            <TableCell className={classes.effectsCell} align="right" data-system={props.system}>
+                
+            </TableCell>
 
-            <ListItemSecondaryAction>
+            <TableCell className={classes.iconCell} align="right" data-system={props.system}>
+                <SystemHealth value={100} />
+            </TableCell>
+
+            <TableCell className={classes.iconCell} align="center" data-system={props.system}>
                 <PowerIcon level={props.power} color={props.power === PowerLevel.Off ? 'error' : undefined} />
-            </ListItemSecondaryAction>
-        </ListItem>
+            </TableCell>
+        </TableRow>
     )
 }
