@@ -1,5 +1,5 @@
-import React, { useState, Dispatch, useMemo } from 'react';
-import { multiFilter } from 'filter-mirror';
+import React, { useState, Dispatch, useMemo, useEffect } from 'react';
+import { multiFilter, PatchOperation } from 'filter-mirror';
 import { apply_patch } from 'jsonpatch';
 import { System } from '../data/System';
 import { GameContext } from './GameProvider';
@@ -80,6 +80,8 @@ function createInitialState(currentSystem?: System): GameState {
     };
 }
 
+const patches: PatchOperation[] = [];
+
 function useGameStateReducer(initialSystem?: System): [EnhancedClientGameState, Dispatch<ClientAction>] {
     const [clientState, setClientState] = useState<EnhancedClientGameState>(undefined!);
 
@@ -94,7 +96,7 @@ function useGameStateReducer(initialSystem?: System): [EnhancedClientGameState, 
 
             const clientMirror = createMirror(localClientName, patch => {
                 console.log('patch', patch);
-                setClientState(clientState => enhanceState(apply_patch(clientState, [patch])));
+                patches.push(patch);
             });
 
             setClientState(enhanceState(JSON.parse(JSON.stringify(clientMirror))));
@@ -103,6 +105,24 @@ function useGameStateReducer(initialSystem?: System): [EnhancedClientGameState, 
         },
         [initialSystem]
     );
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (patches.length === 0) {
+                return;
+            }
+
+            let patchBatch = patches.slice();
+            setClientState(clientState => enhanceState(apply_patch(clientState, patchBatch)));
+
+            patches.splice(0, patches.length);
+        }, 50);
+
+        return () => {
+            clearInterval(interval);
+            patches.splice(0, patches.length);
+        }
+    }, []);
 
     const actionExecutor = (action: ClientAction) => {
         clientActionExecutor(gameState, action, localClientName);

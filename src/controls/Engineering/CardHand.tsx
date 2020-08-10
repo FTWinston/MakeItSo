@@ -68,7 +68,7 @@ export const CardHand: React.FC<Props> = props => {
         () => {
             setAddingCards(
                 props.cards
-                    .filter(card => prevCards.indexOf(card) === -1)
+                    .filter(card => !prevCards.find(c => c.id === card.id))
             );
             setPrevCards(props.cards);
 
@@ -89,7 +89,7 @@ export const CardHand: React.FC<Props> = props => {
                     const fraction = currentFraction;
                     currentFraction += fractionStep;
 
-                    const animateEntrance = addingCards.indexOf(card) !== -1;
+                    const animateEntrance = !!addingCards.find(c => c.id === card.id);
 
                     const cardDisplay = (
                         <div
@@ -104,7 +104,7 @@ export const CardHand: React.FC<Props> = props => {
                                 rarity={card.rarity}
                                 mainClassName={classes.card}
                                 zoomClassName={classes.zoomCard}
-                                dragStart={() => dragStart(card)}
+                                dragStart={dragStart ? () => dragStart(card) : undefined}
                                 dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
                             />
                         </div>
