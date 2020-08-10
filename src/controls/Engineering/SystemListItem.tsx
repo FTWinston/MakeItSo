@@ -16,7 +16,6 @@ interface Props {
 
 const useStyles = makeStyles(theme => ({
     item: {
-        paddingBottom: 0,
         transition: 'background-color 0.5s ease-in-out',
     },
     itemValidDrop: {
@@ -35,6 +34,9 @@ const useStyles = makeStyles(theme => ({
     },
     text: {
         flexGrow: 0,
+        display: 'flex',
+        alignItems: 'center',
+        height: theme.spacing(6),
     },
     effectsContainer: {
         flexGrow: 1,
@@ -62,7 +64,6 @@ export const SystemListItem: React.FC<Props> = props => {
             </ListItemAvatar>
             <ListItemText
                 primary={getSystemName(props.system)}
-                secondary="No effects"
                 className={classes.text}
             />
 
