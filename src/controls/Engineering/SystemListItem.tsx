@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItem, ListItemAvatar, Avatar, ListItemText, makeStyles, ListItemSecondaryAction, TableRow, TableCell, Paper } from '@material-ui/core';
+import { Avatar, makeStyles, TableRow, TableCell } from '@material-ui/core';
 import { fade } from '@material-ui/core/styles/colorManipulator';
 import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
@@ -10,6 +10,7 @@ import { SystemHealth } from './SystemHealth';
 
 interface Props {
     system: System;
+    health: number;
     power: PowerLevel;
     effects: PowerEffectInfo[];
     validDropTarget?: boolean;
@@ -79,7 +80,7 @@ export const SystemListItem: React.FC<Props> = props => {
             </TableCell>
 
             <TableCell className={classes.iconCell} align="right" data-system={props.system}>
-                <SystemHealth value={100} />
+                <SystemHealth value={props.health} />
             </TableCell>
 
             <TableCell className={classes.iconCell} align="center" data-system={props.system}>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { List, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, makeStyles } from '@material-ui/core';
+import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, makeStyles } from '@material-ui/core';
 import { SystemListItem } from './SystemListItem';
 import { PowerLevel } from '../../data/PowerLevel';
 import { System, anyEngineeringSystem } from '../../data/System';
@@ -9,6 +9,7 @@ import { PowerCardInfo } from '../../data/PowerCard';
 interface Props {
     systemOrder: System[];
     powerLevels: Record<System, PowerLevel>;
+    health: Record<System, number>;
     effects: Record<System, PowerEffectInfo[]>;
     draggingCard?: PowerCardInfo;
 }
@@ -55,6 +56,7 @@ export const SystemList: React.FC<Props> = props => {
                         <SystemListItem
                             system={system}
                             key={system}
+                            health={props.health[system]}
                             power={props.powerLevels[system]}
                             effects={props.effects[system]}
                             validDropTarget={allowedDropSystems === undefined ? undefined : (allowedDropSystems & system) !== 0}
