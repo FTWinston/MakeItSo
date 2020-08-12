@@ -7,6 +7,7 @@ import { PowerIcon } from '../common/PowerIcon';
 import { PowerLevel } from '../../data/PowerLevel';
 import { PowerEffectInfo } from '../../data/PowerEffect';
 import { SystemHealth } from './SystemHealth';
+import { EffectIndicators } from './EffectIndicators';
 
 interface Props {
     system: System;
@@ -40,10 +41,11 @@ const useStyles = makeStyles(theme => ({
     },
     text: {
         fontSize: '1rem',
-        paddingLeft: theme.spacing(1),
+        padding: theme.spacing(1),
+        width: 118,
     },
     effectsCell: {
-        width: 72,
+        padding: 0,
     },
     iconCell: {
         paddingLeft: theme.spacing(1),
@@ -75,11 +77,11 @@ export const SystemListItem: React.FC<Props> = props => {
                 {getSystemName(props.system)}
             </TableCell>
 
-            <TableCell className={classes.effectsCell} align="right" data-system={props.system}>
-                
+            <TableCell className={classes.effectsCell} data-system={props.system}>
+                <EffectIndicators effects={props.effects} />
             </TableCell>
 
-            <TableCell className={classes.iconCell} align="right" data-system={props.system}>
+            <TableCell className={classes.iconCell} align="center" data-system={props.system}>
                 <SystemHealth value={props.health} />
             </TableCell>
 

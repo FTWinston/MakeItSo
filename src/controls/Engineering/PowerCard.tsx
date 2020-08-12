@@ -1,9 +1,9 @@
 import React from 'react';
-import { PowerCardInfo, CardRarity, getRarityName } from '../../data/PowerCard';
 import { makeStyles, Card, CardContent, Typography, CardHeader, Avatar } from '@material-ui/core';
 import { blue, purple, grey } from '@material-ui/core/colors';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import UnknownIcon from '@material-ui/icons/HelpOutline';
+import { PowerCardInfo, CardRarity, getRarityName } from '../../data/PowerCard';
+import { CardIcon } from './CardIcon';
 
 interface Props extends Omit<PowerCardInfo, 'id'> {
     className?: string;
@@ -60,17 +60,8 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-function getIcon(name: string) {
-    switch (name) {
-        default:
-            return UnknownIcon;
-    }
-}
-
 export const PowerCard: React.FC<Props> = props => {
     const classes = useStyles();
-
-    const CardIcon = getIcon(props.name);
 
     let iconClass;
     let rootClass;
@@ -105,7 +96,7 @@ export const PowerCard: React.FC<Props> = props => {
                     aria-label={getRarityName(props.rarity)}
                     className={iconClass}
                 >
-                    <CardIcon color="action" />
+                    <CardIcon color="action" card={props.type} />
                 </Avatar>
                 }
                 title={props.name}

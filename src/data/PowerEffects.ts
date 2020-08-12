@@ -5,6 +5,7 @@ import { System } from './System';
 const allEffects: PowerEffectData[] = [
     {
         type: PowerEffectType.Boost1,
+        positive: true,
         duration: 15,
         apply: (ship: ShipState, system: System) => {
             ship.powerLevels[system]++;
@@ -16,6 +17,7 @@ const allEffects: PowerEffectData[] = [
 
     {
         type: PowerEffectType.Boost2,
+        positive: true,
         duration: 12,
         apply: (ship: ShipState, system: System) => {
             ship.powerLevels[system] += 2;
@@ -27,6 +29,7 @@ const allEffects: PowerEffectData[] = [
 
     {
         type: PowerEffectType.Boost3,
+        positive: false,
         duration: 10,
         apply: (ship: ShipState, system: System) => {
             ship.powerLevels[system] += 3;

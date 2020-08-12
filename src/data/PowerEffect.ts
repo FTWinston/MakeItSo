@@ -10,6 +10,7 @@ export enum PowerEffectType {
 export interface PowerEffectInfo {
     type: PowerEffectType;
     duration: number;
+    positive: boolean;
 }
 
 export interface PowerEffectData extends PowerEffectInfo {
