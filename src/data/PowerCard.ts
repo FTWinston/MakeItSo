@@ -9,10 +9,18 @@ export enum CardRarity {
 }
 
 export enum PowerCardType {
-    Card1,
-    Card2,
-    Card3,
-    Card4,
+    Boost1,
+    BoostHelm,
+    BoostFTL,
+    BoostWeapons,
+    BoostSensors,
+    BoostEngineering,
+    BoostShields,
+    Boost2,
+    RepairSmall,
+    RepairMedium,
+    RepairLarge,
+    Overload,
 }
 
 export interface PowerCardInfo {

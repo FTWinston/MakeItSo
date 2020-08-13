@@ -17,8 +17,6 @@ export const SystemHealth: React.FC<Props> = props => {
 
     const animatedProps = useSpring({ health: props.value });
 
-    const AnimatedTypography = animated(Typography);
-
     const gb = props.value * 2 + 55; // 55-255, as health is 0-100
 
     return (

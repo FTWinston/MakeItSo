@@ -1,7 +1,7 @@
 import React from 'react';
 import { Theme } from '../../style/theme';
 import { ZoomableCard } from './ZoomableCard';
-import { commonCard, uncommonCard, rareCard, epicCard } from './PowerCard.examples';
+import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } from '../../data/PowerCards';
 
 export default { title: 'Engineering/Card' };
 
@@ -9,7 +9,7 @@ export const common = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <ZoomableCard 
-                {...commonCard()}
+                {...createCommonCard(1)}
             />
         </div>
     </Theme>
@@ -19,7 +19,7 @@ export const uncommon = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <ZoomableCard
-                {...uncommonCard()}
+                {...createUncommonCard(1)}
             />
         </div>
     </Theme>
@@ -29,7 +29,7 @@ export const rare = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <ZoomableCard 
-                {...rareCard()}
+                {...createRareCard(1)}
             />
         </div>
     </Theme>
@@ -39,7 +39,7 @@ export const epic = () => (
     <Theme>
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
             <ZoomableCard
-                {...epicCard()}
+                {...createEpicCard(1)}
             />
         </div>
     </Theme>

@@ -5,6 +5,12 @@ export enum PowerEffectType {
     Boost1,
     Boost2,
     Boost3,
+    Reduce1,
+    Reduce2,
+    Reduce3,
+    Overload,
+    Damage,
+    Repair,
 }
 
 export interface PowerEffectInfo {

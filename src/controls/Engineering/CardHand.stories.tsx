@@ -1,78 +1,43 @@
 import React from 'react';
 import { Theme } from '../../style/theme';
 import { CardHand } from './CardHand';
-import { uncommonCard, commonCard, rareCard, epicCard } from './PowerCard.examples';
+import { createCommonCard, createEpicCard, createUncommonCard, createRareCard } from '../../data/PowerCards';
 
 export default { title: 'Engineering/Card Hand' };
 
-export const eight = () => (
-    <Theme>
-        <CardHand
-            cards={[commonCard(), commonCard(), commonCard(), uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
-        />
-    </Theme>
-);
+const cards = [
+    createCommonCard(1),
+    createEpicCard(2),
+    createCommonCard(3),
+    createUncommonCard(4),
+    createCommonCard(5),
+    createRareCard(6),
+    createCommonCard(7),
+    createUncommonCard(8)
+];
 
-export const seven = () => (
+const exampleHand = (size: number) => (
     <Theme>
         <CardHand
-            cards={[commonCard(), commonCard(), uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
+            cards={cards.slice(0, 8)}
         />
-    </Theme>
-);
+    </Theme>    
+)
 
-export const six = () => (
-    <Theme>
-        <CardHand
-            cards={[commonCard(), uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
-        />
-    </Theme>
-);
+export const eight = () => exampleHand(8);
 
-export const five = () => (
-    <Theme>
-        <CardHand
-            cards={[uncommonCard(), commonCard(), rareCard(), commonCard(), epicCard()]}
-        />
-    </Theme>
-);
+export const seven = () => exampleHand(7);
 
-export const four = () => (
-    <Theme>
-        <CardHand
-            cards={[commonCard(), rareCard(), commonCard(), epicCard()]}
-        />
-    </Theme>
-);
+export const six = () => exampleHand(6);
 
-export const three = () => (
-    <Theme>
-        <CardHand
-            cards={[uncommonCard(), commonCard(), commonCard()]}
-        />
-    </Theme>
-);
+export const five = () => exampleHand(5);
 
-export const two = () => (
-    <Theme>
-        <CardHand
-            cards={[commonCard(), commonCard()]}
-        />
-    </Theme>
-);
+export const four = () => exampleHand(4);
 
-export const one = () => (
-    <Theme>
-        <CardHand
-            cards={[uncommonCard()]}
-        />
-    </Theme>
-);
+export const three = () => exampleHand(3);
 
-export const zero = () => (
-    <Theme>
-        <CardHand
-            cards={[]}
-        />
-    </Theme>
-);
+export const two = () => exampleHand(2);
+
+export const one = () => exampleHand(1);
+
+export const zero = () => exampleHand(0);
