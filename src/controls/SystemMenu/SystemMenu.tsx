@@ -55,7 +55,7 @@ export const SystemMenu: React.FC<Props> = props => {
                 disabled={gameState.paused || (gameState.currentSystem !== system && occupant !== undefined)}
                 occupant={occupant}
                 select={() => { dispatch({ type: 'select system', system }); props.close(); }}
-                power={localShip.powerLevels[system]}
+                power={localShip.systemInfo[system].power}
             />
         )
     });

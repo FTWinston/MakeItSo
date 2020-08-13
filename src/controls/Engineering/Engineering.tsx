@@ -130,17 +130,8 @@ export const Engineering: React.FC = () => {
                     className={classes.tabContent}
                 >
                     <SystemList
-                        powerLevels={gameState.localShip.powerLevels}
-                        health={{
-                            [System.Helm]: 100,
-                            [System.FTL]: 10,
-                            [System.Weapons]: 50,
-                            [System.Sensors]: 100,
-                            [System.Engineering]: 1,
-                            [System.DamageControl]: 0,
-                        }}//gameState.localShip.systemHealth}
+                        systemInfo={gameState.localShip.systemInfo}
                         systemOrder={gameState.localShip.power.systemOrder}
-                        effects={gameState.localShip.power.effects}
                         draggingCard={draggingCard}
                     />
                 </div>

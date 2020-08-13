@@ -12,8 +12,18 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                 clientsBySystem: {
                     [anyOtherFields]: true,
                 },
-                powerLevels: {
-                    [anyOtherFields]: true,
+                systemInfo: {
+                    [anyOtherFields]: {
+                        health: true,
+                        power: true,
+                        effects: {
+                            [anyOtherFields]: {
+                                type: true,
+                                duration: true,
+                                positive: true,
+                            }
+                        }
+                    }
                 },
                 power: {
                     // [shouldMap]: power => power.client === client,
@@ -41,9 +51,6 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         [anyOtherFields]: {}
                     },
                     systemOrder: true,
-                    effects: {
-                        [anyOtherFields]: true,
-                    }
                 }
             }
         },

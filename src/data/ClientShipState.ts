@@ -1,15 +1,14 @@
 import { System } from './System';
-import { PowerLevel } from './PowerLevel';
 import { EngineeringCardInfo } from './EngineeringCard';
-import { SystemStatusEffectInfo } from './SystemStatusEffect';
+import { ClientSystemState } from './ClientSystemState';
 
 export interface ClientShipState {
     clientsBySystem: Partial<Record<System, string>>;
-    powerLevels: Record<System, PowerLevel>;
+
+    systemInfo: Record<System, ClientSystemState>;
 
     power: {
         systemOrder: System[];
-        effects: Record<System, SystemStatusEffectInfo[]>;
         hand: EngineeringCardInfo[];
         draftChoices: Array<EngineeringCardInfo[]>;
     };

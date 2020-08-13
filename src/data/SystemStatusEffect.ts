@@ -1,5 +1,4 @@
-import { ShipState } from './ShipState';
-import { System } from './System';
+import { SystemState } from './SystemState';
 
 export enum SystemStatusEffectType {
     Boost1,
@@ -20,6 +19,10 @@ export interface SystemStatusEffectInfo {
 }
 
 export interface SystemStatusEffectData extends SystemStatusEffectInfo {
-    apply: (ship: ShipState, system: System) => void;
-    remove: (ship: ShipState, system: System) => void;
+    apply: (system: SystemState) => void;
+    remove: (system: SystemState) => void;
+}
+
+export interface SystemStatusEffectInstance extends SystemStatusEffectData {
+    removeTime: Date; // TODO: presumably this should deal in ticks? And we want to actually remove effects.
 }

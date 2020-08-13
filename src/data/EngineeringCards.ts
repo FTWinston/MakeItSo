@@ -1,7 +1,7 @@
 import { EngineeringCardData, EngineeringCardType, EngineeringCardRarity } from './EngineeringCard';
 import { System } from './System';
-import { createEffect } from './SystemStatusEffects';
 import { SystemStatusEffectType } from './SystemStatusEffect';
+import { applyEffect, adjustHealth } from './SystemState';
 
 const commonCards: Array<(id: number) => EngineeringCardData> = [
     id => ({
@@ -11,9 +11,8 @@ const commonCards: Array<(id: number) => EngineeringCardData> = [
         description: "Boosts a system's power by 1 for 15s",
         rarity: EngineeringCardRarity.Common,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost1);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost1);
         },
     }),
 
@@ -21,15 +20,12 @@ const commonCards: Array<(id: number) => EngineeringCardData> = [
         id,
         type: EngineeringCardType.RepairSmall,
         name: 'Repair 1',
-        description: "Increases a system's health by 10%",
+        description: "Restores 10% of a system's health",
         rarity: EngineeringCardRarity.Common,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Repair);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
-
-            // TODO: restore health
-            // ship.systemHealth[system] += 10;
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Repair);
+            adjustHealth(systemState, 10);
         },
     }),
 ];
@@ -43,9 +39,8 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         rarity: EngineeringCardRarity.Uncommon,
         allowedSystems: System.Helm,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 
@@ -57,9 +52,8 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         rarity: EngineeringCardRarity.Uncommon,
         allowedSystems: System.FTL,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 
@@ -71,9 +65,8 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         rarity: EngineeringCardRarity.Uncommon,
         allowedSystems: System.Weapons,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 
@@ -85,9 +78,8 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         rarity: EngineeringCardRarity.Uncommon,
         allowedSystems: System.Sensors,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 
@@ -99,9 +91,8 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         rarity: EngineeringCardRarity.Uncommon,
         allowedSystems: System.Engineering,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 
@@ -113,9 +104,8 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         rarity: EngineeringCardRarity.Uncommon,
         // allowedSystems: System.Shields,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 ];
@@ -128,9 +118,8 @@ const rareCards: Array<(id: number) => EngineeringCardData> = [
         description: "Boosts a system's power by 2 for 12s",
         rarity: EngineeringCardRarity.Epic,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Boost2);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
 
@@ -138,15 +127,12 @@ const rareCards: Array<(id: number) => EngineeringCardData> = [
         id,
         type: EngineeringCardType.RepairMedium,
         name: 'Repair 2',
-        description: "Increases a system's health by 25%",
+        description: "Restores 25% of a system's health",
         rarity: EngineeringCardRarity.Rare,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Repair);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
-
-            // TODO: restore health
-            // ship.systemHealth[system] += 25;
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Repair);
+            adjustHealth(systemState, 25);
         },
     }),
 ];
@@ -159,9 +145,8 @@ const epicCards: Array<(id: number) => EngineeringCardData> = [
         description: "Boosts a system's power by 3 for 12s, then damages it",
         rarity: EngineeringCardRarity.Epic,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Overload);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Overload);
         },
     }),
     
@@ -169,15 +154,12 @@ const epicCards: Array<(id: number) => EngineeringCardData> = [
         id,
         type: EngineeringCardType.RepairLarge,
         name: 'Repair 3',
-        description: "Increases a system's health by 50%",
+        description: "Restores 50% of a system's health",
         rarity: EngineeringCardRarity.Epic,
         play: (ship, system) => {
-            const effect = createEffect(SystemStatusEffectType.Repair);
-            ship.power.effects[system].push(effect);
-            effect.apply(ship, system);
-
-            // TODO: restore health
-            // ship.systemHealth[system] += 50;
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Repair);
+            adjustHealth(systemState, 50);
         },
     }),
 ];

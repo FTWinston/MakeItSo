@@ -34,13 +34,43 @@ function createInitialState(currentSystem?: System): GameState {
             [localShipId]: {
                 clientsBySystem,
                 systemsByClient,
-                powerLevels: {
-                    [System.Helm]: PowerLevel.High,
-                    [System.FTL]: PowerLevel.Low,
-                    [System.Weapons]: PowerLevel.Off,
-                    [System.Sensors]: PowerLevel.Full,
-                    [System.Engineering]: PowerLevel.Med,
-                    [System.DamageControl]: PowerLevel.High,
+                systemInfo: {
+                    [System.Helm]: {
+                        power: PowerLevel.Med,
+                        basePower: PowerLevel.Med,
+                        health: 100,
+                        effects: [],
+                    },
+                    [System.FTL]: {
+                        power: PowerLevel.Med,
+                        basePower: PowerLevel.Med,
+                        health: 100,
+                        effects: [],
+                    },
+                    [System.Weapons]: {
+                        power: PowerLevel.Med,
+                        basePower: PowerLevel.Med,
+                        health: 100,
+                        effects: [],
+                    },
+                    [System.Sensors]: {
+                        power: PowerLevel.Med,
+                        basePower: PowerLevel.Med,
+                        health: 100,
+                        effects: [],
+                    },
+                    [System.Engineering]: {
+                        power: PowerLevel.Med,
+                        basePower: PowerLevel.Med,
+                        health: 100,
+                        effects: [],
+                    },
+                    [System.DamageControl]: {
+                        power: PowerLevel.Med,
+                        basePower: PowerLevel.Med,
+                        health: 100,
+                        effects: [],
+                    },
                 },
                 power: {
                     systemOrder: [
@@ -51,14 +81,6 @@ function createInitialState(currentSystem?: System): GameState {
                         System.Engineering,
                         System.DamageControl,
                     ],
-                    effects: {    
-                        [System.Helm]: [],
-                        [System.FTL]: [],
-                        [System.Weapons]: [],
-                        [System.Sensors]: [],
-                        [System.Engineering]: [],
-                        [System.DamageControl]: [],
-                    },
                     hand: [
                         createCard(nextCardId++),
                         createCard(nextCardId++),

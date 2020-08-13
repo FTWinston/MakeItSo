@@ -32,7 +32,7 @@ export const SystemHeader: React.FC<Props> = props => {
 
     const powerLevel = gameState.currentSystem === undefined
         ? PowerLevel.Off
-        : gameState.localShip.powerLevels[gameState.currentSystem];
+        : gameState.localShip.systemInfo[gameState.currentSystem].power;
     
     return (
         <AppBar position="static" color="primary">

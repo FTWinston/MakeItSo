@@ -1,16 +1,13 @@
 import React from 'react';
 import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, makeStyles } from '@material-ui/core';
 import { SystemListItem } from './SystemListItem';
-import { PowerLevel } from '../../data/PowerLevel';
 import { System, anyEngineeringSystem } from '../../data/System';
-import { SystemStatusEffectInfo } from '../../data/SystemStatusEffect';
 import { EngineeringCardInfo } from '../../data/EngineeringCard';
+import { ClientSystemState } from '../../data/ClientShipState';
 
 interface Props {
     systemOrder: System[];
-    powerLevels: Record<System, PowerLevel>;
-    health: Record<System, number>;
-    effects: Record<System, SystemStatusEffectInfo[]>;
+    systemInfo: Record<System, ClientSystemState>;
     draggingCard?: EngineeringCardInfo;
 }
 
@@ -56,9 +53,7 @@ export const SystemList: React.FC<Props> = props => {
                         <SystemListItem
                             system={system}
                             key={system}
-                            health={props.health[system]}
-                            power={props.powerLevels[system]}
-                            effects={props.effects[system]}
+                            {...props.systemInfo[system]}
                             validDropTarget={allowedDropSystems === undefined ? undefined : (allowedDropSystems & system) !== 0}
                         />
                     ))}
