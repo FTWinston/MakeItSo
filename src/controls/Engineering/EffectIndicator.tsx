@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress, makeStyles, useTheme, Zoom } from '@material-ui/core';
-import { PowerEffectInfo } from '../../data/PowerEffect';
+import { SystemStatusEffectInfo } from '../../data/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
 
-export interface EffectIndicatorData extends PowerEffectInfo {
+export interface EffectIndicatorData extends SystemStatusEffectInfo {
     remaining?: number;
 }
 

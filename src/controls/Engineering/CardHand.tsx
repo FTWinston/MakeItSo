@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { PowerCardInfo } from '../../data/PowerCard';
+import { EngineeringCardInfo } from '../../data/EngineeringCard';
 import { makeStyles, Typography, Slide } from '@material-ui/core';
 import { ZoomableCard, shrinkScale } from './ZoomableCard';
-import { cardWidth, cardHeight } from './PowerCard';
+import { cardWidth, cardHeight } from './EngineeringCard';
 import { exitDuration } from './CardChoice';
 
 interface Props {
-    cards: PowerCardInfo[];
-    dragStart?: (card: PowerCardInfo) => void;
-    dragEnd?: (card: PowerCardInfo, x: number, y: number) => void;
+    cards: EngineeringCardInfo[];
+    dragStart?: (card: EngineeringCardInfo) => void;
+    dragEnd?: (card: EngineeringCardInfo, x: number, y: number) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -62,7 +62,7 @@ export const CardHand: React.FC<Props> = props => {
     );
 
     const [prevCards, setPrevCards] = useState(props.cards);
-    const [addingCards, setAddingCards] = useState<PowerCardInfo[]>([]);
+    const [addingCards, setAddingCards] = useState<EngineeringCardInfo[]>([]);
 
     useEffect(
         () => {

@@ -6,7 +6,7 @@ import { GameContext } from '../GameProvider';
 import { SystemList } from './SystemList';
 import { CardHand } from './CardHand';
 import { CardChoice } from './CardChoice';
-import { PowerCardInfo } from '../../data/PowerCard';
+import { EngineeringCardInfo } from '../../data/EngineeringCard';
 import { System } from '../../data/System';
 
 const useStyles = makeStyles(theme => ({
@@ -48,7 +48,7 @@ export const Engineering: React.FC = () => {
 
     const classes = useStyles();
     
-    const [draggingCard, setDragging] = useState<PowerCardInfo>();
+    const [draggingCard, setDragging] = useState<EngineeringCardInfo>();
     
     const [tabIndex, setTabIndex] = useState(0);
 
@@ -85,7 +85,7 @@ export const Engineering: React.FC = () => {
         </Tabs>
     );
 
-    const tryPlayCard = (card: PowerCardInfo, x: number, y: number) => {
+    const tryPlayCard = (card: EngineeringCardInfo, x: number, y: number) => {
         setDragging(undefined);
         
         const elements: Element[] = document.elementsFromPoint

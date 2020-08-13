@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { PowerCardInfo } from '../../data/PowerCard';
+import { EngineeringCardInfo } from '../../data/EngineeringCard';
 import { makeStyles, Typography, Zoom, useTheme, Slide } from '@material-ui/core';
-import { cardHeight } from './PowerCard';
+import { cardHeight } from './EngineeringCard';
 import { ZoomableCard, shrinkScale } from './ZoomableCard';
 
 interface Props {
-    cards: PowerCardInfo[];
-    choose: (card: PowerCardInfo) => void;
+    cards: EngineeringCardInfo[];
+    choose: (card: EngineeringCardInfo) => void;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -62,7 +62,7 @@ export const CardChoice: React.FC<Props> = props => {
 
     const [cards, setCards] = useState(props.cards);
 
-    const [selected, setSelected] = useState<PowerCardInfo>();
+    const [selected, setSelected] = useState<EngineeringCardInfo>();
 
     useEffect(
         () => {

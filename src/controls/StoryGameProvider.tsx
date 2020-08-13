@@ -8,7 +8,7 @@ import { GameState } from '../data/GameState';
 import { PowerLevel } from '../data/PowerLevel';
 import { ClientGameState, EnhancedClientGameState, enhanceState } from '../data/ClientGameState';
 import { ClientAction } from '../data/ClientAction';
-import { createCard } from '../data/PowerCards';
+import { createCard } from '../data/EngineeringCards';
 import { mapClientState } from '../logic/mapClientState';
 
 interface Props {

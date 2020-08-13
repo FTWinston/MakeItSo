@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { useSpring, animated } from 'react-spring'
 import { useGesture } from 'react-use-gesture'
-import { PowerCard } from './PowerCard';
-import { PowerCardInfo } from '../../data/PowerCard';
+import { EngineeringCard } from './EngineeringCard';
+import { EngineeringCardInfo } from '../../data/EngineeringCard';
 
-interface Props extends Omit<PowerCardInfo, 'id'> {
+interface Props extends Omit<EngineeringCardInfo, 'id'> {
     mainClassName?: string;
     zoomClassName?: string;
     forceZoom?: boolean;
@@ -126,7 +126,7 @@ export const ZoomableCard: React.FC<Props> = props => {
         props.mainClassName
     );
     const mainCard = (
-        <PowerCard
+        <EngineeringCard
             type={props.type}
             name={props.name}
             className={mainClasses}
@@ -136,7 +136,7 @@ export const ZoomableCard: React.FC<Props> = props => {
     );
 
     const zoomCard = (
-        <PowerCard
+        <EngineeringCard
             type={props.type}
             name={props.name}
             className={zoomClasses}

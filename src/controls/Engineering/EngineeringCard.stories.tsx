@@ -1,7 +1,7 @@
 import React from 'react';
 import { Theme } from '../../style/theme';
 import { ZoomableCard } from './ZoomableCard';
-import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } from '../../data/PowerCards';
+import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } from '../../data/EngineeringCards';
 
 export default { title: 'Engineering/Card' };
 

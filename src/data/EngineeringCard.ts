@@ -1,14 +1,14 @@
 import { System } from './System';
 import { ShipState } from './ShipState';
 
-export enum CardRarity {
+export enum EngineeringCardRarity {
     Common,
     Uncommon,
     Rare,
     Epic,
 }
 
-export enum PowerCardType {
+export enum EngineeringCardType {
     Boost1,
     BoostHelm,
     BoostFTL,
@@ -23,28 +23,28 @@ export enum PowerCardType {
     Overload,
 }
 
-export interface PowerCardInfo {
+export interface EngineeringCardInfo {
     id: number;
-    type: PowerCardType;
+    type: EngineeringCardType;
     name: string;
     description: string;
-    rarity: CardRarity;
+    rarity: EngineeringCardRarity;
     allowedSystems?: System;
 }
 
-export interface PowerCardData extends PowerCardInfo {
+export interface EngineeringCardData extends EngineeringCardInfo {
     play: (ship: ShipState, system: System) => void | false;
 }
 
-export function getRarityName(rarity: CardRarity) {
+export function getRarityName(rarity: EngineeringCardRarity) {
     switch (rarity) {
-        case CardRarity.Common:
+        case EngineeringCardRarity.Common:
             return 'Common';
-        case CardRarity.Uncommon:
+        case EngineeringCardRarity.Uncommon:
             return 'Uncommon';
-        case CardRarity.Rare:
+        case EngineeringCardRarity.Rare:
             return 'Rare';
-        case CardRarity.Epic:
+        case EngineeringCardRarity.Epic:
             return 'Epic';
     }
 }

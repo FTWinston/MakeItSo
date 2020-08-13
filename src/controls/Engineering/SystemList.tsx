@@ -3,15 +3,15 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, makeS
 import { SystemListItem } from './SystemListItem';
 import { PowerLevel } from '../../data/PowerLevel';
 import { System, anyEngineeringSystem } from '../../data/System';
-import { PowerEffectInfo } from '../../data/PowerEffect';
-import { PowerCardInfo } from '../../data/PowerCard';
+import { SystemStatusEffectInfo } from '../../data/SystemStatusEffect';
+import { EngineeringCardInfo } from '../../data/EngineeringCard';
 
 interface Props {
     systemOrder: System[];
     powerLevels: Record<System, PowerLevel>;
     health: Record<System, number>;
-    effects: Record<System, PowerEffectInfo[]>;
-    draggingCard?: PowerCardInfo;
+    effects: Record<System, SystemStatusEffectInfo[]>;
+    draggingCard?: EngineeringCardInfo;
 }
 
 const useStyles = makeStyles(theme => ({

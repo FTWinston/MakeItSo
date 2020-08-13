@@ -1,7 +1,7 @@
 import { System } from './System';
 import { PowerLevel } from './PowerLevel';
-import { PowerCardData } from './PowerCard';
-import { PowerEffectData } from './PowerEffect';
+import { EngineeringCardData } from './EngineeringCard';
+import { SystemStatusEffectData } from './SystemStatusEffect';
 
 export interface ShipState {
     clientsBySystem: Partial<Record<System, string>>;
@@ -10,9 +10,9 @@ export interface ShipState {
 
     power: {
         systemOrder: System[];
-        effects: Record<System, PowerEffectData[]>;
-        hand: PowerCardData[];
-        draftChoices: Array<PowerCardData[]>;
+        effects: Record<System, SystemStatusEffectData[]>;
+        hand: EngineeringCardData[];
+        draftChoices: Array<EngineeringCardData[]>;
         nextCardId: number;
     };
 }

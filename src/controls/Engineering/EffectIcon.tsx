@@ -9,42 +9,42 @@ import Reduce3Icon from '@material-ui/icons/VerticalAlignBottom';
 import OverloadIcon from '@material-ui/icons/Warning';
 import DamageIcon from '@material-ui/icons/Whatshot';
 import RepairIcon from '@material-ui/icons/Build';
-import { PowerEffectType } from '../../data/PowerEffect';
+import { SystemStatusEffectType } from '../../data/SystemStatusEffect';
 
 interface Props {
     className?: string;
-    effect: PowerEffectType;
+    effect: SystemStatusEffectType;
     color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
 }
 
 export const EffectIcon: React.FC<Props> = props => {
     let Icon;
     switch (props.effect) {
-        case PowerEffectType.Boost1:
+        case SystemStatusEffectType.Boost1:
             Icon = Boost1Icon;
             break;
-        case PowerEffectType.Boost2:
+        case SystemStatusEffectType.Boost2:
             Icon = Boost2Icon;
             break;
-        case PowerEffectType.Boost3:
+        case SystemStatusEffectType.Boost3:
             Icon = Boost3Icon;
             break;
-        case PowerEffectType.Reduce1:
+        case SystemStatusEffectType.Reduce1:
             Icon = Reduce1Icon;
             break;
-        case PowerEffectType.Reduce2:
+        case SystemStatusEffectType.Reduce2:
             Icon = Reduce2Icon;
             break;
-        case PowerEffectType.Reduce3:
+        case SystemStatusEffectType.Reduce3:
             Icon = Reduce3Icon;
             break;
-        case PowerEffectType.Overload:
+        case SystemStatusEffectType.Overload:
             Icon = OverloadIcon;
             break;
-        case PowerEffectType.Damage:
+        case SystemStatusEffectType.Damage:
             Icon = DamageIcon;
             break;
-        case PowerEffectType.Repair:
+        case SystemStatusEffectType.Repair:
             Icon = RepairIcon;
             break;
         default:

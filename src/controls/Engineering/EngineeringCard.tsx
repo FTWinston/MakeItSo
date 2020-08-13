@@ -2,10 +2,10 @@ import React from 'react';
 import { makeStyles, Card, CardContent, Typography, CardHeader, Avatar } from '@material-ui/core';
 import { blue, purple, grey } from '@material-ui/core/colors';
 import { fade } from '@material-ui/core/styles/colorManipulator';
-import { PowerCardInfo, CardRarity, getRarityName } from '../../data/PowerCard';
+import { EngineeringCardInfo, EngineeringCardRarity, getRarityName } from '../../data/EngineeringCard';
 import { CardIcon } from './CardIcon';
 
-interface Props extends Omit<PowerCardInfo, 'id'> {
+interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
 }
 
@@ -60,25 +60,25 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-export const PowerCard: React.FC<Props> = props => {
+export const EngineeringCard: React.FC<Props> = props => {
     const classes = useStyles();
 
     let iconClass;
     let rootClass;
     switch (props.rarity) {
-        case CardRarity.Common:
+        case EngineeringCardRarity.Common:
             iconClass = classes.commonIcon;
             rootClass = `${classes.root} ${classes.commonRoot}`;
             break;
-        case CardRarity.Uncommon:
+        case EngineeringCardRarity.Uncommon:
             iconClass = classes.uncommonIcon;
             rootClass = `${classes.root} ${classes.uncommonRoot}`;
             break;
-        case CardRarity.Rare:
+        case EngineeringCardRarity.Rare:
             iconClass = classes.rareIcon;
             rootClass = `${classes.root} ${classes.rareRoot}`;
             break;
-        case CardRarity.Epic:
+        case EngineeringCardRarity.Epic:
             iconClass = classes.epicIcon;
             rootClass = `${classes.root} ${classes.epicRoot}`;
             break;

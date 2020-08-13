@@ -1,7 +1,7 @@
 import { ShipState } from './ShipState';
 import { System } from './System';
 
-export enum PowerEffectType {
+export enum SystemStatusEffectType {
     Boost1,
     Boost2,
     Boost3,
@@ -13,13 +13,13 @@ export enum PowerEffectType {
     Repair,
 }
 
-export interface PowerEffectInfo {
-    type: PowerEffectType;
+export interface SystemStatusEffectInfo {
+    type: SystemStatusEffectType;
     duration: number;
     positive: boolean;
 }
 
-export interface PowerEffectData extends PowerEffectInfo {
+export interface SystemStatusEffectData extends SystemStatusEffectInfo {
     apply: (ship: ShipState, system: System) => void;
     remove: (ship: ShipState, system: System) => void;
 }

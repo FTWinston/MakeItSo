@@ -1,7 +1,7 @@
 import React from 'react';
 import { Theme } from '../../style/theme';
 import { CardHand } from './CardHand';
-import { createCommonCard, createEpicCard, createUncommonCard, createRareCard } from '../../data/PowerCards';
+import { createCommonCard, createEpicCard, createUncommonCard, createRareCard } from '../../data/EngineeringCards';
 
 export default { title: 'Engineering/Card Hand' };
 
