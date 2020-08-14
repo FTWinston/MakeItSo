@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         justifyContent: 'space-evenly',
         alignItems: 'center',
+        height: 32,
     },
     item: {
         position: 'absolute',

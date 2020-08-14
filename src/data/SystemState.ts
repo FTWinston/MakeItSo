@@ -1,12 +1,12 @@
 import { PowerLevel } from './PowerLevel';
-import { SystemStatusEffectData, SystemStatusEffectType } from './SystemStatusEffect';
+import { SystemStatusEffectInstance, SystemStatusEffectType } from './SystemStatusEffect';
 import { createEffect } from './SystemStatusEffects';
 
 export interface SystemState {
     power: PowerLevel;
     basePower: number;
     health: number;
-    effects: SystemStatusEffectData[];
+    effects: SystemStatusEffectInstance[];
 }
 
 export function adjustPower(system: SystemState, adjustment: number) {
@@ -22,4 +22,20 @@ export function applyEffect(system: SystemState, effect: SystemStatusEffectType)
     const effectInstance = createEffect(effect);
     system.effects.push(effectInstance); // TODO: add in "remaining duration" order
     effectInstance.apply(system);
+}
+
+export function removeExpiredEffects(system: SystemState) {
+    const currentTime = Date.now();
+    const filteredEffects = system.effects.filter(effect => {
+        if (effect.removeTime > currentTime) {
+            return true;
+        }
+        
+        effect.remove(system);
+        return false;
+    });
+    
+    if (filteredEffects.length < system.effects.length) {
+        system.effects = filteredEffects;
+    }
 }

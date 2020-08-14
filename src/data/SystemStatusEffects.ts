@@ -1,6 +1,5 @@
 import { SystemStatusEffectType, SystemStatusEffectData, SystemStatusEffectInstance } from './SystemStatusEffect';
 import { SystemState, adjustPower, adjustHealth } from './SystemState';
-import { getRarityName } from './EngineeringCard';
 
 const allEffects: SystemStatusEffectData[] = [
     {
@@ -87,11 +86,8 @@ for (const effect of allEffects) {
 export function createEffect(effect: SystemStatusEffectType): SystemStatusEffectInstance {
     const effectData =  effects.get(effect)!;
 
-    const currentTime = new Date();
-    const removeTime = new Date(currentTime.getTime() + effectData.duration * 1000);
-
     return {
         ...effectData,
-        removeTime,
+        removeTime: Date.now() + effectData.duration * 1000,
     };
 }

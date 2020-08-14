@@ -10,6 +10,7 @@ import { ClientGameState, EnhancedClientGameState, enhanceState } from '../data/
 import { ClientAction } from '../data/ClientAction';
 import { createCard } from '../data/EngineeringCards';
 import { mapClientState } from '../logic/mapClientState';
+import { tickState } from '../logic/tickState';
 
 interface Props {
     initialSystem: System;
@@ -130,6 +131,8 @@ function useGameStateReducer(initialSystem?: System): [EnhancedClientGameState, 
 
     useEffect(() => {
         const interval = setInterval(() => {
+            tickState(gameState, 0.05);
+
             if (patches.length === 0) {
                 return;
             }
@@ -144,7 +147,7 @@ function useGameStateReducer(initialSystem?: System): [EnhancedClientGameState, 
             clearInterval(interval);
             patches.splice(0, patches.length);
         }
-    }, []);
+    }, [gameState]);
 
     const actionExecutor = (action: ClientAction) => {
         clientActionExecutor(gameState, action, localClientName);

@@ -24,5 +24,5 @@ export interface SystemStatusEffectData extends SystemStatusEffectInfo {
 }
 
 export interface SystemStatusEffectInstance extends SystemStatusEffectData {
-    removeTime: Date; // TODO: presumably this should deal in ticks? And we want to actually remove effects.
+    removeTime: number;
 }
