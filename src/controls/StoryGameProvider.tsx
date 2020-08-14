@@ -95,6 +95,7 @@ function createInitialState(currentSystem?: System): GameState {
                         [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
                     ],
                     nextCardId,
+                    generationProgress: 0,
                 },
             },
         },

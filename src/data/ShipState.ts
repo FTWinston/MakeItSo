@@ -13,5 +13,6 @@ export interface ShipState {
         hand: EngineeringCardData[];
         draftChoices: Array<EngineeringCardData[]>;
         nextCardId: number;
+        generationProgress: number;
     };
 }
