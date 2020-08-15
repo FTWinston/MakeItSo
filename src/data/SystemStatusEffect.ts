@@ -1,4 +1,5 @@
 import { SystemState } from './SystemState';
+import { Countdown } from './Countdown';
 
 export enum SystemStatusEffectType {
     Boost1,
@@ -12,7 +13,7 @@ export enum SystemStatusEffectType {
     Repair,
 }
 
-export interface SystemStatusEffectInfo {
+interface SystemStatusEffectInfo {
     type: SystemStatusEffectType;
     duration: number;
     positive: boolean;
@@ -23,6 +24,6 @@ export interface SystemStatusEffectData extends SystemStatusEffectInfo {
     remove: (system: SystemState) => void;
 }
 
-export interface SystemStatusEffectInstance extends SystemStatusEffectData {
-    removeTime: number;
-}
+export type SystemStatusEffectInstance = SystemStatusEffectData & Countdown;
+
+export type ClientSystemStatusEffectInstance = SystemStatusEffectInfo & Countdown;

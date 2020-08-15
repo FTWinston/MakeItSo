@@ -1,8 +1,8 @@
 import { PowerLevel } from './PowerLevel';
-import { SystemStatusEffectInfo } from './SystemStatusEffect';
+import { ClientSystemStatusEffectInstance } from './SystemStatusEffect';
 
 export interface ClientSystemState {
     power: PowerLevel;
     health: number;
-    effects: SystemStatusEffectInfo[];
+    effects: ClientSystemStatusEffectInstance[];
 }

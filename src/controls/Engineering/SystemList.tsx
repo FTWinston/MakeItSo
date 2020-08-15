@@ -3,7 +3,7 @@ import { TableContainer, Table, TableHead, TableRow, TableCell, TableBody, makeS
 import { SystemListItem } from './SystemListItem';
 import { System, anyEngineeringSystem } from '../../data/System';
 import { EngineeringCardInfo } from '../../data/EngineeringCard';
-import { ClientSystemState } from '../../data/ClientShipState';
+import { ClientSystemState } from '../../data/ClientSystemState';
 
 interface Props {
     systemOrder: System[];

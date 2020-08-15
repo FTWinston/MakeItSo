@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress, makeStyles, useTheme, Zoom } from '@material-ui/core';
-import { SystemStatusEffectInfo } from '../../data/SystemStatusEffect';
+import { ClientSystemStatusEffectInstance } from '../../data/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
+import { getCompletedFraction } from '../../data/Countdown';
 
-export interface EffectIndicatorData extends SystemStatusEffectInfo {
-    remaining?: number;
-}
-
-interface Props extends EffectIndicatorData {
+interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
 }
 
@@ -28,12 +25,12 @@ export const indicatorSize = 32;
 export const EffectIndicator: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const [value, setValue] = useState(props.remaining === undefined ? props.duration : props.remaining);
+    const [value, setValue] = useState(100 * getCompletedFraction(props));
 
     useEffect(
         () => {
             const interval = setInterval(
-                () => setValue(value => Math.max(value - 0.2, 0)),
+                () => setValue(100 * getCompletedFraction(props)),
                 200
             );
 
@@ -51,14 +48,14 @@ export const EffectIndicator: React.FC<Props> = props => {
 
     return (
         <Zoom
-            in={value > 0}
+            in={value < 100}
             timeout={transitionDuration}
             unmountOnExit
             >
             <Box position="relative" display="inline-flex" className={props.className}>
                 <CircularProgress 
                     variant="static"
-                    value={100 - value / props.duration * 100}
+                    value={value}
                     className={classes.progress}
                     size={indicatorSize}
                 />

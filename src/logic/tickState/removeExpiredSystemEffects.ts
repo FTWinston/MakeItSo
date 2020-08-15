@@ -9,7 +9,7 @@ export function removeExpiredEffects(ship: ShipState) {
         const systemState = ship.systemInfo[system];
         
         const filteredEffects = systemState.effects.filter(effect => {
-            if (effect.removeTime > currentTime) {
+            if (effect.endTime > currentTime) {
                 return true;
             }
     

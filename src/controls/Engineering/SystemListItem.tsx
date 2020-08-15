@@ -5,7 +5,7 @@ import { System, getSystemName } from '../../data/System';
 import { SystemIcon } from '../common/SystemIcon';
 import { PowerIcon } from '../common/PowerIcon';
 import { PowerLevel } from '../../data/PowerLevel';
-import { SystemStatusEffectInfo } from '../../data/SystemStatusEffect';
+import { ClientSystemStatusEffectInstance } from '../../data/SystemStatusEffect';
 import { SystemHealth } from './SystemHealth';
 import { EffectIndicators } from './EffectIndicators';
 
@@ -13,7 +13,7 @@ interface Props {
     system: System;
     health: number;
     power: PowerLevel;
-    effects: SystemStatusEffectInfo[];
+    effects: ClientSystemStatusEffectInstance[];
     validDropTarget?: boolean;
 }
 

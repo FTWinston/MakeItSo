@@ -1,10 +1,11 @@
 import React from 'react';
 import { Box, makeStyles } from '@material-ui/core';
-import { EffectIndicatorData, EffectIndicator, indicatorSize } from './EffectIndicator';
+import { EffectIndicator, indicatorSize } from './EffectIndicator';
+import { ClientSystemStatusEffectInstance } from '../../data/SystemStatusEffect';
 
 interface Props {
     className?: string;
-    effects: EffectIndicatorData[];
+    effects: ClientSystemStatusEffectInstance[];
 }
 
 const useStyles = makeStyles(theme => ({

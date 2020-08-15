@@ -88,6 +88,6 @@ export function createEffect(effect: SystemStatusEffectType): SystemStatusEffect
 
     return {
         ...effectData,
-        removeTime: Date.now() + effectData.duration * 1000,
+        endTime: Date.now() + effectData.duration * 1000,
     };
 }
