@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Box, CircularProgress, makeStyles, useTheme, Zoom } from '@material-ui/core';
 import { ClientSystemStatusEffectInstance } from '../../data/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { getCompletedFraction } from '../../data/Countdown';
+import { getCompletedFraction } from '../../data/Progression';
 
 interface Props extends ClientSystemStatusEffectInstance {
     className?: string;

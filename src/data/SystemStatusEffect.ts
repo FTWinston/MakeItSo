@@ -1,5 +1,5 @@
 import { SystemState } from './SystemState';
-import { Countdown } from './Countdown';
+import { Progression } from './Progression';
 
 export enum SystemStatusEffectType {
     Boost1,
@@ -24,6 +24,6 @@ export interface SystemStatusEffectData extends SystemStatusEffectInfo {
     remove: (system: SystemState) => void;
 }
 
-export type SystemStatusEffectInstance = SystemStatusEffectData & Countdown;
+export type SystemStatusEffectInstance = SystemStatusEffectData & Progression;
 
-export type ClientSystemStatusEffectInstance = SystemStatusEffectInfo & Countdown;
+export type ClientSystemStatusEffectInstance = SystemStatusEffectInfo & Progression;

@@ -14,5 +14,7 @@ export interface ShipState {
         draftChoices: Array<EngineeringCardData[]>;
         nextCardId: number;
         generationProgress: number;
+
+        // TODO: inject a Progression here, that's somehow updated whenever engineering power level changes.
     };
 }
