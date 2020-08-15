@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, makeStyles, useTheme, Zoom } from '@material-ui/core';
+import React from 'react';
+import { Box, makeStyles, useTheme, Zoom } from '@material-ui/core';
 import { ClientSystemStatusEffectInstance } from '../../data/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { getCompletedFraction } from '../../data/Progression';
+import { CircularProgression } from '../common/CircularProgression';
 
 interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
@@ -25,20 +25,6 @@ export const indicatorSize = 32;
 export const EffectIndicator: React.FC<Props> = props => {
     const classes = useStyles();
 
-    const [value, setValue] = useState(100 * getCompletedFraction(props));
-
-    useEffect(
-        () => {
-            const interval = setInterval(
-                () => setValue(100 * getCompletedFraction(props)),
-                200
-            );
-
-            return () => clearInterval(interval);
-        },
-        []
-    );
-
     const theme = useTheme();
 
     const transitionDuration = {
@@ -48,14 +34,14 @@ export const EffectIndicator: React.FC<Props> = props => {
 
     return (
         <Zoom
-            in={value < 100}
+            in={true}
             timeout={transitionDuration}
             unmountOnExit
             >
             <Box position="relative" display="inline-flex" className={props.className}>
-                <CircularProgress 
-                    variant="static"
-                    value={value}
+                <CircularProgression
+                    duration={props.duration}
+                    endTime={props.endTime}
                     className={classes.progress}
                     size={indicatorSize}
                 />
