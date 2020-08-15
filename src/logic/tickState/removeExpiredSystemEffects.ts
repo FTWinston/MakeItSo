@@ -1,25 +1,19 @@
-import { ShipState } from '../../data/ShipState';
-import { System } from '../../data/System';
-import { getTime } from '../../data/Progression';
+import { getTime, hasCompleted } from '../../data/Progression';
+import { SystemState } from '../../data/SystemState';
 
-export function removeExpiredEffects(ship: ShipState) {
+export function removeExpiredEffects(systemState: SystemState) {
     const currentTime = getTime();
-    
-    for (const systemId in ship.systemInfo) {
-        const system = systemId as unknown as System;
-        const systemState = ship.systemInfo[system];
         
-        const filteredEffects = systemState.effects.filter(effect => {
-            if (effect.endTime > currentTime) {
-                return true;
-            }
-    
+    const filteredEffects = systemState.effects.filter(effect => {
+        if (hasCompleted(effect, currentTime)) {
             effect.remove(systemState);
             return false;
-        });
-        
-        if (filteredEffects.length < systemState.effects.length) {
-            systemState.effects = filteredEffects;
         }
+
+        return true;
+    });
+    
+    if (filteredEffects.length < systemState.effects.length) {
+        systemState.effects = filteredEffects;
     }
 }

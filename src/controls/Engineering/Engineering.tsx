@@ -149,6 +149,7 @@ export const Engineering: React.FC = () => {
                             type: 'power draft',
                             card: card.id,
                         })}
+                        progress={gameState.localShip.power.cardGeneration}
                     />
                 </div>
             </SwipeableViews>

@@ -3,10 +3,13 @@ import { EngineeringCardInfo } from '../../data/EngineeringCard';
 import { makeStyles, Typography, Zoom, useTheme, Slide } from '@material-ui/core';
 import { cardHeight } from './EngineeringCard';
 import { ZoomableCard, shrinkScale } from './ZoomableCard';
+import { Progression } from '../../data/Progression';
+import { LinearProgression } from '../common/LinearProgression';
 
 interface Props {
     cards: EngineeringCardInfo[];
     choose: (card: EngineeringCardInfo) => void;
+    progress?: Progression;
 }
 
 const useStyles = makeStyles(theme => ({
@@ -45,6 +48,9 @@ const useStyles = makeStyles(theme => ({
     },
     selectedCardWrapper: {
         zIndex: 1,
+    },
+    progress: {
+        marginTop: theme.spacing(1),
     }
 }));
 
@@ -91,7 +97,17 @@ export const CardChoice: React.FC<Props> = props => {
     );
 
     const prompt = cards.length === 0
-        ? <Typography className={classes.emptyPrompt}>No card choice available.<br/>Please wait...</Typography>
+        ? (
+            <Typography className={classes.emptyPrompt} component="div">
+                No card choice available.
+                <br/>Please wait...
+                {props.progress && <LinearProgression
+                    className={classes.progress}
+                    {...props.progress}
+                    color="primary"
+                />}
+            </Typography>
+        )
         : (
             <Typography 
                 className={props.cards.length === 0 ? `${classes.prompt} ${classes.fadePrompt}` : classes.prompt}

@@ -5,13 +5,13 @@ import { createEffect } from './SystemStatusEffects';
 export interface SystemState {
     power: PowerLevel;
     basePower: number;
+    prevPower: number;
     health: number;
     effects: SystemStatusEffectInstance[];
 }
 
 export function adjustPower(system: SystemState, adjustment: number) {
     system.basePower += adjustment;
-    system.power = Math.max(Math.min(system.basePower, PowerLevel.Full), PowerLevel.Off);
 }
 
 export function adjustHealth(system: SystemState, adjustment: number) {

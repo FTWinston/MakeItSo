@@ -1,6 +1,7 @@
 import { System } from './System';
 import { EngineeringCardData } from './EngineeringCard';
 import { SystemState } from './SystemState';
+import { Progression } from './Progression';
 
 export interface ShipState {
     clientsBySystem: Partial<Record<System, string>>;
@@ -13,8 +14,6 @@ export interface ShipState {
         hand: EngineeringCardData[];
         draftChoices: Array<EngineeringCardData[]>;
         nextCardId: number;
-        generationProgress: number;
-
-        // TODO: inject a Progression here, that's somehow updated whenever engineering power level changes.
+        cardGeneration?: Progression;
     };
 }
