@@ -5,16 +5,21 @@ import { CircularProgressionWrapper } from './CircularProgressionWrapper';
 
 const useStyles = makeStyles(theme => ({
     draftTab: {
-        postion: 'relative',
+        position: 'relative',
     },
     draftBadge: {
         color: theme.palette.secondary.contrastText,
     },
     draftProgressWrapper: {
         position: 'absolute',
-        right: theme.spacing(2),
-        top: theme.spacing(1),
+        right: theme.spacing(1.5),
+        top: theme.spacing(0.5),
         zIndex: 1,
+        width: 26,
+        height: 26,
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     draftProgress: {
         color: theme.palette.secondary.contrastText,
@@ -48,7 +53,11 @@ export const EngineeringTabs: React.FC<Props> = props => {
                 {countBadge}
             </CircularProgressionWrapper>
         )
-        : countBadge;
+        : (
+            <div className={classes.draftProgressWrapper}>
+                {countBadge}
+            </div>
+        );
 
     return (
         <Tabs
