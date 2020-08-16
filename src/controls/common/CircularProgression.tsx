@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Progression, getCompletedFraction } from '../../data/Progression';
 import { CircularProgress } from '@material-ui/core';
 
@@ -20,7 +20,7 @@ export const CircularProgression: React.FC<Props> = props => {
 
             return () => clearInterval(interval);
         },
-        []
+        [props.duration, props.endTime]
     );
 
     return (

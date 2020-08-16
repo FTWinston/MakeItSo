@@ -4,7 +4,6 @@ import { System } from '../../data/System';
 import { getTime, determineEndTime, hasCompleted, determineUpdatedEndTime } from '../../data/Progression';
 import { PowerLevel } from '../../data/PowerLevel';
 
-const engineeringCardGenerationTarget = 40;
 const maxEngineeringCardDraftQueue = 9;
 
 function determineDuration(ship: ShipState) {
@@ -25,7 +24,7 @@ function determineDuration(ship: ShipState) {
 export function progressEngineeringCardDraft(ship: ShipState) {
     const { power, prevPower } = ship.systemInfo[System.Engineering];
 
-    if (ship.power.draftChoices.length >= maxEngineeringCardDraftQueue || power == PowerLevel.Off) {
+    if (ship.power.draftChoices.length >= maxEngineeringCardDraftQueue || power === PowerLevel.Off) {
         if (ship.power.cardGeneration) {
             delete ship.power.cardGeneration;
         }

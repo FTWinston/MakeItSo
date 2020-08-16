@@ -1,11 +1,12 @@
 import React, { useContext, useState } from 'react';
-import { Tabs, Tab, makeStyles, Badge } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import SwipeableViews from 'react-swipeable-views';
 import { ShipSystem } from '../common/ShipSystem';
 import { GameContext } from '../GameProvider';
 import { SystemList } from './SystemList';
 import { CardHand } from './CardHand';
 import { CardChoice } from './CardChoice';
+import { EngineeringTabs } from './EngineeringTabs';
 import { EngineeringCardInfo } from '../../data/EngineeringCard';
 import { System } from '../../data/System';
 
@@ -31,16 +32,6 @@ const useStyles = makeStyles(theme => ({
         display: 'flex',
         flexDirection: 'column',
     },
-    draftTab: {
-        postion: 'relative',
-    },
-    draftBadgeRoot: {
-        position: 'static',
-    },
-    draftBadge: {
-        right: theme.spacing(2),
-        top: theme.spacing(2),
-    }
 }));
 
 export const Engineering: React.FC = () => {
@@ -53,36 +44,12 @@ export const Engineering: React.FC = () => {
     const [tabIndex, setTabIndex] = useState(0);
 
     const tabs = (
-        <Tabs
-            value={tabIndex}
-            onChange={(_e, newVal) => setTabIndex(newVal)}
-            variant="fullWidth"
-        >
-            <Tab
-                label="Ship Systems"
-                id="engineering-tab-systems"
-                aria-controls="engineering-systems"
-                value={0}
-            />
-            <Tab
-                className={classes.draftTab}
-                label={
-                    <Badge
-                        badgeContent={gameState.localShip.power.draftChoices.length}
-                        color="secondary"
-                        classes={{
-                            root: classes.draftBadgeRoot,
-                            badge: classes.draftBadge,
-                        }}
-                    >
-                        Draft Cards
-                    </Badge>
-                }   
-                id="engineering-tab-draft"
-                aria-controls="engineering-draft"
-                value={1}
-            />
-        </Tabs>
+        <EngineeringTabs
+            tabIndex={tabIndex}
+            setTabIndex={setTabIndex}
+            choices={gameState.localShip.power.draftChoices.length}
+            progress={gameState.localShip.power.cardGeneration}
+        />
     );
 
     const tryPlayCard = (card: EngineeringCardInfo, x: number, y: number) => {

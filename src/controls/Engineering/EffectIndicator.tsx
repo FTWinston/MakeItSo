@@ -1,8 +1,8 @@
 import React from 'react';
-import { Box, makeStyles, useTheme, Zoom } from '@material-ui/core';
+import { makeStyles, useTheme, Zoom } from '@material-ui/core';
 import { ClientSystemStatusEffectInstance } from '../../data/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { CircularProgression } from '../common/CircularProgression';
+import { CircularProgressionWrapper } from './CircularProgressionWrapper';
 
 interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
@@ -37,27 +37,15 @@ export const EffectIndicator: React.FC<Props> = props => {
             in={true}
             timeout={transitionDuration}
             unmountOnExit
+        >
+            <CircularProgressionWrapper
+                size={indicatorSize}
+                duration={props.duration}
+                endTime={props.endTime}
+                progressClassName={classes.progress}
             >
-            <Box position="relative" display="inline-flex" className={props.className}>
-                <CircularProgression
-                    duration={props.duration}
-                    endTime={props.endTime}
-                    className={classes.progress}
-                    size={indicatorSize}
-                />
-                <Box
-                    top={0}
-                    left={0}
-                    bottom={0}
-                    right={0}
-                    position="absolute"
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
-                >
-                    <EffectIcon effect={props.type} className={props.positive ? classes.iconPositive : classes.iconNegative} />
-                </Box>
-            </Box>
+                <EffectIcon effect={props.type} className={props.positive ? classes.iconPositive : classes.iconNegative} />
+            </CircularProgressionWrapper>
         </Zoom>
     );
 }
