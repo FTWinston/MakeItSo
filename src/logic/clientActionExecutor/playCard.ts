@@ -14,15 +14,15 @@ export function playCard(state: GameState, client: string, cardId: number, syste
         return;
     }
 
-    const handIndex = ship.power.hand.findIndex(card => card.id === cardId);
+    const handIndex = ship.engineering.hand.findIndex(card => card.id === cardId);
 
     if (handIndex === -1) {
         return;
     }
 
-    const card = ship.power.hand[handIndex];
+    const card = ship.engineering.hand[handIndex];
 
     if (card.play(ship, system) !== false) {
-        ship.power.hand.splice(handIndex, 1);
+        ship.engineering.hand.splice(handIndex, 1);
     }
 }

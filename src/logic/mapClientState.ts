@@ -26,8 +26,8 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         }
                     }
                 },
-                power: {
-                    // [shouldMap]: power => power.client === client,
+                engineering: {
+                    // [shouldMap]: engineering => engineering.client === client,
                     hand: {
                         [anyOtherFields]: {
                             type: true,

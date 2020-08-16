@@ -9,7 +9,7 @@ export interface ShipState {
 
     systemInfo: Record<System, SystemState>;
 
-    power: {
+    engineering: {
         systemOrder: System[];
         hand: EngineeringCardData[];
         draftChoices: Array<EngineeringCardData[]>;

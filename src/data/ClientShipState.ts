@@ -8,7 +8,7 @@ export interface ClientShipState {
 
     systemInfo: Record<System, ClientSystemState>;
 
-    power: {
+    engineering: {
         systemOrder: System[];
         hand: EngineeringCardInfo[];
         draftChoices: Array<EngineeringCardInfo[]>;

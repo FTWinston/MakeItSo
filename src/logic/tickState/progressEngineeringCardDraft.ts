@@ -24,9 +24,9 @@ function determineDuration(ship: ShipState) {
 export function progressEngineeringCardDraft(ship: ShipState) {
     const { power, prevPower } = ship.systemInfo[System.Engineering];
 
-    if (ship.power.draftChoices.length >= maxEngineeringCardDraftQueue || power === PowerLevel.Off) {
-        if (ship.power.cardGeneration) {
-            delete ship.power.cardGeneration;
+    if (ship.engineering.draftChoices.length >= maxEngineeringCardDraftQueue || power === PowerLevel.Off) {
+        if (ship.engineering.cardGeneration) {
+            delete ship.engineering.cardGeneration;
         }
 
         return;
@@ -34,10 +34,10 @@ export function progressEngineeringCardDraft(ship: ShipState) {
 
     const currentTime = getTime();
 
-    if (!ship.power.cardGeneration) {
+    if (!ship.engineering.cardGeneration) {
         const duration = determineDuration(ship);
         
-        ship.power.cardGeneration = {
+        ship.engineering.cardGeneration = {
             duration,
             endTime: determineEndTime(duration, currentTime)
         }
@@ -45,22 +45,22 @@ export function progressEngineeringCardDraft(ship: ShipState) {
     else if (power !== prevPower) {
         const duration = determineDuration(ship);
 
-        ship.power.cardGeneration = {
+        ship.engineering.cardGeneration = {
             duration,
-            endTime: determineUpdatedEndTime(duration, ship.power.cardGeneration, currentTime),
+            endTime: determineUpdatedEndTime(duration, ship.engineering.cardGeneration, currentTime),
         };
     }
 
-    if (hasCompleted(ship.power.cardGeneration, currentTime)) {
-        ship.power.draftChoices.push([
-            createCard(ship.power.nextCardId++),
-            createCard(ship.power.nextCardId++),
-            createCard(ship.power.nextCardId++),
+    if (hasCompleted(ship.engineering.cardGeneration, currentTime)) {
+        ship.engineering.draftChoices.push([
+            createCard(ship.engineering.nextCardId++),
+            createCard(ship.engineering.nextCardId++),
+            createCard(ship.engineering.nextCardId++),
         ]);
 
-        ship.power.cardGeneration = {
-            duration: ship.power.cardGeneration.duration,
-            endTime: determineEndTime(ship.power.cardGeneration.duration, currentTime),
+        ship.engineering.cardGeneration = {
+            duration: ship.engineering.cardGeneration.duration,
+            endTime: determineEndTime(ship.engineering.cardGeneration.duration, currentTime),
         };
     }
 }

@@ -10,19 +10,19 @@ export function draftCard(state: GameState, client: string, cardId: number) {
     const ship = state.ships[shipId];
     const currentSystem = ship.systemsByClient[client];
 
-    if (currentSystem !== System.Engineering || ship.power.draftChoices.length === 0) {
+    if (currentSystem !== System.Engineering || ship.engineering.draftChoices.length === 0) {
         return;
     }
 
-    const chosen = ship.power.draftChoices[0].find(card => card.id === cardId);
+    const chosen = ship.engineering.draftChoices[0].find(card => card.id === cardId);
 
     if (chosen === undefined) {
         return; // TODO: ability to specify "no card" somehow?
     }
 
-    ship.power.hand.push(chosen);
+    ship.engineering.hand.push(chosen);
 
-    const draftChoices = ship.power.draftChoices.slice();
+    const draftChoices = ship.engineering.draftChoices.slice();
     draftChoices.shift();
-    ship.power.draftChoices = draftChoices;
+    ship.engineering.draftChoices = draftChoices;
 }

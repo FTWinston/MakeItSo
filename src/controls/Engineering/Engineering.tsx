@@ -47,8 +47,8 @@ export const Engineering: React.FC = () => {
         <EngineeringTabs
             tabIndex={tabIndex}
             setTabIndex={setTabIndex}
-            choices={gameState.localShip.power.draftChoices.length}
-            progress={gameState.localShip.power.cardGeneration}
+            choices={gameState.localShip.engineering.draftChoices.length}
+            progress={gameState.localShip.engineering.cardGeneration}
         />
     );
 
@@ -98,7 +98,7 @@ export const Engineering: React.FC = () => {
                 >
                     <SystemList
                         systemInfo={gameState.localShip.systemInfo}
-                        systemOrder={gameState.localShip.power.systemOrder}
+                        systemOrder={gameState.localShip.engineering.systemOrder}
                         draggingCard={draggingCard}
                     />
                 </div>
@@ -111,18 +111,18 @@ export const Engineering: React.FC = () => {
                     className={classes.tabContent}
                 >
                     <CardChoice
-                        cards={gameState.localShip.power.draftChoices[0] ?? []}
+                        cards={gameState.localShip.engineering.draftChoices[0] ?? []}
                         choose={card => dispatch({
                             type: 'power draft',
                             card: card.id,
                         })}
-                        progress={gameState.localShip.power.cardGeneration}
+                        progress={gameState.localShip.engineering.cardGeneration}
                     />
                 </div>
             </SwipeableViews>
                 
             <CardHand
-                cards={gameState.localShip.power.hand}
+                cards={gameState.localShip.engineering.hand}
                 dragStart={tabIndex === 0 ? setDragging : undefined}
                 dragEnd={tabIndex === 0 ? tryPlayCard : undefined}
             />

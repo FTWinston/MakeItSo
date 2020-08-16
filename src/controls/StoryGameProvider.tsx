@@ -73,7 +73,7 @@ function createInitialState(currentSystem?: System): GameState {
                         effects: [],
                     },
                 },
-                power: {
+                engineering: {
                     systemOrder: [
                         System.Helm,
                         System.FTL,
