@@ -39,6 +39,8 @@ export const CardIcon: React.FC<Props> = props => {
         case EngineeringCardType.RepairMedium:
         case EngineeringCardType.RepairLarge:
             return <EffectIcon effect={SystemStatusEffectType.Repair} color={props.color} />
+        case EngineeringCardType.SwapSystems:
+            return <EffectIcon effect={SystemStatusEffectType.Swap} color={props.color} />
         default:
             Icon = UnknownIcon;
             break;

@@ -77,6 +77,14 @@ const allEffects: SystemStatusEffectData[] = [
         apply: () => {},
         remove: () => {}
     },
+
+    {
+        type: SystemStatusEffectType.Swap,
+        positive: true,
+        duration: 1,
+        apply: () => {},
+        remove: () => {}
+    },
 ];
 
 const effects: Map<SystemStatusEffectType, SystemStatusEffectData> = new Map();

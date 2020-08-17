@@ -51,7 +51,9 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         },
                         [anyOtherFields]: {}
                     },
-                    systemOrder: true,
+                    systemOrder: {
+                        [anyOtherFields]: true,
+                    },
                     cardGeneration: true,
                 }
             }

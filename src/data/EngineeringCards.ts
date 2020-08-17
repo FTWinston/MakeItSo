@@ -2,6 +2,7 @@ import { EngineeringCardData, EngineeringCardType, EngineeringCardRarity } from 
 import { System } from './System';
 import { SystemStatusEffectType } from './SystemStatusEffect';
 import { applyEffect, adjustHealth } from './SystemState';
+import { ShipSystem } from '../controls/common/ShipSystem';
 
 const commonCards: Array<(id: number) => EngineeringCardData> = [
     id => ({
@@ -134,6 +135,41 @@ const rareCards: Array<(id: number) => EngineeringCardData> = [
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 25);
         },
+    }),
+
+    id => ({
+        id,
+        type: EngineeringCardType.SwapSystems,
+        name: 'Swap Systems',
+        description: 'Swaps the position of the selected system with the system below it',
+        rarity: EngineeringCardRarity.Rare,
+        play: (ship, system) => {
+            const systemOrder = ship.engineering.systemOrder;
+            const firstIndex = systemOrder.indexOf(system);
+            if (firstIndex === -1 || firstIndex === systemOrder.length - 1) {
+                return false;
+            }
+
+            const secondIndex = firstIndex + 1;
+
+            const firstSystem = systemOrder[firstIndex];
+            const secondSystem = systemOrder[secondIndex];
+
+            const firstState = ship.systemInfo[firstSystem];
+            applyEffect(firstState, SystemStatusEffectType.Swap);
+
+            const secondState = ship.systemInfo[secondSystem];
+            applyEffect(secondState, SystemStatusEffectType.Swap);
+
+            systemOrder[firstIndex] = secondSystem;
+            systemOrder[secondIndex] = firstSystem;
+
+            firstState.modified = true;
+            secondState.modified = true;
+        },
+        determineAllowedSystems: ship => ship.engineering.systemOrder
+            .slice(0, ship.engineering.systemOrder.length - 1)
+            .reduce((prev, current) => prev | current, 0 as System),
     }),
 ];
 

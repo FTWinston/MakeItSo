@@ -9,6 +9,7 @@ import Reduce3Icon from '@material-ui/icons/VerticalAlignBottom';
 import OverloadIcon from '@material-ui/icons/Warning';
 import DamageIcon from '@material-ui/icons/Whatshot';
 import RepairIcon from '@material-ui/icons/Build';
+import SwapIcon from '@material-ui/icons/SwapVert';
 import { SystemStatusEffectType } from '../../data/SystemStatusEffect';
 
 interface Props {
@@ -46,6 +47,9 @@ export const EffectIcon: React.FC<Props> = props => {
             break;
         case SystemStatusEffectType.Repair:
             Icon = RepairIcon;
+            break;
+        case SystemStatusEffectType.Swap:
+            Icon = SwapIcon;
             break;
         default:
             Icon = UnknownIcon as never;
