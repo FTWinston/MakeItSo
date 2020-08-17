@@ -6,8 +6,8 @@ import { PowerLevel } from '../../data/PowerLevel';
 
 const maxEngineeringCardDraftQueue = 9;
 
-function determineDuration(ship: ShipState) {
-    switch (ship.systemInfo[System.Engineering].power) {
+function determineDuration(power: PowerLevel) {
+    switch (power) {
         case PowerLevel.Off:
             return 0;
         case PowerLevel.Low:
@@ -35,7 +35,7 @@ export function progressEngineeringCardDraft(ship: ShipState) {
     const currentTime = getTime();
 
     if (!ship.engineering.cardGeneration) {
-        const duration = determineDuration(ship);
+        const duration = determineDuration(power);
         
         ship.engineering.cardGeneration = {
             duration,
@@ -43,7 +43,7 @@ export function progressEngineeringCardDraft(ship: ShipState) {
         }
     }
     else if (power !== prevPower) {
-        const duration = determineDuration(ship);
+        const duration = determineDuration(power);
 
         ship.engineering.cardGeneration = {
             duration,

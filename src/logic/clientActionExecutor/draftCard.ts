@@ -20,6 +20,9 @@ export function draftCard(state: GameState, client: string, cardId: number) {
         return; // TODO: ability to specify "no card" somehow?
     }
 
+    if (chosen.determineAllowedSystems) {
+        chosen.allowedSystems = chosen.determineAllowedSystems(ship);
+    }
     ship.engineering.hand.push(chosen);
 
     const draftChoices = ship.engineering.draftChoices.slice();

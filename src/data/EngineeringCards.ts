@@ -37,7 +37,7 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         name: 'Boost Helm',
         description: "Boosts helm power by 2 for 12s",
         rarity: EngineeringCardRarity.Uncommon,
-        allowedSystems: System.Helm,
+        determineAllowedSystems: () => System.Helm,
         play: (ship, system) => {
             const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);
@@ -50,7 +50,7 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         name: 'Boost FTL',
         description: "Boosts FTL power by 2 for 12s",
         rarity: EngineeringCardRarity.Uncommon,
-        allowedSystems: System.FTL,
+        determineAllowedSystems: () => System.FTL,
         play: (ship, system) => {
             const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);
@@ -63,7 +63,7 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         name: 'Boost Weapons',
         description: "Boosts weapons power by 2 for 12s",
         rarity: EngineeringCardRarity.Uncommon,
-        allowedSystems: System.Weapons,
+        determineAllowedSystems: () => System.Weapons,
         play: (ship, system) => {
             const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);
@@ -76,7 +76,7 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         name: 'Boost Sensors',
         description: "Boosts sensor power by 2 for 12s",
         rarity: EngineeringCardRarity.Uncommon,
-        allowedSystems: System.Sensors,
+        determineAllowedSystems: () => System.Sensors,
         play: (ship, system) => {
             const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);
@@ -89,7 +89,7 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         name: 'Boost Engineering',
         description: "Boosts engineering power by 2 for 12s",
         rarity: EngineeringCardRarity.Uncommon,
-        allowedSystems: System.Engineering,
+        determineAllowedSystems: () => System.Engineering,
         play: (ship, system) => {
             const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);
@@ -102,7 +102,7 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
         name: 'Boost Shields',
         description: "Boosts shield power by 2 for 12s",
         rarity: EngineeringCardRarity.Uncommon,
-        // allowedSystems: System.Shields,
+        // determineAllowedSystems: () => System.Shields,
         play: (ship, system) => {
             const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);

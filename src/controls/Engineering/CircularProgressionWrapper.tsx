@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box } from '@material-ui/core';
 import { CircularProgression } from '../common/CircularProgression';
 import { Progression } from '../../data/Progression';
 

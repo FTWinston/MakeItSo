@@ -34,6 +34,7 @@ export interface EngineeringCardInfo {
 
 export interface EngineeringCardData extends EngineeringCardInfo {
     play: (ship: ShipState, system: System) => void | false;
+    determineAllowedSystems?: (ship: ShipState) => System;
 }
 
 export function getRarityName(rarity: EngineeringCardRarity) {
