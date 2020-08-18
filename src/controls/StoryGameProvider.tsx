@@ -5,12 +5,11 @@ import { System } from '../data/System';
 import { GameContext } from './GameProvider';
 import { clientActionExecutor } from '../logic/clientActionExecutor';
 import { GameState } from '../data/GameState';
-import { PowerLevel } from '../data/PowerLevel';
 import { ClientGameState, EnhancedClientGameState, enhanceState } from '../data/ClientGameState';
 import { ClientAction } from '../data/ClientAction';
-import { createCard } from '../data/EngineeringCards';
 import { mapClientState } from '../logic/mapClientState';
 import { tickState } from '../logic/tickState';
+import { createShipState } from '../logic/createShipState';
 
 interface Props {
     initialSystem: System;
@@ -20,95 +19,16 @@ const localShipId = 1;
 const localClientName = 'Local player';
 
 function createInitialState(currentSystem?: System): GameState {
-    const clientsBySystem: Partial<Record<System, string>> = {};
-    const systemsByClient: Partial<Record<string, System>> = {};
+    const shipState = createShipState();
 
     if (currentSystem !== undefined) {
-        clientsBySystem[currentSystem] = localClientName;
-        systemsByClient[localClientName] = currentSystem;
+        shipState.clientsBySystem[currentSystem] = localClientName;
+        shipState.systemsByClient[localClientName] = currentSystem;
     }
-
-    let nextCardId = 1;
 
     return {
         ships: {
-            [localShipId]: {
-                clientsBySystem,
-                systemsByClient,
-                systemInfo: {
-                    [System.Helm]: {
-                        power: PowerLevel.Med,
-                        basePower: PowerLevel.Med,
-                        prevPower: PowerLevel.Med,
-                        health: 100,
-                        effects: [],
-                        modified: true,
-                    },
-                    [System.FTL]: {
-                        power: PowerLevel.Med,
-                        basePower: PowerLevel.Med,
-                        prevPower: PowerLevel.Med,
-                        health: 100,
-                        effects: [],
-                        modified: true,
-                    },
-                    [System.Weapons]: {
-                        power: PowerLevel.Med,
-                        basePower: PowerLevel.Med,
-                        prevPower: PowerLevel.Med,
-                        health: 100,
-                        effects: [],
-                        modified: true,
-                    },
-                    [System.Sensors]: {
-                        power: PowerLevel.Med,
-                        basePower: PowerLevel.Med,
-                        prevPower: PowerLevel.Med,
-                        health: 100,
-                        effects: [],
-                        modified: true,
-                    },
-                    [System.Engineering]: {
-                        power: PowerLevel.Med,
-                        basePower: PowerLevel.Med,
-                        prevPower: PowerLevel.Med,
-                        health: 100,
-                        effects: [],
-                        modified: true,
-                    },
-                    [System.DamageControl]: {
-                        power: PowerLevel.Med,
-                        basePower: PowerLevel.Med,
-                        prevPower: PowerLevel.Med,
-                        health: 100,
-                        effects: [],
-                        modified: true,
-                    },
-                },
-                engineering: {
-                    systemOrder: [
-                        System.Helm,
-                        System.FTL,
-                        System.Weapons,
-                        System.Sensors,
-                        System.Engineering,
-                        System.DamageControl,
-                    ],
-                    hand: [
-                        createCard(nextCardId++),
-                        createCard(nextCardId++),
-                        createCard(nextCardId++),
-                        createCard(nextCardId++),
-                    ],
-                    draftChoices: [
-                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
-                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
-                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
-                        [createCard(nextCardId++), createCard(nextCardId++), createCard(nextCardId++)],
-                    ],
-                    nextCardId,
-                },
-            },
+            [localShipId]: shipState,
         },
         shipsByClient: { [localClientName]: localShipId },
         paused: false,
