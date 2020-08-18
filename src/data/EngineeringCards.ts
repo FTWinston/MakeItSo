@@ -245,6 +245,37 @@ const epicCards: Array<(id: number) => EngineeringCardData> = [
     
     id => ({
         id,
+        type: EngineeringCardType.Supercharge,
+        name: 'Supercharge',
+        description: "Damages adjacent systems, boosts a system's power by 4 for 10s, then damages it",
+        rarity: EngineeringCardRarity.Epic,
+        play: (ship, system) => {
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.Supercharge);
+
+            const systemOrder = ship.engineering.systemOrder;
+            const index = systemOrder.indexOf(system);
+
+            if (index > 0) {
+                const prevSystem = systemOrder[index - 1];
+                const prevSystemState = ship.systemInfo[prevSystem];
+                
+                adjustHealth(prevSystemState, 20);
+                applyEffect(prevSystemState, SystemStatusEffectType.Damage);
+            }
+            
+            if (index < systemOrder.length - 1) {
+                const nextSystem = systemOrder[index + 1];
+                const nextSystemState = ship.systemInfo[nextSystem];
+                
+                adjustHealth(nextSystemState, 20);
+                applyEffect(nextSystemState, SystemStatusEffectType.Damage);
+            }
+        },
+    }),
+
+    id => ({
+        id,
         type: EngineeringCardType.RepairLarge,
         name: 'Repair 3',
         description: "Restores 50% of a system's health",

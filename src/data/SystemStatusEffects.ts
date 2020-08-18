@@ -66,6 +66,20 @@ const allEffects: SystemStatusEffectData[] = [
     },
 
     {
+        type: SystemStatusEffectType.Supercharge,
+        positive: false,
+        duration: 10,
+        apply: (system: SystemState) => adjustPower(system, 4),
+        remove: (system: SystemState, forced: boolean) => {
+            adjustPower(system, -4);
+
+            if (!forced) {
+                adjustHealth(system, -80);
+            }
+        },
+    },
+
+    {
         type: SystemStatusEffectType.Damage,
         positive: false,
         duration: 1,
@@ -102,9 +116,12 @@ const allEffects: SystemStatusEffectData[] = [
         positive: true,
         duration: 3,
         apply: system => adjustPower(system, -100),
-        remove: system => {
+        remove: (system, forced) => {
              adjustPower(system, 100);
-             adjustHealth(system, 30);
+
+             if (!forced) {
+                adjustHealth(system, 30);
+             }
         },
     },
 ];

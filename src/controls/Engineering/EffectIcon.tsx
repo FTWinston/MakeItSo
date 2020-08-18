@@ -7,6 +7,7 @@ import Reduce1Icon from '@material-ui/icons/ExposureNeg1';
 import Reduce2Icon from '@material-ui/icons/ExposureNeg2';
 import Reduce3Icon from '@material-ui/icons/VerticalAlignBottom';
 import OverloadIcon from '@material-ui/icons/Warning';
+import SuperchargeIcon from '@material-ui/icons/FlashOn';
 import DamageIcon from '@material-ui/icons/Whatshot';
 import RepairIcon from '@material-ui/icons/Build';
 import SwapIcon from '@material-ui/icons/SwapVert';
@@ -58,6 +59,9 @@ export const EffectIcon: React.FC<Props> = props => {
             break;
         case SystemStatusEffectType.HotSwap:
             Icon = HotSwapIcon;
+            break;
+        case SystemStatusEffectType.Supercharge:
+            Icon = SuperchargeIcon;
             break;
         default:
             Icon = UnknownIcon as never;

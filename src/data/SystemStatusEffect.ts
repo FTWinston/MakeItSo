@@ -15,6 +15,7 @@ export enum SystemStatusEffectType {
     Swap,
     Offline,
     HotSwap,
+    Supercharge,
 }
 
 interface SystemStatusEffectInfo {

@@ -49,6 +49,8 @@ export const CardIcon: React.FC<Props> = props => {
             return <EffectIcon effect={SystemStatusEffectType.Offline} color={props.color} />
         case EngineeringCardType.HotSwap:
             return <EffectIcon effect={SystemStatusEffectType.HotSwap} color={props.color} />
+        case EngineeringCardType.Supercharge:
+            return <EffectIcon effect={SystemStatusEffectType.Supercharge} color={props.color} />
         default:
             Icon = UnknownIcon;
             break;

@@ -26,6 +26,7 @@ export enum EngineeringCardType {
     Purge,
     ColdRestart,
     HotSwap,
+    Supercharge,
 }
 
 export interface EngineeringCardInfo {
