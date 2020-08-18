@@ -10,6 +10,8 @@ import OverloadIcon from '@material-ui/icons/Warning';
 import DamageIcon from '@material-ui/icons/Whatshot';
 import RepairIcon from '@material-ui/icons/Build';
 import SwapIcon from '@material-ui/icons/SwapVert';
+import OfflineIcon from '@material-ui/icons/PowerOff';
+import HotSwapIcon from '@material-ui/icons/PowerSettingsNew';
 import { SystemStatusEffectType } from '../../data/SystemStatusEffect';
 
 interface Props {
@@ -50,6 +52,12 @@ export const EffectIcon: React.FC<Props> = props => {
             break;
         case SystemStatusEffectType.Swap:
             Icon = SwapIcon;
+            break;
+        case SystemStatusEffectType.Offline:
+            Icon = OfflineIcon;
+            break;
+        case SystemStatusEffectType.HotSwap:
+            Icon = HotSwapIcon;
             break;
         default:
             Icon = UnknownIcon as never;

@@ -58,7 +58,7 @@ const allEffects: SystemStatusEffectData[] = [
         apply: (system: SystemState) => adjustPower(system, 3),
         remove: (system: SystemState, forced: boolean) => {
             adjustPower(system, -3);
-            
+
             if (!forced) {
                 adjustHealth(system, -50);
             }
@@ -87,6 +87,25 @@ const allEffects: SystemStatusEffectData[] = [
         duration: 1,
         apply: () => {},
         remove: () => {}
+    },
+
+    {
+        type: SystemStatusEffectType.Offline,
+        positive: false,
+        duration: 12,
+        apply: system => adjustPower(system, -100),
+        remove: system => adjustPower(system, 100),
+    },
+
+    {
+        type: SystemStatusEffectType.HotSwap,
+        positive: true,
+        duration: 3,
+        apply: system => adjustPower(system, -100),
+        remove: system => {
+             adjustPower(system, 100);
+             adjustHealth(system, 30);
+        },
     },
 ];
 

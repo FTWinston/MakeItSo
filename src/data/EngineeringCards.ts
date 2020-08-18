@@ -114,6 +114,31 @@ const uncommonCards: Array<(id: number) => EngineeringCardData> = [
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
+
+    id => ({
+        id,
+        type: EngineeringCardType.ColdRestart,
+        name: 'Cold Restart',
+        description: "Repair 75 damage, but drain all power from target system for 12 seconds",
+        rarity: EngineeringCardRarity.Uncommon,
+        play: (ship, system) => {
+            const systemState = ship.systemInfo[system];
+            adjustHealth(systemState, 75);
+            applyEffect(systemState, SystemStatusEffectType.Offline);
+        },
+    }),
+
+    id => ({
+        id,
+        type: EngineeringCardType.HotSwap,
+        name: 'Hot Swap',
+        description: "Drain all power from target system for 3 seconds, then repair 30 damage",
+        rarity: EngineeringCardRarity.Uncommon,
+        play: (ship, system) => {
+            const systemState = ship.systemInfo[system];
+            applyEffect(systemState, SystemStatusEffectType.HotSwap);
+        },
+    }),
 ];
 
 const rareCards: Array<(id: number) => EngineeringCardData> = [

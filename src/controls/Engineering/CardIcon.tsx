@@ -45,6 +45,10 @@ export const CardIcon: React.FC<Props> = props => {
         case EngineeringCardType.Purge:
             Icon = PurgeIcon;
             break;
+        case EngineeringCardType.ColdRestart:
+            return <EffectIcon effect={SystemStatusEffectType.Offline} color={props.color} />
+        case EngineeringCardType.HotSwap:
+            return <EffectIcon effect={SystemStatusEffectType.HotSwap} color={props.color} />
         default:
             Icon = UnknownIcon;
             break;

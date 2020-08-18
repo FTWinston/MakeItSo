@@ -11,7 +11,10 @@ export enum SystemStatusEffectType {
     Overload,
     Damage,
     Repair,
+
     Swap,
+    Offline,
+    HotSwap,
 }
 
 interface SystemStatusEffectInfo {
