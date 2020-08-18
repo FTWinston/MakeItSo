@@ -22,6 +22,7 @@ export enum EngineeringCardType {
     RepairLarge,
     Overload,
     SwapSystems,
+    Purge,
 }
 
 export interface EngineeringCardInfo {

@@ -22,7 +22,7 @@ interface SystemStatusEffectInfo {
 
 export interface SystemStatusEffectData extends SystemStatusEffectInfo {
     apply: (system: SystemState) => void;
-    remove: (system: SystemState) => void;
+    remove: (system: SystemState, forced: boolean) => void;
 }
 
 export type SystemStatusEffectInstance = SystemStatusEffectData & Progression;

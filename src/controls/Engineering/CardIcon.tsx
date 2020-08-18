@@ -1,5 +1,6 @@
 import React from 'react';
 import BoostShieldIcon from '@material-ui/icons/Security';
+import PurgeIcon from '@material-ui/icons/BlurOff';
 import UnknownIcon from '@material-ui/icons/HelpOutline';
 import { EngineeringCardType } from '../../data/EngineeringCard';
 import { System } from '../../data/System';
@@ -41,6 +42,9 @@ export const CardIcon: React.FC<Props> = props => {
             return <EffectIcon effect={SystemStatusEffectType.Repair} color={props.color} />
         case EngineeringCardType.SwapSystems:
             return <EffectIcon effect={SystemStatusEffectType.Swap} color={props.color} />
+        case EngineeringCardType.Purge:
+            Icon = PurgeIcon;
+            break;
         default:
             Icon = UnknownIcon;
             break;

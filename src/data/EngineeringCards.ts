@@ -2,7 +2,11 @@ import { EngineeringCardData, EngineeringCardType, EngineeringCardRarity } from 
 import { System } from './System';
 import { SystemStatusEffectType } from './SystemStatusEffect';
 import { applyEffect, adjustHealth } from './SystemState';
-import { ShipSystem } from '../controls/common/ShipSystem';
+import { ShipState } from './ShipState';
+
+const onlyDamagedSystems = (ship: ShipState) => ship.engineering.systemOrder
+    .filter(system => ship.systemInfo[system].health < 100)
+    .reduce((prev, current) => prev | current, 0 as System);
 
 const commonCards: Array<(id: number) => EngineeringCardData> = [
     id => ({
@@ -28,6 +32,7 @@ const commonCards: Array<(id: number) => EngineeringCardData> = [
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 10);
         },
+        determineAllowedSystems: onlyDamagedSystems,
     }),
 ];
 
@@ -135,13 +140,14 @@ const rareCards: Array<(id: number) => EngineeringCardData> = [
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 25);
         },
+        determineAllowedSystems: onlyDamagedSystems,
     }),
 
     id => ({
         id,
         type: EngineeringCardType.SwapSystems,
         name: 'Swap Systems',
-        description: 'Swaps the position of the selected system with the system below it',
+        description: 'Swaps the position of the selected system with the one below it',
         rarity: EngineeringCardRarity.Rare,
         play: (ship, system) => {
             const systemOrder = ship.engineering.systemOrder;
@@ -171,6 +177,32 @@ const rareCards: Array<(id: number) => EngineeringCardData> = [
             .slice(0, ship.engineering.systemOrder.length - 1)
             .reduce((prev, current) => prev | current, 0 as System),
     }),
+
+    id => ({
+        id,
+        type: EngineeringCardType.Purge,
+        name: 'Purge',
+        description: 'Removes all negative effects from a system',
+        rarity: EngineeringCardRarity.Rare,
+        play: (ship, system) => {
+            const systemState = ship.systemInfo[system];
+            const effects = systemState.effects
+                .filter(effect => {
+                    if (effect.positive === false) {
+                        effect.remove(systemState, true);
+                        return false;
+                    }
+                    return true;
+                });
+
+            if (effects.length !== systemState.effects.length) {
+                systemState.effects = effects;
+            }
+        },
+        determineAllowedSystems: ship => ship.engineering.systemOrder
+            .filter(system => ship.systemInfo[system].effects.some(effect => effect.positive === false))
+            .reduce((prev, current) => prev | current, 0 as System),
+    }),
 ];
 
 const epicCards: Array<(id: number) => EngineeringCardData> = [
@@ -197,6 +229,7 @@ const epicCards: Array<(id: number) => EngineeringCardData> = [
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 50);
         },
+        determineAllowedSystems: onlyDamagedSystems,
     }),
 ];
 

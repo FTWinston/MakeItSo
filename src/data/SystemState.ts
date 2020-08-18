@@ -34,7 +34,7 @@ export function removeExpiredEffects(systemState: SystemState) {
         
     const filteredEffects = systemState.effects.filter(effect => {
         if (hasCompleted(effect, currentTime)) {
-            effect.remove(systemState);
+            effect.remove(systemState, false);
             systemState.modified = true;
             return false;
         }

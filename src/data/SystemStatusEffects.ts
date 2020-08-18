@@ -56,9 +56,12 @@ const allEffects: SystemStatusEffectData[] = [
         positive: false,
         duration: 12,
         apply: (system: SystemState) => adjustPower(system, 3),
-        remove: (system: SystemState) => {
+        remove: (system: SystemState, forced: boolean) => {
             adjustPower(system, -3);
-            adjustHealth(system, -50);
+            
+            if (!forced) {
+                adjustHealth(system, -50);
+            }
         },
     },
 
