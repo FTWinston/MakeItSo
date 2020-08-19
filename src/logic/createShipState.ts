@@ -3,6 +3,7 @@ import { PowerLevel } from '../data/PowerLevel'
 import { createCard } from '../data/EngineeringCards'
 import { EngineeringCardData } from '../data/EngineeringCard';
 import { ShipState } from '../data/ShipState';
+import { getTime } from '../data/Progression';
 
 function createSystemState() {
     return {
@@ -44,6 +45,26 @@ export function createShipState(): ShipState {
             [System.Sensors]: createSystemState(),
             [System.Engineering]: createSystemState(),
             [System.DamageControl]: createSystemState(),
+        },
+        position: {
+            current: {
+                startValue: {
+                    x: 0,
+                    y: 0,
+                },
+                endValue: {
+                    x: 0,
+                    y: 0,
+                },
+                duration: 1,
+                endTime: getTime(),
+            }
+        },
+        angle: {
+            startValue: 0,
+            endValue: 0,
+            duration: 1,
+            endTime: getTime(),
         },
         engineering: {
             systemOrder: [

@@ -26,6 +26,16 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         }
                     }
                 },
+                position: {
+                    // [shouldMap]: client system is helm/weapons/sensors
+                    [anyOtherFields]: {
+                        [anyOtherFields]: true,
+                    },
+                },
+                angle: {
+                    // [shouldMap]: client system is helm/weapons/sensors
+                    [anyOtherFields]: true,
+                },
                 engineering: {
                     // [shouldMap]: engineering => engineering.client === client,
                     hand: {
@@ -63,7 +73,7 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                 getValue: () => client,
             },
             localShipId: {
-                getValue: state => state.shipsByClient[client], // TODO: just network the ID, resolve on the client, I guess! ClientGameState and EnhancedClientGameState?
+                getValue: state => state.shipsByClient[client],
             },
             currentSystem: {
                 getValue: state => state.ships[state.shipsByClient[client]].systemsByClient[client],
