@@ -43,7 +43,7 @@ export const SystemList: React.FC<Props> = props => {
                 <TableHead>
                     <TableRow className={classes.headerRow}>
                         <TableCell className={classes.textHeader} colSpan={2}>System</TableCell>
-                        <TableCell className={classes.textHeader} align="center">Effects</TableCell>
+                        <TableCell></TableCell>
                         <TableCell className={classes.iconHeader} align="right">Health</TableCell>
                         <TableCell className={classes.iconHeader} align="right">Power</TableCell>
                     </TableRow>

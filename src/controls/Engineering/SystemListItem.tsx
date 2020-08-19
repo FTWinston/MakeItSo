@@ -38,6 +38,7 @@ const useStyles = makeStyles(theme => ({
     },
     avatar: {
         padding: `${theme.spacing(1.5)}px ${theme.spacing(1)}px`,
+        width: theme.spacing(7),
     },
     text: {
         fontSize: '1rem',
@@ -50,6 +51,7 @@ const useStyles = makeStyles(theme => ({
     iconCell: {
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
+        width: 64,
         '&:last-child': {
             paddingRight: 0,
         }
