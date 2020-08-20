@@ -32,8 +32,8 @@ export const SpaceMap: React.FC<Props> = props => {
     const bind = useGesture({
         onDrag: ({ movement: [mx, my] }) => {
             setOffset({
-                x: mx,
-                y: my,
+                x: -mx,
+                y: -my,
             });
         },
         onPinchStart: ({ da: [distance] }) => {
@@ -78,7 +78,7 @@ function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, color: ColorName, 
         }
     }
 
-    ctx.strokeStyle = theme.palette[color].main;
+    ctx.strokeStyle = theme.palette[color].light;
     ctx.stroke();
 
     ctx.fillStyle = theme.palette.primary.light;
@@ -127,12 +127,12 @@ function drawSpace(
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const minX = (viewBounds.width + cellRadius) / 2 - center.x;
-    const minY = (viewBounds.height + cellRadius) / 2 - center.y;
+    const minX = (viewBounds.width + cellRadius) / 2 + center.x;
+    const minY = (viewBounds.height + cellRadius) / 2 + center.y;
     const maxX = minX + viewBounds.width + cellRadius;
     const maxY = minY + viewBounds.height + cellRadius;
 
-    ctx.translate(center.x - viewBounds.width / 2, center.y - viewBounds.height / 2);
+    ctx.translate(viewBounds.width / 2 - center.x, viewBounds.height / 2 - center.y);
 
     let currentCell = getClosestCellCenter(
         center.x - viewBounds.width / 2,
