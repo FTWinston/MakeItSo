@@ -4,11 +4,15 @@ import { progressEngineeringCardDraft } from './progressEngineeringCardDraft';
 import { System } from '../../data/System';
 import { updatePowerLevel } from './updatePowerLevel';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
+import { getTime } from '../../data/Progression';
+import { updateShipPosition } from './updateShipPosition';
 
 export function tickState(state: GameState, interval: number) {
     if (state.paused) {
         return;
     }
+
+    const tickTime = getTime();
 
     for (const shipId in state.ships) {
         const ship = state.ships[shipId];
@@ -25,6 +29,10 @@ export function tickState(state: GameState, interval: number) {
                 systemState.modified = false;
                 anyModified = true;
             }
+        }
+
+        if (ship.position.current.endTime <= tickTime) {
+            updateShipPosition(ship, tickTime);
         }
 
         if (anyModified) {

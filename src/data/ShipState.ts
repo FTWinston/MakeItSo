@@ -12,6 +12,7 @@ export interface ShipState {
     systemInfo: Record<System, SystemState>;
     
     position: ContinuousInterpolation<Vector2D>;
+    futurePositions: Vector2D[];
     angle: Interpolation<number>;
 
     engineering: {

@@ -60,6 +60,7 @@ export function createShipState(): ShipState {
                 endTime: getTime(),
             }
         },
+        futurePositions: [],
         angle: {
             startValue: 0,
             endValue: 0,

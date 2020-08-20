@@ -6,11 +6,11 @@ export interface Progression {
 // TODO: These three should run on server ticks.
 export const getTime = Date.now;
 
-function timeSpanToDuration(timeSpan: number) {
+export function timeSpanToDuration(timeSpan: number) {
     return timeSpan / 1000;
 }
 
-function durationToTimeSpan(duration: number) {
+export function durationToTimeSpan(duration: number) {
     return duration * 1000;
 }
 
