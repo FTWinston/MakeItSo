@@ -3,12 +3,17 @@ import { Theme, useTheme } from '@material-ui/core';
 import { useGesture } from 'react-use-gesture'
 import { Canvas } from './Canvas';
 import { Vector2D } from '../../data/Vector2D';
+import { ClientVessel } from '../../data/ClientVessel';
+import { continuousVectorValue, continuousNumberValue, discreteNumberValue } from '../../data/Interpolation';
+import { getTime } from '../../data/Progression';
 
 type ColorName = 'primary' | 'secondary';
 
 interface Props {
     className?: string;
     gridColor: ColorName;
+    vessels: ClientVessel[];
+    localVessel?: ClientVessel;
 }
 
 let startDistance = 32;
@@ -16,7 +21,13 @@ let startDistance = 32;
 export const SpaceMap: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const [offset, setOffset] = useState<Vector2D>({ x: 0, y: 0 });
+    const [offset, setOffset] = useState<Vector2D>(() => {
+        if (!props.localVessel) {
+            return { x: 0, y: 0 };
+        }
+
+        return continuousVectorValue(props.localVessel.position);
+    });
 
     const [cellRadius, setCellRadius] = useState(32);
 
@@ -25,8 +36,8 @@ export const SpaceMap: React.FC<Props> = props => {
     const { gridColor } = props;
 
     const draw = useCallback(
-        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawSpace(ctx, bounds, theme, gridColor, cellRadius, offset),
-        [cellRadius, theme, offset, gridColor]
+        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawMap(ctx, bounds, theme, gridColor, cellRadius, offset, props.vessels, props.localVessel),
+        [cellRadius, theme, offset, gridColor, props.vessels, props.localVessel]
     );
 
     const bind = useGesture({
@@ -45,7 +56,7 @@ export const SpaceMap: React.FC<Props> = props => {
         },
     }, {
         drag: {
-            initial: () => [offset.x, offset.y],
+            initial: () => [-offset.x, -offset.y],
         },
     });
 
@@ -116,24 +127,16 @@ function getClosestCellCenter(x: number, y: number, cellRadius: number) {
     }
 }
 
-function drawSpace(
+function drawHexGrid(
     ctx: CanvasRenderingContext2D,
     viewBounds: DOMRect,
+    center: Vector2D,
+    cellRadius: number,
+    maxX: number,
+    maxY: number,
     theme: Theme,
     gridColor: 'primary' | 'secondary',
-    cellRadius: number,
-    center: Vector2D,
 ) {
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-
-    const minX = (viewBounds.width + cellRadius) / 2 + center.x;
-    const minY = (viewBounds.height + cellRadius) / 2 + center.y;
-    const maxX = minX + viewBounds.width + cellRadius;
-    const maxY = minY + viewBounds.height + cellRadius;
-
-    ctx.translate(viewBounds.width / 2 - center.x, viewBounds.height / 2 - center.y);
-
     let currentCell = getClosestCellCenter(
         center.x - viewBounds.width / 2,
         center.y - viewBounds.height / 2,
@@ -160,5 +163,58 @@ function drawSpace(
             : insetStartX;
 
         outset = !outset;
+    }
+}
+
+function drawVessel(
+    ctx: CanvasRenderingContext2D,
+    theme: Theme,
+    isLocal: boolean,
+    position: Vector2D,
+    angle: number,
+) {
+    ctx.translate(position.x, position.y);
+    
+    ctx.fillStyle = isLocal
+        ? theme.palette.text.primary
+        : theme.palette.text.secondary;
+
+    ctx.beginPath();
+
+    ctx.arc(0, 0, 20, 0, Math.PI * 2);
+
+    ctx.fill();
+
+    ctx.translate(-position.x, -position.y);
+}
+
+function drawMap(
+    ctx: CanvasRenderingContext2D,
+    viewBounds: DOMRect,
+    theme: Theme,
+    gridColor: 'primary' | 'secondary',
+    cellRadius: number,
+    center: Vector2D,
+    vessels: ClientVessel[],
+    localVessel?: ClientVessel,
+) {
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    const minX = (viewBounds.width + cellRadius) / 2 + center.x;
+    const minY = (viewBounds.height + cellRadius) / 2 + center.y;
+    const maxX = minX + viewBounds.width + cellRadius;
+    const maxY = minY + viewBounds.height + cellRadius;
+
+    ctx.translate(viewBounds.width / 2 - center.x, viewBounds.height / 2 - center.y);
+
+    drawHexGrid(ctx, viewBounds, center, cellRadius, maxX, maxY, theme, gridColor);
+
+    const currentTime = getTime();
+    
+    for (const vessel of vessels) {
+        const position = continuousVectorValue(vessel.position, currentTime);
+        const angle = discreteNumberValue(vessel.angle, currentTime);
+        drawVessel(ctx, theme, vessel === localVessel, position, angle);
     }
 }

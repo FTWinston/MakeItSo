@@ -2,16 +2,12 @@ import { System } from './System';
 import { EngineeringCardInfo } from './EngineeringCard';
 import { ClientSystemState } from './ClientSystemState';
 import { Progression } from './Progression';
-import { ContinuousInterpolation, Interpolation } from './Interpolation';
-import { Vector2D } from './Vector2D';
+import { ClientVessel } from './ClientVessel';
 
-export interface ClientShipState {
+export interface ClientShipState extends ClientVessel {
     clientsBySystem: Partial<Record<System, string>>;
 
     systemInfo: Record<System, ClientSystemState>;
-
-    position?: ContinuousInterpolation<Vector2D>;
-    angle?: Interpolation<number>;
 
     engineering: {
         systemOrder: System[];

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { SpaceMap } from '../common/SpaceMap';
 import { ShipSystem } from '../common/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
+import { GameContext } from '../GameProvider';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -13,6 +14,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const Helm: React.FC = () => {
+    const [gameState, dispatch] = useContext(GameContext);
     const classes = useStyles();
 
     const [evasiveShowing, showEvasive] = useState(false);
@@ -20,11 +22,18 @@ export const Helm: React.FC = () => {
 
     const [maneuverMode, setManeuverMode] = useState(false);
 
+    const ships = useMemo(
+        () => Object.values(gameState.ships),
+        [gameState.ships]
+    );
+
     return (
         <ShipSystem>
             <SpaceMap
                 className={classes.map}
                 gridColor={maneuverMode ? 'secondary' : 'primary'}
+                vessels={ships}
+                localVessel={gameState.localShip}
             />
 
             <ActionButtons
