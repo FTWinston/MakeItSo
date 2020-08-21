@@ -4,6 +4,7 @@ import ResizeObserver from 'resize-observer-polyfill';
 
 interface Props {
     className?: string;
+    animate?: boolean;
     draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
     onClick?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
     onMouseDown?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
@@ -43,7 +44,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
     
     const [context, setContext] = useState<CanvasRenderingContext2D>();
 
-    const { draw } = props;
+    const { draw, animate } = props;
 
     useLayoutEffect(
         () => {    
@@ -52,16 +53,38 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 return;
             }
 
-            context.save();
+            let identifier: number | undefined;
 
-            context.translate(-bounds.x, -bounds.y);
-            context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+            const performDraw = () => {
+                identifier = undefined;
+                context.save();
 
-            draw(context, bounds);
-            
-            context.restore();
+                context.translate(-bounds.x, -bounds.y);
+                context.clearRect(bounds.x, bounds.y, bounds.width, bounds.height);
+
+                draw(context, bounds);
+                
+                context.restore();
+
+                if (animate) {
+                    identifier = requestAnimationFrame(performDraw);
+                }
+            };
+
+            if (animate) {
+                identifier = requestAnimationFrame(performDraw);
+            }
+            else {
+                performDraw();
+            }
+
+            return () => {
+                if (identifier !== undefined) {
+                    cancelAnimationFrame(identifier);
+                }
+            };
         },
-        [draw, context, bounds]
+        [draw, animate, context, bounds]
     );
 
     const [displaySizeStyle, setDisplaySizeStyle] = useState<CSSProperties>();

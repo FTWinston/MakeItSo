@@ -21,6 +21,8 @@ let startDistance = 32;
 export const SpaceMap: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
+    // TODO: could useSpring to have this snap back to the local vessel position when released?
+    // ...but with a very low spring coefficient?
     const [offset, setOffset] = useState<Vector2D>(() => {
         if (!props.localVessel) {
             return { x: 0, y: 0 };
@@ -64,6 +66,7 @@ export const SpaceMap: React.FC<Props> = props => {
         <Canvas
             ref={canvas}
             className={props.className}
+            animate={true}
             draw={draw}
             {...bind()}
         />
