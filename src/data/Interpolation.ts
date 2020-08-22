@@ -6,10 +6,15 @@ export interface Interpolation<T> extends Progression {
     endValue: T;
 }
 
+export interface PartialInterpolation<T> {
+    duration: number;
+    value: T;
+}
+
 export interface ContinuousInterpolation<T> {
-    previous?: Interpolation<T>;
+    previous?: PartialInterpolation<T>;
     current: Interpolation<T>;
-    next?: Interpolation<T>;
+    next?: PartialInterpolation<T>;
 }
 
 export function discreteNumberValue(interpolation: Interpolation<number>, currentTime = getTime()): number {
@@ -40,14 +45,14 @@ function interpolate(val0: number, val1: number, val2: number, val3: number, fra
 export function continuousNumberValue(interpolation: ContinuousInterpolation<number>, currentTime = getTime()): number {
     const fraction = getCompletedFraction(interpolation.current, currentTime);
 
-    const val0 = interpolation.previous?.startValue
+    const val0 = interpolation.previous?.value
         ?? interpolation.current.startValue;
 
     const val1 = interpolation.current.startValue;
 
     const val2 = interpolation.current.endValue;
 
-    const val3 = interpolation.next?.endValue
+    const val3 = interpolation.next?.value
         ?? interpolation.current.endValue;
 
     return interpolate(val0, val1, val2, val3, fraction);
@@ -56,14 +61,14 @@ export function continuousNumberValue(interpolation: ContinuousInterpolation<num
 export function continuousVectorValue(interpolation: ContinuousInterpolation<Vector2D>, currentTime = getTime()): Vector2D {
     const fraction = getCompletedFraction(interpolation.current, currentTime);
 
-    const vec0 = interpolation.previous?.startValue
+    const vec0 = interpolation.previous?.value
         ?? interpolation.current.startValue;
 
     const vec1 = interpolation.current.startValue;
 
     const vec2 = interpolation.current.endValue;
 
-    const vec3 = interpolation.next?.endValue
+    const vec3 = interpolation.next?.value
         ?? interpolation.current.endValue;
 
     return {

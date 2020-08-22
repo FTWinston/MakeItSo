@@ -60,23 +60,14 @@ export function createShipState(): ShipState {
                 endTime: getTime() + durationToTimeSpan(10),
             },
             next: {
-                startValue: {
-                    x: 250,
-                    y: 75,
-                },
-                endValue: {
+                value: {
                     x: -250,
                     y: -600,
                 },
                 duration: 10,
-                endTime: getTime() + durationToTimeSpan(20),
             }
         },
         futurePositions: [
-            {
-                x: -250,
-                y: -600,
-            },
             {
                 x: 0,
                 y: 0,
