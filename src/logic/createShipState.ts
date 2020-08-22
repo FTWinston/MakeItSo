@@ -3,7 +3,7 @@ import { PowerLevel } from '../data/PowerLevel'
 import { createCard } from '../data/EngineeringCards'
 import { EngineeringCardData } from '../data/EngineeringCard';
 import { ShipState } from '../data/ShipState';
-import { getTime } from '../data/Progression';
+import { getTime, durationToTimeSpan } from '../data/Progression';
 
 function createSystemState() {
     return {
@@ -53,14 +53,35 @@ export function createShipState(): ShipState {
                     y: 0,
                 },
                 endValue: {
-                    x: 0,
-                    y: 0,
+                    x: 250,
+                    y: 75,
                 },
-                duration: 1,
-                endTime: getTime(),
+                duration: 10,
+                endTime: getTime() + durationToTimeSpan(10),
+            },
+            next: {
+                startValue: {
+                    x: 250,
+                    y: 75,
+                },
+                endValue: {
+                    x: -250,
+                    y: -600,
+                },
+                duration: 10,
+                endTime: getTime() + durationToTimeSpan(20),
             }
         },
-        futurePositions: [],
+        futurePositions: [
+            {
+                x: -250,
+                y: -600,
+            },
+            {
+                x: 0,
+                y: 0,
+            }
+        ],
         angle: {
             startValue: 0,
             endValue: 0,

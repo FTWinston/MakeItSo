@@ -9,13 +9,23 @@ export function updateShipPosition(ship: ShipState, tickTime: number) {
 
     if (ship.position.next) {
         ship.position.current = ship.position.next;
-        ship.futurePositions.pop();
+        ship.futurePositions.shift();
 
         const stepDuration = 10; // TODO: determine how long this step should take
 
+        // TODO: if changing multiple properties, patches are nicer if we just replace the whole of ship.position
+
+        // TODO: store just a single position and duration in prev & next
+        // ... prev's end and next's start can be determined from current, as can their endTimes.
+
+        const nextPos = ship.futurePositions[0] ?? ship.position.current.endValue;
+
         ship.position.next = {
-            startValue: ship.position.next.endValue,
-            endValue: ship.futurePositions[0],
+            startValue: ship.position.current.endValue,
+            endValue: {
+                x: nextPos.x,
+                y: nextPos.y,
+            },
             duration: stepDuration,
             endTime: tickTime + durationToTimeSpan(stepDuration),
         }
@@ -24,8 +34,8 @@ export function updateShipPosition(ship: ShipState, tickTime: number) {
     }
     
     const stepDuration = 30;
-
-    ship.position.next = {
+    // TODO: if next always has a value, don't need this?
+    ship.position.current = {
         startValue: ship.position.current.endValue,
         endValue: ship.position.current.endValue,
         duration: stepDuration,
