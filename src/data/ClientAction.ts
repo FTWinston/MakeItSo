@@ -1,4 +1,5 @@
 import { System } from './System';
+import { Vector2D } from './Vector2D';
 
 export type ClientAction = {
     type: 'pause';
@@ -10,10 +11,10 @@ export type ClientAction = {
     type: 'select system';
     system: System;
 } | {
-    type: 'power draft';
+    type: 'eng draft';
     card: number;
 } | {
-    type: 'power play';
+    type: 'eng play';
     card: number;
     system: System;
 }

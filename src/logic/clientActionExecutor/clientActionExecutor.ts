@@ -18,11 +18,11 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             selectSystem(state, client, action.system);
             break;
 
-        case 'power draft':
+        case 'eng draft':
             draftCard(state, client, action.card);
             break;
 
-        case 'power play':
+        case 'eng play':
             playCard(state, client, action.card, action.system)
             break;
 

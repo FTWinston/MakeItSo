@@ -70,7 +70,7 @@ export const Engineering: React.FC = () => {
 
             if (card.allowedSystems === undefined || (card.allowedSystems & system) !== 0) {
                 dispatch({
-                    type: 'power play',
+                    type: 'eng play',
                     card: card.id,
                     system,
                 });
@@ -113,7 +113,7 @@ export const Engineering: React.FC = () => {
                     <CardChoice
                         cards={gameState.localShip.engineering.draftChoices[0] ?? []}
                         choose={card => dispatch({
-                            type: 'power draft',
+                            type: 'eng draft',
                             card: card.id,
                         })}
                         progress={gameState.localShip.engineering.cardGeneration}
