@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Progression, getCompletedFraction } from '../../data/Progression';
 import { LinearProgress } from '@material-ui/core';
+import { ColorName } from './Colors';
 
 interface Props extends Progression {
     className?: string;
-    color?: 'primary' | 'secondary';
+    color?: ColorName;
 }
 
 export const LinearProgression: React.FC<Props> = props => {

@@ -6,16 +6,18 @@ import { Vector2D } from '../../data/Vector2D';
 import { ClientVessel } from '../../data/ClientVessel';
 import { continuousVectorValue, discreteNumberValue } from '../../data/Interpolation';
 import { getTime } from '../../data/Progression';
+import { ColorName } from './Colors';
 
-type ColorName = 'primary' | 'secondary';
+export type CellHighlights = Partial<Record<ColorName, Vector2D[]>>;
 
 interface Props {
     className?: string;
     gridColor: ColorName;
     vessels: ClientVessel[];
     localVessel?: ClientVessel;
-    onCellTap?: (pos: Vector2D) => void; // TODO: use these
-    onCellLongPress?: (pos: Vector2D) => void;
+    onCellTap?: (pos: Vector2D) => void;
+    onCellLongPress?: (pos: Vector2D) => void; // TODO: use this
+    highlightCells?: CellHighlights;
 }
 
 let startDistance = 32;
@@ -40,8 +42,8 @@ export const SpaceMap: React.FC<Props> = props => {
     const { gridColor, onCellTap, onCellLongPress } = props;
 
     const draw = useCallback(
-        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawMap(ctx, bounds, theme, gridColor, cellRadius, offset, props.vessels, props.localVessel),
-        [cellRadius, theme, offset, gridColor, props.vessels, props.localVessel]
+        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawMap(ctx, bounds, theme, gridColor, cellRadius, offset, props.highlightCells, props.vessels, props.localVessel),
+        [cellRadius, theme, offset, gridColor, props.highlightCells, props.vessels, props.localVessel]
     );
 
     const bind = useGesture({
@@ -95,11 +97,11 @@ function getWorldCoordinates(
     return { x, y };
 }
 
-function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, color: ColorName, radius: number) {
+function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number = 6) {
     ctx.beginPath();
     
     let angle, x, y;
-    for (let point = 0; point < 4; point++) {
+    for (let point = 0; point <= numPoints; point++) {
         angle = 2 * Math.PI / 6 * (point + 0.5);
         x = radius * Math.cos(angle);
         y = radius * Math.sin(angle);
@@ -110,12 +112,6 @@ function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, color: ColorName, 
             ctx.lineTo(x, y);
         }
     }
-
-    ctx.strokeStyle = theme.palette[color].light;
-    ctx.stroke();
-
-    ctx.fillStyle = theme.palette.primary.light;
-    ctx.fillText('X', 0, 0);
 }
 
 function getClosestCellCenter(x: number, y: number, cellRadius: number) {
@@ -157,7 +153,7 @@ function drawHexGrid(
     maxX: number,
     maxY: number,
     theme: Theme,
-    gridColor: 'primary' | 'secondary',
+    gridColor: ColorName,
 ) {
     let currentCell = getClosestCellCenter(
         center.x - viewBounds.width / 2,
@@ -173,7 +169,14 @@ function drawHexGrid(
     while (currentCell.y < maxY) {
         while (currentCell.x < maxX) {
             ctx.translate(currentCell.x, currentCell.y);
-            drawHex(ctx, theme, gridColor, cellRadius);
+            
+            drawHex(ctx, cellRadius, 3);
+            ctx.strokeStyle = theme.palette[gridColor].light;
+            ctx.stroke();
+
+            ctx.fillStyle = theme.palette.primary.light;
+            ctx.fillText('X', 0, 0);
+            
             ctx.translate(-currentCell.x, -currentCell.y);
 
             currentCell.x += packedWidthRatio * cellRadius;
@@ -186,6 +189,29 @@ function drawHexGrid(
 
         outset = !outset;
     }
+}
+
+function fillHexCell(
+    ctx: CanvasRenderingContext2D,
+    cell: Vector2D,
+    cellRadius: number,
+    theme: Theme,
+    fillColor: ColorName
+) {
+    const currentCell = getClosestCellCenter(
+        cell.x,
+        cell.y,
+        cellRadius
+    );
+
+    ctx.translate(currentCell.x, currentCell.y);
+            
+    drawHex(ctx, cellRadius);
+
+    ctx.fillStyle = theme.palette[fillColor].main;
+    ctx.fill();
+
+    ctx.translate(-currentCell.x, -currentCell.y);
 }
 
 function drawVessel(
@@ -214,9 +240,10 @@ function drawMap(
     ctx: CanvasRenderingContext2D,
     viewBounds: DOMRect,
     theme: Theme,
-    gridColor: 'primary' | 'secondary',
+    gridColor: ColorName,
     cellRadius: number,
     center: Vector2D,
+    highlights: CellHighlights | undefined,
     vessels: ClientVessel[],
     localVessel?: ClientVessel,
 ) {
@@ -229,6 +256,16 @@ function drawMap(
     const maxY = minY + viewBounds.height + cellRadius;
 
     ctx.translate(viewBounds.width / 2 - center.x, viewBounds.height / 2 - center.y);
+
+    if (highlights) {
+        ctx.globalAlpha = 0.33;
+        for (const color in highlights) {
+            for (const cell of highlights[color as ColorName]!) {
+                fillHexCell(ctx, cell, cellRadius, theme, color as ColorName);
+            }
+        }
+        ctx.globalAlpha = 1;
+    }
 
     drawHexGrid(ctx, viewBounds, center, cellRadius, maxX, maxY, theme, gridColor);
 

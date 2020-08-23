@@ -6,6 +6,7 @@ import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../GameProvider';
 import { Vector2D } from '../../data/Vector2D';
+import { ColorName } from '../common/Colors';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -46,6 +47,21 @@ export const Helm: React.FC = () => {
         []
     );
 
+    const { position, futurePositions } = gameState.localShip;
+
+    const highlightCells = useMemo(
+        () => {
+            const highlightCells: Partial<Record<ColorName, Vector2D[]>> = {
+                secondary: futurePositions,
+            }
+            if (position.next) {
+                highlightCells.primary = [position.next.value]; // TODO: it should be current.endValue
+            }
+            return highlightCells;
+        },
+        [position, futurePositions]
+    );
+
     return (
         <ShipSystem>
             <SpaceMap
@@ -53,6 +69,7 @@ export const Helm: React.FC = () => {
                 gridColor={maneuverMode ? 'secondary' : 'primary'}
                 vessels={ships}
                 localVessel={gameState.localShip}
+                highlightCells={highlightCells}
                 onCellTap={maneuverMode ? undefined : appendMove}
                 onCellLongPress={maneuverMode ? undefined : replaceMove}
             />

@@ -9,7 +9,7 @@ import FullIcon from '@material-ui/icons/SignalCellular4Bar';
 interface Props {
     className?: string;
     level?: PowerLevel;
-    color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+    color?: IconColorName;
 }
 
 export const PowerIcon: React.FC<Props> = props => {

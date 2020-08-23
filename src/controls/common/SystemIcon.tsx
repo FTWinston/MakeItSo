@@ -10,7 +10,7 @@ import DamageIcon from '@material-ui/icons/Whatshot';
 interface Props {
     className?: string;
     system: System;
-    color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+    color?: IconColorName;
 }
 
 export const SystemIcon: React.FC<Props> = props => {

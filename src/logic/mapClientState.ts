@@ -32,6 +32,10 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         [anyOtherFields]: true,
                     },
                 },
+                futurePositions: {
+                    // [shouldMap]: client system is helm
+                    [anyOtherFields]: true,
+                },
                 angle: {
                     // [shouldMap]: client system is helm/weapons/sensors
                     [anyOtherFields]: true,

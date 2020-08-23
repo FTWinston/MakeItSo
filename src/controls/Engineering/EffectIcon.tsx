@@ -18,7 +18,7 @@ import { SystemStatusEffectType } from '../../data/SystemStatusEffect';
 interface Props {
     className?: string;
     effect: SystemStatusEffectType;
-    color?: 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'error';
+    color?: IconColorName;
 }
 
 export const EffectIcon: React.FC<Props> = props => {

@@ -2,11 +2,12 @@ import React from 'react';
 import { Box } from '@material-ui/core';
 import { CircularProgression } from '../common/CircularProgression';
 import { Progression } from '../../data/Progression';
+import { ColorName } from '../common/Colors';
 
 interface Props extends Progression {
     className?: string;
     progressClassName?: string;
-    color?: 'primary' | 'secondary';
+    color?: ColorName;
     size: number;
 }
 
