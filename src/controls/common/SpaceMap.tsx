@@ -4,7 +4,7 @@ import { useGesture } from 'react-use-gesture'
 import { Canvas } from './Canvas';
 import { Vector2D } from '../../data/Vector2D';
 import { ClientVessel } from '../../data/ClientVessel';
-import { continuousVectorValue, continuousNumberValue, discreteNumberValue } from '../../data/Interpolation';
+import { continuousVectorValue, discreteNumberValue } from '../../data/Interpolation';
 import { getTime } from '../../data/Progression';
 
 type ColorName = 'primary' | 'secondary';
@@ -14,6 +14,8 @@ interface Props {
     gridColor: ColorName;
     vessels: ClientVessel[];
     localVessel?: ClientVessel;
+    onCellTap?: (pos: Vector2D) => void; // TODO: use these
+    onCellLongPress?: (pos: Vector2D) => void;
 }
 
 let startDistance = 32;
@@ -35,7 +37,7 @@ export const SpaceMap: React.FC<Props> = props => {
 
     const theme = useTheme();
 
-    const { gridColor } = props;
+    const { gridColor, onCellTap, onCellLongPress } = props;
 
     const draw = useCallback(
         (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawMap(ctx, bounds, theme, gridColor, cellRadius, offset, props.vessels, props.localVessel),
@@ -56,6 +58,12 @@ export const SpaceMap: React.FC<Props> = props => {
             const scale = distance / startDistance;
             setCellRadius(Math.max(16, cellRadius * scale));
         },
+        onClick: onCellTap
+            ? e => {
+                const { x, y } = getWorldCoordinates(canvas.current!, offset, e);
+                onCellTap(getClosestCellCenter(x, y, cellRadius))
+            }
+            : undefined,
     }, {
         drag: {
             initial: () => [-offset.x, -offset.y],
@@ -75,6 +83,17 @@ export const SpaceMap: React.FC<Props> = props => {
 
 const packedWidthRatio = 1.7320508075688772;
 const packedHeightRatio = 1.5;
+
+function getWorldCoordinates(
+    canvas: HTMLCanvasElement,
+    offset: Vector2D,
+    event: React.MouseEvent<Element, MouseEvent>
+): Vector2D {
+    const bounds = canvas.getBoundingClientRect();
+    const x = event.pageX - bounds.x + offset.x - bounds.width / 2;
+    const y = event.pageY - bounds.y + offset.y - bounds.height / 2;
+    return { x, y };
+}
 
 function drawHex(ctx: CanvasRenderingContext2D, theme: Theme, color: ColorName, radius: number) {
     ctx.beginPath();

@@ -11,6 +11,10 @@ export type ClientAction = {
     type: 'select system';
     system: System;
 } | {
+    type: 'helm move';
+    target: Vector2D;
+    append: boolean;
+} | {
     type: 'eng draft';
     card: number;
 } | {

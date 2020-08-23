@@ -1,10 +1,11 @@
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useCallback } from 'react';
 import { makeStyles } from '@material-ui/core';
 import { SpaceMap } from '../common/SpaceMap';
 import { ShipSystem } from '../common/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../GameProvider';
+import { Vector2D } from '../../data/Vector2D';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -27,6 +28,24 @@ export const Helm: React.FC = () => {
         [gameState.ships]
     );
 
+    const appendMove = useCallback(
+        (target: Vector2D) => dispatch({
+            type: 'helm move',
+            target,
+            append: true,
+        }),
+        []
+    );
+
+    const replaceMove = useCallback(
+        (target: Vector2D) => dispatch({
+            type: 'helm move',
+            target,
+            append: false,
+        }),
+        []
+    );
+
     return (
         <ShipSystem>
             <SpaceMap
@@ -34,6 +53,8 @@ export const Helm: React.FC = () => {
                 gridColor={maneuverMode ? 'secondary' : 'primary'}
                 vessels={ships}
                 localVessel={gameState.localShip}
+                onCellTap={maneuverMode ? undefined : appendMove}
+                onCellLongPress={maneuverMode ? undefined : replaceMove}
             />
 
             <ActionButtons
