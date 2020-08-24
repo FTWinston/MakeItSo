@@ -32,7 +32,7 @@ export function tickState(state: GameState, interval: number) {
         }
 
         if (ship.position.current.endTime <= tickTime) {
-            updateShipPosition(ship, tickTime);
+            updateShipPosition(ship);
         }
 
         if (anyModified) {

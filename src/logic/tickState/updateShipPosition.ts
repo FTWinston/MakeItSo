@@ -1,55 +1,77 @@
 import { ShipState } from '../../data/ShipState';
-import { durationToTimeSpan, getTime, getCompletedFraction } from '../../data/Progression';
-import { Vector2D } from '../../data/Vector2D';
 import { PartialInterpolation, Interpolation, discreteVectorValue } from '../../data/Interpolation';
+import { durationToTimeSpan, getTime, getCompletedFraction } from '../../data/Progression';
+import { Vector2D, vectorsEqual } from '../../data/Vector2D';
 
 function determineStepDuration(ship: ShipState, from: Vector2D, to: Vector2D) {
     return 10; // TODO: calculate this based on ship's helm power?
 }
 
-export function updateShipPosition(ship: ShipState, time: number) {
+export function updateShipPosition(ship: ShipState) {
     const oldCurrent = ship.position.current;
     const oldNext = ship.position.next
         ?? {
             duration: 30,
             value: oldCurrent.endValue,
-        }
+        };
 
     const previous = {
         value: { ...oldCurrent.startValue },
         duration: oldCurrent.duration,
     };
 
-    const current = {
-        startValue: { ...oldCurrent.endValue },
-        endValue: { ...oldNext.value },
-        duration: oldNext.duration,
-        endTime: oldCurrent.endTime + durationToTimeSpan(oldNext.duration)
-    };
+    const current = oldNext
+        ? {
+            startValue: { ...oldCurrent.endValue },
+            endValue: { ...oldNext.value },
+            duration: oldNext.duration,
+            endTime: oldCurrent.endTime + durationToTimeSpan(oldNext.duration),
+        }
+        : {
+            startValue: { ...oldCurrent.endValue },
+            endValue: { ...oldCurrent.endValue },
+            duration: 30,
+            endTime: oldCurrent.endTime + durationToTimeSpan(30),
+        }
 
-    const nextPos = ship.futurePositions.shift()
-        ?? { ...oldNext.value };
+    const nextPos = ship.futurePositions.shift();
 
-    const next = {
-        value: {
-            x: nextPos.x,
-            y: nextPos.y,
-        },
-        duration: determineStepDuration(ship, current.endValue, nextPos),
-    }
-
-    ship.position = {
-        previous,
-        current,
-        next,
-    };
+    ship.position = nextPos
+        ? {
+            previous,
+            current,
+            next: {
+                value: {
+                    x: nextPos.x,
+                    y: nextPos.y,
+                },
+                duration: determineStepDuration(ship, current.endValue, nextPos),
+            },
+        }
+        : {
+            previous,
+            current,
+        };
 }
 
 export function addToMovement(ship: ShipState, destination: Vector2D) {
     if (ship.position.next) {
+        if (ship.futurePositions.length > 0) {
+            const lastPos = ship.futurePositions[ship.futurePositions.length - 1];
+            if (vectorsEqual(lastPos, destination)) {
+                return; // Don't add the same position again
+            }
+        }
+        else {
+            if (vectorsEqual(ship.position.next.value, destination)) {
+                return; // Don't add the same position again
+            }
+        }
         ship.futurePositions.push(destination);
     }
-    else {
+    else if (vectorsEqual(ship.position.current.startValue, ship.position.current.endValue)) {
+        replaceMovement(ship, destination); // currently immobile, override immediately
+    } else {
         const duration = determineStepDuration(ship, ship.position.current.endValue, destination);
         
         ship.position.next = {
@@ -73,15 +95,17 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
         endTime: time + durationToTimeSpan(duration),
     };
 
-    const previous: PartialInterpolation<Vector2D> = {
-        value: ship.position.current.startValue,
-        duration: getCompletedFraction(ship.position.current, time),
-    };
-
-    ship.position = {
-        current,
-        previous,
-    };
+    ship.position = vectorsEqual(ship.position.current.startValue, ship.position.current.endValue)
+        ? {
+            current,
+        }
+        : {
+            current,
+            previous: {
+                value: ship.position.current.startValue,
+                duration: getCompletedFraction(ship.position.current, time),
+            },
+        };
 
     ship.futurePositions = [];
 }

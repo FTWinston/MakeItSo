@@ -5,7 +5,7 @@ import { ShipSystem } from '../common/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../GameProvider';
-import { Vector2D } from '../../data/Vector2D';
+import { Vector2D, vectorsEqual } from '../../data/Vector2D';
 import { ColorName } from '../common/Colors';
 
 const useStyles = makeStyles(theme => ({
@@ -50,15 +50,19 @@ export const Helm: React.FC = () => {
     const { position, futurePositions } = gameState.localShip;
 
     const highlightCells = useMemo(
-        () => {
-            const highlightCells: Partial<Record<ColorName, Vector2D[]>> = {
-                secondary: futurePositions,
-            }
-            if (position.next) {
-                highlightCells.primary = [position.next.value]; // TODO: it should be current.endValue
-            }
-            return highlightCells;
-        },
+        () => ({
+            primary: vectorsEqual(position.current.startValue, position.current.endValue)
+                ? []
+                : [position.current.endValue],
+            secondary: position.next
+                ? [
+                    position.next.value,
+                    ...futurePositions
+                ]
+                : [
+                    ...futurePositions
+                ],
+        }),
         [position, futurePositions]
     );
 
