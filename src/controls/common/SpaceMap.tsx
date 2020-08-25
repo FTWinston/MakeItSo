@@ -97,7 +97,7 @@ function getWorldCoordinates(
     return { x, y };
 }
 
-function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number = 6) {
+function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number) {
     ctx.beginPath();
     
     let angle, x, y;
@@ -206,7 +206,7 @@ function fillHexCell(
 
     ctx.translate(currentCell.x, currentCell.y);
             
-    drawHex(ctx, cellRadius);
+    drawHex(ctx, cellRadius, 6);
 
     ctx.fillStyle = theme.palette[fillColor].main;
     ctx.fill();
