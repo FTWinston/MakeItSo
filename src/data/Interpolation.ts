@@ -1,5 +1,5 @@
 import { Progression, getTime, getCompletedFraction } from './Progression';
-import { Vector2D, vectorsEqual } from './Vector2D';
+import { Vector2D } from './Vector2D';
 
 export interface Interpolation<T> extends Progression {
     startValue: T;

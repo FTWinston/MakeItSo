@@ -6,7 +6,6 @@ import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../GameProvider';
 import { Vector2D, vectorsEqual } from '../../data/Vector2D';
-import { ColorName } from '../common/Colors';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -35,7 +34,7 @@ export const Helm: React.FC = () => {
             target,
             append: true,
         }),
-        []
+        [dispatch]
     );
 
     const replaceMove = useCallback(
@@ -44,7 +43,7 @@ export const Helm: React.FC = () => {
             target,
             append: false,
         }),
-        []
+        [dispatch]
     );
 
     const { position, futurePositions } = gameState.localShip;

@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useRef } from 'react';
 import { Vector2D, distanceSq } from '../../data/Vector2D';
 
 const delay = 400;
@@ -92,13 +92,8 @@ export function useLongPress(
         },
         onMouseLeave: (e: React.MouseEvent<Element, MouseEvent>) => clear(false),
         onTouchEnd: (e: React.TouchEvent<Element>) => {
-            // on laptop at least, touch events trigger mouse events,
-            // so cells are added twice. But the touch version always does 0,0...
-            if (e.changedTouches.length > 0) {
-                const touch = e.changedTouches[0];
-                clear();
-                e.preventDefault();
-            }
+            clear();
+            e.preventDefault();
         },
         onMouseMove: (e: React.MouseEvent<Element>) => move(e.pageX, e.pageY),
         onTouchMove: (e: React.TouchEvent<Element>) => e.touches.length < 2

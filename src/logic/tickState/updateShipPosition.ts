@@ -1,5 +1,5 @@
 import { ShipState } from '../../data/ShipState';
-import { PartialInterpolation, Interpolation, discreteVectorValue } from '../../data/Interpolation';
+import { Interpolation, discreteVectorValue } from '../../data/Interpolation';
 import { durationToTimeSpan, getTime, getCompletedFraction } from '../../data/Progression';
 import { Vector2D, vectorsEqual } from '../../data/Vector2D';
 
