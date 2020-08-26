@@ -11,3 +11,9 @@ export function vectorsEqual(v1: Vector2D, v2: Vector2D) {
         && v1.y >= v2.y - tolerance
         && v1.y <= v2.y + tolerance;
 }
+
+export function distanceSq(v1: Vector2D, v2: Vector2D) {
+    const dx = v1.x - v2.x;
+    const dy = v1.y - v2.y;
+    return dx * dx + dy * dy;
+}

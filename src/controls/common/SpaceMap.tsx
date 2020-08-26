@@ -7,6 +7,7 @@ import { ClientVessel } from '../../data/ClientVessel';
 import { continuousVectorValue, discreteNumberValue } from '../../data/Interpolation';
 import { getTime } from '../../data/Progression';
 import { ColorName } from './Colors';
+import { useLongPress, clickMoveLimit } from '../hooks/useLongPress';
 
 export type CellHighlights = Partial<Record<ColorName, Vector2D[]>>;
 
@@ -60,15 +61,24 @@ export const SpaceMap: React.FC<Props> = props => {
             const scale = distance / startDistance;
             setCellRadius(Math.max(16, cellRadius * scale));
         },
-        onClick: onCellTap
-            ? e => {
-                const { x, y } = getWorldCoordinates(canvas.current!, offset, e);
-                onCellTap(getClosestCellCenter(x, y, cellRadius))
-            }
-            : undefined,
+        ...useLongPress(
+            onCellLongPress
+                ? e => {
+                    const { x, y } = getWorldCoordinates(canvas.current!, offset, e);
+                    onCellLongPress(getClosestCellCenter(x, y, cellRadius))
+                }
+                : undefined,
+            onCellTap
+                ? e => {
+                    const { x, y } = getWorldCoordinates(canvas.current!, offset, e);
+                    onCellTap(getClosestCellCenter(x, y, cellRadius))
+                }
+                : undefined
+        ),
     }, {
         drag: {
             initial: () => [-offset.x, -offset.y],
+            threshold: clickMoveLimit,
         },
     });
 
@@ -89,11 +99,11 @@ const packedHeightRatio = 1.5;
 function getWorldCoordinates(
     canvas: HTMLCanvasElement,
     offset: Vector2D,
-    event: React.MouseEvent<Element, MouseEvent>
+    pagePos: Vector2D,
 ): Vector2D {
     const bounds = canvas.getBoundingClientRect();
-    const x = event.pageX - bounds.x + offset.x - bounds.width / 2;
-    const y = event.pageY - bounds.y + offset.y - bounds.height / 2;
+    const x = pagePos.x - bounds.x + offset.x - bounds.width / 2;
+    const y = pagePos.y - bounds.y + offset.y - bounds.height / 2;
     return { x, y };
 }
 

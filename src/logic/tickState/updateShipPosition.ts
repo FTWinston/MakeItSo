@@ -72,19 +72,40 @@ export function addToMovement(ship: ShipState, destination: Vector2D) {
     else if (vectorsEqual(ship.position.current.startValue, ship.position.current.endValue)) {
         replaceMovement(ship, destination); // currently immobile, override immediately
     } else {
-        const duration = determineStepDuration(ship, ship.position.current.endValue, destination);
+        const time = getTime();
+        const oldCurrent = ship.position.current;
         
-        ship.position.next = {
-            value: destination,
-            duration,
-        }
+        const completedFraction = getCompletedFraction(oldCurrent, time);
+        
+        // Update previous and current too, in order to stop it jerking.
+        // TODO: this doesn't stop the jerk...
+        ship.position = {
+            /*
+            previous: {
+                value: oldCurrent.startValue,
+                duration: completedFraction * oldCurrent.duration,
+            },
+            */
+            current: {
+                startValue: discreteVectorValue(oldCurrent, time),
+                endValue: oldCurrent.endValue,
+                duration: (1 - completedFraction) * oldCurrent.duration,
+                endTime: oldCurrent.endTime,
+            },
+            next: {
+                value: destination,
+                duration: determineStepDuration(ship, oldCurrent.endValue, destination),
+            },
+        };
     }
 }
 
 export function replaceMovement(ship: ShipState, destination: Vector2D) {
     const time = getTime();
 
-    const currentPos = discreteVectorValue(ship.position.current);
+    const oldCurrent = ship.position.current;
+
+    const currentPos = discreteVectorValue(oldCurrent, time);
 
     const duration = determineStepDuration(ship, currentPos, destination);
 
@@ -95,15 +116,15 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
         endTime: time + durationToTimeSpan(duration),
     };
 
-    ship.position = vectorsEqual(ship.position.current.startValue, ship.position.current.endValue)
+    ship.position = vectorsEqual(oldCurrent.startValue, oldCurrent.endValue)
         ? {
             current,
         }
         : {
             current,
             previous: {
-                value: ship.position.current.startValue,
-                duration: getCompletedFraction(ship.position.current, time),
+                value: oldCurrent.startValue,
+                duration: getCompletedFraction(oldCurrent, time) * oldCurrent.duration,
             },
         };
 
