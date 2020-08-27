@@ -14,20 +14,12 @@ export function useLongPress(
     const timeout = useRef<number>();
     const startPos = useRef<Vector2D>();
     const latestPos = useRef<Vector2D>();
-    //const target = useRef<Element>();
 
     const start = useCallback(
         (event, x: number, y: number) => {
             event.persist();
 
             startPos.current = latestPos.current = { x, y };
-
-            /*
-            if (shouldPreventDefault && event.target) {
-                event.target.addEventListener('touchend', preventDefault, { passive: false });
-                target.current = event.target;
-            }
-            */
 
             timeout.current = setTimeout(() => {
                 if (onLongPress && distanceSq(latestPos.current!, startPos.current!) < maxDistSq) {
@@ -56,11 +48,6 @@ export function useLongPress(
             }
 
             startPos.current = latestPos.current = undefined;
-            /*
-            if (shouldPreventDefault && target.current) {
-                target.current.removeEventListener('touchend', preventDefault);
-            }
-            */
         },
         [onClick, startPos, latestPos]
     );
@@ -101,15 +88,3 @@ export function useLongPress(
             : undefined,
     };
 };
-
-/*
-function isTouchEvent(event: Event): event is TouchEvent {
-    return 'touches' in event;
-};
-
-const preventDefault = (event: Event) => {
-    if (isTouchEvent(event) && event.touches.length < 2 && event.preventDefault) {
-        event.preventDefault();
-    }
-};
-*/
