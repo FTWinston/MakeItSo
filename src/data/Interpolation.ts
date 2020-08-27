@@ -23,6 +23,22 @@ export function discreteNumberValue(interpolation: Interpolation<number>, curren
     return interpolation.startValue + (interpolation.endValue - interpolation.startValue) * fraction;
 }
 
+export function discreteAngleValue(interpolation: Interpolation<number>, currentTime = getTime()): number {
+    const fraction = getCompletedFraction(interpolation, currentTime);
+
+    // As per discreteNumberValue, but with clamping
+    let { startValue, endValue } = interpolation;
+
+    while (startValue - endValue > Math.PI) {
+        startValue -= Math.PI * 2;
+    }
+    while (endValue - startValue > Math.PI) {
+        endValue -= Math.PI * 2;
+    }
+
+    return startValue + (endValue - startValue) * fraction;
+}
+
 export function discreteVectorValue(interpolation: Interpolation<Vector2D>, currentTime = getTime()): Vector2D {
     const fraction = getCompletedFraction(interpolation, currentTime);
 
@@ -54,6 +70,44 @@ export function continuousNumberValue(interpolation: ContinuousInterpolation<num
 
     const val3 = interpolation.next?.value
         ?? interpolation.current.endValue;
+
+    return interpolate(val0, val1, val2, val3, fraction);
+}
+
+export function continuousAngleValue(interpolation: ContinuousInterpolation<number>, currentTime = getTime()): number {
+    const fraction = getCompletedFraction(interpolation.current, currentTime);
+
+    let val0 = interpolation.previous?.value
+        ?? interpolation.current.startValue;
+
+    let val1 = interpolation.current.startValue;
+
+    let val2 = interpolation.current.endValue;
+
+    let val3 = interpolation.next?.value
+        ?? interpolation.current.endValue;
+
+    // as per continuousNumberValue, but with wrapping
+    while (val3 - val2 > Math.PI) {
+        val3 += Math.PI * 2;
+    }
+    while (val2 - val3 > Math.PI) {
+        val3 -= Math.PI * 2;
+    }
+
+    while (val1 - val2 > Math.PI) {
+        val1 += Math.PI * 2;
+    }
+    while (val2 - val1 > Math.PI) {
+        val1 -= Math.PI * 2;
+    }
+
+    while (val0 - val1 > Math.PI) {
+        val0 += Math.PI * 2;
+    }
+    while (val1 - val0 > Math.PI) {
+        val0 -= Math.PI * 2;
+    }
 
     return interpolate(val0, val1, val2, val3, fraction);
 }

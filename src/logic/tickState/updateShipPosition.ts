@@ -3,8 +3,14 @@ import { Interpolation, discreteVectorValue } from '../../data/Interpolation';
 import { durationToTimeSpan, getTime, getCompletedFraction } from '../../data/Progression';
 import { Vector2D, vectorsEqual } from '../../data/Vector2D';
 
-function determineStepDuration(ship: ShipState, from: Vector2D, to: Vector2D) {
-    return 10; // TODO: calculate this based on ship's helm power?
+function determineStepDuration(ship: ShipState, fromPos: Vector2D, toPos: Vector2D) {
+    return 10; // TODO: calculate this based on ship's helm power and distance. And angle?
+}
+
+function determineAngle(fromPos: Vector2D, toPos: Vector2D, prevAngle: number) {
+    return vectorsEqual(fromPos, toPos)
+        ? prevAngle
+        : Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
 }
 
 export function updateShipPosition(ship: ShipState) {
@@ -52,6 +58,13 @@ export function updateShipPosition(ship: ShipState) {
             previous,
             current,
         };
+
+    ship.angle = {
+        startValue: ship.angle.endValue,
+        endValue: determineAngle(current.startValue, current.endValue, ship.angle.endValue),
+        duration: current.duration * 0.33,
+        endTime: current.endTime - durationToTimeSpan(current.duration * 0.67),
+    };
 }
 
 export function addToMovement(ship: ShipState, destination: Vector2D) {
@@ -128,6 +141,13 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
             },
         };
 
+    ship.angle = {
+        startValue: ship.angle.endValue,
+        endValue: determineAngle(current.startValue, current.endValue, ship.angle.endValue),
+        duration: current.duration * 0.33,
+        endTime: current.endTime - durationToTimeSpan(current.duration * 0.67),
+    };
+    
     ship.futurePositions = [];
 }
 
@@ -140,8 +160,8 @@ export function adjustSpeed(ship: ShipState, time: number) {
     }
 
     const remainingFraction = 1 - getCompletedFraction(current);
-    current.duration = fullDuration;
-    current.endTime = time + fullDuration * remainingFraction;
+    current.duration = ship.angle.duration = fullDuration;
+    current.endTime = ship.angle.endTime = time + fullDuration * remainingFraction;
 
     if (next) {
         next.duration = determineStepDuration(ship, current.endValue, next?.value);

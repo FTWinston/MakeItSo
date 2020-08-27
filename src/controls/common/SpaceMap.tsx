@@ -4,7 +4,7 @@ import { useGesture } from 'react-use-gesture'
 import { Canvas } from './Canvas';
 import { Vector2D } from '../../data/Vector2D';
 import { ClientVessel } from '../../data/ClientVessel';
-import { continuousVectorValue, discreteNumberValue } from '../../data/Interpolation';
+import { continuousVectorValue, discreteAngleValue } from '../../data/Interpolation';
 import { getTime } from '../../data/Progression';
 import { ColorName } from './Colors';
 import { useLongPress, clickMoveLimit } from '../hooks/useLongPress';
@@ -232,6 +232,7 @@ function drawVessel(
     angle: number,
 ) {
     ctx.translate(position.x, position.y);
+    ctx.rotate(angle);
     
     ctx.fillStyle = isLocal
         ? theme.palette.text.primary
@@ -239,10 +240,14 @@ function drawVessel(
 
     ctx.beginPath();
 
-    ctx.arc(0, 0, 20, 0, Math.PI * 2);
+    ctx.moveTo(20, 0);
+    ctx.lineTo(-15, 17);
+    ctx.lineTo(-9, 0);
+    ctx.lineTo(-15, -17);
 
     ctx.fill();
 
+    ctx.rotate(-angle);
     ctx.translate(-position.x, -position.y);
 }
 
@@ -283,7 +288,8 @@ function drawMap(
     
     for (const vessel of vessels) {
         const position = continuousVectorValue(vessel.position, currentTime);
-        const angle = discreteNumberValue(vessel.angle, currentTime);
+        // TODO: can it work with discrete, rather than continuous?
+        const angle = discreteAngleValue(vessel.angle, currentTime);
         drawVessel(ctx, theme, vessel === localVessel, position, angle);
     }
 }
