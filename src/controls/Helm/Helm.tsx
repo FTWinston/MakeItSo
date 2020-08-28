@@ -1,11 +1,13 @@
-import React, { useState, useContext, useMemo, useCallback } from 'react';
+import React, { useState, useContext, useMemo, useCallback, useRef } from 'react';
 import { makeStyles } from '@material-ui/core';
-import { SpaceMap } from '../common/SpaceMap';
+import { SpaceMap, getWorldCoordinates, getClosestCellCenter } from '../common/SpaceMap';
 import { ShipSystem } from '../common/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../GameProvider';
 import { Vector2D, vectorsEqual } from '../../data/Vector2D';
+import { useLongPress } from '../hooks/useLongPress';
+import { continuousVectorValue } from '../../data/Interpolation';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -65,16 +67,39 @@ export const Helm: React.FC = () => {
         [position, futurePositions]
     );
 
+    const [cellRadius, setCellRadius] = useState(32);
+
+    const [center, setCenter] = useState<Vector2D>(() => {
+        if (!gameState.localShip) {
+            return { x: 0, y: 0 };
+        }
+
+        return continuousVectorValue(gameState.localShip.position);
+    });
+
+    const canvas = useRef<HTMLCanvasElement>(null);
+
     return (
         <ShipSystem>
             <SpaceMap
+                ref={canvas}
                 className={classes.map}
                 gridColor={maneuverMode ? 'secondary' : 'primary'}
+                cellRadius={cellRadius}
+                setCellRadius={setCellRadius}
+                center={center}
+                setCenter={setCenter}
                 vessels={ships}
                 localVessel={gameState.localShip}
                 highlightCells={highlightCells}
-                onCellTap={maneuverMode ? undefined : appendMove}
-                onCellLongPress={maneuverMode ? undefined : replaceMove}
+                {...useLongPress(e => {
+                    const { x, y } = getWorldCoordinates(canvas.current!, center, e);
+                    replaceMove(getClosestCellCenter(x, y, cellRadius));
+                },
+                e => {
+                    const { x, y } = getWorldCoordinates(canvas.current!, center, e);
+                    appendMove(getClosestCellCenter(x, y, cellRadius));
+                })}
             />
 
             <ActionButtons

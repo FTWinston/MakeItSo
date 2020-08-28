@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useState } from 'react';
+import React, { useRef, useCallback, useState, forwardRef } from 'react';
 import { Theme, useTheme } from '@material-ui/core';
 import { useGesture } from 'react-use-gesture'
 import { Canvas } from './Canvas';
@@ -7,49 +7,59 @@ import { ClientVessel } from '../../data/ClientVessel';
 import { continuousVectorValue, discreteAngleValue } from '../../data/Interpolation';
 import { getTime } from '../../data/Progression';
 import { ColorName } from './Colors';
-import { useLongPress, clickMoveLimit } from '../hooks/useLongPress';
+import { clickMoveLimit } from '../hooks/useLongPress';
+import { TouchEvents } from './TouchEvents';
 
 export type CellHighlights = Partial<Record<ColorName, Vector2D[]>>;
 
-interface Props {
+interface Props extends TouchEvents {
     className?: string;
     gridColor: ColorName;
     vessels: ClientVessel[];
     localVessel?: ClientVessel;
-    onCellTap?: (pos: Vector2D) => void;
-    onCellLongPress?: (pos: Vector2D) => void; // TODO: use this
     highlightCells?: CellHighlights;
+    cellRadius: number;
+    setCellRadius: (radius: number) => void;
+    center: Vector2D;
+    setCenter: (center: Vector2D) => void;
+    drawExtra?: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
 }
 
 let startDistance = 32;
 
-export const SpaceMap: React.FC<Props> = props => {
-    const canvas = useRef<HTMLCanvasElement>(null);
-
-    // TODO: could useSpring to have this snap back to the local vessel position when released?
-    // ...but with a very low spring coefficient?
-    const [offset, setOffset] = useState<Vector2D>(() => {
-        if (!props.localVessel) {
-            return { x: 0, y: 0 };
-        }
-
-        return continuousVectorValue(props.localVessel.position);
-    });
-
-    const [cellRadius, setCellRadius] = useState(32);
-
+export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
     const theme = useTheme();
 
-    const { gridColor, onCellTap, onCellLongPress } = props;
+    const {
+        gridColor,
+        cellRadius,
+        setCellRadius,
+        center,
+        setCenter,
+        drawExtra,
+        onClick,
+        onMouseDown,
+        onMouseUp,
+        onMouseMove,
+        onTouchStart,
+        onTouchEnd,
+        onTouchMove,
+    } = props;
 
     const draw = useCallback(
-        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => drawMap(ctx, bounds, theme, gridColor, cellRadius, offset, props.highlightCells, props.vessels, props.localVessel),
-        [cellRadius, theme, offset, gridColor, props.highlightCells, props.vessels, props.localVessel]
+        (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {
+            drawMap(ctx, bounds, theme, gridColor, cellRadius, center, props.highlightCells, props.vessels, props.localVessel);
+            
+            if (drawExtra) {
+                drawExtra(ctx, bounds);
+            }
+        },
+        [cellRadius, theme, center, gridColor, props.highlightCells, props.vessels, props.localVessel, props.drawExtra]
     );
 
     const bind = useGesture({
         onDrag: ({ movement: [mx, my] }) => {
-            setOffset({
+            setCenter({
                 x: -mx,
                 y: -my,
             });
@@ -61,42 +71,35 @@ export const SpaceMap: React.FC<Props> = props => {
             const scale = distance / startDistance;
             setCellRadius(Math.max(16, cellRadius * scale));
         },
-        ...useLongPress(
-            onCellLongPress
-                ? e => {
-                    const { x, y } = getWorldCoordinates(canvas.current!, offset, e);
-                    onCellLongPress(getClosestCellCenter(x, y, cellRadius))
-                }
-                : undefined,
-            onCellTap
-                ? e => {
-                    const { x, y } = getWorldCoordinates(canvas.current!, offset, e);
-                    onCellTap(getClosestCellCenter(x, y, cellRadius))
-                }
-                : undefined
-        ),
+        onClick,
+        onMouseDown,
+        onMouseUp,
+        onMouseMove,
+        onTouchStart,
+        onTouchEnd,
+        onTouchMove,
     }, {
         drag: {
-            initial: () => [-offset.x, -offset.y],
+            initial: () => [-center.x, -center.y],
             threshold: clickMoveLimit,
         },
     });
 
     return (
         <Canvas
-            ref={canvas}
+            ref={ref}
             className={props.className}
             animate={true}
             draw={draw}
             {...bind()}
         />
     )
-}
+});
 
 const packedWidthRatio = 1.7320508075688772;
 const packedHeightRatio = 1.5;
 
-function getWorldCoordinates(
+export function getWorldCoordinates(
     canvas: HTMLCanvasElement,
     offset: Vector2D,
     pagePos: Vector2D,
@@ -124,7 +127,7 @@ function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: numbe
     }
 }
 
-function getClosestCellCenter(x: number, y: number, cellRadius: number) {
+export function getClosestCellCenter(x: number, y: number, cellRadius: number) {
     x -= cellRadius;
     y -= cellRadius;
 

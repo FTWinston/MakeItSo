@@ -1,18 +1,12 @@
 import React, { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
 import { makeStyles } from '@material-ui/core';
 import ResizeObserver from 'resize-observer-polyfill';
+import { TouchEvents } from './TouchEvents';
 
-interface Props {
+interface Props extends TouchEvents {
     className?: string;
     animate?: boolean;
     draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
-    onClick?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseDown?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseUp?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseMove?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onTouchStart?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
-    onTouchEnd?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
-    onTouchMove?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
 }
 
 const defaultBounds = new DOMRect(0, 0, 1, 1);
