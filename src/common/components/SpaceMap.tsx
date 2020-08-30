@@ -9,6 +9,7 @@ import { getTime } from '../data/Progression';
 import { ColorName } from './Colors';
 import { clickMoveLimit } from '../hooks/useLongPress';
 import { TouchEvents } from './TouchEvents';
+import { UserHandlersPartial } from 'react-use-gesture/dist/types';
 
 export type CellHighlights = Partial<Record<ColorName, Vector2D[]>>;
 
@@ -41,6 +42,7 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         onMouseDown,
         onMouseUp,
         onMouseMove,
+        onMouseLeave,
         onTouchStart,
         onTouchEnd,
         onTouchMove,
@@ -57,7 +59,7 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         [cellRadius, theme, center, gridColor, props.highlightCells, props.vessels, props.localVessel, drawExtra]
     );
 
-    const bind = useGesture({
+    const gestureConfig: UserHandlersPartial = {
         onDrag: ({ movement: [mx, my] }) => {
             setCenter({
                 x: -mx,
@@ -71,14 +73,20 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
             const scale = distance / startDistance;
             setCellRadius(Math.max(16, cellRadius * scale));
         },
-        onClick,
         onMouseDown,
         onMouseUp,
         onMouseMove,
+        onMouseLeave,
         onTouchStart,
         onTouchEnd,
         onTouchMove,
-    }, {
+    };
+
+    if (onClick) {
+        gestureConfig.onClick = onClick;
+    }
+
+    const bind = useGesture(gestureConfig, {
         drag: {
             initial: () => [-center.x, -center.y],
             threshold: clickMoveLimit,

@@ -1,5 +1,6 @@
 import { useCallback, useRef } from 'react';
 import { Vector2D, distanceSq } from '../data/Vector2D';
+import { TouchEvents } from '../components/TouchEvents';
 
 const delay = 400;
 
@@ -10,7 +11,7 @@ const maxDistSq = clickMoveLimit * clickMoveLimit;
 export function useLongPress(
     onLongPress?: (clientPosition: Vector2D) => void,
     onClick?: (clientPosition: Vector2D) => void,
-) {
+): TouchEvents {
     const timeout = useRef<number>();
     const startPos = useRef<Vector2D>();
     const latestPos = useRef<Vector2D>();

@@ -139,6 +139,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 onMouseDown={props.onMouseDown}
                 onMouseUp={props.onMouseUp}
                 onMouseMove={props.onMouseMove}
+                onMouseLeave={props.onMouseLeave}
                 onTouchStart={props.onTouchStart}
                 onTouchEnd={props.onTouchEnd}
                 onTouchMove={props.onTouchMove}
