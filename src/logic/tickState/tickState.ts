@@ -1,10 +1,10 @@
-import { GameState } from '../../data/GameState';
-import { removeExpiredEffects } from '../../data/SystemState';
+import { GameState } from '../../common/data/server/GameState';
+import { removeExpiredEffects } from '../../common/data/server/SystemState';
 import { progressEngineeringCardDraft } from './progressEngineeringCardDraft';
-import { System } from '../../data/System';
+import { System } from '../../common/data/System';
 import { updatePowerLevel } from './updatePowerLevel';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
-import { getTime } from '../../data/Progression';
+import { getTime } from '../../common/data/Progression';
 import { updateShipPosition } from './updateShipPosition';
 
 export function tickState(state: GameState, interval: number) {

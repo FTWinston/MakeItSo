@@ -1,6 +1,6 @@
 import { FieldMappings, extraFields, anyOtherFields } from 'filter-mirror';
-import { GameState } from '../data/GameState';
-import { ClientGameState } from '../data/ClientGameState';
+import { GameState } from '../common/data/server/GameState';
+import { ClientGameState } from '../common/data/client/ClientGameState';
 
 export function mapClientState(client: string): FieldMappings<GameState, ClientGameState> {
     return {

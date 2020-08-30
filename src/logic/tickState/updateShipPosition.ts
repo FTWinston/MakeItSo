@@ -1,7 +1,7 @@
-import { ShipState } from '../../data/ShipState';
-import { Interpolation, discreteVectorValue } from '../../data/Interpolation';
-import { durationToTimeSpan, getTime, getCompletedFraction } from '../../data/Progression';
-import { Vector2D, vectorsEqual } from '../../data/Vector2D';
+import { ShipState } from '../../common/data/server/ShipState';
+import { Interpolation, discreteVectorValue } from '../../common/data/Interpolation';
+import { durationToTimeSpan, getTime, getCompletedFraction } from '../../common/data/Progression';
+import { Vector2D, vectorsEqual } from '../../common/data/Vector2D';
 
 function determineStepDuration(ship: ShipState, fromPos: Vector2D, toPos: Vector2D) {
     return 10; // TODO: calculate this based on ship's helm power and distance. And angle?

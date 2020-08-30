@@ -1,9 +1,9 @@
-import { System } from '../data/System'
-import { PowerLevel } from '../data/PowerLevel'
-import { createCard } from '../data/EngineeringCards'
-import { EngineeringCardData } from '../data/EngineeringCard';
-import { ShipState } from '../data/ShipState';
-import { getTime, durationToTimeSpan } from '../data/Progression';
+import { System } from '../common/data/System'
+import { PowerLevel } from '../common/data/PowerLevel'
+import { createCard } from '../systems/engineering/data/EngineeringCards'
+import { EngineeringCardData } from '../systems/engineering/data/EngineeringCard';
+import { ShipState } from '../common/data/server/ShipState';
+import { getTime, durationToTimeSpan } from '../common/data/Progression';
 
 function createSystemState() {
     return {

@@ -1,8 +1,8 @@
-import { ShipState } from '../../data/ShipState';
-import { createCard } from '../../data/EngineeringCards';
-import { System } from '../../data/System';
-import { getTime, determineEndTime, hasCompleted, determineUpdatedEndTime } from '../../data/Progression';
-import { PowerLevel } from '../../data/PowerLevel';
+import { ShipState } from '../../common/data/server/ShipState';
+import { createCard } from '../../systems/engineering/data/EngineeringCards';
+import { System } from '../../common/data/System';
+import { getTime, determineEndTime, hasCompleted, determineUpdatedEndTime } from '../../common/data/Progression';
+import { PowerLevel } from '../../common/data/PowerLevel';
 
 const maxEngineeringCardDraftQueue = 9;
 

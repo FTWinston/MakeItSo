@@ -1,5 +1,5 @@
-import { GameState } from '../../data/GameState';
-import { ClientAction } from '../../data/ClientAction';
+import { GameState } from '../../common/data/server/GameState';
+import { ClientAction } from '../../common/data/ClientAction';
 import { selectSystem } from './selectSystem';
 import { draftCard } from './draftCard';
 import { playCard } from './playCard';

@@ -1,5 +1,5 @@
-import { SystemState } from '../../data/SystemState';
-import { PowerLevel } from '../../data/PowerLevel';
+import { SystemState } from '../../common/data/server/SystemState';
+import { PowerLevel } from '../../common/data/PowerLevel';
 
 export function updatePowerLevel(systemState: SystemState) {
     systemState.prevPower = systemState.power;

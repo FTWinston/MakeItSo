@@ -1,4 +1,4 @@
-import { ShipState } from '../../data/ShipState';
+import { ShipState } from '../../common/data/server/ShipState';
 
 export function updateCardAllowedSystems(ship: ShipState) {
     for (const card of ship.engineering.hand) {

@@ -1,5 +1,5 @@
-import { GameState } from '../../data/GameState';
-import { System } from '../../data/System';
+import { GameState } from '../../common/data/server/GameState';
+import { System } from '../../common/data/System';
 
 export function draftCard(state: GameState, client: string, cardId: number) {
     const shipId = state.shipsByClient[client];
