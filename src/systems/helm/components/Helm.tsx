@@ -1,24 +1,13 @@
-import React, { useState, useContext, useMemo, useCallback, useRef } from 'react';
-import { makeStyles } from '@material-ui/core';
-import { SpaceMap, getWorldCoordinates, getClosestCellCenter } from '../../../common/components/SpaceMap';
+import React, { useState, useContext, useMemo, useCallback } from 'react';
 import { ShipSystem } from '../../../common/components/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../../../common/components/GameProvider';
-import { Vector2D, vectorsEqual } from '../../../common/data/Vector2D';
-import { useLongPress } from '../../../common/hooks/useLongPress';
-import { continuousVectorValue } from '../../../common/data/Interpolation';
-
-const useStyles = makeStyles(theme => ({
-    map: {
-        width: '100vw',
-        height: `calc(100vh - ${theme.spacing(7)}px)`,
-    },
-}));
+import { Vector2D } from '../../../common/data/Vector2D';
+import { HelmMap } from './HelmMap';
 
 export const Helm: React.FC = () => {
     const [gameState, dispatch] = useContext(GameContext);
-    const classes = useStyles();
 
     const [evasiveShowing, showEvasive] = useState(false);
     const closeEvasive = () => showEvasive(false);
@@ -48,58 +37,14 @@ export const Helm: React.FC = () => {
         [dispatch]
     );
 
-    const { position, futurePositions } = gameState.localShip;
-
-    const highlightCells = useMemo(
-        () => ({
-            primary: vectorsEqual(position.current.startValue, position.current.endValue)
-                ? []
-                : [position.current.endValue],
-            secondary: position.next
-                ? [
-                    position.next.value,
-                    ...futurePositions
-                ]
-                : [
-                    ...futurePositions
-                ],
-        }),
-        [position, futurePositions]
-    );
-
-    const [cellRadius, setCellRadius] = useState(32);
-
-    const [center, setCenter] = useState<Vector2D>(() => {
-        if (!gameState.localShip) {
-            return { x: 0, y: 0 };
-        }
-
-        return continuousVectorValue(gameState.localShip.position);
-    });
-
-    const canvas = useRef<HTMLCanvasElement>(null);
-
     return (
         <ShipSystem>
-            <SpaceMap
-                ref={canvas}
-                className={classes.map}
-                gridColor={maneuverMode ? 'secondary' : 'primary'}
-                cellRadius={cellRadius}
-                setCellRadius={setCellRadius}
-                center={center}
-                setCenter={setCenter}
-                vessels={ships}
-                localVessel={gameState.localShip}
-                highlightCells={highlightCells}
-                {...useLongPress(e => {
-                    const { x, y } = getWorldCoordinates(canvas.current!, center, e);
-                    replaceMove(getClosestCellCenter(x, y, cellRadius));
-                },
-                e => {
-                    const { x, y } = getWorldCoordinates(canvas.current!, center, e);
-                    appendMove(getClosestCellCenter(x, y, cellRadius));
-                })}
+            <HelmMap
+                maneuverMode={maneuverMode}
+                ships={ships}
+                localShip={gameState.localShip}
+                appendMove={appendMove}
+                replaceMove={replaceMove}
             />
 
             <ActionButtons
@@ -113,5 +58,5 @@ export const Helm: React.FC = () => {
                 close={closeEvasive}
             />
         </ShipSystem>
-    )
+    );
 }
