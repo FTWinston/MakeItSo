@@ -13,7 +13,7 @@ export type ClientAction = {
 } | {
     type: 'helm move';
     target: Vector2D;
-    append: boolean;
+    angle?: number;
 } | {
     type: 'eng draft';
     card: number;

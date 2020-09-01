@@ -20,7 +20,7 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             break;
 
         case 'helm move':
-            moveShip(state, client, action.target, action.append);
+            moveShip(state, client, action.target, action.angle);
             break;
 
         case 'eng draft':

@@ -23,8 +23,7 @@ export const Helm: React.FC = () => {
         (target: Vector2D, angle?: number) => dispatch({
             type: 'helm move',
             target,
-            append: true,
-            // TODO: include angle, if present
+            angle,
         }),
         [dispatch]
     );

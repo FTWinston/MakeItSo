@@ -61,7 +61,9 @@ export function updateShipPosition(ship: ShipState) {
     };
 }
 
-export function addToMovement(ship: ShipState, destination: Vector2D) {
+export function addToMovement(ship: ShipState, destination: Vector2D, targetAngle?: number) {
+    // TODO: make use of targetAngle
+
     if (ship.position.next) {
         if (ship.futurePositions.length > 0) {
             const lastPos = ship.futurePositions[ship.futurePositions.length - 1];

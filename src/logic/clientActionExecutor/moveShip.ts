@@ -1,9 +1,9 @@
 import { GameState } from '../../common/data/server/GameState';
 import { System } from '../../common/data/System';
 import { Vector2D } from '../../common/data/Vector2D';
-import { replaceMovement, addToMovement } from '../tickState/updateShipPosition';
+import { addToMovement } from '../tickState/updateShipPosition';
 
-export function moveShip(state: GameState, client: string, target: Vector2D, append: boolean) {
+export function moveShip(state: GameState, client: string, target: Vector2D, angle?: number) {
     const shipId = state.shipsByClient[client];
     if (shipId === undefined) {
         return;
@@ -16,10 +16,5 @@ export function moveShip(state: GameState, client: string, target: Vector2D, app
         return;
     }
 
-    if (append) {
-        addToMovement(ship, target);
-    }
-    else {
-        replaceMovement(ship, target);
-    }
+    addToMovement(ship, target, angle);
 }
