@@ -9,8 +9,15 @@ import { HelmMap } from './HelmMap';
 export const Helm: React.FC = () => {
     const [gameState, dispatch] = useContext(GameContext);
 
-    const [evasiveShowing, showEvasive] = useState(false);
-    const closeEvasive = () => showEvasive(false);
+    const [evasiveShowing, setEvasiveShowing] = useState(false);
+    const showEvasive = useCallback(
+        () => setEvasiveShowing(true),
+        []
+    );
+    const closeEvasive = useCallback(
+        () => setEvasiveShowing(false),
+        []
+    );
 
     const [maneuverMode, setManeuverMode] = useState(false);
 
@@ -40,7 +47,7 @@ export const Helm: React.FC = () => {
             <ActionButtons
                 maneuverMode={maneuverMode}
                 setManeuverMode={setManeuverMode}
-                showEvasive={() => showEvasive(true)}
+                showEvasive={showEvasive}
             />
 
             <EvasiveSelection
