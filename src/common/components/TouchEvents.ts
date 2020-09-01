@@ -1,10 +1,9 @@
 export interface TouchEvents {
-    onClick?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseDown?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseUp?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseMove?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onMouseLeave?: (e: React.MouseEvent<HTMLCanvasElement, MouseEvent>) => void;
-    onTouchStart?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
-    onTouchEnd?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
-    onTouchMove?: (e: React.TouchEvent<HTMLCanvasElement>) => void;
+    onMouseDown?: (e: React.MouseEvent<Element, MouseEvent>) => void;
+    onMouseUp?: (e: React.MouseEvent<Element, MouseEvent>) => void;
+    onMouseMove?: (e: React.MouseEvent<Element, MouseEvent>) => void;
+    onMouseLeave?: (e: React.MouseEvent<Element, MouseEvent>) => void;
+    onTouchStart?: (e: React.TouchEvent<Element>) => void;
+    onTouchEnd?: (e: React.TouchEvent<Element>) => void;
+    onTouchMove?: (e: React.TouchEvent<Element>) => void;
 }

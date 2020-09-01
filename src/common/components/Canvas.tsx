@@ -135,7 +135,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 className={classes.display}
                 style={displaySizeStyle}
                 ref={ref}
-                onClick={props.onClick}
+                // onClick={props.onClick}
                 onMouseDown={props.onMouseDown}
                 onMouseUp={props.onMouseUp}
                 onMouseMove={props.onMouseMove}

@@ -1,16 +1,10 @@
 import { ShipState } from '../../common/data/server/ShipState';
 import { Interpolation, discreteVectorValue } from '../../common/data/Interpolation';
 import { durationToTimeSpan, getTime, getCompletedFraction } from '../../common/data/Progression';
-import { Vector2D, vectorsEqual } from '../../common/data/Vector2D';
+import { Vector2D, vectorsEqual, determineAngle } from '../../common/data/Vector2D';
 
 function determineStepDuration(ship: ShipState, fromPos: Vector2D, toPos: Vector2D) {
     return 10; // TODO: calculate this based on ship's helm power and distance. And angle?
-}
-
-function determineAngle(fromPos: Vector2D, toPos: Vector2D, prevAngle: number) {
-    return vectorsEqual(fromPos, toPos)
-        ? prevAngle
-        : Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
 }
 
 export function updateShipPosition(ship: ShipState) {

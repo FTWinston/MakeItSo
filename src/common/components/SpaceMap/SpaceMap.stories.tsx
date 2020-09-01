@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { Theme } from '../theme';
+import { Theme } from '../../theme';
 import { makeStyles } from '@material-ui/core';
 import { SpaceMap } from './SpaceMap';
-import { Vector2D } from '../data/Vector2D';
+import { Vector2D } from '../../data/Vector2D';
 
 export default { title: 'Common/Space Map' };
 
@@ -29,6 +29,7 @@ const Simple = () => {
             setCellRadius={setCellRadius}
             center={center}
             setCenter={setCenter}
+            dragEnabled={false}
         />
     )
 }

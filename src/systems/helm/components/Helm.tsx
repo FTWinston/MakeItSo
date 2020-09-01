@@ -20,19 +20,11 @@ export const Helm: React.FC = () => {
     );
 
     const appendMove = useCallback(
-        (target: Vector2D) => dispatch({
+        (target: Vector2D, angle?: number) => dispatch({
             type: 'helm move',
             target,
             append: true,
-        }),
-        [dispatch]
-    );
-
-    const replaceMove = useCallback(
-        (target: Vector2D) => dispatch({
-            type: 'helm move',
-            target,
-            append: false,
+            // TODO: include angle, if present
         }),
         [dispatch]
     );
@@ -44,7 +36,6 @@ export const Helm: React.FC = () => {
                 ships={ships}
                 localShip={gameState.localShip}
                 appendMove={appendMove}
-                replaceMove={replaceMove}
             />
 
             <ActionButtons

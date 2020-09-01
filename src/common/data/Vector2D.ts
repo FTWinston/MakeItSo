@@ -17,3 +17,9 @@ export function distanceSq(v1: Vector2D, v2: Vector2D) {
     const dy = v1.y - v2.y;
     return dx * dx + dy * dy;
 }
+
+export function determineAngle(fromPos: Vector2D, toPos: Vector2D, valueIfEqual: number) {
+    return vectorsEqual(fromPos, toPos)
+        ? valueIfEqual
+        : Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
+}
