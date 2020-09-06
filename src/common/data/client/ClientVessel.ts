@@ -1,7 +1,6 @@
-import { ContinuousInterpolation, Interpolation } from '../Interpolation';
-import { Vector2D } from '../Vector2D';
+import { Animation } from '../Animation';
+import { Position } from '../Position';
 
 export interface ClientVessel {
-    position: ContinuousInterpolation<Vector2D>;
-    angle: Interpolation<number>;
+    position: Animation<Position>;
 }

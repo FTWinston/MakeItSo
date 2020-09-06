@@ -3,6 +3,7 @@ import { EngineeringCardData } from '../../../systems/engineering/data/Engineeri
 import { SystemState } from './SystemState';
 import { Progression } from '../Progression';
 import { Vessel } from './Vessel';
+import { Waypoint } from '../Waypoint';
 
 export interface ShipState extends Vessel {
     clientsBySystem: Partial<Record<System, string>>;
@@ -10,6 +11,8 @@ export interface ShipState extends Vessel {
 
     systemInfo: Record<System, SystemState>;
     
+    waypoints: Waypoint[];
+
     engineering: {
         systemOrder: System[];
         hand: EngineeringCardData[];

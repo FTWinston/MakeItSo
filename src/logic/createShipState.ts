@@ -46,27 +46,17 @@ export function createShipState(): ShipState {
             [System.Engineering]: createSystemState(),
             [System.DamageControl]: createSystemState(),
         },
-        position: {
-            current: {
-                startValue: {
+        position: [
+            {
+                time: getTime(),
+                val: {
                     x: 0,
                     y: 0,
-                },
-                endValue: {
-                    x: 0,
-                    y: 0,
-                },
-                duration: 10,
-                endTime: getTime() + durationToTimeSpan(10),
-            },
-        },
-        futurePositions: [],
-        angle: {
-            startValue: 0,
-            endValue: 0,
-            duration: 1,
-            endTime: getTime(),
-        },
+                    angle: 0,
+                }
+            }
+        ],
+        waypoints: [],
         engineering: {
             systemOrder: [
                 System.Helm,

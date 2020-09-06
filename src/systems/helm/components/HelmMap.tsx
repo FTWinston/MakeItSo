@@ -3,12 +3,12 @@ import { makeStyles, useTheme } from '@material-ui/core';
 import { SpaceMap } from '../../../common/components/SpaceMap/SpaceMap';
 import { Vector2D, vectorsEqual, determineAngle } from '../../../common/data/Vector2D';
 import { useLongPress } from '../../../common/hooks/useLongPress';
-import { continuousVectorValue } from '../../../common/data/Interpolation';
 import { ClientShipState } from '../../../common/data/client/ClientShipState';
 import { getWorldCoordinates } from '../../../common/components/SpaceMap/drawMap';
 import { TouchEvents } from '../../../common/components/TouchEvents';
 import { ColorName } from '../../../common/components/Colors';
 import { getClosestCellCenter, fillHexCell } from '../../../common/components/SpaceMap/drawHexGrid';
+import { getPositionValue } from '../../../common/data/Animation';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -33,15 +33,15 @@ export const HelmMap: React.FC<Props> = props => {
         [props.ships]
     );
     
-    const { position, futurePositions } = props.localShip;
+    const { position, waypoints } = props.localShip;
 
     const [cellRadius, setCellRadius] = useState(32);
 
-    const [center, setCenter] = useState<Vector2D>(() => continuousVectorValue(position));
+    const [center, setCenter] = useState<Vector2D>(() => getPositionValue(position));
 
-    const [screenTarget, setScreenTarget] = useState<Vector2D>();
-    const [target, setTarget] = useState<Vector2D>();
-    const [angle, setAngle] = useState<number>(0);
+    const [screenTouchPos, setScreenTouchPos] = useState<Vector2D>();
+    const [newWaypoint, setNewWaypoint] = useState<Vector2D>();
+    const [newAngle, setNewAngle] = useState<number>(0);
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
@@ -53,81 +53,68 @@ export const HelmMap: React.FC<Props> = props => {
     const longPress = (pagePos: Vector2D) => {
         const { x: worldX, y: worldY } = getWorldCoordinates(canvas.current!, center, pagePos);
         const cellCenter = getClosestCellCenter(worldX, worldY, cellRadius);
-        setTarget(cellCenter);
+        setNewWaypoint(cellCenter);
         
         // Screen target should be center of closest cell, still.
-        setScreenTarget({
+        setScreenTouchPos({
             x: pagePos.x - worldX + cellCenter.x,
             y: pagePos.y - worldY + cellCenter.y,
         });
     };
 
-    const extraHandlers: TouchEvents | undefined = target && screenTarget
+    const extraHandlers: TouchEvents | undefined = newWaypoint && screenTouchPos
         ? {
             onMouseMove: (e: React.MouseEvent<Element>) => {
-                setAngle(determineAngle(screenTarget, { x: e.pageX, y: e.pageY }, angle));
+                setNewAngle(determineAngle(screenTouchPos, { x: e.pageX, y: e.pageY }, newAngle));
             },
             onTouchMove: (e: React.TouchEvent<Element>) => {
                 if (e.touches.length < 2) {
-                    setAngle(determineAngle(screenTarget, { x: e.touches[0].pageX, y: e.touches[0].pageY }, angle));
+                    setNewAngle(determineAngle(screenTouchPos, { x: e.touches[0].pageX, y: e.touches[0].pageY }, newAngle));
                 }
             },
             onMouseUp: () => {
-                props.appendMove(target, angle);
-                setTarget(undefined);
-                setAngle(0);
+                props.appendMove(newWaypoint, newAngle);
+                setNewWaypoint(undefined);
+                setNewAngle(0);
                 setTimeout(
                     () => {
-                        setScreenTarget(undefined);
+                        setScreenTouchPos(undefined);
                     }
                 , 10);
             },
             onTouchEnd: () => {
-                props.appendMove(target, angle);
-                setTarget(undefined);
-                setAngle(0);
+                props.appendMove(newWaypoint, newAngle);
+                setNewWaypoint(undefined);
+                setNewAngle(0);
                 setTimeout(
                     () => {
-                        setScreenTarget(undefined);
+                        setScreenTouchPos(undefined);
                     }
                 , 10);
             },
             onMouseLeave: () => {
-                setScreenTarget(undefined);
-                setTarget(undefined);
-                setAngle(0);
+                setScreenTouchPos(undefined);
+                setNewWaypoint(undefined);
+                setNewAngle(0);
             },
         }
         : undefined;
 
     const highlightDestinationCells = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {
         ctx.globalAlpha = 0.33;
-
-        let targetColor: ColorName;
-        if (!vectorsEqual(position.current.startValue, position.current.endValue)) {
-            fillHexCell(ctx, position.current.endValue, cellRadius, theme, 'primary');
-            targetColor = 'secondary';
-        }
-        else {
-            targetColor = 'primary';
-        }
-
-        for (const cell of futurePositions) {
+       
+        for (const cell of waypoints) {
             fillHexCell(ctx, cell, cellRadius, theme, 'secondary');
         }
 
-        if (position.next) {
-            fillHexCell(ctx, position.next.value, cellRadius, theme, 'secondary');
-        }
-        
-        if (target !== undefined) {
-            fillHexCell(ctx, target, cellRadius, theme, targetColor);
+        if (newWaypoint !== undefined) {
+            fillHexCell(ctx, newWaypoint, cellRadius, theme, waypoints.length === 0 ? 'primary' : 'secondary');
 
             ctx.globalAlpha = 1;
 
             // Add an arrow indicating the target angle.
-            ctx.translate(target.x, target.y);
-            ctx.rotate(angle);
+            ctx.translate(newWaypoint.x, newWaypoint.y);
+            ctx.rotate(newAngle);
 
             ctx.beginPath();
             ctx.strokeStyle = theme.palette.success.main;
@@ -136,8 +123,8 @@ export const HelmMap: React.FC<Props> = props => {
             ctx.lineTo(cellRadius * 2, 0);
             ctx.stroke();
 
-            ctx.rotate(-angle);
-            ctx.translate(-target.x, -target.y);
+            ctx.rotate(-newAngle);
+            ctx.translate(-newWaypoint.x, -newWaypoint.y);
         }
 
         ctx.globalAlpha = 1;
@@ -148,7 +135,7 @@ export const HelmMap: React.FC<Props> = props => {
             ref={canvas}
             className={classes.map}
             gridColor={props.maneuverMode ? 'secondary' : 'primary'}
-            dragEnabled={screenTarget === undefined}
+            dragEnabled={screenTouchPos === undefined}
             cellRadius={cellRadius}
             setCellRadius={setCellRadius}
             center={center}

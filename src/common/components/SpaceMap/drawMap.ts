@@ -1,10 +1,11 @@
-import { continuousVectorValue, discreteAngleValue } from '../../data/Interpolation';
 import { Vector2D } from '../../data/Vector2D';
 import { Theme } from '@material-ui/core';
 import { ColorName } from '../Colors';
 import { ClientVessel } from '../../data/client/ClientVessel';
 import { getTime } from '../../data/Progression';
 import { drawHexGrid } from './drawHexGrid';
+import { getPositionValue } from '../../data/Animation';
+import { Position } from '../../data/Position';
 
 export type drawFunction = (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
 
@@ -23,11 +24,10 @@ function drawVessel(
     ctx: CanvasRenderingContext2D,
     theme: Theme,
     isLocal: boolean,
-    position: Vector2D,
-    angle: number,
+    position: Position,
 ) {
     ctx.translate(position.x, position.y);
-    ctx.rotate(angle);
+    ctx.rotate(position.angle);
     
     ctx.fillStyle = isLocal
         ? theme.palette.text.primary
@@ -42,7 +42,7 @@ function drawVessel(
 
     ctx.fill();
 
-    ctx.rotate(-angle);
+    ctx.rotate(-position.angle);
     ctx.translate(-position.x, -position.y);
 }
 
@@ -75,10 +75,8 @@ export function drawMap(
     const currentTime = getTime();
     
     for (const vessel of vessels) {
-        const position = continuousVectorValue(vessel.position, currentTime);
-        // TODO: can it work with discrete, rather than continuous?
-        const angle = discreteAngleValue(vessel.angle, currentTime);
-        drawVessel(ctx, theme, vessel === localVessel, position, angle);
+        const position = getPositionValue(vessel.position, currentTime);
+        drawVessel(ctx, theme, vessel === localVessel, position);
     }
 
     drawExtraForeground?.(ctx, viewBounds);

@@ -1,5 +1,5 @@
 export interface Progression {
-    duration: number;
+    startTime: number;
     endTime: number;
 }
 
@@ -20,20 +20,18 @@ export function hasCompleted(progression: Progression, currentTime = getTime()) 
     return progression.endTime <= currentTime;
 }
 
-export function determineEndTime(duration: number, currentTime = getTime()) {
-    return currentTime + durationToTimeSpan(duration);
+export function determineEndTime(duration: number, startTime = getTime()) {
+    return startTime + durationToTimeSpan(duration);
 }
 
 export function determineUpdatedEndTime(duration: number, previousProgression: Progression, currentTime = getTime()) {
-    const remainingFraction = 1 - getCompletedFraction(previousProgression, currentTime);
+    const remainingFraction = 1 - getCompletedFraction(previousProgression.startTime, previousProgression.endTime, currentTime);
 
     return currentTime + durationToTimeSpan(duration * remainingFraction);
 }
 
-export function getCompletedFraction(progression: Progression, currentTime = getTime()) {
-    const remaining = timeSpanToDuration(progression.endTime - currentTime);
-
-    const fraction = (progression.duration - remaining) / progression.duration;
+export function getCompletedFraction(startTime: number, endTime: number, currentTime = getTime()) {
+    const fraction = (currentTime - startTime) / (endTime - startTime);
 
     return Math.max(0, Math.min(1, fraction));
 }

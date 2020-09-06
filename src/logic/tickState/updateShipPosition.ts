@@ -1,5 +1,5 @@
 import { ShipState } from '../../common/data/server/ShipState';
-import { Interpolation, discreteVectorValue } from '../../common/data/Interpolation';
+import { Interpolation, getVectorValue } from '../../common/data/Interpolation';
 import { durationToTimeSpan, getTime, getCompletedFraction } from '../../common/data/Progression';
 import { Vector2D, vectorsEqual, determineAngle } from '../../common/data/Vector2D';
 
@@ -8,8 +8,9 @@ function determineStepDuration(ship: ShipState, fromPos: Vector2D, toPos: Vector
 }
 
 export function updateShipPosition(ship: ShipState) {
-    const oldCurrent = ship.position.current;
-    const oldNext = ship.position.next
+    /*
+    const oldCurrent = ship.movement.current;
+    const oldNext = ship.movement.next
         ?? {
             duration: 30,
             value: oldCurrent.endValue,
@@ -34,69 +35,69 @@ export function updateShipPosition(ship: ShipState) {
             endTime: oldCurrent.endTime + durationToTimeSpan(30),
         }
 
-    const nextPos = ship.futurePositions.shift();
+    const nextPos = ship.waypoints.shift();
 
-    ship.position = nextPos
+    ship.movement = nextPos
         ? {
             previous,
             current,
             next: {
                 value: {
-                    x: nextPos.x,
-                    y: nextPos.y,
+                    position: {
+                        x: nextPos.x,
+                        y: nextPos.y,
+                    },
+                    angle: nextPos.angle,
                 },
-                duration: determineStepDuration(ship, current.endValue, nextPos),
+                duration: determineStepDuration(ship, current.endValue.position, nextPos),
             },
         }
         : {
             previous,
             current,
         };
-
-    ship.angle = {
-        startValue: ship.angle.endValue,
-        endValue: determineAngle(current.startValue, current.endValue, ship.angle.endValue),
-        duration: current.duration * 0.33,
-        endTime: current.endTime - durationToTimeSpan(current.duration * 0.67),
-    };
+    */
 }
 
 export function addToMovement(ship: ShipState, destination: Vector2D, targetAngle?: number) {
+    /*
     // TODO: make use of targetAngle
 
-    if (ship.position.next) {
-        if (ship.futurePositions.length > 0) {
-            const lastPos = ship.futurePositions[ship.futurePositions.length - 1];
+    if (ship.movement.next) {
+        if (ship.waypoints.length > 0) {
+            const lastPos = ship.waypoints[ship.waypoints.length - 1];
             if (vectorsEqual(lastPos, destination)) {
                 return; // Don't add the same position again
             }
         }
         else {
-            if (vectorsEqual(ship.position.next.value, destination)) {
+            if (vectorsEqual(ship.movement.next.value.position, destination)) {
                 return; // Don't add the same position again
             }
         }
-        ship.futurePositions.push(destination);
+        ship.waypoints.push(destination);
     }
-    else if (vectorsEqual(ship.position.current.startValue, ship.position.current.endValue)) {
+    else if (vectorsEqual(ship.movement.current.startValue.position, ship.movement.current.endValue.position)) {
         replaceMovement(ship, destination); // currently immobile, override immediately
     } else {
         const time = getTime();
-        const oldCurrent = ship.position.current;
+        const oldCurrent = ship.movement.current;
         
         const completedFraction = getCompletedFraction(oldCurrent, time);
         
         // Update previous and current too, in order to stop it jerking.
         // TODO: this doesn't stop the jerk...
-        ship.position = {
+        ship.movement = {
+            */
             /*
             previous: {
                 value: oldCurrent.startValue,
                 duration: completedFraction * oldCurrent.duration,
             },
             */
+            /*
             current: {
-                startValue: discreteVectorValue(oldCurrent, time),
+                startValue: getVectorValue(oldCurrent, time),
                 endValue: oldCurrent.endValue,
                 duration: (1 - completedFraction) * oldCurrent.duration,
                 endTime: oldCurrent.endTime,
@@ -107,14 +108,16 @@ export function addToMovement(ship: ShipState, destination: Vector2D, targetAngl
             },
         };
     }
+    */
 }
 
 export function replaceMovement(ship: ShipState, destination: Vector2D) {
+    /*
     const time = getTime();
 
-    const oldCurrent = ship.position.current;
+    const oldCurrent = ship.movement.current;
 
-    const currentPos = discreteVectorValue(oldCurrent, time);
+    const currentPos = getVectorValue(oldCurrent, time);
 
     const duration = determineStepDuration(ship, currentPos, destination);
 
@@ -125,7 +128,7 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
         endTime: time + durationToTimeSpan(duration),
     };
 
-    ship.position = vectorsEqual(oldCurrent.startValue, oldCurrent.endValue)
+    ship.movement = vectorsEqual(oldCurrent.startValue, oldCurrent.endValue)
         ? {
             current,
         }
@@ -144,11 +147,13 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
         endTime: current.endTime - durationToTimeSpan(current.duration * 0.67),
     };
     
-    ship.futurePositions = [];
+    ship.waypoints = [];
+    */
 }
 
 export function adjustSpeed(ship: ShipState, time: number) {
-    const { current, next } = ship.position;
+    /*
+    const { current, next } = ship.movement;
 
     const fullDuration = determineStepDuration(ship, current.startValue, current.endValue);
     if (fullDuration === current.duration) {
@@ -161,5 +166,6 @@ export function adjustSpeed(ship: ShipState, time: number) {
 
     if (next) {
         next.duration = determineStepDuration(ship, current.endValue, next?.value);
-    }   
+    }
+    */
 }
