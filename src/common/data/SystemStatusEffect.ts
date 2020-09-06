@@ -29,6 +29,6 @@ export interface SystemStatusEffectData extends SystemStatusEffectInfo {
     remove: (system: SystemState, forced: boolean) => void;
 }
 
-export type SystemStatusEffectInstance = SystemStatusEffectData & Progression;
+export type SystemStatusEffectInstance = Omit<SystemStatusEffectData, 'duration'> & Progression;
 
-export type ClientSystemStatusEffectInstance = SystemStatusEffectInfo & Progression;
+export type ClientSystemStatusEffectInstance = Omit<SystemStatusEffectInfo, 'duration'> & Progression;

@@ -2,6 +2,7 @@ import { ShipState } from '../../common/data/server/ShipState';
 import { Interpolation, getVectorValue } from '../../common/data/Interpolation';
 import { durationToTimeSpan, getTime, getCompletedFraction } from '../../common/data/Progression';
 import { Vector2D, vectorsEqual, determineAngle } from '../../common/data/Vector2D';
+import { Waypoint } from '../../common/data/Waypoint';
 
 function determineStepDuration(ship: ShipState, fromPos: Vector2D, toPos: Vector2D) {
     return 10; // TODO: calculate this based on ship's helm power and distance. And angle?
@@ -59,8 +60,8 @@ export function updateShipPosition(ship: ShipState) {
     */
 }
 
+/*
 export function addToMovement(ship: ShipState, destination: Vector2D, targetAngle?: number) {
-    /*
     // TODO: make use of targetAngle
 
     if (ship.movement.next) {
@@ -88,14 +89,6 @@ export function addToMovement(ship: ShipState, destination: Vector2D, targetAngl
         // Update previous and current too, in order to stop it jerking.
         // TODO: this doesn't stop the jerk...
         ship.movement = {
-            */
-            /*
-            previous: {
-                value: oldCurrent.startValue,
-                duration: completedFraction * oldCurrent.duration,
-            },
-            */
-            /*
             current: {
                 startValue: getVectorValue(oldCurrent, time),
                 endValue: oldCurrent.endValue,
@@ -108,11 +101,9 @@ export function addToMovement(ship: ShipState, destination: Vector2D, targetAngl
             },
         };
     }
-    */
 }
 
 export function replaceMovement(ship: ShipState, destination: Vector2D) {
-    /*
     const time = getTime();
 
     const oldCurrent = ship.movement.current;
@@ -148,7 +139,17 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
     };
     
     ship.waypoints = [];
-    */
+}
+*/
+
+export function addWaypoint(ship: ShipState, waypoint: Waypoint) {
+    ship.waypoints.push(waypoint);
+    // TODO: possibly recalculate movement
+}
+
+export function clearMovement(ship: ShipState) {
+    ship.waypoints = [];
+    // TODO: recaclulate movement
 }
 
 export function adjustSpeed(ship: ShipState, time: number) {

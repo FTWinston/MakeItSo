@@ -1,9 +1,8 @@
 import { GameState } from '../../common/data/server/GameState';
 import { System } from '../../common/data/System';
-import { Waypoint } from '../../common/data/Waypoint';
-import { addWaypoint } from '../tickState/updateShipPosition';
+import { clearMovement } from '../tickState/updateShipPosition';
 
-export function moveShip(state: GameState, client: string, waypoint: Waypoint) {
+export function stopShip(state: GameState, client: string) {
     const shipId = state.shipsByClient[client];
     if (shipId === undefined) {
         return;
@@ -16,5 +15,5 @@ export function moveShip(state: GameState, client: string, waypoint: Waypoint) {
         return;
     }
 
-    addWaypoint(ship, waypoint);
+    clearMovement(ship);
 }

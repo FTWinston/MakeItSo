@@ -4,6 +4,7 @@ import { selectSystem } from './selectSystem';
 import { draftCard } from './draftCard';
 import { playCard } from './playCard';
 import { moveShip } from './moveShip';
+import { stopShip } from './stopShip';
 
 export function clientActionExecutor(state: GameState, action: ClientAction, client: string) {
     switch (action.type) {
@@ -20,7 +21,11 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             break;
 
         case 'helm move':
-            moveShip(state, client, action.target, action.angle);
+            moveShip(state, client, action.waypoint);
+            break;
+
+        case 'helm stop':
+            stopShip(state, client);
             break;
 
         case 'eng draft':

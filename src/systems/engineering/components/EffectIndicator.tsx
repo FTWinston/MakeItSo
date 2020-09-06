@@ -40,7 +40,7 @@ export const EffectIndicator: React.FC<Props> = props => {
         >
             <CircularProgressionWrapper
                 size={indicatorSize}
-                duration={props.duration}
+                startTime={props.startTime}
                 endTime={props.endTime}
                 progressClassName={classes.progress}
             >

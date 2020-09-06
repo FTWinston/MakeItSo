@@ -19,7 +19,7 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         effects: {
                             [anyOtherFields]: {
                                 type: true,
-                                duration: true,
+                                startTime: true,
                                 endTime: true,
                                 positive: true,
                             }

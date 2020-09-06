@@ -1,6 +1,6 @@
 import { SystemStatusEffectType, SystemStatusEffectData, SystemStatusEffectInstance } from '../SystemStatusEffect';
 import { SystemState, adjustPower, adjustHealth } from './SystemState';
-import { determineEndTime } from '../Progression';
+import { determineEndTime, getTime } from '../Progression';
 
 const allEffects: SystemStatusEffectData[] = [
     {
@@ -134,8 +134,14 @@ for (const effect of allEffects) {
 export function createEffect(effect: SystemStatusEffectType): SystemStatusEffectInstance {
     const effectData =  effects.get(effect)!;
 
+    const startTime = getTime();
+
     return {
-        ...effectData,
+        startTime,
         endTime: determineEndTime(effectData.duration),
+        type: effectData.type,
+        positive: effectData.positive,
+        apply: effectData.apply,
+        remove: effectData.remove,
     };
 }

@@ -9,6 +9,7 @@ import { TouchEvents } from '../../../common/components/TouchEvents';
 import { ColorName } from '../../../common/components/Colors';
 import { getClosestCellCenter, fillHexCell } from '../../../common/components/SpaceMap/drawHexGrid';
 import { getPositionValue } from '../../../common/data/Animation';
+import { Waypoint } from '../../../common/data/Waypoint';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -19,7 +20,7 @@ const useStyles = makeStyles(theme => ({
 
 interface Props {
     ships: Record<number, ClientShipState>;
-    appendMove: (target: Vector2D, angle?: number) => void;
+    appendMove: (waypoint: Waypoint) => void;
     maneuverMode: boolean;
     localShip: ClientShipState;
 }
@@ -47,7 +48,7 @@ export const HelmMap: React.FC<Props> = props => {
 
     const tap = (pagePos: Vector2D) => {
         const { x, y } = getWorldCoordinates(canvas.current!, center, pagePos);
-        props.appendMove(getClosestCellCenter(x, y, cellRadius), undefined);
+        props.appendMove(getClosestCellCenter(x, y, cellRadius));
     };
 
     const longPress = (pagePos: Vector2D) => {
@@ -73,7 +74,11 @@ export const HelmMap: React.FC<Props> = props => {
                 }
             },
             onMouseUp: () => {
-                props.appendMove(newWaypoint, newAngle);
+                props.appendMove({
+                    x: newWaypoint.x,
+                    y: newWaypoint.y,
+                    angle: newAngle
+                });
                 setNewWaypoint(undefined);
                 setNewAngle(0);
                 setTimeout(
@@ -83,7 +88,11 @@ export const HelmMap: React.FC<Props> = props => {
                 , 10);
             },
             onTouchEnd: () => {
-                props.appendMove(newWaypoint, newAngle);
+                props.appendMove({
+                    x: newWaypoint.x,
+                    y: newWaypoint.y,
+                    angle: newAngle
+                });
                 setNewWaypoint(undefined);
                 setNewAngle(0);
                 setTimeout(

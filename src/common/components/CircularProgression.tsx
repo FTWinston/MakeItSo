@@ -10,18 +10,19 @@ interface Props extends Progression {
 }
 
 export const CircularProgression: React.FC<Props> = props => {
-    const [value, setValue] = useState(() => 100 * getCompletedFraction(props));
+    const { startTime, endTime } = props;
+    const [value, setValue] = useState(() => 100 * getCompletedFraction(startTime, endTime));
 
     useEffect(
         () => {
             const interval = setInterval(
-                () => setValue(100 * getCompletedFraction(props)),
+                () => setValue(100 * getCompletedFraction(startTime, endTime)),
                 200
             );
 
             return () => clearInterval(interval);
         },
-        [props.duration, props.endTime]
+        [startTime, endTime]
     );
 
     return (

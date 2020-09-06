@@ -15,7 +15,7 @@ export const CircularProgressionWrapper: React.FC<Props> = props => {
     return (
         <Box position="relative" display="inline-flex" className={props.className}>
             <CircularProgression
-                duration={props.duration}
+                startTime={props.startTime}
                 endTime={props.endTime}
                 className={props.progressClassName}
                 size={props.size}

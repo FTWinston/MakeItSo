@@ -3,8 +3,8 @@ import { ShipSystem } from '../../../common/components/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
 import { GameContext } from '../../../common/components/GameProvider';
-import { Vector2D } from '../../../common/data/Vector2D';
 import { HelmMap } from './HelmMap';
+import { Waypoint } from '../../../common/data/Waypoint';
 
 export const Helm: React.FC = () => {
     const [gameState, dispatch] = useContext(GameContext);
@@ -27,10 +27,9 @@ export const Helm: React.FC = () => {
     );
 
     const appendMove = useCallback(
-        (target: Vector2D, angle?: number) => dispatch({
+        (waypoint: Waypoint) => dispatch({
             type: 'helm move',
-            target,
-            angle,
+            waypoint,
         }),
         [dispatch]
     );

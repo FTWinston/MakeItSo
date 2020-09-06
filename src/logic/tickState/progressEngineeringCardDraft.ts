@@ -38,7 +38,7 @@ export function progressEngineeringCardDraft(ship: ShipState) {
         const duration = determineDuration(power);
         
         ship.engineering.cardGeneration = {
-            duration,
+            startTime: currentTime,
             endTime: determineEndTime(duration, currentTime)
         }
     }
@@ -46,7 +46,7 @@ export function progressEngineeringCardDraft(ship: ShipState) {
         const duration = determineDuration(power);
 
         ship.engineering.cardGeneration = {
-            duration,
+            startTime: currentTime,
             endTime: determineUpdatedEndTime(duration, ship.engineering.cardGeneration, currentTime),
         };
     }
@@ -59,8 +59,8 @@ export function progressEngineeringCardDraft(ship: ShipState) {
         ]);
 
         ship.engineering.cardGeneration = {
-            duration: ship.engineering.cardGeneration.duration,
-            endTime: determineEndTime(ship.engineering.cardGeneration.duration, currentTime),
+            startTime: currentTime,
+            endTime: currentTime + ship.engineering.cardGeneration.endTime - ship.engineering.cardGeneration.startTime,
         };
     }
 }

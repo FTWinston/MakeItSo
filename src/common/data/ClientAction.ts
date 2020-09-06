@@ -1,5 +1,6 @@
 import { System } from './System';
 import { Vector2D } from './Vector2D';
+import { Waypoint } from './Waypoint';
 
 export type ClientAction = {
     type: 'pause';
@@ -12,8 +13,9 @@ export type ClientAction = {
     system: System;
 } | {
     type: 'helm move';
-    target: Vector2D;
-    angle?: number;
+    waypoint: Waypoint;
+} | {
+    type: 'helm stop';
 } | {
     type: 'eng draft';
     card: number;
