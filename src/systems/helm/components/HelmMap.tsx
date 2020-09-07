@@ -1,15 +1,16 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { makeStyles, useTheme } from '@material-ui/core';
 import { SpaceMap } from '../../../common/components/SpaceMap/SpaceMap';
-import { Vector2D, vectorsEqual, determineAngle } from '../../../common/data/Vector2D';
+import { Vector2D, determineAngle } from '../../../common/data/Vector2D';
 import { useLongPress } from '../../../common/hooks/useLongPress';
 import { ClientShipState } from '../../../common/data/client/ClientShipState';
 import { getWorldCoordinates } from '../../../common/components/SpaceMap/drawMap';
 import { TouchEvents } from '../../../common/components/TouchEvents';
 import { ColorName } from '../../../common/components/Colors';
-import { getClosestCellCenter, fillHexCell } from '../../../common/components/SpaceMap/drawHexGrid';
+import { getClosestCellCenter } from '../../../common/components/SpaceMap/drawHexGrid';
 import { getPositionValue } from '../../../common/data/Animation';
 import { Waypoint } from '../../../common/data/Waypoint';
+import { drawWaypoint } from './drawWaypoint';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -41,46 +42,67 @@ export const HelmMap: React.FC<Props> = props => {
     const [center, setCenter] = useState<Vector2D>(() => getPositionValue(position));
 
     const [screenTouchPos, setScreenTouchPos] = useState<Vector2D>();
-    const [newWaypoint, setNewWaypoint] = useState<Vector2D>();
-    const [newAngle, setNewAngle] = useState<number>(0);
+    const [newWaypoint, setNewWaypoint] = useState<Waypoint>();
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const tap = (pagePos: Vector2D) => {
-        const { x, y } = getWorldCoordinates(canvas.current!, center, pagePos);
-        props.appendMove(getClosestCellCenter(x, y, cellRadius));
+        const world = getWorldCoordinates(canvas.current!, center, pagePos);
+        props.appendMove(getClosestCellCenter(world.x, world.y, cellRadius));
     };
 
     const longPress = (pagePos: Vector2D) => {
-        const { x: worldX, y: worldY } = getWorldCoordinates(canvas.current!, center, pagePos);
-        const cellCenter = getClosestCellCenter(worldX, worldY, cellRadius);
-        setNewWaypoint(cellCenter);
+        const world = getWorldCoordinates(canvas.current!, center, pagePos);
+        const cellCenter = getClosestCellCenter(world.x, world.y, cellRadius);
+
+        setNewWaypoint({
+            x: cellCenter.x,
+            y: cellCenter.y,
+            angle: 0,
+        });
         
         // Screen target should be center of closest cell, still.
         setScreenTouchPos({
-            x: pagePos.x - worldX + cellCenter.x,
-            y: pagePos.y - worldY + cellCenter.y,
+            x: pagePos.x - world.x + cellCenter.x,
+            y: pagePos.y - world.y + cellCenter.y,
         });
     };
 
     const extraHandlers: TouchEvents | undefined = newWaypoint && screenTouchPos
         ? {
             onMouseMove: (e: React.MouseEvent<Element>) => {
-                setNewAngle(determineAngle(screenTouchPos, { x: e.pageX, y: e.pageY }, newAngle));
+                const pagePos = {
+                    x: e.pageX,
+                    y: e.pageY,
+                };
+
+                setNewWaypoint(waypoint => ({
+                    x: waypoint!.x,
+                    y: waypoint!.y,
+                    angle: determineAngle(screenTouchPos, pagePos, waypoint!.angle!)
+                }));
             },
             onTouchMove: (e: React.TouchEvent<Element>) => {
                 if (e.touches.length < 2) {
-                    setNewAngle(determineAngle(screenTouchPos, { x: e.touches[0].pageX, y: e.touches[0].pageY }, newAngle));
+                    const pagePos = {
+                        x: e.touches[0].pageX,
+                        y: e.touches[0].pageY,
+                    };
+
+                    setNewWaypoint(waypoint => ({
+                        x: waypoint!.x,
+                        y: waypoint!.y,
+                        angle: determineAngle(screenTouchPos, pagePos, waypoint!.angle!)
+                    }));
                 }
             },
             onMouseUp: () => {
                 props.appendMove({
                     x: newWaypoint.x,
                     y: newWaypoint.y,
-                    angle: newAngle
+                    angle: newWaypoint.angle,
                 });
                 setNewWaypoint(undefined);
-                setNewAngle(0);
                 setTimeout(
                     () => {
                         setScreenTouchPos(undefined);
@@ -91,10 +113,9 @@ export const HelmMap: React.FC<Props> = props => {
                 props.appendMove({
                     x: newWaypoint.x,
                     y: newWaypoint.y,
-                    angle: newAngle
+                    angle: newWaypoint.angle,
                 });
                 setNewWaypoint(undefined);
-                setNewAngle(0);
                 setTimeout(
                     () => {
                         setScreenTouchPos(undefined);
@@ -104,39 +125,30 @@ export const HelmMap: React.FC<Props> = props => {
             onMouseLeave: () => {
                 setScreenTouchPos(undefined);
                 setNewWaypoint(undefined);
-                setNewAngle(0);
             },
         }
         : undefined;
 
-    const highlightDestinationCells = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {
-        ctx.globalAlpha = 0.33;
-       
-        for (const cell of waypoints) {
-            fillHexCell(ctx, cell, cellRadius, theme, 'secondary');
+    const drawWaypoints = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {    
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.font = `${Math.round(cellRadius * 0.45)}px Jura`;
+
+        for (let i = 0; i < waypoints.length; i++) {
+            const color: ColorName = i === 0
+                ? 'primary'
+                : 'secondary';
+
+            drawWaypoint(ctx, waypoints[i], cellRadius, theme, color, i + 1);
         }
 
         if (newWaypoint !== undefined) {
-            fillHexCell(ctx, newWaypoint, cellRadius, theme, waypoints.length === 0 ? 'primary' : 'secondary');
+            const color: ColorName = waypoints.length === 0
+                ? 'primary'
+                : 'secondary';
 
-            ctx.globalAlpha = 1;
-
-            // Add an arrow indicating the target angle.
-            ctx.translate(newWaypoint.x, newWaypoint.y);
-            ctx.rotate(newAngle);
-
-            ctx.beginPath();
-            ctx.strokeStyle = theme.palette.success.main;
-            ctx.lineWidth = 3;
-            ctx.moveTo(0, 0);
-            ctx.lineTo(cellRadius * 2, 0);
-            ctx.stroke();
-
-            ctx.rotate(-newAngle);
-            ctx.translate(-newWaypoint.x, -newWaypoint.y);
+            drawWaypoint(ctx, newWaypoint, cellRadius, theme, color, waypoints.length + 1);
         }
-
-        ctx.globalAlpha = 1;
     };
 
     return (
@@ -152,7 +164,7 @@ export const HelmMap: React.FC<Props> = props => {
             vessels={ships}
             localVessel={props.localShip}
             {...useLongPress(longPress, tap, extraHandlers)}
-            drawExtraBackground={highlightDestinationCells}
+            drawExtraBackground={drawWaypoints}
         />
     );
 }

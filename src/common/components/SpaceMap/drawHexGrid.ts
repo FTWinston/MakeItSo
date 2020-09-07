@@ -1,11 +1,12 @@
 import { Theme } from '@material-ui/core';
 import { Vector2D } from '../../data/Vector2D';
 import { ColorName } from '../Colors';
+import { Waypoint } from '../../data/Waypoint';
 
 const packedWidthRatio = 1.7320508075688772;
 const packedHeightRatio = 1.5;
 
-function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number) {
+export function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number) {
     ctx.beginPath();
     
     let angle, x, y;
@@ -84,8 +85,6 @@ export function drawHexGrid(
             drawHex(ctx, cellRadius, 3);
             ctx.stroke();
 
-            ctx.fillText('X', 0, 0);
-            
             ctx.translate(-currentCell.x, -currentCell.y);
 
             currentCell.x += packedWidthRatio * cellRadius;
@@ -98,27 +97,4 @@ export function drawHexGrid(
 
         outset = !outset;
     }
-}
-
-export function fillHexCell(
-    ctx: CanvasRenderingContext2D,
-    cell: Vector2D,
-    cellRadius: number,
-    theme: Theme,
-    fillColor: ColorName
-) {
-    const currentCell = getClosestCellCenter(
-        cell.x,
-        cell.y,
-        cellRadius
-    );
-
-    ctx.translate(currentCell.x, currentCell.y);
-            
-    drawHex(ctx, cellRadius, 6);
-
-    ctx.fillStyle = theme.palette[fillColor].main;
-    ctx.fill();
-
-    ctx.translate(-currentCell.x, -currentCell.y);
 }

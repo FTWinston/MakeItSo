@@ -144,12 +144,18 @@ export function replaceMovement(ship: ShipState, destination: Vector2D) {
 
 export function addWaypoint(ship: ShipState, waypoint: Waypoint) {
     ship.waypoints.push(waypoint);
-    // TODO: possibly recalculate movement
+
+    if (ship.waypoints.length > 2) {
+        return;
+    }
+
+    // TODO: recalculate movement
 }
 
 export function clearMovement(ship: ShipState) {
     ship.waypoints = [];
-    // TODO: recaclulate movement
+
+    // TODO: recaclulate movement .. decelerate to a stop
 }
 
 export function adjustSpeed(ship: ShipState, time: number) {
