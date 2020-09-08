@@ -1,7 +1,6 @@
 import { Theme } from '@material-ui/core';
 import { Vector2D } from '../../data/Vector2D';
 import { ColorName } from '../Colors';
-import { Waypoint } from '../../data/Waypoint';
 
 const packedWidthRatio = 1.7320508075688772;
 const packedHeightRatio = 1.5;

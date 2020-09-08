@@ -70,8 +70,10 @@ export function drawMap(
 
     drawExtraBackground?.(ctx, viewBounds);
 
+    ctx.globalAlpha = 0.5;
     drawHexGrid(ctx, viewBounds, center, cellRadius, maxX, maxY, theme, gridColor);
 
+    ctx.globalAlpha = 1;
     const currentTime = getTime();
     
     for (const vessel of vessels) {
