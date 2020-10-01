@@ -58,6 +58,7 @@ export function createShipState(): ShipState {
         ],
         forcePositionUpdate: false,
         waypoints: [],
+        calculatedWaypoint: -1,
         engineering: {
             systemOrder: [
                 System.Helm,

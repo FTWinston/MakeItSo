@@ -13,6 +13,7 @@ export interface ShipState extends Vessel {
     
     forcePositionUpdate: boolean;
     waypoints: Waypoint[];
+    calculatedWaypoint: number;
 
     engineering: {
         systemOrder: System[];

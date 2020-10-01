@@ -1,5 +1,5 @@
 import { ShipState } from '../../common/data/server/ShipState';
-import { durationToTimeSpan } from '../../common/data/Progression';
+import { durationToTimeSpan, timeSpanToDuration } from '../../common/data/Progression';
 import { Vector2D, determineAngle, determineMidAngle, vectorsEqual } from '../../common/data/Vector2D';
 import { Position } from '../../common/data/Position';
 import { Waypoint } from '../../common/data/Waypoint';
@@ -42,14 +42,21 @@ function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
     const lastPastKeyframeIndex = getLastPastKeyframe(ship.position, currentTime);
     
     if (lastPastKeyframeIndex === -1) {
+        console.log('keeping 0 frames, adding current time twice');
+        const currentPos = getPositionValue(ship.position, currentTime);
         return [
             {
+                time: currentTime - durationToTimeSpan(1), // TODO: account for ship acceleration?
+                val: currentPos,
+            },
+            {
                 time: currentTime,
-                val: getPositionValue(ship.position, currentTime),
+                val: currentPos,
             },
         ];
     }
     else if (ship.forcePositionUpdate || lastPastKeyframeIndex === 0) {
+        console.log('keeping 1 frame, adding current time');
         return [
             ship.position[lastPastKeyframeIndex],
             {
@@ -59,7 +66,8 @@ function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
         ]
     }
     else {
-        return ship.position.slice(lastPastKeyframeIndex - 1, lastPastKeyframeIndex + 1);
+        console.log(`keeping ${ship.position.length - lastPastKeyframeIndex + 1} frames`);
+        return ship.position.slice(lastPastKeyframeIndex - 1);
     }
 }
 
@@ -74,7 +82,7 @@ export function updateShipPosition(ship: ShipState, currentTime: number) {
                 time: currentTime + durationToTimeSpan(5),
                 val: lastKeyframe.val,
             }];
-
+            ship.calculatedWaypoint = -1;
             break;
         }
         case 1: {
@@ -96,6 +104,7 @@ export function updateShipPosition(ship: ShipState, currentTime: number) {
                         : firstWaypoint as Position,
                 }];
                 ship.waypoints.shift();
+                ship.calculatedWaypoint = -1;
             }
             else {
                 console.log(`updateShipPosition, 1 waypoint, ${ship.forcePositionUpdate ? 'forced' : 'unforced'}, not reached it`);
@@ -109,22 +118,27 @@ export function updateShipPosition(ship: ShipState, currentTime: number) {
                     ...framesToKeep,
                     ...calculatePositions(ship, lastKeyframe.time, lastKeyframe.val, firstWaypoint, undefined),
                 ];
+                ship.calculatedWaypoint = 0;
             }
             break;
         }
         default: {
-            let firstWaypoint = ship.waypoints[0];
             const currentPos = getPositionValue(ship.position, currentTime);
-
-            if (vectorsEqual(firstWaypoint, currentPos)) {
-                ship.waypoints.shift();
-                firstWaypoint = ship.waypoints[0];
-            }
             const framesToKeep = getExistingFramesToKeep(ship, currentTime);
 
-            const secondWaypoint = ship.waypoints[1];
+            const firstWaypoint = ship.waypoints[ship.calculatedWaypoint + 1];
+            const secondWaypoint = ship.waypoints[ship.calculatedWaypoint + 2];
 
             const lastKeyframe = framesToKeep[framesToKeep.length - 1];
+
+            if (vectorsEqual(ship.waypoints[0], currentPos)) {
+                console.log(`updateShipPosition, >1 waypoint, ${ship.forcePositionUpdate ? 'forced' : 'unforced'}, reached it`);
+                ship.waypoints.shift();
+            }
+            else {
+                console.log(`updateShipPosition, >1 waypoint, ${ship.forcePositionUpdate ? 'forced' : 'unforced'}, not reached it`);
+                ship.calculatedWaypoint++;
+            }
 
             ship.position = [
                 ...framesToKeep,
@@ -159,6 +173,7 @@ export function calculatePositions(ship: ShipState, currentTime: number, current
     const midTime = currentTime + durationToTimeSpan(determineStepDuration(ship, currentPosition, midPosition));
     const endTime = midTime + durationToTimeSpan(determineStepDuration(ship, midPosition, endPosition));
 
+    console.log('calculated 2 new frames');
     return [
         {
             time: midTime,
@@ -181,8 +196,9 @@ export function addWaypoint(ship: ShipState, waypoint: Waypoint) {
 
 export function clearMovement(ship: ShipState) {
     ship.waypoints = [];
+    ship.calculatedWaypoint = -1;
 
-    // TODO: recaclulate movement .. decelerate to a stop
+    // TODO: recalculate movement .. decelerate to a stop
 
     ship.forcePositionUpdate = true;
 }
