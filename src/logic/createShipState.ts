@@ -56,6 +56,7 @@ export function createShipState(): ShipState {
                 }
             }
         ],
+        forcePositionUpdate: false,
         waypoints: [],
         engineering: {
             systemOrder: [

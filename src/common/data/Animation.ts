@@ -11,6 +11,17 @@ export interface KeyFrame<T> {
 
 export type Animation<T> = Array<KeyFrame<T>>;
 
+export function getLastPastKeyframe<T>(animation: Animation<T>, currentTime: number) {
+    for (let i = animation.length - 1; i >= 0; i--) {
+        const keyFrame = animation[i];
+        if (keyFrame.time < currentTime) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
 type AnimationSegment<T> = [
     KeyFrame<T>,
     KeyFrame<T>,
@@ -23,25 +34,32 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
 
     if (firstFutureIndex >= 2) {
         if (animation.length >= firstFutureIndex + 2) {
-            return animation.slice(firstFutureIndex - 2, firstFutureIndex + 1) as AnimationSegment<T>;
+            return animation.slice(firstFutureIndex - 2, firstFutureIndex + 2) as AnimationSegment<T>;
         }
         else {
             const firstFuture = animation[firstFutureIndex];
 
+            const keepFrames = animation.slice(firstFutureIndex - 2);
+            
             // Add a "stationary" item on the end on the end.
-            return [
-                ...animation.slice(firstFutureIndex - 2),
-                {
-                    time: firstFuture.time + endTimespan,
+            keepFrames.push({
+                time: firstFuture.time + endTimespan,
+                val: firstFuture.val,
+            });
+
+            if (keepFrames.length !== 4) {
+                keepFrames.push({
+                    time: firstFuture.time + endTimespan + endTimespan,
                     val: firstFuture.val,
-                }
-            ] as AnimationSegment<T>;
+                });
+            }
+
+            return keepFrames as AnimationSegment<T>;
         }
     }
     else if (firstFutureIndex === -1) {
         // It's all in the past...
         const { val } = animation[animation.length - 1];
-
         return [
             {
                 time: currentTime - endTimespan,
@@ -94,7 +112,6 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
     if (firstFutureIndex === animation.length - 1) {
         // Add one "stationary" value onto the end.
         const endVal = returnVal[2];
-
         returnVal.push({
             time: endVal.time + endTimespan,
             val: endVal.val,
@@ -128,24 +145,24 @@ export function getNumberValue(animation: Animation<number>, currentTime = getTi
 
 function interpolateAngle(angle0: number, angle1: number, angle2: number, angle3: number, fraction: number) {
     while (angle3 - angle2 > Math.PI) {
-        angle3 += Math.PI * 2;
+        angle3 -= Math.PI * 2;
     }
     while (angle2 - angle3 > Math.PI) {
-        angle3 -= Math.PI * 2;
+        angle3 += Math.PI * 2;
     }
 
     while (angle1 - angle2 > Math.PI) {
-        angle1 += Math.PI * 2;
+        angle1 -= Math.PI * 2;
     }
     while (angle2 - angle1 > Math.PI) {
-        angle1 -= Math.PI * 2;
+        angle1 += Math.PI * 2;
     }
 
     while (angle0 - angle1 > Math.PI) {
-        angle0 += Math.PI * 2;
+        angle0 -= Math.PI * 2;
     }
     while (angle1 - angle0 > Math.PI) {
-        angle0 -= Math.PI * 2;
+        angle0 += Math.PI * 2;
     }
 
     return interpolate(angle0, angle1, angle2, angle3, fraction);
@@ -172,7 +189,6 @@ export function getVectorValue(animation: Animation<Vector2D>, currentTime = get
 
 export function getPositionValue(animation: Animation<Position>, currentTime = getTime()): Position {
     const [val0, val1, val2, val3] = getCurrentSegment(animation, currentTime);
-
     const fraction = getCompletedFraction(val1.time, val2.time, currentTime);
 
     const pos0 = val0.val;
@@ -186,3 +202,22 @@ export function getPositionValue(animation: Animation<Position>, currentTime = g
         angle: interpolateAngle(pos0.angle, pos1.angle, pos2.angle, pos3.angle, fraction),
     };
 }
+
+/*
+
+given start angle A and position V, and target position W, and NO FOLLOW UP
+
+angle should turn to face W and hold
+should move at strafe/back speed as appropriate, then accelerate at forward speed once facing directly.
+only would be quicker to accelerate faster and curve around slightly.
+
+
+given start angle A and position V, and target angle B and position W, and NO FOLLOW UP
+
+...
+
+can this be solved exactly?
+
+perhaps as some higher-dimensional thing where we calculate the shortest path?
+
+*/

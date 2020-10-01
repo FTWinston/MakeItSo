@@ -23,3 +23,28 @@ export function determineAngle(fromPos: Vector2D, toPos: Vector2D, valueIfEqual:
         ? valueIfEqual
         : Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
 }
+
+export function determineMidAngle(fromPos: Vector2D, midPos: Vector2D, endPos: Vector2D, valueIfEqual: number) {
+    const firstAngle = determineAngle(fromPos, midPos, valueIfEqual);
+    const secondAngle = determineAngle(midPos, endPos, valueIfEqual);
+    return combineAngles(firstAngle, secondAngle);
+}
+
+export function combineAngles(angle1: number, angle2: number) {
+    if (angle2 < angle1) {
+        [angle1, angle2] = [angle2, angle1];
+    }
+
+    const twoPi = Math.PI * 2;
+    while (angle2 - angle1 > twoPi) {
+        angle2 -= twoPi;
+    }
+
+    let midAngle = (angle1 + angle2) / 2;
+
+    if (midAngle < 0) {
+        midAngle += twoPi;
+    }
+
+    return midAngle;
+}

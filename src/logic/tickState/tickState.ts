@@ -5,7 +5,7 @@ import { System } from '../../common/data/System';
 import { updatePowerLevel } from './updatePowerLevel';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { getTime } from '../../common/data/Progression';
-import { updateShipPosition } from './updateShipPosition';
+import { updateShipPosition, shouldUpdatePosition } from './updateShipPosition';
 
 export function tickState(state: GameState, interval: number) {
     if (state.paused) {
@@ -31,8 +31,8 @@ export function tickState(state: GameState, interval: number) {
             }
         }
 
-        if (ship.position.length === 0 || ship.position[ship.position.length - 1].time < tickTime) {
-            updateShipPosition(ship);
+        if (shouldUpdatePosition(ship, tickTime)) {
+            updateShipPosition(ship, tickTime);
         }
 
         if (anyModified) {
