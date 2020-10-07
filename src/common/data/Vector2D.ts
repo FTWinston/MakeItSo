@@ -21,7 +21,7 @@ export function distanceSq(v1: Vector2D, v2: Vector2D) {
 export function determineAngle(fromPos: Vector2D, toPos: Vector2D, valueIfEqual: number) {
     return vectorsEqual(fromPos, toPos)
         ? valueIfEqual
-        : Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
+        : clampAngle(Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x));
 }
 
 export function determineMidAngle(fromPos: Vector2D, midPos: Vector2D, endPos: Vector2D, valueIfEqual: number) {
@@ -30,21 +30,30 @@ export function determineMidAngle(fromPos: Vector2D, midPos: Vector2D, endPos: V
     return combineAngles(firstAngle, secondAngle);
 }
 
+export function clampAngle(angle: number) {
+    const twoPi = Math.PI * 2;
+
+    while (angle < 0) {
+        angle += twoPi;
+    }
+
+    while (angle >= twoPi) {
+        angle -= twoPi;
+    }
+
+    return angle;
+}
+
 export function combineAngles(angle1: number, angle2: number) {
     if (angle2 < angle1) {
         [angle1, angle2] = [angle2, angle1];
     }
 
-    const twoPi = Math.PI * 2;
-    while (angle2 - angle1 > twoPi) {
-        angle2 -= twoPi;
+    if (angle2 - angle1 > Math.PI) {
+        angle1 += Math.PI * 2;
     }
 
     let midAngle = (angle1 + angle2) / 2;
 
-    if (midAngle < 0) {
-        midAngle += twoPi;
-    }
-
-    return midAngle;
+    return clampAngle(midAngle);
 }

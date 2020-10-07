@@ -1,20 +1,21 @@
 import { getTime, getCompletedFraction, durationToTimeSpan } from './Progression';
-import { Vector2D } from './Vector2D';
+import { clampAngle, Vector2D } from './Vector2D';
 import { Position } from './Position';
 
 const endTimespan = durationToTimeSpan(3);
 
-export interface KeyFrame<T> {
+export interface Frame<T> {
     time: number;
     val: T;
+    isKey?: true;
 }
 
-export type Animation<T> = Array<KeyFrame<T>>;
+export type Animation<T> = Array<Frame<T>>;
 
-export function getLastPastKeyframe<T>(animation: Animation<T>, currentTime: number) {
+export function getLastPastFrame<T>(animation: Animation<T>, currentTime: number) {
     for (let i = animation.length - 1; i >= 0; i--) {
-        const keyFrame = animation[i];
-        if (keyFrame.time < currentTime) {
+        const frame = animation[i];
+        if (frame.time < currentTime) {
             return i;
         }
     }
@@ -23,10 +24,10 @@ export function getLastPastKeyframe<T>(animation: Animation<T>, currentTime: num
 }
 
 type AnimationSegment<T> = [
-    KeyFrame<T>,
-    KeyFrame<T>,
-    KeyFrame<T>,
-    KeyFrame<T>,
+    Frame<T>,
+    Frame<T>,
+    Frame<T>,
+    Frame<T>,
 ];
 
 function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): AnimationSegment<T> {
@@ -80,7 +81,7 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
         ]
     }
 
-    let returnVal: KeyFrame<T>[];
+    let returnVal: Frame<T>[];
     const firstVal = animation[0];
 
     if (firstFutureIndex === 1) {
@@ -165,7 +166,9 @@ function interpolateAngle(angle0: number, angle1: number, angle2: number, angle3
         angle0 += Math.PI * 2;
     }
 
-    return interpolate(angle0, angle1, angle2, angle3, fraction);
+    const result = interpolate(angle0, angle1, angle2, angle3, fraction);
+    
+    return clampAngle(result);
 }
 
 export function getAngleValue(animation: Animation<number>, currentTime = getTime()): number {

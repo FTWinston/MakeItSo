@@ -3,7 +3,7 @@ import { PowerLevel } from '../common/data/PowerLevel'
 import { createCard } from '../systems/engineering/data/EngineeringCards'
 import { EngineeringCardData } from '../systems/engineering/data/EngineeringCard';
 import { ShipState } from '../common/data/server/ShipState';
-import { getTime, durationToTimeSpan } from '../common/data/Progression';
+import { getTime } from '../common/data/Progression';
 
 function createSystemState() {
     return {
@@ -58,7 +58,6 @@ export function createShipState(): ShipState {
         ],
         forcePositionUpdate: false,
         waypoints: [],
-        calculatedWaypoint: -1,
         engineering: {
             systemOrder: [
                 System.Helm,
