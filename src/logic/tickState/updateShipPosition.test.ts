@@ -1,3 +1,4 @@
+import { durationToTimeSpan } from '../../common/data/Progression';
 import { ShipState } from '../../common/data/server/ShipState';
 import { Waypoint } from '../../common/data/Waypoint';
 import { createShipState } from '../createShipState';
@@ -70,42 +71,6 @@ test('moves to single waypoint then holds position', () => {
     expect(ship.waypoints).toHaveLength(1);
     expect(ship.waypoints[0]).toStrictEqual(waypoint);
 
-    expect(ship.position).toHaveLength(5);
-
-    const [
-        update0,
-        update1,
-        update2,
-        update3,
-        update4,
-    ] = ship.position;
-
-    expect(update0.val).toEqual(orig1.val);
-    expect(update1.val).toEqual(orig2.val);
-    expect(update2.val).toEqual(orig3.val);
-    expect(update3.val).toEqual(orig3.val);
-    expect(update4.val).toEqual(orig3.val);
-
-    expect(update0.time).toEqual(orig1.time);
-    expect(update1.time).toEqual(orig2.time);
-    expect(update2.time).toEqual(orig3.time);
-    expect(update3.time).toBeGreaterThan(orig3.time);
-    expect(update4.time).toBeGreaterThan(update3.time);
-
-    currentTime = (update2.time + update3.time) / 2;
-    
-    expect(shouldUpdatePosition(ship, currentTime))
-        .toBeFalsy();
-    
-    currentTime = (update3.time + update4.time) / 2;
-    
-    expect(shouldUpdatePosition(ship, currentTime))
-        .toBeTruthy();
-
-    updateShipPosition(ship, currentTime);
-
-    expect(ship.waypoints).toHaveLength(0);
-
     expect(ship.position).toHaveLength(1);
 
     const [
@@ -113,8 +78,15 @@ test('moves to single waypoint then holds position', () => {
     ] = ship.position;
 
     expect(final.isKey).toBeFalsy();
-    expect(final.time).toBeGreaterThan(update4.time);
-    expect(final.val).toEqual(update4.val);
+    expect(final.time).toBeGreaterThan(orig3.time);
+    expect(final.val).toEqual(orig3.val);
+
+    currentTime = (orig3.time + final.time) / 2;
+
+    expect(shouldUpdatePosition(ship, currentTime))
+        .toBeFalsy();
+
+    expect(ship.waypoints).toHaveLength(0);
 });
 
 test('moves through multiple waypoints (added together)', () => {
@@ -168,18 +140,18 @@ test('moves through multiple waypoints (added separately)', () => {
     updateShipPosition(ship, currentTime);
 
     addWaypoint(ship, waypoint2);
-    currentTime = 25;
+    currentTime = durationToTimeSpan(0.025);
     updateShipPosition(ship, currentTime);
 
     addWaypoint(ship, waypoint3);
-    currentTime = 50;
+    currentTime = durationToTimeSpan(0.05);
     updateShipPosition(ship, currentTime);
 
     testThreeWaypoints(ship, currentTime, waypoint1, waypoint2, waypoint3);
 });
 
 function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Waypoint, waypoint2: Waypoint, waypoint3: Waypoint) {
-    expect(ship.position).toHaveLength(4);
+    expect(ship.position.length).toBeGreaterThanOrEqual(4);
 
     const [
         orig0,
@@ -206,7 +178,7 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
     expect(orig3.isKey).toBeTruthy();
 
     expect(orig0.time).toBeLessThan(currentTime);
-    expect(orig1.time).toEqual(currentTime);
+    expect(orig1.time).toBeLessThanOrEqual(currentTime);
     expect(orig2.time).toBeGreaterThan(currentTime);
     expect(orig3.time).toBeGreaterThan(orig2.time);
 
@@ -242,9 +214,11 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
     expect(update0.val).toEqual(orig1.val);
     expect(update1.val).toEqual(orig2.val);
     expect(update2.val).toEqual(orig3.val);
-    expect(update4.val.x).toEqual(waypoint2.x);
-    expect(update4.val.y).toEqual(waypoint2.y);
-    expect(update4.val.angle).toEqual(7 * Math.PI / 4);
+    expect(update4.val).toEqual({
+        x: waypoint2.x,
+        y: waypoint2.y,
+        angle: 7 * Math.PI / 4,
+    });
 
     expect(update0.time).toEqual(orig1.time);
     expect(update1.time).toEqual(orig2.time);
@@ -288,4 +262,36 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
     expect(final2.time).toEqual(update4.time);
     expect(final3.time).toBeGreaterThan(update4.time);
     expect(final4.time).toBeGreaterThan(final3.time);
+
+    currentTime = (final2.time + final3.time) / 2;
+
+    expect(shouldUpdatePosition(ship, currentTime))
+        .toBeFalsy();
+
+    currentTime = (final3.time + final4.time) / 2;
+
+    expect(shouldUpdatePosition(ship, currentTime))
+        .toBeTruthy();
+
+    updateShipPosition(ship, currentTime);
+
+    expect(ship.waypoints).toHaveLength(1);
+
+    expect(ship.position).toHaveLength(1);
+
+    const [
+        absFinal,
+    ] = ship.position;
+
+    expect(absFinal.isKey).toBeFalsy();
+    expect(absFinal.time).toBeGreaterThan(final4.time);
+    expect(absFinal.val.x).toEqual(waypoint3.x);
+    expect(absFinal.val.y).toEqual(waypoint3.y);
+
+    currentTime = final4.time;
+
+    expect(shouldUpdatePosition(ship, currentTime))
+        .toBeFalsy();
+
+    expect(ship.waypoints).toHaveLength(0);
 }
