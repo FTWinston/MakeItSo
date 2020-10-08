@@ -89,13 +89,20 @@ function holdPosition(ship: ShipState, currentTime: number) {
         }
     }
 
-    ship.position = [{
-        time,
-        val: lastFrame.val,
-    }];
+    const framesToKeep = getExistingFramesToKeep(ship, currentTime);
+
+    ship.position = [
+        ...framesToKeep,
+        {
+            time,
+            val: lastFrame.val,
+        }
+    ];
 }
 
-function getExistingFramesToKeep(ship: ShipState, currentTime: number, pastFrames: Animation<Position>) {
+function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
+    const pastFrames = ship.position.slice(0, getLastPastFrame(ship.position, currentTime) + 1);
+
     if (pastFrames.length === 0) {
         // console.log('keeping 0 frames, adding current time twice');
         const currentPos = getPositionValue(ship.position, currentTime);
@@ -127,9 +134,7 @@ function getExistingFramesToKeep(ship: ShipState, currentTime: number, pastFrame
 }
 
 function updatePositionValue(ship: ShipState, currentTime: number) {
-    const pastFrames = ship.position.slice(0, getLastPastFrame(ship.position, currentTime) + 1);
-    
-    const framesToKeep = getExistingFramesToKeep(ship, currentTime, pastFrames);
+    const framesToKeep = getExistingFramesToKeep(ship, currentTime);
     const newFrames = determineFutureFrames(ship, framesToKeep);
 
     /*
