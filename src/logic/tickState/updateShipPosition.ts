@@ -193,7 +193,6 @@ function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position
     {
         time: endTime,
         val: endPosition,
-        isKey: true,
     }];
     return futureFrames;
 }
@@ -232,42 +231,3 @@ export function adjustSpeed(ship: ShipState, time: number) {
     }
     */
 }
-
-
-/*
-
-addWaypoint
-    add to waypoints
-    if waypoints.length < calculatedWaypoint + 2
-        recalculateMovement
-
-clearMovement
-    determine "stop position"
-    set that to be only waypoint
-    forcePositionUpdate = true;
-
-adjustEnginePower
-    just adjust timings of existing Frames?
-
-recaluculateMovement
-    calculatedWaypoint = -1
-    get current pos, angle & velocity
-    forcePositionUpdate = true;
-
-shouldUpdatePosition
-    forcePositionUpdate or
-    time of penultimate Frame reached
-
-updateShipPosition
-    if a past frame is key, remove a waypoint
-
-    keep last two frames
-
-    always purge future frames? Make no use of forceUpdatePosition?
-    dump calculatedWaypoint?
-
-    frames marked as key correspond to waypoints?
-
-    uh
-    piss
-*/

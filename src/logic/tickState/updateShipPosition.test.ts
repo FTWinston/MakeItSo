@@ -41,11 +41,6 @@ test('moves to single waypoint then holds position', () => {
         angle: Math.PI / 2,
     });
 
-    expect(orig0.isKey).toBeFalsy();
-    expect(orig1.isKey).toBeFalsy();
-    expect(orig2.isKey).toBeFalsy();
-    expect(orig3.isKey).toBeTruthy();
-
     expect(orig0.time).toBeLessThan(currentTime);
     expect(orig1.time).toEqual(currentTime);
     expect(orig2.time).toBeGreaterThan(currentTime);
@@ -84,7 +79,6 @@ test('moves to single waypoint then holds position', () => {
     expect(final1).toEqual(orig2);
     expect(final2).toEqual(orig3);
 
-    expect(final3.isKey).toBeFalsy();
     expect(final3.time).toBeGreaterThan(orig3.time);
     expect(final3.val).toEqual(orig3.val);
 
@@ -154,7 +148,7 @@ test('moves through multiple waypoints (added separately)', () => {
     currentTime = durationToTimeSpan(0.05);
     updateShipPosition(ship, currentTime);
 
-    // testThreeWaypoints(ship, currentTime, waypoint1, waypoint2, waypoint3);
+    testThreeWaypoints(ship, currentTime, waypoint1, waypoint2, waypoint3);
 });
 
 function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Waypoint, waypoint2: Waypoint, waypoint3: Waypoint) {
@@ -178,11 +172,6 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
         y: waypoint1.y,
         angle: Math.PI / 4,
     });
-
-    expect(orig0.isKey).toBeFalsy();
-    expect(orig1.isKey).toBeFalsy();
-    expect(orig2.isKey).toBeFalsy();
-    expect(orig3.isKey).toBeTruthy();
 
     expect(orig0.time).toBeLessThan(currentTime);
     expect(orig1.time).toBeLessThanOrEqual(currentTime);
@@ -301,7 +290,6 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
     expect(absFinal1).toEqual(final3);
     expect(absFinal2).toEqual(final4);
 
-    expect(absFinal3.isKey).toBeFalsy();
     expect(absFinal3.time).toBeGreaterThan(final4.time);
     expect(absFinal3.val.x).toEqual(waypoint3.x);
     expect(absFinal3.val.y).toEqual(waypoint3.y);

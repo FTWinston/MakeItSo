@@ -7,7 +7,6 @@ const endTimespan = durationToTimeSpan(3);
 export interface Frame<T> {
     time: number;
     val: T;
-    isKey?: true;
 }
 
 export type Animation<T> = Array<Frame<T>>;
