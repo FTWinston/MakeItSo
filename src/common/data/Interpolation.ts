@@ -21,7 +21,7 @@ export function getAngleValue(interpolation: Interpolation<number>, currentTime 
     while (startVal - endVal > Math.PI) {
         startVal -= Math.PI * 2;
     }
-    while (endVal - startVal > Math.PI) {
+    while (endVal - startVal >= Math.PI) {
         endVal -= Math.PI * 2;
     }
 

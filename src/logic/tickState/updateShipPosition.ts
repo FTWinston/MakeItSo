@@ -1,14 +1,9 @@
 import { ShipState } from '../../common/data/server/ShipState';
 import { durationToTimeSpan } from '../../common/data/Progression';
-import { determineAngle, determineMidAngle, vectorsEqual, distance } from '../../common/data/Vector2D';
+import { determineAngle, determineMidAngle, vectorsEqual, distance, clampAngle, unit } from '../../common/data/Vector2D';
 import { Position } from '../../common/data/Position';
 import { Waypoint } from '../../common/data/Waypoint';
 import { Animation, getPositionValue, getLastPastFrame } from '../../common/data/Animation';
-
-function determineStepDuration(ship: ShipState, from: Position, to: Position) {
-    // TODO: account for angles, etc?
-    return distance(from, to) / ship.helm.speed;
-}
 
 function updateWaypoints(ship: ShipState, currentTime: number) {
     if (ship.helm.waypoints.length === 0) {
@@ -151,7 +146,7 @@ function updatePositionValue(ship: ShipState, currentTime: number) {
     ];
 }
 
-function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position>) {
+function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position>): Animation<Position> {
     let [
         firstWaypoint,
         secondWaypoint,
@@ -163,39 +158,102 @@ function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position
         secondWaypoint = thirdWaypoint;
     }
 
-    const lastFrame = framesToKeep[framesToKeep.length - 1];
-    const moveAngle = determineAngle(lastFrame.val, firstWaypoint, lastFrame.val.angle);
+    const { val: startPosition, time: startTime } = framesToKeep[framesToKeep.length - 1];
+    const moveAngle = determineAngle(startPosition, firstWaypoint, startPosition.angle);
 
     const endPosition = firstWaypoint.angle === undefined
         ? {
             x: firstWaypoint.x,
             y: firstWaypoint.y,
             angle: secondWaypoint
-                ? determineMidAngle(lastFrame.val, firstWaypoint, secondWaypoint, lastFrame.val.angle)
+                ? determineMidAngle(startPosition, firstWaypoint, secondWaypoint, startPosition.angle)
                 : moveAngle,
         }
         : firstWaypoint as Position;
 
-    const midPosition: Position = {
-        x: (lastFrame.val.x + firstWaypoint.x) / 2,
-        y: (lastFrame.val.y + firstWaypoint.y) / 2,
-        angle: moveAngle,
-    };
+    const startRotationAngularDistance = clampAngle(startPosition.angle - moveAngle);
+    const startRotationDuration = Math.abs(startRotationAngularDistance / ship.helm.rotationalSpeed);
 
-    const midTime = lastFrame.time + durationToTimeSpan(determineStepDuration(ship, lastFrame.val, midPosition));
-    const endTime = midTime + durationToTimeSpan(determineStepDuration(ship, midPosition, endPosition));
+    const endRotationAngularDistance = clampAngle(endPosition.angle - moveAngle);
+    const endRotationDuration = Math.abs(endRotationAngularDistance / ship.helm.rotationalSpeed);
 
-    firstWaypoint.time = endTime;
+    const fullRotationDuration = distance(startPosition, endPosition) / ship.helm.speedWhileRotating;
 
-    const futureFrames: Animation<Position> = [{
-        time: midTime,
-        val: midPosition,
-    },
-    {
-        time: endTime,
+    if (startRotationDuration + endRotationDuration >= fullRotationDuration) {
+        // rotate directly to the end position
+        const endTime = startTime + durationToTimeSpan(fullRotationDuration);
+        firstWaypoint.time = endTime;
+
+        return [{
+            val: endPosition,
+            time: endTime,
+        }];
+    }
+    
+    const results: Animation<Position> = [];
+
+    // rotate, go straight, rotate again
+    const moveDirection = unit(startPosition, endPosition);
+
+    let latestTime = startTime;
+    let startStraightPos: Position;
+
+    if (startRotationDuration > 0.01) {
+        const startRotationDistance = ship.helm.speedWhileRotating * startRotationDuration;
+
+        startStraightPos = {
+            x: startPosition.x + moveDirection.x * startRotationDistance,
+            y: startPosition.y + moveDirection.y * startRotationDistance,
+            angle: moveAngle,
+        };
+
+        latestTime += durationToTimeSpan(startRotationDuration);
+        
+        results.push({
+            val: startStraightPos,
+            time: latestTime,
+        })
+    }
+    else {
+        startStraightPos = startPosition;
+    }
+    
+    let endStraightPos: Position;
+
+    if (endRotationDuration > 0.01) {
+        const endRotationDistance = ship.helm.speedWhileRotating * endRotationDuration;
+
+        endStraightPos = {
+            x: endPosition.x - moveDirection.x * endRotationDistance,
+            y: endPosition.y - moveDirection.y * endRotationDistance,
+            angle: moveAngle,
+        };
+    }
+    else {
+        endStraightPos = endPosition;
+    }
+    
+    const straightTimeSpan = durationToTimeSpan(distance(startStraightPos, endStraightPos) / ship.helm.speed);
+
+    latestTime += straightTimeSpan;
+    
+    if (endRotationDuration > 0.01) {
+        results.push({
+            val: endStraightPos,
+            time: latestTime,
+        });
+
+        latestTime += durationToTimeSpan(endRotationDuration);
+    }
+
+    results.push({
         val: endPosition,
-    }];
-    return futureFrames;
+        time: latestTime,
+    });
+
+    firstWaypoint.time = latestTime;
+
+    return results;
 }
 
 export function addWaypoint(ship: ShipState, waypoint: Waypoint) {

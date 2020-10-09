@@ -13,6 +13,8 @@ export interface ShipState extends Vessel {
     
     helm: {
         speed: number;
+        speedWhileRotating: number;
+        rotationalSpeed: number;
         forcePositionUpdate: boolean;
         waypoints: Waypoint[];
         lastWaypoint: Waypoint;

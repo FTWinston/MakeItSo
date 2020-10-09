@@ -57,7 +57,9 @@ export function createShipState(): ShipState {
             }
         ],
         helm: {
-            speed: 25,
+            speed: 30,
+            speedWhileRotating: 10,
+            rotationalSpeed: 0.5,
             forcePositionUpdate: false,
             waypoints: [],
             lastWaypoint: {
