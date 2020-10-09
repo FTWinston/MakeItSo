@@ -35,7 +35,8 @@ export const HelmMap: React.FC<Props> = props => {
         [props.ships]
     );
     
-    const { position, waypoints } = props.localShip;
+    const position = props.localShip.position;
+    const waypoints = props.localShip.helm.waypoints;
 
     const [cellRadius, setCellRadius] = useState(32);
 

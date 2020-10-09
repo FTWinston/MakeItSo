@@ -18,6 +18,10 @@ export function distanceSq(v1: Vector2D, v2: Vector2D) {
     return dx * dx + dy * dy;
 }
 
+export function distance(v1: Vector2D, v2: Vector2D) {
+    return Math.sqrt(distanceSq(v1, v2));
+}
+
 export function determineAngle(fromPos: Vector2D, toPos: Vector2D, valueIfEqual: number) {
     return vectorsEqual(fromPos, toPos)
         ? valueIfEqual

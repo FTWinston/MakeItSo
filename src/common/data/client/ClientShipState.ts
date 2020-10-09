@@ -10,7 +10,9 @@ export interface ClientShipState extends ClientVessel {
 
     systemInfo: Record<System, ClientSystemState>;
 
-    waypoints: Waypoint[];
+    helm: {
+        waypoints: Waypoint[];
+    };
 
     engineering: {
         systemOrder: System[];

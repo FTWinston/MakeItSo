@@ -11,9 +11,12 @@ export interface ShipState extends Vessel {
 
     systemInfo: Record<System, SystemState>;
     
-    forcePositionUpdate: boolean;
-    waypoints: Waypoint[];
-    lastWaypoint: Waypoint;
+    helm: {
+        speed: number;
+        forcePositionUpdate: boolean;
+        waypoints: Waypoint[];
+        lastWaypoint: Waypoint;
+    }
 
     engineering: {
         systemOrder: System[];

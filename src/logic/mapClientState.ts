@@ -32,9 +32,11 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         [anyOtherFields]: true,
                     },
                 },
-                waypoints: {
-                    // [shouldMap]: client system is helm
-                    [anyOtherFields]: true,
+                helm: {
+                    waypoints: {
+                        // [shouldMap]: client system is helm
+                        [anyOtherFields]: true,
+                    },
                 },
                 engineering: {
                     // [shouldMap]: engineering => engineering.client === client,

@@ -56,12 +56,15 @@ export function createShipState(): ShipState {
                 }
             }
         ],
-        forcePositionUpdate: false,
-        waypoints: [],
-        lastWaypoint: {
-            x: 0,
-            y: 0,
-            angle: 0,
+        helm: {
+            speed: 25,
+            forcePositionUpdate: false,
+            waypoints: [],
+            lastWaypoint: {
+                x: 0,
+                y: 0,
+                angle: 0,
+            },
         },
         engineering: {
             systemOrder: [

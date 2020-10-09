@@ -63,8 +63,8 @@ test('moves to single waypoint then holds position', () => {
 
     updateShipPosition(ship, currentTime);
 
-    expect(ship.waypoints).toHaveLength(1);
-    expect(ship.waypoints[0]).toStrictEqual(waypoint);
+    expect(ship.helm.waypoints).toHaveLength(1);
+    expect(ship.helm.waypoints[0]).toStrictEqual(waypoint);
 
     expect(ship.position).toHaveLength(4);
 
@@ -87,7 +87,7 @@ test('moves to single waypoint then holds position', () => {
     expect(shouldUpdatePosition(ship, currentTime))
         .toBeTruthy();
 
-    expect(ship.waypoints).toHaveLength(0);
+    expect(ship.helm.waypoints).toHaveLength(0);
 });
 
 test('moves through multiple waypoints (added together)', () => {
@@ -197,7 +197,7 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
 
     updateShipPosition(ship, currentTime);
 
-    expect(ship.waypoints).toHaveLength(3);
+    expect(ship.helm.waypoints).toHaveLength(3);
 
     expect(ship.position).toHaveLength(5);
 
@@ -236,7 +236,7 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
 
     updateShipPosition(ship, currentTime);
 
-    expect(ship.waypoints).toHaveLength(2);
+    expect(ship.helm.waypoints).toHaveLength(2);
 
     expect(ship.position).toHaveLength(5);
 
@@ -275,7 +275,7 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
 
     updateShipPosition(ship, currentTime);
 
-    expect(ship.waypoints).toHaveLength(1);
+    expect(ship.helm.waypoints).toHaveLength(1);
 
     expect(ship.position).toHaveLength(4);
 
@@ -299,5 +299,5 @@ function testThreeWaypoints(ship: ShipState, currentTime: number, waypoint1: Way
     expect(shouldUpdatePosition(ship, currentTime))
         .toBeTruthy();
 
-    expect(ship.waypoints).toHaveLength(0);
+    expect(ship.helm.waypoints).toHaveLength(0);
 }

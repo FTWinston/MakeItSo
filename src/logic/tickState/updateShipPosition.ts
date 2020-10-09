@@ -1,39 +1,40 @@
 import { ShipState } from '../../common/data/server/ShipState';
 import { durationToTimeSpan } from '../../common/data/Progression';
-import { Vector2D, determineAngle, determineMidAngle, vectorsEqual } from '../../common/data/Vector2D';
+import { determineAngle, determineMidAngle, vectorsEqual, distance } from '../../common/data/Vector2D';
 import { Position } from '../../common/data/Position';
 import { Waypoint } from '../../common/data/Waypoint';
 import { Animation, getPositionValue, getLastPastFrame } from '../../common/data/Animation';
 
-function determineStepDuration(ship: ShipState, fromPos: Vector2D, toPos: Vector2D) {
-    return 5; // TODO: calculate this based on ship's helm power and distance. And angle?
+function determineStepDuration(ship: ShipState, from: Position, to: Position) {
+    // TODO: account for angles, etc?
+    return distance(from, to) / ship.helm.speed;
 }
 
 function updateWaypoints(ship: ShipState, currentTime: number) {
-    if (ship.waypoints.length === 0) {
+    if (ship.helm.waypoints.length === 0) {
         return;
     }
 
-    const testWaypoint = ship.waypoints[0];
+    const testWaypoint = ship.helm.waypoints[0];
     if (testWaypoint.time === undefined || testWaypoint.time > currentTime) {
         return;
     }
 
-    ship.lastWaypoint = testWaypoint;
-    ship.waypoints = ship.waypoints.slice(1);
+    ship.helm.lastWaypoint = testWaypoint;
+    ship.helm.waypoints = ship.helm.waypoints.slice(1);
 }
 
 export function shouldUpdatePosition(ship: ShipState, currentTime: number) {
     updateWaypoints(ship, currentTime);
 
-    if (ship.forcePositionUpdate) {
+    if (ship.helm.forcePositionUpdate) {
         return true;
     }
 
     const position = ship.position;
 
     if (position.length === 0) {
-        return ship.waypoints.length > 0;
+        return ship.helm.waypoints.length > 0;
     }
 
     let testFrame: number;
@@ -57,19 +58,19 @@ export function updateShipPosition(ship: ShipState, currentTime: number) {
         updatePositionValue(ship, currentTime);
     }
 
-    ship.forcePositionUpdate = false;
+    ship.helm.forcePositionUpdate = false;
 }
 
 function shouldHoldPosition(ship: ShipState) {
     // Hold position if we've nowhere to go,
-    if (ship.waypoints.length === 0) {
+    if (ship.helm.waypoints.length === 0) {
         return true;
     }
 
     // Or if we've only one waypoint and have plotted a course there already.
-    if (ship.waypoints.length === 1) {
+    if (ship.helm.waypoints.length === 1) {
         const lastPos = ship.position[ship.position.length - 1];
-        const onlyWaypoint = ship.waypoints[0];
+        const onlyWaypoint = ship.helm.waypoints[0];
 
         return vectorsEqual(lastPos.val, onlyWaypoint);
     }
@@ -82,8 +83,8 @@ function holdPosition(ship: ShipState, currentTime: number) {
 
     const time = currentTime + durationToTimeSpan(5);
 
-    if (ship.waypoints.length > 0) {
-        const waypoint = ship.waypoints[0];
+    if (ship.helm.waypoints.length > 0) {
+        const waypoint = ship.helm.waypoints[0];
         if (waypoint.time === undefined) {
             waypoint.time = time;
         }
@@ -117,7 +118,7 @@ function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
             },
         ];
     }
-    else if (ship.forcePositionUpdate || pastFrames.length === 1) {
+    else if (ship.helm.forcePositionUpdate || pastFrames.length === 1) {
         // console.log('keeping 1 frame, adding current time');
         return [
             pastFrames[pastFrames.length - 1],
@@ -155,9 +156,9 @@ function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position
         firstWaypoint,
         secondWaypoint,
         thirdWaypoint,
-    ] = ship.waypoints;
+    ] = ship.helm.waypoints;
 
-    if (firstWaypoint.time !== undefined && !ship.forcePositionUpdate) {
+    if (firstWaypoint.time !== undefined && !ship.helm.forcePositionUpdate) {
         firstWaypoint = secondWaypoint;
         secondWaypoint = thirdWaypoint;
     }
@@ -198,19 +199,19 @@ function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position
 }
 
 export function addWaypoint(ship: ShipState, waypoint: Waypoint) {
-    ship.waypoints.push(waypoint);
+    ship.helm.waypoints.push(waypoint);
 
-    if (ship.waypoints.length <= 2) {
-        ship.forcePositionUpdate = true;
+    if (ship.helm.waypoints.length <= 2) {
+        ship.helm.forcePositionUpdate = true;
     }
 }
 
 export function clearMovement(ship: ShipState) {
-    ship.waypoints = [];
+    ship.helm.waypoints = [];
 
     // TODO: recalculate movement .. decelerate to a stop
 
-    ship.forcePositionUpdate = true;
+    ship.helm.forcePositionUpdate = true;
 }
 
 export function adjustSpeed(ship: ShipState, time: number) {
