@@ -6,6 +6,7 @@ import BetaIcon from '@material-ui/icons/RotateRight';
 
 interface Props {
     open: boolean;
+    select: (pattern: string) => void;
     close: () => void;
 }
 
@@ -33,21 +34,21 @@ export const EvasiveSelection: React.FC<Props> = props => {
 
             <List>
                 <ListSubheader>Select a pattern to perform:</ListSubheader>
-                <ListItem button onClick={props.close}> {/* TODO: actually select pattern */}
+                <ListItem button onClick={() => { props.select('stop'); props.close(); }}>
                     <ListItemIcon>
                         <StopIcon />
                     </ListItemIcon>
                     <ListItemText primary="All stop" secondary="Stop moving completely" />
                 </ListItem>
 
-                <ListItem button onClick={props.close}> {/* TODO: actually select pattern */}
+                <ListItem button onClick={() => { props.select('alpha'); props.close(); }}>
                     <ListItemIcon>
                         <AlphaIcon />
                     </ListItemIcon>
                     <ListItemText primary="Alpha 1" secondary="Strafe unpredictably" />
                 </ListItem>
                 
-                <ListItem button onClick={props.close}> {/* TODO: actually select pattern */}
+                <ListItem button onClick={() => { props.select('beta'); props.close(); }}>
                     <ListItemIcon>
                         <BetaIcon />
                     </ListItemIcon>

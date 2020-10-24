@@ -4,7 +4,7 @@ import { selectSystem } from './selectSystem';
 import { draftCard } from './draftCard';
 import { playCard } from './playCard';
 import { moveShip } from './moveShip';
-import { stopShip } from './stopShip';
+import { maneuverShip } from './maneuverShip';
 
 export function clientActionExecutor(state: GameState, action: ClientAction, client: string) {
     switch (action.type) {
@@ -24,8 +24,8 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             moveShip(state, client, action.waypoint, action.replace);
             break;
 
-        case 'helm stop':
-            stopShip(state, client);
+        case 'helm maneuver':
+            maneuverShip(state, client, action.pattern);
             break;
 
         case 'eng draft':

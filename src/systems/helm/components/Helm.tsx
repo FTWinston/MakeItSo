@@ -35,6 +35,14 @@ export const Helm: React.FC = () => {
         [dispatch, replaceMode]
     );
 
+    const maneuver = useCallback(
+        (pattern: string) => dispatch({
+            type: 'helm maneuver',
+            pattern,
+        }),
+        [dispatch]
+    );
+
     return (
         <ShipSystem>
             <HelmMap
@@ -53,6 +61,7 @@ export const Helm: React.FC = () => {
             <EvasiveSelection
                 open={evasiveShowing}
                 close={closeEvasive}
+                select={maneuver}
             />
         </ShipSystem>
     );

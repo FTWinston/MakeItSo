@@ -16,7 +16,8 @@ export type ClientAction = {
     waypoint: Waypoint;
     replace: boolean;
 } | {
-    type: 'helm stop';
+    type: 'helm maneuver';
+    pattern: string;
 } | {
     type: 'eng draft';
     card: number;
