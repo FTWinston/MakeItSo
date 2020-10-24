@@ -14,6 +14,7 @@ export type ClientAction = {
 } | {
     type: 'helm move';
     waypoint: Waypoint;
+    replace: boolean;
 } | {
     type: 'helm stop';
 } | {

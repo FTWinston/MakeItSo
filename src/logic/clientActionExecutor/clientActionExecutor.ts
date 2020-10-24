@@ -21,7 +21,7 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
             break;
 
         case 'helm move':
-            moveShip(state, client, action.waypoint);
+            moveShip(state, client, action.waypoint, action.replace);
             break;
 
         case 'helm stop':

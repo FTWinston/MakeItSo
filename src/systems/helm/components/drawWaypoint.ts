@@ -9,7 +9,7 @@ export function drawWaypoint(
     cellRadius: number,
     theme: Theme,
     fillColor: ColorName,
-    number: number,
+    number?: number,
 ) {
     const cell = getClosestCellCenter(
         waypoint.x,
@@ -32,14 +32,16 @@ export function drawWaypoint(
     if (waypoint.angle !== undefined) {
         drawArrow(ctx, waypoint.angle, theme, cellRadius);
     }
-    else {
+    else if (number !== undefined) {
         ctx.beginPath();
         ctx.arc(0, 0, cellRadius * 0.3, 0, Math.PI * 2);
         ctx.fill();
     }
 
-    ctx.fillStyle = theme.palette.primary.main;
-    ctx.fillText(number.toString(), 0, 0);
+    if (number !== undefined) {
+        ctx.fillStyle = theme.palette.primary.main;
+        ctx.fillText(number.toString(), 0, 0);
+    }
 
     ctx.translate(-cell.x, -cell.y);
 }

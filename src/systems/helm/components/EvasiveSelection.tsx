@@ -1,5 +1,6 @@
 import React from 'react';
 import { Typography, Drawer, List, ListItem, ListItemIcon, ListItemText, ListSubheader, makeStyles } from '@material-ui/core';
+import StopIcon from '@material-ui/icons/Cancel';
 import AlphaIcon from '@material-ui/icons/SwapHoriz';
 import BetaIcon from '@material-ui/icons/RotateRight';
 
@@ -34,16 +35,23 @@ export const EvasiveSelection: React.FC<Props> = props => {
                 <ListSubheader>Select a pattern to perform:</ListSubheader>
                 <ListItem button onClick={props.close}> {/* TODO: actually select pattern */}
                     <ListItemIcon>
+                        <StopIcon />
+                    </ListItemIcon>
+                    <ListItemText primary="All stop" secondary="Stop moving completely" />
+                </ListItem>
+
+                <ListItem button onClick={props.close}> {/* TODO: actually select pattern */}
+                    <ListItemIcon>
                         <AlphaIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Alpha" secondary="Strafe unpredictably" />
+                    <ListItemText primary="Alpha 1" secondary="Strafe unpredictably" />
                 </ListItem>
                 
                 <ListItem button onClick={props.close}> {/* TODO: actually select pattern */}
                     <ListItemIcon>
                         <BetaIcon />
                     </ListItemIcon>
-                    <ListItemText primary="Beta" secondary="Loop the loop" />
+                    <ListItemText primary="Beta 2" secondary="Loop the loop" />
                 </ListItem>
             </List>
         </Drawer>

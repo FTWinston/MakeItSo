@@ -1,12 +1,12 @@
-import React from 'react';
-import { makeStyles, Fab, Zoom, useTheme } from '@material-ui/core';
-import ManoeverIcon from '@material-ui/icons/OpenWith';
-import TravelIcon from '@material-ui/icons/Navigation';
+import React, { useState } from 'react';
+import { makeStyles, Fab, Zoom, useTheme, Snackbar } from '@material-ui/core';
+import ReplaceMoveIcon from '@material-ui/icons/LocationOn';
+import AddMoveIcon from '@material-ui/icons/AddLocation';
 import EvasiveIcon from '@material-ui/icons/TrendingUp';
 
 interface Props {
-    maneuverMode: boolean;
-    setManeuverMode: (mode: boolean) => void;
+    replaceMode: boolean;
+    setReplaceMode: (mode: boolean) => void;
     showEvasive: () => void;
 }
 
@@ -26,6 +26,10 @@ const useStyles = makeStyles(theme => ({
             backgroundColor: theme.palette.warning.dark,
         },
     },
+    snack: {
+        maxWidth: '60vw',
+        opacity: 0.75,
+    },
 }));
 
 export const ActionButtons: React.FC<Props> = props => {
@@ -38,13 +42,25 @@ export const ActionButtons: React.FC<Props> = props => {
         exit: theme.transitions.duration.leavingScreen,
     };
 
+    const [showSnack, setShowSnack] = useState(false);
+
     return (
-        <React.Fragment>
+        <React.Fragment>    
+            <Snackbar
+                key={props.replaceMode ? 'replace' : 'add'}
+                className={classes.snack}
+                open={showSnack}
+                onClose={() => setShowSnack(false)}
+                autoHideDuration={3000}
+                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                message={props.replaceMode ? 'Replace existing movement' : 'Add to existing movement'}
+            />
+
             <Zoom
-                in={props.maneuverMode}
+                in={props.replaceMode}
                 timeout={transitionDuration}
                 style={{
-                    transitionDelay: `${props.maneuverMode ? transitionDuration.exit : 0}ms`,
+                    transitionDelay: `${props.replaceMode ? transitionDuration.exit : 0}ms`,
                 }}
                 unmountOnExit
             >
@@ -52,17 +68,17 @@ export const ActionButtons: React.FC<Props> = props => {
                     color="primary"
                     className={classes.fabMode}
                     aria-label="Travel"
-                    onClick={() => props.setManeuverMode(false)}
+                    onClick={() => { props.setReplaceMode(false); setShowSnack(true); }}
                 >
-                    <TravelIcon />
+                    <AddMoveIcon />
                 </Fab>
             </Zoom>
 
             <Zoom
-                in={!props.maneuverMode}
+                in={!props.replaceMode}
                 timeout={transitionDuration}
                 style={{
-                    transitionDelay: `${!props.maneuverMode ? transitionDuration.exit : 0}ms`,
+                    transitionDelay: `${!props.replaceMode ? transitionDuration.exit : 0}ms`,
                 }}
                 unmountOnExit
             >
@@ -70,9 +86,9 @@ export const ActionButtons: React.FC<Props> = props => {
                     color="secondary"
                     className={classes.fabMode}
                     aria-label="Maneuver"
-                    onClick={() => props.setManeuverMode(true)}
+                    onClick={() => { props.setReplaceMode(true); setShowSnack(true); }}
                 >
-                    <ManoeverIcon />
+                    <ReplaceMoveIcon />
                 </Fab>
             </Zoom>
 

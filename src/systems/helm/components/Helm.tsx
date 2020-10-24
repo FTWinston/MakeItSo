@@ -19,7 +19,7 @@ export const Helm: React.FC = () => {
         []
     );
 
-    const [maneuverMode, setManeuverMode] = useState(false);
+    const [replaceMode, setReplaceMode] = useState(false);
 
     const ships = useMemo(
         () => Object.values(gameState.ships),
@@ -30,22 +30,23 @@ export const Helm: React.FC = () => {
         (waypoint: Waypoint) => dispatch({
             type: 'helm move',
             waypoint,
+            replace: replaceMode
         }),
-        [dispatch]
+        [dispatch, replaceMode]
     );
 
     return (
         <ShipSystem>
             <HelmMap
-                maneuverMode={maneuverMode}
+                replaceMode={replaceMode}
                 ships={ships}
                 localShip={gameState.localShip}
-                appendMove={appendMove}
+                addWaypoint={appendMove}
             />
 
             <ActionButtons
-                maneuverMode={maneuverMode}
-                setManeuverMode={setManeuverMode}
+                replaceMode={replaceMode}
+                setReplaceMode={setReplaceMode}
                 showEvasive={showEvasive}
             />
 

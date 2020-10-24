@@ -21,8 +21,8 @@ const useStyles = makeStyles(theme => ({
 
 interface Props {
     ships: Record<number, ClientShipState>;
-    appendMove: (waypoint: Waypoint) => void;
-    maneuverMode: boolean;
+    addWaypoint: (waypoint: Waypoint) => void;
+    replaceMode: boolean;
     localShip: ClientShipState;
 }
 
@@ -49,7 +49,7 @@ export const HelmMap: React.FC<Props> = props => {
 
     const tap = (pagePos: Vector2D) => {
         const world = getWorldCoordinates(canvas.current!, center, pagePos);
-        props.appendMove(getClosestCellCenter(world.x, world.y, cellRadius));
+        props.addWaypoint(getClosestCellCenter(world.x, world.y, cellRadius));
     };
 
     const longPress = (pagePos: Vector2D) => {
@@ -98,7 +98,7 @@ export const HelmMap: React.FC<Props> = props => {
                 }
             },
             onMouseUp: () => {
-                props.appendMove({
+                props.addWaypoint({
                     x: newWaypoint.x,
                     y: newWaypoint.y,
                     angle: newWaypoint.angle,
@@ -111,7 +111,7 @@ export const HelmMap: React.FC<Props> = props => {
                 , 10);
             },
             onTouchEnd: () => {
-                props.appendMove({
+                props.addWaypoint({
                     x: newWaypoint.x,
                     y: newWaypoint.y,
                     angle: newWaypoint.angle,
@@ -135,12 +135,14 @@ export const HelmMap: React.FC<Props> = props => {
         ctx.textBaseline = 'middle';
         ctx.font = `${Math.round(cellRadius * 0.45)}px Jura`;
 
+        const existingNumbers = waypoints.length > 1 || !props.replaceMode;
+
         for (let i = 0; i < waypoints.length; i++) {
             const color: ColorName = i === 0
                 ? 'primary'
                 : 'secondary';
 
-            drawWaypoint(ctx, waypoints[i], cellRadius, theme, color, i + 1);
+            drawWaypoint(ctx, waypoints[i], cellRadius, theme, color, existingNumbers ? i + 1 : undefined);
         }
 
         if (newWaypoint !== undefined) {
@@ -148,7 +150,7 @@ export const HelmMap: React.FC<Props> = props => {
                 ? 'primary'
                 : 'secondary';
 
-            drawWaypoint(ctx, newWaypoint, cellRadius, theme, color, waypoints.length + 1);
+            drawWaypoint(ctx, newWaypoint, cellRadius, theme, color, props.replaceMode ? undefined : waypoints.length + 1);
         }
     };
 
@@ -156,7 +158,7 @@ export const HelmMap: React.FC<Props> = props => {
         <SpaceMap
             ref={canvas}
             className={classes.map}
-            gridColor={props.maneuverMode ? 'secondary' : 'primary'}
+            gridColor={props.replaceMode ? 'secondary' : 'primary'}
             dragEnabled={screenTouchPos === undefined}
             cellRadius={cellRadius}
             setCellRadius={setCellRadius}
