@@ -6,7 +6,7 @@ export interface ClientGameState {
     localShipId: number;
     currentSystem?: System;
 
-    ships: Record<number, ClientShipState>;
+    ships: Partial<Record<number, ClientShipState>>;
 
     paused: boolean;
 }
@@ -18,6 +18,6 @@ export interface EnhancedClientGameState extends ClientGameState {
 export function enhanceState(state: ClientGameState): EnhancedClientGameState {
     return {
         ...state,
-        localShip: state.ships[state.localShipId],
+        localShip: state.ships[state.localShipId]!,
     };
 }

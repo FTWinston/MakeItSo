@@ -75,10 +75,10 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                 getValue: () => client,
             },
             localShipId: {
-                getValue: state => state.shipsByClient[client],
+                getValue: state => state.shipsByClient[client]!,
             },
             currentSystem: {
-                getValue: state => state.ships[state.shipsByClient[client]].systemsByClient[client],
+                getValue: state => state.ships[state.shipsByClient[client]!]!.systemsByClient[client],
             }
         }
     }
