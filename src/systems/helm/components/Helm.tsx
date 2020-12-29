@@ -1,4 +1,4 @@
-import React, { useState, useContext, useMemo, useCallback } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { ShipSystem } from '../../../common/components/ShipSystem';
 import { ActionButtons } from './ActionButtons';
 import { EvasiveSelection } from './EvasiveSelection';
@@ -21,11 +21,6 @@ export const Helm: React.FC = () => {
 
     const [replaceMode, setReplaceMode] = useState(false);
 
-    const ships = useMemo(
-        () => Object.values(gameState.ships),
-        [gameState.ships]
-    );
-
     const appendMove = useCallback(
         (waypoint: Waypoint) => dispatch({
             type: 'helm move',
@@ -47,7 +42,7 @@ export const Helm: React.FC = () => {
         <ShipSystem>
             <HelmMap
                 replaceMode={replaceMode}
-                ships={ships}
+                ships={gameState.ships}
                 localShip={gameState.localShip}
                 addWaypoint={appendMove}
             />

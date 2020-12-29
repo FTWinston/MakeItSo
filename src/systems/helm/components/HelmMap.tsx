@@ -11,6 +11,7 @@ import { getClosestCellCenter } from '../../../common/components/SpaceMap/drawHe
 import { getPositionValue } from '../../../common/data/Animation';
 import { Waypoint } from '../../../common/data/Waypoint';
 import { drawWaypoint } from './drawWaypoint';
+import { partialValues } from '../../../logic/records';
 
 const useStyles = makeStyles(theme => ({
     map: {
@@ -20,7 +21,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface Props {
-    ships: Record<number, ClientShipState>;
+    ships: Partial<Record<number, ClientShipState>>;
     addWaypoint: (waypoint: Waypoint) => void;
     replaceMode: boolean;
     localShip: ClientShipState;
@@ -31,7 +32,7 @@ export const HelmMap: React.FC<Props> = props => {
     const classes = useStyles();
 
     const ships = useMemo(
-        () => Object.values(props.ships),
+        () => partialValues(props.ships),
         [props.ships]
     );
     

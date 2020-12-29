@@ -7,7 +7,7 @@ export function draftCard(state: GameState, client: string, cardId: number) {
         return;
     }
 
-    const ship = state.ships[shipId];
+    const ship = state.ships[shipId]!;
     const currentSystem = ship.systemsByClient[client];
 
     if (currentSystem !== System.Engineering || ship.engineering.draftChoices.length === 0) {
