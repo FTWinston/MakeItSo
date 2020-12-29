@@ -3,7 +3,7 @@ import { Theme } from '../../../common/theme';
 import { CardHand } from './CardHand';
 import { createCommonCard, createEpicCard, createUncommonCard, createRareCard } from '../data/EngineeringCards';
 
-export default { title: 'Engineering/Card Hand' };
+export default { title: 'Engineering/Components/Card Hand' };
 
 const cards = [
     createCommonCard(1),

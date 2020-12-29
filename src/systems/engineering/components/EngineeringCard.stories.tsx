@@ -3,7 +3,7 @@ import { Theme } from '../../../common/theme';
 import { ZoomableCard } from './ZoomableCard';
 import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } from '../data/EngineeringCards';
 
-export default { title: 'Engineering/Card' };
+export default { title: 'Engineering/Components/Card' };
 
 export const common = () => (
     <Theme>

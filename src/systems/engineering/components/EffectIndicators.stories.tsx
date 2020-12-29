@@ -4,7 +4,7 @@ import { EffectIndicators } from './EffectIndicators';
 import { SystemStatusEffectType } from '../../../common/data/SystemStatusEffect';
 import { determineEndTime, getTime, durationToTimeSpan } from '../../../common/data/Progression';
 
-export default { title: 'Engineering/Effect Indicators' };
+export default { title: 'Engineering/Components/Effect Indicators' };
 
 export const three = () => {
     const now = getTime();

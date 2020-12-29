@@ -3,7 +3,7 @@ import { Theme } from '../../../common/theme';
 import { EffectIndicator } from './EffectIndicator';
 import { SystemStatusEffectType } from '../../../common/data/SystemStatusEffect';
 
-export default { title: 'Engineering/Effect Indicator' };
+export default { title: 'Engineering/Components/Effect Indicator' };
 
 export const positive = () => (
     <Theme>
