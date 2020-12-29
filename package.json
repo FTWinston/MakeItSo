@@ -7,7 +7,7 @@
     "@material-ui/icons": "^4.9.1",
     "filter-mirror": "git+https://github.com/FTWinston/filter-mirror.git",
     "jsonpatch": "^3.0.1",
-    "peer-server": "^1.1.2",
+    "peer-server": "git+https://github.com/FTWinston/peer-server.git",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-scripts": "3.4.1",
