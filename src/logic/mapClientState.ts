@@ -67,7 +67,20 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                         [anyOtherFields]: true,
                     },
                     cardGeneration: true,
-                }
+                },
+                weapons: {
+                    // [shouldMap]: client system is weapons
+                    targetVesselId: true,
+                    targetSolutionId: true,
+                    
+                    [extraFields]: {
+                        targetSolutions: {
+                            getValue: weapons => weapons.targetVesselId === undefined
+                                ? []
+                                : weapons.solutionsByTarget[weapons.targetVesselId],
+                        },
+                    }
+                },
             }
         },
         [extraFields]: {

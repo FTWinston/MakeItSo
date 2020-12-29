@@ -27,4 +27,10 @@ export interface ShipState extends Vessel {
         nextCardId: number;
         cardGeneration?: Progression;
     };
+
+    weapons: {
+        targetVesselId?: number;
+        targetSolutionId?: number;
+        solutionsByTarget: Record<number, number[]>;
+    }
 }

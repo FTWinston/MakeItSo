@@ -5,6 +5,8 @@ import { draftCard } from './draftCard';
 import { playCard } from './playCard';
 import { moveShip } from './moveShip';
 import { maneuverShip } from './maneuverShip';
+import { targetShip } from './targetShip';
+import { targetSolution } from './targetSolution';
 
 export function clientActionExecutor(state: GameState, action: ClientAction, client: string) {
     switch (action.type) {
@@ -34,6 +36,14 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
 
         case 'eng play':
             playCard(state, client, action.card, action.system)
+            break;
+
+        case 'wpn target':
+            targetShip(state, client, action.ship);
+            break;
+        
+        case 'wpn solution':
+            targetSolution(state, client, action.solution);
             break;
 
         default:

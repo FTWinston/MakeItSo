@@ -25,4 +25,10 @@ export type ClientAction = {
     type: 'eng play';
     card: number;
     system: System;
+} | {
+    type: 'wpn target';
+    ship?: number;
+} | {
+    type: 'wpn solution';
+    solution?: number;
 }

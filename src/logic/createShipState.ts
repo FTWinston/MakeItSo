@@ -81,5 +81,8 @@ export function createShipState(): ShipState {
             draftChoices,
             nextCardId,
         },
+        weapons: {
+            solutionsByTarget: {},
+        },
     }
 }

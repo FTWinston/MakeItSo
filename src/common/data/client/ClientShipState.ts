@@ -20,4 +20,10 @@ export interface ClientShipState extends ClientVessel {
         draftChoices: Array<EngineeringCardInfo[]>;
         cardGeneration?: Progression;
     };
+
+    weapons: {
+        targetVesselId?: number;
+        targetSolutionId?: number;
+        targetSolutions: number[];
+    }
 }

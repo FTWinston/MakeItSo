@@ -29,6 +29,9 @@ function createInitialState(currentSystem?: System): GameState {
     return {
         ships: {
             [localShipId]: shipState,
+            2: createShipState(),
+            3: createShipState(),
+            4: createShipState(),
         },
         shipsByClient: { [localClientName]: localShipId },
         paused: false,
