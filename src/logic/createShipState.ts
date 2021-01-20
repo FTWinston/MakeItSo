@@ -4,6 +4,7 @@ import { createCard } from '../systems/engineering/data/EngineeringCards'
 import { EngineeringCardData } from '../systems/engineering/data/EngineeringCard';
 import { ShipState } from '../common/data/server/ShipState';
 import { getTime } from '../common/data/Progression';
+import { TargetingSolution } from '../systems/weapons/data/TargetingSolution';
 
 function createSystemState() {
     return {
@@ -82,7 +83,26 @@ export function createShipState(): ShipState {
             nextCardId,
         },
         weapons: {
-            solutionsByTarget: {},
+            solutionsByTarget: {
+                2: [
+                    TargetingSolution.Weapons,
+                    TargetingSolution.Sensors,
+                    TargetingSolution.Engines,
+                    TargetingSolution.Engineering,
+                ],
+                3: [
+                    TargetingSolution.Weapons,
+                    TargetingSolution.Sensors,
+                    TargetingSolution.Engines,
+                    TargetingSolution.Engineering,
+                ],
+                4: [
+                    TargetingSolution.Weapons,
+                    TargetingSolution.Sensors,
+                    TargetingSolution.Engines,
+                    TargetingSolution.Engineering,
+                ],
+            },
         },
     }
 }

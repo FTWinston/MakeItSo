@@ -1,17 +1,14 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core';
-import { SpaceMap } from '../../../common/components/SpaceMap/SpaceMap';
+import React, { useState, useRef, useEffect } from 'react';
+import { makeStyles, Theme, useTheme } from '@material-ui/core';
 import { Vector2D } from '../../../common/data/Vector2D';
 import { getBounds, Polygon } from '../../../common/data/Polygon';
-import { getPositionValue } from '../../../common/data/Animation';
 import { Canvas } from '../../../common/components/Canvas';
 import { useGesture } from 'react-use-gesture';
 import { UserHandlersPartial } from 'react-use-gesture/dist/types';
 
 const useStyles = makeStyles(theme => ({
-    map: {
-        width: '100vw',
-        height: `calc(100vh - ${theme.spacing(7)}px)`,
+    canvas: {
+        flexGrow: 1,
     },
 }));
 
@@ -25,12 +22,14 @@ interface SliceResult {
 
 interface DisplayInfo {
     unitSize: number;
-    boundsMin: Vector2D;
-    boundsMax: Vector2D;
+    viewWidth: number;
+    viewHeight: number;
+    gridMin: Vector2D;
+    gridMax: Vector2D;
+    theme: Theme;
 }
 
 interface Props {
-    className?: string;
     requiredAccuracy: number;
     polygon?: Polygon;
     fire: (x1: number, y1: number, x2: number, y2: number) => void;
@@ -40,10 +39,14 @@ export const Aim: React.FC<Props> = props => {
     const theme = useTheme();
     const classes = useStyles();
 
-    const [display, setDisplay] = useState<DisplayInfo>({
+    // This seems to be in grid space, rather than screen space.
+    const display = useRef<DisplayInfo>({
         unitSize: 1,
-        boundsMin: { x: 0, y: 0 },
-        boundsMax: { x: 1, y: 1 },
+        viewWidth: 1,
+        viewHeight: 1,
+        gridMin: { x: 0, y: 0 },
+        gridMax: { x: 1, y: 1 },
+        theme,
     });
     
     const [startPos, setStartPos] = useState<Vector2D>();
@@ -52,18 +55,29 @@ export const Aim: React.FC<Props> = props => {
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const draw = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {
-        ;
+    useEffect(
+        () => {
+            display.current = updateScaleAndOffset(canvas.current!.clientWidth, canvas.current!.clientHeight, theme, props.polygon);
+        },
+        [props.polygon, theme]
+    );
+
+    const boundsChanged = (bounds: DOMRect) => {
+        display.current = updateScaleAndOffset(bounds.width, bounds.height, theme, props.polygon);
+    };
+
+    const draw = (ctx: CanvasRenderingContext2D) => {
+        drawAll(ctx, display.current, props.polygon, startPos, endPos, sliceResults);
     };
 
     const gestureConfig: UserHandlersPartial = {
         onDrag: ({ movement: [mx, my] }) => {
             
         },
-        onDragStart: ({ da: [distance] }) => {
+        onDragStart: ({ /*da: [distance]*/ }) => {
             
         },
-        onDragEnd: ({ da: [distance] }) => {
+        onDragEnd: ({ /*da: [distance]*/ }) => {
             
         },
     };
@@ -77,42 +91,87 @@ export const Aim: React.FC<Props> = props => {
     return (
         <Canvas
             ref={canvas}
-            className={props.className}
+            className={classes.canvas}
             animate={true}
             draw={draw}
+            boundsChanged={boundsChanged}
             {...bind()}
         />
     );
 }
 
-function determinePolygonBounds(polygon: Polygon | undefined): IState {
+function getPaddedBounds(polygon: Polygon | undefined) {
     if (polygon === undefined) {
         return {
-            minRequiredX: 0,
-            maxRequiredX: 8,
-            minRequiredY: 0,
-            maxRequiredY: 8,
+            minX: 0,
+            minY: 0,
+            maxX: 8,
+            maxY: 8,
         };
     }
 
     // determine the extent of the polygon itself
     const polyBounds = getBounds(polygon);
 
+    polyBounds.minX -= gridPadding;
+    polyBounds.minY -= gridPadding;
+
+    polyBounds.maxX += gridPadding;
+    polyBounds.maxY += gridPadding;
+
+    return polyBounds;
+}
+
+function updateScaleAndOffset(viewWidth: number, viewHeight: number, theme: Theme, polygon?: Polygon): DisplayInfo {
+    const gridSpaceBounds = getPaddedBounds(polygon);
+
+    // X or Y bounds will probably be larger than required so as to keep the polygon in the center
+    const gridCenterX = (gridSpaceBounds.maxX + gridSpaceBounds.minX) / 2;
+    const gridCenterY = (gridSpaceBounds.maxY + gridSpaceBounds.minY) / 2;
+
+    let gridExtentX = gridSpaceBounds.maxX - gridSpaceBounds.minX;
+    let gridExtentY = gridSpaceBounds.maxY - gridSpaceBounds.minY;
+
+    const requiredRatio = gridExtentX / gridExtentY;
+    const displayRatio = viewWidth / viewHeight;
+    let unitSize: number;
+
+    if (requiredRatio < displayRatio) {
+        // fit to height, extend X space
+        unitSize = viewHeight / gridExtentY;
+
+        const requiredWidth = gridExtentX * unitSize;
+        gridExtentX *= viewWidth / requiredWidth;
+    }
+    else {
+        // fit to width, extend Y space
+        unitSize = viewWidth / gridExtentX;
+
+        const requiredHeight = gridExtentY * unitSize;
+        gridExtentY *= viewHeight / requiredHeight;
+    }
+
     return {
-        minRequiredX: polyBounds.minX - gridPadding,
-        minRequiredY: polyBounds.minY - gridPadding,
-        maxRequiredX: polyBounds.maxX + gridPadding,
-        maxRequiredY: polyBounds.maxY + gridPadding,
+        gridMin: {
+            x: gridCenterX - gridExtentX / 2,
+            y: gridCenterY - gridExtentY / 2,
+        },
+        gridMax: {
+            x: gridSpaceBounds.maxX,
+            y: gridSpaceBounds.maxY,
+        },
+        unitSize,
+        viewWidth,
+        viewHeight,
+        theme,
     };
 }
 
-function draw(ctx: CanvasRenderingContext2D, width: number, height: number, display: DisplayInfo, polygon?: Polygon, startPos?: Vector2D, endPos?: Vector2D, sliceResults?: SliceResult[]) {
-    updateScaleAndOffset(width, height);
-    
-    drawBackground(ctx, display, width, height);
+function drawAll(ctx: CanvasRenderingContext2D, display: DisplayInfo, polygon?: Polygon, startPos?: Vector2D, endPos?: Vector2D, sliceResults?: SliceResult[]) {
+    drawBackground(ctx, display);
 
     if (polygon !== undefined && polygon.length > 0) {
-        drawPolygon(ctx, polygon, display, width, height);
+        drawPolygon(ctx, polygon, display);
     }
     else {
         // TODO: some sort of message about no targeting solution
@@ -123,25 +182,25 @@ function draw(ctx: CanvasRenderingContext2D, width: number, height: number, disp
     }
 }
 
-function drawPolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, display: DisplayInfo, width: number, height: number, sliceStart?: Vector2D, sliceEnd?: Vector2D) {
+function drawPolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, display: DisplayInfo, sliceStart?: Vector2D, sliceEnd?: Vector2D) {
     ctx.strokeStyle = '#ccc';
     ctx.lineWidth = display.unitSize * 0.1;
 
     if (sliceEnd === undefined || sliceStart === undefined || (sliceStart.x === sliceEnd.x && sliceStart.y === sliceEnd.y)) {
-        ctx.fillStyle = '#c00';
+        ctx.fillStyle = display.theme.palette.primary.main;
         drawSinglePolygon(ctx, polygon, display);
 
         if (sliceStart) {
             // draw "start point" for what will become the clipping line
             ctx.fillStyle = '#fff';
             ctx.beginPath();
-            ctx.arc(gridToScreen(sliceStart.x, display.boundsMin.x, display.unitSize), gridToScreen(sliceStart.y, display.boundsMin.y, display.unitSize), display.unitSize * 0.2, 0, Math.PI * 2);
+            ctx.arc(gridToScreen(sliceStart.x, display.gridMin.x, display.unitSize), gridToScreen(sliceStart.y, display.gridMin.y, display.unitSize), display.unitSize * 0.2, 0, Math.PI * 2);
             ctx.fill();
         }
         return;
     }
 
-    const clippingInfo = getClippingInfo(width, height, display);
+    const clippingInfo = getClippingInfo(display, sliceStart, sliceEnd);
 
     // clip on one side of the line and draw the polygon in one color
     ctx.save();
@@ -169,38 +228,38 @@ function drawPolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, display: D
     ctx.lineWidth = display.unitSize * 0.2;
     ctx.beginPath();
     ctx.moveTo(
-        gridToScreen(sliceStart.x, display.boundsMin.x, display.unitSize),
-        gridToScreen(sliceStart.y, display.boundsMin.y, display.unitSize)
+        gridToScreen(sliceStart.x, display.gridMin.x, display.unitSize),
+        gridToScreen(sliceStart.y, display.gridMin.y, display.unitSize)
     );
     ctx.lineTo(
-        gridToScreen(sliceEnd.x, display.boundsMin.x, display.unitSize),
-        gridToScreen(sliceEnd.y, display.boundsMin.y, display.unitSize)
+        gridToScreen(sliceEnd.x, display.gridMin.x, display.unitSize),
+        gridToScreen(sliceEnd.y, display.gridMin.y, display.unitSize)
     );
     ctx.stroke();
 }
 
-function drawBackground(ctx: CanvasRenderingContext2D, display: DisplayInfo, width: number, height: number) {
+function drawBackground(ctx: CanvasRenderingContext2D, display: DisplayInfo) {
     // first, fill the background
     ctx.fillStyle = '#000';
-    ctx.fillRect(0, 0, width, height);
+    ctx.fillRect(0, 0, display.viewWidth, display.viewHeight);
 
     if (display.unitSize <= 1) {
         return;
     }
 
     // determine where to draw the top left point
-    const startX = gridToScreen(Math.ceil(display.boundsMin.x), display.boundsMin.x, display.unitSize);
-    const startY = gridToScreen(Math.ceil(display.boundsMin.y), display.boundsMin.y, display.unitSize);
+    const startX = gridToScreen(Math.ceil(display.gridMin.x), display.gridMin.x, display.unitSize);
+    const startY = gridToScreen(Math.ceil(display.gridMin.y), display.gridMin.y, display.unitSize);
 
     // draw a grid of points
-    ctx.fillStyle = '#999';
-    const radius = display.unitSize * 0.1;
+    ctx.fillStyle = '#666';
+    const radius = display.unitSize * 0.075;
     const twoPi = Math.PI * 2;
 
     ctx.beginPath();
 
-    for (let x = startX; x <= width; x += display.unitSize) {
-        for (let y = startY; y <= height; y += display.unitSize) {
+    for (let x = startX; x <= display.viewWidth; x += display.unitSize) {
+        for (let y = startY; y <= display.viewHeight; y += display.unitSize) {
             ctx.moveTo(x, y);
             ctx.arc(x, y, radius, 0, twoPi);
         }
@@ -216,13 +275,13 @@ function drawSinglePolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, disp
 
     const firstPoint = polygon[0];
 
-    const startX = gridToScreen(firstPoint.x, display.boundsMin.x, display.unitSize);
-    const startY = gridToScreen(firstPoint.y, display.boundsMin.y, display.unitSize);
+    const startX = gridToScreen(firstPoint.x, display.gridMin.x, display.unitSize);
+    const startY = gridToScreen(firstPoint.y, display.gridMin.y, display.unitSize);
     ctx.moveTo(startX, startY);
 
     for (const point of polygon) {
-        const x = gridToScreen(point.x, display.boundsMin.x, display.unitSize);
-        const y = gridToScreen(point.y, display.boundsMin.y, display.unitSize);
+        const x = gridToScreen(point.x, display.gridMin.x, display.unitSize);
+        const y = gridToScreen(point.y, display.gridMin.y, display.unitSize);
         ctx.lineTo(x, y);
     }
 
@@ -236,12 +295,13 @@ function drawSinglePolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, disp
 
 function drawResults(ctx: CanvasRenderingContext2D, display: DisplayInfo, sliceResults: SliceResult[]) {
     ctx.fillStyle = '#fff';
-    ctx.font = `${Math.round(display.unitSize)}px Georgia`;
+    
+    ctx.font = `${Math.round(display.unitSize)}px ${display.theme.typography.fontFamily}`;
     ctx.globalAlpha = 0.75;
     ctx.textAlign = 'center';
 
     for (const result of sliceResults) {
-        ctx.fillText(result.percent.toString(), gridToScreen(result.x, display.boundsMin.x, display.unitSize), gridToScreen(result.y, display.boundsMin.y, display.unitSize));
+        ctx.fillText(result.percent.toString(), gridToScreen(result.x, display.gridMin.x, display.unitSize), gridToScreen(result.y, display.gridMin.y, display.unitSize));
     }
 
     ctx.globalAlpha = 1;
@@ -255,34 +315,34 @@ function gridToScreen(val: number, offset: number, unitSize: number) {
     return (val - offset) * unitSize;
 }
 
-function getClippingInfo(width: number, height: number, display: DisplayInfo) {
+function getClippingInfo(display: DisplayInfo, sliceStart: Vector2D, sliceEnd: Vector2D) {
     // determine the "full length" version of the clipping line,
     // plus two clipping paths to use to separate each "half" of the polygon, based on that line
     
-    let x1 = gridToScreen(this.state.x1!, display.boundsMin.x, display.unitSize);
-    let y1 = gridToScreen(this.state.y1!, display.boundsMin.y, display.unitSize);
-    let x2 = gridToScreen(this.state.x2!, display.boundsMin.x, display.unitSize);
-    let y2 = gridToScreen(this.state.y2!, display.boundsMin.y, display.unitSize);
+    let x1 = gridToScreen(sliceStart.x, display.gridMin.x, display.unitSize);
+    let y1 = gridToScreen(sliceStart.y!, display.gridMin.y, display.unitSize);
+    let x2 = gridToScreen(sliceEnd.x!, display.gridMin.x, display.unitSize);
+    let y2 = gridToScreen(sliceEnd.y!, display.gridMin.y, display.unitSize);
 
     let bounds1;
     let bounds2;
 
     if (x1 === x2) {
         y1 = 0;
-        y2 = height
+        y2 = display.viewHeight
 
         bounds1 = [
             { x: 0, y: 0 },
             { x: x1, y: 0 },
-            { x: x2, y: height },
-            { x: 0, y: height },
+            { x: x2, y: display.viewHeight },
+            { x: 0, y: display.viewHeight },
         ];
 
         bounds2 = [
             { x: x1, y: 0 },
-            { x: width, y: 0 },
-            { x: width, y: height },
-            { x: x2, y: height },
+            { x: display.viewWidth, y: 0 },
+            { x: display.viewWidth, y: display.viewHeight },
+            { x: x2, y: display.viewHeight },
         ];
     }
     else {
@@ -299,7 +359,7 @@ function getClippingInfo(width: number, height: number, display: DisplayInfo) {
 
         // x = (y - c) / m
         const xIntercept = (0 - yIntercept) / gradient;
-        const xTopIntercept = (height - yIntercept) / gradient;
+        const xTopIntercept = (display.viewHeight - yIntercept) / gradient;
 
         if (gradient >= 0) {
             if (xIntercept >= 0) {
@@ -310,12 +370,12 @@ function getClippingInfo(width: number, height: number, display: DisplayInfo) {
                 bounds1 = [ // anticlockwise
                     { x: x1, y: y1 },
                     { x: 0, y: 0 },
-                    { x: 0, y: height },
+                    { x: 0, y: display.viewHeight },
                 ];
 
                 bounds2 = [ // clockwise
                     { x: x1, y: y1 },
-                    { x: width, y: 0 },
+                    { x: display.viewWidth, y: 0 },
                 ]
             }
             else {
@@ -325,32 +385,32 @@ function getClippingInfo(width: number, height: number, display: DisplayInfo) {
 
                 bounds1 = [ // anticlockwise
                     { x: x1, y: y1 },
-                    { x: 0, y: height },
+                    { x: 0, y: display.viewHeight },
                 ];
 
                 bounds2 = [ // clockwise
                     { x: x1, y: y1 },
                     { x: 0, y: 0 },
-                    { x: width, y: 0 },
+                    { x: display.viewWidth, y: 0 },
                 ];
             }
 
-            if (xTopIntercept <= width) {
-                // right end touches y = height
+            if (xTopIntercept <= display.viewWidth) {
+                // right end touches y = display.viewHeight
                 x2 = xTopIntercept;
-                y2 = height;
+                y2 = display.viewHeight;
 
                 bounds1.push({ x: x2, y: y2 }); // anticlockwise
 
-                bounds2.push({ x: width, y: height }); // clockwise
+                bounds2.push({ x: display.viewWidth, y: display.viewHeight }); // clockwise
                 bounds2.push({ x: x2, y: y2 });
             }
             else {
                 // right end touches the right
-                x2 = width;
-                y2 = gradient * width + yIntercept;
+                x2 = display.viewWidth;
+                y2 = gradient * display.viewWidth + yIntercept;
 
-                bounds1.push({ x: width, y: height }); // anticlockwise
+                bounds1.push({ x: display.viewWidth, y: display.viewHeight }); // anticlockwise
                 bounds1.push({ x: x2, y: y2 });
 
                 bounds2.push({ x: x2, y: y2 }); // clockwise
@@ -358,19 +418,19 @@ function getClippingInfo(width: number, height: number, display: DisplayInfo) {
         }
         else {
             if (xTopIntercept >= 0) {
-                // left end touches y = height
+                // left end touches y = display.viewHeight
                 x1 = xTopIntercept;
-                y1 = height;
+                y1 = display.viewHeight;
 
                 bounds1 = [ // clockwise
                     { x: x1, y: y1 },
-                    { x: 0, y: height },
+                    { x: 0, y: display.viewHeight },
                     { x: 0, y: 0 },
                 ];
 
                 bounds2 = [ // anticlockwise
                     { x: x1, y: y1 },
-                    { x: width, y: height },
+                    { x: display.viewWidth, y: display.viewHeight },
                 ];
             }
             else {
@@ -385,26 +445,26 @@ function getClippingInfo(width: number, height: number, display: DisplayInfo) {
 
                 bounds2 = [ // anticlockwise
                     { x: x1, y: y1 },
-                    { x: 0, y: height },
-                    { x: width, y: height },
+                    { x: 0, y: display.viewHeight },
+                    { x: display.viewWidth, y: display.viewHeight },
                 ];
             }
 
-            if (xIntercept <= width) {
+            if (xIntercept <= display.viewWidth) {
                 // right end touches y = 0
                 x2 = xIntercept;
                 y2 = 0;
 
                 bounds1.push({ x: x2, y: y2 }); // clockwise
 
-                bounds2.push({ x: width, y: 0 }); // anticlockwise
+                bounds2.push({ x: display.viewWidth, y: 0 }); // anticlockwise
                 bounds2.push({ x: x2, y: y2 });
             }
             else {
                 // right end touches the right
-                x2 = width;
-                y2 = gradient * width + yIntercept;
-                bounds1.push({ x: width, y: 0 }); // clockwise
+                x2 = display.viewWidth;
+                y2 = gradient * display.viewWidth + yIntercept;
+                bounds1.push({ x: display.viewWidth, y: 0 }); // clockwise
                 bounds1.push({ x: x2, y: y2 });
 
                 bounds2.push({ x: x2, y: y2 }); // anticlockwise
@@ -517,36 +577,6 @@ export class Targeting extends React.Component<IProps, IState> {
     private unitSize: number;
     private minX: number;
     private minY: number;
-    
-    private updateScaleAndOffset(width: number, height: number) {
-        // X or Y bounds will probably be larger than required so as to keep the polygon in the center
-        const centerX = (this.state.maxRequiredX + this.state.minRequiredX) / 2;
-        const centerY = (this.state.maxRequiredY + this.state.minRequiredY) / 2;
-
-        let xExtent = this.state.maxRequiredX - this.state.minRequiredX;
-        let yExtent = this.state.maxRequiredY - this.state.minRequiredY;
-
-        const requiredRatio = xExtent / yExtent;
-        const displayRatio = width / height;
-
-        if (requiredRatio < displayRatio) {
-            // fit to height, extend X space
-            this.unitSize = height / yExtent;
-
-            const requiredWidth = xExtent * this.unitSize;
-            xExtent *= width / requiredWidth;
-        }
-        else {
-            // fit to width, extend Y space
-            this.unitSize = width / xExtent;
-
-            const requiredHeight = yExtent * this.unitSize;
-            yExtent *= height / requiredHeight;
-        }
-
-        display.boundsMin.x = centerX - xExtent / 2;
-        display.boundsMin.y = centerY - yExtent / 2;
-    }
 
     private setupTouch(area: TouchArea) {
         area.createPan2D(

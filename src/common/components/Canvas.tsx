@@ -6,6 +6,7 @@ import { TouchEvents } from './TouchEvents';
 interface Props extends TouchEvents {
     className?: string;
     animate?: boolean;
+    boundsChanged?: (bounds: DOMRect) => void;
     draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
 }
 
@@ -111,6 +112,10 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                         displayHeight
                     );
                     
+                    if (props.boundsChanged) {
+                        props.boundsChanged(bounds);
+                    }
+
                     setBounds(bounds);
                 }
             };
@@ -122,7 +127,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
 
             return () => resizeObserver.disconnect();
         },
-        []
+        [props.boundsChanged]
     );
 
     const rootClasses = props.className

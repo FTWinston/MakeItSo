@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Button, Checkbox, makeStyles, Paper, Table, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, useTheme } from '@material-ui/core';
+import { Button, Checkbox, makeStyles, Paper, Table, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, useTheme } from '@material-ui/core';
 import { SpaceMap } from '../../../common/components/SpaceMap/SpaceMap';
 import { Vector2D } from '../../../common/data/Vector2D';
 import { ClientShipState } from '../../../common/data/client/ClientShipState';
@@ -8,7 +8,14 @@ import { TouchEvents } from '../../../common/components/TouchEvents';
 import { getPositionValue } from '../../../common/data/Animation';
 
 const useStyles = makeStyles(theme => ({
-    
+    root: {
+
+    },
+    prompt: {
+        margin: theme.spacing(2),
+        marginTop: theme.spacing(1),
+        marginBottom: 0,
+    }
 }));
 
 interface Props {
@@ -23,7 +30,8 @@ export const TargetSelection: React.FC<Props> = props => {
     const classes = useStyles();
 
     const ships = useMemo(
-        () => Object.entries(props.ships),
+        () => Object.entries(props.ships)
+            .filter(ship => ship[1] !== props.localShip),
         [props.ships]
     );
 
@@ -34,18 +42,6 @@ export const TargetSelection: React.FC<Props> = props => {
 
     // Friendly / hostile / planet / etc filters.
     // View toggle on each ship in the list.
-
-    // View as a FAB with a speed dial?
-    //  Reset
-    //  Magnify
-    //  Zoom out
-    //  internal / external
-
-    // Magnify!?
-
-    // FAB vs a new tab
-
-    // AIMING could be in a modal, from a FAB
 
     interface HeadCell {
         disablePadding: boolean;
@@ -92,7 +88,10 @@ export const TargetSelection: React.FC<Props> = props => {
     });
 
     return (
-        <div>
+        <div className={classes.root}>
+            <Typography variant="h6" className={classes.prompt}>
+                Select a target
+            </Typography>
             <Paper>
                 <TableContainer>
                     <Table
@@ -103,35 +102,27 @@ export const TargetSelection: React.FC<Props> = props => {
                     >
                         <TableHead>
                             <TableRow>
-                                <TableCell padding="checkbox">
-                                <Checkbox
-                                    //indeterminate={numSelected > 0 && numSelected < rowCount}
-                                    checked={false}
-                                    //checked={rowCount > 0 && numSelected === rowCount}
-                                    //onChange={onSelectAllClick}
-                                    inputProps={{ 'aria-label': 'select all desserts' }}
-                                />
-                                </TableCell>
+                                <TableCell padding="checkbox" />
                                 {headCells.map((headCell) => (
-                                <TableCell
-                                    key={headCell.id}
-                                    align={headCell.numeric ? 'right' : 'left'}
-                                    padding={headCell.disablePadding ? 'none' : 'default'}
-                                    sortDirection={orderBy === headCell.id ? order : false}
-                                >
-                                    <TableSortLabel
-                                        active={orderBy === headCell.id}
-                                        direction={orderBy === headCell.id ? order : 'asc'}
-                                        //onClick={createSortHandler(headCell.id)}
+                                    <TableCell
+                                        key={headCell.id}
+                                        align={headCell.numeric ? 'right' : 'left'}
+                                        padding={headCell.disablePadding ? 'none' : 'default'}
+                                        sortDirection={orderBy === headCell.id ? order : false}
                                     >
-                                    {headCell.label}
-                                    {orderBy === headCell.id ? (
-                                        <span /*className={classes.visuallyHidden}*/>
-                                        {order === 'asc' ? 'sorted ascending' : 'sorted descending'}
-                                        </span>
-                                    ) : null}
-                                    </TableSortLabel>
-                                </TableCell>
+                                        <TableSortLabel
+                                            active={orderBy === headCell.id}
+                                            direction={orderBy === headCell.id ? order : 'asc'}
+                                            //onClick={createSortHandler(headCell.id)}
+                                        >
+                                            {headCell.label}
+                                            {orderBy === headCell.id ? (
+                                                <span /*className={classes.visuallyHidden}*/>
+                                                {order === 'asc' ? 'sorted ascending' : 'sorted descending'}
+                                                </span>
+                                            ) : null}
+                                        </TableSortLabel>
+                                    </TableCell>
                                 ))}
                             </TableRow>
                         </TableHead>

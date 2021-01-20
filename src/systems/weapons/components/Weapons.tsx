@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 import SwipeableViews from 'react-swipeable-views';
 import { GameContext } from '../../../common/components/GameProvider';
 import { ShipSystem } from '../../../common/components/ShipSystem';
+import { Aim } from './Aim';
 import { SolutionSelection } from './SolutionSelection';
 import { TargetSelection } from './TargetSelection';
 import { WeaponStepper } from './WeaponStepper';
@@ -15,9 +16,13 @@ const useStyles = makeStyles(theme => ({
     },
     tabs: {
         flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
     },
     tabContent: {
-
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
     },
     chargeIndicator: {
         height: theme.spacing(4),
@@ -65,6 +70,16 @@ export const Weapons: React.FC = () => {
         }
     }
 
+    /*
+
+    // View as a FAB with a speed dial?
+    //  Reset
+    //  Magnify
+    //  Zoom out
+    //  internal / external
+
+    */
+
     const stepper = (
         <WeaponStepper
             activeStep={activeStep}
@@ -78,6 +93,8 @@ export const Weapons: React.FC = () => {
                 className={classes.tabs}
                 axis="x"
                 index={activeStep}
+                containerStyle={{flexGrow: 1}}
+                slideStyle={{display: 'flex', flexDirection: 'column'}}
                 //onChangeIndex={changeStep}
             >
                 
@@ -118,7 +135,16 @@ export const Weapons: React.FC = () => {
                     aria-labelledby="weapon-tab-fire"
                     className={classes.tabContent}
                 >
-                    blah
+                    <Aim 
+                        fire={() => {}}
+                        polygon={[
+                            { x: 1, y: 1 },
+                            { x: 5, y: 1 },
+                            { x: 5, y: 5 },
+                            { x: 1, y: 5 }
+                        ]}
+                        requiredAccuracy={0.9}
+                    />
                 </div>
             </SwipeableViews>
             
