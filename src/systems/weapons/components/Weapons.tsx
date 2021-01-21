@@ -90,7 +90,7 @@ export const Weapons: React.FC = () => {
     return (
         <ShipSystem className={classes.root} appBarContent={stepper}>
             <SwipeableViews
-                className={classes.tabs}
+                className={classes.tabs + ' swipeableRoot'}
                 axis="x"
                 index={activeStep}
                 containerStyle={{flexGrow: 1}}
