@@ -142,14 +142,14 @@ function drawPolygon(
     // clip on one side of the line and draw the polygon in one color
     ctx.save();
     clipPath(ctx, clippingInfo.bounds1);
-    ctx.fillStyle = '#f90';
+    ctx.fillStyle = '#f60';
     drawSinglePolygon(ctx, polygon, display);
     ctx.restore();
 
     // clip on the other side of line and draw the polygon in another color
     ctx.save();
     clipPath(ctx, clippingInfo.bounds2);
-    ctx.fillStyle = '#0cf';
+    ctx.fillStyle = '#09f';
     drawSinglePolygon(ctx, polygon, display);
     ctx.restore();
     

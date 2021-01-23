@@ -1,9 +1,9 @@
 import { action } from '@storybook/addon-actions';
 import React from 'react';
 import { Theme } from '../../../common/theme';
-import { Aim } from './Aim';
+import { Slicer } from './Slicer';
 
-export default { title: 'Weapons/Aim' };
+export default { title: 'Weapons/Slicer' };
 
 export const square = () => (
     <Theme>
@@ -13,7 +13,7 @@ export const square = () => (
             width: '100vw',
             height: '100vh'
         }}>
-            <Aim
+            <Slicer
                 fire={action("fire")}
                 requiredAccuracy={0.9}
                 polygon={[

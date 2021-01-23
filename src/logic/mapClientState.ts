@@ -71,7 +71,7 @@ export function mapClientState(client: string): FieldMappings<GameState, ClientG
                 weapons: {
                     // [shouldMap]: client system is weapons
                     targetVesselId: true,
-                    targetSolutionId: true,
+                    targetSolution: true,
                     
                     [extraFields]: {
                         targetSolutions: {

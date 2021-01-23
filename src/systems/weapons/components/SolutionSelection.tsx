@@ -1,12 +1,10 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { Button, Checkbox, makeStyles, Paper, Table, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, useTheme } from '@material-ui/core';
-import { SpaceMap } from '../../../common/components/SpaceMap/SpaceMap';
-import { Vector2D } from '../../../common/data/Vector2D';
+import React from 'react';
+import { Checkbox, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, useTheme } from '@material-ui/core';
 import { ClientShipState } from '../../../common/data/client/ClientShipState';
 import { getWorldCoordinates } from '../../../common/components/SpaceMap/drawMap';
-import { TouchEvents } from '../../../common/components/TouchEvents';
 import { getPositionValue } from '../../../common/data/Animation';
 import { TargetingSolution } from '../data/TargetingSolution';
+import { getSystemName } from '../../../common/data/System';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -20,7 +18,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 interface Props {
-    selected: (solution: TargetingSolution) => void;
+    selected: (solution: number) => void;
     localShip: ClientShipState;
     targetShip: ClientShipState;
     solutions: TargetingSolution[];
@@ -46,27 +44,28 @@ export const SolutionSelection: React.FC<Props> = props => {
     }
     
     const headCells: HeadCell[] = [
-        { id: 'name', numeric: false, disablePadding: true, label: 'Vessel' },
-        { id: 'range', numeric: true, disablePadding: false, label: 'Range' },
-        { id: 'angle', numeric: true, disablePadding: false, label: 'Angle' },
+        { id: 'system', numeric: false, disablePadding: true, label: 'System' },
+        { id: 'shapes', numeric: true, disablePadding: true, label: 'Shapes' },
+        { id: 'time', numeric: true, disablePadding: true, label: 'Time' },
+        { id: 'diff', numeric: true, disablePadding: true, label: 'Difficulty' },
     ];
       
     const orderBy = 'x';
     const order: 'asc' | 'desc' = 'asc';
 
-    const rows = props.solutions.map(solution => {
+    const rows = props.solutions.map((solution, index) => {
         const selected = false;
-        const labelId = `sol-${solution}`;
+        const labelId = `sol-${index}`;
 
         return (
             <TableRow
                 hover
-                onClick={() => props.selected(solution)}
+                onClick={() => props.selected(index)}
                 role="checkbox"
                 aria-checked={selected}
                 tabIndex={-1}
                 selected={selected}
-                key={solution}
+                key={index}
             >
                 <TableCell padding="checkbox">
                     <Checkbox
@@ -75,10 +74,11 @@ export const SolutionSelection: React.FC<Props> = props => {
                     />
                 </TableCell>
                 <TableCell component="th" id={labelId} scope="row" padding="none">
-                    Solution {solution}
+                    {getSystemName(solution.system)}
                 </TableCell>
-                <TableCell align="right">52</TableCell>
-                <TableCell align="right">25</TableCell>
+                <TableCell align="right">{solution.shapes.length}</TableCell>
+                <TableCell align="right">{solution.duration}s</TableCell>
+                <TableCell align="right">{solution.complexity}</TableCell>
             </TableRow>
         )
     });
@@ -122,8 +122,9 @@ export const SolutionSelection: React.FC<Props> = props => {
                                 ))}
                             </TableRow>
                         </TableHead>
-                        
-                        {rows}
+                        <TableBody>
+                            {rows}
+                        </TableBody>
                     </Table>
                 </TableContainer>
             </Paper>

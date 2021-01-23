@@ -4,7 +4,8 @@ import { createCard } from '../systems/engineering/data/EngineeringCards'
 import { EngineeringCardData } from '../systems/engineering/data/EngineeringCard';
 import { ShipState } from '../common/data/server/ShipState';
 import { getTime } from '../common/data/Progression';
-import { TargetingSolution } from '../systems/weapons/data/TargetingSolution';
+import { TargetingSolution, TargetingSolutionComplexity } from '../systems/weapons/data/TargetingSolution';
+import { createTargetingSolution } from '../systems/weapons/logic/createTargetingSolution';
 
 function createSystemState() {
     return {
@@ -85,22 +86,22 @@ export function createShipState(): ShipState {
         weapons: {
             solutionsByTarget: {
                 2: [
-                    TargetingSolution.Weapons,
-                    TargetingSolution.Sensors,
-                    TargetingSolution.Engines,
-                    TargetingSolution.Engineering,
+                    createTargetingSolution(System.Weapons, TargetingSolutionComplexity.Simple),
+                    createTargetingSolution(System.Sensors, TargetingSolutionComplexity.Simple),
+                    createTargetingSolution(System.Engineering, TargetingSolutionComplexity.Complex),
+                    createTargetingSolution(System.Helm, TargetingSolutionComplexity.Moderate),
                 ],
                 3: [
-                    TargetingSolution.Weapons,
-                    TargetingSolution.Sensors,
-                    TargetingSolution.Engines,
-                    TargetingSolution.Engineering,
+                    createTargetingSolution(System.Weapons, TargetingSolutionComplexity.Simple),
+                    createTargetingSolution(System.Sensors, TargetingSolutionComplexity.Simple),
+                    createTargetingSolution(System.Engineering, TargetingSolutionComplexity.Complex),
+                    createTargetingSolution(System.Helm, TargetingSolutionComplexity.Moderate),
                 ],
                 4: [
-                    TargetingSolution.Weapons,
-                    TargetingSolution.Sensors,
-                    TargetingSolution.Engines,
-                    TargetingSolution.Engineering,
+                    createTargetingSolution(System.Weapons, TargetingSolutionComplexity.Simple),
+                    createTargetingSolution(System.Sensors, TargetingSolutionComplexity.Simple),
+                    createTargetingSolution(System.Engineering, TargetingSolutionComplexity.Complex),
+                    createTargetingSolution(System.Helm, TargetingSolutionComplexity.Moderate),
                 ],
             },
         },

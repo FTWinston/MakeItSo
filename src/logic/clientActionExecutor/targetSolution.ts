@@ -1,14 +1,20 @@
 import { GameState } from '../../common/data/server/GameState';
 import { System } from '../../common/data/System';
 
-export function targetSolution(state: GameState, client: string, solutionId?: number) {
+export function targetSolution(state: GameState, client: string, solutionIndex?: number) {
     const clientShipId = state.shipsByClient[client];
     if (clientShipId === undefined) {
         return;
     }
 
     const clientShip = state.ships[clientShipId];
-    if (clientShip === undefined || clientShip.weapons.targetVesselId === undefined) {
+    if (clientShip === undefined) {
+        return;
+    }
+
+    const weapons = clientShip.weapons;
+    
+    if (weapons.targetVesselId === undefined) {
         return;
     }
 
@@ -18,12 +24,13 @@ export function targetSolution(state: GameState, client: string, solutionId?: nu
         return;
     }
 
-    if (solutionId === undefined) {
-        delete clientShip.weapons.targetSolutionId;
+    const solutions = weapons.solutionsByTarget[weapons.targetVesselId];
+
+    if (solutionIndex === undefined || solutions === undefined 
+        || solutionIndex < 0 || solutionIndex >= solutions.length) {
+        delete weapons.targetSolution;
         return;
     }    
-    
-    // TODO: ensure this is a valid solution
-
-    clientShip.weapons.targetSolutionId = solutionId;
+ 
+    clientShip.weapons.targetSolution = solutionIndex;
 }

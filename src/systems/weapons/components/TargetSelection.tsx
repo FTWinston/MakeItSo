@@ -1,10 +1,8 @@
-import React, { useState, useMemo, useRef } from 'react';
-import { Button, Checkbox, makeStyles, Paper, Table, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, useTheme } from '@material-ui/core';
-import { SpaceMap } from '../../../common/components/SpaceMap/SpaceMap';
+import React, { useMemo } from 'react';
+import { Checkbox, makeStyles, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel, Typography, useTheme } from '@material-ui/core';
 import { Vector2D } from '../../../common/data/Vector2D';
 import { ClientShipState } from '../../../common/data/client/ClientShipState';
 import { getWorldCoordinates } from '../../../common/components/SpaceMap/drawMap';
-import { TouchEvents } from '../../../common/components/TouchEvents';
 import { getPositionValue } from '../../../common/data/Animation';
 
 const useStyles = makeStyles(theme => ({
@@ -127,7 +125,9 @@ export const TargetSelection: React.FC<Props> = props => {
                             </TableRow>
                         </TableHead>
                         
-                        {rows}
+                        <TableBody>
+                            {rows}
+                        </TableBody>
                     </Table>
                 </TableContainer>
             </Paper>

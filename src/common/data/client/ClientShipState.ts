@@ -4,6 +4,7 @@ import { ClientSystemState } from './ClientSystemState';
 import { Progression } from '../Progression';
 import { ClientVessel } from './ClientVessel';
 import { Waypoint } from '../Waypoint';
+import { TargetingSolution } from '../../../systems/weapons/data/TargetingSolution';
 
 export interface ClientShipState extends ClientVessel {
     clientsBySystem: Partial<Record<System, string>>;
@@ -23,7 +24,7 @@ export interface ClientShipState extends ClientVessel {
 
     weapons: {
         targetVesselId?: number;
-        targetSolutionId?: number;
-        targetSolutions: number[];
+        targetSolution?: number;
+        targetSolutions: TargetingSolution[];
     }
 }

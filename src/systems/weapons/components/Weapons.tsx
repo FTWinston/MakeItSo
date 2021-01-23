@@ -40,9 +40,9 @@ export const Weapons: React.FC = () => {
         ? undefined
         : gameState.ships[targetShipId];
 
-    const solutionId = targetShip === undefined
+    const solution = targetShip === undefined || gameState.localShip.weapons.targetSolution === undefined
         ? undefined
-        : gameState.localShip.weapons.targetSolutionId;
+        : gameState.localShip.weapons.targetSolutions[gameState.localShip.weapons.targetSolution];
 
     
     const setTarget = (target?: number) => dispatch({
@@ -55,7 +55,7 @@ export const Weapons: React.FC = () => {
         solution,
     });
 
-    const activeStep = solutionId !== undefined
+    const activeStep = solution !== undefined
         ? 2
         : targetShipId !== undefined
             ? 1
