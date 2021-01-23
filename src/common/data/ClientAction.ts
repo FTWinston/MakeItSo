@@ -31,4 +31,7 @@ export type ClientAction = {
 } | {
     type: 'wpn solution';
     solution?: number;
+} | {
+    type: 'wpn fire';
+    points: number[][];
 }

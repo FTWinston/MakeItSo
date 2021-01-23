@@ -14,7 +14,7 @@ export const square = () => (
             height: '100vh'
         }}>
             <Slicer
-                fire={action("fire")}
+                slice={action("slice")}
                 requiredAccuracy={0.9}
                 polygon={[
                     { x: 1, y: 1 },

@@ -7,6 +7,7 @@ import { moveShip } from './moveShip';
 import { maneuverShip } from './maneuverShip';
 import { targetShip } from './targetShip';
 import { targetSolution } from './targetSolution';
+import { fireSolution } from './fireSolution';
 
 export function clientActionExecutor(state: GameState, action: ClientAction, client: string) {
     switch (action.type) {
@@ -44,6 +45,10 @@ export function clientActionExecutor(state: GameState, action: ClientAction, cli
         
         case 'wpn solution':
             targetSolution(state, client, action.solution);
+            break;
+
+        case 'wpn fire':
+            fireSolution(state, client, action.points);
             break;
 
         default:

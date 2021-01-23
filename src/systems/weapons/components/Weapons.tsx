@@ -34,16 +34,16 @@ export const Weapons: React.FC = () => {
     const classes = useStyles();
     
     const [gameState, dispatch] = useContext(GameContext);
+    const weaponsData = gameState.localShip.weapons;
 
-    const targetShipId = gameState.localShip.weapons.targetVesselId
+    const targetShipId = weaponsData.targetVesselId
     const targetShip = targetShipId === undefined
         ? undefined
         : gameState.ships[targetShipId];
 
-    const solution = targetShip === undefined || gameState.localShip.weapons.targetSolution === undefined
+    const solution = targetShip === undefined || weaponsData.targetSolution === undefined
         ? undefined
-        : gameState.localShip.weapons.targetSolutions[gameState.localShip.weapons.targetSolution];
-
+        : weaponsData.targetSolutions[weaponsData.targetSolution];
     
     const setTarget = (target?: number) => dispatch({
         type: 'wpn target',
@@ -54,6 +54,11 @@ export const Weapons: React.FC = () => {
         type: 'wpn solution',
         solution,
     });
+
+    const fire = (stepPoints: number[][]) => dispatch({
+        type: 'wpn fire',
+        points: stepPoints,
+    })
 
     const activeStep = solution !== undefined
         ? 2
@@ -123,7 +128,7 @@ export const Weapons: React.FC = () => {
                     <SolutionSelection
                         localShip={gameState.localShip}
                         targetShip={targetShip ?? gameState.localShip}
-                        solutions={gameState.localShip.weapons.targetSolutions}
+                        solutions={weaponsData.targetSolutions}
                         selected={setSolution}
                     />
                 </div>
@@ -136,13 +141,8 @@ export const Weapons: React.FC = () => {
                     className={classes.tabContent}
                 >
                     <Aim 
-                        fire={() => {}}
-                        polygon={[
-                            { x: 1, y: 1 },
-                            { x: 5, y: 1 },
-                            { x: 5, y: 5 },
-                            { x: 1, y: 5 }
-                        ]}
+                        fire={fire}
+                        solution={solution}
                         requiredAccuracy={0.9}
                     />
                 </div>

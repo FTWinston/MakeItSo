@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
 interface Props {
     requiredAccuracy: number;
     polygon?: Polygon;
-    fire: (x1: number, y1: number, x2: number, y2: number) => void;
+    slice: (x1: number, y1: number, x2: number, y2: number) => void;
 }
 
 export const Slicer: React.FC<Props> = props => {
