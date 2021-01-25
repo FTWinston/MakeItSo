@@ -15,6 +15,7 @@ export const square = () => (
         }}>
             <Slicer
                 slice={action("slice")}
+                done={action("done")}
                 requiredAccuracy={0.9}
                 polygon={[
                     { x: 1, y: 1 },

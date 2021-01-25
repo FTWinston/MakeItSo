@@ -17,6 +17,7 @@ export const Aim: React.FC<Props> = props => {
     const classes = useStyles();
 
     const [slices, setSlices] = useState<number[][]>([])
+    const [showIndex, setShowIndex] = useState(0);
 
     useEffect(
         () => setSlices([]),
@@ -28,6 +29,7 @@ export const Aim: React.FC<Props> = props => {
             ...slices,
             [x1, y1, x2, y2]
         ];
+        
         setSlices(newSlices);
 
         if (slices.length === props.solution?.shapes.length) {
@@ -37,9 +39,10 @@ export const Aim: React.FC<Props> = props => {
 
     return (
         <Slicer
-            polygon={props.solution?.shapes[slices.length]}
+            polygon={props.solution?.shapes[showIndex]}
             requiredAccuracy={props.requiredAccuracy}
             slice={slice}
+            done={() => setShowIndex(showIndex + 1)}
         />
     );
 }

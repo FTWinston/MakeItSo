@@ -1,5 +1,5 @@
 import { Theme } from '@material-ui/core';
-import { getBounds, Polygon } from '../../../common/data/Polygon';
+import { bisect, getArea, getBounds, getPointFurthestFromEdge, Polygon } from '../../../common/data/Polygon';
 import { Vector2D } from '../../../common/data/Vector2D';
 import { SliceResult } from '../data/SliceResult';
 
@@ -438,4 +438,21 @@ function clipPath(ctx: CanvasRenderingContext2D, bounds: Vector2D[]) {
     }
 
     ctx.clip();
+}
+
+export function determineResultDisplay(polygon: Polygon, startPos: Vector2D, endPos: Vector2D) {
+    const parts = bisect(polygon, startPos, endPos);
+
+    const partAreas = parts.map(part => getArea(part));
+
+    const totalArea = partAreas.reduce((total, area) => total + area, 0);
+
+    return parts.map((part, index) => {
+        const labelPosition = getPointFurthestFromEdge(part);
+        return {
+            percent: Math.round(1000 * partAreas[index] / totalArea) / 10,
+            x: labelPosition.x,
+            y: labelPosition.y,
+        };
+    });
 }

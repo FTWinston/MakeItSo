@@ -1,4 +1,4 @@
-// import Queue from 'tinyqueue';
+import Queue from 'tinyqueue';
 import { Vector2D } from './Vector2D';
 
 export type Polygon = Vector2D[];
@@ -75,7 +75,6 @@ export function getCentroid(polygon: Polygon): Vector2D {
     };
 }
 
-/*
 export function getPointFurthestFromEdge(polygon: Polygon): Vector2D {
     // based on this: https://github.com/mapbox/polylabel
     const precision = 0.1;
@@ -101,23 +100,23 @@ export function getPointFurthestFromEdge(polygon: Polygon): Vector2D {
     // cover polygon with initial cells
     for (let x = minX; x < maxX; x += cellSize) {
         for (let y = minY; y < maxY; y += cellSize) {
-            cellQueue.push(new Cell(x + h, y + h, h, this));
+            cellQueue.push(new Cell(x + h, y + h, h, polygon));
         }
     }
     
     // take centroid as the first best guess
-    const centroid = this.centroid;
-    let bestCell = new Cell(centroid.x, centroid.y, 0, this);
+    const centroid = getCentroid(polygon);
+    let bestCell = new Cell(centroid.x, centroid.y, 0, polygon);
 
     // special case for rectangular polygons
-    const bboxCell = new Cell(minX + width / 2, minY + height / 2, 0, this);
+    const bboxCell = new Cell(minX + width / 2, minY + height / 2, 0, polygon);
     if (bboxCell.d > bestCell.d) {
         bestCell = bboxCell;
     }
 
-    while (cellQueue.length) {
+    let cell: Cell | undefined;
+    while (cell = cellQueue.pop()) {
         // pick the most promising cell from the queue
-        let cell = cellQueue.pop();
 
         // update the best cell if we found a better one
         if (cell.d > bestCell.d) {
@@ -129,15 +128,14 @@ export function getPointFurthestFromEdge(polygon: Polygon): Vector2D {
 
         // split the cell into four cells
         h = cell.h / 2;
-        cellQueue.push(new Cell(cell.x - h, cell.y - h, h, this));
-        cellQueue.push(new Cell(cell.x + h, cell.y - h, h, this));
-        cellQueue.push(new Cell(cell.x - h, cell.y + h, h, this));
-        cellQueue.push(new Cell(cell.x + h, cell.y + h, h, this));
+        cellQueue.push(new Cell(cell.x - h, cell.y - h, h, polygon));
+        cellQueue.push(new Cell(cell.x + h, cell.y - h, h, polygon));
+        cellQueue.push(new Cell(cell.x - h, cell.y + h, h, polygon));
+        cellQueue.push(new Cell(cell.x + h, cell.y + h, h, polygon));
     }
 
     return bestCell;
 }
-*/
 
 export function bisect(polygon: Polygon, p1: Vector2D, p2: Vector2D): Polygon[] {
     if (polygon.length < 3) {
@@ -302,7 +300,6 @@ function getIntersection(m1: number, c1: number, m2: number, c2: number): Vector
     }
 }
 
-/*
 class Cell implements Vector2D {
     public readonly d: number;
     public readonly max: number;
@@ -357,4 +354,3 @@ class Cell implements Vector2D {
         return dx * dx + dy * dy;
     }
 }
-*/

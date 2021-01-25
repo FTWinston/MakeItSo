@@ -14,7 +14,8 @@
     "react-spring": "^9.0.0-rc.3",
     "react-swipeable-views": "^0.13.9",
     "react-use-gesture": "^7.0.15",
-    "resize-observer-polyfill": "^1.5.1"
+    "resize-observer-polyfill": "^1.5.1",
+    "tinyqueue": "^2.0.3"
   },
   "scripts": {
     "start": "react-scripts start",
