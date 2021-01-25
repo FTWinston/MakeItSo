@@ -1,7 +1,6 @@
 import { Theme } from '@material-ui/core';
 import { bisect, getArea, getBounds, getPointFurthestFromEdge, Polygon } from '../../../common/data/Polygon';
 import { Vector2D } from '../../../common/data/Vector2D';
-import { SliceResult } from '../data/SliceResult';
 
 const gridPadding = 3.25;
 
@@ -13,6 +12,13 @@ export interface DisplayInfo {
     gridMin: Vector2D;
     gridMax: Vector2D;
     theme: Theme;
+}
+
+export interface SliceResult {
+    percent: number;
+    textScale: number;
+    x: number;
+    y: number;
 }
 
 function getPaddedBounds(polygon: Polygon | undefined) {
@@ -235,11 +241,12 @@ function drawSinglePolygon(ctx: CanvasRenderingContext2D, polygon: Polygon, disp
 function drawResults(ctx: CanvasRenderingContext2D, display: DisplayInfo, sliceResults: SliceResult[]) {
     ctx.fillStyle = '#fff';
     
-    ctx.font = `${Math.round(display.unitSize)}px ${display.theme.typography.fontFamily}`;
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.85;
     ctx.textAlign = 'center';
 
     for (const result of sliceResults) {
+        ctx.font = `${Math.round(display.unitSize * result.textScale)}px ${display.theme.typography.fontFamily}`;
+
         ctx.fillText(result.percent.toString(), gridToScreen(result.x, display.gridMin.x, display.unitSize), gridToScreen(result.y, display.gridMin.y, display.unitSize));
     }
 
@@ -440,7 +447,7 @@ function clipPath(ctx: CanvasRenderingContext2D, bounds: Vector2D[]) {
     ctx.clip();
 }
 
-export function determineResultDisplay(polygon: Polygon, startPos: Vector2D, endPos: Vector2D) {
+export function determineResultDisplay(polygon: Polygon, startPos: Vector2D, endPos: Vector2D): SliceResult[] {
     const parts = bisect(polygon, startPos, endPos);
 
     const partAreas = parts.map(part => getArea(part));
@@ -448,11 +455,13 @@ export function determineResultDisplay(polygon: Polygon, startPos: Vector2D, end
     const totalArea = partAreas.reduce((total, area) => total + area, 0);
 
     return parts.map((part, index) => {
-        const labelPosition = getPointFurthestFromEdge(part);
+        const { point: labelPosition, distance } = getPointFurthestFromEdge(part);
+
         return {
             percent: Math.round(1000 * partAreas[index] / totalArea) / 10,
             x: labelPosition.x,
             y: labelPosition.y,
+            textScale: Math.max(0.2, Math.min(distance, 1)),
         };
     });
 }

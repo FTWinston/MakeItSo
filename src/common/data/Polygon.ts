@@ -75,7 +75,7 @@ export function getCentroid(polygon: Polygon): Vector2D {
     };
 }
 
-export function getPointFurthestFromEdge(polygon: Polygon): Vector2D {
+export function getPointFurthestFromEdge(polygon: Polygon) {
     // based on this: https://github.com/mapbox/polylabel
     const precision = 0.1;
 
@@ -87,8 +87,11 @@ export function getPointFurthestFromEdge(polygon: Polygon): Vector2D {
 
     if (cellSize === 0) {
         return {
-            x: minX,
-            y: minY,
+            point: {
+                x: minX,
+                y: minY,
+            },
+            distance: 0,
         };
     }
 
@@ -134,7 +137,13 @@ export function getPointFurthestFromEdge(polygon: Polygon): Vector2D {
         cellQueue.push(new Cell(cell.x + h, cell.y + h, h, polygon));
     }
 
-    return bestCell;
+    return {
+        point: {
+            x: bestCell.x,
+            y: bestCell.y,
+        },
+        distance: bestCell.d,
+    };
 }
 
 export function bisect(polygon: Polygon, p1: Vector2D, p2: Vector2D): Polygon[] {

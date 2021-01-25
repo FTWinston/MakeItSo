@@ -5,8 +5,7 @@ import { Polygon } from '../../../common/data/Polygon';
 import { Canvas } from '../../../common/components/Canvas';
 import { useGesture } from 'react-use-gesture';
 import { UserHandlersPartial } from 'react-use-gesture/dist/types';
-import { DisplayInfo, drawAll, screenToGrid, calculateDisplay, determineResultDisplay } from '../logic/renderSlicer';
-import { SliceResult } from '../data/SliceResult';
+import { DisplayInfo, drawAll, screenToGrid, calculateDisplay, determineResultDisplay, SliceResult } from '../logic/renderSlicer';
 
 const useStyles = makeStyles(theme => ({
     canvas: {
@@ -79,7 +78,7 @@ export const Slicer: React.FC<Props> = props => {
             setEndPos(pos);
         },
         onDrag: ({ xy: [x, y] }) => {
-            if (startPos !== undefined || results.length > 0) {
+            if (startPos !== undefined && results.length === 0) {
                 setEndPos(screenToGrid(x, y, display.current!));
             }
         },
