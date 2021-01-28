@@ -59,10 +59,10 @@ function getPaddedBounds(minefield?: ClientMinefield) {
     }
     
     minX -= gridPadding + packedWidthRatio * 0.5;
-    minY -= gridPadding + packedHeightRatio * 0.5;
+    minY -= gridPadding + packedHeightRatio * 1;
 
     maxX += gridPadding + packedWidthRatio * 0.5;
-    maxY += gridPadding + packedHeightRatio * 0.5;
+    maxY += gridPadding + packedHeightRatio * 1;
 
     return {
         minX,
@@ -222,8 +222,8 @@ function drawCell(ctx: CanvasRenderingContext2D, display: DisplayInfo, cell: Cli
     ctx.fill();
 
     ctx.clip();
-    ctx.globalAlpha = 0.2;
-    ctx.lineWidth = display.cellRadius * 0.25;
+    ctx.globalAlpha = 0.15;
+    ctx.lineWidth = display.cellRadius * 0.2;
     ctx.strokeStyle = '#111';
     ctx.stroke();
 
@@ -246,11 +246,10 @@ export function drawMinefield(ctx: CanvasRenderingContext2D, display: DisplayInf
     ctx.textBaseline = 'middle';
     ctx.font = `${Math.round(display.cellRadius * 0.75)}px ${display.theme.typography.fontFamily}`;
 
-    // TODO: draw clues for minefield.columns
-
     const insetStartY = display.cellRadius * packedHeightRatio / 2;
     const outsetStartY = 0;
 
+    // Draw the cells themselves.
     let outset = true;
 
     for (let x = 0; x < minefield.grid.length; x++) {
@@ -276,5 +275,29 @@ export function drawMinefield(ctx: CanvasRenderingContext2D, display: DisplayInf
         }
         
         outset = !outset;
+    }
+
+    // Now draw column clues.
+    if (minefield.columns) {
+        outset = true;
+
+        for (let x = 0; x < minefield.columns.length; x++) {
+            const clue = minefield.columns[x];
+            if (clue !== null) {
+                let xPos = packedWidthRatio * display.cellRadius * x;
+                
+                let yPos = outset
+                    ? outsetStartY - packedHeightRatio * display.cellRadius
+                    : insetStartY - packedHeightRatio * display.cellRadius;
+
+                ctx.translate(xPos, yPos);
+
+                drawClue(ctx, display, clue);
+                
+                ctx.translate(-xPos, -yPos);
+            }
+
+            outset = !outset;
+        }
     }
 }
