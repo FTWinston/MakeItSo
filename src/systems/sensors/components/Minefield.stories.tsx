@@ -6,7 +6,7 @@ import { Minefield } from './Minefield';
 
 export default { title: 'Sensors/Minefield' };
 
-const minefield3x3: ClientMinefield = {
+const minefieldComprehensive: ClientMinefield = {
     grid: [
         [
             {
@@ -17,18 +17,30 @@ const minefield3x3: ClientMinefield = {
             },
             {
                 state: CellState.Marked
-            }
+            },
+            {
+                state: CellState.Revealed,
+                content: {
+                    clue: {
+                        number: 2,
+                        type: ClueType.NonAdjacent,
+                    }
+                }
+            },
         ],
         [
             {
-                state: CellState.Unknown
+                state: CellState.Marked
+            },
+            {
+                state: CellState.Marked
             },
             {
                 state: CellState.Unknown
             },
             {
                 state: CellState.Unknown
-            }
+            },
         ],
         [
             {
@@ -44,52 +56,43 @@ const minefield3x3: ClientMinefield = {
                 }
             },
             {
+                state: CellState.Revealed,
+                content: {}
+            },
+            {
                 state: CellState.Unknown
-            }
+            },
+        ],
+        [
+            {
+                state: CellState.Revealed,
+                content: {
+                    clue: {
+                        number: 2,
+                        type: ClueType.Adjacent,
+                    }
+                }
+            },
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Revealed,
+                content: {
+                    clue: {
+                        number: 2,
+                        type: ClueType.Nearby,
+                    }
+                }
+            },
         ]
     ]
 };
 
-const minefield4x2: ClientMinefield = {
-    grid: [
-        [
-            {
-                state: CellState.Unknown
-            },
-            {
-                state: CellState.Unknown
-            },
-            {
-                state: CellState.Marked
-            },
-            {
-                state: CellState.Unknown
-            },
-        ],
-        [
-            {
-                state: CellState.Unknown
-            },
-            {
-                state: CellState.Unknown
-            },
-            {
-                state: CellState.Unknown
-            },
-            {
-                state: CellState.Revealed,
-                content: {
-                    clue: {
-                        number: 3,
-                        type: ClueType.Normal,
-                    }
-                }
-            },
-        ],
-    ]
-};
-
-const minefield2x4: ClientMinefield = {
+const minefieldShaped: ClientMinefield = {
     grid: [
         [
             {
@@ -103,11 +106,94 @@ const minefield2x4: ClientMinefield = {
             {
                 state: CellState.Marked
             },
+            null,
             {
                 state: CellState.Unknown
             },
         ],
         [
+            null,
+            {
+                state: CellState.Revealed,
+                content: {
+                    clue: {
+                        number: 1,
+                        type: ClueType.Normal,
+                    }
+                }
+            },
+            null,
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Unknown
+            },
+        ],
+        [
+            null,
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Revealed,
+                content: {
+                    clue: {
+                        number: 2,
+                        type: ClueType.Nearby,
+                    }
+                }
+            },
+        ]
+    ]
+};
+
+const minefieldCols: ClientMinefield = {
+    columns: [
+        {
+            number: 3,
+            type: ClueType.Normal,
+        },
+        null,
+        {
+            number: 2,
+            type: ClueType.Adjacent,
+        },
+        {
+            number: 2,
+            type: ClueType.NonAdjacent,
+        }
+    ],
+    grid: [
+        [
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Unknown
+            },
+        ],
+        [
+            {
+                state: CellState.Marked
+            },
+            {
+                state: CellState.Unknown
+            },
+            {
+                state: CellState.Unknown
+            },
+        ],
+        [
+            {
+                state: CellState.Unknown
+            },
             {
                 state: CellState.Unknown
             },
@@ -128,11 +214,14 @@ const minefield2x4: ClientMinefield = {
                     }
                 }
             },
+            {
+                state: CellState.Unknown
+            },
         ],
     ]
 };
 
-export const threeByThree = () => (
+export const everyCellType = () => (
     <Theme>
         <div style={{
             display: 'flex',
@@ -143,13 +232,13 @@ export const threeByThree = () => (
             <Minefield
                 reveal={action("reveal")}
                 mark={action("mark")}
-                minefield={minefield3x3}
+                minefield={minefieldComprehensive}
             />
         </div>
     </Theme>
 );
 
-export const fourByTwo = () => (
+export const shaped = () => (
     <Theme>
         <div style={{
             display: 'flex',
@@ -160,13 +249,13 @@ export const fourByTwo = () => (
             <Minefield
                 reveal={action("reveal")}
                 mark={action("mark")}
-                minefield={minefield4x2}
+                minefield={minefieldShaped}
             />
         </div>
     </Theme>
 );
 
-export const twoByFour = () => (
+export const columns = () => (
     <Theme>
         <div style={{
             display: 'flex',
@@ -177,7 +266,7 @@ export const twoByFour = () => (
             <Minefield
                 reveal={action("reveal")}
                 mark={action("mark")}
-                minefield={minefield2x4}
+                minefield={minefieldCols}
             />
         </div>
     </Theme>

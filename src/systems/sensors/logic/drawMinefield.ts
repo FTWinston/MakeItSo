@@ -205,7 +205,7 @@ function drawClue(ctx: CanvasRenderingContext2D, display: DisplayInfo, clue: Clu
             text = `-${clue.number}-`;
             break;
         case ClueType.Nearby:
-            text = `[${clue.number}]`;
+            text = `"${clue.number}"`;
             break;
         default:
             text = `${clue.number}`;
@@ -286,9 +286,8 @@ export function drawMinefield(ctx: CanvasRenderingContext2D, display: DisplayInf
             if (clue !== null) {
                 let xPos = packedWidthRatio * display.cellRadius * x;
                 
-                let yPos = outset
-                    ? outsetStartY - packedHeightRatio * display.cellRadius
-                    : insetStartY - packedHeightRatio * display.cellRadius;
+                let yPos = outset ? outsetStartY : insetStartY;
+                yPos -= (packedHeightRatio - 0.33) * display.cellRadius;
 
                 ctx.translate(xPos, yPos);
 
