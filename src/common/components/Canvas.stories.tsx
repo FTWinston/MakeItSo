@@ -7,8 +7,8 @@ export default { title: 'Common/Generic/Canvas' };
 
 const useStyles = makeStyles(theme => ({
     canvas: {
-        width: '100vw',
-        height: '100vh',
+        width: 'calc(100vw - 2rem)',
+        height: 'calc(100vh - 2rem)',
     },
 }));
     

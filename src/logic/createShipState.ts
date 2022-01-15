@@ -6,6 +6,8 @@ import { ShipState } from '../common/data/server/ShipState';
 import { getTime } from '../common/data/Progression';
 import { TargetingSolution, TargetingSolutionComplexity } from '../systems/weapons/data/TargetingSolution';
 import { createTargetingSolution } from '../systems/weapons/logic/createTargetingSolution';
+import { createMinefield } from '../systems/sensors/logic/createMinefield';
+import { MinefieldComplexity } from '../systems/sensors/data/MinefieldComplexity';
 
 function createSystemState() {
     return {
@@ -105,5 +107,8 @@ export function createShipState(): ShipState {
                 ],
             },
         },
+        sensors: {
+            minefield: createMinefield(System.Helm, MinefieldComplexity.Moderate),
+        }
     }
 }

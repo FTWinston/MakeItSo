@@ -30,7 +30,6 @@ export enum CellState {
 export type ServerCell = {
     state: CellState;
     content: ServerCellContent;
-    error?: true;
 }
 
 export type ClientCell = {
@@ -38,7 +37,6 @@ export type ClientCell = {
 } | {
     state: CellState.Revealed;
     content: ClientCellContent;
-    error?: true;
 }
 
 export interface ServerMinefield {

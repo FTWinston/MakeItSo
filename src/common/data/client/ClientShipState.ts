@@ -5,6 +5,7 @@ import { Progression } from '../Progression';
 import { ClientVessel } from './ClientVessel';
 import { Waypoint } from '../Waypoint';
 import { TargetingSolution } from '../../../systems/weapons/data/TargetingSolution';
+import { ClientMinefield } from '../../../systems/sensors/data/MinefieldData';
 
 export interface ClientShipState extends ClientVessel {
     clientsBySystem: Partial<Record<System, string>>;
@@ -26,5 +27,11 @@ export interface ClientShipState extends ClientVessel {
         targetVesselId?: number;
         targetSolution?: number;
         targetSolutions: TargetingSolution[];
+    }
+    
+    sensors: {
+        targetVesselId?: number;
+        targetSystem?: System;
+        minefield?: ClientMinefield;
     }
 }
