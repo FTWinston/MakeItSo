@@ -1,0 +1,93 @@
+@use 'colors';
+@import url('https://fonts.googleapis.com/css2?family=Jura:wght@400;500;700&display=swap');
+
+html {
+	box-sizing: border-box;
+}
+
+// with the box-sizing declartion in the html tag, this should set the border-box to be the default box model:
+// https://css-tricks.com/box-sizing/
+*,
+*:before,
+*:after {
+	box-sizing: inherit;
+}
+body {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	user-select: none;
+	font-size: calc(0.03 * 100vh);
+	font-family: Jura, sans-serif;
+	background-color: colors.$background;
+	color: colors.$text;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+figure,
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+// We leave the default ol list styling (numbers), but remove the margins (if they exist).
+ol {
+	margin: 0;
+}
+
+// We think browsers default to 0, but just in case.
+li {
+	padding: 0;
+}
+
+ul {
+	list-style: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-size: inherit;
+}
+
+::-moz-focus-inner {
+	padding: 0;
+	border: 0;
+}
+
+:focus {
+	outline: 0;
+}
+
+button {
+	color: inherit;
+	font-family: inherit;
+}
+
+a {
+	font-family: inherit;
+	text-decoration: none;
+
+	&:hover {
+		text-decoration: underline;
+	}
+}
+
+a,
+button {
+	&:active,
+	&:focus {
+		outline: 1px dotted #aaa;
+		outline-offset: 2px;
+	}
+}
