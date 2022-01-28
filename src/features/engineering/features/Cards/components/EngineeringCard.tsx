@@ -3,10 +3,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { alpha, styled, useTheme } from '@mui/material/styles';
-import { blue, purple, grey } from '@mui/material/colors';
+import { grey, blue, purple, deepOrange } from '@mui/material/colors';
+import { alpha, styled } from '@mui/material/styles';
 import { EngineeringCardInfo, EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardIcon } from './CardIcon';
+import { MuiColor } from 'src/types/Colors';
 
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
@@ -17,76 +18,45 @@ export const cardWidth = 224;
 export const cardHeight = 160;
 export const shrinkScale = 0.8;
 
-const sharedStyle = {
+interface RootProps {
+    palette: MuiColor;
+}
+
+const CardRoot = styled(Card)<RootProps>(({ palette }) => ({
     width: cardWidth,
     height: cardHeight,
     transition: 'border-color 0.2s linear',
     backgroundColor: 'background.paper',
-};
-
-const CommonCard = styled(Card)({
-    ...sharedStyle,
-    borderColor: alpha(grey[600], 0.5),
+    borderColor: alpha(palette[600], 0.5),
     '&:hover': {
-        borderColor: grey[600],
+        borderColor: palette[700],
     },
     ' .icon': {
-        backgroundColor: grey[600],
+        backgroundColor: palette[600],
     },
-});
-
-const UncommonCard = styled(Card)({
-    ...sharedStyle,
-    borderColor: alpha(grey[400], 0.5),
-    '&:hover': {
-        borderColor: grey[400],
-    },
-    ' .icon': {
-        backgroundColor: grey[500],
-    },
-});
-
-const RareCard = styled(Card)({
-    ...sharedStyle,
-    borderColor: alpha(blue[600], 0.5),
-    '&:hover': {
-        borderColor: blue[600],
-    },
-    ' .icon': {
-        backgroundColor: blue[600],
-    },
-});
-
-const EpicCard = styled(Card)({
-    ...sharedStyle,
-    borderColor: alpha(purple[300], 0.5),
-    '&:hover': {
-        borderColor: purple[300],
-    },
-    ' .icon': {
-        backgroundColor: purple[300],
-    },
-});
-
-function determineCardStyle(rarity: EngineeringCardRarity) {
-    switch (rarity) {
-    case EngineeringCardRarity.Common:
-        return CommonCard;
-    case EngineeringCardRarity.Uncommon:
-        return UncommonCard;
-    case EngineeringCardRarity.Rare:
-        return RareCard;
-    case EngineeringCardRarity.Epic:
-        return EpicCard;
-    }
-}
+}));
 
 export const EngineeringCard: React.FC<Props> = props => {
-    const Root = determineCardStyle(props.rarity);
+    let color: MuiColor;
+    switch (props.rarity) {
+    case EngineeringCardRarity.Common:
+        color = grey; break;
+    case EngineeringCardRarity.Uncommon:
+        color = blue; break;
+    case EngineeringCardRarity.Rare:
+        color = purple; break;
+    case EngineeringCardRarity.Epic:
+        color = deepOrange; break;
+    }
 
     // TODO: internationalise identifiers
     return (
-        <Root className={props.className} style={props.style} variant="outlined">
+        <CardRoot
+            palette={color}
+            className={props.className}
+            style={props.style}
+            variant="outlined"
+        >
             <CardHeader
                 avatar={(
                     <Avatar
@@ -103,6 +73,6 @@ export const EngineeringCard: React.FC<Props> = props => {
                     {`card_${props.type}_desc`}
                 </Typography>
             </CardContent>
-        </Root>
+        </CardRoot>
     );
 };
