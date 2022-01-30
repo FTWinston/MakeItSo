@@ -1,5 +1,4 @@
 import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
 
@@ -16,16 +15,18 @@ const Root = styled('div')(({ theme }) => ({
     height: '6em',
 }));
 
-const HealthSvg = styled('svg')({
+const SvgRoot = styled('svg')({
     zIndex: 1,
     position: 'absolute',
-    top: '0.1em; right: 0.1em',
-    bottom: '0.1em; left: 0.1em',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
 });
 
-const ellipseRx = 38;
-const ellipseRy = 28;
-const ellipsePerimeter = 208.5638; // See https://www.mathsisfun.com/geometry/ellipse-perimeter.html
+const ellipseRx = 45;
+const ellipseRy = 25;
+const ellipsePerimeter = 224.4229; // See https://www.mathsisfun.com/geometry/ellipse-perimeter.html
 
 const HealthEllipse = styled('ellipse')<{ health: number }>(props => {
     const healthScale = props.health / 100;
@@ -42,16 +43,20 @@ const HealthEllipse = styled('ellipse')<{ health: number }>(props => {
     };
 });
 
-const Name = styled(Typography)({
-    zIndex: 2,
-    fontSize: '1.2em',
-});
+const NameText = styled('text')(({ theme }) => ({
+    fill: theme.palette.text.primary,
+    textAnchor: 'middle',
+    alignmentBaseline: 'middle',
+    fontSize: '14px',
+    fontWeight: 'bold',
+}));
 
-const Health = styled('div')({
-    order: -1,
-    zIndex: 2,
-    height: '1.2em',
-});
+const HealthText = styled('text')(({ theme }) => ({
+    fill: theme.palette.text.primary,
+    textAnchor: 'middle',
+    alignmentBaseline: 'middle',
+    fontSize: '12px',
+}));
 
 const Effects = styled(EffectIndicators)({
     zIndex: 2,
@@ -62,25 +67,19 @@ export const SystemTile: React.FC<TileDisplayInfo> = (props) => {
 
     return (
         <Root role="group">
-            <HealthSvg
-                role="presentation"
-                viewBox="0 0 80 60"
-            >
+            <SvgRoot viewBox="0 0 100 60">
                 <HealthEllipse
-                    cx="40" cy="30"
+                    cx="50" cy="30"
                     rx={ellipseRx} ry={ellipseRy}
                     health={constrainedHealth}
                     strokeWidth={3.6}
                 />
-            </HealthSvg>
-
-            <Name variant="h3">
-                {props.name}
-            </Name>
-
-            <Health aria-label="health">
-                <span role="presentation">H</span> {Math.round(constrainedHealth)}%
-            </Health>
+                <NameText x="50" y="30" role="heading">{props.name}</NameText>
+                
+                <HealthText x="50" y="17" aria-label="health">
+                    {Math.round(constrainedHealth)}%
+                </HealthText>
+            </SvgRoot>
 
             <Effects effects={props.effects} />
         </Root>

@@ -7,7 +7,7 @@ export default {
 };
 
 const Template: ComponentStory<typeof SystemTile> = (args) => (
-    <div style={{width: '8em', height: '5em', display: 'flex', alignItems: 'stretch'}}>
+    <div style={{width: '10em', height: '6em', display: 'flex', alignItems: 'stretch'}}>
         <SystemTile {...args} />
     </div>
 );
