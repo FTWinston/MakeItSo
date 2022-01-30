@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import { EffectIndicator, indicatorSize } from './EffectIndicator';
 import { ClientSystemStatusEffectInstance } from '../../../types/SystemStatusEffect';
 import { styled } from '@mui/material/styles';
@@ -8,29 +7,28 @@ interface Props {
     effects: ClientSystemStatusEffectInstance[];
 }
 
-const Root = styled(Box)({
+const Root = styled('div')({
     display: 'flex',
-    justifyContent: 'space-evenly',
-    alignItems: 'center',
+    position: 'relative',
     height: 32,
-    '& .item': {
-        position: 'absolute',
-        top: 0,
-        transition: 'left 1s ease-in-out',
-    },
+});
+
+const Item = styled('div')({
+    position: 'absolute',
+    top: 0,
+    transition: 'left 1s ease-in-out',
 });
 
 export const EffectIndicators: React.FC<Props> = props => {
     return (
-        <Root position="relative" display="flex" className={props.className}>
+        <Root className={props.className}>
             {props.effects.map((effect, index) => (
-                <div
-                    className="item"
+                <Item
                     key={index}
                     style={{ left: `calc((100% - ${indicatorSize}px) * ${index} / ${props.effects.length})` }}
                 >
                     <EffectIndicator {...effect} />
-                </div>
+                </Item>
             ))}
         </Root>
     );

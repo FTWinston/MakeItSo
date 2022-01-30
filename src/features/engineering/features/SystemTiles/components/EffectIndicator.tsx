@@ -1,8 +1,8 @@
-import Zoom from '@mui/material/Zoom';
 import { ClientSystemStatusEffectInstance } from '../../../types/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { CircularProgressionWrapper } from './CircularProgressionWrapper';
+import { CircularTimer } from 'src/components/CircularTimer';
 import { useTheme } from '@mui/material/styles';
+import Zoom from '@mui/material/Zoom';
 
 interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
@@ -24,14 +24,14 @@ export const EffectIndicator: React.FC<Props> = props => {
             timeout={transitionDuration}
             unmountOnExit
         >
-            <CircularProgressionWrapper
+            <CircularTimer
                 size={indicatorSize}
                 startTime={props.startTime}
                 endTime={props.endTime}
                 color="primary"
             >
                 <EffectIcon effect={props.type} color={props.positive ? 'success' : 'error'} />
-            </CircularProgressionWrapper>
+            </CircularTimer>
         </Zoom>
     );
 };
