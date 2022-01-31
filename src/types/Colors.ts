@@ -1,6 +1,6 @@
-export type ColorName = 'primary' | 'secondary';
+export type ColorName = 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | 'inherit';
 
-export type IconColorName = 'inherit' | 'primary' | 'secondary' | 'action' | 'disabled' | 'success' | 'error';
+export type IconColorName = ColorName | 'action' | 'disabled';
 
 export interface MuiColor {
   50: string;
