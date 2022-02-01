@@ -10,7 +10,8 @@ interface Props {
 const Root = styled('div')({
     display: 'flex',
     position: 'relative',
-    height: 32,
+    width: '100%',
+    height: indicatorSize,
 });
 
 const Item = styled('div')({
@@ -25,7 +26,7 @@ export const EffectIndicators: React.FC<Props> = props => {
             {props.effects.map((effect, index) => (
                 <Item
                     key={index}
-                    style={{ left: `calc((100% - ${indicatorSize}px) * ${index} / ${props.effects.length})` }}
+                    style={{ left: `calc((100% - ${indicatorSize}px) * ${index + 0.5} / ${props.effects.length})` }}
                 >
                     <EffectIndicator {...effect} />
                 </Item>

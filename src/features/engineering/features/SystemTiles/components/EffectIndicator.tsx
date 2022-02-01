@@ -8,7 +8,7 @@ interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
 }
 
-export const indicatorSize = 32;
+export const indicatorSize = 24;
 
 export const EffectIndicator: React.FC<Props> = props => {
     const theme = useTheme();

@@ -5,18 +5,14 @@ import { EffectIndicators } from './EffectIndicators';
 const Root = styled('div')(({ theme }) => ({
     position: 'relative',
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    color: 'white',
-    backgroundColor: theme.palette.background.paper,
+    justifyContent: 'stretch',
     flexGrow: 1,
     width: '10em',
     height: '6em',
+    paddingTop: '3.65em',
 }));
 
 const SvgRoot = styled('svg')({
-    zIndex: 1,
     position: 'absolute',
     top: 0,
     right: 0,
@@ -24,22 +20,20 @@ const SvgRoot = styled('svg')({
     left: 0,
 });
 
-const ellipseRx = 45;
-const ellipseRy = 25;
-const ellipsePerimeter = 224.4229; // See https://www.mathsisfun.com/geometry/ellipse-perimeter.html
+const pathPerimeter = Math.PI * 2 * 10 + 200;
 
-const HealthEllipse = styled('ellipse')<{ health: number }>(props => {
+const HealthPath = styled('path')<{ health: number }>(props => {
     const healthScale = props.health / 100;
     const healthByte = Math.round(healthScale * 255);
     const color = `rgb(${255 - healthByte}, ${healthByte}, 0)`;
-    const fillDistance = healthScale * ellipsePerimeter;
+    const fillDistance = healthScale * pathPerimeter;
 
     return {
         stroke: color,
-        fill: 'none',
-        strokeDasharray: `${fillDistance}, ${ellipsePerimeter - fillDistance}`,
-        strokeDashoffset: ellipsePerimeter * 0.25,
-        transition: 'stroke-dasharray 300ms ease-in-out',
+        fill: props.theme.palette.background.paper,
+        strokeDasharray: `${fillDistance}, ${pathPerimeter - fillDistance}`,
+        strokeDashoffset: pathPerimeter - 35,
+        transition: 'stroke-dasharray 400ms ease-in-out',
     };
 });
 
@@ -58,19 +52,14 @@ const HealthText = styled('text')(({ theme }) => ({
     fontSize: '12px',
 }));
 
-const Effects = styled(EffectIndicators)({
-    zIndex: 2,
-});
-
 export const SystemTile: React.FC<TileDisplayInfo> = (props) => {
     const constrainedHealth = Math.max(0, Math.min(100, props.health));
 
     return (
         <Root role="group">
             <SvgRoot viewBox="0 0 100 60">
-                <HealthEllipse
-                    cx="50" cy="30"
-                    rx={ellipseRx} ry={ellipseRy}
+                <HealthPath
+                    d="M 15 5 L 85 5 A 10 10 0 0 1 95 15 L 95 45 A 10 10 0 0 1 85 55 L 15 55 A 10 10 0 0 1 5 45 L 5 15 A 10 10 0 0 1 15 5"
                     health={constrainedHealth}
                     strokeWidth={3.6}
                 />
@@ -81,7 +70,7 @@ export const SystemTile: React.FC<TileDisplayInfo> = (props) => {
                 </HealthText>
             </SvgRoot>
 
-            <Effects effects={props.effects} />
+            <EffectIndicators effects={props.effects} />
         </Root>
     );
 };
