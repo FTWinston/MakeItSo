@@ -1,4 +1,6 @@
-import { styled } from '@mui/material/styles';
+import { styled, Theme } from '@mui/material/styles';
+import { normal } from 'color-blend';
+import { RGBA } from 'color-blend/dist/types';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
 
@@ -22,14 +24,44 @@ const SvgRoot = styled('svg')({
 
 const pathPerimeter = Math.PI * 2 * 10 + 200;
 
+const hex2rgba = (hex: string, a: number) => {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return { r, g, b, a };
+};
+
+function getHealthColor(healthScale: number, theme: Theme) {
+    let fromColor: string;
+    let toColor: string;
+    let blendAmount: number;
+
+    if (healthScale < 0.5) {
+        fromColor = theme.palette.error.dark;
+        toColor = theme.palette.warning.dark;
+        blendAmount = healthScale * 2;
+    }
+    else {
+        fromColor = theme.palette.warning.dark;
+        toColor = theme.palette.success.dark;
+        blendAmount = (healthScale - 0.5) * 2;
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+    const color: RGBA = normal(
+        hex2rgba(fromColor, 1),
+        hex2rgba(toColor, blendAmount)
+    );
+
+    return `rgb(${color.r},${color.g},${color.b})`;
+}
+
 const HealthPath = styled('path')<{ health: number }>(props => {
     const healthScale = props.health / 100;
-    const healthByte = Math.round(healthScale * 255);
-    const color = `rgb(${255 - healthByte}, ${healthByte}, 0)`;
     const fillDistance = healthScale * pathPerimeter;
 
     return {
-        stroke: color,
+        stroke: getHealthColor(healthScale, props.theme),
         fill: props.theme.palette.background.paper,
         strokeDasharray: `${fillDistance}, ${pathPerimeter - fillDistance}`,
         strokeDashoffset: pathPerimeter - 35,
