@@ -1,7 +1,6 @@
+import { styled } from '@mui/material/styles';
 import { Component } from 'react';
 import { Translation } from 'react-i18next';
-import { classNames } from 'src/utils/classNames';
-import styles from './ErrorBoundary.module.scss';
 
 interface Props {
     className?: string;
@@ -11,6 +10,11 @@ interface Props {
 interface State {
     hasError: boolean;
 }
+
+const ErrorMessage = styled('h1')(({ theme }) => ({
+    color: theme.palette.error.main,
+    padding: '1em',
+}));
 
 /**
  * Ensures that any errors don't break the whole app.
@@ -46,7 +50,7 @@ export class ErrorBoundary extends Component<Props, State> {
         // Note we can't use the more streamlined useTranslation hook since this is a class-based component not a functional component.
         return (
             <Translation>
-                {(t) => <h1 className={classNames(this.props.className, styles.error)}>{t('common:error')}</h1>}
+                {(t) => <ErrorMessage className={this.props.className}>{t('common:error')}</ErrorMessage>}
             </Translation>
         );
     }

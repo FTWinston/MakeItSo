@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
-import Typography from '@mui/material/Typography';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { ZoomableCard } from './ZoomableCard';
 import { cardHeight, cardWidth, shrinkScale } from './EngineeringCard';
@@ -30,14 +29,15 @@ const HandWrapper = styled('div')({
 
 const CardWrapper = styled('div')({
     position: 'absolute',
-    top: '1em',
+    top: 0,
     pointerEvents: 'none',
     transition: 'left 0.5s ease-in-out',
 });
 
-const EmptyText = styled(Typography)({
+const EmptyText = styled('div')({
     flexGrow: 1,
     textAlign: 'center',
+    fontSize: '1.2em',
 });
 
 export const CardHand: React.FC<Props> = props => {

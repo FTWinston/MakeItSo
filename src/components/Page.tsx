@@ -1,16 +1,28 @@
-import { classNames } from 'src/utils/classNames';
-import classes from './Page.module.scss';
+import { styled } from '@mui/material/styles';
 
 interface Props {
     className?: string;
 }
 
+const Outer = styled('div')(({ theme }) => ({
+    display: 'flex',
+    justifyContent: 'center',
+    backgroundColor: theme.palette.common.black,
+}));
+
+const Inner = styled('div')(({ theme }) => ({
+    maxWidth: 'calc(100vh * 2 / 3)',
+    width: '100vw',
+    height: '100vh',
+    backgroundColor: theme.palette.grey[900],
+}));
+
 export const Page: React.FC<Props> = (props) => {
     return (
-        <div className={classes.outer}>
-            <div className={classNames(classes.inner, props.className)}>
+        <Outer>
+            <Inner className={props.className}>
                 {props.children}
-            </div>
-        </div>
+            </Inner>
+        </Outer>
     );
 };

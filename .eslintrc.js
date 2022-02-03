@@ -37,13 +37,16 @@ module.exports = {
         "indent": ["error", 4],
         "key-spacing": ["error", { "afterColon": true }],
         "no-restricted-imports": ["warn", {
-            "patterns": [
-                "src/features/*/*",
-                "./features/*/*",
-                "../features/*/*",
-                "../../features/*/*",
-                "../../../features/*/*"
-            ]
+            "patterns": [{
+                "group": [
+                    "src/features/*/*",
+                    "./features/*/*",
+                    "../features/*/*",
+                    "../../features/*/*",
+                    "../../../features/*/*",
+                ],
+                "message": "If you need to import from another feature, export what you need from that feature's index file."
+            }]
         }],
         "prefer-const": "warn",
         "react/jsx-wrap-multilines": ["warn", {
@@ -83,7 +86,8 @@ module.exports = {
             "**/*.stories.*"
           ],
           "rules": {
-            "import/no-anonymous-default-export": "off"
+            "import/no-anonymous-default-export": "off",
+            "no-restricted-imports": "off"
           }
         }
     ]

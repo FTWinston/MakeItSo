@@ -4,9 +4,10 @@ import { createCommonCard, createEpicCard, createUncommonCard, createRareCard } 
 export default {
     title: 'Engineering/Cards/Card Hand',
     Component: CardHand,
+    includeStories: /^[A-Z]/,
 };
 
-const cards = [
+export const storyCards = [
     createCommonCard(1),
     createEpicCard(2),
     createCommonCard(3),
@@ -19,24 +20,24 @@ const cards = [
 
 const exampleHand = (size: number) => (
     <CardHand
-        cards={cards.slice(0, size)}
+        cards={storyCards.slice(0, size)}
     />
 );
 
-export const eight = () => exampleHand(8);
+export const Eight = () => exampleHand(8);
 
-export const seven = () => exampleHand(7);
+export const Seven = () => exampleHand(7);
 
-export const six = () => exampleHand(6);
+export const Six = () => exampleHand(6);
 
-export const five = () => exampleHand(5);
+export const Five = () => exampleHand(5);
 
-export const four = () => exampleHand(4);
+export const Four = () => exampleHand(4);
 
-export const three = () => exampleHand(3);
+export const Three = () => exampleHand(3);
 
-export const two = () => exampleHand(2);
+export const Two = () => exampleHand(2);
 
-export const one = () => exampleHand(1);
+export const One = () => exampleHand(1);
 
-export const zero = () => exampleHand(0);
+export const Zero = () => exampleHand(0);
