@@ -11,7 +11,7 @@ const Root = styled('div')(({ theme }) => ({
     flexGrow: 1,
     width: '10em',
     height: '6em',
-    paddingTop: '3.65em',
+    paddingTop: '3.575em',
 }));
 
 const SvgRoot = styled('svg')({
@@ -78,7 +78,7 @@ const NameText = styled('text')(({ theme }) => ({
 }));
 
 const HealthText = styled('text')(({ theme }) => ({
-    fill: theme.palette.text.primary,
+    fill: theme.palette.text.secondary,
     textAnchor: 'middle',
     alignmentBaseline: 'middle',
     fontSize: '12px',

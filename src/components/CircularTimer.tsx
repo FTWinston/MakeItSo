@@ -3,29 +3,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { getCompletedFraction } from 'src/utils/timeSpans';
 import { ColorName } from 'src/types/Colors';
-import { styled } from '@mui/material/styles';
 
 interface Props extends TimeSpan {
     className?: string;
     color?: ColorName;
-    size?: number;
+    size?: string | number;
 }
-
-const Root = styled('div')({
-    position: 'relative',
-    display: 'flex',
-});
-
-const ContentWrapper = styled('div')({
-    position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    top: 0,
-    left: 0,
-    bottom: 0,
-    right: 0,
-});
 
 export const CircularTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<Props>>((props, ref) => {
     const { startTime, endTime } = props;
@@ -44,20 +27,13 @@ export const CircularTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<
     );
 
     return (
-        <Root
-            className={props.className}
+        <CircularProgress
             ref={ref}
-        >
-            <CircularProgress
-                variant="determinate"
-                className={props.className}
-                color={props.color}
-                value={value}
-                size={props.size}
-            />
-            <ContentWrapper>
-                {props.children}
-            </ContentWrapper>
-        </Root>
+            variant="determinate"
+            className={props.className}
+            color={props.color}
+            value={value}
+            size={props.size}
+        />
     );
 });

@@ -11,13 +11,11 @@ import SwapHorizontalIcon from '@mui/icons-material/SwapHoriz';
 import SwapVerticalIcon from '@mui/icons-material/SwapVert';
 import OfflineIcon from '@mui/icons-material/PowerOff';
 import HotSwapIcon from '@mui/icons-material/PowerSettingsNew';
-import { IconColorName } from 'src/types/Colors';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 
 interface Props {
     className?: string;
     effect: SystemStatusEffectType;
-    color?: IconColorName;
 }
 
 export const EffectIcon: React.FC<Props> = props => {
@@ -64,5 +62,5 @@ export const EffectIcon: React.FC<Props> = props => {
         break;
     }
 
-    return <Icon color={props.color} className={props.className} />;
+    return <Icon className={props.className} />;
 };

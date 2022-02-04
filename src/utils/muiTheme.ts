@@ -9,5 +9,9 @@ export const theme = createTheme({
             contrastText: 'white',
         },
         */
+        error: {
+            main: '#f44336',
+            contrastText: 'black',
+        },
     },
 });

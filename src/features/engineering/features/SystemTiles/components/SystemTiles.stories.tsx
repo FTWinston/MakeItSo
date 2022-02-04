@@ -72,8 +72,8 @@ export const complexStoryTiles: TileDisplayInfo[] = [
         name: 'Shields',
         effects: [
             { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
-            { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: false, type: SystemStatusEffectType.Overload },
-            { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
+            { startTime: Date.now() - durationToTimeSpan(1), endTime: determineEndTime(15), positive: false, type: SystemStatusEffectType.Overload },
+            { startTime: Date.now() - durationToTimeSpan(6), endTime: determineEndTime(8), positive: true, type: SystemStatusEffectType.Boost1 },
         ],
     },
     {
