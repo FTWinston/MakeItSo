@@ -11,6 +11,8 @@ export const theme = createTheme({
         */
         error: {
             main: '#f44336',
+            dark: '#d32f2f',
+            light: '#e57373',
             contrastText: 'black',
         },
     },
