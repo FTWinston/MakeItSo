@@ -11,7 +11,7 @@ const Root = styled('div')(({ theme }) => ({
     flexGrow: 1,
     width: '10em',
     height: '6em',
-    paddingTop: '3.575em',
+    paddingTop: '3.59em',
 }));
 
 const SvgRoot = styled('svg')({

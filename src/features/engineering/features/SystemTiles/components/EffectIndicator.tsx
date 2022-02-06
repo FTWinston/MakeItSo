@@ -8,13 +8,16 @@ interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
 }
 
+const iconSize = '1.2em';
 export const indicatorSize = '1.5em';
 const timerSize = '1.7em';
 
 const ScaledIcon = styled(EffectIcon)({
     position: 'absolute',
-    width: indicatorSize,
-    height: indicatorSize,
+    width: iconSize,
+    height: iconSize,
+    top: '0.15em',
+    left: '0.15em',
     fontSize: 'unset', // Icons default this to 1.5rem
     filter: 'drop-shadow(0px 0px 0.1em rgb(255 255 255 / 0.6))',
 });
@@ -23,7 +26,7 @@ const Timer = styled(CircularTimer
     , { shouldForwardProp: (prop) => prop !== 'positive' }
 )<{ positive: boolean }>(({ theme, positive }) => ({
     position: 'absolute',
-    color: positive ? theme.palette.primary.light : theme.palette.error.light,
+    color: theme.palette.text.primary,
     top: '-0.1em',
     left: '-0.1em',
 }));
