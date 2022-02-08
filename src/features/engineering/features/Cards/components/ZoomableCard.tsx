@@ -1,18 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import styled from '@mui/material/styles/styled';
 import React, { useState } from 'react';
 import { useSpring, animated } from 'react-spring';
 import { useGesture } from 'react-use-gesture';
-import { EngineeringCard, shrinkScale } from './EngineeringCard';
+import { cardHeight, cardWidth, EngineeringCard } from './EngineeringCard';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     forceZoom?: boolean;
-    style?: React.CSSProperties;
-    zoomStyle?: React.CSSProperties;
+    className?: string;
     dragStart?: () => void;
     dragEnd?: (x: number, y: number) => void;
 }
@@ -20,52 +15,25 @@ interface Props extends Omit<EngineeringCardInfo, 'id'> {
 const Root = styled('div')({
     position: 'relative',
     pointerEvents: 'none',
+    width: cardWidth,
+    height: cardHeight,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
 });
 
-const MainCard = styled(EngineeringCard)({
-    transform: `scale(${shrinkScale})`,
+const ZoomingCard = styled(EngineeringCard)({
     pointerEvents: 'initial',
-    borderWidth: 2,
-
+    fontSize: '0.8em',
     '&:hover': {
-        opacity: 0,
-    },
-    '&:hover + div': {
-        display: 'block',
+        fontSize: '1em',
+        zIndex: 1,
     },
 });
 
-const ForceInMainCard = styled(EngineeringCard)({
-    opacity: 0,
+const FixedCard = styled(EngineeringCard)({
     pointerEvents: 'initial',
-});
-
-const ForceOutMainCard = styled(EngineeringCard)({
-    transform: `scale(${shrinkScale})`,
-    pointerEvents: 'initial',
-    borderWidth: 2,
-});
-
-const ForceOutMainDragging = styled(EngineeringCard)({
-    transform: `scale(${shrinkScale})`,
-    borderWidth: 2,
-});
-
-const ZoomCard = styled(EngineeringCard)({
-    display: 'none',
-    position: 'absolute',
-    bottom: 0,
     zIndex: 1,
-});
-
-const ForceInZoomCard = styled(EngineeringCard)({
-    position: 'absolute',
-    bottom: 0,
-    zIndex: 1,
-});
-
-const ForceOutZoomCard = styled(EngineeringCard)({
-    display: 'none',
 });
 
 export const ZoomableCard: React.FC<Props> = props => {
@@ -97,17 +65,9 @@ export const ZoomableCard: React.FC<Props> = props => {
         ? false
         : props.forceZoom;
 
-    const ZoomCardComponent = forceZoom === true
-        ? ForceInZoomCard
-        : forceZoom === false
-            ? ForceOutZoomCard
-            : ZoomCard;
-
-    const MainCardComponent = forceZoom === true
-        ? ForceInMainCard
-        : forceZoom === false
-            ? (dragging ? ForceOutMainDragging : ForceOutMainCard)
-            : MainCard;
+    const Card = forceZoom === true
+        ? FixedCard
+        : ZoomingCard;
    
     const AnimatedRoot = animated(Root);
 
@@ -115,31 +75,20 @@ export const ZoomableCard: React.FC<Props> = props => {
         ? (
             <AnimatedRoot
                 {...bind()}
+                className={props.className}
                 style={{ x: dragX, y: dragY }}
             >
-                <MainCardComponent
+                <Card
                     type={props.type}
                     rarity={props.rarity}
-                    style={props.style}
-                />
-                <ZoomCardComponent
-                    type={props.type}
-                    rarity={props.rarity}
-                    style={props.zoomStyle}
                 />
             </AnimatedRoot>
         )
         : (
-            <Root>
-                <MainCardComponent
+            <Root className={props.className}>
+                <Card
                     type={props.type}
                     rarity={props.rarity}
-                    style={props.style}
-                />
-                <ZoomCardComponent
-                    type={props.type}
-                    rarity={props.rarity}
-                    style={props.zoomStyle}
                 />
             </Root>
         );

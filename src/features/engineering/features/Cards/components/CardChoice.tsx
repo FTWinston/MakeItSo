@@ -6,7 +6,6 @@ import Zoom from '@mui/material/Zoom';
 import { LinearTimer } from 'src/components/LinearTimer';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
-import { cardHeight, shrinkScale } from './EngineeringCard';
 import { ZoomableCard } from './ZoomableCard';
 
 interface Props {
@@ -23,7 +22,7 @@ const Root = styled('div')({
     flexGrow: 1,
     position: 'relative',
     marginTop: 2,
-    gap: -(1 - shrinkScale) * cardHeight * 0.75,
+    gap: '1em',
 });
 
 const Prompt = styled(Typography)<{ hide: boolean }>(({ theme, hide }) => ({

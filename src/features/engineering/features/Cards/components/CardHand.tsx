@@ -40,6 +40,10 @@ const EmptyText = styled('div')({
     fontSize: '1.2em',
 });
 
+const Card = styled(ZoomableCard)({
+    alignItems: 'flex-end',
+});
+
 export const CardHand: React.FC<Props> = props => {
     const fractionStep = props.cards.length < 2 ? 0 : 1 / (props.cards.length - 1);
     let currentFraction = 0;
@@ -97,16 +101,14 @@ export const CardHand: React.FC<Props> = props => {
 
                     const cardDisplay = (
                         <CardWrapper
-                            style={{ left: `calc((100% - ${cardWidth}px) * ${fraction})` }}
+                            style={{ left: `calc((100% - ${cardWidth}) * ${fraction})` }}
                             key={card.id}
                         >
-                            <ZoomableCard
+                            <Card
                                 type={card.type}
                                 rarity={card.rarity}
                                 dragStart={dragStart ? () => dragStart(card) : undefined}
                                 dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
-                                style={{ transformOrigin: 'bottom' }}
-                                zoomStyle={{bottom: cardHeight * shrinkScale * 0.6}}
                             />
                         </CardWrapper>
                     );

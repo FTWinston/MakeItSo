@@ -14,18 +14,22 @@ interface Props extends Omit<EngineeringCardInfo, 'id'> {
     style?: React.CSSProperties;
 }
 
-export const cardWidth = 224;
-export const cardHeight = 160;
+export const cardWidth = '22.4em';
+export const cardHeight = '16em';
 export const shrinkScale = 0.8;
 
 interface RootProps {
     palette: MuiColor;
 }
 
-const CardRoot = styled(Card)<RootProps>(({ palette }) => ({
+const CardRoot = styled(Card    
+    , { shouldForwardProp: (prop) => prop !== 'palette' }
+)<RootProps>(({ palette }) => ({
     width: cardWidth,
     height: cardHeight,
+    borderWidth: '0.2em',
     transition: 'border-color 0.2s linear',
+    borderRadius: '0.45em',
     backgroundColor: 'background.paper',
     borderColor: alpha(palette[600], 0.5),
     '&:hover': {
@@ -35,6 +39,37 @@ const CardRoot = styled(Card)<RootProps>(({ palette }) => ({
         backgroundColor: palette[600],
     },
 }));
+
+const Header = styled(CardHeader)({
+    padding: '1.6em',
+    '& .MuiCardHeader-title': {
+        fontSize: '1.15em',
+    },
+    '& .MuiCardHeader-avatar': {
+        marginRight: '1.4em',
+    },
+});
+
+const IconWrapper = styled(Avatar)({
+    fontSize: '1em',
+    width: '3.85em',
+    height: '3.85em',
+});
+
+const Icon = styled(CardIcon)({
+    fontSize: '1em',
+    width: '2.25em',
+    height: '2.25em',
+    color: 'white',
+});
+
+const Content = styled(CardContent)({
+    padding: '1.6em',
+});
+
+const Description = styled(Typography)({
+    fontSize: '1.3em',
+});
 
 export const EngineeringCard: React.FC<Props> = props => {
     let color: MuiColor;
@@ -57,22 +92,22 @@ export const EngineeringCard: React.FC<Props> = props => {
             style={props.style}
             variant="outlined"
         >
-            <CardHeader
+            <Header
                 avatar={(
-                    <Avatar
+                    <IconWrapper
                         aria-label={`rarity_${props.rarity}`}
                         className="icon"
                     >
-                        <CardIcon color="action" card={props.type} />
-                    </Avatar>
+                        <Icon card={props.type} />
+                    </IconWrapper>
                 )}
                 title={`card_${props.type}_title`}
             />
-            <CardContent sx={{ paddingTop: 0 }}>
-                <Typography>
+            <Content sx={{ paddingTop: 0 }}>
+                <Description>
                     {`card_${props.type}_desc`}
-                </Typography>
-            </CardContent>
+                </Description>
+            </Content>
         </CardRoot>
     );
 };
