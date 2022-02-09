@@ -19,9 +19,11 @@ export const storyCards = [
 ];
 
 const exampleHand = (size: number) => (
-    <CardHand
-        cards={storyCards.slice(0, size)}
-    />
+    <div style={{marginTop: '5em'}}>
+        <CardHand
+            cards={storyCards.slice(0, size)}
+        />
+    </div>
 );
 
 export const Eight = () => exampleHand(8);

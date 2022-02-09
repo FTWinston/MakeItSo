@@ -1,5 +1,5 @@
 import styled from '@mui/material/styles/styled';
-import React, { useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import { useSpring, animated } from 'react-spring';
 import { useGesture } from 'react-use-gesture';
 import { cardHeight, cardWidth, EngineeringCard } from './EngineeringCard';
@@ -10,25 +10,28 @@ interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
     dragStart?: () => void;
     dragEnd?: (x: number, y: number) => void;
+    style?: CSSProperties;
 }
+
+export const zoomScale = 1.33;
 
 const Root = styled('div')({
     position: 'relative',
-    pointerEvents: 'none',
     width: cardWidth,
     height: cardHeight,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    '&:hover > *': {
+        fontSize: `${zoomScale}em`,
+        zIndex: 1,
+    },
 });
 
 const ZoomingCard = styled(EngineeringCard)({
-    pointerEvents: 'initial',
-    fontSize: '0.8em',
-    '&:hover': {
-        fontSize: '1em',
-        zIndex: 1,
-    },
+    pointerEvents: 'none',
+    fontSize: '1em',
+    position: 'absolute',
 });
 
 const FixedCard = styled(EngineeringCard)({
@@ -76,7 +79,7 @@ export const ZoomableCard: React.FC<Props> = props => {
             <AnimatedRoot
                 {...bind()}
                 className={props.className}
-                style={{ x: dragX, y: dragY }}
+                style={{ x: dragX, y: dragY, ...props.style }}
             >
                 <Card
                     type={props.type}
@@ -85,7 +88,7 @@ export const ZoomableCard: React.FC<Props> = props => {
             </AnimatedRoot>
         )
         : (
-            <Root className={props.className}>
+            <Root className={props.className} style={props.style}>
                 <Card
                     type={props.type}
                     rarity={props.rarity}

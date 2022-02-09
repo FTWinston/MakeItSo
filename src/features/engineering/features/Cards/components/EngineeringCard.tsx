@@ -14,8 +14,8 @@ interface Props extends Omit<EngineeringCardInfo, 'id'> {
     style?: React.CSSProperties;
 }
 
-export const cardWidth = '22.4em';
-export const cardHeight = '16em';
+export const cardWidth = '11.2em';
+export const cardHeight = '8em';
 export const shrinkScale = 0.8;
 
 interface RootProps {
@@ -27,9 +27,9 @@ const CardRoot = styled(Card
 )<RootProps>(({ palette }) => ({
     width: cardWidth,
     height: cardHeight,
-    borderWidth: '0.2em',
+    borderWidth: '0.1em',
     transition: 'border-color 0.2s linear',
-    borderRadius: '0.45em',
+    borderRadius: '0.225em',
     backgroundColor: 'background.paper',
     borderColor: alpha(palette[600], 0.5),
     '&:hover': {
@@ -41,34 +41,34 @@ const CardRoot = styled(Card
 }));
 
 const Header = styled(CardHeader)({
-    padding: '1.6em',
+    padding: '0.8em',
     '& .MuiCardHeader-title': {
-        fontSize: '1.15em',
+        fontSize: '0.575em',
     },
     '& .MuiCardHeader-avatar': {
-        marginRight: '1.4em',
+        marginRight: '0.7em',
     },
 });
 
 const IconWrapper = styled(Avatar)({
     fontSize: '1em',
-    width: '3.85em',
-    height: '3.85em',
+    width: '1.925em',
+    height: '1.925em',
 });
 
 const Icon = styled(CardIcon)({
     fontSize: '1em',
-    width: '2.25em',
-    height: '2.25em',
+    width: '1.125em',
+    height: '1.125em',
     color: 'white',
 });
 
 const Content = styled(CardContent)({
-    padding: '1.6em',
+    padding: '0.8em',
 });
 
 const Description = styled(Typography)({
-    fontSize: '1.3em',
+    fontSize: '0.65em',
 });
 
 export const EngineeringCard: React.FC<Props> = props => {

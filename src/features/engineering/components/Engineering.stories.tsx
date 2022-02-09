@@ -17,7 +17,6 @@ Empty.args = {
     systems: basicStoryTiles,
     handCards: [],
     choiceCards: [],
-    log: [],
 };
 
 export const Busy = Template.bind({});
@@ -25,9 +24,4 @@ Busy.args = {
     systems: complexStoryTiles,
     handCards: storyCards,
     choiceCards: [],
-    log: [
-        'Something happened.',
-        'Something else!',
-        'GASP!',
-    ],
 };

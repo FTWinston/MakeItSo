@@ -1,7 +1,6 @@
 import { styled } from '@mui/material/styles';
-import { grid } from '@mui/system';
 import { Page } from 'src/components/Page';
-import { CardHand, EngineeringCardInfo } from '../features/Cards';
+import { CardHand, cardHeight, EngineeringCardInfo } from '../features/Cards';
 import { SystemTiles, TileDisplayInfo } from '../features/SystemTiles';
 
 interface Props {
@@ -13,7 +12,7 @@ interface Props {
 
 const Root = styled(Page)({
     display: 'grid',
-    gridTemplateRows: '1fr 6em 9em',
+    gridTemplateRows: `1fr ${cardHeight}`,
 });
 
 const Systems = styled(SystemTiles)({
@@ -38,10 +37,6 @@ export const Engineering: React.FC<Props> = (props) => {
             <Systems
                 systems={props.systems}
             />
-
-            <Log>
-                {props.log.map((msg, index) => <LogEntry key={index}>{msg}</LogEntry>)}
-            </Log>
 
             <Hand
                 cards={props.handCards}

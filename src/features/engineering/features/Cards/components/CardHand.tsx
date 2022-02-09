@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
-import { ZoomableCard } from './ZoomableCard';
-import { cardHeight, cardWidth, shrinkScale } from './EngineeringCard';
+import { ZoomableCard, zoomScale } from './ZoomableCard';
+import { cardHeight, cardWidth } from './EngineeringCard';
 // import { exitDuration } from './CardChoice';
 
 const exitDuration = 0.5;
@@ -16,22 +16,12 @@ interface Props {
 
 const Root = styled('div')({
     display: 'flex',
-    height: '11em',
+    height: cardHeight,
     alignItems: 'stretch',
     justifyContent: 'stretch',
-});
-
-const HandWrapper = styled('div')({
-    display: 'flex',
-    flexGrow: 1,
     position: 'relative',
-});
-
-const CardWrapper = styled('div')({
-    position: 'absolute',
-    top: 0,
-    pointerEvents: 'none',
-    transition: 'left 0.5s ease-in-out',
+    marginLeft: `calc(${cardWidth} * ${(zoomScale - 1) * 0.5})`,
+    marginRight: `calc(${cardWidth} * ${(zoomScale - 1) * 0.5})`,
 });
 
 const EmptyText = styled('div')({
@@ -41,6 +31,8 @@ const EmptyText = styled('div')({
 });
 
 const Card = styled(ZoomableCard)({
+    position: 'absolute',
+    transition: 'left 0.5s ease-in-out',
     alignItems: 'flex-end',
 });
 
@@ -92,47 +84,42 @@ export const CardHand: React.FC<Props> = props => {
 
     return (
         <Root>
-            <HandWrapper>
-                {props.cards.map((card, index) => {
-                    const fraction = currentFraction;
-                    currentFraction += fractionStep;
+            {props.cards.map(card => {
+                const fraction = currentFraction;
+                currentFraction += fractionStep;
 
-                    const animateEntrance = !!addingCards.find(c => c.id === card.id);
+                const animateEntrance = !!addingCards.find(c => c.id === card.id);
 
-                    const cardDisplay = (
-                        <CardWrapper
-                            style={{ left: `calc((100% - ${cardWidth}) * ${fraction})` }}
+                const cardDisplay = (
+                    <Card
+                        style={{ left: `calc((100% - ${cardWidth}) * ${fraction})` }}
+                        key={card.id}
+                        type={card.type}
+                        rarity={card.rarity}
+                        dragStart={dragStart ? () => dragStart(card) : undefined}
+                        dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
+                    />
+                );
+
+                return animateEntrance
+                    ? (
+                        <Slide
+                            in={true}
+                            timeout={transitionDuration}
+                            appear={!firstRender}
+                            enter={true}
+                            exit={false}
+                            direction="left"
                             key={card.id}
+                            style={{
+                                transitionDelay: `${exitDuration}ms`,
+                            }}
                         >
-                            <Card
-                                type={card.type}
-                                rarity={card.rarity}
-                                dragStart={dragStart ? () => dragStart(card) : undefined}
-                                dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
-                            />
-                        </CardWrapper>
-                    );
-
-                    return animateEntrance
-                        ? (
-                            <Slide
-                                in={true}
-                                timeout={transitionDuration}
-                                appear={!firstRender}
-                                enter={true}
-                                exit={false}
-                                direction="left"
-                                key={card.id}
-                                style={{
-                                    transitionDelay: `${exitDuration}ms`,
-                                }}
-                            >
-                                {cardDisplay}
-                            </Slide>
-                        )
-                        : cardDisplay;
-                })}
-            </HandWrapper>
+                            {cardDisplay}
+                        </Slide>
+                    )
+                    : cardDisplay;
+            })}
         </Root>
     );
 };

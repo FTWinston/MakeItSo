@@ -8,7 +8,7 @@ export default {
 };
 
 export const common = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <ZoomableCard 
             {...createCommonCard(1)}
         />
@@ -16,7 +16,7 @@ export const common = () => (
 );
 
 export const uncommon = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <ZoomableCard
             {...createUncommonCard(1)}
         />
@@ -24,7 +24,7 @@ export const uncommon = () => (
 );
 
 export const rare = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <ZoomableCard 
             {...createRareCard(1)}
         />
@@ -32,7 +32,7 @@ export const rare = () => (
 );
 
 export const epic = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <ZoomableCard
             {...createEpicCard(1)}
         />
