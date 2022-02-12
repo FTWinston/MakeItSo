@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
-import { ZoomableCard, zoomScale } from './ZoomableCard';
-import { cardHeight, cardWidth } from './EngineeringCard';
+import { EngineeringCardStub, stubHeight, stubWidth } from './CardStub';
+import { EngineeringCard } from './EngineeringCard';
 // import { exitDuration } from './CardChoice';
 
 const exitDuration = 0.5;
@@ -16,12 +16,33 @@ interface Props {
 
 const Root = styled('div')({
     display: 'flex',
-    height: cardHeight,
-    alignItems: 'stretch',
-    justifyContent: 'stretch',
+    height: stubHeight,
+    justifyContent: 'center',
+    alignItems: 'flex-end',
+});
+
+const stubPadding = '0.1em';
+
+const StubsWrapper = styled('div',
+    { shouldForwardProp: (prop) => prop !== 'numCards' }
+)<{ numCards: number }>(({ numCards }) => ({
     position: 'relative',
-    marginLeft: `calc(${cardWidth} * ${(zoomScale - 1) * 0.5})`,
-    marginRight: `calc(${cardWidth} * ${(zoomScale - 1) * 0.5})`,
+    height: stubHeight,
+    width: numCards > 0
+        ? `calc(${numCards - 1} * (${stubWidth} + ${stubPadding} + ${stubPadding}))`
+        : undefined,
+    maxWidth: '100%',
+    marginRight: stubWidth,
+    zIndex: 1,
+}));
+
+const IndividualStubWrapper = styled('div')({
+    padding: `0 ${stubPadding}`,
+    position: 'absolute',
+    transition: 'left 0.5s ease-in-out',
+    '&:hover > *': {
+        color: 'transparent',
+    },
 });
 
 const EmptyText = styled('div')({
@@ -30,22 +51,23 @@ const EmptyText = styled('div')({
     fontSize: '1.2em',
 });
 
-const Card = styled(ZoomableCard)({
+const FocusedCardDisplay = styled(EngineeringCard)({
+    pointerEvents: 'none',
+    zIndex: 2,
+    fontSize: '1.5em',
     position: 'absolute',
-    transition: 'left 0.5s ease-in-out',
-    alignItems: 'flex-end',
+    inset: '0 auto auto auto',
 });
 
 export const CardHand: React.FC<Props> = props => {
-    const fractionStep = props.cards.length < 2 ? 0 : 1 / (props.cards.length - 1);
-    let currentFraction = 0;
-
     const transitionDuration = {
         enter: 500,
         exit: 0,
     };
     
     const [firstRender, setFirstRender] = useState(true);
+
+    const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
 
     useEffect(
         () => {
@@ -82,44 +104,61 @@ export const CardHand: React.FC<Props> = props => {
 
     const { dragStart, dragEnd } = props;
 
+    const screenFractionStep =  1 / (props.cards.length - 1);
+    let screenFraction = 0;
+
+    const focusedCardDisplay = focusedCard === null
+        ? null
+        : <FocusedCardDisplay type={focusedCard.type} rarity={focusedCard.rarity} />;
+
     return (
         <Root>
-            {props.cards.map(card => {
-                const fraction = currentFraction;
-                currentFraction += fractionStep;
+            <StubsWrapper numCards={props.cards.length}>
+                {props.cards.map((card, cardIndex) => {
+                    const left = `calc(100% * ${screenFraction})`;
+                    screenFraction += screenFractionStep;
 
-                const animateEntrance = !!addingCards.find(c => c.id === card.id);
+                    const animateEntrance = !!addingCards.find(c => c.id === card.id);
 
-                const cardDisplay = (
-                    <Card
-                        style={{ left: `calc((100% - ${cardWidth}) * ${fraction})` }}
-                        key={card.id}
-                        type={card.type}
-                        rarity={card.rarity}
-                        dragStart={dragStart ? () => dragStart(card) : undefined}
-                        dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
-                    />
-                );
-
-                return animateEntrance
-                    ? (
-                        <Slide
-                            in={true}
-                            timeout={transitionDuration}
-                            appear={!firstRender}
-                            enter={true}
-                            exit={false}
-                            direction="left"
+                    const cardDisplay = (
+                        <IndividualStubWrapper
                             key={card.id}
-                            style={{
-                                transitionDelay: `${exitDuration}ms`,
-                            }}
+                            style={{ left, zIndex: props.cards.length - cardIndex }}
+                            onMouseEnter={() => setFocusedCard(card)}
+                            onMouseLeave={() => setFocusedCard(null)}
+                            
+                            /*dragStart={dragStart ? () => dragStart(card) : undefined}
+                            dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}*/
                         >
-                            {cardDisplay}
-                        </Slide>
-                    )
-                    : cardDisplay;
-            })}
+                            <EngineeringCardStub
+                                type={card.type}
+                                rarity={card.rarity}
+                            />
+                        </IndividualStubWrapper>
+                    );
+
+                    return animateEntrance
+                        ? (
+                            <Slide
+                                in={true}
+                                timeout={transitionDuration}
+                                appear={!firstRender}
+                                enter={true}
+                                exit={false}
+                                direction="left"
+                                key={card.id}
+                                style={{
+                                    transitionDelay: `${exitDuration}ms`,
+                                }}
+                            >
+                                {cardDisplay}
+                            </Slide>
+                        )
+                        : cardDisplay;
+                })}
+            </StubsWrapper>
+            
+            {focusedCardDisplay}
         </Root>
     );
 };

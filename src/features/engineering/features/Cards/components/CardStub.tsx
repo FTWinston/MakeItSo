@@ -1,32 +1,32 @@
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
 import { grey, blue, purple, deepOrange } from '@mui/material/colors';
 import { alpha, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { EngineeringCardInfo, EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
+import { cardWidth } from './EngineeringCard';
+import { CardContent, Typography } from '@mui/material';
 
-interface Props extends Omit<EngineeringCardInfo, 'id'> {
+interface Props extends Omit<EngineeringCardInfo, 'id' | 'description'> {
     className?: string;
-    style?: React.CSSProperties;
+    onMouseEnter?: () => void;
+    onMouseLeave?: () => void;
 }
 
-export const cardWidth = '11.2em';
-export const cardHeight = '8em';
+export const stubWidth = '3.8em';
+export const stubHeight = cardWidth;
 
 interface RootProps {
     palette: MuiColor;
 }
 
-const CardRoot = styled(Card    
+const StubRoot = styled(Card
     , { shouldForwardProp: (prop) => prop !== 'palette' }
 )<RootProps>(({ palette }) => ({
-    width: cardWidth,
-    height: cardHeight,
+    width: stubWidth,
+    height: stubHeight,
     borderWidth: '0.1em',
     transition: 'border-color 0.2s linear',
     borderRadius: '0.225em',
@@ -40,20 +40,24 @@ const CardRoot = styled(Card
     },
 }));
 
-const Header = styled(CardHeader)({
+const Content = styled(CardContent)({
     padding: '0.8em',
-    '& .MuiCardHeader-title': {
-        fontSize: '0.75em',
-    },
-    '& .MuiCardHeader-avatar': {
-        marginRight: '0.7em',
-    },
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+});
+
+const Title = styled(Typography)({
+    writingMode: 'vertical-rl',
+    fontSize: '0.75em',
 });
 
 const IconWrapper = styled(Avatar)({
     fontSize: '1em',
     width: '1.925em',
     height: '1.925em',
+    marginBottom: '0.925em',
 });
 
 const Icon = styled(CardIcon)({
@@ -63,17 +67,9 @@ const Icon = styled(CardIcon)({
     color: 'white',
 });
 
-const Content = styled(CardContent)({
-    padding: '0.8em',
-});
-
-const Description = styled(Typography)({
-    fontSize: '0.65em',
-});
-
-export const EngineeringCard: React.FC<Props> = props => {
+export const EngineeringCardStub: React.FC<Props> = props => {
     const { t } = useTranslation('engineering');
-    
+
     let color: MuiColor;
     switch (props.rarity) {
     case EngineeringCardRarity.Common:
@@ -87,28 +83,23 @@ export const EngineeringCard: React.FC<Props> = props => {
     }
 
     return (
-        <CardRoot
-            palette={color}
+        <StubRoot
             className={props.className}
-            style={props.style}
+            palette={color}
             variant="outlined"
+            onMouseEnter={props.onMouseEnter}
+            onMouseLeave={props.onMouseLeave}
         >
-            <Header
-                avatar={(
-                    <IconWrapper
-                        aria-label={t(`rarity_${props.rarity}`)}
-                        className="icon"
-                    >
-                        <Icon card={props.type} />
-                    </IconWrapper>
-                )}
-                title={t(`card_${props.type}_title`)}
-            />
-            <Content sx={{ paddingTop: 0 }}>
-                <Description>
-                    {t(`card_${props.type}_desc`)}
-                </Description>
+            <Content>
+                <IconWrapper
+                    aria-label={t(`rarity_${props.rarity}`)}
+                    className="icon"
+                >
+                    <Icon card={props.type} />
+                </IconWrapper>
+
+                <Title>{t(`card_${props.type}_title`)}</Title>
             </Content>
-        </CardRoot>
+        </StubRoot>
     );
 };

@@ -1,9 +1,10 @@
-import { CardHand } from './CardHand';
-import { createCommonCard, createEpicCard, createUncommonCard, createRareCard } from '../data/EngineeringCards';
+import { CardHand as CardHandComponent } from './CardHand';
+import { createCommonCard, createEpicCard, createUncommonCard, createRareCard, createCard } from '../data/EngineeringCards';
+import { useState } from 'react';
 
 export default {
     title: 'Engineering/Cards/Card Hand',
-    Component: CardHand,
+    Component: CardHandComponent,
     includeStories: /^[A-Z]/,
 };
 
@@ -18,28 +19,28 @@ export const storyCards = [
     createUncommonCard(8),
 ];
 
-const exampleHand = (size: number) => (
-    <div style={{marginTop: '5em'}}>
-        <CardHand
-            cards={storyCards.slice(0, size)}
-        />
-    </div>
-);
+export const CardHand = () => {
+    const [cards, setCards] = useState(storyCards);
+    const [nextID, setNextID] = useState(9);
 
-export const Eight = () => exampleHand(8);
+    return (
+        <div style={{marginTop: '5em'}}>
+            <CardHandComponent
+                cards={cards}
+            />
 
-export const Seven = () => exampleHand(7);
+            <br/><br/>
 
-export const Six = () => exampleHand(6);
+            <button onClick={() => {
+                setCards([...cards, createCard(nextID)]);
+                setNextID(nextID + 1);
+            }}>add card</button>
 
-export const Five = () => exampleHand(5);
-
-export const Four = () => exampleHand(4);
-
-export const Three = () => exampleHand(3);
-
-export const Two = () => exampleHand(2);
-
-export const One = () => exampleHand(1);
-
-export const Zero = () => exampleHand(0);
+            <button onClick={() => {
+                const newCards = cards.slice();
+                newCards.splice(Math.round(newCards.length / 2), 1);
+                setCards(newCards);
+            }}>remove card</button>
+        </div>
+    );
+};

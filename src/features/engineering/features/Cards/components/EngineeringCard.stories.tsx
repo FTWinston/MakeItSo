@@ -3,38 +3,18 @@ import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } 
 import { EngineeringCard } from './EngineeringCard';
 
 export default {
-    title: 'Engineering/Cards',
+    title: 'Engineering/Cards/Full Cards',
     Component: EngineeringCard,
 };
 
-export const common = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <ZoomableCard 
-            {...createCommonCard(1)}
-        />
-    </div>
-);
+export const FullCards = () => (
+    <div style={{ display: 'flex', flexDirection: 'column', margin: '1em', gap: '1em', justifyContent: 'center', alignItems: 'center' }}>
+        <ZoomableCard {...createCommonCard(1)} />
+        
+        <ZoomableCard {...createUncommonCard(1)} />
 
-export const uncommon = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <ZoomableCard
-            {...createUncommonCard(1)}
-        />
-    </div>
-);
+        <ZoomableCard {...createRareCard(1)} />
 
-export const rare = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <ZoomableCard 
-            {...createRareCard(1)}
-        />
-    </div>
-);
-
-export const epic = () => (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
-        <ZoomableCard
-            {...createEpicCard(1)}
-        />
+        <ZoomableCard {...createEpicCard(1)} />
     </div>
 );

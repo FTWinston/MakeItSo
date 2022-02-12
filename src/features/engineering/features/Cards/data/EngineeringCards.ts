@@ -155,7 +155,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.Boost2,
         name: 'Boost +2',
         description: "Boosts a system's power by 2 for 12s",
-        rarity: EngineeringCardRarity.Epic,
+        rarity: EngineeringCardRarity.Rare,
         play: (ship, system) => {
             /*
             const systemState = ship.systemInfo[system];
