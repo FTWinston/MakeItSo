@@ -1,18 +1,53 @@
+import Button from '@mui/material/Button';
 import { styled, Theme } from '@mui/material/styles';
+import { palette } from '@mui/system';
 import { normal } from 'color-blend';
 import { RGBA } from 'color-blend/dist/types';
+import { useTranslation } from 'react-i18next';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
 
-const Root = styled('div')(({ theme }) => ({
-    position: 'relative',
-    display: 'flex',
-    justifyContent: 'stretch',
-    flexGrow: 1,
-    width: '10em',
-    height: '6em',
-    paddingTop: '3.59em',
-}));
+const Root = styled(Button,
+    { shouldForwardProp: (prop) => prop !== 'validTarget' && prop !== 'health' }
+)<{ validTarget: boolean | undefined, health: number }>(({ theme, health, validTarget }) => {
+    let color: string;
+    let backgroundColor = theme.palette.background.paper;
+    let hover: object | undefined;
+    if (validTarget === true) {
+        color = theme.palette.success.light;
+        backgroundColor = '#242';
+        hover = {
+            color: theme.palette.text.primary,
+            backgroundColor: '#474',
+        };
+    }
+    else if (validTarget === false) {
+        color = theme.palette.error.light;
+    }
+    else if (health === 0) {
+        color = theme.palette.error.light;
+        backgroundColor = '#200';
+    }
+    else {
+        color = theme.palette.text.primary;
+    }
+
+    return {
+        position: 'relative',
+        display: 'flex',
+        justifyContent: 'stretch',
+        flexGrow: 1,
+        width: '9em',
+        height: '5.4em',
+        paddingTop: '3.15em',
+        margin: '0.5em',
+        borderRadius: '0.75em',
+        color,
+        backgroundColor,
+        transition: 'color 200ms ease-in-out, background-color 200ms ease-in-out',
+        '&:hover': hover,
+    };
+});
 
 const SvgRoot = styled('svg')({
     position: 'absolute',
@@ -22,7 +57,7 @@ const SvgRoot = styled('svg')({
     left: 0,
 });
 
-const pathPerimeter = Math.PI * 2 * 10 + 200;
+const pathPerimeter = Math.PI * 2 * 10 + 232;
 
 const hex2rgba = (hex: string, a: number) => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -61,8 +96,8 @@ const HealthPath = styled('path')<{ health: number }>(props => {
     const fillDistance = healthScale * pathPerimeter;
 
     return {
+        fill: 'none',
         stroke: getHealthColor(healthScale, props.theme),
-        fill: props.theme.palette.background.paper,
         strokeDasharray: `${fillDistance}, ${pathPerimeter - fillDistance}`,
         strokeDashoffset: pathPerimeter - 35,
         transition: 'stroke-dasharray 400ms ease-in-out',
@@ -70,7 +105,7 @@ const HealthPath = styled('path')<{ health: number }>(props => {
 });
 
 const NameText = styled('text')(({ theme }) => ({
-    fill: theme.palette.text.primary,
+    fill: 'currentColor',
     textAnchor: 'middle',
     alignmentBaseline: 'middle',
     fontSize: '14px',
@@ -84,21 +119,40 @@ const HealthText = styled('text')(({ theme }) => ({
     fontSize: '12px',
 }));
 
-export const SystemTile: React.FC<TileDisplayInfo> = (props) => {
+// TODO: Clicking this normally should open a side drawer
+// with detail on each condition etc.
+
+interface Props extends TileDisplayInfo {
+    onClick?: () => void;
+    validTarget?: boolean;
+}
+
+export const SystemTile: React.FC<Props> = (props) => {
+    const { t } = useTranslation('engineering');
     const constrainedHealth = Math.max(0, Math.min(100, props.health));
 
+    const healthText = constrainedHealth === 0
+        ? t('offline')
+        : `${Math.round(constrainedHealth)}%`;
+
     return (
-        <Root role="group">
+        <Root
+            variant="text"
+            onClick={props.onClick}
+            health={constrainedHealth}
+            validTarget={props.validTarget}
+            disabled={props.validTarget === false}
+        >
             <SvgRoot viewBox="0 0 100 60">
                 <HealthPath
-                    d="M 15 5 L 85 5 A 10 10 0 0 1 95 15 L 95 45 A 10 10 0 0 1 85 55 L 15 55 A 10 10 0 0 1 5 45 L 5 15 A 10 10 0 0 1 15 5"
+                    d="M 11 1 L 89 1 A 10 10 0 0 1 99 11 L 99 49 A 10 10 0 0 1 89 59 L 11 59 A 10 10 0 0 1 1 49 L 1 11 A 10 10 0 0 1 11 1"
                     health={constrainedHealth}
-                    strokeWidth={3.6}
+                    strokeWidth={4}
                 />
                 <NameText x="50" y="30" role="heading">{props.name}</NameText>
                 
-                <HealthText x="50" y="17" aria-label="health">
-                    {Math.round(constrainedHealth)}%
+                <HealthText x="50" y="17" aria-label={t('health')}>
+                    {healthText}
                 </HealthText>
             </SvgRoot>
 

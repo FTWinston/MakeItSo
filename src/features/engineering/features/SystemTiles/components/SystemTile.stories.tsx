@@ -9,7 +9,7 @@ export default {
 };
 
 const Template: ComponentStory<typeof SystemTile> = (args) => (
-    <div style={{width: '10em', height: '6em', display: 'flex', alignItems: 'stretch'}}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '2em'}}>
         <SystemTile {...args} />
     </div>
 );
@@ -63,6 +63,36 @@ ThreeEffects.args = {
             type: SystemStatusEffectType.Repair,
             startTime: Date.now(),
             endTime: Date.now() + durationToTimeSpan(5),
+            positive: true,
+        },
+    ],
+};
+
+export const ValidTarget = Template.bind({});
+ValidTarget.args = {
+    name: 'Weapons',
+    health: 88,
+    validTarget: true,
+    effects: [
+        {
+            type: SystemStatusEffectType.Boost1,
+            startTime: Date.now(),
+            endTime: Date.now() + durationToTimeSpan(15),
+            positive: true,
+        },
+    ],
+};
+
+export const InvalidTarget = Template.bind({});
+InvalidTarget.args = {
+    name: 'Weapons',
+    health: 53,
+    validTarget: false,
+    effects: [
+        {
+            type: SystemStatusEffectType.Boost1,
+            startTime: Date.now(),
+            endTime: Date.now() + durationToTimeSpan(15),
             positive: true,
         },
     ],
