@@ -19,6 +19,7 @@ const Root = styled('div')({
     height: stubHeight,
     justifyContent: 'center',
     alignItems: 'flex-end',
+    position: 'relative',
 });
 
 const stubPadding = '0.1em';
@@ -29,11 +30,11 @@ const StubsWrapper = styled('div',
     position: 'relative',
     height: stubHeight,
     width: numCards > 0
-        ? `calc(${numCards - 1} * (${stubWidth} + ${stubPadding} + ${stubPadding}))`
+        ? `min(100%, calc(${numCards - 1} * (${stubWidth} + ${stubPadding} + ${stubPadding})))`
         : undefined,
-    maxWidth: '100%',
     marginRight: stubWidth,
     zIndex: 1,
+    right: stubPadding,
 }));
 
 const IndividualStubWrapper = styled('div')({
@@ -56,7 +57,7 @@ const FocusedCardDisplay = styled(EngineeringCard)({
     zIndex: 2,
     fontSize: '1.5em',
     position: 'absolute',
-    inset: '0 auto auto auto',
+    bottom: `calc(${stubHeight} * 0.333)`,
 });
 
 export const CardHand: React.FC<Props> = props => {

@@ -1,6 +1,6 @@
 import { styled } from '@mui/material/styles';
 import { Page } from 'src/components/Page';
-import { CardHand, cardWidth, EngineeringCardInfo } from '../features/Cards';
+import { CardHand, stubHeight, EngineeringCardInfo } from '../features/Cards';
 import { SystemTiles, TileDisplayInfo } from '../features/SystemTiles';
 
 interface Props {
@@ -12,7 +12,7 @@ interface Props {
 
 const Root = styled(Page)({
     display: 'grid',
-    gridTemplateRows: `1fr ${cardWidth}`,
+    gridTemplateRows: `1fr ${stubHeight}`,
 });
 
 const Systems = styled(SystemTiles)({
