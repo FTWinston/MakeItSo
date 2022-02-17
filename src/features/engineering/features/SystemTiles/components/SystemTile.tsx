@@ -1,6 +1,5 @@
 import Button from '@mui/material/Button';
 import { styled, Theme } from '@mui/material/styles';
-import { palette } from '@mui/system';
 import { normal } from 'color-blend';
 import { RGBA } from 'color-blend/dist/types';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +36,7 @@ const Root = styled(Button,
         display: 'flex',
         justifyContent: 'stretch',
         flexGrow: 1,
+        fontSize: '1em',
         width: '9em',
         height: '5.4em',
         paddingTop: '3.15em',

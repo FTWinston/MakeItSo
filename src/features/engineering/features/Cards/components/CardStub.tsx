@@ -8,6 +8,7 @@ import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
 import { cardWidth } from './EngineeringCard';
 import { CardContent, Typography } from '@mui/material';
+import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
 
 interface Props extends Omit<EngineeringCardInfo, 'id' | 'description'> {
     className?: string;
@@ -99,6 +100,8 @@ export const EngineeringCardStub: React.FC<Props> = props => {
                 </IconWrapper>
 
                 <Title>{t(`card_${props.type}_title`)}</Title>
+
+                <ScreenReaderOnly>{t(`card_${props.type}_desc`)}</ScreenReaderOnly>
             </Content>
         </StubRoot>
     );

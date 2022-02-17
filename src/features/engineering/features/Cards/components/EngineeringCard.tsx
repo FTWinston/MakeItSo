@@ -1,3 +1,4 @@
+import type { AriaRole } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -13,6 +14,7 @@ import { MuiColor } from 'src/types/Colors';
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
     style?: React.CSSProperties;
+    role?: AriaRole;
 }
 
 export const cardWidth = '11.2em';
@@ -92,6 +94,7 @@ export const EngineeringCard: React.FC<Props> = props => {
             className={props.className}
             style={props.style}
             variant="outlined"
+            role={props.role}
         >
             <Header
                 avatar={(

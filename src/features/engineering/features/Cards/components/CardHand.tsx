@@ -110,7 +110,13 @@ export const CardHand: React.FC<Props> = props => {
 
     const focusedCardDisplay = focusedCard === null
         ? null
-        : <FocusedCardDisplay type={focusedCard.type} rarity={focusedCard.rarity} />;
+        : (
+            <FocusedCardDisplay
+                type={focusedCard.type}
+                rarity={focusedCard.rarity}
+                role="presentation"
+            />
+        );
 
     return (
         <Root>
