@@ -9,7 +9,7 @@ interface Props {
 const Root = styled('div')({
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    width: '100%',
+    margin: '0.5em 0.25em',
     gap: '0.25em',
     placeItems: 'center',
 });

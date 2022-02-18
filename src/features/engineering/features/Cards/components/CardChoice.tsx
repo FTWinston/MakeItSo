@@ -11,7 +11,7 @@ import { ZoomableCard } from './ZoomableCard';
 interface Props {
     cards: EngineeringCardInfo[];
     progress?: TimeSpan;
-    choose: (card: EngineeringCardInfo) => void;
+    choose: (id: number) => void;
 }
 
 const Root = styled('div')({
@@ -128,7 +128,7 @@ export const CardChoice: React.FC<Props> = props => {
                         >
                             <CardWrapper
                                 selected={card === selected}
-                                onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card); } }}
+                                onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card.id); } }}
                             >
                                 <ZoomableCard
                                     type={card.type}
