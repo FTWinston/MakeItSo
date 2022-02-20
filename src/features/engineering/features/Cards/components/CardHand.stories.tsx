@@ -2,6 +2,7 @@ import { CardHand as CardHandComponent } from './CardHand';
 import { createCommonCard, createEpicCard, createUncommonCard, createRareCard, createCard } from '../data/EngineeringCards';
 import { useState } from 'react';
 import { stubHeight } from './CardStub';
+import { action } from '@storybook/addon-actions';
 
 export default {
     title: 'Engineering/Cards/Card Hand',
@@ -28,6 +29,7 @@ export const CardHand = () => {
         <div style={{marginTop: `calc(${stubHeight} * 0.5)`}}>
             <CardHandComponent
                 cards={cards}
+                focus={action('focus')}
             />
 
             <br/><br/>

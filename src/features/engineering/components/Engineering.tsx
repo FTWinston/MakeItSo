@@ -9,6 +9,7 @@ import { Page } from 'src/components/Page';
 import { AppBarHeight, SystemAppBar } from 'src/components/SystemAppBar';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
+import { EngineeringCard } from '../features/Cards';
 import { SystemTiles, TileDisplayInfo } from '../features/SystemTiles';
 
 interface Props {
@@ -38,11 +39,25 @@ const AppBarBadge = styled(Badge)<BadgeProps>({
     },
 });
 
+const FocusedCardDisplay = styled(EngineeringCard)({
+    pointerEvents: 'none',
+    zIndex: 2,
+    fontSize: '1.5em',
+    position: 'absolute',
+    top: `45vh`,
+    marginLeft: 'auto',
+    marginRight: 'auto',
+    left: 0,
+    right: 0,
+});
+
 export const Engineering: React.FC<Props> = (props) => {
     const { t } = useTranslation('engineering');
     const theme = useTheme();
     
-    const [draggingCard, setDragging] = useState<EngineeringCardInfo>();
+    const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
+
+    const [draggingCard, setDragging] = useState<EngineeringCardInfo | null>(null);
     
     const [showChoice, setShowChoice] = useState(false);
 
@@ -58,11 +73,22 @@ export const Engineering: React.FC<Props> = (props) => {
         ? (
             <CardChoice
                 cards={props.choiceCards ?? []}
+                focus={setFocusedCard}
                 choose={props.chooseCard}
                 progress={props.choiceProgress}
             />
         )
         : undefined;
+
+    const focusedCardDisplay = focusedCard === null
+        ? null
+        : (
+            <FocusedCardDisplay
+                type={focusedCard.type}
+                rarity={focusedCard.rarity}
+                role="presentation"
+            />
+        );
 
     const transitionDuration = {
         enter: theme.transitions.duration.enteringScreen,
@@ -114,9 +140,12 @@ export const Engineering: React.FC<Props> = (props) => {
         
             <CardHand
                 cards={props.handCards}
+                focus={setFocusedCard}
                 //dragStart={tabIndex === 0 ? setDragging : undefined}
                 //dragEnd={tabIndex === 0 ? tryPlayCard : undefined}
             />
+
+            {focusedCardDisplay}
         </Root>
     );
 };

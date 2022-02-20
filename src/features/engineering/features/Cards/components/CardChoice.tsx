@@ -6,12 +6,11 @@ import Zoom from '@mui/material/Zoom';
 import { LinearTimer } from 'src/components/LinearTimer';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
-import { EngineeringCardStub, stubHeight } from './CardStub';
-import { EngineeringCard } from './EngineeringCard';
-import { shouldForwardProp } from '@mui/styled-engine';
+import { EngineeringCardStub } from './CardStub';
 
 interface Props {
     cards: EngineeringCardInfo[];
+    focus: (card: EngineeringCardInfo | null) => void;
     progress?: TimeSpan;
     choose: (id: number) => void;
 }
@@ -57,14 +56,6 @@ const CardGeneration = styled(LinearTimer)(({ theme }) => ({
     marginBottom: '0.5em',
 }));
 
-const FocusedCardDisplay = styled(EngineeringCard)({
-    pointerEvents: 'none',
-    zIndex: 2,
-    fontSize: '1.5em',
-    position: 'absolute',
-    bottom: `calc(${stubHeight} * 0.333)`,
-});
-
 export const exitDuration = 1000;
 
 export const CardChoice: React.FC<Props> = props => {
@@ -105,18 +96,6 @@ export const CardChoice: React.FC<Props> = props => {
         []
     );
 
-    const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
-
-    const focusedCardDisplay = focusedCard === null
-        ? null
-        : (
-            <FocusedCardDisplay
-                type={focusedCard.type}
-                rarity={focusedCard.rarity}
-                role="presentation"
-            />
-        );
-
     const prompt = cards.length === 0
         ? (
             <EmptyPrompt>
@@ -155,8 +134,8 @@ export const CardChoice: React.FC<Props> = props => {
                                 <CardWrapper
                                     selected={card === selected}
                                     onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card.id); } }}
-                                    onMouseEnter={() => setFocusedCard(card)}
-                                    onMouseLeave={() => setFocusedCard(null)}
+                                    onMouseEnter={() => props.focus(card)}
+                                    onMouseLeave={() => props.focus(null)}
                                 >
                                     <EngineeringCardStub
                                         type={card.type}
@@ -174,7 +153,6 @@ export const CardChoice: React.FC<Props> = props => {
         <Root>
             {prompt}
             {cardDisplay}
-            {focusedCardDisplay}
             {props.progress && <CardGeneration {...props.progress} color="secondary" />}
         </Root>
     );

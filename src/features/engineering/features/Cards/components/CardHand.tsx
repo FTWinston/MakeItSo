@@ -3,11 +3,11 @@ import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub, stubHeight, stubWidth } from './CardStub';
-import { EngineeringCard } from './EngineeringCard';
 import { exitDuration } from './CardChoice';
 
 interface Props {
     cards: EngineeringCardInfo[];
+    focus: (card: EngineeringCardInfo | null) => void;
     dragStart?: (card: EngineeringCardInfo) => void;
     dragEnd?: (card: EngineeringCardInfo, x: number, y: number) => void;
 }
@@ -17,7 +17,6 @@ const Root = styled('div')({
     height: stubHeight,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    position: 'relative',
 });
 
 const stubPadding = '0.1em';
@@ -50,14 +49,6 @@ const EmptyText = styled('div')({
     fontSize: '1.2em',
 });
 
-const FocusedCardDisplay = styled(EngineeringCard)({
-    pointerEvents: 'none',
-    zIndex: 2,
-    fontSize: '1.5em',
-    position: 'absolute',
-    bottom: `calc(${stubHeight} * 0.333)`,
-});
-
 export const CardHand: React.FC<Props> = props => {
     const transitionDuration = {
         enter: 500,
@@ -65,8 +56,6 @@ export const CardHand: React.FC<Props> = props => {
     };
     
     const [firstRender, setFirstRender] = useState(true);
-
-    const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
 
     useEffect(
         () => {
@@ -106,16 +95,6 @@ export const CardHand: React.FC<Props> = props => {
     const screenFractionStep =  1 / (props.cards.length - 1);
     let screenFraction = 0;
 
-    const focusedCardDisplay = focusedCard === null
-        ? null
-        : (
-            <FocusedCardDisplay
-                type={focusedCard.type}
-                rarity={focusedCard.rarity}
-                role="presentation"
-            />
-        );
-
     return (
         <Root>
             <StubsWrapper numCards={props.cards.length}>
@@ -129,8 +108,8 @@ export const CardHand: React.FC<Props> = props => {
                         <IndividualStubWrapper
                             key={card.id}
                             style={{ left, zIndex: props.cards.length - cardIndex }}
-                            onMouseEnter={() => setFocusedCard(card)}
-                            onMouseLeave={() => setFocusedCard(null)}
+                            onMouseEnter={() => props.focus(card)}
+                            onMouseLeave={() => props.focus(null)}
                             
                             /*dragStart={dragStart ? () => dragStart(card) : undefined}
                             dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}*/
@@ -162,8 +141,6 @@ export const CardHand: React.FC<Props> = props => {
                         : cardDisplay;
                 })}
             </StubsWrapper>
-            
-            {focusedCardDisplay}
         </Root>
     );
 };
