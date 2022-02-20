@@ -4,9 +4,7 @@ import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub, stubHeight, stubWidth } from './CardStub';
 import { EngineeringCard } from './EngineeringCard';
-// import { exitDuration } from './CardChoice';
-
-const exitDuration = 0.5;
+import { exitDuration } from './CardChoice';
 
 interface Props {
     cards: EngineeringCardInfo[];

@@ -6,7 +6,9 @@ import Zoom from '@mui/material/Zoom';
 import { LinearTimer } from 'src/components/LinearTimer';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
-import { ZoomableCard } from './ZoomableCard';
+import { EngineeringCardStub, stubHeight } from './CardStub';
+import { EngineeringCard } from './EngineeringCard';
+import { shouldForwardProp } from '@mui/styled-engine';
 
 interface Props {
     cards: EngineeringCardInfo[];
@@ -15,27 +17,29 @@ interface Props {
 }
 
 const Root = styled('div')({
+    flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    flexGrow: 1,
-    position: 'relative',
-    marginTop: 2,
-    gap: '1em',
+    justifyContent: 'center',
 });
 
-const Prompt = styled(Typography)<{ hide: boolean }>(({ theme, hide }) => ({
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    transform: 'rotate(-90deg)',
-    transformOrigin: 'left top 0',
+const Prompt = styled(
+    Typography
+    , { shouldForwardProp: (prop) => prop !== 'hide' }
+)<{ hide: boolean }>(({ theme, hide }) => ({
     color: theme.palette.text.secondary,
-    fontSize: '2em',
+    fontSize: '1.5em',
     transition: 'opacity 0.5s linear',
     opacity: hide ? 0 : undefined,
 }));
+
+const Cards = styled('div')({    
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    flexGrow: 1,
+    gap: '1em',
+});
 
 const EmptyPrompt = styled('div')({
     textAlign: 'center',
@@ -49,8 +53,17 @@ const CardWrapper = styled('div')<{ selected: boolean }>(({ selected }) => ({
 }));
 
 const CardGeneration = styled(LinearTimer)(({ theme }) => ({
-    marginTop: theme.spacing(1),
+    marginTop: '0.5em',
+    marginBottom: '0.5em',
 }));
+
+const FocusedCardDisplay = styled(EngineeringCard)({
+    pointerEvents: 'none',
+    zIndex: 2,
+    fontSize: '1.5em',
+    position: 'absolute',
+    bottom: `calc(${stubHeight} * 0.333)`,
+});
 
 export const exitDuration = 1000;
 
@@ -92,12 +105,24 @@ export const CardChoice: React.FC<Props> = props => {
         []
     );
 
+    const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
+
+    const focusedCardDisplay = focusedCard === null
+        ? null
+        : (
+            <FocusedCardDisplay
+                type={focusedCard.type}
+                rarity={focusedCard.rarity}
+                role="presentation"
+            />
+        );
+
     const prompt = cards.length === 0
         ? (
             <EmptyPrompt>
                 No card choice available.
                 <br/>Please wait...
-                {props.progress && <CardGeneration {...props.progress} color="primary" />}
+                {props.progress && <CardGeneration {...props.progress} color="secondary" />}
             </EmptyPrompt>
         )
         : (
@@ -105,41 +130,52 @@ export const CardChoice: React.FC<Props> = props => {
                 Choose one:
             </Prompt>
         );
-    
+        
+    const cardDisplay = cards.length === 0
+        ? undefined
+        : (
+            <Cards>
+                {cards.map(card => {
+                    return (
+                        <Zoom
+                            in={props.cards.indexOf(card) !== -1 || card === selected}
+                            timeout={transitionDuration}
+                            unmountOnExit
+                            key={card.id}
+                            appear={!firstRender}
+                        >
+                            <Slide
+                                in={props.cards.indexOf(card) !== -1 || card !== selected}
+                                timeout={transitionDuration}
+                                appear={false}
+                                direction="left"
+                                unmountOnExit
+                                key={card.id}
+                            >
+                                <CardWrapper
+                                    selected={card === selected}
+                                    onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card.id); } }}
+                                    onMouseEnter={() => setFocusedCard(card)}
+                                    onMouseLeave={() => setFocusedCard(null)}
+                                >
+                                    <EngineeringCardStub
+                                        type={card.type}
+                                        rarity={card.rarity}
+                                    />
+                                </CardWrapper>
+                            </Slide>
+                        </Zoom>
+                    );
+                })}
+            </Cards>
+        );
+
     return (
         <Root>
             {prompt}
-            {cards.map(card => {
-                return (
-                    <Zoom
-                        in={props.cards.indexOf(card) !== -1 || card === selected}
-                        timeout={transitionDuration}
-                        unmountOnExit
-                        key={card.id}
-                        appear={!firstRender}
-                    >
-                        <Slide
-                            in={props.cards.indexOf(card) !== -1 || card !== selected}
-                            timeout={transitionDuration}
-                            appear={false}
-                            direction="left"
-                            unmountOnExit
-                            key={card.id}
-                        >
-                            <CardWrapper
-                                selected={card === selected}
-                                onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card.id); } }}
-                            >
-                                <ZoomableCard
-                                    type={card.type}
-                                    rarity={card.rarity}
-                                    forceZoom={selected ? card === selected : undefined}
-                                />
-                            </CardWrapper>
-                        </Slide>
-                    </Zoom>
-                );
-            })}
+            {cardDisplay}
+            {focusedCardDisplay}
+            {props.progress && <CardGeneration {...props.progress} color="secondary" />}
         </Root>
     );
 };
