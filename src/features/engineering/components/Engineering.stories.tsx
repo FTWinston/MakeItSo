@@ -20,6 +20,10 @@ Empty.args = {
     handCards: [],
     choiceCards: [],
     numChoices: 0,
+    choiceProgress: {
+        startTime: Date.now(),
+        endTime: Date.now() + durationToTimeSpan(15),
+    },
 };
 
 export const Busy = Template.bind({});

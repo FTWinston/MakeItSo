@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
+import { Typography } from 'src/components/Typography';
 import Slide from '@mui/material/Slide';
 import Zoom from '@mui/material/Zoom';
 import { LinearTimer } from 'src/components/LinearTimer';
@@ -10,6 +10,7 @@ import { EngineeringCardStub } from './CardStub';
 
 interface Props {
     cards: EngineeringCardInfo[];
+    numChoices: number;
     focus: (card: EngineeringCardInfo | null) => void;
     progress?: TimeSpan;
     choose: (id: number) => void;
@@ -35,19 +36,20 @@ const Prompt = styled(
 const Cards = styled('div')({    
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
     flexGrow: 1,
-    gap: '1em',
 });
 
 const EmptyPrompt = styled('div')({
     textAlign: 'center',
+    flexGrow: 1,
 });
 
 const CardWrapper = styled('div')<{ selected: boolean }>(({ selected }) => ({
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
+    padding: '0 1em',
     zIndex: selected ? 1 : undefined,
 }));
 
@@ -55,6 +57,10 @@ const CardGeneration = styled(LinearTimer)(({ theme }) => ({
     marginTop: '0.5em',
     marginBottom: '0.5em',
 }));
+
+const ChoiceMessage = styled(Typography)({
+    textAlign: 'center',
+});
 
 export const exitDuration = 1000;
 
@@ -96,13 +102,13 @@ export const CardChoice: React.FC<Props> = props => {
         []
     );
 
+    const alertMessage = cards.length === 0
+        ? 'No card choice available. Please wait...'
+        : `${props.numChoices - 1} further choices available.`;
+
     const prompt = cards.length === 0
         ? (
-            <EmptyPrompt>
-                No card choice available.
-                <br/>Please wait...
-                {props.progress && <CardGeneration {...props.progress} color="secondary" />}
-            </EmptyPrompt>
+            <EmptyPrompt />
         )
         : (
             <Prompt hide={props.cards.length === 0}>
@@ -153,6 +159,7 @@ export const CardChoice: React.FC<Props> = props => {
         <Root>
             {prompt}
             {cardDisplay}
+            <ChoiceMessage>{alertMessage}</ChoiceMessage>
             {props.progress && <CardGeneration {...props.progress} color="secondary" />}
         </Root>
     );

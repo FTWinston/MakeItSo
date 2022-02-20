@@ -73,6 +73,7 @@ export const Engineering: React.FC<Props> = (props) => {
         ? (
             <CardChoice
                 cards={props.choiceCards ?? []}
+                numChoices={props.numChoices}
                 focus={setFocusedCard}
                 choose={props.chooseCard}
                 progress={props.choiceProgress}

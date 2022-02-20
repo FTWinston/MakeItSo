@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
-import Typography from '@mui/material/Typography';
+import { Typography } from 'src/components/Typography';
 import { grey, blue, purple, deepOrange } from '@mui/material/colors';
 import { alpha, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';

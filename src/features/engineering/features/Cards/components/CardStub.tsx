@@ -7,7 +7,8 @@ import { EngineeringCardInfo, EngineeringCardRarity } from '../types/Engineering
 import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
 import { cardWidth } from './EngineeringCard';
-import { CardContent, Typography } from '@mui/material';
+import CardContent from '@mui/material/CardContent';
+import { Typography } from 'src/components/Typography';
 import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
 
 interface Props extends Omit<EngineeringCardInfo, 'id' | 'description'> {
