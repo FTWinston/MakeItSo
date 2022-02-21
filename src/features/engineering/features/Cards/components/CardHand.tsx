@@ -4,6 +4,7 @@ import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub, stubHeight, stubWidth } from './CardStub';
 import { exitDuration } from './CardChoice';
+import { DraggableCardStub, stubPadding } from './DraggableCardStub';
 
 interface Props {
     cards: EngineeringCardInfo[];
@@ -19,8 +20,6 @@ const Root = styled('div')({
     alignItems: 'flex-end',
 });
 
-const stubPadding = '0.1em';
-
 const StubsWrapper = styled('div',
     { shouldForwardProp: (prop) => prop !== 'numCards' }
 )<{ numCards: number }>(({ numCards }) => ({
@@ -33,15 +32,6 @@ const StubsWrapper = styled('div',
     zIndex: 1,
     right: stubPadding,
 }));
-
-const IndividualStubWrapper = styled('div')({
-    padding: `0 ${stubPadding}`,
-    position: 'absolute',
-    transition: 'left 0.5s ease-in-out',
-    '&:hover > *': {
-        color: 'transparent',
-    },
-});
 
 const EmptyText = styled('div')({
     flexGrow: 1,
@@ -105,20 +95,16 @@ export const CardHand: React.FC<Props> = props => {
                     const animateEntrance = !!addingCards.find(c => c.id === card.id);
 
                     const cardDisplay = (
-                        <IndividualStubWrapper
+                        <DraggableCardStub
                             key={card.id}
                             style={{ left, zIndex: props.cards.length - cardIndex }}
                             onMouseEnter={() => props.focus(card)}
                             onMouseLeave={() => props.focus(null)}
-                            
-                            /*dragStart={dragStart ? () => dragStart(card) : undefined}
-                            dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}*/
-                        >
-                            <EngineeringCardStub
-                                type={card.type}
-                                rarity={card.rarity}
-                            />
-                        </IndividualStubWrapper>
+                            type={card.type}
+                            rarity={card.rarity}
+                            dragStart={dragStart ? () => dragStart(card) : undefined}
+                            dragEnd={dragEnd ? (x, y) => dragEnd(card, x, y) : undefined}
+                        />
                     );
 
                     return animateEntrance

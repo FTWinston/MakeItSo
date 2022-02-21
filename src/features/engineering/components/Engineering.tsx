@@ -11,6 +11,8 @@ import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { EngineeringCard } from '../features/Cards';
 import { SystemTiles, TileDisplayInfo } from '../features/SystemTiles';
+import DraftIcon from '@mui/icons-material/FilterNone';
+import SystemsIcon from '@mui/icons-material/GridView';
 
 interface Props {
     systems: TileDisplayInfo[];
@@ -61,15 +63,11 @@ export const Engineering: React.FC<Props> = (props) => {
     
     const [showChoice, setShowChoice] = useState(false);
 
-    const systems = !showChoice
-        ? (
-            <SystemTiles
-                systems={props.systems}
-            />
-        )
-        : undefined;
+    const allowedSystems = draggingCard === null || draggingCard.allowedSystems === undefined
+        ? null
+        : draggingCard.allowedSystems;
 
-    const choice = showChoice
+    const systemsOrChoice = showChoice
         ? (
             <CardChoice
                 cards={props.choiceCards ?? []}
@@ -79,7 +77,12 @@ export const Engineering: React.FC<Props> = (props) => {
                 progress={props.choiceProgress}
             />
         )
-        : undefined;
+        : (
+            <SystemTiles
+                systems={props.systems}
+                allowedTargets={allowedSystems}
+            />
+        );
 
     const focusedCardDisplay = focusedCard === null
         ? null
@@ -94,6 +97,37 @@ export const Engineering: React.FC<Props> = (props) => {
     const transitionDuration = {
         enter: theme.transitions.duration.enteringScreen,
         exit: theme.transitions.duration.leavingScreen,
+    };
+
+
+    const tryPlayCard = (card: EngineeringCardInfo, x: number, y: number) => {
+        setDragging(null);
+        
+        /*
+        const elements: Element[] = document.elementsFromPoint
+            ? document.elementsFromPoint(x, y)
+            : (document as any).msElementsFromPoint(x, y);
+
+        for (let i=0; i<elements.length; i++) {
+            const element = elements[i];
+            const attrVal = element.getAttribute('data-system');
+            if (attrVal === null) {
+                continue;
+            }
+
+            const system = parseInt(attrVal) as System;
+
+            if (card.allowedSystems === undefined || (card.allowedSystems & system) !== 0) {
+                dispatch({
+                    type: 'eng play',
+                    card: card.id,
+                    system,
+                });
+            }
+            
+            break;
+        }
+        */
     };
 
     return (
@@ -111,6 +145,7 @@ export const Engineering: React.FC<Props> = (props) => {
                         color="primary"
                         variant="outlined"
                         onClick={() => setShowChoice(false)}
+                        startIcon={<SystemsIcon />}
                     >
                         {t('shipSystems')}
                     </AppBarButton>
@@ -128,6 +163,7 @@ export const Engineering: React.FC<Props> = (props) => {
                             color="secondary"
                             variant="outlined"
                             onClick={() => setShowChoice(true)}
+                            startIcon={<DraftIcon />}
                         >
                             {t('chooseCards')}
                         </AppBarButton>
@@ -135,15 +171,13 @@ export const Engineering: React.FC<Props> = (props) => {
                 </Zoom>    
             </SystemAppBar>
 
-            {systems}
-
-            {choice}
+            {systemsOrChoice}
         
             <CardHand
                 cards={props.handCards}
                 focus={setFocusedCard}
-                //dragStart={tabIndex === 0 ? setDragging : undefined}
-                //dragEnd={tabIndex === 0 ? tryPlayCard : undefined}
+                dragStart={setDragging}
+                dragEnd={tryPlayCard}
             />
 
             {focusedCardDisplay}

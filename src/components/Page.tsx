@@ -16,6 +16,7 @@ const Inner = styled('div')(({ theme }) => ({
     height: '100vh',
     backgroundColor: theme.palette.grey[900],
     position: 'relative',
+    overflow: 'hidden',
 }));
 
 export const Page: React.FC<Props> = (props) => {

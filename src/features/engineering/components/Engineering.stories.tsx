@@ -1,7 +1,9 @@
 import { ComponentStory } from '@storybook/react';
-import { durationToTimeSpan, timeSpanToDuration } from 'src/utils/timeSpans';
+import { useState } from 'react';
+import { durationToTimeSpan } from 'src/utils/timeSpans';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCommonCard } from '../features/Cards/data/EngineeringCards';
+import { EngineeringCardInfo } from '../features/Cards';
 import { basicStoryTiles, complexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
 import { Engineering } from './Engineering';
 
@@ -10,9 +12,32 @@ export default {
     component: Engineering,
 };
 
-const Template: ComponentStory<typeof Engineering> = (args) => (
-    <Engineering {...args} />
-);
+let nextId = 14;
+const Template: ComponentStory<typeof Engineering> = (args) => {
+    const [handCards, setHandCards] = useState<EngineeringCardInfo[]>(args.handCards);
+    const [choiceCards, setChoiceCards] = useState<EngineeringCardInfo[]>(args.choiceCards);
+
+    return (
+        <Engineering
+            {...args}
+            choiceCards={choiceCards}
+            chooseCard={id => {
+                const card = choiceCards.find(card => card.id === id);
+                console.log(`id ${id}`, card);
+                if (card) {
+                    setHandCards([...handCards, card]);
+                }
+
+                setChoiceCards([
+                    createCommonCard(++nextId),
+                    createCommonCard(++nextId),
+                    createCommonCard(++nextId),
+                ]);
+            }}
+            handCards={handCards}
+        />
+    );
+};
 
 export const Empty = Template.bind({});
 Empty.args = {

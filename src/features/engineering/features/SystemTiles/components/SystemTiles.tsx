@@ -1,9 +1,11 @@
 import { styled } from '@mui/material/styles';
+import { ShipSystem } from 'src/types/ShipSystem';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { SystemTile } from './SystemTile';
 
 interface Props {
     systems: TileDisplayInfo[];
+    allowedTargets: ShipSystem | null;
 }
 
 const Root = styled('div')({
@@ -20,6 +22,7 @@ export const SystemTiles: React.FC<Props> = props => {
             {props.systems.map(tile => (
                 <SystemTile
                     key={tile.system}
+                    validTarget={props.allowedTargets === null ? undefined : (props.allowedTargets & tile.system) !== 0}
                     system={tile.system}
                     name={tile.name}
                     health={tile.health}

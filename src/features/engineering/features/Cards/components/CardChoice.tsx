@@ -50,6 +50,7 @@ const CardWrapper = styled('div')<{ selected: boolean }>(({ selected }) => ({
     display: 'flex',
     justifyContent: 'center',
     padding: '0 1em',
+    cursor: 'pointer',
     zIndex: selected ? 1 : undefined,
 }));
 
@@ -104,7 +105,7 @@ export const CardChoice: React.FC<Props> = props => {
 
     const alertMessage = cards.length === 0
         ? 'No card choice available. Please wait...'
-        : `${props.numChoices - 1} further choices available.`;
+        : `${props.numChoices - 1} more choices available.`;
 
     const prompt = cards.length === 0
         ? (
