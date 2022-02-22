@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
-import { EngineeringCardStub, stubHeight, stubWidth } from './CardStub';
+import { stubHeight, stubWidth } from './CardStub';
 import { exitDuration } from './CardChoice';
 import { DraggableCardStub, stubPadding } from './DraggableCardStub';
 
 interface Props {
     cards: EngineeringCardInfo[];
-    focus: (card: EngineeringCardInfo | null) => void;
+    selectedCard: EngineeringCardInfo | null;
+    setFocus: (card: EngineeringCardInfo | null) => void;
+    selectFocusedCard: () => void;
+    clearSelection: () => void;
     dragStart?: (card: EngineeringCardInfo) => void;
     dragEnd?: (card: EngineeringCardInfo, x: number, y: number) => void;
 }
@@ -31,6 +34,7 @@ const StubsWrapper = styled('div',
     marginRight: stubWidth,
     zIndex: 1,
     right: stubPadding,
+    transition: `width ${exitDuration}ms linear`,
 }));
 
 const EmptyText = styled('div')({
@@ -56,6 +60,8 @@ export const CardHand: React.FC<Props> = props => {
 
     const [prevCards, setPrevCards] = useState(props.cards);
     const [addingCards, setAddingCards] = useState<EngineeringCardInfo[]>([]);
+    
+    const isMouseDown = useRef(false);
 
     useEffect(
         () => {
@@ -86,7 +92,12 @@ export const CardHand: React.FC<Props> = props => {
     let screenFraction = 0;
 
     return (
-        <Root>
+        <Root
+            onMouseOut={() => { if (isMouseDown.current && !props.selectedCard) { props.selectFocusedCard(); }}}
+            //onMouseEnter={props.clearSelection}
+            onMouseDown={() => isMouseDown.current = true}
+            onMouseUp={() => isMouseDown.current = false}
+        >
             <StubsWrapper numCards={props.cards.length}>
                 {props.cards.map((card, cardIndex) => {
                     const left = `calc(100% * ${screenFraction})`;
@@ -94,12 +105,26 @@ export const CardHand: React.FC<Props> = props => {
 
                     const animateEntrance = !!addingCards.find(c => c.id === card.id);
 
+                    const onClick = () => {
+                        if (props.selectedCard) {
+                            props.clearSelection();
+                        }
+                        else {
+                            props.setFocus(card); props.selectFocusedCard();
+                        }
+                    };
+
                     const cardDisplay = (
                         <DraggableCardStub
                             key={card.id}
-                            style={{ left, zIndex: props.cards.length - cardIndex }}
-                            onMouseEnter={() => props.focus(card)}
-                            onMouseLeave={() => props.focus(null)}
+                            style={{
+                                left,
+                                zIndex: props.selectedCard === card ? 999 : props.cards.length - cardIndex,
+                                opacity: props.selectedCard === null || props.selectedCard === card ? undefined : 0.33,
+                            }}
+                            onMouseEnter={() => { if (!isMouseDown.current && !props.selectedCard) { props.setFocus(card); }}}
+                            onMouseLeave={() => { if (!isMouseDown.current && !props.selectedCard) { props.setFocus(null); }}}
+                            onClick={onClick}
                             type={card.type}
                             rarity={card.rarity}
                             dragStart={dragStart ? () => dragStart(card) : undefined}

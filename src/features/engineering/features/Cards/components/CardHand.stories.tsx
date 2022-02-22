@@ -29,7 +29,10 @@ export const CardHand = () => {
         <div style={{marginTop: `calc(${stubHeight} * 0.5)`}}>
             <CardHandComponent
                 cards={cards}
-                focus={action('focus')}
+                selectedCard={null}
+                selectFocusedCard={action('startPlaying')}
+                clearSelection={action('stopPlaying')}
+                setFocus={action('focus')}
             />
 
             <br/><br/>

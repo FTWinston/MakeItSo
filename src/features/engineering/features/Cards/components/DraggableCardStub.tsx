@@ -10,6 +10,7 @@ interface Props extends Omit<EngineeringCardInfo, 'id' | 'description'> {
     style?: React.CSSProperties;
     dragStart?: () => void;
     dragEnd?: (x: number, y: number) => void;
+    onClick?: () => void;
     onMouseEnter?: () => void;
     onMouseLeave?: () => void;
 }
@@ -44,13 +45,14 @@ export const DraggableCardStub = forwardRef<HTMLDivElement, PropsWithChildren<Pr
     }, {
         drag: { threshold: 50 },
     });
-
+/*
     if (props.dragEnd) {
         return (
             <AnimatedRoot
                 {...bind()}
                 ref={ref}
                 style={{ ...props.style, x: dragX, y: dragY }}
+                onClick={props.onClick}
                 onMouseEnter={props.onMouseEnter}
                 onMouseLeave={props.onMouseLeave}
             >
@@ -61,11 +63,12 @@ export const DraggableCardStub = forwardRef<HTMLDivElement, PropsWithChildren<Pr
             </AnimatedRoot>
         );
     }
-    
+*/
     return (
         <Root
             ref={ref}
             style={props.style}
+            onClick={props.onClick}
             onMouseEnter={props.onMouseEnter}
             onMouseLeave={props.onMouseLeave}
         >

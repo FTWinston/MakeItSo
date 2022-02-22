@@ -11,8 +11,6 @@ import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { EngineeringCard } from '../features/Cards';
 import { SystemTiles, TileDisplayInfo } from '../features/SystemTiles';
-import DraftIcon from '@mui/icons-material/FilterNone';
-import SystemsIcon from '@mui/icons-material/GridView';
 
 interface Props {
     systems: TileDisplayInfo[];
@@ -58,14 +56,17 @@ export const Engineering: React.FC<Props> = (props) => {
     const theme = useTheme();
     
     const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
+    const [cardSelected, setCardSelected] = useState(false);
 
     const [draggingCard, setDragging] = useState<EngineeringCardInfo | null>(null);
     
     const [showChoice, setShowChoice] = useState(false);
 
-    const allowedSystems = draggingCard === null || draggingCard.allowedSystems === undefined
+    const allowedSystems = !cardSelected || focusedCard === null
         ? null
-        : draggingCard.allowedSystems;
+        : focusedCard.allowedSystems;
+
+    console.log(`isPlayingCard ${cardSelected.toString()}, has card ${(focusedCard !== null).toString()}`, allowedSystems);
 
     const systemsOrChoice = showChoice
         ? (
@@ -84,7 +85,7 @@ export const Engineering: React.FC<Props> = (props) => {
             />
         );
 
-    const focusedCardDisplay = focusedCard === null
+    const focusedCardDisplay = focusedCard === null || cardSelected
         ? null
         : (
             <FocusedCardDisplay
@@ -145,7 +146,6 @@ export const Engineering: React.FC<Props> = (props) => {
                         color="primary"
                         variant="outlined"
                         onClick={() => setShowChoice(false)}
-                        startIcon={<SystemsIcon />}
                     >
                         {t('shipSystems')}
                     </AppBarButton>
@@ -163,7 +163,6 @@ export const Engineering: React.FC<Props> = (props) => {
                             color="secondary"
                             variant="outlined"
                             onClick={() => setShowChoice(true)}
-                            startIcon={<DraftIcon />}
                         >
                             {t('chooseCards')}
                         </AppBarButton>
@@ -175,7 +174,10 @@ export const Engineering: React.FC<Props> = (props) => {
         
             <CardHand
                 cards={props.handCards}
-                focus={setFocusedCard}
+                setFocus={card => { setFocusedCard(card); setCardSelected(false); }}
+                selectedCard={cardSelected ? focusedCard : null}
+                selectFocusedCard={showChoice ? () => {} : () => setCardSelected(true)}
+                clearSelection={() => setCardSelected(false)}
                 dragStart={setDragging}
                 dragEnd={tryPlayCard}
             />
