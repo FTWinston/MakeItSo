@@ -124,6 +124,8 @@ const HealthText = styled('text')(({ theme }) => ({
 
 interface Props extends TileDisplayInfo {
     onClick?: () => void;
+    onMouseUp?: () => void;
+    onDragEnd?: () => void;
     validTarget?: boolean;
 }
 
@@ -139,6 +141,8 @@ export const SystemTile: React.FC<Props> = (props) => {
         <Root
             variant="text"
             onClick={props.onClick}
+            onMouseUp={props.onMouseUp}
+            onDragEnd={props.onDragEnd}
             health={constrainedHealth}
             validTarget={props.validTarget}
             disabled={props.validTarget === false}

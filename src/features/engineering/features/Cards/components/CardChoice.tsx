@@ -52,6 +52,9 @@ const CardWrapper = styled('div')<{ selected: boolean }>(({ selected }) => ({
     padding: '0 1em',
     cursor: 'pointer',
     zIndex: selected ? 1 : undefined,
+    '&:focus > *': {
+        borderColor: 'white',
+    },
 }));
 
 const CardGeneration = styled(LinearTimer)(({ theme }) => ({
@@ -143,6 +146,7 @@ export const CardChoice: React.FC<Props> = props => {
                                     onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card.id); } }}
                                     onMouseEnter={() => props.focus(card)}
                                     onMouseLeave={() => props.focus(null)}
+                                    tabIndex={0}
                                 >
                                     <EngineeringCardStub
                                         type={card.type}

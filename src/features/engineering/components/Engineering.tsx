@@ -7,6 +7,7 @@ import { Badge } from 'src/components/Badge';
 import { Button } from 'src/components/Button';
 import { Page } from 'src/components/Page';
 import { AppBarHeight, SystemAppBar } from 'src/components/SystemAppBar';
+import { ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { EngineeringCard } from '../features/Cards';
@@ -18,8 +19,8 @@ interface Props {
     choiceCards: EngineeringCardInfo[];
     numChoices: number;
     choiceProgress?: TimeSpan;
-    log: string[];
     chooseCard: (id: number) => void;
+    playCard: (card: EngineeringCardInfo, system: ShipSystem) => void;
 }
 
 const Root = styled(Page)({
@@ -57,8 +58,6 @@ export const Engineering: React.FC<Props> = (props) => {
     
     const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
     const [cardSelected, setCardSelected] = useState(false);
-
-    const [draggingCard, setDragging] = useState<EngineeringCardInfo | null>(null);
     
     const [showChoice, setShowChoice] = useState(false);
 
@@ -66,44 +65,15 @@ export const Engineering: React.FC<Props> = (props) => {
         ? null
         : focusedCard.allowedSystems;
 
-    console.log(`isPlayingCard ${cardSelected.toString()}, has card ${(focusedCard !== null).toString()}`, allowedSystems);
+    const tryPlayCard = (system: ShipSystem) => {
+        if (focusedCard === null) {
+            return;
+        }
 
-    const systemsOrChoice = showChoice
-        ? (
-            <CardChoice
-                cards={props.choiceCards ?? []}
-                numChoices={props.numChoices}
-                focus={setFocusedCard}
-                choose={props.chooseCard}
-                progress={props.choiceProgress}
-            />
-        )
-        : (
-            <SystemTiles
-                systems={props.systems}
-                allowedTargets={allowedSystems}
-            />
-        );
-
-    const focusedCardDisplay = focusedCard === null || cardSelected
-        ? null
-        : (
-            <FocusedCardDisplay
-                type={focusedCard.type}
-                rarity={focusedCard.rarity}
-                role="presentation"
-            />
-        );
-
-    const transitionDuration = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen,
-    };
-
-
-    const tryPlayCard = (card: EngineeringCardInfo, x: number, y: number) => {
-        setDragging(null);
+        console.log(`trying to play card ${(focusedCard?.id ?? '<not found>')} on system ${system}`);
         
+        props.playCard(focusedCard, system);
+        setFocusedCard(null);
         /*
         const elements: Element[] = document.elementsFromPoint
             ? document.elementsFromPoint(x, y)
@@ -131,6 +101,43 @@ export const Engineering: React.FC<Props> = (props) => {
         */
     };
 
+    const expandSystem = (system: ShipSystem) => {
+        console.log(`ok, trying to expand system ${system}`);
+    };
+    
+    const systemsOrChoice = showChoice
+        ? (
+            <CardChoice
+                cards={props.choiceCards ?? []}
+                numChoices={props.numChoices}
+                focus={setFocusedCard}
+                choose={props.chooseCard}
+                progress={props.choiceProgress}
+            />
+        )
+        : (
+            <SystemTiles
+                systems={props.systems}
+                allowedTargets={allowedSystems}
+                tileSelected={focusedCard ? tryPlayCard : expandSystem}
+            />
+        );
+
+    const focusedCardDisplay = focusedCard === null || cardSelected
+        ? null
+        : (
+            <FocusedCardDisplay
+                type={focusedCard.type}
+                rarity={focusedCard.rarity}
+                role="presentation"
+            />
+        );
+
+    const transitionDuration = {
+        enter: theme.transitions.duration.enteringScreen,
+        exit: theme.transitions.duration.leavingScreen,
+    };
+
     return (
         <Root>
             <SystemAppBar title={t('title')}>
@@ -145,7 +152,7 @@ export const Engineering: React.FC<Props> = (props) => {
                     <AppBarButton
                         color="primary"
                         variant="outlined"
-                        onClick={() => setShowChoice(false)}
+                        onClick={() => { setShowChoice(false); setFocusedCard(null); }}
                     >
                         {t('shipSystems')}
                     </AppBarButton>
@@ -162,7 +169,7 @@ export const Engineering: React.FC<Props> = (props) => {
                         <AppBarButton
                             color="secondary"
                             variant="outlined"
-                            onClick={() => setShowChoice(true)}
+                            onClick={() => { setShowChoice(true); setFocusedCard(null); }}
                         >
                             {t('chooseCards')}
                         </AppBarButton>
@@ -178,8 +185,6 @@ export const Engineering: React.FC<Props> = (props) => {
                 selectedCard={cardSelected ? focusedCard : null}
                 selectFocusedCard={showChoice ? () => {} : () => setCardSelected(true)}
                 clearSelection={() => setCardSelected(false)}
-                dragStart={setDragging}
-                dragEnd={tryPlayCard}
             />
 
             {focusedCardDisplay}

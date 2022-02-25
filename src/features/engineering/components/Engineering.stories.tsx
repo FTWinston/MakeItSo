@@ -34,6 +34,10 @@ const Template: ComponentStory<typeof Engineering> = (args) => {
                     createCommonCard(++nextId),
                 ]);
             }}
+            playCard={(card, system) => {
+                console.log(`playing card ${card.id} on ${system}`);
+                setHandCards(handCards.filter(c => c !== card));
+            }}
             handCards={handCards}
         />
     );

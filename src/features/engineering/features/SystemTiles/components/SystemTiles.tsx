@@ -6,6 +6,7 @@ import { SystemTile } from './SystemTile';
 interface Props {
     systems: TileDisplayInfo[];
     allowedTargets: ShipSystem | null | undefined;
+    tileSelected: (system: ShipSystem) => void;
 }
 
 const Root = styled('div')({
@@ -21,16 +22,24 @@ export const SystemTiles: React.FC<Props> = props => {
     
     return (
         <Root>
-            {props.systems.map(tile => (
-                <SystemTile
-                    key={tile.system}
-                    validTarget={targets === null ? undefined : (targets === undefined ? true : (targets & tile.system) !== 0)}
-                    system={tile.system}
-                    name={tile.name}
-                    health={tile.health}
-                    effects={tile.effects}
-                />
-            ))}
+            {props.systems.map(tile => {
+                const isActiveTarget = (targets && (targets & tile.system) !== 0) ?? false;
+                const isValidTarget = targets === null ? undefined : (targets === undefined ? true : isActiveTarget);
+
+                return (
+                    <SystemTile
+                        key={tile.system}
+                        validTarget={isValidTarget}
+                        system={tile.system}
+                        name={tile.name}
+                        health={tile.health}
+                        effects={tile.effects}
+                        onClick={() => props.tileSelected(tile.system)}
+                        onMouseUp={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
+                        onDragEnd={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
+                    />
+                );
+            })}
         </Root>
     );
 };
