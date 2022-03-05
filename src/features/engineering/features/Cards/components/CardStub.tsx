@@ -93,16 +93,13 @@ export const EngineeringCardStub: React.FC<Props> = props => {
             onMouseLeave={props.onMouseLeave}
         >
             <Content>
-                <IconWrapper
-                    aria-label={t(`rarity_${props.rarity}`)}
-                    className="icon"
-                >
+                <IconWrapper className="icon" role="presentation">
                     <Icon card={props.type} />
                 </IconWrapper>
 
                 <Title>{t(`card_${props.type}_title`)}</Title>
 
-                <ScreenReaderOnly>{t(`card_${props.type}_desc`)}</ScreenReaderOnly>
+                <ScreenReaderOnly>{t(`rarity_${props.rarity}`)}. {t(`card_${props.type}_desc`)}</ScreenReaderOnly>
             </Content>
         </StubRoot>
     );

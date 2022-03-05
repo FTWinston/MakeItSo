@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { EngineeringCardInfo, EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
+import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
 
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
@@ -98,16 +99,14 @@ export const EngineeringCard: React.FC<Props> = props => {
         >
             <Header
                 avatar={(
-                    <IconWrapper
-                        aria-label={t(`rarity_${props.rarity}`)}
-                        className="icon"
-                    >
+                    <IconWrapper className="icon" role="presentation">
                         <Icon card={props.type} />
                     </IconWrapper>
                 )}
                 title={t(`card_${props.type}_title`)}
             />
             <Content sx={{ paddingTop: 0 }}>
+                <ScreenReaderOnly>{t(`rarity_${props.rarity}`)}.</ScreenReaderOnly>
                 <Description>
                     {t(`card_${props.type}_desc`)}
                 </Description>

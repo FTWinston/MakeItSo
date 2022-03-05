@@ -7,6 +7,7 @@ import { LinearTimer } from 'src/components/LinearTimer';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub } from './CardStub';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     cards: EngineeringCardInfo[];
@@ -69,6 +70,7 @@ const ChoiceMessage = styled(Typography)({
 export const exitDuration = 1000;
 
 export const CardChoice: React.FC<Props> = props => {
+    const { t } = useTranslation('engineering');
     const theme = useTheme();
 
     const transitionDuration = {
@@ -165,7 +167,7 @@ export const CardChoice: React.FC<Props> = props => {
             {prompt}
             {cardDisplay}
             <ChoiceMessage>{alertMessage}</ChoiceMessage>
-            {props.progress && <CardGeneration {...props.progress} color="secondary" />}
+            {props.progress && <CardGeneration {...props.progress} aria-label={t('progress')} color="secondary" />}
         </Root>
     );
 };

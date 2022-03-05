@@ -146,6 +146,7 @@ export const SystemTile: React.FC<Props> = (props) => {
             health={constrainedHealth}
             validTarget={props.validTarget}
             disabled={props.validTarget === false}
+            aria-label={props.name}
         >
             <SvgRoot viewBox="0 0 100 60">
                 <HealthPath
@@ -153,7 +154,7 @@ export const SystemTile: React.FC<Props> = (props) => {
                     health={constrainedHealth}
                     strokeWidth={4}
                 />
-                <NameText x="50" y="30" role="heading">{props.name}</NameText>
+                <NameText x="50" y="30" role="presentation">{props.name}</NameText>
                 
                 <HealthText x="50" y="17" aria-label={t('health')}>
                     {healthText}

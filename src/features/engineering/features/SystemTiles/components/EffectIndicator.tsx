@@ -3,6 +3,7 @@ import { EffectIcon } from './EffectIcon';
 import { CircularTimer } from 'src/components/CircularTimer';
 import { styled, useTheme } from '@mui/material/styles';
 import Zoom from '@mui/material/Zoom';
+import { useTranslation } from 'react-i18next';
 
 interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
@@ -44,6 +45,7 @@ const Background = styled('div'
 }));
 
 export const EffectIndicator: React.FC<Props> = props => {
+    const { t } = useTranslation('engineering');
     const theme = useTheme();
     
     const transitionDuration = {
@@ -57,9 +59,10 @@ export const EffectIndicator: React.FC<Props> = props => {
             timeout={transitionDuration}
             unmountOnExit
         >
-            <Background positive={props.positive}>
+            <Background positive={props.positive} role="group" aria-label={t(`effect_${props.type}`)}>
                 <ScaledIcon effect={props.type} />
                 <Timer
+                    aria-label={t('effect_duration')}
                     positive={props.positive}
                     startTime={props.startTime}
                     endTime={props.endTime}

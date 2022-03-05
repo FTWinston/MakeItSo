@@ -7,6 +7,7 @@ import { ColorName } from 'src/types/Colors';
 interface Props extends TimeSpan {
     className?: string;
     color?: ColorName;
+    'aria-label'?: string;
     size?: string | number;
 }
 
@@ -30,6 +31,7 @@ export const CircularTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<
         <CircularProgress
             ref={ref}
             variant="determinate"
+            aria-label={props['aria-label']}
             className={props.className}
             color={props.color}
             value={value}
