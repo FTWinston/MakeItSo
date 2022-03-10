@@ -11,3 +11,12 @@ export interface TileDisplayInfo extends Omit<TileInfo, 'effects'> {
     name: string;
     effects: ClientSystemStatusEffectInstance[];
 }
+
+export interface LogEvent {
+    identifier: string;
+    parameters: Record<string, string>;
+}
+
+export interface SystemInfo extends TileDisplayInfo {
+    eventLog: LogEvent[];
+}

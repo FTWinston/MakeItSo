@@ -11,10 +11,10 @@ import { ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { EngineeringCard } from '../features/Cards';
-import { SystemTiles, TileDisplayInfo } from '../features/SystemTiles';
+import { SystemTiles, SystemInfo } from '../features/SystemTiles';
 
 interface Props {
-    systems: TileDisplayInfo[];
+    systems: SystemInfo[];
     handCards: EngineeringCardInfo[];
     choiceCards: EngineeringCardInfo[];
     numChoices: number;

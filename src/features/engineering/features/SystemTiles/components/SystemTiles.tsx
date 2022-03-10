@@ -1,10 +1,14 @@
+import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
+import { useState } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { TileDisplayInfo } from '../types/TileInfo';
+import { SystemInfo } from '../types/TileInfo';
+import { SystemLog } from './SystemLog';
+import { SystemRepair } from './SystemRepair';
 import { SystemTile } from './SystemTile';
 
 interface Props {
-    systems: TileDisplayInfo[];
+    systems: SystemInfo[];
     allowedTargets: ShipSystem | null | undefined;
     tileSelected: (system: ShipSystem) => void;
 }
@@ -18,8 +22,15 @@ const Root = styled('div')({
 });
 
 export const SystemTiles: React.FC<Props> = props => {
+    const [showingDrawer, showDrawer] = useState<ShipSystem>();
     const targets = props.allowedTargets;
-    
+    const selectingTargets = targets !== null;
+    const drawerSystemInfo = props.systems.find(system => system.system === showingDrawer);
+
+    const drawerContent = drawerSystemInfo === undefined || drawerSystemInfo.health === 0
+        ? <SystemRepair system={showingDrawer ?? ShipSystem.Hull} />
+        : <SystemLog system={showingDrawer ?? ShipSystem.Hull} events={drawerSystemInfo.eventLog} />;
+
     return (
         <Root>
             {props.systems.map(tile => {
@@ -34,12 +45,19 @@ export const SystemTiles: React.FC<Props> = props => {
                         name={tile.name}
                         health={tile.health}
                         effects={tile.effects}
-                        onClick={() => props.tileSelected(tile.system)}
+                        onClick={() => selectingTargets ? props.tileSelected(tile.system) : showDrawer(tile.system)}
                         onMouseUp={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
                         onDragEnd={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
                     />
                 );
             })}
+            <Drawer
+                anchor="right"
+                open={showingDrawer !== undefined}
+                onClose={() => showDrawer(undefined)}
+            >
+                {drawerContent}
+            </Drawer>
         </Root>
     );
 };
