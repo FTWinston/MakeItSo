@@ -2,7 +2,7 @@
  * An error which can be thrown when a value does not fall within a list of possibilities which are assumed to be exhaustive.
  * As it is constructed with that value as a parameter whose type is 'never', this can help us to detect unhandled cases.
  */
-export class UnexpectedValueError extends Error {
+ export class UnexpectedValueError extends Error {
     /**
      * An error which can be thrown when a value does not fall within a list of possibilities which are assumed to be exhaustive.
      *

@@ -22,7 +22,7 @@ const ErrorMessage = styled('h1')(({ theme }) => ({
  * this component will render an error message,
  * but the rest of the app will not be affected.
  */
-export class ErrorBoundary extends Component<Props, State> {
+export class ErrorBoundary extends Component<React.PropsWithChildren<Props>, State> {
     constructor(props: Props) {
         super(props);
         this.state = { hasError: false };

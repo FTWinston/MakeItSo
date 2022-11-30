@@ -19,7 +19,7 @@ const Inner = styled('div')(({ theme }) => ({
     overflow: 'hidden',
 }));
 
-export const Page: React.FC<Props> = (props) => {
+export const Page: React.FC<React.PropsWithChildren<Props>> = (props) => {
     return (
         <Outer>
             <Inner className={props.className}>

@@ -1,4 +1,4 @@
-import '../src/assets/base.scss';
+import '../src/base.css';
 import { theme } from '../src/utils/muiTheme';
 import { ThemeProvider } from '@mui/material/styles';
 

@@ -30,7 +30,7 @@ const MenuIconImage = styled(MenuIcon)({
 
 export const AppBarHeight = '3em';
 
-export const SystemAppBar: React.FC<Props> = (props) => {
+export const SystemAppBar: React.FC<React.PropsWithChildren<Props>> = (props) => {
     const { t } = useTranslation('common');
 
     return (

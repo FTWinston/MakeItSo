@@ -1,4 +1,7 @@
 import { createTheme } from '@mui/material/styles';
+import '@fontsource/jura/400.css';
+import '@fontsource/jura/500.css';
+import '@fontsource/jura/700.css';
 
 export const theme = createTheme({
     palette: {
@@ -16,4 +19,7 @@ export const theme = createTheme({
             contrastText: 'black',
         },
     },
+    typography: {
+        fontFamily: 'Jura,sans-serif'
+    }
 });
