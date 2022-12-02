@@ -167,7 +167,7 @@ export const CardChoice: React.FC<Props> = props => {
             {prompt}
             {cardDisplay}
             <ChoiceMessage>{alertMessage}</ChoiceMessage>
-            {props.progress && <CardGeneration {...props.progress} aria-label={t('progress')} color="secondary" />}
+            {props.progress && <CardGeneration {...props.progress} aria-label={t('generation progress')} color="secondary" />}
         </Root>
     );
 };

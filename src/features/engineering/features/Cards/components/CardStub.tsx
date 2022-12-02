@@ -97,9 +97,9 @@ export const EngineeringCardStub: React.FC<Props> = props => {
                     <Icon card={props.type} />
                 </IconWrapper>
 
-                <Title>{t(`card_${props.type}_title`)}</Title>
+                <Title>{t(`card ${props.type} title`)}</Title>
 
-                <ScreenReaderOnly>{t(`rarity_${props.rarity}`)}. {t(`card_${props.type}_desc`)}</ScreenReaderOnly>
+                <ScreenReaderOnly>{t(`rarity ${props.rarity}`)}. {t(`card ${props.type} desc`)}</ScreenReaderOnly>
             </Content>
         </StubRoot>
     );

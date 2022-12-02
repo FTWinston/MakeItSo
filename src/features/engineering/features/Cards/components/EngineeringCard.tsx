@@ -103,12 +103,12 @@ export const EngineeringCard: React.FC<Props> = props => {
                         <Icon card={props.type} />
                     </IconWrapper>
                 )}
-                title={t(`card_${props.type}_title`)}
+                title={t(`card ${props.type} title`)}
             />
             <Content sx={{ paddingTop: 0 }}>
-                <ScreenReaderOnly>{t(`rarity_${props.rarity}`)}.</ScreenReaderOnly>
+                <ScreenReaderOnly>{t(`rarity ${props.rarity}`)}.</ScreenReaderOnly>
                 <Description>
-                    {t(`card_${props.type}_desc`)}
+                    {t(`card ${props.type} desc`)}
                 </Description>
             </Content>
         </CardRoot>

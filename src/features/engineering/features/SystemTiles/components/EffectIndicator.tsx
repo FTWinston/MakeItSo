@@ -59,10 +59,10 @@ export const EffectIndicator: React.FC<Props> = props => {
             timeout={transitionDuration}
             unmountOnExit
         >
-            <Background positive={props.positive} role="group" aria-label={t(`effect_${props.type}`)}>
+            <Background positive={props.positive} role="group" aria-label={t(`effect ${props.type}`)}>
                 <ScaledIcon effect={props.type} />
                 <Timer
-                    aria-label={t('effect_duration')}
+                    aria-label={t('effect duration')}
                     positive={props.positive}
                     startTime={props.startTime}
                     endTime={props.endTime}

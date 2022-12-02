@@ -154,7 +154,7 @@ export const Engineering: React.FC<Props> = (props) => {
                         variant="outlined"
                         onClick={() => { setShowChoice(false); setFocusedCard(null); }}
                     >
-                        {t('shipSystems')}
+                        {t('ship systems')}
                     </AppBarButton>
                 </Zoom>
                 <Zoom
@@ -171,7 +171,7 @@ export const Engineering: React.FC<Props> = (props) => {
                             variant="outlined"
                             onClick={() => { setShowChoice(true); setFocusedCard(null); }}
                         >
-                            {t('chooseCards')}
+                            {t('choose cards')}
                         </AppBarButton>
                     </AppBarBadge>
                 </Zoom>    

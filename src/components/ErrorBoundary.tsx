@@ -50,7 +50,7 @@ export class ErrorBoundary extends Component<React.PropsWithChildren<Props>, Sta
         // Note we can't use the more streamlined useTranslation hook since this is a class-based component not a functional component.
         return (
             <Translation>
-                {(t) => <ErrorMessage className={this.props.className}>{t('common:error')}</ErrorMessage>}
+                {(t) => <ErrorMessage className={this.props.className}>{t('error')}</ErrorMessage>}
             </Translation>
         );
     }

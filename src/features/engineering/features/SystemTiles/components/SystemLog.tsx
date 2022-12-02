@@ -12,11 +12,11 @@ export const SystemLog: React.FC<Props> = (props) => {
 
     return (
         <div>
-            <h3>{t('systemEventLog')}</h3>
+            <h3>{t('system event log')}</h3>
 
             <ul>
                 {props.events.map((event, index) => (
-                    <div key={index}>{t(event.identifier, event.parameters)}</div>
+                    <div key={index}>{t(event.identifier as any, event.parameters)}</div>
                 ))}
             </ul>
         </div>
