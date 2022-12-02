@@ -8,6 +8,7 @@ import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub } from './CardStub';
 import { useTranslation } from 'react-i18next';
+import { durationToTimeSpan } from 'src/utils/timeSpans';
 
 interface Props {
     cards: EngineeringCardInfo[];
@@ -108,9 +109,9 @@ export const CardChoice: React.FC<Props> = props => {
         []
     );
 
-    const alertMessage = cards.length === 0
-        ? 'No card choice available. Please wait...'
-        : `${props.numChoices - 1} more choices available.`;
+    const alertMessage = cards.length === 0 || props.numChoices <= 0
+        ? t('no choice cards')
+        : t('available choices', { count: props.numChoices - 1 });
 
     const prompt = cards.length === 0
         ? (
@@ -118,7 +119,7 @@ export const CardChoice: React.FC<Props> = props => {
         )
         : (
             <Prompt hide={props.cards.length === 0}>
-                Choose one:
+                {t('choose prompt')}
             </Prompt>
         );
         
@@ -162,12 +163,17 @@ export const CardChoice: React.FC<Props> = props => {
             </Cards>
         );
 
+    const progress = props.progress ?? {
+        startTime: Date.now() + durationToTimeSpan(100),
+        endTime: Date.now() + durationToTimeSpan(110),
+    }
+
     return (
         <Root>
             {prompt}
             {cardDisplay}
             <ChoiceMessage>{alertMessage}</ChoiceMessage>
-            {props.progress && <CardGeneration {...props.progress} aria-label={t('generation progress')} color="secondary" />}
+            <CardGeneration {...progress} aria-label={t('generation progress')} color="secondary" />
         </Root>
     );
 };

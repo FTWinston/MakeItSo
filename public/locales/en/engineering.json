@@ -1,9 +1,15 @@
 {
     "title": "Engineering",
-    "ship systems": "Ship Systems",
+    
     "choose cards": "Choose cards",
+    "choose prompt": "Choose one:",
     "generation progress": "Card generation progress",
+    "no choice cards": "No card choice available. Please wait...",
+    "available choices_zero": "No more choices available.",
+    "available choices_one": "{{count}} further choice available.",
+    "available choices_other": "{{count}} further choices available.",
 
+    "ship systems": "Ship Systems",
     "offline": "Offline",
     "health": "Health",
     "system event log": "System event log",

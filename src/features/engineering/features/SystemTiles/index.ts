@@ -1,3 +1,3 @@
 export { SystemTiles } from './components/SystemTiles';
 export { EffectIcon } from './components/EffectIcon';
-export type { SystemInfo } from './types/TileInfo';
+export type { LogEvent, SystemInfo } from './types/TileInfo';

@@ -1,44 +1,30 @@
 import { StoryFn } from '@storybook/react';
-import { ComponentProps, useState } from 'react';
-import { durationToTimeSpan } from 'src/utils/timeSpans';
+import { ComponentProps, useEffect, useReducer } from 'react';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCommonCard } from '../features/Cards/data/EngineeringCards';
-import { EngineeringCardInfo } from '../features/Cards';
 import { basicStoryTiles, complexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
 import { Engineering } from './Engineering';
+import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';
 
 export default {
     title: 'Engineering',
     component: Engineering,
 };
 
-let nextId = 14;
 const Template: StoryFn<ComponentProps<typeof Engineering>> = (args) => {
-    const [handCards, setHandCards] = useState<EngineeringCardInfo[]>(args.handCards);
-    const [choiceCards, setChoiceCards] = useState<EngineeringCardInfo[]>(args.choiceCards);
+    const [state, dispatch] = useReducer(engineeringTrainingReducer, args);
+
+    useEffect(() => {
+        const interval = setInterval(() => dispatch({ type: 'cleanup', currentTime: Date.now() }), 200);
+
+        return () => clearInterval(interval);
+    })
 
     return (
         <Engineering
-            {...args}
-            choiceCards={choiceCards}
-            chooseCard={id => {
-                const card = choiceCards.find(card => card.id === id);
-                console.log(`id ${id}`, card);
-                if (card) {
-                    setHandCards([...handCards, card]);
-                }
-
-                setChoiceCards([
-                    createCommonCard(++nextId),
-                    createCommonCard(++nextId),
-                    createCommonCard(++nextId),
-                ]);
-            }}
-            playCard={(card, system) => {
-                console.log(`playing card ${card.id} on ${system}`);
-                setHandCards(handCards.filter(c => c !== card));
-            }}
-            handCards={handCards}
+            {...state}
+            chooseCard={cardId => dispatch({ type: 'draw', cardId })}
+            playCard={(card, targetSystem) => dispatch({ type: 'play', cardId: card.id, targetSystem })}
         />
     );
 };
@@ -49,10 +35,6 @@ Empty.args = {
     handCards: [],
     choiceCards: [],
     numChoices: 0,
-    choiceProgress: {
-        startTime: Date.now(),
-        endTime: Date.now() + durationToTimeSpan(15),
-    },
 };
 
 export const Busy = Template.bind({});
@@ -64,9 +46,5 @@ Busy.args = {
         createCommonCard(12),
         createCommonCard(13),
     ],
-    choiceProgress: {
-        startTime: Date.now(),
-        endTime: Date.now() + durationToTimeSpan(15),
-    },
     numChoices: 3,
 };
