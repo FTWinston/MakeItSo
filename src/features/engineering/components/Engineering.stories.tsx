@@ -1,5 +1,5 @@
-import { ComponentStory } from '@storybook/react';
-import { useState } from 'react';
+import { StoryFn } from '@storybook/react';
+import { ComponentProps, useState } from 'react';
 import { durationToTimeSpan } from 'src/utils/timeSpans';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCommonCard } from '../features/Cards/data/EngineeringCards';
@@ -13,7 +13,7 @@ export default {
 };
 
 let nextId = 14;
-const Template: ComponentStory<typeof Engineering> = (args) => {
+const Template: StoryFn<ComponentProps<typeof Engineering>> = (args) => {
     const [handCards, setHandCards] = useState<EngineeringCardInfo[]>(args.handCards);
     const [choiceCards, setChoiceCards] = useState<EngineeringCardInfo[]>(args.choiceCards);
 

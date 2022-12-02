@@ -1,14 +1,15 @@
 import { SystemTile } from './SystemTile';
-import { ComponentStory } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { durationToTimeSpan } from 'src/utils/timeSpans';
+import { ComponentProps } from 'react';
 
 export default {
     title: 'Engineering/System Tiles/Tile',
     component: SystemTile,
 };
 
-const Template: ComponentStory<typeof SystemTile> = (args) => (
+const Template: StoryFn<ComponentProps<typeof SystemTile>> = (args) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '2em'}}>
         <SystemTile {...args} />
     </div>

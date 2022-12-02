@@ -1,4 +1,5 @@
-import { ComponentStory } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
+import { ComponentProps } from 'react';
 import { Dice as DiceComponent } from './Dice';
 
 export default {
@@ -6,7 +7,7 @@ export default {
     component: DiceComponent,
 };
 
-const Template: ComponentStory<typeof DiceComponent> = (args) => (
+const Template: StoryFn<ComponentProps<typeof DiceComponent>> = (args) => (
     <div style={{display: 'flex', margin: '0.5em', gap: '0.5em'}}>
         <DiceComponent {...args} />
         <DiceComponent {...args} value={1} />

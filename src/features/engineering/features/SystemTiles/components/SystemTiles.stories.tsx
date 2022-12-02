@@ -1,10 +1,11 @@
 import { SystemTiles as TilesComponent } from './SystemTiles';
-import { ComponentStory } from '@storybook/react';
+import { StoryFn } from '@storybook/react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Page } from 'src/components/Page';
 import { SystemInfo } from '../types/TileInfo';
 import { determineEndTime, durationToTimeSpan } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
+import { ComponentProps } from 'react';
 
 export default {
     title: 'Engineering/System Tiles',
@@ -12,7 +13,7 @@ export default {
     includeStories: /^[A-Z]/,
 };
 
-const Template: ComponentStory<typeof TilesComponent> = (args) => (
+const Template: StoryFn<ComponentProps<typeof TilesComponent>> = (args) => (
     <Page>
         <TilesComponent {...args} />
     </Page>
