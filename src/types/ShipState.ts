@@ -1,5 +1,8 @@
+import { EngineeringState } from 'src/features/engineering/types/EngineeringState';
+import { ShipSystem } from './ShipSystem';
 import { SystemState } from './SystemState';
 
 export interface ShipState {
-    systems: SystemState[];
+    systems: Record<ShipSystem, SystemState>;
+    engineering: EngineeringState;
 }

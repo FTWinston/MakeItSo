@@ -1,11 +1,12 @@
 import { ShipSystem } from 'src/types/ShipSystem';
+import { SystemState } from 'src/types/SystemState';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCard } from '../features/Cards';
-import { LogEvent, SystemInfo } from '../features/SystemTiles';
+import { LogEvent } from '../features/SystemTiles';
 import { ClientSystemStatusEffectInstance } from './SystemStatusEffect';
 
 export interface EngineeringState {
-    systems: SystemInfo[];
+    systemOrder: ShipSystem[];
     handCards: EngineeringCard[];
     choiceCards: EngineeringCard[];
     numChoices: number;
@@ -25,7 +26,7 @@ export type EngineeringAction = {
     handCards: EngineeringCard[];
     choiceCards: EngineeringCard[];
     numChoices: number;
-    systems: SystemInfo[];
+    systems: SystemState[];
     choiceProcess: TimeSpan | undefined;
 } | {
     type: 'play';

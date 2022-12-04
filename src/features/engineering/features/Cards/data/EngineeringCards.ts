@@ -2,6 +2,7 @@ import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { adjustHealth } from '../../../utils/systemActions';
 // import { applyEffect, adjustHealth } from '../../../common/data/server/SystemState';
 
 const onlyDamagedSystems = (ship: ShipState) => ShipSystem.Hull;
@@ -33,11 +34,14 @@ const commonCards: Array<(id: number) => EngineeringCard> = [
         description: "Restores 10% of a system's health",
         rarity: EngineeringCardRarity.Common,
         play: (ship, system) => {
+            // TODO: decide if we really want to action this like a reducer.
+            const systemState = { ...ship.systems[system] };
+            ship.systems[system] = { ...systemState };
+
             /*
-            const systemState = ship.systemInfo[system];
             applyEffect(systemState, SystemStatusEffectType.Repair);
-            adjustHealth(systemState, 10);
             */
+            adjustHealth(systemState, 10);
         },
         determineAllowedSystems: onlyDamagedSystems,
     }),

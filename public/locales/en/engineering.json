@@ -1,6 +1,13 @@
 {
     "title": "Engineering",
-    
+
+    "system 1": "Hull",
+    "system 2": "Engines",
+    "system 4": "Sensors",
+    "system 8": "Weapons",
+    "system 16": "Reactor",
+    "system 32": "Shields",
+
     "choose cards": "Choose cards",
     "choose prompt": "Choose one:",
     "generation progress": "Card generation progress",

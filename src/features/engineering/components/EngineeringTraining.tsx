@@ -1,10 +1,11 @@
 import { useEffect, useReducer } from 'react';
-import { EffectAction, EngineeringState } from '../types/EngineeringState';
+import { ShipState } from 'src/types/ShipState';
+import { EffectAction } from '../types/EngineeringState';
 import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';
 import { Engineering } from './Engineering';
 
 interface Props {
-    getInitialState: () => EngineeringState;
+    getInitialState: () => ShipState;
     getEffects: () => EffectAction[];
 }
 
@@ -33,9 +34,13 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
         return () => clearInterval(interval);
     }, [getEffects]);
 
+    const { systemOrder, ...otherState } = state.engineering;
+    const orderedSystemInfo = systemOrder.map(system => state.systems[system]);
+
     return (
         <Engineering
-            {...state}
+            {...otherState}
+            systems={orderedSystemInfo}
             chooseCard={cardId => dispatch({ type: 'draw', cardId })}
             playCard={(card, targetSystem) => dispatch({ type: 'play', cardId: card.id, targetSystem })}
         />

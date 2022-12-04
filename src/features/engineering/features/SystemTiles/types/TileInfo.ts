@@ -8,7 +8,6 @@ export interface TileInfo {
 }
 
 export interface TileDisplayInfo extends Omit<TileInfo, 'effects'> {
-    name: string;
     effects: ClientSystemStatusEffectInstance[];
 }
 

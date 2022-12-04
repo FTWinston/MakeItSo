@@ -1,5 +1,5 @@
-import { ShipSystem } from './ShipSystem';
+import { SystemInfo } from 'src/features/engineering';
 
-export interface SystemState {
-    system: ShipSystem;
+export interface SystemState extends SystemInfo {
+    power: number;
 }

@@ -2,10 +2,10 @@ import { SystemTiles as TilesComponent } from './SystemTiles';
 import { StoryFn } from '@storybook/react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Page } from 'src/components/Page';
-import { SystemInfo } from '../types/TileInfo';
 import { determineEndTime, durationToTimeSpan } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { ComponentProps } from 'react';
+import { SystemState } from 'src/types/SystemState';
 
 export default {
     title: 'Engineering/System Tiles',
@@ -19,56 +19,56 @@ const Template: StoryFn<ComponentProps<typeof TilesComponent>> = (args) => (
     </Page>
 );
 
-export const getBasicStoryTiles: () => SystemInfo[] = () => [
+export const getBasicStoryTiles: () => SystemState[] = () => [
     {
         system: ShipSystem.Hull,
         health: 100,
-        name: 'Hull',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Shields,
         health: 100,
-        name: 'Shields',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Sensors,
         health: 100,
-        name: 'Sensors',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Weapons,
         health: 100,
-        name: 'Weapons',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Engines,
         health: 100,
-        name: 'Engines',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Reactor,
         health: 100,
-        name: 'Reactor',
+        power: 100,
         effects: [],
         eventLog: [],
     },
 ];
 
-export const getComplexStoryTiles: () => SystemInfo[] = () => [
+export const getComplexStoryTiles: () => SystemState[] = () => [
     {
         system: ShipSystem.Hull,
         health: 3,
-        name: 'Hull',
+        power: 100,
         effects: [
             { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
         ],
@@ -77,7 +77,7 @@ export const getComplexStoryTiles: () => SystemInfo[] = () => [
     {
         system: ShipSystem.Shields,
         health: 62,
-        name: 'Shields',
+        power: 100,
         effects: [
             { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
             { startTime: Date.now() - durationToTimeSpan(1), endTime: determineEndTime(15), positive: false, type: SystemStatusEffectType.Overload },
@@ -88,28 +88,28 @@ export const getComplexStoryTiles: () => SystemInfo[] = () => [
     {
         system: ShipSystem.Sensors,
         health: 40,
-        name: 'Sensors',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Weapons,
         health: 97,
-        name: 'Weapons',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Engines,
         health: 81,
-        name: 'Engines',
+        power: 100,
         effects: [],
         eventLog: [],
     },
     {
         system: ShipSystem.Reactor,
         health: 15,
-        name: 'Reactor',
+        power: 100,
         effects: [],
         eventLog: [],
     },

@@ -1,6 +1,7 @@
 import { StoryFn } from '@storybook/react';
 import { ComponentProps } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { arrayToObject } from 'src/utils/arrays';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCommonCard } from '../features/Cards/data/EngineeringCards';
 import { getBasicStoryTiles, getComplexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
@@ -19,12 +20,18 @@ const Template: StoryFn<ComponentProps<typeof EngineeringTraining>> = (args) => 
 
 export const Empty = Template.bind({});
 Empty.args = {
-    getInitialState: () => ({
-        systems: getBasicStoryTiles(),
-        handCards: [],
-        choiceCards: [],
-        numChoices: 0,
-    }),
+    getInitialState: () => {
+        const systems = getBasicStoryTiles();
+        return {
+            systems: arrayToObject(systems, info => info.system),
+            engineering: {
+                systemOrder: systems.map(system => system.system),
+                handCards: [],
+                choiceCards: [],
+                numChoices: 0,
+            }
+        };
+    },
     getEffects: () => [
         {
             type: 'effect',
@@ -36,16 +43,22 @@ Empty.args = {
 
 export const Busy = Template.bind({});
 Busy.args = {
-    getInitialState: () => ({
-        systems: getComplexStoryTiles(),
-        handCards: storyCards,
-        choiceCards: [
-            createCommonCard(11),
-            createCommonCard(12),
-            createCommonCard(13),
-        ],
-        numChoices: 3,
-    }),
+    getInitialState: () => {
+        const systems = getComplexStoryTiles();
+        return {
+            systems: arrayToObject(systems, info => info.system),
+            engineering: {
+                systemOrder: systems.map(system => system.system),
+                handCards: storyCards,
+                choiceCards: [
+                    createCommonCard(11),
+                    createCommonCard(12),
+                    createCommonCard(13),
+                ],
+                numChoices: 3,
+            }
+        };
+    },
     getEffects: () => [
         {
             type: 'effect',

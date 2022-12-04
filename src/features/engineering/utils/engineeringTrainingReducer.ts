@@ -1,23 +1,30 @@
-import { durationToTimeSpan } from 'src/utils/timeSpans';
+import { ShipState } from 'src/types/ShipState';
+import { ShipSystem } from 'src/types/ShipSystem';
+import { arrayToObject } from 'src/utils/arrays';
+import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCard } from '../features/Cards';
-import { EngineeringAction, EngineeringState } from '../types/EngineeringState';
+import { EngineeringAction } from '../types/EngineeringState';
+import { adjustHealth } from './systemActions';
 
 let nextId = 14;
 
-export function engineeringTrainingReducer(state: EngineeringState, action: EngineeringAction): EngineeringState {
+export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
     switch (action.type) {
         case 'reset':
             return {
-                choiceCards: action.choiceCards,
-                handCards: action.handCards,
-                numChoices: action.numChoices,
-                systems: action.systems,
-                choiceProgress: action.choiceProcess,
+                systems: arrayToObject(action.systems, info => info.system),
+                engineering: {
+                    systemOrder: action.systems.map(system => system.system),
+                    choiceCards: action.choiceCards,
+                    handCards: action.handCards,
+                    numChoices: action.numChoices,
+                    choiceProgress: action.choiceProcess,
+                }
             };
             
         case 'play':
-            const card = state.handCards.find(card => card.id === action.cardId);
+            const card = state.engineering.handCards.find(card => card.id === action.cardId);
 
             if (!card) {
                 return state;
@@ -27,7 +34,10 @@ export function engineeringTrainingReducer(state: EngineeringState, action: Engi
                 return state;
             }
 
-            const newState = { ...state, };
+            const newState = {
+                ...state,
+                systems: { ...state.systems },
+            };
 
             if (card.play(newState, action.targetSystem) === false) {
                 return state;
@@ -35,69 +45,72 @@ export function engineeringTrainingReducer(state: EngineeringState, action: Engi
 
             return {
                 ...newState,
-                handCards: state.handCards.filter(c => c !== card),
+                engineering: {
+                    ...newState.engineering,
+                    handCards: state.engineering.handCards.filter(c => c !== card),
+                }
             }
 
         case 'draw': {
-            const card = state.choiceCards.find(card => card.id === action.cardId);
+            const card = state.engineering.choiceCards.find(card => card.id === action.cardId);
 
-            if (!card || state.numChoices <= 0) {
+            if (!card || state.engineering.numChoices <= 0) {
                 return state;
             }
 
             return {
                 ...state,
-                handCards: [...state.handCards, card],
-                choiceCards: state.numChoices > 1
-                    ? [
-                        createCard(++nextId),
-                        createCard(++nextId),
-                        createCard(++nextId),
-                    ]
-                    : [],
-                numChoices: state.numChoices - 1,
+                engineering: {
+                    ...state.engineering,
+                    handCards: [...state.engineering.handCards, card],
+                    choiceCards: state.engineering.numChoices > 1
+                        ? [
+                            createCard(++nextId),
+                            createCard(++nextId),
+                            createCard(++nextId),
+                        ]
+                        : [],
+                    numChoices: state.engineering.numChoices - 1,
+                }
             }
         }
 
-        case 'effect':
+        case 'effect': {
+            const newSystems = { ...state.systems };
+            const updatedSystem = { ...newSystems[action.system] };
+            newSystems[action.system] = updatedSystem;
+
+            if (action.healthChange) {
+                adjustHealth(updatedSystem, action.healthChange);
+            }
+
+            if (action.addEffects) {
+                updatedSystem.effects = [
+                    ...updatedSystem.effects,
+                    ...action.addEffects,
+                ];
+            }
+
+            if (action.events) {
+                updatedSystem.eventLog = [
+                    ...updatedSystem.eventLog,
+                    ...action.events,
+                ]
+            }
+
             return {
                 ...state,
-                systems: state.systems.map(system => {
-                    if (system.system !== action.system) {
-                        return system;
-                    }
-                    
-                    const updatedSystem = { ...system };
-
-                    if (action.healthChange) {
-                        updatedSystem.health = Math.max(0, updatedSystem.health + action.healthChange);
-                    }
-
-                    if (action.addEffects) {
-                        updatedSystem.effects = [
-                            ...updatedSystem.effects,
-                            ...action.addEffects,
-                        ];
-                    }
-
-                    if (action.events) {
-                        updatedSystem.eventLog = [
-                            ...updatedSystem.eventLog,
-                            ...action.events,
-                        ]
-                    }
-
-                    return updatedSystem;
-                })
+                systems: newSystems,
             };
+        }
 
         case 'cleanup': {
-            let { numChoices, choiceCards, choiceProgress } = state;
+            let { numChoices, choiceCards, choiceProgress } = state.engineering;
 
             if (!choiceProgress) {
                 choiceProgress = {
-                    startTime: Date.now(),
-                    endTime: Date.now() + durationToTimeSpan(15),
+                    startTime: getTime(),
+                    endTime: getTime() + durationToTimeSpan(15),
                 };
             }
             else if (action.currentTime >= choiceProgress.endTime) {
@@ -114,16 +127,29 @@ export function engineeringTrainingReducer(state: EngineeringState, action: Engi
                 choiceProgress = undefined;
             }
 
+            const newSystems = {} as typeof state.systems;
+            for (let [system, systemInfo] of Object.entries(state.systems)) {
+                const keepEffects = systemInfo.effects.filter(effect => effect.endTime > action.currentTime);
+
+                if (keepEffects.length !== systemInfo.effects.length) {
+                    systemInfo = {
+                        ...systemInfo,
+                        effects: keepEffects,
+                    };
+                }
+
+                newSystems[system as unknown as ShipSystem] = systemInfo;
+            }
+
             return {
                 ...state,
-                systems: state.systems
-                    .map(system => ({
-                        ...system,
-                        effects: system.effects.filter(effect => effect.endTime > action.currentTime),
-                    })),
-                numChoices,
-                choiceCards,
-                choiceProgress,
+                systems: newSystems,
+                engineering: {
+                    ...state.engineering,
+                    numChoices,
+                    choiceCards,
+                    choiceProgress,
+                }
             }
         }
 

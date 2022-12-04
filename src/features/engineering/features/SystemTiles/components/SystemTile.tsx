@@ -132,6 +132,7 @@ interface Props extends TileDisplayInfo {
 export const SystemTile: React.FC<Props> = (props) => {
     const { t } = useTranslation('engineering');
     const constrainedHealth = Math.max(0, Math.min(100, props.health));
+    const name = t(`system ${props.system}`);
 
     const healthText = constrainedHealth === 0
         ? t('offline')
@@ -146,7 +147,7 @@ export const SystemTile: React.FC<Props> = (props) => {
             health={constrainedHealth}
             validTarget={props.validTarget}
             disabled={props.validTarget === false}
-            aria-label={props.name}
+            aria-label={name}
         >
             <SvgRoot viewBox="0 0 100 60">
                 <HealthPath
@@ -154,7 +155,7 @@ export const SystemTile: React.FC<Props> = (props) => {
                     health={constrainedHealth}
                     strokeWidth={4}
                 />
-                <NameText x="50" y="30" role="presentation">{props.name}</NameText>
+                <NameText x="50" y="30" role="presentation">{name}</NameText>
                 
                 <HealthText x="50" y="17" aria-label={t('health')}>
                     {healthText}

@@ -38,6 +38,7 @@ const EmptyText = styled('div')({
     flexGrow: 1,
     textAlign: 'center',
     fontSize: '1.2em',
+    marginBottom: '1em',
 });
 
 const stubPadding = '0.1em';
