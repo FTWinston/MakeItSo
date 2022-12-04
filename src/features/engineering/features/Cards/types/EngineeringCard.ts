@@ -35,11 +35,6 @@ export interface EngineeringCardInfo {
     allowedSystems?: ShipSystem;
 }
 
-export interface EngineeringCardDisplayInfo extends EngineeringCardInfo {
-    name: string;
-    description: string;
-}
-
 export interface EngineeringCard extends EngineeringCardInfo {
     play: (ship: ShipState, system: ShipSystem) => void | false;
     determineAllowedSystems?: (ship: ShipState) => ShipSystem;

@@ -27,10 +27,14 @@ export function engineeringTrainingReducer(state: EngineeringState, action: Engi
                 return state;
             }
 
-            // TODO: apply card's effect
+            const newState = { ...state, };
+
+            if (card.play(newState, action.targetSystem) === false) {
+                return state;
+            }
 
             return {
-                ...state,
+                ...newState,
                 handCards: state.handCards.filter(c => c !== card),
             }
 

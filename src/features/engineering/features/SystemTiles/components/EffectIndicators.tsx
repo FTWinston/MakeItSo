@@ -27,7 +27,7 @@ export const EffectIndicators: React.FC<Props> = props => {
         <Root className={props.className}>
             {props.effects.map((effect, index) => (
                 <Item
-                    key={index}
+                    key={effect.type}
                     style={{ left: `calc((100% - ${indicatorSize}) * ${index + 0.5} / ${props.effects.length})` }}
                 >
                     <EffectIndicator {...effect} />

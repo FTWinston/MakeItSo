@@ -74,7 +74,7 @@ const Description = styled(Typography)({
     fontSize: '0.65em',
 });
 
-export const EngineeringCard: React.FC<Props> = props => {
+export const CardDisplay: React.FC<Props> = props => {
     const { t } = useTranslation('engineering');
     
     let color: MuiColor;

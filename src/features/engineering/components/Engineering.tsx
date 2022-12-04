@@ -10,7 +10,7 @@ import { AppBarHeight, SystemAppBar } from 'src/components/SystemAppBar';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
-import { EngineeringCard } from '../features/Cards';
+import { CardDisplay } from '../features/Cards';
 import { SystemTiles, SystemInfo } from '../features/SystemTiles';
 
 interface Props {
@@ -40,7 +40,7 @@ const AppBarBadge = styled(Badge)<BadgeProps>({
     },
 });
 
-const FocusedCardDisplay = styled(EngineeringCard)({
+const FocusedCardDisplay = styled(CardDisplay)({
     pointerEvents: 'none',
     zIndex: 2,
     fontSize: '1.5em',

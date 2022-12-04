@@ -19,7 +19,7 @@ const Template: StoryFn<ComponentProps<typeof TilesComponent>> = (args) => (
     </Page>
 );
 
-export const basicStoryTiles: SystemInfo[] = [
+export const getBasicStoryTiles: () => SystemInfo[] = () => [
     {
         system: ShipSystem.Hull,
         health: 100,
@@ -64,7 +64,7 @@ export const basicStoryTiles: SystemInfo[] = [
     },
 ];
 
-export const complexStoryTiles: SystemInfo[] = [
+export const getComplexStoryTiles: () => SystemInfo[] = () => [
     {
         system: ShipSystem.Hull,
         health: 3,
@@ -81,7 +81,7 @@ export const complexStoryTiles: SystemInfo[] = [
         effects: [
             { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
             { startTime: Date.now() - durationToTimeSpan(1), endTime: determineEndTime(15), positive: false, type: SystemStatusEffectType.Overload },
-            { startTime: Date.now() - durationToTimeSpan(6), endTime: determineEndTime(8), positive: true, type: SystemStatusEffectType.Boost1 },
+            { startTime: Date.now() - durationToTimeSpan(6), endTime: determineEndTime(8), positive: true, type: SystemStatusEffectType.Boost2 },
         ],
         eventLog: [],
     },
@@ -117,11 +117,11 @@ export const complexStoryTiles: SystemInfo[] = [
 
 export const BasicTiles = Template.bind({});
 BasicTiles.args = {
-    systems: basicStoryTiles,
+    systems: getBasicStoryTiles(),
 };
 
 export const ComplexTiles = Template.bind({});
 ComplexTiles.args = {
-    systems: complexStoryTiles,
+    systems: getComplexStoryTiles(),
 };
 

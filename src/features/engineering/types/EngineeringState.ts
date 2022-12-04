@@ -1,17 +1,29 @@
-import { ComponentProps } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
-import type { Engineering } from '../components/Engineering';
-import { EngineeringCardInfo } from '../features/Cards';
+import { EngineeringCard } from '../features/Cards';
 import { LogEvent, SystemInfo } from '../features/SystemTiles';
 import { ClientSystemStatusEffectInstance } from './SystemStatusEffect';
 
-export type EngineeringState = Omit<ComponentProps<typeof Engineering>, 'chooseCard' | 'playCard'>;
+export interface EngineeringState {
+    systems: SystemInfo[];
+    handCards: EngineeringCard[];
+    choiceCards: EngineeringCard[];
+    numChoices: number;
+    choiceProgress?: TimeSpan;
+}
+
+export type EffectAction = {
+    type: 'effect';
+    system: ShipSystem;
+    healthChange?: number;
+    addEffects?: ClientSystemStatusEffectInstance[];
+    events?: LogEvent[];
+}
 
 export type EngineeringAction = {
     type: 'reset';
-    handCards: EngineeringCardInfo[];
-    choiceCards: EngineeringCardInfo[];
+    handCards: EngineeringCard[];
+    choiceCards: EngineeringCard[];
     numChoices: number;
     systems: SystemInfo[];
     choiceProcess: TimeSpan | undefined;
@@ -23,12 +35,6 @@ export type EngineeringAction = {
     type: 'draw';
     cardId: number;
 } | {
-    type: 'effect';
-    system: ShipSystem;
-    healthChange?: number;
-    addEffects?: ClientSystemStatusEffectInstance[];
-    events?: LogEvent[];
-} | {
     type: 'cleanup';
     currentTime: number;
-}
+} | EffectAction;

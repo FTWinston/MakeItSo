@@ -1,10 +1,10 @@
 import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } from '../data/EngineeringCards';
-import { EngineeringCard } from './EngineeringCard';
+import { CardDisplay } from './CardDisplay';
 import { EngineeringCardStub, stubHeight } from './CardStub';
 
 export default {
     title: 'Engineering/Cards/Card Stubs',
-    Component: EngineeringCard,
+    Component: CardDisplay,
 };
 
 export const CardStubs = () => (

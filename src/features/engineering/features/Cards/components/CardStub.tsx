@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { EngineeringCardInfo, EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
-import { cardWidth } from './EngineeringCard';
+import { cardWidth } from './CardDisplay';
 import CardContent from '@mui/material/CardContent';
 import { Typography } from 'src/components/Typography';
 import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
