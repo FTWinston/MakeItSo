@@ -11,6 +11,11 @@ const onlyDamagedSystems = (ship: ShipState) =>
         .filter(system => system.health < maxSystemHealth)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
 
+const onlyOnlineSystems = (ship: ShipState) =>
+    Object.values(ship.systems)
+        .filter(system => system.health > 0)
+        .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
+
 const commonCards: Array<(id: number) => EngineeringCard> = [
     id => ({
         id,
@@ -20,6 +25,7 @@ const commonCards: Array<(id: number) => EngineeringCard> = [
             const systemState = ship.systems[system];
             applyEffect(systemState, SystemStatusEffectType.Boost1);
         },
+        determineAllowedSystems: onlyOnlineSystems,
     }),
 
     id => ({
@@ -100,6 +106,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
             adjustHealth(systemState, 75);
             applyEffect(systemState, SystemStatusEffectType.Offline);
         },
+        determineAllowedSystems: onlyDamagedSystems,
     }),
 
     id => ({
@@ -110,6 +117,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
             const systemState = ship.systems[system];
             applyEffect(systemState, SystemStatusEffectType.HotSwap);
         },
+        determineAllowedSystems: onlyDamagedSystems,
     }),
 ];
 
@@ -122,6 +130,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
             const systemState = ship.systems[system];
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
+        determineAllowedSystems: onlyOnlineSystems,
     }),
 
     id => ({
@@ -200,6 +209,7 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
             const systemState = ship.systems[system];
             applyEffect(systemState, SystemStatusEffectType.Overload);
         },
+        determineAllowedSystems: onlyOnlineSystems,
     }),
     
     id => ({
@@ -236,6 +246,7 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
                 applyEffect(adjacentSystem, SystemStatusEffectType.Damage);
             }
         },
+        determineAllowedSystems: onlyOnlineSystems,
     }),
 
     id => ({
@@ -307,7 +318,7 @@ export function createCards(ids: number[]): EngineeringCard[] {
 
     for (const id of ids) {
         let newCard: EngineeringCard;
-        
+
         do {
             newCard = createCard(id);
         } while (results.some(card => card.type === newCard.type));
