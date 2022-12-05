@@ -124,10 +124,8 @@ for (const effect of allEffects) {
     effects.set(effect.type, effect);
 }
 
-export function createEffect(effect: SystemStatusEffectType): SystemStatusEffectInstance {
+export function createEffect(effect: SystemStatusEffectType, startTime = getTime()): SystemStatusEffectInstance {
     const effectData =  effects.get(effect)!;
-
-    const startTime = getTime();
 
     return {
         startTime,

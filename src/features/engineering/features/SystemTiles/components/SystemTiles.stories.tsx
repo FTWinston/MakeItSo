@@ -2,10 +2,11 @@ import { SystemTiles as TilesComponent } from './SystemTiles';
 import { StoryFn } from '@storybook/react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Page } from 'src/components/Page';
-import { determineEndTime, durationToTimeSpan } from 'src/utils/timeSpans';
+import { determineEndTime, durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { ComponentProps } from 'react';
 import { SystemState } from 'src/types/SystemState';
+import { createEffect } from 'src/features/engineering/utils/SystemStatusEffects';
 
 export default {
     title: 'Engineering/System Tiles',
@@ -70,7 +71,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         health: 3,
         power: 100,
         effects: [
-            { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
+            createEffect(SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
         ],
         eventLog: [],
     },
@@ -79,9 +80,9 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         health: 62,
         power: 100,
         effects: [
-            { startTime: Date.now() - durationToTimeSpan(10), endTime: determineEndTime(5), positive: true, type: SystemStatusEffectType.Boost1 },
-            { startTime: Date.now() - durationToTimeSpan(1), endTime: determineEndTime(15), positive: false, type: SystemStatusEffectType.Overload },
-            { startTime: Date.now() - durationToTimeSpan(6), endTime: determineEndTime(8), positive: true, type: SystemStatusEffectType.Boost2 },
+            createEffect(SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
+            createEffect(SystemStatusEffectType.Overload, getTime() - durationToTimeSpan(1)),
+            createEffect(SystemStatusEffectType.Boost2, getTime() - durationToTimeSpan(6)),
         ],
         eventLog: [],
     },
