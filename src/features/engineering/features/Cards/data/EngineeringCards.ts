@@ -301,3 +301,19 @@ export function createCard(id: number): EngineeringCard {
         return createEpicCard(id);
     }
 }
+
+export function createCards(ids: number[]): EngineeringCard[] {
+    const results: EngineeringCard[] = [];
+
+    for (const id of ids) {
+        let newCard: EngineeringCard;
+        
+        do {
+            newCard = createCard(id);
+        } while (results.some(card => card.type === newCard.type));
+
+        results.push(newCard);
+    }
+
+    return results;
+}

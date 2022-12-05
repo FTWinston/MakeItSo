@@ -2,7 +2,7 @@ import { ShipState } from 'src/types/ShipState';
 import { arrayToObject } from 'src/utils/arrays';
 import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { createCard } from '../features/Cards';
+import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
 import { adjustHealth, removeExpiredEffects } from './systemActions';
 
@@ -57,13 +57,9 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 card.allowedSystems = card.determineAllowedSystems(state);
             }
 
-            if (state.engineering.numChoices > 1) {
+            if (state.engineering.numChoices > 0) {
                 state.engineering.choiceCards = state.engineering.numChoices > 1
-                    ? [
-                        createCard(++nextId),
-                        createCard(++nextId),
-                        createCard(++nextId),
-                    ]
+                    ? createCards([nextId++, nextId++, nextId++])
                     : [];
 
                 state.engineering.numChoices --;
@@ -91,26 +87,20 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
         }
 
         case 'tick': {
-            let { numChoices, choiceCards, choiceProgress } = state.engineering;
-
-            if (!choiceProgress) {
-                choiceProgress = {
+            if (!state.engineering.choiceProgress) {
+                state.engineering.choiceProgress = {
                     startTime: getTime(),
                     endTime: getTime() + durationToTimeSpan(15),
                 };
             }
-            else if (action.currentTime >= choiceProgress.endTime) {
-                numChoices = Math.min(9, numChoices + 1);
+            else if (action.currentTime >= state.engineering.choiceProgress.endTime) {
+                state.engineering.numChoices = Math.min(9, state.engineering.numChoices + 1);
                 
-                if (choiceCards.length === 0) {
-                    choiceCards = [
-                        createCard(++nextId),
-                        createCard(++nextId),
-                        createCard(++nextId),
-                    ];
+                if (state.engineering.choiceCards.length === 0) {
+                    state.engineering.choiceCards = createCards([nextId++, nextId++, nextId++]);
                 }
 
-                choiceProgress = undefined;
+                state.engineering.choiceProgress = undefined;
             }
 
             for (const system of Object.values(state.systems)) {

@@ -3,7 +3,7 @@ import { ComponentProps } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { arrayToObject } from 'src/utils/arrays';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
-import { createCommonCard } from '../features/Cards/data/EngineeringCards';
+import { createCards } from '../features/Cards/data/EngineeringCards';
 import { getBasicStoryTiles, getComplexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
 import { EffectAction } from '../types/EngineeringState';
 import { Engineering } from './Engineering';
@@ -50,11 +50,7 @@ Busy.args = {
             engineering: {
                 systemOrder: systems.map(system => system.system),
                 handCards: storyCards,
-                choiceCards: [
-                    createCommonCard(11),
-                    createCommonCard(12),
-                    createCommonCard(13),
-                ],
+                choiceCards: createCards([11, 12, 13]),
                 numChoices: 3,
             }
         };
