@@ -7,6 +7,8 @@ export enum ShipSystem {
     Shields = 32,
 }
 
+export const allSystems: ShipSystem = ShipSystem.Hull | ShipSystem.Engines | ShipSystem.Sensors | ShipSystem.Weapons | ShipSystem.Reactor | ShipSystem.Shields;
+
 export enum CrewStation {
     Helm = ShipSystem.Engines,
     Sensors = ShipSystem.Sensors,

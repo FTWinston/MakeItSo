@@ -9,7 +9,7 @@ import { SystemTile } from './SystemTile';
 
 interface Props {
     systems: ClientSystemInfo[];
-    allowedTargets: ShipSystem | null | undefined;
+    allowedTargets: ShipSystem | null;
     tileSelected: (system: ShipSystem) => void;
 }
 
@@ -23,8 +23,8 @@ const Root = styled('div')({
 
 export const SystemTiles: React.FC<Props> = props => {
     const [showingDrawer, showDrawer] = useState<ShipSystem>();
-    const targets = props.allowedTargets;
-    const selectingTargets = targets !== null;
+    const { allowedTargets } = props;
+    const selectingTarget = allowedTargets !== null;
     const drawerSystemInfo = props.systems.find(system => system.system === showingDrawer);
 
     const drawerContent = drawerSystemInfo === undefined || drawerSystemInfo.health === 0
@@ -34,18 +34,23 @@ export const SystemTiles: React.FC<Props> = props => {
     return (
         <Root>
             {props.systems.map(tile => {
-                const isActiveTarget = (targets && (targets & tile.system) !== 0) ?? false;
-                const isValidTarget = targets === null ? undefined : (targets === undefined ? true : isActiveTarget);
+                const isActiveTarget = selectingTarget && (allowedTargets & tile.system) !== 0;
 
                 return (
                     <SystemTile
                         key={tile.system}
-                        validTarget={isValidTarget}
+                        validTarget={selectingTarget ? isActiveTarget : undefined}
                         system={tile.system}
                         health={tile.health}
                         effects={tile.effects}
-                        onClick={() => selectingTargets ? props.tileSelected(tile.system) : showDrawer(tile.system)}
-                        onMouseUp={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
+                        onClick={() => {
+                            if (isActiveTarget) {
+                                props.tileSelected(tile.system);
+                            } else if (!selectingTarget) {
+                                showDrawer(tile.system);
+                            }
+                        }}
+                        //onMouseUp={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
                         onDragEnd={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
                     />
                 );

@@ -7,7 +7,7 @@ import { Badge } from 'src/components/Badge';
 import { Button } from 'src/components/Button';
 import { Page } from 'src/components/Page';
 import { AppBarHeight, SystemAppBar } from 'src/components/SystemAppBar';
-import { ShipSystem } from 'src/types/ShipSystem';
+import { allSystems, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { CardDisplay } from '../features/Cards';
@@ -61,9 +61,11 @@ export const Engineering: React.FC<Props> = (props) => {
     
     const [showChoice, setShowChoice] = useState(false);
 
-    const allowedSystems = !cardSelected || focusedCard === null
+    const validTargetSystems = !cardSelected || focusedCard === null
         ? null
-        : focusedCard.allowedSystems;
+        : focusedCard.allowedSystems === undefined
+            ? allSystems
+            : focusedCard.allowedSystems;
 
     const tryPlayCard = (system: ShipSystem) => {
         if (focusedCard === null) {
@@ -118,7 +120,7 @@ export const Engineering: React.FC<Props> = (props) => {
         : (
             <SystemTiles
                 systems={props.systems}
-                allowedTargets={allowedSystems}
+                allowedTargets={validTargetSystems}
                 tileSelected={focusedCard ? tryPlayCard : expandSystem}
             />
         );
