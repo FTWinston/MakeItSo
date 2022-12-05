@@ -2,13 +2,13 @@ import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { SystemInfo } from '../types/TileInfo';
+import { ClientSystemInfo } from '../types/TileInfo';
 import { SystemLog } from './SystemLog';
 import { SystemRepair } from './SystemRepair';
 import { SystemTile } from './SystemTile';
 
 interface Props {
-    systems: SystemInfo[];
+    systems: ClientSystemInfo[];
     allowedTargets: ShipSystem | null | undefined;
     tileSelected: (system: ShipSystem) => void;
 }
@@ -42,7 +42,6 @@ export const SystemTiles: React.FC<Props> = props => {
                         key={tile.system}
                         validTarget={isValidTarget}
                         system={tile.system}
-                        name={tile.name}
                         health={tile.health}
                         effects={tile.effects}
                         onClick={() => selectingTargets ? props.tileSelected(tile.system) : showDrawer(tile.system)}

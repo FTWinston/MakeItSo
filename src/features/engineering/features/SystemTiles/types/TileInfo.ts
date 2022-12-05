@@ -16,6 +16,10 @@ export interface LogEvent {
     parameters: Record<string, string>;
 }
 
-export interface SystemInfo extends TileDisplayInfo {
+type SystemEvents = {
     eventLog: LogEvent[];
-}
+};
+
+export type ClientSystemInfo = TileDisplayInfo & SystemEvents;
+
+export type SystemInfo = TileInfo & SystemEvents;

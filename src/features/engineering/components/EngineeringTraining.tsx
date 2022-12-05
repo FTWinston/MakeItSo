@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { useEffect, useReducer } from 'react';
 import { ShipState } from 'src/types/ShipState';
 import { EffectAction } from '../types/EngineeringState';
@@ -12,7 +13,7 @@ interface Props {
 export const EngineeringTraining: React.FC<Props> = (props) => {
     const { getEffects, getInitialState } = props;
 
-    const [state, dispatch] = useReducer(engineeringTrainingReducer, undefined, getInitialState);
+    const [state, dispatch] = useReducer(produce(engineeringTrainingReducer), undefined, getInitialState);
 
     // Run cleanup action at a regular interval.
     useEffect(() => {

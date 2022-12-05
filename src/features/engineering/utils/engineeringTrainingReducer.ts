@@ -1,11 +1,10 @@
 import { ShipState } from 'src/types/ShipState';
-import { ShipSystem } from 'src/types/ShipSystem';
 import { arrayToObject } from 'src/utils/arrays';
 import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCard } from '../features/Cards';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth } from './systemActions';
+import { adjustHealth, removeExpiredEffects } from './systemActions';
 
 let nextId = 14;
 
@@ -34,22 +33,16 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 return state;
             }
 
-            const newState = {
-                ...state,
-                systems: { ...state.systems },
-            };
-
-            if (card.play(newState, action.targetSystem) === false) {
+            if (card.play(state, action.targetSystem) === false) {
                 return state;
             }
 
-            return {
-                ...newState,
-                engineering: {
-                    ...newState.engineering,
-                    handCards: state.engineering.handCards.filter(c => c !== card),
-                }
+            const index = state.engineering.handCards.indexOf(card);
+            if (index !== -1) {
+                state.engineering.handCards.splice(index, 1);
             }
+            
+            return state;
 
         case 'draw': {
             const card = state.engineering.choiceCards.find(card => card.id === action.cardId);
@@ -58,50 +51,39 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 return state;
             }
 
-            return {
-                ...state,
-                engineering: {
-                    ...state.engineering,
-                    handCards: [...state.engineering.handCards, card],
-                    choiceCards: state.engineering.numChoices > 1
-                        ? [
-                            createCard(++nextId),
-                            createCard(++nextId),
-                            createCard(++nextId),
-                        ]
-                        : [],
-                    numChoices: state.engineering.numChoices - 1,
-                }
+            state.engineering.handCards.push(card);
+
+            if (state.engineering.numChoices > 1) {
+                state.engineering.choiceCards = state.engineering.numChoices > 1
+                    ? [
+                        createCard(++nextId),
+                        createCard(++nextId),
+                        createCard(++nextId),
+                    ]
+                    : [];
+
+                state.engineering.numChoices --;
             }
+
+            return state;
         }
 
         case 'effect': {
-            const newSystems = { ...state.systems };
-            const updatedSystem = { ...newSystems[action.system] };
-            newSystems[action.system] = updatedSystem;
+            const affectedSystem = state.systems[action.system];
 
             if (action.healthChange) {
-                adjustHealth(updatedSystem, action.healthChange);
+                adjustHealth(affectedSystem, action.healthChange);
             }
 
             if (action.addEffects) {
-                updatedSystem.effects = [
-                    ...updatedSystem.effects,
-                    ...action.addEffects,
-                ];
+                affectedSystem.effects.push(...action.addEffects);
             }
 
             if (action.events) {
-                updatedSystem.eventLog = [
-                    ...updatedSystem.eventLog,
-                    ...action.events,
-                ]
+                affectedSystem.eventLog.push(...action.events);
             }
 
-            return {
-                ...state,
-                systems: newSystems,
-            };
+            return state;
         }
 
         case 'cleanup': {
@@ -127,30 +109,11 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 choiceProgress = undefined;
             }
 
-            const newSystems = {} as typeof state.systems;
-            for (let [system, systemInfo] of Object.entries(state.systems)) {
-                const keepEffects = systemInfo.effects.filter(effect => effect.endTime > action.currentTime);
-
-                if (keepEffects.length !== systemInfo.effects.length) {
-                    systemInfo = {
-                        ...systemInfo,
-                        effects: keepEffects,
-                    };
-                }
-
-                newSystems[system as unknown as ShipSystem] = systemInfo;
+            for (const system of Object.values(state.systems)) {
+                removeExpiredEffects(system, action.currentTime);
             }
 
-            return {
-                ...state,
-                systems: newSystems,
-                engineering: {
-                    ...state.engineering,
-                    numChoices,
-                    choiceCards,
-                    choiceProgress,
-                }
-            }
+            return state;
         }
 
         default:

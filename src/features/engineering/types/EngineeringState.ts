@@ -3,7 +3,7 @@ import { SystemState } from 'src/types/SystemState';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCard } from '../features/Cards';
 import { LogEvent } from '../features/SystemTiles';
-import { ClientSystemStatusEffectInstance } from './SystemStatusEffect';
+import { SystemStatusEffectInstance } from './SystemStatusEffect';
 
 export interface EngineeringState {
     systemOrder: ShipSystem[];
@@ -17,7 +17,7 @@ export type EffectAction = {
     type: 'effect';
     system: ShipSystem;
     healthChange?: number;
-    addEffects?: ClientSystemStatusEffectInstance[];
+    addEffects?: SystemStatusEffectInstance[];
     events?: LogEvent[];
 }
 

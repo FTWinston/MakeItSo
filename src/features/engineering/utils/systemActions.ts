@@ -7,7 +7,7 @@ export function adjustPower(system: SystemState, adjustment: number) {
     system.power += adjustment;
 }
 
-const maxSystemHealth = 100;
+export const maxSystemHealth = 100;
 
 export function adjustHealth(system: SystemState, adjustment: number) {
     system.health = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
@@ -19,11 +19,7 @@ export function applyEffect(system: SystemState, effect: SystemStatusEffectType)
     effectInstance.apply(system);
 }
 
-/*
-// TODO: this doesn't exactly sit with a reducer state.
-export function removeExpiredEffects(systemState: SystemState) {
-    const currentTime = getTime();
-        
+export function removeExpiredEffects(systemState: SystemState, currentTime = getTime()) {
     const filteredEffects = systemState.effects.filter(effect => {
         if (hasCompleted(effect, currentTime)) {
             effect.remove(systemState, false);
@@ -37,4 +33,3 @@ export function removeExpiredEffects(systemState: SystemState) {
         systemState.effects = filteredEffects;
     }
 }
-*/
