@@ -36,6 +36,6 @@ export type EngineeringAction = {
     type: 'draw';
     cardId: number;
 } | {
-    type: 'cleanup';
+    type: 'tick';
     currentTime: number;
 } | EffectAction;

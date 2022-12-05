@@ -17,7 +17,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
 
     // Run cleanup action at a regular interval.
     useEffect(() => {
-        const interval = setInterval(() => dispatch({ type: 'cleanup', currentTime: Date.now() }), 200);
+        const interval = setInterval(() => dispatch({ type: 'tick', currentTime: Date.now() }), 200);
 
         return () => clearInterval(interval);
     });

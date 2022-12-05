@@ -4,6 +4,7 @@ import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { adjustHealth, applyEffect, maxSystemHealth } from '../../../utils/systemActions';
 import { getRandomInt } from 'src/utils/random';
+import { SystemState } from 'src/types/SystemState';
 
 const onlyDamagedSystems = (ship: ShipState) =>
     Object.values(ship.systems)
@@ -146,7 +147,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
                 return false;
             }
 
-            const secondIndex = firstIndex + 1;
+            const secondIndex = firstIndex + 2;
 
             const firstSystem = systemOrder[firstIndex];
             const secondSystem = systemOrder[secondIndex];
@@ -161,7 +162,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
             systemOrder[secondIndex] = firstSystem;
         },
         determineAllowedSystems: ship => ship.engineering.systemOrder
-            .slice(0, ship.engineering.systemOrder.length - 1)
+            .slice(0, ship.engineering.systemOrder.length - 2)
             .reduce((prev, current) => prev | current, 0 as ShipSystem),
     }),
 
@@ -212,20 +213,27 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
             const systemOrder = ship.engineering.systemOrder;
             const index = systemOrder.indexOf(system);
 
-            if (index > 0) {
-                const prevSystem = systemOrder[index - 1];
-                const prevSystemState = ship.systems[prevSystem];
-                
-                adjustHealth(prevSystemState, 20);
-                applyEffect(prevSystemState, SystemStatusEffectType.Damage);
+            const adjacentSystems: SystemState[] = [];
+            if (index > 1) {
+                const adjacentSystem = systemOrder[index - 2];
+                adjacentSystems.push(ship.systems[adjacentSystem]);
             }
-            
             if (index < systemOrder.length - 1) {
-                const nextSystem = systemOrder[index + 1];
-                const nextSystemState = ship.systems[nextSystem];
-                
-                adjustHealth(nextSystemState, 20);
-                applyEffect(nextSystemState, SystemStatusEffectType.Damage);
+                const adjacentSystem = systemOrder[index + 2];
+                adjacentSystems.push(ship.systems[adjacentSystem]);
+            }
+            if (index % 2 === 0) {
+                const adjacentSystem = systemOrder[index + 1];
+                adjacentSystems.push(ship.systems[adjacentSystem]);
+            }
+            else {
+                const adjacentSystem = systemOrder[index - 1];
+                adjacentSystems.push(ship.systems[adjacentSystem]);
+            }
+
+            for (const adjacentSystem of adjacentSystems) {
+                adjustHealth(adjacentSystem, 20);
+                applyEffect(adjacentSystem, SystemStatusEffectType.Damage);
             }
         },
     }),

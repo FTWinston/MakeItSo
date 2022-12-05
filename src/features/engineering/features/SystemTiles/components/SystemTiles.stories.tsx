@@ -125,4 +125,3 @@ export const ComplexTiles = Template.bind({});
 ComplexTiles.args = {
     systems: getComplexStoryTiles(),
 };
-

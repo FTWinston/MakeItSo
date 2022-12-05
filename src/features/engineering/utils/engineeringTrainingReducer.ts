@@ -53,6 +53,10 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
             state.engineering.handCards.push(card);
 
+            if (card.determineAllowedSystems) {
+                card.allowedSystems = card.determineAllowedSystems(state);
+            }
+
             if (state.engineering.numChoices > 1) {
                 state.engineering.choiceCards = state.engineering.numChoices > 1
                     ? [
@@ -86,7 +90,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
             return state;
         }
 
-        case 'cleanup': {
+        case 'tick': {
             let { numChoices, choiceCards, choiceProgress } = state.engineering;
 
             if (!choiceProgress) {
@@ -111,6 +115,15 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
             for (const system of Object.values(state.systems)) {
                 removeExpiredEffects(system, action.currentTime);
+            }
+
+            for (const card of state.engineering.handCards) {
+                if (card.determineAllowedSystems) {
+                    const newAllowedSystems = card.determineAllowedSystems(state);
+                    if (newAllowedSystems !== card.allowedSystems) {
+                        card.allowedSystems = newAllowedSystems;
+                    }
+                }
             }
 
             return state;
