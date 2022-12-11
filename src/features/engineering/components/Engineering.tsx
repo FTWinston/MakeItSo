@@ -1,10 +1,10 @@
-import type { BadgeProps } from '@mui/material/Badge/Badge';
-import { styled, useTheme } from '@mui/material/styles';
-import Zoom from '@mui/material/Zoom';
-import { useState } from 'react';
+import EngineeringIcon from '@mui/icons-material/Engineering';
+import { styled } from '@mui/material/styles';
+import { Tab } from 'src/components/Tab';
+import { Tabs } from 'src/components/Tabs';
+import { ComponentProps, useLayoutEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Badge } from 'src/components/Badge';
-import { Button } from 'src/components/Button';
 import { Page } from 'src/components/Page';
 import { AppBarHeight, SystemAppBar } from 'src/components/SystemAppBar';
 import { allSystems, ShipSystem } from 'src/types/ShipSystem';
@@ -12,6 +12,7 @@ import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
+import Box from '@mui/material/Box';
 
 interface Props {
     systems: ClientSystemInfo[];
@@ -28,15 +29,13 @@ const Root = styled(Page)({
     gridTemplateRows: `${AppBarHeight} 1fr ${stubHeight}`,
 });
 
-const AppBarButton = styled(Button)({
-    padding: '0.15em 0.65em',
+const AppBarTab = styled(Tab)<ComponentProps<typeof Tab>>({
+    marginTop: '4px',
 });
 
-const AppBarBadge = styled(Badge)<BadgeProps>({
-    position: 'absolute',
-    right: '0.75em',
+const AppBarBadge = styled(Badge)<ComponentProps<typeof Badge>>({
     '& .MuiBadge-badge': {
-        top: '1.95em',
+        right: '-0.55em',
     },
 });
 
@@ -54,12 +53,11 @@ const FocusedCardDisplay = styled(CardDisplay)({
 
 export const Engineering: React.FC<Props> = (props) => {
     const { t } = useTranslation('engineering');
-    const theme = useTheme();
     
     const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
     const [cardSelected, setCardSelected] = useState(false);
     
-    const [showChoice, setShowChoice] = useState(false);
+    const [contentTab, setContentTab] = useState<'systems' | 'draw'>('systems');
 
     const validTargetSystems = !cardSelected || focusedCard === null
         ? null
@@ -106,8 +104,10 @@ export const Engineering: React.FC<Props> = (props) => {
     const expandSystem = (system: ShipSystem) => {
         console.log(`ok, trying to expand system ${system}`);
     };
+
+    useLayoutEffect(() => setFocusedCard(null), [contentTab]);
     
-    const systemsOrChoice = showChoice
+    const systemsOrChoice = contentTab === 'draw'
         ? (
             <CardChoice
                 cards={props.choiceCards ?? []}
@@ -135,48 +135,29 @@ export const Engineering: React.FC<Props> = (props) => {
             />
         );
 
-    const transitionDuration = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen,
-    };
-
     return (
         <Root>
-            <SystemAppBar title={t('title')}>
-                <Zoom
-                    in={showChoice}
-                    timeout={transitionDuration}
-                    style={{
-                        transitionDelay: `${showChoice ? transitionDuration.exit : 0}ms`,
-                    }}
-                    unmountOnExit
+            <SystemAppBar>
+                <EngineeringIcon
+                    fontSize="large"
+                    titleAccess={t('title')}
+                    role="img"
+                    color="disabled"
+                />
+                <Box sx={{flexGrow: 1}} />
+
+                <Tabs
+                    value={contentTab}
+                    onChange={(_e, newTab) => setContentTab(newTab)}
                 >
-                    <AppBarButton
-                        color="primary"
-                        variant="outlined"
-                        onClick={() => { setShowChoice(false); setFocusedCard(null); }}
-                    >
-                        {t('ship systems')}
-                    </AppBarButton>
-                </Zoom>
-                <Zoom
-                    in={!showChoice}
-                    timeout={transitionDuration}
-                    style={{
-                        transitionDelay: `${!showChoice ? transitionDuration.exit : 0}ms`,
-                    }}
-                    unmountOnExit
-                >
-                    <AppBarBadge badgeContent={props.numChoices} color="secondary">
-                        <AppBarButton
-                            color="secondary"
-                            variant="outlined"
-                            onClick={() => { setShowChoice(true); setFocusedCard(null); }}
-                        >
-                            {t('choose cards')}
-                        </AppBarButton>
-                    </AppBarBadge>
-                </Zoom>    
+                    <AppBarTab label={t('ship systems')} value="systems" />
+                    <AppBarTab
+                        label={<AppBarBadge badgeContent={props.numChoices} invisible={contentTab === 'draw'} color="secondary">{t('choose cards')}</AppBarBadge>}
+                        color="secondary"
+                        value="draw"
+                        disabled={props.numChoices === 0}
+                    />
+                </Tabs>
             </SystemAppBar>
 
             {systemsOrChoice}
@@ -185,7 +166,7 @@ export const Engineering: React.FC<Props> = (props) => {
                 cards={props.handCards}
                 setFocus={card => { setFocusedCard(card); setCardSelected(false); }}
                 selectedCard={cardSelected ? focusedCard : null}
-                selectFocusedCard={showChoice ? () => {} : () => setCardSelected(true)}
+                selectFocusedCard={contentTab === 'draw' ? () => {} : () => setCardSelected(true)}
                 clearSelection={() => setCardSelected(false)}
             />
 

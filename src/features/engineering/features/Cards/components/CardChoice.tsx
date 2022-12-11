@@ -30,6 +30,7 @@ const Prompt = styled(
     , { shouldForwardProp: (prop) => prop !== 'hide' }
 )<{ hide: boolean }>(({ theme, hide }) => ({
     color: theme.palette.text.secondary,
+    margin: '0 0.25em',
     fontSize: '1.5em',
     transition: 'opacity 0.5s linear',
     opacity: hide ? 0 : undefined,
