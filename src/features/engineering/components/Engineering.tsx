@@ -1,18 +1,13 @@
-import EngineeringIcon from '@mui/icons-material/Engineering';
 import { styled } from '@mui/material/styles';
-import { Tab } from 'src/components/Tab';
-import { Tabs } from 'src/components/Tabs';
-import { ComponentProps, useLayoutEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Badge } from 'src/components/Badge';
+import { useLayoutEffect, useState } from 'react';
 import { Page } from 'src/components/Page';
-import { AppBarHeight, SystemAppBar } from 'src/components/SystemAppBar';
+import { AppBarHeight } from 'src/components/SystemAppBar';
 import { allSystems, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
-import Box from '@mui/material/Box';
+import { EngineeringAppBar } from './EngineeringAppBar';
 
 interface Props {
     systems: ClientSystemInfo[];
@@ -29,22 +24,12 @@ const Root = styled(Page)({
     gridTemplateRows: `${AppBarHeight} 1fr ${stubHeight}`,
 });
 
-const AppBarTab = styled(Tab)<ComponentProps<typeof Tab>>({
-    marginTop: '4px',
-});
-
-const AppBarBadge = styled(Badge)<ComponentProps<typeof Badge>>({
-    '& .MuiBadge-badge': {
-        right: '-0.55em',
-    },
-});
-
 const FocusedCardDisplay = styled(CardDisplay)({
     pointerEvents: 'none',
     zIndex: 2,
     fontSize: '1.5em',
     position: 'absolute',
-    top: `45vh`,
+    bottom: '10vh',
     marginLeft: 'auto',
     marginRight: 'auto',
     left: 0,
@@ -52,12 +37,10 @@ const FocusedCardDisplay = styled(CardDisplay)({
 });
 
 export const Engineering: React.FC<Props> = (props) => {
-    const { t } = useTranslation('engineering');
-    
     const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
     const [cardSelected, setCardSelected] = useState(false);
     
-    const [contentTab, setContentTab] = useState<'systems' | 'draw'>('systems');
+    const [currentTab, setCurrentTab] = useState<'systems' | 'draw'>('systems');
 
     const validTargetSystems = !cardSelected || focusedCard === null
         ? null
@@ -105,9 +88,9 @@ export const Engineering: React.FC<Props> = (props) => {
         console.log(`ok, trying to expand system ${system}`);
     };
 
-    useLayoutEffect(() => setFocusedCard(null), [contentTab]);
+    useLayoutEffect(() => setFocusedCard(null), [currentTab]);
     
-    const systemsOrChoice = contentTab === 'draw'
+    const systemsOrChoice = currentTab === 'draw'
         ? (
             <CardChoice
                 cards={props.choiceCards ?? []}
@@ -137,28 +120,11 @@ export const Engineering: React.FC<Props> = (props) => {
 
     return (
         <Root>
-            <SystemAppBar>
-                <EngineeringIcon
-                    fontSize="large"
-                    titleAccess={t('title')}
-                    role="img"
-                    color="disabled"
-                />
-                <Box sx={{flexGrow: 1}} />
-
-                <Tabs
-                    value={contentTab}
-                    onChange={(_e, newTab) => setContentTab(newTab)}
-                >
-                    <AppBarTab label={t('ship systems')} value="systems" />
-                    <AppBarTab
-                        label={<AppBarBadge badgeContent={props.numChoices} invisible={contentTab === 'draw'} color="secondary">{t('choose cards')}</AppBarBadge>}
-                        color="secondary"
-                        value="draw"
-                        disabled={props.numChoices === 0}
-                    />
-                </Tabs>
-            </SystemAppBar>
+            <EngineeringAppBar
+                currentTab={currentTab}
+                setCurrentTab={setCurrentTab}
+                numChoices={props.numChoices}
+            />
 
             {systemsOrChoice}
         
@@ -166,7 +132,7 @@ export const Engineering: React.FC<Props> = (props) => {
                 cards={props.handCards}
                 setFocus={card => { setFocusedCard(card); setCardSelected(false); }}
                 selectedCard={cardSelected ? focusedCard : null}
-                selectFocusedCard={contentTab === 'draw' ? () => {} : () => setCardSelected(true)}
+                selectFocusedCard={currentTab === 'draw' ? () => {} : () => setCardSelected(true)}
                 clearSelection={() => setCardSelected(false)}
             />
 
