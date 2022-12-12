@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { ClientSystemInfo } from '../types/TileInfo';
 import { SystemLog } from './SystemLog';
-import { SystemRepair } from './SystemRepair';
 import { SystemTile } from './SystemTile';
 
 interface Props {
@@ -25,11 +24,7 @@ export const SystemTiles: React.FC<Props> = props => {
     const [showingDrawer, showDrawer] = useState<ShipSystem>();
     const { allowedTargets } = props;
     const selectingTarget = allowedTargets !== null;
-    const drawerSystemInfo = props.systems.find(system => system.system === showingDrawer);
-
-    const drawerContent = drawerSystemInfo === undefined || drawerSystemInfo.health === 0
-        ? <SystemRepair system={showingDrawer ?? ShipSystem.Hull} />
-        : <SystemLog system={showingDrawer ?? ShipSystem.Hull} events={drawerSystemInfo.eventLog} />;
+    const eventLog = props.systems.find(system => system.system === showingDrawer)?.eventLog ?? [];
 
     return (
         <Root>
@@ -60,7 +55,7 @@ export const SystemTiles: React.FC<Props> = props => {
                 open={showingDrawer !== undefined}
                 onClose={() => showDrawer(undefined)}
             >
-                {drawerContent}
+                <SystemLog system={showingDrawer ?? ShipSystem.Hull} events={eventLog} />
             </Drawer>
         </Root>
     );
