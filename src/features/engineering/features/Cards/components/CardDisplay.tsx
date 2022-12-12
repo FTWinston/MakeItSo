@@ -14,6 +14,7 @@ import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
 
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
+    repairMode?: boolean;
     style?: React.CSSProperties;
     role?: AriaRole;
 }
@@ -70,9 +71,12 @@ const Content = styled(CardContent)({
     padding: '0.8em',
 });
 
-const Description = styled(Typography)({
+const Description = styled(Typography)<{ disableEffect?: boolean }>(({ disableEffect, theme }) => ({
     fontSize: '0.65em',
-});
+    textDecoration: disableEffect ? 'line-through' : undefined,
+    textDecorationColor: disableEffect ? theme.palette.error.main : undefined,
+    color: disableEffect ? theme.palette.grey[500] : undefined,
+}));
 
 export const CardDisplay: React.FC<Props> = props => {
     const { t } = useTranslation('engineering');
@@ -107,7 +111,7 @@ export const CardDisplay: React.FC<Props> = props => {
             />
             <Content sx={{ paddingTop: 0 }}>
                 <ScreenReaderOnly>{t(`rarity ${props.rarity}`)}.</ScreenReaderOnly>
-                <Description>
+                <Description disableEffect={props.repairMode}>
                     {t(`card ${props.type} desc`)}
                 </Description>
             </Content>

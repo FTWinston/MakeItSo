@@ -1,12 +1,12 @@
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import { useLayoutEffect, useState } from 'react';
 import { Page } from 'src/components/Page';
 import { Switch } from 'src/components/Switch';
 import { AppBarHeight } from 'src/components/SystemAppBar';
 import { allSystems, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
+import { Typography } from 'src/components/Typography';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
@@ -154,6 +154,7 @@ export const Engineering: React.FC<Props> = (props) => {
             <FocusedCardDisplay
                 type={focusedCard.type}
                 rarity={focusedCard.rarity}
+                repairMode={repairMode && currentTab === 'systems'}
                 role="presentation"
             />
         );
