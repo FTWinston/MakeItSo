@@ -14,6 +14,7 @@ interface Props {
     currentTab: TabIdentifiers;
     setCurrentTab: (tab: TabIdentifiers) => void;
     numChoices: number;
+    anyOffline: boolean;
 }
 
 const AppBarTab = styled(Tab)<ComponentProps<typeof Tab>>({
@@ -28,7 +29,7 @@ const AppBarBadge = styled(Badge)<ComponentProps<typeof Badge>>({
 
 export const EngineeringAppBar: React.FC<Props> = (props) => {
     const { t } = useTranslation('engineering');
-    const { currentTab: contentTab, setCurrentTab: setContentTab, numChoices } = props;
+    const { currentTab, setCurrentTab, numChoices, anyOffline } = props;
 
     return (
         <SystemAppBar>
@@ -41,12 +42,15 @@ export const EngineeringAppBar: React.FC<Props> = (props) => {
             <Box sx={{flexGrow: 1}} />
 
             <Tabs
-                value={contentTab}
-                onChange={(_e, newTab) => setContentTab(newTab)}
+                value={currentTab}
+                onChange={(_e, newTab) => setCurrentTab(newTab)}
             >
-                <AppBarTab label={t('ship systems')} value="systems" />
                 <AppBarTab
-                    label={<AppBarBadge badgeContent={props.numChoices} invisible={contentTab === 'draw'} color="secondary">{t('choose cards')}</AppBarBadge>}
+                    label={<AppBarBadge variant="dot" invisible={!anyOffline || currentTab === 'systems'} color="error">{t('ship systems')}</AppBarBadge>}
+                    value="systems"
+                />
+                <AppBarTab
+                    label={<AppBarBadge badgeContent={props.numChoices} invisible={currentTab === 'draw'} color="secondary">{t('choose cards')}</AppBarBadge>}
                     color="secondary"
                     value="draw"
                     disabled={numChoices === 0}

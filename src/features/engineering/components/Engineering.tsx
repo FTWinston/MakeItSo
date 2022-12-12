@@ -124,6 +124,7 @@ export const Engineering: React.FC<Props> = (props) => {
                 currentTab={currentTab}
                 setCurrentTab={setCurrentTab}
                 numChoices={props.numChoices}
+                anyOffline={props.systems.some(system => system.health === 0)}
             />
 
             {systemsOrChoice}
