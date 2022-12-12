@@ -1,5 +1,7 @@
 {
     "title": "Engineering",
+    "effect mode": "Effect mode",
+    "repair mode": "Repair mode",
 
     "system 1": "Hull",
     "system 2": "Engines",

@@ -1,6 +1,9 @@
+import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { useLayoutEffect, useState } from 'react';
 import { Page } from 'src/components/Page';
+import { Switch } from 'src/components/Switch';
 import { AppBarHeight } from 'src/components/SystemAppBar';
 import { allSystems, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
@@ -8,6 +11,8 @@ import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../featur
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
 import { EngineeringAppBar } from './EngineeringAppBar';
+import Box from '@mui/material/Box';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     systems: ClientSystemInfo[];
@@ -24,6 +29,11 @@ const Root = styled(Page)({
     gridTemplateRows: `${AppBarHeight} 1fr ${stubHeight}`,
 });
 
+const SystemsAndCardMode = styled(Box)({
+    display: 'grid',
+    gridTemplateRows: `1fr 2em`,
+});
+
 const FocusedCardDisplay = styled(CardDisplay)({
     pointerEvents: 'none',
     zIndex: 2,
@@ -37,8 +47,10 @@ const FocusedCardDisplay = styled(CardDisplay)({
 });
 
 export const Engineering: React.FC<Props> = (props) => {
+    const { t } = useTranslation('engineering');
     const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
     const [cardSelected, setCardSelected] = useState(false);
+    const [repairMode, setRepairMode] = useState(false);
     
     const [currentTab, setCurrentTab] = useState<'systems' | 'draw'>('systems');
 
@@ -93,7 +105,7 @@ export const Engineering: React.FC<Props> = (props) => {
     const systemsOrChoice = currentTab === 'draw'
         ? (
             <CardChoice
-                cards={props.choiceCards ?? []}
+                cards={props.choiceCards}
                 numChoices={props.numChoices}
                 focus={setFocusedCard}
                 choose={props.chooseCard}
@@ -101,11 +113,39 @@ export const Engineering: React.FC<Props> = (props) => {
             />
         )
         : (
-            <SystemTiles
-                systems={props.systems}
-                allowedTargets={validTargetSystems}
-                tileSelected={focusedCard ? tryPlayCard : expandSystem}
-            />
+            <SystemsAndCardMode>
+                <SystemTiles
+                    systems={props.systems}
+                    allowedTargets={validTargetSystems}
+                    tileSelected={focusedCard ? tryPlayCard : expandSystem}
+                />
+                <Stack
+                    direction="row"
+                    spacing={1}
+                    alignItems="center"
+                    justifySelf="center"
+                    component="label"
+                >
+                    <Typography
+                        variant="button"
+                        color={repairMode ? 'grey' : undefined}
+                        role="none"
+                    >
+                        {t('effect mode')}
+                    </Typography>
+                    <Switch
+                        color="error"
+                        checked={repairMode}
+                        onChange={e => setRepairMode(e.target.checked)}
+                    />
+                    <Typography
+                        variant="button"
+                        color={repairMode ? undefined : 'grey'}
+                    >
+                        {t('repair mode')}
+                    </Typography>
+                </Stack>
+            </SystemsAndCardMode>
         );
 
     const focusedCardDisplay = focusedCard === null || cardSelected
@@ -128,7 +168,7 @@ export const Engineering: React.FC<Props> = (props) => {
             />
 
             {systemsOrChoice}
-        
+
             <CardHand
                 cards={props.handCards}
                 setFocus={card => { setFocusedCard(card); setCardSelected(false); }}

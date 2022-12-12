@@ -3,6 +3,7 @@ import { styled, Theme } from '@mui/material/styles';
 import { normal } from 'color-blend';
 import { RGBA } from 'color-blend/dist/types';
 import { useTranslation } from 'react-i18next';
+import { maxSystemHealth } from 'src/features/engineering/utils/systemActions';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
 
@@ -38,8 +39,8 @@ const Root = styled(Button,
         flexGrow: 1,
         fontSize: '1em',
         width: '9em',
-        height: '5.4em',
-        paddingTop: '3.15em',
+        height: '5.05em',
+        paddingTop: '2.95em',
         margin: 0,
         borderRadius: '0.75em',
         color,
@@ -57,7 +58,7 @@ const SvgRoot = styled('svg')({
     left: 0,
 });
 
-const pathPerimeter = Math.PI * 2 * 10 + 232;
+const pathPerimeter = Math.PI * 2 * 10 + 224;
 
 const hex2rgba = (hex: string, a: number) => {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -92,7 +93,7 @@ function getHealthColor(healthScale: number, theme: Theme) {
 }
 
 const HealthPath = styled('path')<{ health: number }>(props => {
-    const healthScale = props.health / 100;
+    const healthScale = props.health / maxSystemHealth;
     const fillDistance = healthScale * pathPerimeter;
 
     return {
@@ -138,6 +139,11 @@ export const SystemTile: React.FC<Props> = (props) => {
         ? t('offline')
         : `${Math.round(constrainedHealth)}%`;
 
+    // width: '9em',    height: '5.4em',
+    // top edge is 88 long
+    // side edge is 38 long
+    // corner radius is 10
+    
     return (
         <Root
             variant="text"
@@ -149,15 +155,15 @@ export const SystemTile: React.FC<Props> = (props) => {
             disabled={props.validTarget === false}
             aria-label={name}
         >
-            <SvgRoot viewBox="0 0 100 60">
+            <SvgRoot viewBox="0 0 100 56">
                 <HealthPath
-                    d="M 11 1 L 89 1 A 10 10 0 0 1 99 11 L 99 49 A 10 10 0 0 1 89 59 L 11 59 A 10 10 0 0 1 1 49 L 1 11 A 10 10 0 0 1 11 1"
+                    d="M 11 1 L 89 1 A 10 10 0 0 1 99 11 L 99 45 A 10 10 0 0 1 89 55 L 11 55 A 10 10 0 0 1 1 45 L 1 11 A 10 10 0 0 1 11 1"
                     health={constrainedHealth}
                     strokeWidth={4}
                 />
-                <NameText x="50" y="30" role="presentation">{name}</NameText>
+                <NameText x="50" y="28" role="presentation">{name}</NameText>
                 
-                <HealthText x="50" y="17" aria-label={t('health')}>
+                <HealthText x="50" y="14" aria-label={t('health')}>
                     {healthText}
                 </HealthText>
             </SvgRoot>

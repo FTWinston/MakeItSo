@@ -9,9 +9,9 @@ interface Props extends ClientSystemStatusEffectInstance {
     className?: string;
 }
 
-const iconSize = '1.2em';
-export const indicatorSize = '1.5em';
-const timerSize = '1.7em';
+const iconSize = '1em';
+export const indicatorSize = '1.3em';
+const timerSize = '1.5em';
 
 const ScaledIcon = styled(EffectIcon)({
     position: 'absolute',
