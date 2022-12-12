@@ -1,5 +1,3 @@
-import Avatar from '@mui/material/Avatar';
-import Card from '@mui/material/Card';
 import { grey, blue, purple, deepOrange } from '@mui/material/colors';
 import { alpha, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -7,9 +5,7 @@ import { EngineeringCardInfo, EngineeringCardRarity } from '../types/Engineering
 import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
 import { cardWidth } from './CardDisplay';
-import CardContent from '@mui/material/CardContent';
-import { Typography } from 'src/components/Typography';
-import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
+import { Avatar, Card, CardContent, ScreenReaderOnly, Typography } from 'src/components';
 
 interface Props extends Omit<EngineeringCardInfo, 'id' | 'description'> {
     className?: string;
@@ -43,7 +39,6 @@ const StubRoot = styled(Card
 }));
 
 const Content = styled(CardContent)({
-    padding: '0.8em',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
@@ -59,7 +54,7 @@ const IconWrapper = styled(Avatar)({
     fontSize: '1em',
     width: '1.925em',
     height: '1.925em',
-    marginBottom: '0.925em',
+    marginBottom: '0.7em',
 });
 
 const Icon = styled(CardIcon)({

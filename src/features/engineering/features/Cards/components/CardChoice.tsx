@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
-import { Typography } from 'src/components/Typography';
+import { LinearTimer, Typography } from 'src/components';
 import Slide from '@mui/material/Slide';
 import Zoom from '@mui/material/Zoom';
-import { LinearTimer } from 'src/components/LinearTimer';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub } from './CardStub';

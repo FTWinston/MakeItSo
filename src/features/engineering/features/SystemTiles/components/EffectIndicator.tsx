@@ -1,6 +1,6 @@
 import { ClientSystemStatusEffectInstance } from '../../../types/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { CircularTimer } from 'src/components/CircularTimer';
+import { CircularTimer } from 'src/components';
 import { styled, useTheme } from '@mui/material/styles';
 import Zoom from '@mui/material/Zoom';
 import { useTranslation } from 'react-i18next';

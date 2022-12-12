@@ -1,12 +1,10 @@
 import EngineeringIcon from '@mui/icons-material/Engineering';
 import { styled } from '@mui/material/styles';
-import { Tab } from 'src/components/Tab';
-import { Tabs } from 'src/components/Tabs';
+import { Badge, Tab, Tabs } from 'src/components';
 import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Badge } from 'src/components/Badge';
-import { SystemAppBar } from 'src/components/SystemAppBar';
 import Box from '@mui/material/Box';
+import { SystemAppBar } from 'src/features/layout';
 
 type TabIdentifiers = 'systems' | 'draw';
 

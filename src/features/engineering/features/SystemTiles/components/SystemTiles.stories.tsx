@@ -1,8 +1,8 @@
 import { SystemTiles as TilesComponent } from './SystemTiles';
 import { StoryFn } from '@storybook/react';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { Page } from 'src/components/Page';
-import { determineEndTime, durationToTimeSpan, getTime } from 'src/utils/timeSpans';
+import { Page } from 'src/features/layout';
+import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { ComponentProps } from 'react';
 import { SystemState } from 'src/types/SystemState';

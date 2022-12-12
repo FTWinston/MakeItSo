@@ -3,7 +3,7 @@ import PurgeIcon from '@mui/icons-material/BlurOff';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { EngineeringCardType } from '../types/EngineeringCard';
-import { SystemIcon } from 'src/components/SystemIcon';
+import { SystemIcon } from 'src/components';
 import { EffectIcon } from '../../SystemTiles';
 import { ShipSystem } from 'src/types/ShipSystem';
 

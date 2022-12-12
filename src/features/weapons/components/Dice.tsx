@@ -1,5 +1,5 @@
 import { styled } from '@mui/material/styles';
-import { Button } from 'src/components/Button';
+import { Button } from 'src/components';
 
 interface StateProps {
     value?: number;

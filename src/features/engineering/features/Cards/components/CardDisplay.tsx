@@ -1,16 +1,11 @@
 import type { AriaRole } from 'react';
-import Avatar from '@mui/material/Avatar';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardHeader from '@mui/material/CardHeader';
-import { Typography } from 'src/components/Typography';
+import { Avatar, Card, CardContent, CardHeader, ScreenReaderOnly, Typography } from 'src/components';
 import { grey, blue, purple, deepOrange } from '@mui/material/colors';
 import { alpha, styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { EngineeringCardInfo, EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardIcon } from './CardIcon';
 import { MuiColor } from 'src/types/Colors';
-import { ScreenReaderOnly } from 'src/components/ScreenReaderOnly';
 
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
@@ -33,7 +28,6 @@ const CardRoot = styled(Card
     height: cardHeight,
     borderWidth: '0.1em',
     transition: 'border-color 0.2s linear',
-    borderRadius: '0.225em',
     backgroundColor: 'background.paper',
     borderColor: alpha(palette[600], 0.5),
     '&:hover': {
@@ -44,22 +38,6 @@ const CardRoot = styled(Card
     },
 }));
 
-const Header = styled(CardHeader)({
-    padding: '0.8em',
-    '& .MuiCardHeader-title': {
-        fontSize: '0.75em',
-    },
-    '& .MuiCardHeader-avatar': {
-        marginRight: '0.7em',
-    },
-});
-
-const IconWrapper = styled(Avatar)({
-    fontSize: '1em',
-    width: '1.925em',
-    height: '1.925em',
-});
-
 const Icon = styled(CardIcon)({
     fontSize: '1em',
     width: '1.125em',
@@ -68,10 +46,10 @@ const Icon = styled(CardIcon)({
 });
 
 const Content = styled(CardContent)({
-    padding: '0.8em',
+    paddingTop: 0,
 });
 
-const Description = styled(Typography)<{ disableEffect?: boolean }>(({ disableEffect, theme }) => ({
+const Description = styled(Typography, { shouldForwardProp: (prop) => prop !== 'disableEffect' })<{ disableEffect?: boolean }>(({ disableEffect, theme }) => ({
     fontSize: '0.65em',
     textDecoration: disableEffect ? 'line-through' : undefined,
     textDecorationColor: disableEffect ? theme.palette.error.main : undefined,
@@ -101,15 +79,15 @@ export const CardDisplay: React.FC<Props> = props => {
             variant="outlined"
             role={props.role}
         >
-            <Header
+            <CardHeader
                 avatar={(
-                    <IconWrapper className="icon" role="presentation">
+                    <Avatar className="icon" role="presentation">
                         <Icon card={props.type} />
-                    </IconWrapper>
+                    </Avatar>
                 )}
                 title={t(`card ${props.type} title`)}
             />
-            <Content sx={{ paddingTop: 0 }}>
+            <Content>
                 <ScreenReaderOnly>{t(`rarity ${props.rarity}`)}.</ScreenReaderOnly>
                 <Description disableEffect={props.repairMode}>
                     {t(`card ${props.type} desc`)}

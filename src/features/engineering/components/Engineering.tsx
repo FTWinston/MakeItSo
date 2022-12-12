@@ -1,12 +1,9 @@
-import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import { useLayoutEffect, useState } from 'react';
-import { Page } from 'src/components/Page';
-import { Switch } from 'src/components/Switch';
-import { AppBarHeight } from 'src/components/SystemAppBar';
+import { Stack, Switch, Typography } from 'src/components';
+import { AppBarHeight, Page } from 'src/features/layout';
 import { allSystems, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
-import { Typography } from 'src/components/Typography';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
