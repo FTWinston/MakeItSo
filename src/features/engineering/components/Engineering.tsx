@@ -10,6 +10,7 @@ import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
 import { EngineeringAppBar } from './EngineeringAppBar';
 import Box from '@mui/material/Box';
 import { useTranslation } from 'react-i18next';
+import { maxSystemHealth } from '../utils/systemActions';
 
 interface Props {
     systems: ClientSystemInfo[];
@@ -18,7 +19,7 @@ interface Props {
     numChoices: number;
     choiceProgress?: TimeSpan;
     chooseCard: (id: number) => void;
-    playCard: (card: EngineeringCardInfo, system: ShipSystem) => void;
+    playCard: (card: EngineeringCardInfo, system: ShipSystem, repair: boolean) => void;
 }
 
 const Root = styled(Page)({
@@ -53,9 +54,7 @@ export const Engineering: React.FC<Props> = (props) => {
 
     const validTargetSystems = !cardSelected || focusedCard === null
         ? null
-        : focusedCard.allowedSystems === undefined
-            ? allSystems
-            : focusedCard.allowedSystems;
+        : determineValidTargets(focusedCard, repairMode, props.systems);
 
     const tryPlayCard = (system: ShipSystem) => {
         if (focusedCard === null) {
@@ -64,7 +63,7 @@ export const Engineering: React.FC<Props> = (props) => {
 
         console.log(`trying to play card ${(focusedCard?.id ?? '<not found>')} on system ${system}`);
         
-        props.playCard(focusedCard, system);
+        props.playCard(focusedCard, system, repairMode);
         setFocusedCard(null);
         /*
         const elements: Element[] = document.elementsFromPoint
@@ -114,6 +113,7 @@ export const Engineering: React.FC<Props> = (props) => {
                 <SystemTiles
                     systems={props.systems}
                     allowedTargets={validTargetSystems}
+                    possibleRepair={cardSelected && focusedCard && repairMode ? focusedCard.rarity : null}
                     tileSelected={focusedCard ? tryPlayCard : expandSystem}
                 />
                 <Stack
@@ -179,3 +179,19 @@ export const Engineering: React.FC<Props> = (props) => {
         </Root>
     );
 };
+
+function determineValidTargets(card: EngineeringCardInfo, repairMode: boolean, systems: ClientSystemInfo[]): ShipSystem {
+    if (repairMode) {
+        // In repair mode, any card can target any system with less than full health.
+        return systems.reduce(
+            (prev, system) => system.health < maxSystemHealth
+                ? prev | system.system
+                : prev
+            , 0 as ShipSystem
+        );
+    }
+    
+    return card.allowedSystems === undefined
+        ? allSystems
+        : card.allowedSystems;
+}

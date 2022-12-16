@@ -1,7 +1,9 @@
 import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
+import { determineRepairAmount } from 'src/features/engineering/utils/systemActions';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { EngineeringCardRarity } from '../../Cards/types/EngineeringCard';
 import { ClientSystemInfo } from '../types/TileInfo';
 import { SystemLog } from './SystemLog';
 import { SystemTile } from './SystemTile';
@@ -9,6 +11,7 @@ import { SystemTile } from './SystemTile';
 interface Props {
     systems: ClientSystemInfo[];
     allowedTargets: ShipSystem | null;
+    possibleRepair: EngineeringCardRarity | null;
     tileSelected: (system: ShipSystem) => void;
 }
 
@@ -22,7 +25,7 @@ const Root = styled('div')({
 
 export const SystemTiles: React.FC<Props> = props => {
     const [showingDrawer, showDrawer] = useState<ShipSystem>();
-    const { allowedTargets } = props;
+    const { allowedTargets, possibleRepair } = props;
     const selectingTarget = allowedTargets !== null;
     const eventLog = props.systems.find(system => system.system === showingDrawer)?.eventLog ?? [];
 
@@ -30,6 +33,9 @@ export const SystemTiles: React.FC<Props> = props => {
         <Root>
             {props.systems.map(tile => {
                 const isActiveTarget = selectingTarget && (allowedTargets & tile.system) !== 0;
+                const repairAmount = possibleRepair === null
+                    ? 0
+                    : determineRepairAmount(tile.health, possibleRepair);
 
                 return (
                     <SystemTile
@@ -37,6 +43,7 @@ export const SystemTiles: React.FC<Props> = props => {
                         validTarget={selectingTarget ? isActiveTarget : undefined}
                         system={tile.system}
                         health={tile.health}
+                        healAmount={repairAmount}
                         effects={tile.effects}
                         onClick={() => {
                             if (isActiveTarget) {

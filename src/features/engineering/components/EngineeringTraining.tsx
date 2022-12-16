@@ -43,7 +43,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
             {...otherState}
             systems={orderedSystemInfo}
             chooseCard={cardId => dispatch({ type: 'draw', cardId })}
-            playCard={(card, targetSystem) => dispatch({ type: 'play', cardId: card.id, targetSystem })}
+            playCard={(card, targetSystem, repair) => dispatch({ type: 'play', cardId: card.id, targetSystem, repair })}
         />
     );
 };

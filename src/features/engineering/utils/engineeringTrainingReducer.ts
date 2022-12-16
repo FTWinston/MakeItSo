@@ -4,7 +4,7 @@ import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth, removeExpiredEffects } from './systemActions';
+import { adjustHealth, determineRepairAmount, removeExpiredEffects } from './systemActions';
 
 let nextId = 14;
 
@@ -29,12 +29,25 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 return state;
             }
 
-            if (card.allowedSystems !== undefined && (card.allowedSystems & action.targetSystem) === 0) {
-                return state;
-            }
+            if (action.repair) {
+                const affectedSystem = state.systems[action.targetSystem];
 
-            if (card.play(state, action.targetSystem) === false) {
-                return state;
+                const repairAmount = determineRepairAmount(affectedSystem.health, card.rarity);
+
+                if (repairAmount === 0) {
+                    return state;
+                }
+
+                adjustHealth(affectedSystem, repairAmount);
+            }
+            else {
+                if (card.allowedSystems !== undefined && (card.allowedSystems & action.targetSystem) === 0) {
+                    return state;
+                }
+
+                if (card.play(state, action.targetSystem) === false) {
+                    return state;
+                }
             }
 
             const index = state.engineering.handCards.indexOf(card);

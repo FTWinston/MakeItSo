@@ -32,6 +32,7 @@ export type EngineeringAction = {
     type: 'play';
     cardId: number;
     targetSystem: ShipSystem;
+    repair: boolean;
 } | {
     type: 'draw';
     cardId: number;

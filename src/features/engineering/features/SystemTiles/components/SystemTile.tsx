@@ -120,6 +120,13 @@ const HealthText = styled('text')(({ theme }) => ({
     fontSize: '12px',
 }));
 
+const HealText = styled('text')(({ theme }) => ({
+    fill: theme.palette.success.main,
+    textAnchor: 'end',
+    alignmentBaseline: 'middle',
+    fontSize: '12px',
+}));
+
 // TODO: Clicking this normally should open a side drawer
 // with detail on each condition etc.
 
@@ -127,6 +134,7 @@ interface Props extends TileDisplayInfo {
     onClick?: () => void;
     onMouseUp?: () => void;
     onDragEnd?: () => void;
+    healAmount: number;
     validTarget?: boolean;
 }
 
@@ -139,10 +147,13 @@ export const SystemTile: React.FC<Props> = (props) => {
         ? t('offline')
         : `${Math.round(constrainedHealth)}%`;
 
-    // width: '9em',    height: '5.4em',
-    // top edge is 88 long
-    // side edge is 38 long
-    // corner radius is 10
+    const healAmountElement = props.health === 0 || props.healAmount === 0
+        ? undefined
+        : (
+            <HealText x="96" y="14" aria-label={t('heal amount')}>
+                +{props.healAmount}
+            </HealText>
+        )
     
     return (
         <Root
@@ -166,6 +177,8 @@ export const SystemTile: React.FC<Props> = (props) => {
                 <HealthText x="50" y="14" aria-label={t('health')}>
                     {healthText}
                 </HealthText>
+                
+                {healAmountElement}
             </SvgRoot>
 
             <EffectIndicators effects={props.effects} />
