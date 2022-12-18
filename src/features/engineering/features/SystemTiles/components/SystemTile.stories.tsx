@@ -3,6 +3,7 @@ import { StoryFn } from '@storybook/react';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { durationToTimeSpan } from 'src/utils/timeSpans';
 import { ComponentProps } from 'react';
+import { ShipSystem } from 'src/types/ShipSystem';
 
 export default {
     title: 'Engineering/System Tiles/Tile',
@@ -17,21 +18,56 @@ const Template: StoryFn<ComponentProps<typeof SystemTile>> = (args) => (
 
 export const Full = Template.bind({});
 Full.args = {
-    name: 'Engines',
+    system: ShipSystem.Engines,
     health: 100,
     effects: [],
 };
 
+export const Partial = Template.bind({});
+Partial.args = {
+    system: ShipSystem.Engines,
+    health: 25,
+    effects: [],
+};
+
+export const Healing = Template.bind({});
+Healing.args = {
+    system: ShipSystem.Engines,
+    health: 70,
+    healAmount: 10,
+    validTarget: true,
+    effects: [],
+};
+
+
 export const Zero = Template.bind({});
 Zero.args = {
-    name: 'Hull',
+    system: ShipSystem.Hull,
     health: 0,
+    restoration: 0,
+    effects: [],
+};
+
+export const PartiallyRestored = Template.bind({});
+PartiallyRestored.args = {
+    system: ShipSystem.Hull,
+    health: 0,
+    restoration: 50,
+    effects: [],
+};
+
+export const Restoring = Template.bind({});
+Restoring.args = {
+    system: ShipSystem.Hull,
+    health: 0,
+    restoration: 50,
+    healAmount: 25,
     effects: [],
 };
 
 export const OneEffect = Template.bind({});
 OneEffect.args = {
-    name: 'Weapons',
+    system: ShipSystem.Weapons,
     health: 75,
     effects: [
         {
@@ -45,7 +81,7 @@ OneEffect.args = {
 
 export const ThreeEffects = Template.bind({});
 ThreeEffects.args = {
-    name: 'Sensors',
+    system: ShipSystem.Sensors,
     health: 82,
     effects: [
         {
@@ -71,7 +107,7 @@ ThreeEffects.args = {
 
 export const ValidTarget = Template.bind({});
 ValidTarget.args = {
-    name: 'Weapons',
+    system: ShipSystem.Weapons,
     health: 88,
     validTarget: true,
     effects: [
@@ -86,7 +122,7 @@ ValidTarget.args = {
 
 export const InvalidTarget = Template.bind({});
 InvalidTarget.args = {
-    name: 'Weapons',
+    system: ShipSystem.Weapons,
     health: 53,
     validTarget: false,
     effects: [

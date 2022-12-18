@@ -9,9 +9,34 @@ export function adjustPower(system: SystemState, adjustment: number) {
 }
 
 export const maxSystemHealth = 100;
+export const maxRestorationValue = 100;
 
 export function adjustHealth(system: SystemState, adjustment: number) {
+    const hadHealth = system.health > 0;
+
     system.health = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
+
+    if (!hadHealth) {
+        if (adjustment < 0) {
+            // Damage affects restoration even more than health
+            adjustRestoration(system, adjustment * 2.5);
+        }
+    }
+    else if (system.health === 0) {
+        system.restoration = 0;
+    }
+}
+
+export function adjustRestoration(system: SystemState, adjustment: number) {
+    const newRestorationValue = Math.max(0, Math.min(maxRestorationValue, (system.restoration ?? 0) + adjustment));
+
+    if (newRestorationValue >= maxRestorationValue) {
+        system.health = 1;
+        delete system.restoration;
+    }
+    else {
+        system.restoration = newRestorationValue;
+    }
 }
 
 export function applyEffect(system: SystemState, effect: SystemStatusEffectType) {
@@ -58,4 +83,17 @@ export function determineRepairAmount(currentHealth: number, cardRarity: Enginee
     repairAmount = Math.round(repairAmount);
 
     return Math.min(repairAmount, maxSystemHealth - currentHealth);
+}
+
+export function determineRestoreAmount(cardRarity: EngineeringCardRarity) {
+    switch (cardRarity) {
+        case EngineeringCardRarity.Common:
+            return 10;
+        case EngineeringCardRarity.Uncommon:
+            return 20;
+        case EngineeringCardRarity.Rare:
+            return 30;
+        case EngineeringCardRarity.Epic:
+            return 40;
+    }
 }

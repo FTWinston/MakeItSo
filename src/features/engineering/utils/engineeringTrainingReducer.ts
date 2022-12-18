@@ -4,7 +4,7 @@ import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth, determineRepairAmount, removeExpiredEffects } from './systemActions';
+import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration } from './systemActions';
 
 let nextId = 14;
 
@@ -32,13 +32,22 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
             if (action.repair) {
                 const affectedSystem = state.systems[action.targetSystem];
 
-                const repairAmount = determineRepairAmount(affectedSystem.health, card.rarity);
+                if (affectedSystem.health === 0) {
+                    // Increase restore value. If that reaches the max, set health to a low value.
+                    const restoreAmount = determineRestoreAmount(card.rarity);
 
-                if (repairAmount === 0) {
-                    return state;
+                    adjustRestoration(affectedSystem, restoreAmount);
                 }
+                else {
+                    // Repair health
+                    const repairAmount = determineRepairAmount(affectedSystem.health, card.rarity);
 
-                adjustHealth(affectedSystem, repairAmount);
+                    if (repairAmount === 0) {
+                        return state;
+                    }
+
+                    adjustHealth(affectedSystem, repairAmount);
+                }
             }
             else {
                 if (card.allowedSystems !== undefined && (card.allowedSystems & action.targetSystem) === 0) {

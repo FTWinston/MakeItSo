@@ -3,6 +3,7 @@ import { styled, Theme } from '@mui/material/styles';
 import { normal } from 'color-blend';
 import { RGBA } from 'color-blend/dist/types';
 import { useTranslation } from 'react-i18next';
+import { LinearProgress } from 'src/components';
 import { maxSystemHealth } from 'src/features/engineering/utils/systemActions';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
@@ -35,7 +36,7 @@ const Root = styled(Button,
     return {
         position: 'relative',
         display: 'flex',
-        justifyContent: 'stretch',
+        justifyContent: 'center',
         flexGrow: 1,
         fontSize: '1em',
         width: '9em',
@@ -127,8 +128,9 @@ const HealText = styled('text')(({ theme }) => ({
     fontSize: '12px',
 }));
 
-// TODO: Clicking this normally should open a side drawer
-// with detail on each condition etc.
+const RestoreProgress = styled(LinearProgress)({
+    width: '5em',
+});
 
 interface Props extends TileDisplayInfo {
     onClick?: () => void;
@@ -147,13 +149,28 @@ export const SystemTile: React.FC<Props> = (props) => {
         ? t('offline')
         : `${Math.round(constrainedHealth)}%`;
 
-    const healAmountElement = props.health === 0 || props.healAmount === 0
-        ? undefined
-        : (
+    const healAmountElement = props.health && props.healAmount
+        ? (
             <HealText x="96" y="14" aria-label={t('heal amount')}>
                 +{props.healAmount}
             </HealText>
         )
+        : undefined;
+
+    const restoration = props.health === 0
+        ? (
+            <RestoreProgress
+                variant="buffer"
+                color="warning"
+                value={props.restoration ?? 0}
+                valueBuffer={(props.restoration ?? 0) + (props.healAmount ?? 0)}
+            />
+        )
+        : undefined;
+
+    const effectIndicators = props.health === 0
+        ? undefined
+        : <EffectIndicators effects={props.effects} />
     
     return (
         <Root
@@ -181,7 +198,8 @@ export const SystemTile: React.FC<Props> = (props) => {
                 {healAmountElement}
             </SvgRoot>
 
-            <EffectIndicators effects={props.effects} />
+            {restoration}
+            {effectIndicators}
         </Root>
     );
 };

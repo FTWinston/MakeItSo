@@ -4,6 +4,7 @@ import { ShipSystem } from 'src/types/ShipSystem';
 export interface TileInfo {
     system: ShipSystem;
     health: number;
+    restoration?: number;
     effects: SystemStatusEffectInstance[];
 }
 

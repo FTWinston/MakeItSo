@@ -1,5 +1,5 @@
 import React, { useState, useEffect, PropsWithChildren } from 'react';
-import LinearProgress from '@mui/material/LinearProgress';
+import { LinearProgress } from './LinearProgress';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { getCompletedFraction } from 'src/utils/timeSpans';
 import { ColorName } from 'src/types/Colors';
@@ -9,10 +9,6 @@ interface Props extends TimeSpan {
     className?: string;
     color?: ColorName;
 }
-
-const Progress = styled(LinearProgress)({
-    height: '0.25em',
-});
 
 export const LinearTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<Props>>((props, ref) => {
     const { startTime, endTime } = props;
@@ -31,7 +27,7 @@ export const LinearTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<Pr
     );
 
     return (
-        <Progress
+        <LinearProgress
             ref={ref}
             variant="determinate"
             className={props.className}

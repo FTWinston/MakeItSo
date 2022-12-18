@@ -1,7 +1,7 @@
 import Drawer from '@mui/material/Drawer';
 import { styled } from '@mui/material/styles';
 import { useState } from 'react';
-import { determineRepairAmount } from 'src/features/engineering/utils/systemActions';
+import { determineRepairAmount, determineRestoreAmount } from 'src/features/engineering/utils/systemActions';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { EngineeringCardRarity } from '../../Cards/types/EngineeringCard';
 import { ClientSystemInfo } from '../types/TileInfo';
@@ -35,7 +35,9 @@ export const SystemTiles: React.FC<Props> = props => {
                 const isActiveTarget = selectingTarget && (allowedTargets & tile.system) !== 0;
                 const repairAmount = possibleRepair === null
                     ? 0
-                    : determineRepairAmount(tile.health, possibleRepair);
+                    : tile.health === 0
+                        ? determineRestoreAmount(possibleRepair)
+                        : determineRepairAmount(tile.health, possibleRepair);
 
                 return (
                     <SystemTile
@@ -43,6 +45,7 @@ export const SystemTiles: React.FC<Props> = props => {
                         validTarget={selectingTarget ? isActiveTarget : undefined}
                         system={tile.system}
                         health={tile.health}
+                        restoration={tile.restoration}
                         healAmount={repairAmount}
                         effects={tile.effects}
                         onClick={() => {
