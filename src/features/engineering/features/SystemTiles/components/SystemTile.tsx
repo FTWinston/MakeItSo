@@ -133,9 +133,12 @@ const RestoreProgress = styled(LinearProgress)({
     width: '5em',
 });
 
-const SystemPower = styled(PowerDisplay)({
-    margin: '0 0.2em 0.6em 0'
-});
+const SystemPower = styled(PowerDisplay,
+    { shouldForwardProp: (prop) => prop !== 'faint' }
+)<{ faint: boolean }>((({ faint }) => ({
+    margin: '0 0.2em 0.6em 0',
+    opacity: faint ? 0.3 : undefined
+})));
 
 interface Props extends TileDisplayInfo {
     onClick?: () => void;
@@ -179,7 +182,7 @@ export const SystemTile: React.FC<Props> = (props) => {
 
     const powerDisplay = props.health === 0
         ? undefined
-        : <SystemPower powerLevel={props.power} />
+        : <SystemPower powerLevel={props.power} faint={props.healAmount > 0} />
     
     return (
         <Root
