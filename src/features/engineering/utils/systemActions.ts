@@ -1,16 +1,16 @@
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
-import { SystemState } from 'src/types/SystemState';
+import { PowerLevel, SystemState } from 'src/types/SystemState';
 import { createEffect } from './SystemStatusEffects';
 import { getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 
-export function adjustPower(system: SystemState, adjustment: number) {
-    system.power += adjustment;
-}
-
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
 export const maxPowerLevel = 4;
+
+export function adjustPower(system: SystemState, adjustment: number) {
+    system.power = Math.max(Math.min(system.power + adjustment, maxPowerLevel), 1) as PowerLevel;
+}
 
 export function adjustHealth(system: SystemState, adjustment: number) {
     const hadHealth = system.health > 0;
