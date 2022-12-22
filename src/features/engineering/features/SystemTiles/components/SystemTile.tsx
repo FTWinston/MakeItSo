@@ -7,6 +7,7 @@ import { LinearProgress } from 'src/components';
 import { maxSystemHealth } from 'src/features/engineering/utils/systemActions';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
+import { PowerDisplay } from './PowerDisplay';
 
 const Root = styled(Button,
     { shouldForwardProp: (prop) => prop !== 'validTarget' && prop !== 'health' }
@@ -132,6 +133,10 @@ const RestoreProgress = styled(LinearProgress)({
     width: '5em',
 });
 
+const SystemPower = styled(PowerDisplay)({
+    margin: '0 0.2em 0.6em 0'
+});
+
 interface Props extends TileDisplayInfo {
     onClick?: () => void;
     onMouseUp?: () => void;
@@ -171,6 +176,10 @@ export const SystemTile: React.FC<Props> = (props) => {
     const effectIndicators = props.health === 0
         ? undefined
         : <EffectIndicators effects={props.effects} />
+
+    const powerDisplay = props.health === 0
+        ? undefined
+        : <SystemPower powerLevel={props.power} />
     
     return (
         <Root
@@ -200,6 +209,7 @@ export const SystemTile: React.FC<Props> = (props) => {
 
             {restoration}
             {effectIndicators}
+            {powerDisplay}
         </Root>
     );
 };

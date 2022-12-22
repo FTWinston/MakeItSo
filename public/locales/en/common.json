@@ -1,5 +1,9 @@
 {
     "loading": "Loading...",
     "error": "An error has occurred.",
-    "menu": "Menu"
+    "menu": "Menu",
+    "powerLevel1": "Low power",
+    "powerLevel2": "Normal power",
+    "powerLevel3": "High power",
+    "powerLevel4": "Full power"
 }

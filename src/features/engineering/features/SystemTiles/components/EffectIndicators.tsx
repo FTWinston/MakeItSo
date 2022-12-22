@@ -11,6 +11,7 @@ const Root = styled('div')({
     display: 'flex',
     position: 'relative',
     width: '100%',
+    flexGrow: 1,
     height: indicatorSize,
 });
 

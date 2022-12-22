@@ -47,6 +47,7 @@ export const SystemTiles: React.FC<Props> = props => {
                         health={tile.health}
                         restoration={tile.restoration}
                         healAmount={repairAmount}
+                        power={tile.power}
                         effects={tile.effects}
                         onClick={() => {
                             if (isActiveTarget) {

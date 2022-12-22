@@ -1,9 +1,11 @@
 import { ClientSystemStatusEffectInstance, SystemStatusEffectInstance } from '../../../types/SystemStatusEffect';
 import { ShipSystem } from 'src/types/ShipSystem';
+import type { PowerLevel } from 'src/types/SystemState';
 
 export interface TileInfo {
     system: ShipSystem;
     health: number;
+    power: PowerLevel;
     restoration?: number;
     effects: SystemStatusEffectInstance[];
 }

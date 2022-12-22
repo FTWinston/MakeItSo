@@ -10,6 +10,7 @@ export function adjustPower(system: SystemState, adjustment: number) {
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
+export const maxPowerLevel = 4;
 
 export function adjustHealth(system: SystemState, adjustment: number) {
     const hadHealth = system.health > 0;

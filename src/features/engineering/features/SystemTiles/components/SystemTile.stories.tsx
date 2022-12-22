@@ -20,6 +20,7 @@ export const Full = Template.bind({});
 Full.args = {
     system: ShipSystem.Engines,
     health: 100,
+    power: 2,
     effects: [],
 };
 
@@ -27,6 +28,7 @@ export const Partial = Template.bind({});
 Partial.args = {
     system: ShipSystem.Engines,
     health: 25,
+    power: 2,
     effects: [],
 };
 
@@ -36,6 +38,7 @@ Healing.args = {
     health: 70,
     healAmount: 10,
     validTarget: true,
+    power: 2,
     effects: [],
 };
 
@@ -45,6 +48,7 @@ Zero.args = {
     system: ShipSystem.Hull,
     health: 0,
     restoration: 0,
+    power: 2,
     effects: [],
 };
 
@@ -53,6 +57,7 @@ PartiallyRestored.args = {
     system: ShipSystem.Hull,
     health: 0,
     restoration: 50,
+    power: 2,
     effects: [],
 };
 
@@ -62,6 +67,7 @@ Restoring.args = {
     health: 0,
     restoration: 50,
     healAmount: 25,
+    power: 2,
     effects: [],
 };
 
@@ -69,6 +75,7 @@ export const OneEffect = Template.bind({});
 OneEffect.args = {
     system: ShipSystem.Weapons,
     health: 75,
+    power: 2,
     effects: [
         {
             type: SystemStatusEffectType.Boost1,
@@ -83,6 +90,7 @@ export const ThreeEffects = Template.bind({});
 ThreeEffects.args = {
     system: ShipSystem.Sensors,
     health: 82,
+    power: 2,
     effects: [
         {
             type: SystemStatusEffectType.Overload,
@@ -110,6 +118,7 @@ ValidTarget.args = {
     system: ShipSystem.Weapons,
     health: 88,
     validTarget: true,
+    power: 2,
     effects: [
         {
             type: SystemStatusEffectType.Boost1,
@@ -125,6 +134,7 @@ InvalidTarget.args = {
     system: ShipSystem.Weapons,
     health: 53,
     validTarget: false,
+    power: 2,
     effects: [
         {
             type: SystemStatusEffectType.Boost1,
