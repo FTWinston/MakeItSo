@@ -1,7 +1,10 @@
-import { theme } from '../src/utils/muiTheme';
+import { enableMapSet } from 'immer';
 import { ThemeProvider } from '@mui/material/styles';
+import { theme } from '../src/utils/muiTheme';
 import '../src/language';
 import '../src/base.css';
+
+enableMapSet();
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

@@ -1,5 +1,8 @@
+import { DefiniteMap } from 'src/types/DefiniteMap';
 import { ShipState } from 'src/types/ShipState';
-import { arrayToObject } from 'src/utils/arrays';
+import { ShipSystem } from 'src/types/ShipSystem';
+import { SystemState } from 'src/types/SystemState';
+import { arrayToMap } from 'src/utils/arrays';
 import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCards } from '../features/Cards/data/EngineeringCards';
@@ -12,7 +15,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
     switch (action.type) {
         case 'reset':
             return {
-                systems: arrayToObject(action.systems, info => info.system),
+                systems: arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
                 engineering: {
                     systemOrder: action.systems.map(system => system.system),
                     choiceCards: action.choiceCards,
@@ -30,7 +33,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
             }
 
             if (action.repair) {
-                const affectedSystem = state.systems[action.targetSystem];
+                const affectedSystem = state.systems.get(action.targetSystem);
 
                 if (affectedSystem.health === 0) {
                     // Increase restore value. If that reaches the max, set health to a low value.
@@ -91,7 +94,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
         }
 
         case 'effect': {
-            const affectedSystem = state.systems[action.system];
+            const affectedSystem = state.systems.get(action.system);
 
             if (action.healthChange) {
                 adjustHealth(affectedSystem, action.healthChange);
@@ -125,7 +128,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 state.engineering.choiceProgress = undefined;
             }
 
-            for (const system of Object.values(state.systems)) {
+            for (const system of state.systems.values()) {
                 removeExpiredEffects(system, action.currentTime);
             }
 

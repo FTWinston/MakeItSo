@@ -36,7 +36,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     }, [getEffects]);
 
     const { systemOrder, ...otherState } = state.engineering;
-    const orderedSystemInfo = systemOrder.map(system => state.systems[system]);
+    const orderedSystemInfo = systemOrder.map(system => state.systems.get(system));
 
     return (
         <Engineering

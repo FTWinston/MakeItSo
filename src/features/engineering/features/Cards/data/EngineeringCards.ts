@@ -7,12 +7,12 @@ import { getRandomInt } from 'src/utils/random';
 import { SystemState } from 'src/types/SystemState';
 
 const onlyDamagedSystems = (ship: ShipState) =>
-    Object.values(ship.systems)
+    [...ship.systems.values()]
         .filter(system => system.health < maxSystemHealth)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
 
 const onlyOnlineSystems = (ship: ShipState) =>
-    Object.values(ship.systems)
+    [...ship.systems.values()]
         .filter(system => system.health > 0)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
 
@@ -22,7 +22,7 @@ const commonCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.Boost1,
         rarity: EngineeringCardRarity.Common,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost1);
         },
         determineAllowedSystems: onlyOnlineSystems,
@@ -33,7 +33,7 @@ const commonCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.RepairSmall,
         rarity: EngineeringCardRarity.Common,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 10);
         },
@@ -48,7 +48,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         rarity: EngineeringCardRarity.Uncommon,
         determineAllowedSystems: () => ShipSystem.Engines,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
@@ -59,7 +59,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         rarity: EngineeringCardRarity.Uncommon,
         determineAllowedSystems: () => ShipSystem.Weapons,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
@@ -70,7 +70,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         rarity: EngineeringCardRarity.Uncommon,
         determineAllowedSystems: () => ShipSystem.Sensors,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
@@ -81,7 +81,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         rarity: EngineeringCardRarity.Uncommon,
         determineAllowedSystems: () => ShipSystem.Reactor,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
@@ -92,7 +92,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         rarity: EngineeringCardRarity.Uncommon,
         determineAllowedSystems: () => ShipSystem.Shields,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
     }),
@@ -102,7 +102,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.ColdRestart,
         rarity: EngineeringCardRarity.Uncommon,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             adjustHealth(systemState, 75);
             applyEffect(systemState, SystemStatusEffectType.Offline);
         },
@@ -114,7 +114,7 @@ const uncommonCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.HotSwap,
         rarity: EngineeringCardRarity.Uncommon,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.HotSwap);
         },
         determineAllowedSystems: onlyDamagedSystems,
@@ -127,7 +127,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.Boost2,
         rarity: EngineeringCardRarity.Rare,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Boost2);
         },
         determineAllowedSystems: onlyOnlineSystems,
@@ -138,7 +138,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.RepairMedium,
         rarity: EngineeringCardRarity.Rare,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 25);
         },
@@ -161,10 +161,10 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
             const firstSystem = systemOrder[firstIndex];
             const secondSystem = systemOrder[secondIndex];
 
-            const firstState = ship.systems[firstSystem];
+            const firstState = ship.systems.get(firstSystem);
             applyEffect(firstState, SystemStatusEffectType.SwapVertical);
 
-            const secondState = ship.systems[secondSystem];
+            const secondState = ship.systems.get(secondSystem);
             applyEffect(secondState, SystemStatusEffectType.SwapVertical);
 
             systemOrder[firstIndex] = secondSystem;
@@ -180,7 +180,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.Purge,
         rarity: EngineeringCardRarity.Rare,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             const effects = systemState.effects
                 .filter(effect => {
                     if (effect.positive === false) {
@@ -195,7 +195,7 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
             }
         },
         determineAllowedSystems: ship => ship.engineering.systemOrder
-            .filter(system => ship.systems[system].effects.some(effect => effect.positive === false))
+            .filter(system => ship.systems.get(system).effects.some(effect => effect.positive === false))
             .reduce((prev, current) => prev | current, 0 as ShipSystem),
     }),
 ];
@@ -206,7 +206,7 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.Overload,
         rarity: EngineeringCardRarity.Epic,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Overload);
         },
         determineAllowedSystems: onlyOnlineSystems,
@@ -217,7 +217,7 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.Supercharge,
         rarity: EngineeringCardRarity.Epic,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Supercharge);
 
             const systemOrder = ship.engineering.systemOrder;
@@ -226,19 +226,19 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
             const adjacentSystems: SystemState[] = [];
             if (index > 1) {
                 const adjacentSystem = systemOrder[index - 2];
-                adjacentSystems.push(ship.systems[adjacentSystem]);
+                adjacentSystems.push(ship.systems.get(adjacentSystem));
             }
             if (index < systemOrder.length - 1) {
                 const adjacentSystem = systemOrder[index + 2];
-                adjacentSystems.push(ship.systems[adjacentSystem]);
+                adjacentSystems.push(ship.systems.get(adjacentSystem));
             }
             if (index % 2 === 0) {
                 const adjacentSystem = systemOrder[index + 1];
-                adjacentSystems.push(ship.systems[adjacentSystem]);
+                adjacentSystems.push(ship.systems.get(adjacentSystem));
             }
             else {
                 const adjacentSystem = systemOrder[index - 1];
-                adjacentSystems.push(ship.systems[adjacentSystem]);
+                adjacentSystems.push(ship.systems.get(adjacentSystem));
             }
 
             for (const adjacentSystem of adjacentSystems) {
@@ -254,7 +254,7 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
         type: EngineeringCardType.RepairLarge,
         rarity: EngineeringCardRarity.Epic,
         play: (ship, system) => {
-            const systemState = ship.systems[system];
+            const systemState = ship.systems.get(system);
             applyEffect(systemState, SystemStatusEffectType.Repair);
             adjustHealth(systemState, 50);
         },

@@ -1,9 +1,6 @@
-export interface Identifiable<T> {
-    readonly id: T;
-}
-
 type MapKey = string | number | symbol;
 
+/*
 export function objectToObject<TKey extends MapKey, TValue, TResult>(
     object: Readonly<Record<TKey, TValue>>,
     transform: (value: TValue, key: TKey) => TResult | undefined
@@ -27,6 +24,7 @@ export function objectToObject<TKey extends MapKey, TValue, TResult>(
 
     return result;
 }
+*/
 
 export function arrayToObject<TKey extends MapKey, TValue>(
     array: ReadonlyArray<TValue>,
@@ -44,6 +42,7 @@ export function arrayToObject<TKey extends MapKey, TValue>(
     return result;
 }
 
+/*
 export function objectToArray<TKey extends MapKey, TValue, TResult>(
     object: Readonly<Record<TKey, TValue>>,
     transform: (value: TValue, key: TKey) => TResult | undefined
@@ -59,4 +58,13 @@ export function objectToArray<TKey extends MapKey, TValue, TResult>(
     }
 
     return result;
+}
+*/
+
+export function arrayToMap<TKey, TValue>(
+    items: readonly TValue[], getKey: (value: TValue) => TKey,
+): Map<TKey, TValue> {
+    return new Map<TKey, TValue>(
+        items.map(item => [getKey(item), item])
+    );
 }

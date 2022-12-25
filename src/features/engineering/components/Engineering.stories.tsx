@@ -1,7 +1,9 @@
 import { StoryFn } from '@storybook/react';
 import { ComponentProps } from 'react';
+import { DefiniteMap } from 'src/types/DefiniteMap';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { arrayToObject } from 'src/utils/arrays';
+import { SystemState } from 'src/types/SystemState';
+import { arrayToMap } from 'src/utils/arrays';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { getBasicStoryTiles, getComplexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
@@ -23,7 +25,7 @@ Empty.args = {
     getInitialState: () => {
         const systems = getBasicStoryTiles();
         return {
-            systems: arrayToObject(systems, info => info.system),
+            systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
             engineering: {
                 systemOrder: systems.map(system => system.system),
                 handCards: [],
@@ -46,7 +48,7 @@ Busy.args = {
     getInitialState: () => {
         const systems = getComplexStoryTiles();
         return {
-            systems: arrayToObject(systems, info => info.system),
+            systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
             engineering: {
                 systemOrder: systems.map(system => system.system),
                 handCards: storyCards,
