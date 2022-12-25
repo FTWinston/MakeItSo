@@ -12,6 +12,10 @@ const Template: StoryFn<ComponentProps<typeof PowerDisplay>> = (args) => (
     <PowerDisplay {...args} />
 );
 
+export const Zero = Template.bind({});
+Zero.args = {
+    powerLevel: 0,
+};
 
 export const One = Template.bind({});
 One.args = {

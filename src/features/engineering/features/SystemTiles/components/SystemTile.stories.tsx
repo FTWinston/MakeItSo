@@ -16,16 +16,16 @@ const Template: StoryFn<ComponentProps<typeof SystemTile>> = (args) => (
     </div>
 );
 
-export const Full = Template.bind({});
-Full.args = {
+export const FullHealth = Template.bind({});
+FullHealth.args = {
     system: ShipSystem.Engines,
     health: 100,
     power: 2,
     effects: [],
 };
 
-export const Partial = Template.bind({});
-Partial.args = {
+export const PartialHealth = Template.bind({});
+PartialHealth.args = {
     system: ShipSystem.Engines,
     health: 25,
     power: 2,
@@ -43,8 +43,8 @@ Healing.args = {
 };
 
 
-export const Zero = Template.bind({});
-Zero.args = {
+export const ZeroHealth = Template.bind({});
+ZeroHealth.args = {
     system: ShipSystem.Hull,
     health: 0,
     restoration: 0,
@@ -68,6 +68,14 @@ Restoring.args = {
     restoration: 50,
     healAmount: 25,
     power: 2,
+    effects: [],
+};
+
+export const ZeroPower = Template.bind({});
+ZeroPower.args = {
+    system: ShipSystem.Hull,
+    health: 100,
+    power: 0,
     effects: [],
 };
 

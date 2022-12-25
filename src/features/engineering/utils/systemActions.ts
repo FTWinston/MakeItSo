@@ -9,7 +9,12 @@ export const maxRestorationValue = 100;
 export const maxPowerLevel = 4;
 
 export function adjustPower(system: SystemState, adjustment: number) {
-    system.power = Math.max(Math.min(system.power + adjustment, maxPowerLevel), 1) as PowerLevel;
+    system.unconstrainedPower += adjustment;
+    
+    const before = system.power;
+    system.power = Math.max(Math.min(system.unconstrainedPower, maxPowerLevel), 0) as PowerLevel;
+
+    return system.power - before;
 }
 
 export function adjustHealth(system: SystemState, adjustment: number) {

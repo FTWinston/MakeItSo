@@ -19,7 +19,7 @@
     "available choices_other": "{{count}} further choices available.",
 
     "ship systems": "Systems",
-    "offline": "Offline",
+    "noHealth": "Disabled",
     "health": "Health",
     "heal amount": "Heal amount",
     "system event log": "System event log",

@@ -5,13 +5,14 @@ import { RGBA } from 'color-blend/dist/types';
 import { useTranslation } from 'react-i18next';
 import { LinearProgress } from 'src/components';
 import { maxSystemHealth } from 'src/features/engineering/utils/systemActions';
+import { PowerLevel } from 'src/types/SystemState';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
 import { PowerDisplay } from './PowerDisplay';
 
 const Root = styled(Button,
-    { shouldForwardProp: (prop) => prop !== 'validTarget' && prop !== 'health' }
-)<{ validTarget: boolean | undefined, health: number }>(({ theme, health, validTarget }) => {
+    { shouldForwardProp: (prop) => prop !== 'validTarget' && prop !== 'health' && prop !== 'power' }
+)<{ validTarget: boolean | undefined, health: number, power: PowerLevel }>(({ theme, health, power, validTarget }) => {
     let color: string;
     let backgroundColor = theme.palette.background.paper;
     let hover: object | undefined;
@@ -26,7 +27,7 @@ const Root = styled(Button,
     else if (validTarget === false) {
         color = theme.palette.error.light;
     }
-    else if (health === 0) {
+    else if (health === 0 || power === 0) {
         color = theme.palette.error.light;
         backgroundColor = '#200';
     }
@@ -154,7 +155,7 @@ export const SystemTile: React.FC<Props> = (props) => {
     const name = t(`system ${props.system}`);
 
     const healthText = constrainedHealth === 0
-        ? t('offline')
+        ? t('noHealth')
         : `${Math.round(constrainedHealth)}%`;
 
     const healAmountElement = props.health && props.healAmount
@@ -191,6 +192,7 @@ export const SystemTile: React.FC<Props> = (props) => {
             onMouseUp={props.onMouseUp}
             onDragEnd={props.onDragEnd}
             health={constrainedHealth}
+            power={props.power}
             validTarget={props.validTarget}
             disabled={props.validTarget === false}
             aria-label={name}
