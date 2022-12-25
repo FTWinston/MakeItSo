@@ -1,20 +1,26 @@
+import { ShipState } from 'src/types/ShipState';
 import { SystemState } from 'src/types/SystemState';
 import type { TimeSpan } from 'src/types/TimeSpan';
 
 export enum SystemStatusEffectType {
-    Boost1,
-    Boost2,
-    Reduce1,
-    Reduce2,
-    Overload,
-    Damage,
-    Repair,
+    AuxPower = 'auxPower',
+    StoreCharge = 'storing',
+    StoredCharge = 'stored',
 
-    SwapHorizontal,
-    SwapVertical,
-    Offline,
-    HotSwap,
-    Supercharge,
+
+
+    Boost1 = 'boost1',
+    Boost2 = 'boost2',
+    Reduce1 = 'reduce1',
+    Reduce2 = 'reduce2',
+    Overload = 'overload',
+    Damage = 'damage',
+    Repair = 'repair',
+    SwapHorizontal = 'swapH',
+    SwapVertical = 'swapV',
+    Offline = 'offline',
+    HotSwap = 'hotSwap',
+    Supercharge = 'superCharge',
 }
 
 interface SystemStatusEffectInfo {
@@ -24,8 +30,8 @@ interface SystemStatusEffectInfo {
 }
 
 export interface SystemStatusEffect extends SystemStatusEffectInfo {
-    apply: (system: SystemState) => void;
-    remove: (system: SystemState, forced: boolean) => void;
+    apply: (system: SystemState, ship: ShipState) => void;
+    remove: (system: SystemState, ship: ShipState, forced: boolean) => void;
 }
 
 export type SystemStatusEffectInstance = Omit<SystemStatusEffect, 'duration'> & TimeSpan;

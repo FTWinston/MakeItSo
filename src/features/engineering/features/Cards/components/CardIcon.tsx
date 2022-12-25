@@ -15,6 +15,13 @@ interface Props {
 export const CardIcon: React.FC<Props> = props => {
     let Icon;
     switch (props.card) {
+    case EngineeringCardType.AuxPower:
+        return <EffectIcon effect={SystemStatusEffectType.AuxPower} className={props.className} />;
+    case EngineeringCardType.StoreCharge:
+        return <EffectIcon effect={SystemStatusEffectType.StoredCharge} className={props.className} />;
+
+
+
     case EngineeringCardType.Boost1:
         return <EffectIcon effect={SystemStatusEffectType.Boost1} className={props.className} />;
     case EngineeringCardType.BoostHelm:

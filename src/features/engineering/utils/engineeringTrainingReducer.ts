@@ -32,24 +32,24 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 return state;
             }
 
+            const targetSystem = state.systems.get(action.targetSystem);
             if (action.repair) {
-                const affectedSystem = state.systems.get(action.targetSystem);
 
-                if (affectedSystem.health === 0) {
+                if (targetSystem.health === 0) {
                     // Increase restore value. If that reaches the max, set health to a low value.
                     const restoreAmount = determineRestoreAmount(card.rarity);
 
-                    adjustRestoration(affectedSystem, restoreAmount);
+                    adjustRestoration(targetSystem, restoreAmount);
                 }
                 else {
                     // Repair health
-                    const repairAmount = determineRepairAmount(affectedSystem.health, card.rarity);
+                    const repairAmount = determineRepairAmount(targetSystem.health, card.rarity);
 
                     if (repairAmount === 0) {
                         return state;
                     }
 
-                    adjustHealth(affectedSystem, repairAmount);
+                    adjustHealth(targetSystem, repairAmount);
                 }
             }
             else {
@@ -57,7 +57,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                     return state;
                 }
 
-                if (card.play(state, action.targetSystem) === false) {
+                if (card.play(targetSystem, state) === false) {
                     return state;
                 }
             }
@@ -129,7 +129,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
             }
 
             for (const system of state.systems.values()) {
-                removeExpiredEffects(system, action.currentTime);
+                removeExpiredEffects(system, state, action.currentTime);
             }
 
             for (const card of state.engineering.handCards) {

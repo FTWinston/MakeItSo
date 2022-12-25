@@ -3,6 +3,7 @@ import { PowerLevel, SystemState } from 'src/types/SystemState';
 import { createEffect } from './SystemStatusEffects';
 import { getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
+import { ShipState } from 'src/types/ShipState';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
@@ -45,16 +46,32 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
     }
 }
 
-export function applyEffect(system: SystemState, effect: SystemStatusEffectType) {
+export function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffectType) {
     const effectInstance = createEffect(effect);
     system.effects.push(effectInstance);
-    effectInstance.apply(system);
+    effectInstance.apply(system, ship);
 }
 
-export function removeExpiredEffects(systemState: SystemState, currentTime = getTime()) {
+export function removeEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffectType, forced: boolean = true) {
+    const toRemove = system.effects
+        .filter(instance => instance.type === effect);
+
+    if (toRemove.length === 0) {
+        return;
+    }
+
+    for (const effectInstance of toRemove) {
+        effectInstance.remove(system, ship, forced);
+    }
+
+    system.effects = system.effects
+        .filter(instance => instance.type !== effect);
+}
+
+export function removeExpiredEffects(systemState: SystemState, ship: ShipState, currentTime = getTime()) {
     const filteredEffects = systemState.effects.filter(effect => {
         if (hasCompleted(effect, currentTime)) {
-            effect.remove(systemState, false);
+            effect.remove(systemState, ship, false);
             return false;
         }
 

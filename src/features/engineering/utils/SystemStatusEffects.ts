@@ -1,9 +1,40 @@
+import { ShipState } from 'src/types/ShipState';
 import { SystemState } from 'src/types/SystemState';
 import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffect, SystemStatusEffectInstance, SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { adjustHealth, adjustPower } from './systemActions';
 
 const allEffects: SystemStatusEffect[] = [
+    {
+        type: SystemStatusEffectType.AuxPower,
+        positive: true,
+        duration: 60,
+        apply: (system: SystemState) => adjustPower(system, 1),
+        remove: (system: SystemState) => adjustPower(system, -1),
+    },
+    {
+        type: SystemStatusEffectType.StoreCharge,
+        positive: false,
+        duration: 30,
+        apply: (system: SystemState) => adjustPower(system, -1),
+        remove: (system: SystemState, ship: ShipState) => {
+            adjustPower(system, 1);
+
+            // TODO: create StoredCharge card, which is a type that isn't available otherwise. It's a special type?
+            // ship.engineering.handCards.push()
+        }
+    },
+    {
+        type: SystemStatusEffectType.StoredCharge,
+        positive: true,
+        duration: 10,
+        apply: (system: SystemState) => adjustPower(system, 1),
+        remove: (system: SystemState) => adjustPower(system, -1),
+    },
+
+
+
+
     {
         type: SystemStatusEffectType.Boost1,
         positive: true,
@@ -41,7 +72,7 @@ const allEffects: SystemStatusEffect[] = [
         positive: false,
         duration: 12,
         apply: (system: SystemState) => adjustPower(system, 3),
-        remove: (system: SystemState, forced: boolean) => {
+        remove: (system: SystemState, ship: ShipState, forced: boolean) => {
             adjustPower(system, -3);
 
             if (!forced) {
@@ -55,7 +86,7 @@ const allEffects: SystemStatusEffect[] = [
         positive: false,
         duration: 10,
         apply: (system: SystemState) => adjustPower(system, 4),
-        remove: (system: SystemState, forced: boolean) => {
+        remove: (system: SystemState, ship: ShipState, forced: boolean) => {
             adjustPower(system, -4);
 
             if (!forced) {

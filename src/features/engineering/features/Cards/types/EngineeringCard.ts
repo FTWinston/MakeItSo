@@ -1,5 +1,6 @@
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { SystemState } from 'src/types/SystemState';
 
 export enum EngineeringCardRarity {
     Common = 1,
@@ -9,6 +10,10 @@ export enum EngineeringCardRarity {
 }
 
 export enum EngineeringCardType {
+    AuxPower = 'auxPower',
+    StoreCharge = 'storeCharge',
+
+
     Boost1 = 'boost1',
     BoostHelm = 'boostHelm',
     BoostWeapons = 'boostWeapons',
@@ -36,6 +41,6 @@ export interface EngineeringCardInfo {
 }
 
 export interface EngineeringCard extends EngineeringCardInfo {
-    play: (ship: ShipState, system: ShipSystem) => void | false;
+    play: (system: SystemState, ship: ShipState) => void | false;
     determineAllowedSystems?: (ship: ShipState) => ShipSystem;
 }

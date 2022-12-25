@@ -1,3 +1,6 @@
+import AuxPowerIcon from '@mui/icons-material/Power';
+import StoreChargeIcon from '@mui/icons-material/BatterySaver';
+
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import Boost1Icon from '@mui/icons-material/KeyboardArrowUp';
 import Boost2Icon from '@mui/icons-material/KeyboardDoubleArrowUp';
@@ -21,8 +24,12 @@ interface Props {
 export const EffectIcon: React.FC<Props> = props => {
     let Icon;
     switch (props.effect) {
-    case SystemStatusEffectType.Boost1:
-        Icon = Boost1Icon;
+    case SystemStatusEffectType.AuxPower:
+        Icon = AuxPowerIcon;
+        break;
+    case SystemStatusEffectType.StoreCharge:
+    case SystemStatusEffectType.StoredCharge:
+        Icon = StoreChargeIcon;
         break;
     case SystemStatusEffectType.Boost2:
         Icon = Boost2Icon;
