@@ -71,12 +71,11 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehavior> = 
             remove: () => {},
         }
     ],
-
     [
         SystemStatusEffectType.Boost1,
         {
             positive: true,
-            duration: 15,
+            duration: 12,
             apply: (system: SystemState) => adjustPower(system, 1),
             remove: (system: SystemState) => adjustPower(system, -1),
         }
@@ -91,10 +90,19 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehavior> = 
         }
     ],
     [
+        SystemStatusEffectType.Boost3,
+        {
+            positive: true,
+            duration: 12,
+            apply: (system: SystemState) => adjustPower(system, 3),
+            remove: (system: SystemState) => adjustPower(system, -3),
+        }
+    ],
+    [
         SystemStatusEffectType.Reduce1,
         {
             positive: false,
-            duration: 15,
+            duration: 12,
             apply: (system: SystemState) => adjustPower(system, -1),
             remove: (system: SystemState) => adjustPower(system, 1),
         }
@@ -108,6 +116,17 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehavior> = 
             remove: (system: SystemState) => adjustPower(system, 2),
         },
     ],
+    [
+        SystemStatusEffectType.Reduce3,
+        {
+            positive: false,
+            duration: 12,
+            apply: (system: SystemState) => adjustPower(system, -3),
+            remove: (system: SystemState) => adjustPower(system, 3),
+        },
+    ],
+
+    
     [
         SystemStatusEffectType.Overload,
         {

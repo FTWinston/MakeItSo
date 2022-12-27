@@ -1,5 +1,6 @@
 import RelocateHereIcon from '@mui/icons-material/PanToolAlt';
 import BoostShieldIcon from '@mui/icons-material/Security';
+import DivertIcon from '@mui/icons-material/Redo';
 import PurgeIcon from '@mui/icons-material/BlurOff';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
@@ -25,6 +26,14 @@ export const CardIcon: React.FC<Props> = props => {
         return <EffectIcon effect={SystemStatusEffectType.Relocating} className={props.className} />;
     case EngineeringCardType.RelocateHere:
         Icon = RelocateHereIcon;
+        break;
+    case EngineeringCardType.DivertHull:
+    case EngineeringCardType.DivertShields:
+    case EngineeringCardType.DivertSensors:
+    case EngineeringCardType.DivertWeapons:
+    case EngineeringCardType.DivertEngines:
+    case EngineeringCardType.DivertReactor:
+        Icon = DivertIcon;
         break;
 
     case EngineeringCardType.Boost1:

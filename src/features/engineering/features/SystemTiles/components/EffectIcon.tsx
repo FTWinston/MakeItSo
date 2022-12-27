@@ -2,12 +2,11 @@ import AuxPowerIcon from '@mui/icons-material/Power';
 import StoreChargeIcon from '@mui/icons-material/BatterySaver';
 import RelocatingIcon from '@mui/icons-material/OpenWith';
 import RelocatedIcon from '@mui/icons-material/SwapHoriz';
-
+import Number1Icon from '@mui/icons-material/LooksOne';
+import Number2Icon from '@mui/icons-material/LooksTwo';
+import Number3Icon from '@mui/icons-material/Looks3';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
-import Boost1Icon from '@mui/icons-material/KeyboardArrowUp';
-import Boost2Icon from '@mui/icons-material/KeyboardDoubleArrowUp';
-import Reduce1Icon from '@mui/icons-material/KeyboardArrowDown';
-import Reduce2Icon from '@mui/icons-material/KeyboardDoubleArrowDown';
+
 import OverloadIcon from '@mui/icons-material/Warning';
 import SuperchargeIcon from '@mui/icons-material/FlashOn';
 import DamageIcon from '@mui/icons-material/Whatshot';
@@ -39,17 +38,19 @@ export const EffectIcon: React.FC<Props> = props => {
     case SystemStatusEffectType.Relocated:
         Icon = RelocatedIcon;
         break;
-
-
-    case SystemStatusEffectType.Boost2:
-        Icon = Boost2Icon;
-        break;
+    case SystemStatusEffectType.Boost1:
     case SystemStatusEffectType.Reduce1:
-        Icon = Reduce1Icon;
+        Icon = Number1Icon;
         break;
+    case SystemStatusEffectType.Boost2:
     case SystemStatusEffectType.Reduce2:
-        Icon = Reduce2Icon;
+        Icon = Number2Icon;
         break;
+    case SystemStatusEffectType.Boost3:
+    case SystemStatusEffectType.Reduce3:
+        Icon = Number3Icon;
+        break;
+
     case SystemStatusEffectType.Overload:
         Icon = OverloadIcon;
         break;

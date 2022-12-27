@@ -1,6 +1,6 @@
 import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../types/EngineeringCard';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
-import { adjustHealth, applyEffect, maxSystemHealth, removeEffect } from '../../../utils/systemActions';
+import { adjustHealth, adjustPower, applyEffect, maxSystemHealth, removeEffect } from '../../../utils/systemActions';
 import { getRandomInt } from 'src/utils/random';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
@@ -43,6 +43,34 @@ const getAdjacentIndices = (index: number) => {
 }
 
 type CardBehavior = Omit<EngineeringCard, 'id' | 'type' | 'rarity'>;
+
+function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
+    return {
+        play: (system, ship) => {
+            const fromSystemInfo = ship.systems.get(fromSystem);
+            
+            switch (fromSystemInfo.power) {
+                case 0:
+                    return false;
+                case 1:
+                    applyEffect(fromSystemInfo, ship, SystemStatusEffectType.Reduce1);
+                    applyEffect(system, ship, SystemStatusEffectType.Boost1);
+                    break;
+                case 2:
+                    applyEffect(fromSystemInfo, ship, SystemStatusEffectType.Reduce2);
+                    applyEffect(system, ship, SystemStatusEffectType.Boost2);
+                    break;
+                default:
+                    applyEffect(fromSystemInfo, ship, SystemStatusEffectType.Reduce3);
+                    applyEffect(system, ship, SystemStatusEffectType.Boost3);
+                    break;
+            }
+        },
+        determineAllowedSystems: ship => [...ship.systems.values()]
+            .filter(system => system.system !== fromSystem && system.health > 0)
+            .reduce((prev, current) => prev | current.system, 0 as ShipSystem),
+    }
+}
 
 const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map([
     [EngineeringCardType.AuxPower, {
@@ -93,11 +121,10 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             // Swap places with that system.
             const systemOrder = ship.engineering.systemOrder;
             const firstIndex = systemOrder.indexOf(system.system);
-            if (firstIndex === -1 || firstIndex === systemOrder.length - 1) {
+            const secondIndex = systemOrder.indexOf(swapWithSystem);
+            if (firstIndex === -1 || secondIndex === -1) {
                 return false;
             }
-
-            const secondIndex = systemOrder.indexOf(swapWithSystem);
 
             const firstSystem = systemOrder[firstIndex];
             const secondSystem = systemOrder[secondIndex];
@@ -121,6 +148,13 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             .map(index => ship.engineering.systemOrder[index]) // adjacent systems to effect
             .reduce((prev, current) => prev | current, 0 as ShipSystem)
     }],
+
+    [EngineeringCardType.DivertHull, createDivertBehavior(ShipSystem.Hull)],
+    [EngineeringCardType.DivertShields, createDivertBehavior(ShipSystem.Shields)],
+    [EngineeringCardType.DivertSensors, createDivertBehavior(ShipSystem.Sensors)],
+    [EngineeringCardType.DivertWeapons, createDivertBehavior(ShipSystem.Weapons)],
+    [EngineeringCardType.DivertEngines, createDivertBehavior(ShipSystem.Engines)],
+    [EngineeringCardType.DivertReactor, createDivertBehavior(ShipSystem.Reactor)],
 ]);
 
 const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([

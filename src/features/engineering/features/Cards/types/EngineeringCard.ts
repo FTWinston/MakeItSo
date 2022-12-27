@@ -15,6 +15,12 @@ export enum EngineeringCardType {
     StoredCharge = 'storedCharge',
     Relocate = 'relocate',
     RelocateHere = 'relocateHere',
+    DivertHull = 'divertHull',
+    DivertShields = 'divertShields',
+    DivertSensors = 'divertSensors',
+    DivertWeapons = 'divertWeapons',
+    DivertEngines = 'divertEngines',
+    DivertReactor = 'divertReactor',
 
 
     Boost1 = 'boost1',

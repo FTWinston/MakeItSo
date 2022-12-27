@@ -8,13 +8,14 @@ export enum SystemStatusEffectType {
     StoredCharge = 'stored',
     Relocating = 'relocate',
     Relocated = 'relocated',
-
-
-
     Boost1 = 'boost1',
     Boost2 = 'boost2',
+    Boost3 = 'boost3',
     Reduce1 = 'reduce1',
     Reduce2 = 'reduce2',
+    Reduce3 = 'reduce3',
+
+
     Overload = 'overload',
     Damage = 'damage',
     Repair = 'repair',
