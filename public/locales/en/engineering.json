@@ -41,6 +41,9 @@
     "effect reduce1": "Reduce 1",
     "effect reduce2": "Reduce 2",
     "effect reduce3": "Reduce 3",
+    "effect overcharge": "Over-Charge",
+    "effect reactorOverload": "Overload",
+    "effect reset": "Restarting",
 
     "effect overload": "Overload",
     "effect damage": "Damage",
@@ -62,6 +65,10 @@
     "card divertWeapons title": "Divert Weapon Power",
     "card divertEngines title": "Divert Engine Power",
     "card divertReactor title": "Divert Reactor Power",
+    "card overcharge title": "Over-Charge",
+    "card reactorOverload title": "Reactor Overload",
+    "card purge title": "Purge",
+    "card reset title": "System Reset",
 
     "card boost1 title": "Boost 1",
     "card boostHelm title": "Boost helm",
@@ -75,7 +82,6 @@
     "card repairLarge title": "Repair (large)",
     "card overload title": "Overload",
     "card swapSystems title": "Swap systems",
-    "card purge title": "Purge",
     "card coldRestart title": "Cold Restart",
     "card hotSwap title": "Hot Swap",
     "card superCharge title": "Supercharge",
@@ -91,6 +97,10 @@
     "card divertWeapons desc": "Reduce weapon power by up to 3 for 12s, add removed power to target system",
     "card divertEngines desc": "Reduce engine power by up to 3 for 12s, add removed power to target system",
     "card divertReactor desc": "Reduce reactor power by up to 3 for 12s, add removed power to target system",
+    "card overcharge desc": "Increase system power by 2 for 10s, dealing 25 damage",
+    "card reactorOverload desc": "Add 1 power to every system for 12s, then deal 50 damage to the reactor",
+    "card purge desc": "Remove a negative effect from the target system",
+    "card reset desc": "Disable system for 2 seconds, then remove all effects",
 
     "card boost1 desc": "Boosts a system's power by 1 for 15s",
     "card boostHelm desc": "Boosts helm power by 2 for 12s",
@@ -104,7 +114,6 @@
     "card repairLarge desc": "Restores 50% of a system's health",
     "card overload desc": "Boosts a system's power by 3 for 12s, then damages it",
     "card swapSystems desc": "Swaps the position of the selected system with the one below it",
-    "card purge desc": "Removes all negative effects from a system",
     "card coldRestart desc": "Repair 75 damage, but drain all power from target system for 12 seconds",
     "card hotSwap desc": "Drain all power from target system for 3 seconds, then repair 30 damage",
     "card superCharge desc": "Damages adjacent systems, boosts a system's power by 4 for 10s, then damages it"

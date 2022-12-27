@@ -21,7 +21,10 @@ export enum EngineeringCardType {
     DivertWeapons = 'divertWeapons',
     DivertEngines = 'divertEngines',
     DivertReactor = 'divertReactor',
-
+    Overcharge = 'overcharge',
+    ReactorOverload = 'reactorOverload',
+    Purge = 'purge',
+    Reset = 'reset',
 
     Boost1 = 'boost1',
     BoostHelm = 'boostHelm',
@@ -34,9 +37,7 @@ export enum EngineeringCardType {
     RepairMedium = 'repairMedium',
     RepairLarge = 'repairLarge',
     Overload = 'overload',
-
     SwapSystems = 'swapSystems',
-    Purge = 'purge',
     ColdRestart = 'coldRestart',
     HotSwap = 'hotSwap',
     Supercharge = 'superCharge',

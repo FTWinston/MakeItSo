@@ -35,6 +35,15 @@ export const CardIcon: React.FC<Props> = props => {
     case EngineeringCardType.DivertReactor:
         Icon = DivertIcon;
         break;
+    case EngineeringCardType.Overcharge:
+        return <EffectIcon effect={SystemStatusEffectType.Overcharge} className={props.className} />;
+    case EngineeringCardType.ReactorOverload:
+        return <EffectIcon effect={SystemStatusEffectType.ReactorOverload} className={props.className} />;
+    case EngineeringCardType.Purge:
+        Icon = PurgeIcon;
+        break;
+    case EngineeringCardType.Reset:
+        return <EffectIcon effect={SystemStatusEffectType.Reset} className={props.className} />;
 
     case EngineeringCardType.Boost1:
         return <EffectIcon effect={SystemStatusEffectType.Boost1} className={props.className} />;
@@ -59,9 +68,6 @@ export const CardIcon: React.FC<Props> = props => {
         return <EffectIcon effect={SystemStatusEffectType.Repair} className={props.className} />;
     case EngineeringCardType.SwapSystems:
         return <EffectIcon effect={SystemStatusEffectType.SwapHorizontal} className={props.className} />;
-    case EngineeringCardType.Purge:
-        Icon = PurgeIcon;
-        break;
     case EngineeringCardType.ColdRestart:
         return <EffectIcon effect={SystemStatusEffectType.Offline} className={props.className} />;
     case EngineeringCardType.HotSwap:

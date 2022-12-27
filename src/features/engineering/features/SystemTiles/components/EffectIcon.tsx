@@ -5,6 +5,9 @@ import RelocatedIcon from '@mui/icons-material/SwapHoriz';
 import Number1Icon from '@mui/icons-material/LooksOne';
 import Number2Icon from '@mui/icons-material/LooksTwo';
 import Number3Icon from '@mui/icons-material/Looks3';
+import OverchargeIcon from '@mui/icons-material/Whatshot';
+import ReactorOverloadIcon from '@mui/icons-material/Brightness7';
+import ResetIcon from '@mui/icons-material/SettingsBackupRestore';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 
 import OverloadIcon from '@mui/icons-material/Warning';
@@ -49,6 +52,15 @@ export const EffectIcon: React.FC<Props> = props => {
     case SystemStatusEffectType.Boost3:
     case SystemStatusEffectType.Reduce3:
         Icon = Number3Icon;
+        break;
+    case SystemStatusEffectType.Overcharge:
+        Icon = OverchargeIcon;
+        break;
+    case SystemStatusEffectType.ReactorOverload:
+        Icon = ReactorOverloadIcon;
+        break;
+    case SystemStatusEffectType.Reset:
+        Icon = ResetIcon;
         break;
 
     case SystemStatusEffectType.Overload:

@@ -13,6 +13,11 @@ const onlyDamagedSystems = (ship: ShipState) =>
         .filter(system => system.health < maxSystemHealth)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
 
+const onlyNegativeAffectedSystems = (ship: ShipState) =>
+    [...ship.systems.values()]
+        .filter(system => system.effects.some(effect => effect.positive === false))
+        .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
+    
 const onlyOnlineSystems = (ship: ShipState) =>
     [...ship.systems.values()]
         .filter(system => system.health > 0)
@@ -105,6 +110,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.RelocateHere, EngineeringCardRarity.Rare);
             ship.engineering.handCards.push(newCard);
         },
+        determineAllowedSystems: onlyOnlineSystems,
     }],
 
     [EngineeringCardType.RelocateHere, {
@@ -155,6 +161,38 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     [EngineeringCardType.DivertWeapons, createDivertBehavior(ShipSystem.Weapons)],
     [EngineeringCardType.DivertEngines, createDivertBehavior(ShipSystem.Engines)],
     [EngineeringCardType.DivertReactor, createDivertBehavior(ShipSystem.Reactor)],
+
+    [EngineeringCardType.Overcharge, {
+        play: (system, ship) => {
+            applyEffect(system, ship, SystemStatusEffectType.Overcharge);
+        },
+        determineAllowedSystems: onlyOnlineSystems,
+    }],
+    [EngineeringCardType.ReactorOverload, {
+        play: (system, ship) => {
+            applyEffect(system, ship, SystemStatusEffectType.ReactorOverload);
+
+            for (const otherSystem of ship.systems.values()) {
+                if (otherSystem.system !== ShipSystem.Reactor) {
+                    applyEffect(otherSystem, ship, SystemStatusEffectType.Boost1);
+                }
+            }
+        },
+        determineAllowedSystems: ship => ship.systems.get(ShipSystem.Reactor).health > 0 ? ShipSystem.Reactor : 0,
+    }],
+    [EngineeringCardType.Purge, {
+        play: (system, ship) => {
+            const removeIndex = system.effects.findIndex(effect => effect.positive === false);
+            system.effects.splice(removeIndex, 1);
+        },
+        determineAllowedSystems: onlyNegativeAffectedSystems,
+    }],
+    [EngineeringCardType.Reset, {
+        play: (system, ship) => {
+            applyEffect(system, ship, SystemStatusEffectType.Reset);
+        },
+        determineAllowedSystems: onlyOnlineSystems,
+    }],
 ]);
 
 const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
@@ -168,21 +206,27 @@ const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
     [
         EngineeringCardRarity.Uncommon,
         [
-            // TODO: rpelace this
-            EngineeringCardType.StoredCharge,
+            EngineeringCardType.DivertHull,
+            EngineeringCardType.DivertShields,
+            EngineeringCardType.DivertSensors,
+            EngineeringCardType.DivertWeapons,
+            EngineeringCardType.DivertEngines,
+            EngineeringCardType.DivertReactor,
+            EngineeringCardType.Purge,
         ]
     ],
     [
         EngineeringCardRarity.Rare,
         [
             EngineeringCardType.Relocate,
+            EngineeringCardType.Overcharge,
+            EngineeringCardType.Reset,
         ]
     ],
     [
         EngineeringCardRarity.Epic,
         [
-            // TODO: replace this
-            EngineeringCardType.StoredCharge,
+            EngineeringCardType.ReactorOverload,
         ]
     ],
 ]) as DefiniteMap<EngineeringCardRarity, EngineeringCardType[]>;

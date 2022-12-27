@@ -14,6 +14,9 @@ export enum SystemStatusEffectType {
     Reduce1 = 'reduce1',
     Reduce2 = 'reduce2',
     Reduce3 = 'reduce3',
+    Overcharge = 'overcharge',
+    ReactorOverload = 'reactorOverload',
+    Reset = 'reset',
 
 
     Overload = 'overload',

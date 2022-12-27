@@ -125,6 +125,58 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehavior> = 
             remove: (system: SystemState) => adjustPower(system, 3),
         },
     ],
+    [
+        SystemStatusEffectType.Overcharge,
+        {
+            positive: false,
+            duration: 10,
+            apply: (system: SystemState) => adjustPower(system, 2),
+            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+                adjustPower(system, -2);
+
+                // TODO: damage over time?
+                if (!forced) {
+                    adjustHealth(system, -25);
+                }
+            },
+        },
+    ],
+    [
+        SystemStatusEffectType.ReactorOverload,
+        {
+            positive: false,
+            duration: 15,
+            apply: (system: SystemState) => {
+                adjustPower(system, 1);
+                adjustHealth(system, -10);
+            },
+            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+                adjustPower(system, -1);
+
+                // TODO: damage over time?
+                if (!forced) {
+                    adjustHealth(system, -50);
+                }
+            },
+        },
+    ],
+    [
+        SystemStatusEffectType.Reset,
+        {
+            positive: true,
+            duration: 2,
+            apply: (system: SystemState) => {
+                adjustPower(system, -10);
+            },
+            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+                adjustPower(system, 10);
+
+                if (!forced) {
+                    system.effects = [];
+                }
+            },
+        },
+    ],
 
     
     [
