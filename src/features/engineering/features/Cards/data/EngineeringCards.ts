@@ -23,6 +23,25 @@ const onlyPoweredSystems = (ship: ShipState) =>
         .filter(system => system.power > 0)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
 
+const getAdjacentIndices = (index: number) => {
+    switch (index) {
+        case 0:
+            return [1, 2];
+        case 1:
+            return [0, 3];
+        case 2:
+            return [0, 3, 4];
+        case 3:
+            return [1, 2, 5];
+        case 4:
+            return [2, 5];
+        case 5:
+            return [3, 4];
+        default:
+            return [];
+    }
+}
+
 type CardBehavior = Omit<EngineeringCard, 'id' | 'type' | 'rarity'>;
 
 const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map([
@@ -95,6 +114,12 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             // Remove the "Relocating" effect from the swapped system.
             removeEffect(secondState, ship, SystemStatusEffectType.Relocating);
         },
+        determineAllowedSystems: ship => ship.engineering.systemOrder
+            .filter(system => ship.systems.get(system).effects.some(effect => effect.type === SystemStatusEffectType.Relocating)) // systems with effect
+            .map(system => ship.engineering.systemOrder.indexOf(system)) // indexes with effect
+            .flatMap(index => getAdjacentIndices(index)) // adjacent indexes to effect
+            .map(index => ship.engineering.systemOrder[index]) // adjacent systems to effect
+            .reduce((prev, current) => prev | current, 0 as ShipSystem)
     }],
 ]);
 
