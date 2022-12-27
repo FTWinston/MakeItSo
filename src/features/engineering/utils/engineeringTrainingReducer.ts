@@ -9,8 +9,6 @@ import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
 import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration } from './systemActions';
 
-let nextId = 14;
-
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
     switch (action.type) {
         case 'reset':
@@ -22,6 +20,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                     handCards: action.handCards,
                     numChoices: action.numChoices,
                     choiceProgress: action.choiceProcess,
+                    nextCardId: 14,
                 }
             };
             
@@ -84,7 +83,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
             if (state.engineering.numChoices > 0) {
                 state.engineering.choiceCards = state.engineering.numChoices > 1
-                    ? createCards([nextId++, nextId++, nextId++])
+                    ? createCards([state.engineering.nextCardId++, state.engineering.nextCardId++, state.engineering.nextCardId++])
                     : [];
 
                 state.engineering.numChoices --;
@@ -122,7 +121,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 state.engineering.numChoices = Math.min(9, state.engineering.numChoices + 1);
                 
                 if (state.engineering.choiceCards.length === 0) {
-                    state.engineering.choiceCards = createCards([nextId++, nextId++, nextId++]);
+                    state.engineering.choiceCards = createCards([state.engineering.nextCardId++, state.engineering.nextCardId++, state.engineering.nextCardId++]);
                 }
 
                 state.engineering.choiceProgress = undefined;

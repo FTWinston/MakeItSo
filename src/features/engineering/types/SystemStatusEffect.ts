@@ -6,6 +6,8 @@ export enum SystemStatusEffectType {
     AuxPower = 'auxPower',
     StoreCharge = 'storing',
     StoredCharge = 'stored',
+    Relocating = 'relocate',
+    Relocated = 'relocated',
 
 
 

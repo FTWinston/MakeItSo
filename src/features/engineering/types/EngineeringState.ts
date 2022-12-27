@@ -11,6 +11,7 @@ export interface EngineeringState {
     choiceCards: EngineeringCard[];
     numChoices: number;
     choiceProgress?: TimeSpan;
+    nextCardId: number;
 }
 
 export type EffectAction = {

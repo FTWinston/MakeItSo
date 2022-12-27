@@ -1,3 +1,4 @@
+import RelocateHereIcon from '@mui/icons-material/PanToolAlt';
 import BoostShieldIcon from '@mui/icons-material/Security';
 import PurgeIcon from '@mui/icons-material/BlurOff';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
@@ -18,9 +19,13 @@ export const CardIcon: React.FC<Props> = props => {
     case EngineeringCardType.AuxPower:
         return <EffectIcon effect={SystemStatusEffectType.AuxPower} className={props.className} />;
     case EngineeringCardType.StoreCharge:
+    case EngineeringCardType.StoredCharge:
         return <EffectIcon effect={SystemStatusEffectType.StoredCharge} className={props.className} />;
-
-
+    case EngineeringCardType.Relocate:
+        return <EffectIcon effect={SystemStatusEffectType.Relocating} className={props.className} />;
+    case EngineeringCardType.RelocateHere:
+        Icon = RelocateHereIcon;
+        break;
 
     case EngineeringCardType.Boost1:
         return <EffectIcon effect={SystemStatusEffectType.Boost1} className={props.className} />;

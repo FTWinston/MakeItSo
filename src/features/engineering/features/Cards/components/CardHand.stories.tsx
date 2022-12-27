@@ -1,8 +1,9 @@
 import { CardHand as CardHandComponent } from './CardHand';
-import { createCommonCard, createEpicCard, createUncommonCard, createRareCard, createCard } from '../data/EngineeringCards';
+import { createCardByRarity, createRandomCard } from '../data/EngineeringCards';
 import { useState } from 'react';
 import { stubHeight } from './CardStub';
 import { action } from '@storybook/addon-actions';
+import { EngineeringCardRarity } from '../types/EngineeringCard';
 
 export default {
     title: 'Engineering/Cards/Card Hand',
@@ -11,14 +12,14 @@ export default {
 };
 
 export const storyCards = [
-    createCommonCard(1),
-    createEpicCard(2),
-    createCommonCard(3),
-    createUncommonCard(4),
-    createCommonCard(5),
-    createRareCard(6),
-    createCommonCard(7),
-    createUncommonCard(8),
+    createCardByRarity(1, EngineeringCardRarity.Common),
+    createCardByRarity(2, EngineeringCardRarity.Epic),
+    createCardByRarity(3, EngineeringCardRarity.Common),
+    createCardByRarity(4, EngineeringCardRarity.Uncommon),
+    createCardByRarity(5, EngineeringCardRarity.Common),
+    createCardByRarity(6, EngineeringCardRarity.Rare),
+    createCardByRarity(7, EngineeringCardRarity.Common),
+    createCardByRarity(8, EngineeringCardRarity.Uncommon),
 ];
 
 export const CardHand = () => {
@@ -38,7 +39,7 @@ export const CardHand = () => {
             <br/><br/>
 
             <button onClick={() => {
-                setCards([...cards, createCard(nextID)]);
+                setCards([...cards, createRandomCard(nextID)]);
                 setNextID(nextID + 1);
             }}>add card</button>
 

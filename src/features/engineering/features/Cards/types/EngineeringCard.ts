@@ -12,6 +12,9 @@ export enum EngineeringCardRarity {
 export enum EngineeringCardType {
     AuxPower = 'auxPower',
     StoreCharge = 'storeCharge',
+    StoredCharge = 'storedCharge',
+    Relocate = 'relocate',
+    RelocateHere = 'relocateHere',
 
 
     Boost1 = 'boost1',

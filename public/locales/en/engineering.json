@@ -31,8 +31,10 @@
 
     "effect duration": "Duration",
     "effect auxPower": "Aux power",
-    "effect storeCharge": "Storing charge",
-    "effect storedCharge": "Stored charge",
+    "effect storing": "Storing charge",
+    "effect stored": "Stored charge",
+    "effect relocate": "Relocating",
+    "effect relocated": "Relocated",
 
     "effect boost1": "Boost 1",
     "effect boost2": "Boost 2",
@@ -45,11 +47,13 @@
     "effect swapV": "Swap (vertical)",
     "effect offline": "Offline",
     "effect hotSwap": "Hot Swap",
-    "effect supercharge": "Supercharge",
+    "effect superCharge": "Supercharge",
 
     "card auxPower title": "Aux Power",
     "card storeCharge title": "Store Charge",
     "card storedCharge title": "Stored Charge",
+    "card relocate title": "Relocate",
+    "card relocateHere title": "Relocate to Here",
 
     "card boost1 title": "Boost 1",
     "card boostHelm title": "Boost helm",
@@ -71,6 +75,8 @@
     "card auxPower desc": "Increases system power by 1 for 60s, removes aux power from other systems",
     "card storeCharge desc": "Decreases system power by 1 for 30s, then adds a Stored Charge card to your hand",
     "card storedCharge desc": "Increases system power by 1 for 10s",
+    "card relocate desc": "Mark a system to be moved, and add a card to your hand that lets you specify which syste it should swap with",
+    "card relocateHere desc": "Specify where the system with the Relocating effect should be moved to",
 
     "card boost1 desc": "Boosts a system's power by 1 for 15s",
     "card boostHelm desc": "Boosts helm power by 2 for 12s",

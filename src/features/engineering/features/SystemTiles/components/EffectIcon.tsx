@@ -1,5 +1,7 @@
 import AuxPowerIcon from '@mui/icons-material/Power';
 import StoreChargeIcon from '@mui/icons-material/BatterySaver';
+import RelocatingIcon from '@mui/icons-material/OpenWith';
+import RelocatedIcon from '@mui/icons-material/SwapHoriz';
 
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import Boost1Icon from '@mui/icons-material/KeyboardArrowUp';
@@ -31,6 +33,14 @@ export const EffectIcon: React.FC<Props> = props => {
     case SystemStatusEffectType.StoredCharge:
         Icon = StoreChargeIcon;
         break;
+    case SystemStatusEffectType.Relocating:
+        Icon = RelocatingIcon;
+        break;
+    case SystemStatusEffectType.Relocated:
+        Icon = RelocatedIcon;
+        break;
+
+
     case SystemStatusEffectType.Boost2:
         Icon = Boost2Icon;
         break;

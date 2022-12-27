@@ -5,6 +5,8 @@ import { getRandomInt } from 'src/utils/random';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
+import { arrayToMap } from 'src/utils/arrays';
+import { DefiniteMap } from 'src/types/DefiniteMap';
 
 const onlyDamagedSystems = (ship: ShipState) =>
     [...ship.systems.values()]
@@ -21,11 +23,10 @@ const onlyPoweredSystems = (ship: ShipState) =>
         .filter(system => system.power > 0)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
 
-const commonCards: Array<(id: number) => EngineeringCard> = [
-    id => ({
-        id,
-        type: EngineeringCardType.AuxPower,
-        rarity: EngineeringCardRarity.Common,
+type CardBehavior = Omit<EngineeringCard, 'id' | 'type' | 'rarity'>;
+
+const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map([
+    [EngineeringCardType.AuxPower, {
         play: (system, ship) => {
             for (const otherSystemState of ship.systems.values()) {
                 removeEffect(otherSystemState, ship, SystemStatusEffectType.AuxPower);
@@ -34,22 +35,116 @@ const commonCards: Array<(id: number) => EngineeringCard> = [
             applyEffect(system, ship, SystemStatusEffectType.AuxPower);
         },
         determineAllowedSystems: onlyOnlineSystems,
-    }),
-    id => ({
-        id,
-        type: EngineeringCardType.StoreCharge,
-        rarity: EngineeringCardRarity.Common,
+    }],
+
+    [EngineeringCardType.StoreCharge, {
         play: (system, ship) => {
             applyEffect(system, ship, SystemStatusEffectType.StoreCharge);
         },
         determineAllowedSystems: onlyPoweredSystems,
-    }),
+    }],
 
+    [EngineeringCardType.StoredCharge, {
+        play: (system, ship) => {
+            applyEffect(system, ship, SystemStatusEffectType.StoredCharge);
+        },
+        determineAllowedSystems: onlyOnlineSystems,
+    }],
 
+    [EngineeringCardType.Relocate, {
+        play: (system, ship) => {
+            applyEffect(system, ship, SystemStatusEffectType.Relocating);
 
+            const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.RelocateHere, EngineeringCardRarity.Rare);
+            ship.engineering.handCards.push(newCard);
+        },
+    }],
 
+    [EngineeringCardType.RelocateHere, {
+        play: (system, ship) => {
+            // Find the system with the "relocating" effect.
+            const swapWithSystem = [...ship.systems.values()]
+                .find(system => system.effects.find(effect => effect.type === SystemStatusEffectType.Relocating))
+                ?.system
 
+            if (!swapWithSystem) {
+                return false;
+            }
 
+            // Swap places with that system.
+            const systemOrder = ship.engineering.systemOrder;
+            const firstIndex = systemOrder.indexOf(system.system);
+            if (firstIndex === -1 || firstIndex === systemOrder.length - 1) {
+                return false;
+            }
+
+            const secondIndex = systemOrder.indexOf(swapWithSystem);
+
+            const firstSystem = systemOrder[firstIndex];
+            const secondSystem = systemOrder[secondIndex];
+            systemOrder[firstIndex] = secondSystem;
+            systemOrder[secondIndex] = firstSystem;
+
+            // Apply a temporary effect to both.
+            const firstState = ship.systems.get(firstSystem);
+            applyEffect(firstState, ship, SystemStatusEffectType.Relocated);
+
+            const secondState = ship.systems.get(secondSystem);
+            applyEffect(secondState, ship, SystemStatusEffectType.Relocated);
+
+            // Remove the "Relocating" effect from the swapped system.
+            removeEffect(secondState, ship, SystemStatusEffectType.Relocating);
+        },
+    }],
+]);
+
+const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
+    [
+        EngineeringCardRarity.Common,
+        [
+            EngineeringCardType.AuxPower,
+            EngineeringCardType.StoreCharge,
+        ]
+    ],
+    [
+        EngineeringCardRarity.Uncommon,
+        [
+            // TODO: rpelace this
+            EngineeringCardType.StoredCharge,
+        ]
+    ],
+    [
+        EngineeringCardRarity.Rare,
+        [
+            EngineeringCardType.Relocate,
+        ]
+    ],
+    [
+        EngineeringCardRarity.Epic,
+        [
+            // TODO: replace this
+            EngineeringCardType.StoredCharge,
+        ]
+    ],
+]) as DefiniteMap<EngineeringCardRarity, EngineeringCardType[]>;
+
+export function createCard(id: number, type: EngineeringCardType, rarity: EngineeringCardRarity): EngineeringCard {
+    const behavior = cardBehaviorByIdentifier.get(type);
+
+    if (behavior === undefined) {
+        throw new Error(`Card not found: ${type}`);
+    }
+
+    return {
+        id,
+        type,
+        rarity,
+        ...behavior,
+    };
+}
+
+/*
+const commonCards: Array<(id: number) => EngineeringCard> = [
     id => ({
         id,
         type: EngineeringCardType.Boost1,
@@ -169,36 +264,6 @@ const rareCards: Array<(id: number) => EngineeringCard> = [
 
     id => ({
         id,
-        type: EngineeringCardType.SwapSystems,
-        rarity: EngineeringCardRarity.Rare,
-        play: (system, ship) => {
-            const systemOrder = ship.engineering.systemOrder;
-            const firstIndex = systemOrder.indexOf(system.system);
-            if (firstIndex === -1 || firstIndex === systemOrder.length - 1) {
-                return false;
-            }
-
-            const secondIndex = firstIndex + 2;
-
-            const firstSystem = systemOrder[firstIndex];
-            const secondSystem = systemOrder[secondIndex];
-
-            const firstState = ship.systems.get(firstSystem);
-            applyEffect(firstState, ship, SystemStatusEffectType.SwapVertical);
-
-            const secondState = ship.systems.get(secondSystem);
-            applyEffect(secondState, ship, SystemStatusEffectType.SwapVertical);
-
-            systemOrder[firstIndex] = secondSystem;
-            systemOrder[secondIndex] = firstSystem;
-        },
-        determineAllowedSystems: ship => ship.engineering.systemOrder
-            .slice(0, ship.engineering.systemOrder.length - 2)
-            .reduce((prev, current) => prev | current, 0 as ShipSystem),
-    }),
-
-    id => ({
-        id,
         type: EngineeringCardType.Purge,
         rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
@@ -279,29 +344,13 @@ const epicCards: Array<(id: number) => EngineeringCard> = [
         determineAllowedSystems: onlyDamagedSystems,
     }),
 ];
+*/
 
-export function createCommonCard(id: number) {
-    const index = getRandomInt(commonCards.length);
-
-    return commonCards[index](id);
-}
-
-export function createUncommonCard(id: number) {
-    const index = getRandomInt(uncommonCards.length);
-
-    return uncommonCards[index](id);
-}
-
-export function createRareCard(id: number) {
-    const index = getRandomInt(rareCards.length);
-
-    return rareCards[index](id);
-}
-
-export function createEpicCard(id: number) {
-    const index = getRandomInt(epicCards.length);
-
-    return epicCards[index](id);
+export function createCardByRarity(id: number, rarity: EngineeringCardRarity) {
+    const possibleCards = cardsByRarity.get(rarity);
+    const index = getRandomInt(possibleCards.length);
+    const type = possibleCards[index];
+    return createCard(id, type, rarity);
 }
 
 const commonChance = 0.5;
@@ -314,21 +363,24 @@ const cumulativeUncommonChance = cumulativeCommonChance + uncommonChance;
 const cumulativeRareChance = cumulativeUncommonChance + rareChance;
 const cumulativeTotalChance = cumulativeRareChance + epicChance;
 
-export function createCard(id: number): EngineeringCard {
+export function createRandomCard(id: number): EngineeringCard {
     const randomValue = Math.random() * cumulativeTotalChance;
+    let rarity: EngineeringCardRarity;
 
     if (randomValue < cumulativeCommonChance) {
-        return createCommonCard(id);
+        rarity = EngineeringCardRarity.Common;
     }
     else if (randomValue < cumulativeUncommonChance) {
-        return createUncommonCard(id);
+        rarity = EngineeringCardRarity.Uncommon;
     }
     else if (randomValue < cumulativeRareChance) {
-        return createRareCard(id);
+        rarity = EngineeringCardRarity.Rare;
     }
     else {
-        return createEpicCard(id);
+        rarity = EngineeringCardRarity.Epic;
     }
+
+    return createCardByRarity(id, rarity);
 }
 
 export function createCards(ids: number[]): EngineeringCard[] {
@@ -338,7 +390,7 @@ export function createCards(ids: number[]): EngineeringCard[] {
         let newCard: EngineeringCard;
 
         do {
-            newCard = createCard(id);
+            newCard = createRandomCard(id);
         } while (results.some(card => card.type === newCard.type));
 
         results.push(newCard);
