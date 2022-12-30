@@ -1,4 +1,4 @@
-import { SystemStatusEffectType } from '../types/SystemStatusEffect';
+import { SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { PowerLevel, SystemState } from 'src/types/SystemState';
 import { createEffect } from './SystemStatusEffects';
 import { getTime, hasCompleted } from 'src/utils/timeSpans';
@@ -46,26 +46,26 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
     }
 }
 
-export function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffectType) {
-    const effectInstance = createEffect(effect);
-    system.effects.push(effectInstance);
-    effectInstance.apply(system, ship);
+export function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffect) {
+    system.effects.push(effect);
+    effect.apply(system, ship);
 }
 
-export function removeEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffectType, forced: boolean = true) {
+// TODO: can this method be removed in favor of one that does it by ID?
+export function removeEffect(system: SystemState, ship: ShipState, effectType: SystemStatusEffectType, forced: boolean = true) {
     const toRemove = system.effects
-        .filter(instance => instance.type === effect);
+        .filter(instance => instance.type === effectType);
 
     if (toRemove.length === 0) {
         return;
     }
 
-    for (const effectInstance of toRemove) {
-        effectInstance.remove(system, ship, forced);
+    for (const effect of toRemove) {
+        effect.remove(system, ship, forced);
     }
 
     system.effects = system.effects
-        .filter(instance => instance.type !== effect);
+        .filter(instance => instance.type !== effectType);
 }
 
 export function removeExpiredEffects(systemState: SystemState, ship: ShipState, currentTime = getTime()) {

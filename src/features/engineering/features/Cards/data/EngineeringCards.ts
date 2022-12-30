@@ -1,6 +1,7 @@
 import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../types/EngineeringCard';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { adjustHealth, adjustPower, applyEffect, maxSystemHealth, removeEffect } from '../../../utils/systemActions';
+import { createEffect, createPrimaryEffect, createSecondaryEffect } from '../../../utils/SystemStatusEffects';
 import { getRandomInt } from 'src/utils/random';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
@@ -54,22 +55,31 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
         play: (system, ship) => {
             const fromSystemInfo = ship.systems.get(fromSystem);
             
+            let reduceEffectType: SystemStatusEffectType;
+            let boostEffectType: SystemStatusEffectType;
+
             switch (fromSystemInfo.power) {
                 case 0:
                     return false;
                 case 1:
-                    applyEffect(fromSystemInfo, ship, SystemStatusEffectType.Reduce1);
-                    applyEffect(system, ship, SystemStatusEffectType.Boost1);
+                    reduceEffectType = SystemStatusEffectType.Reduce1;
+                    boostEffectType = SystemStatusEffectType.Boost1;
                     break;
                 case 2:
-                    applyEffect(fromSystemInfo, ship, SystemStatusEffectType.Reduce2);
-                    applyEffect(system, ship, SystemStatusEffectType.Boost2);
+                    reduceEffectType = SystemStatusEffectType.Reduce2;
+                    boostEffectType = SystemStatusEffectType.Boost2;
                     break;
                 default:
-                    applyEffect(fromSystemInfo, ship, SystemStatusEffectType.Reduce3);
-                    applyEffect(system, ship, SystemStatusEffectType.Boost3);
+                    reduceEffectType = SystemStatusEffectType.Reduce3;
+                    boostEffectType = SystemStatusEffectType.Boost3;
                     break;
             }
+            
+            const reduceEffect = createPrimaryEffect(ship.engineering.nextEffectId++, reduceEffectType);
+            const boostEffect = createSecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, reduceEffect.id);
+
+            applyEffect(fromSystemInfo, ship, reduceEffect);
+            applyEffect(system, ship, boostEffect);
         },
         determineAllowedSystems: ship => [...ship.systems.values()]
             .filter(system => system.system !== fromSystem && system.health > 0)
@@ -84,28 +94,32 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
                 removeEffect(otherSystemState, ship, SystemStatusEffectType.AuxPower);
             }
 
-            applyEffect(system, ship, SystemStatusEffectType.AuxPower);
+            const effect = createEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.AuxPower);
+            applyEffect(system, ship, effect);
         },
         determineAllowedSystems: onlyOnlineSystems,
     }],
 
     [EngineeringCardType.StoreCharge, {
         play: (system, ship) => {
-            applyEffect(system, ship, SystemStatusEffectType.StoreCharge);
+            const effect = createEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.StoreCharge);
+            applyEffect(system, ship, effect);
         },
         determineAllowedSystems: onlyPoweredSystems,
     }],
 
     [EngineeringCardType.StoredCharge, {
         play: (system, ship) => {
-            applyEffect(system, ship, SystemStatusEffectType.StoredCharge);
+            const effect = createEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.StoredCharge);
+            applyEffect(system, ship, effect);
         },
         determineAllowedSystems: onlyOnlineSystems,
     }],
 
     [EngineeringCardType.Relocate, {
         play: (system, ship) => {
-            applyEffect(system, ship, SystemStatusEffectType.Relocating);
+            const effect = createEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocating);
+            applyEffect(system, ship, effect);
 
             const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.RelocateHere, EngineeringCardRarity.Rare);
             ship.engineering.handCards.push(newCard);
@@ -139,10 +153,12 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
             // Apply a temporary effect to both.
             const firstState = ship.systems.get(firstSystem);
-            applyEffect(firstState, ship, SystemStatusEffectType.Relocated);
+            const firstEffect = createPrimaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocated);
+            applyEffect(firstState, ship, firstEffect);
 
             const secondState = ship.systems.get(secondSystem);
-            applyEffect(secondState, ship, SystemStatusEffectType.Relocated);
+            const secondEffect = createSecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocated, firstEffect.id);
+            applyEffect(secondState, ship, secondEffect);
 
             // Remove the "Relocating" effect from the swapped system.
             removeEffect(secondState, ship, SystemStatusEffectType.Relocating);
@@ -164,17 +180,20 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
     [EngineeringCardType.Overcharge, {
         play: (system, ship) => {
-            applyEffect(system, ship, SystemStatusEffectType.Overcharge);
+            const effect = createEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Overcharge);
+            applyEffect(system, ship, effect);
         },
         determineAllowedSystems: onlyOnlineSystems,
     }],
     [EngineeringCardType.ReactorOverload, {
         play: (system, ship) => {
-            applyEffect(system, ship, SystemStatusEffectType.ReactorOverload);
+            const reactorEffect = createPrimaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.ReactorOverload);
+            applyEffect(system, ship, reactorEffect);
 
             for (const otherSystem of ship.systems.values()) {
                 if (otherSystem.system !== ShipSystem.Reactor) {
-                    applyEffect(otherSystem, ship, SystemStatusEffectType.Boost1);
+                    const effect = createSecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Boost1, reactorEffect.id);
+                    applyEffect(otherSystem, ship, effect);
                 }
             }
         },
@@ -189,7 +208,8 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     }],
     [EngineeringCardType.Reset, {
         play: (system, ship) => {
-            applyEffect(system, ship, SystemStatusEffectType.Reset);
+            const effect = createEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reset);
+            applyEffect(system, ship, effect);
         },
         determineAllowedSystems: onlyOnlineSystems,
     }],

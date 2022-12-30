@@ -1,10 +1,10 @@
 import { EffectIndicator, indicatorSize } from './EffectIndicator';
-import { ClientSystemStatusEffectInstance } from '../../../types/SystemStatusEffect';
+import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
 import { styled } from '@mui/material/styles';
 
 interface Props {
     className?: string;
-    effects: ClientSystemStatusEffectInstance[];
+    effects: SystemStatusEffectInfo[];
 }
 
 const Root = styled('div')({
@@ -28,7 +28,7 @@ export const EffectIndicators: React.FC<Props> = props => {
         <Root className={props.className}>
             {props.effects.map((effect, index) => (
                 <Item
-                    key={effect.type}
+                    key={effect.id}
                     style={{ left: `calc((100% - ${indicatorSize}) * ${index + 0.5} / ${props.effects.length})` }}
                 >
                     <EffectIndicator {...effect} />

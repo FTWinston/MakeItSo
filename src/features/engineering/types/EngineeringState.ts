@@ -3,7 +3,7 @@ import { SystemState } from 'src/types/SystemState';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCard } from '../features/Cards';
 import { LogEvent } from '../features/SystemTiles';
-import { SystemStatusEffectInstance } from './SystemStatusEffect';
+import { SystemStatusEffect } from './SystemStatusEffect';
 
 export interface EngineeringState {
     systemOrder: ShipSystem[];
@@ -12,13 +12,14 @@ export interface EngineeringState {
     numChoices: number;
     choiceProgress?: TimeSpan;
     nextCardId: number;
+    nextEffectId: number;
 }
 
 export type EffectAction = {
     type: 'effect';
     system: ShipSystem;
     healthChange?: number;
-    addEffects?: SystemStatusEffectInstance[];
+    addEffects?: SystemStatusEffect[];
     events?: LogEvent[];
 }
 

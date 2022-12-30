@@ -21,6 +21,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                     numChoices: action.numChoices,
                     choiceProgress: action.choiceProcess,
                     nextCardId: 14,
+                    nextEffectId: 1,
                 }
             };
             

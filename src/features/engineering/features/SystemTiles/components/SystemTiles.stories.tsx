@@ -78,7 +78,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         power: 2,
         unconstrainedPower: 2,
         effects: [
-            createEffect(SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
+            createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
         ],
         eventLog: [],
     },
@@ -88,9 +88,9 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         power: 2,
         unconstrainedPower: 2,
         effects: [
-            createEffect(SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
-            createEffect(SystemStatusEffectType.Overload, getTime() - durationToTimeSpan(1)),
-            createEffect(SystemStatusEffectType.Boost2, getTime() - durationToTimeSpan(6)),
+            createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
+            createEffect(2, SystemStatusEffectType.Overload, getTime() - durationToTimeSpan(1)),
+            createEffect(3, SystemStatusEffectType.Boost2, getTime() - durationToTimeSpan(6)),
         ],
         eventLog: [],
     },

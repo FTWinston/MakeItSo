@@ -31,6 +31,8 @@ Empty.args = {
                 handCards: [],
                 choiceCards: [],
                 numChoices: 0,
+                nextCardId: 14,
+                nextEffectId: 1,
             }
         };
     },
@@ -54,6 +56,8 @@ Busy.args = {
                 handCards: storyCards,
                 choiceCards: createCards([11, 12, 13]),
                 numChoices: 3,
+                nextCardId: 14,
+                nextEffectId: 1,
             }
         };
     },

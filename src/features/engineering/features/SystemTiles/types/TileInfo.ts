@@ -1,4 +1,4 @@
-import { ClientSystemStatusEffectInstance, SystemStatusEffectInstance } from '../../../types/SystemStatusEffect';
+import { SystemStatusEffectInfo, SystemStatusEffect } from '../../../types/SystemStatusEffect';
 import { ShipSystem } from 'src/types/ShipSystem';
 import type { PowerLevel } from 'src/types/SystemState';
 
@@ -7,11 +7,11 @@ export interface TileInfo {
     health: number;
     power: PowerLevel;
     restoration?: number;
-    effects: SystemStatusEffectInstance[];
+    effects: SystemStatusEffect[];
 }
 
 export interface TileDisplayInfo extends Omit<TileInfo, 'effects'> {
-    effects: ClientSystemStatusEffectInstance[];
+    effects: SystemStatusEffectInfo[];
 }
 
 export interface LogEvent {
