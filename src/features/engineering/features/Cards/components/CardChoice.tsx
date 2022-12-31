@@ -7,7 +7,7 @@ import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub } from './CardStub';
 import { useTranslation } from 'react-i18next';
-import { durationToTimeSpan } from 'src/utils/timeSpans';
+import { durationToTicks } from 'src/utils/timeSpans';
 
 interface Props {
     cards: EngineeringCardInfo[];
@@ -164,8 +164,8 @@ export const CardChoice: React.FC<Props> = props => {
         );
 
     const progress = props.progress ?? {
-        startTime: Date.now() + durationToTimeSpan(100),
-        endTime: Date.now() + durationToTimeSpan(110),
+        startTime: Date.now() + durationToTicks(100),
+        endTime: Date.now() + durationToTicks(110),
     }
 
     return (

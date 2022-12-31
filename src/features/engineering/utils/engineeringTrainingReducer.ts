@@ -3,7 +3,7 @@ import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
-import { adjustDuration, durationToTimeSpan, getTime } from 'src/utils/timeSpans';
+import { adjustDuration, durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
@@ -123,7 +123,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
             if (!state.engineering.choiceProgress) {
                 state.engineering.choiceProgress = {
                     startTime: getTime(),
-                    endTime: getTime() + durationToTimeSpan(determineCardGenerationDuration(reactorSystem.power)),
+                    endTime: getTime() + durationToTicks(determineCardGenerationDuration(reactorSystem.power)),
                 };
             }
             else {

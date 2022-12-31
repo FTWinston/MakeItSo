@@ -2,7 +2,7 @@ import { SystemTiles as TilesComponent } from './SystemTiles';
 import { StoryFn } from '@storybook/react';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Page } from 'src/features/layout';
-import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
+import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { ComponentProps } from 'react';
 import { SystemState } from 'src/types/SystemState';
@@ -85,7 +85,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         unconstrainedPower: 2,
         powerLevelChanged: false,
         effects: [
-            createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
+            createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTicks(10)),
         ],
         eventLog: [],
     },
@@ -96,9 +96,9 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         unconstrainedPower: 2,
         powerLevelChanged: false,
         effects: [
-            createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTimeSpan(10)),
-            createEffect(2, SystemStatusEffectType.Overload, getTime() - durationToTimeSpan(1)),
-            createEffect(3, SystemStatusEffectType.Boost2, getTime() - durationToTimeSpan(6)),
+            createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTicks(10)),
+            createEffect(2, SystemStatusEffectType.Overload, getTime() - durationToTicks(1)),
+            createEffect(3, SystemStatusEffectType.Boost2, getTime() - durationToTicks(6)),
         ],
         eventLog: [],
     },

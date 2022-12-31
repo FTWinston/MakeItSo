@@ -1,7 +1,7 @@
 import { SystemTile } from './SystemTile';
 import { StoryFn } from '@storybook/react';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
-import { durationToTimeSpan } from 'src/utils/timeSpans';
+import { durationToTicks } from 'src/utils/timeSpans';
 import { ComponentProps } from 'react';
 import { ShipSystem } from 'src/types/ShipSystem';
 
@@ -88,7 +88,7 @@ OneEffect.args = {
         {
             type: SystemStatusEffectType.Boost1,
             startTime: Date.now(),
-            endTime: Date.now() + durationToTimeSpan(15),
+            endTime: Date.now() + durationToTicks(15),
             positive: true,
         },
     ],
@@ -103,19 +103,19 @@ ThreeEffects.args = {
         {
             type: SystemStatusEffectType.Overload,
             startTime: Date.now(),
-            endTime: Date.now() + durationToTimeSpan(15),
+            endTime: Date.now() + durationToTicks(15),
             positive: true,
         },
         {
             type: SystemStatusEffectType.Damage,
             startTime: Date.now(),
-            endTime: Date.now() + durationToTimeSpan(12),
+            endTime: Date.now() + durationToTicks(12),
             positive: false,
         },
         {
             type: SystemStatusEffectType.Repair,
             startTime: Date.now(),
-            endTime: Date.now() + durationToTimeSpan(5),
+            endTime: Date.now() + durationToTicks(5),
             positive: true,
         },
     ],
@@ -131,7 +131,7 @@ ValidTarget.args = {
         {
             type: SystemStatusEffectType.Boost1,
             startTime: Date.now(),
-            endTime: Date.now() + durationToTimeSpan(15),
+            endTime: Date.now() + durationToTicks(15),
             positive: true,
         },
     ],
@@ -147,7 +147,7 @@ InvalidTarget.args = {
         {
             type: SystemStatusEffectType.Boost1,
             startTime: Date.now(),
-            endTime: Date.now() + durationToTimeSpan(15),
+            endTime: Date.now() + durationToTicks(15),
             positive: true,
         },
     ],
