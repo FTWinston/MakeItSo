@@ -57,6 +57,8 @@ export type PrimaryEffectLinkInfo = {
 
 export type SecondaryEffectLinkInfo = {
     link: 'secondary';
+    primaryEffect: LinkedEffectInfo;
+    canRemove: boolean;
 }
 
 export type LinkedEffectInfo = {

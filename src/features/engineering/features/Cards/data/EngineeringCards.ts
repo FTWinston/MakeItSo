@@ -76,7 +76,7 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
             }
             
             const reduceEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, reduceEffectType, fromSystemState, ship);
-            applySecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship, reduceEffect);
+            applySecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship, reduceEffect, fromSystemState, true);
         },
         determineAllowedSystems: ship => [...ship.systems.values()]
             .filter(system => system.system !== fromSystem && system.health > 0)
@@ -146,10 +146,10 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
             // Apply a temporary effect to both.
             const firstState = ship.systems.get(firstSystem);
-            const firstEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocated, firstState, ship);
+            applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocated, firstState, ship);
 
             const secondState = ship.systems.get(secondSystem);
-            applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocated, secondState, ship, firstEffect);
+            applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Relocated, secondState, ship);
 
             // Remove the "Relocating" effect from the swapped system.
             removeEffect(secondState, ship, SystemStatusEffectType.Relocating);
@@ -181,7 +181,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
             for (const otherSystem of ship.systems.values()) {
                 if (otherSystem.system !== ShipSystem.Reactor) {
-                    applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Boost1, otherSystem, ship, reactorEffect);
+                    applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Boost1, otherSystem, ship, reactorEffect, system, false);
                 }
             }
         },

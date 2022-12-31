@@ -3,7 +3,8 @@ import { PowerLevel, SystemState } from 'src/types/SystemState';
 import { getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
-import { createEffect, isPrimary } from './SystemStatusEffects';
+import { createEffect, isPrimary, isSecondary } from './SystemStatusEffects';
+import { ShipSystem } from 'src/types/ShipSystem';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
@@ -90,9 +91,18 @@ export function applySecondaryEffect(
     targetSystem: SystemState,
     ship: ShipState,
     primaryEffect: PrimaryStatusEffect,
+    primarySystem: SystemState,
+    canRemove: boolean,
     startTime = getTime()
 ): SecondaryStatusEffect {
-    const link: SecondaryEffectLinkInfo = { link: 'secondary' };
+    const link: SecondaryEffectLinkInfo = {
+        link: 'secondary',
+        primaryEffect: {
+            effectId: primaryEffect.id,
+            system: primarySystem.system,
+        },
+        canRemove
+    };
 
     const secondaryEffect = createEffect(id, type, startTime, link);
 
@@ -107,23 +117,39 @@ export function applySecondaryEffect(
 }
 
 function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, forced: boolean) {
-    effect.remove(system, ship, forced);
+    if (forced) { 
+        if (isPrimary(effect)) {
+            // Primary effects must also remove their linked secondary effects when they are removed.
+            // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
+            for (const secondaryEffect of effect.secondaryEffects) {
+                const secondarySystem = ship.systems.get(secondaryEffect.system);
 
-    // Primary effects must also remove their linked secondary effects when they are removed.
-    // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
-    if (forced && isPrimary(effect)) {
-        for (const secondaryEffect of effect.secondaryEffects) {
-            const secondarySystem = ship.systems.get(secondaryEffect.system);
+                const secondaryEffectIndex = secondarySystem.effects.findIndex(effect => effect.id === secondaryEffect.effectId);
 
-            const secondaryEffectIndex = secondarySystem.effects.findIndex(effect => effect.id === secondaryEffect.effectId);
-
-            if (secondaryEffectIndex !== -1) {
-                const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
-                removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, forced);
-                secondarySystem.effects.splice(secondaryEffectIndex, 1);
+                if (secondaryEffectIndex !== -1) {
+                    const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
+                    removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, forced);
+                    secondarySystem.effects.splice(secondaryEffectIndex, 1);
+                }
             }
         }
+        else if (isSecondary(effect)) {
+            // You can't force remove a secondary effect. Unless it says you can.
+            if (effect.canRemove) {
+                const primarySystem = ship.systems.get(effect.primaryEffect.system);
+                const primaryEffectId = effect.primaryEffect.effectId;
+                const primaryEffect = primarySystem.effects.find(effect => effect.id === primaryEffectId);
+                if (primaryEffect) {
+                    removeEffectInstance(primarySystem, ship, primaryEffect, forced);
+                }
+            }
+
+            // No forced removal of a secondary effect goes ahead directly. Only via the primary, if that's allowed.
+            return; 
+        }   
     }
+
+    effect.remove(system, ship, forced);
 }
 
 export function removeEffect(system: SystemState, ship: ShipState, effectType: SystemStatusEffectType, forced: boolean = true) {
