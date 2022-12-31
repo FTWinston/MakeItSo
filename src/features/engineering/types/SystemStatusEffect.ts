@@ -46,15 +46,28 @@ export type SystemStatusEffectInfo = Omit<EffectBehaviorInfo, 'duration'> & Time
     link?: 'primary' | 'secondary';
 };
 
-export type EffectLinkInfo = {
+export type BaseStatusEffect = Omit<EffectBehavior, 'duration'> & TimeSpan & {
+    id: number;
+};
+
+export type PrimaryEffectLinkInfo = {
     link: 'primary';
-} | {
+    secondaryEffects: LinkedEffectInfo[];
+};
+
+export type SecondaryEffectLinkInfo = {
     link: 'secondary';
-    primaryEffectId: number;
 }
 
-export type SystemStatusEffect = Omit<EffectBehavior, 'duration'> & TimeSpan & {
-    id: number;
-} & (
-    {} | EffectLinkInfo
-);
+export type LinkedEffectInfo = {
+    effectId: number;
+    system: ShipSystem;
+}
+
+export type EffectLinkInfo = PrimaryEffectLinkInfo | SecondaryEffectLinkInfo;
+
+export type SecondaryStatusEffect = BaseStatusEffect & SecondaryEffectLinkInfo;
+
+export type PrimaryStatusEffect = BaseStatusEffect & PrimaryEffectLinkInfo;
+
+export type SystemStatusEffect = BaseStatusEffect | PrimaryStatusEffect | SecondaryStatusEffect;

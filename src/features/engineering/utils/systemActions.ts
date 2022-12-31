@@ -1,9 +1,9 @@
-import { SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
+import { BaseStatusEffect, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { PowerLevel, SystemState } from 'src/types/SystemState';
-import { createEffect } from './SystemStatusEffects';
 import { getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
+import { createEffect, isPrimary } from './SystemStatusEffects';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
@@ -46,12 +46,86 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
     }
 }
 
-export function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffect) {
+function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffect) {
     system.effects.push(effect);
     effect.apply(system, ship);
 }
 
-// TODO: can this method be removed in favor of one that does it by ID?
+export function applySingleEffect(
+    id: number,
+    type: SystemStatusEffectType,
+    targetSystem: SystemState,
+    ship: ShipState,
+    startTime = getTime()
+): BaseStatusEffect {
+    const effect = createEffect(id, type, startTime);
+
+    applyEffect(targetSystem, ship, effect);
+
+    return effect;
+}
+
+export function applyPrimaryEffect(
+    id: number,
+    type: SystemStatusEffectType,
+    targetSystem: SystemState,
+    ship: ShipState,
+    startTime = getTime()
+): PrimaryStatusEffect {
+    const link: PrimaryEffectLinkInfo = {
+        link: 'primary',
+        secondaryEffects: [],
+    };
+
+    const effect = createEffect(id, type, startTime, link);
+
+    applyEffect(targetSystem, ship, effect);
+
+    return effect;
+}
+
+export function applySecondaryEffect(
+    id: number,
+    type: SystemStatusEffectType,
+    targetSystem: SystemState,
+    ship: ShipState,
+    primaryEffect: PrimaryStatusEffect,
+    startTime = getTime()
+): SecondaryStatusEffect {
+    const link: SecondaryEffectLinkInfo = { link: 'secondary' };
+
+    const secondaryEffect = createEffect(id, type, startTime, link);
+
+    primaryEffect.secondaryEffects.push({
+        effectId: secondaryEffect.id,
+        system: targetSystem.system,
+    });
+
+    applyEffect(targetSystem, ship, secondaryEffect);
+
+    return secondaryEffect;
+}
+
+function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, forced: boolean) {
+    effect.remove(system, ship, forced);
+
+    // Primary effects must also remove their linked secondary effects when they are removed.
+    // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
+    if (forced && isPrimary(effect)) {
+        for (const secondaryEffect of effect.secondaryEffects) {
+            const secondarySystem = ship.systems.get(secondaryEffect.system);
+
+            const secondaryEffectIndex = secondarySystem.effects.findIndex(effect => effect.id === secondaryEffect.effectId);
+
+            if (secondaryEffectIndex !== -1) {
+                const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
+                removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, forced);
+                secondarySystem.effects.splice(secondaryEffectIndex, 1);
+            }
+        }
+    }
+}
+
 export function removeEffect(system: SystemState, ship: ShipState, effectType: SystemStatusEffectType, forced: boolean = true) {
     const toRemove = system.effects
         .filter(instance => instance.type === effectType);
@@ -61,25 +135,25 @@ export function removeEffect(system: SystemState, ship: ShipState, effectType: S
     }
 
     for (const effect of toRemove) {
-        effect.remove(system, ship, forced);
+        removeEffectInstance(system, ship, effect, forced);
     }
 
     system.effects = system.effects
         .filter(instance => instance.type !== effectType);
 }
 
-export function removeExpiredEffects(systemState: SystemState, ship: ShipState, currentTime = getTime()) {
-    const filteredEffects = systemState.effects.filter(effect => {
+export function removeExpiredEffects(system: SystemState, ship: ShipState, currentTime = getTime()) {
+    const filteredEffects = system.effects.filter(effect => {
         if (hasCompleted(effect, currentTime)) {
-            effect.remove(systemState, ship, false);
+            removeEffectInstance(system, ship, effect, false);
             return false;
         }
 
         return true;
     });
     
-    if (filteredEffects.length < systemState.effects.length) {
-        systemState.effects = filteredEffects;
+    if (filteredEffects.length < system.effects.length) {
+        system.effects = filteredEffects;
     }
 }
 

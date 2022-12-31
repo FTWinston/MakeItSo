@@ -1,10 +1,9 @@
 import { ShipState } from 'src/types/ShipState';
-import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
-import { EffectBehavior, EffectLinkInfo, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
+import { BaseStatusEffect, EffectBehavior, EffectLinkInfo, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { adjustHealth, adjustPower } from './systemActions';
 
 type EffectBehaviorWithoutType = Omit<EffectBehavior, 'type'>;
@@ -272,6 +271,10 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
     ],
 ]);
 
+export function createEffect(id: number, type: SystemStatusEffectType): BaseStatusEffect;
+export function createEffect(id: number, type: SystemStatusEffectType, startTime: number): BaseStatusEffect;
+export function createEffect(id: number, type: SystemStatusEffectType, startTime: number, link: PrimaryEffectLinkInfo): PrimaryStatusEffect;
+export function createEffect(id: number, type: SystemStatusEffectType, startTime: number, link: SecondaryEffectLinkInfo): SecondaryStatusEffect;
 export function createEffect(id: number, type: SystemStatusEffectType, startTime = getTime(), link: EffectLinkInfo | undefined = undefined): SystemStatusEffect {
     const behavior = effectBehaviorByIdentifier.get(type);
 
@@ -289,14 +292,14 @@ export function createEffect(id: number, type: SystemStatusEffectType, startTime
     };
 }
 
-export function createPrimaryEffect(id: number, type: SystemStatusEffectType, startTime = getTime()): SystemStatusEffect {
-    const link: EffectLinkInfo = { link: 'primary' };
-
-    return createEffect(id, type, startTime, link);
+function hasLink(effect: SystemStatusEffect): effect is PrimaryStatusEffect | SecondaryStatusEffect {
+    return Object.hasOwn(effect, 'link');
 }
 
-export function createSecondaryEffect(id: number, type: SystemStatusEffectType, primaryEffectId: number, startTime = getTime()): SystemStatusEffect {
-    const link: EffectLinkInfo = { link: 'secondary', primaryEffectId: primaryEffectId };
+export function isPrimary(effect: SystemStatusEffect): effect is PrimaryStatusEffect {
+    return hasLink(effect) && effect.link === 'primary';
+}
 
-    return createEffect(id, type, startTime, link);
+export function isSecondary(effect: SystemStatusEffect): effect is SecondaryStatusEffect {
+    return hasLink(effect) && effect.link === 'secondary';
 }
