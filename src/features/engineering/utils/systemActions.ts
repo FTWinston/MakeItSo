@@ -4,7 +4,6 @@ import { getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
 import { createEffect, isPrimary, isSecondary } from './SystemStatusEffects';
-import { ShipSystem } from 'src/types/ShipSystem';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
@@ -15,6 +14,7 @@ export function adjustPower(system: SystemState, adjustment: number) {
     
     const before = system.power;
     system.power = Math.max(Math.min(system.unconstrainedPower, maxPowerLevel), 0) as PowerLevel;
+    system.powerLevelChanged = true;
 
     return system.power - before;
 }
@@ -218,5 +218,20 @@ export function determineRestoreAmount(cardRarity: EngineeringCardRarity) {
             return 30;
         case EngineeringCardRarity.Epic:
             return 40;
+    }
+}
+
+export function determineCardGenerationDuration(power: PowerLevel): number {
+    switch (power) {
+        case 0:
+            return 60;
+        case 1:
+            return 35;
+        case 2:
+            return 15;
+        case 3:
+            return 10;
+        case 4:
+            return 5;
     }
 }

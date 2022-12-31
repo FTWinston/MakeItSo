@@ -3,17 +3,18 @@ import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
-import { durationToTimeSpan, getTime } from 'src/utils/timeSpans';
+import { adjustDuration, durationToTimeSpan, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration } from './systemActions';
+import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration } from './systemActions';
 
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
     switch (action.type) {
         case 'reset':
+            const systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
             return {
-                systems: arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
+                systems,
                 engineering: {
                     systemOrder: action.systems.map(system => system.system),
                     choiceCards: action.choiceCards,
@@ -112,20 +113,33 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
         }
 
         case 'tick': {
+            const reactorSystem = state.systems.get(ShipSystem.Reactor);
+            const powerLevelChanged = reactorSystem.powerLevelChanged;
+
+            if (reactorSystem.powerLevelChanged) {
+                reactorSystem.powerLevelChanged = false;
+            }
+
             if (!state.engineering.choiceProgress) {
                 state.engineering.choiceProgress = {
                     startTime: getTime(),
-                    endTime: getTime() + durationToTimeSpan(15),
+                    endTime: getTime() + durationToTimeSpan(determineCardGenerationDuration(reactorSystem.power)),
                 };
             }
-            else if (action.currentTime >= state.engineering.choiceProgress.endTime) {
-                state.engineering.numChoices = Math.min(9, state.engineering.numChoices + 1);
-                
-                if (state.engineering.choiceCards.length === 0) {
-                    state.engineering.choiceCards = createCards([state.engineering.nextCardId++, state.engineering.nextCardId++, state.engineering.nextCardId++]);
+            else {
+                if (powerLevelChanged) {
+                    // Adjust choiceProgress to account for duration, maintaining % complete.
+                    state.engineering.choiceProgress = adjustDuration(state.engineering.choiceProgress, determineCardGenerationDuration(reactorSystem.power));
                 }
+                else if (action.currentTime >= state.engineering.choiceProgress.endTime) {
+                    state.engineering.numChoices = Math.min(9, state.engineering.numChoices + 1);
+                    
+                    if (state.engineering.choiceCards.length === 0) {
+                        state.engineering.choiceCards = createCards([state.engineering.nextCardId++, state.engineering.nextCardId++, state.engineering.nextCardId++]);
+                    }
 
-                state.engineering.choiceProgress = undefined;
+                    state.engineering.choiceProgress = undefined;
+                }
             }
 
             for (const system of state.systems.values()) {
