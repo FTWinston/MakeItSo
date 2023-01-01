@@ -27,22 +27,6 @@ export enum EngineeringCardType {
     Reset = 'reset',
     Rewind = 'rewind',
     DrawPower = 'drawPower',
-
-    Boost1 = 'boost1',
-    BoostHelm = 'boostHelm',
-    BoostWeapons = 'boostWeapons',
-    BoostSensors = 'boostSensors',
-    BoostEngineering = 'boostReactor',
-    BoostShields = 'boostShields',
-    Boost2 = 'boost2',
-    RepairSmall = 'repairSmall',
-    RepairMedium = 'repairMedium',
-    RepairLarge = 'repairLarge',
-    Overload = 'overload',
-    SwapSystems = 'swapSystems',
-    ColdRestart = 'coldRestart',
-    HotSwap = 'hotSwap',
-    Supercharge = 'superCharge',
 }
 
 export interface EngineeringCardInfo {

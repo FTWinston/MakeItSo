@@ -18,16 +18,6 @@ export enum SystemStatusEffectType {
     Overcharge = 'overcharge',
     ReactorOverload = 'reactorOverload',
     Reset = 'reset',
-
-
-    Overload = 'overload',
-    Damage = 'damage',
-    Repair = 'repair',
-    SwapHorizontal = 'swapH',
-    SwapVertical = 'swapV',
-    Offline = 'offline',
-    HotSwap = 'hotSwap',
-    Supercharge = 'superCharge',
 }
 
 interface EffectBehaviorInfo {

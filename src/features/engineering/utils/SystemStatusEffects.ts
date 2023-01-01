@@ -1,6 +1,6 @@
 import { ShipState } from 'src/types/ShipState';
 import { SystemState } from 'src/types/SystemState';
-import { determineEndTime, durationToTicks, getTime } from 'src/utils/timeSpans';
+import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { BaseStatusEffect, EffectBehavior, EffectLinkInfo, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
@@ -177,98 +177,6 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
                 }
             },
         },
-    ],
-
-    
-    [
-        SystemStatusEffectType.Overload,
-        {
-            positive: false,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, 3),
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
-                adjustPower(system, -3);
-
-                if (!forced) {
-                    adjustHealth(system, -50);
-                }
-            },
-        },
-    ],
-    [
-        SystemStatusEffectType.Supercharge,
-        {
-            positive: false,
-            duration: 10,
-            apply: (system: SystemState) => adjustPower(system, 4),
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
-                adjustPower(system, -4);
-
-                if (!forced) {
-                    adjustHealth(system, -80);
-                }
-            },
-        },
-    ],
-    [
-        SystemStatusEffectType.Damage,
-        {
-            positive: false,
-            duration: 1,
-            apply: () => {},
-            remove: () => {}
-        },
-    ],
-    [
-        SystemStatusEffectType.Repair,
-        {
-            positive: true,
-            duration: 1,
-            apply: () => {},
-            remove: () => {}
-        },
-    ],
-    [
-        SystemStatusEffectType.SwapHorizontal,
-        {
-            positive: true,
-            duration: 1,
-            apply: () => {},
-            remove: () => {}
-        },
-    ],
-    [
-        SystemStatusEffectType.SwapVertical,
-        {
-            positive: true,
-            duration: 1,
-            apply: () => {},
-            remove: () => {}
-        },
-    ],
-    [
-        SystemStatusEffectType.Offline,
-        {
-            positive: false,
-            duration: 12,
-            apply: system => adjustPower(system, -100),
-            remove: (system, ship) => adjustPower(system, 100),
-        },
-    ],
-    [
-        SystemStatusEffectType.HotSwap,
-        {
-            positive: true,
-            duration: 3,
-            apply: system => adjustPower(system, -100),
-            remove: (system, forced) => {
-                adjustPower(system, 100);
-
-                if (!forced) {
-                    adjustHealth(system, 30);
-                }
-            },
-        }
     ],
 ]);
 

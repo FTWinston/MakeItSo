@@ -97,7 +97,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [
             createEffect(1, SystemStatusEffectType.Boost1, getTime() - durationToTicks(10)),
-            createEffect(2, SystemStatusEffectType.Overload, getTime() - durationToTicks(1)),
+            createEffect(2, SystemStatusEffectType.Overcharge, getTime() - durationToTicks(1)),
             createEffect(3, SystemStatusEffectType.Boost2, getTime() - durationToTicks(6)),
         ],
         eventLog: [],
