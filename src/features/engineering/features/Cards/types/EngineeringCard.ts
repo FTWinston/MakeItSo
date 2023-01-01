@@ -26,6 +26,7 @@ export enum EngineeringCardType {
     Purge = 'purge',
     Reset = 'reset',
     Rewind = 'rewind',
+    DrawPower = 'drawPower',
 
     Boost1 = 'boost1',
     BoostHelm = 'boostHelm',

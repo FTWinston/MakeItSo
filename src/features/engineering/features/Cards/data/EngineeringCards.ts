@@ -44,31 +44,42 @@ const getAdjacentIndices = (index: number) => {
 
 type CardBehavior = Omit<EngineeringCard, 'id' | 'type' | 'rarity'>;
 
+function getBoostEffectType(quantity: number) {
+    switch (quantity) {
+        case 0:
+        case 1:
+            return SystemStatusEffectType.Boost1;
+        case 2:
+            return SystemStatusEffectType.Boost2;
+        default:
+            return SystemStatusEffectType.Boost3;
+    }
+}
+
+function getReduceEffectType(quantity: number) {
+    switch (quantity) {
+        case 0:
+        case 1:
+            return SystemStatusEffectType.Reduce1;
+        case 2:
+            return SystemStatusEffectType.Reduce2;
+        default:
+            return SystemStatusEffectType.Reduce3;
+    }
+}
+
 function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
     return {
         play: (system, ship) => {
             const fromSystemState = ship.systems.get(fromSystem);
             
-            let reduceEffectType: SystemStatusEffectType;
-            let boostEffectType: SystemStatusEffectType;
-
-            switch (fromSystemState.power) {
-                case 0:
-                    return false;
-                case 1:
-                    reduceEffectType = SystemStatusEffectType.Reduce1;
-                    boostEffectType = SystemStatusEffectType.Boost1;
-                    break;
-                case 2:
-                    reduceEffectType = SystemStatusEffectType.Reduce2;
-                    boostEffectType = SystemStatusEffectType.Boost2;
-                    break;
-                default:
-                    reduceEffectType = SystemStatusEffectType.Reduce3;
-                    boostEffectType = SystemStatusEffectType.Boost3;
-                    break;
+            if (fromSystemState.power === 0) {
+                return false;
             }
-            
+
+            const boostEffectType = getBoostEffectType(fromSystemState.power);
+            const reduceEffectType = getReduceEffectType(fromSystemState.power);
+
             const reduceEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, reduceEffectType, fromSystemState, ship);
             applySecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship, reduceEffect, fromSystemState, true);
         },
@@ -204,7 +215,24 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             }
         },
         determineAllowedSystems: onlyOnlineSystemsWithEffects,
-    }]
+    }],
+    [EngineeringCardType.DrawPower, {
+        play: (system, ship) => {
+            const targetSystemIndex = ship.engineering.systemOrder.indexOf(system.system);
+            
+            const poweredAdjacentSystems = getAdjacentIndices(targetSystemIndex)
+                .map(index => ship.systems.get(ship.engineering.systemOrder[index]))
+                .filter(system => system.power > 0);
+
+            const boostEffectType = getBoostEffectType(poweredAdjacentSystems.length);
+            const boostEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship);
+
+            for (const system of poweredAdjacentSystems) {
+                applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reduce1, system, ship, boostEffect, system, true);
+            }
+        },
+        determineAllowedSystems: onlyOnlineSystems,
+    }],
 ]);
 
 const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
@@ -225,6 +253,7 @@ const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
             EngineeringCardType.DivertEngines,
             EngineeringCardType.DivertReactor,
             EngineeringCardType.Purge,
+            EngineeringCardType.DrawPower,
         ]
     ],
     [
