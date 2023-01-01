@@ -25,6 +25,7 @@ export enum EngineeringCardType {
     ReactorOverload = 'reactorOverload',
     Purge = 'purge',
     Reset = 'reset',
+    Rewind = 'rewind',
 
     Boost1 = 'boost1',
     BoostHelm = 'boostHelm',

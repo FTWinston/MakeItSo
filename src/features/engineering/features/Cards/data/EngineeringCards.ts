@@ -8,26 +8,20 @@ import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
 import { DefiniteMap } from 'src/types/DefiniteMap';
+import { getTime } from 'src/utils/timeSpans';
 
-const onlyDamagedSystems = (ship: ShipState) =>
-    [...ship.systems.values()]
-        .filter(system => system.health < maxSystemHealth)
+function filterSystems(filter: (system: SystemState) => boolean) {
+    return (ship: ShipState) =>
+        [...ship.systems.values()]
+        .filter(filter)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
+}
 
-const onlyNegativeAffectedSystems = (ship: ShipState) =>
-    [...ship.systems.values()]
-        .filter(system => system.effects.some(effect => effect.positive === false))
-        .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
-    
-const onlyOnlineSystems = (ship: ShipState) =>
-    [...ship.systems.values()]
-        .filter(system => system.health > 0)
-        .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
-
-const onlyPoweredSystems = (ship: ShipState) =>
-    [...ship.systems.values()]
-        .filter(system => system.power > 0)
-        .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
+const onlyDamagedSystems = filterSystems(system => system.health < maxSystemHealth);
+const onlyOnlineSystemsWithEffects = filterSystems(system => system.health > 0 && system.effects.length > 0);
+const onlyOnlineSystemsWithNegativeEffects = filterSystems(system => system.health > 0 && system.effects.some(effect => effect.positive === false));
+const onlyOnlineSystems = filterSystems(system => system.health > 0);
+const onlyPoweredSystems = filterSystems(system => system.power > 0);
 
 const getAdjacentIndices = (index: number) => {
     switch (index) {
@@ -192,7 +186,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             const removeIndex = system.effects.findIndex(effect => effect.positive === false);
             system.effects.splice(removeIndex, 1);
         },
-        determineAllowedSystems: onlyNegativeAffectedSystems,
+        determineAllowedSystems: onlyOnlineSystemsWithNegativeEffects,
     }],
     [EngineeringCardType.Reset, {
         play: (system, ship) => {
@@ -200,6 +194,17 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         },
         determineAllowedSystems: onlyOnlineSystems,
     }],
+    [EngineeringCardType.Rewind, {
+        play: (system, ship) => {
+            const currentTime = getTime();
+            for (const effect of system.effects) {
+                const duration = effect.endTime - effect.startTime;
+                effect.startTime = currentTime;
+                effect.endTime = currentTime + duration;
+            }
+        },
+        determineAllowedSystems: onlyOnlineSystemsWithEffects,
+    }]
 ]);
 
 const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
@@ -228,6 +233,7 @@ const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
             EngineeringCardType.Relocate,
             EngineeringCardType.Overcharge,
             EngineeringCardType.Reset,
+            EngineeringCardType.Rewind,
         ]
     ],
     [

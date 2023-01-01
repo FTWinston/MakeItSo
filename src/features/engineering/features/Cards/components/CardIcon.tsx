@@ -2,6 +2,7 @@ import RelocateHereIcon from '@mui/icons-material/PanToolAlt';
 import BoostShieldIcon from '@mui/icons-material/Security';
 import DivertIcon from '@mui/icons-material/Redo';
 import PurgeIcon from '@mui/icons-material/BlurOff';
+import RewindIcon from '@mui/icons-material/Replay';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { EngineeringCardType } from '../types/EngineeringCard';
@@ -44,6 +45,9 @@ export const CardIcon: React.FC<Props> = props => {
         break;
     case EngineeringCardType.Reset:
         return <EffectIcon effect={SystemStatusEffectType.Reset} className={props.className} />;
+    case EngineeringCardType.Rewind:
+        Icon = RewindIcon;
+        break;
 
     case EngineeringCardType.Boost1:
         return <EffectIcon effect={SystemStatusEffectType.Boost1} className={props.className} />;

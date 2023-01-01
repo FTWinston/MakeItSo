@@ -69,6 +69,7 @@
     "card reactorOverload title": "Reactor Overload",
     "card purge title": "Purge",
     "card reset title": "System Reset",
+    "card rewind title": "Rewind",
 
     "card boost1 title": "Boost 1",
     "card boostHelm title": "Boost helm",
@@ -101,6 +102,7 @@
     "card reactorOverload desc": "Add 1 power to every system for 12s, then deal 50 damage to the reactor",
     "card purge desc": "Remove a negative effect from the target system",
     "card reset desc": "Disable system for 2 seconds, then remove all effects",
+    "card rewind desc": "Restarts the progress on all active effects on the target system",
 
     "card boost1 desc": "Boosts a system's power by 1 for 15s",
     "card boostHelm desc": "Boosts helm power by 2 for 12s",
