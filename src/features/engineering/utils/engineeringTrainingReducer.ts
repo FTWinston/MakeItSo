@@ -7,7 +7,7 @@ import { adjustDuration, durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration } from './systemActions';
+import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects } from './systemActions';
 
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
     switch (action.type) {
@@ -144,6 +144,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
             for (const system of state.systems.values()) {
                 removeExpiredEffects(system, state, action.currentTime);
+                tickOngoingEffects(system, state, action.currentTime);
             }
 
             for (const card of state.engineering.handCards) {

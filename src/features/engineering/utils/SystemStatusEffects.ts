@@ -1,10 +1,10 @@
 import { ShipState } from 'src/types/ShipState';
 import { SystemState } from 'src/types/SystemState';
-import { determineEndTime, getTime } from 'src/utils/timeSpans';
+import { determineEndTime, durationToTicks, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
-import { BaseStatusEffect, EffectBehavior, EffectLinkInfo, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
-import { adjustHealth, adjustPower } from './systemActions';
+import { BaseStatusEffect, EffectBehavior, EffectLinkInfo, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
+import { adjustHealth, adjustPower, effectTickInterval } from './systemActions';
 
 type EffectBehaviorWithoutType = Omit<EffectBehavior, 'type'>;
 
@@ -133,12 +133,10 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             apply: (system: SystemState) => adjustPower(system, 2),
             remove: (system: SystemState, ship: ShipState, forced: boolean) => {
                 adjustPower(system, -2);
-
-                // TODO: damage over time?
-                if (!forced) {
-                    adjustHealth(system, -25);
-                }
             },
+            tick: (system: SystemState) => {
+                adjustHealth(system, -2);
+            }
         },
     ],
     [
@@ -153,11 +151,14 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             remove: (system: SystemState, ship: ShipState, forced: boolean) => {
                 adjustPower(system, -1);
 
-                // TODO: damage over time?
                 if (!forced) {
                     adjustHealth(system, -50);
                 }
             },
+            tick: (system: SystemState, ship: ShipState) => {
+                adjustHealth(system, -1);
+            },
+            nextTick: 0
         },
     ],
     [
@@ -282,7 +283,7 @@ export function createEffect(id: number, type: SystemStatusEffectType, startTime
         throw new Error(`Effect not found: ${type}`);
     }
 
-    return {
+    const effect: SystemStatusEffect = {
         id,
         type,
         startTime,
@@ -290,6 +291,12 @@ export function createEffect(id: number, type: SystemStatusEffectType, startTime
         ...behavior,
         ...link,
     };
+
+    if (ticks(effect)) {
+        effect.nextTick = startTime + effectTickInterval;
+    }
+
+    return effect;
 }
 
 function hasLink(effect: SystemStatusEffect): effect is PrimaryStatusEffect | SecondaryStatusEffect {
@@ -302,4 +309,8 @@ export function isPrimary(effect: SystemStatusEffect): effect is PrimaryStatusEf
 
 export function isSecondary(effect: SystemStatusEffect): effect is SecondaryStatusEffect {
     return hasLink(effect) && effect.link === 'secondary';
+}
+
+export function ticks(effect: SystemStatusEffect): effect is TickingStatusEffect {
+    return Object.hasOwn(effect, 'tick');
 }

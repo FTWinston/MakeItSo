@@ -1,13 +1,14 @@
 import { BaseStatusEffect, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { PowerLevel, SystemState } from 'src/types/SystemState';
-import { getTime, hasCompleted } from 'src/utils/timeSpans';
+import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
-import { createEffect, isPrimary, isSecondary } from './SystemStatusEffects';
+import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
 export const maxPowerLevel = 4;
+export const effectTickInterval = durationToTicks(1);
 
 export function adjustPower(system: SystemState, adjustment: number) {
     system.unconstrainedPower += adjustment;
@@ -180,6 +181,17 @@ export function removeExpiredEffects(system: SystemState, ship: ShipState, curre
     
     if (filteredEffects.length < system.effects.length) {
         system.effects = filteredEffects;
+    }
+}
+
+export function tickOngoingEffects(system: SystemState, ship: ShipState, currentTime = getTime()) {
+    for (const effect of system.effects) {
+        if (!ticks(effect) || effect.nextTick > currentTime) {
+            continue;
+        }
+
+        effect.tick(system, ship);
+        effect.nextTick += effectTickInterval;
     }
 }
 

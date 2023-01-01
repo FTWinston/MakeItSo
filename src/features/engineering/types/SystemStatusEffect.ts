@@ -39,6 +39,7 @@ interface EffectBehaviorInfo {
 export interface EffectBehavior extends EffectBehaviorInfo {
     apply: (system: SystemState, ship: ShipState) => void;
     remove: (system: SystemState, ship: ShipState, forced: boolean) => void;
+    tick?: (system: SystemState, ship: ShipState) => void;
 }
 
 export type SystemStatusEffectInfo = Omit<EffectBehaviorInfo, 'duration'> & TimeSpan & {
@@ -49,6 +50,11 @@ export type SystemStatusEffectInfo = Omit<EffectBehaviorInfo, 'duration'> & Time
 export type BaseStatusEffect = Omit<EffectBehavior, 'duration'> & TimeSpan & {
     id: number;
 };
+
+export type TickingStatusEffect = BaseStatusEffect & {
+    tick: (system: SystemState, ship: ShipState) => void;
+    nextTick: number;
+}
 
 export type PrimaryEffectLinkInfo = {
     link: 'primary';
@@ -72,4 +78,4 @@ export type SecondaryStatusEffect = BaseStatusEffect & SecondaryEffectLinkInfo;
 
 export type PrimaryStatusEffect = BaseStatusEffect & PrimaryEffectLinkInfo;
 
-export type SystemStatusEffect = BaseStatusEffect | PrimaryStatusEffect | SecondaryStatusEffect;
+export type SystemStatusEffect = BaseStatusEffect | TickingStatusEffect | PrimaryStatusEffect | SecondaryStatusEffect;
