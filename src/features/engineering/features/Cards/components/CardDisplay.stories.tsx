@@ -1,5 +1,6 @@
 
-import { createCommonCard, createEpicCard, createRareCard, createUncommonCard } from '../data/EngineeringCards';
+import { createCardByRarity } from '../data/EngineeringCards';
+import { EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardDisplay } from './CardDisplay';
 
 export default {
@@ -9,12 +10,12 @@ export default {
 
 export const FullCards = () => (
     <div style={{ display: 'flex', flexDirection: 'column', margin: '1em', gap: '1em', justifyContent: 'center', alignItems: 'center' }}>
-        <CardDisplay {...createCommonCard(1)} />
+        <CardDisplay {...createCardByRarity(1, EngineeringCardRarity.Common)} />
         
-        <CardDisplay {...createUncommonCard(1)} />
+        <CardDisplay {...createCardByRarity(2, EngineeringCardRarity.Uncommon)} />
 
-        <CardDisplay {...createRareCard(1)} />
+        <CardDisplay {...createCardByRarity(3, EngineeringCardRarity.Rare)} />
 
-        <CardDisplay {...createEpicCard(1)} />
+        <CardDisplay {...createCardByRarity(4, EngineeringCardRarity.Epic)} />
     </div>
 );

@@ -1,30 +1,34 @@
-import { StoryFn } from '@storybook/react';
+import { StoryObj } from '@storybook/react';
 import { ComponentProps } from 'react';
 import { Dice as DiceComponent } from './Dice';
 
-export default {
-    title: 'Weapons/Dice',
-    component: DiceComponent,
-};
-
-const Template: StoryFn<ComponentProps<typeof DiceComponent>> = (args) => (
+const MultipleDice: React.FC<ComponentProps<typeof DiceComponent>> = (props) => (
     <div style={{display: 'flex', margin: '0.5em', gap: '0.5em'}}>
-        <DiceComponent {...args} />
-        <DiceComponent {...args} value={1} />
-        <DiceComponent {...args} value={2} />
-        <DiceComponent {...args} value={3} />
-        <DiceComponent {...args} value={4} />
-        <DiceComponent {...args} value={5} />
-        <DiceComponent {...args} value={6} />
+        <DiceComponent {...props} />
+        <DiceComponent {...props} value={1} />
+        <DiceComponent {...props} value={2} />
+        <DiceComponent {...props} value={3} />
+        <DiceComponent {...props} value={4} />
+        <DiceComponent {...props} value={5} />
+        <DiceComponent {...props} value={6} />
     </div>
 );
 
-export const Normal = Template.bind({});
-Normal.args = {
-    frozen: false,
-};
+export default {
+    title: 'Weapons/Dice',
+    component: MultipleDice,
+}
 
-export const Frozen = Template.bind({});
-Normal.args = {
-    frozen: true,
-};
+type Story = StoryObj<typeof MultipleDice>;
+
+export const Normal: Story = {
+    args: {
+        frozen: false,
+    }
+}
+
+export const Frozen: Story = {
+    args: {
+        frozen: true,
+    }
+}

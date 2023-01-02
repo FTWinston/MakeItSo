@@ -1,24 +1,24 @@
-import { SystemTiles as TilesComponent } from './SystemTiles';
-import { StoryFn } from '@storybook/react';
+import { Meta, StoryObj } from '@storybook/react';
+import { SystemTiles } from './SystemTiles';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Page } from 'src/features/layout';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
-import { ComponentProps } from 'react';
 import { SystemState } from 'src/types/SystemState';
 import { createEffect } from 'src/features/engineering/utils/SystemStatusEffects';
 
-export default {
+type Story = StoryObj<typeof SystemTiles>;
+
+const meta: Meta<typeof SystemTiles> = {
     title: 'Engineering/System Tiles',
-    component: TilesComponent,
+    component: SystemTiles,
     includeStories: /^[A-Z]/,
+    decorators: [
+        (story) => (<Page>{story()}</Page>)
+    ]
 };
 
-const Template: StoryFn<ComponentProps<typeof TilesComponent>> = (args) => (
-    <Page>
-        <TilesComponent {...args} />
-    </Page>
-);
+export default meta;
 
 export const getBasicStoryTiles: () => SystemState[] = () => [
     {
@@ -140,12 +140,14 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
     },
 ];
 
-export const BasicTiles = Template.bind({});
-BasicTiles.args = {
-    systems: getBasicStoryTiles(),
+export const BasicTiles: Story = {
+    args: {
+        systems: getBasicStoryTiles(),
+    }
 };
 
-export const ComplexTiles = Template.bind({});
-ComplexTiles.args = {
-    systems: getComplexStoryTiles(),
+export const ComplexTiles: Story = {
+    args: {
+        systems: getComplexStoryTiles(),
+    }
 };

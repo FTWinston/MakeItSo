@@ -1,6 +1,7 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
 import { ShipState } from 'src/types/ShipState';
+import { getTime } from 'src/utils/timeSpans';
 import { EffectAction } from '../types/EngineeringState';
 import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';
 import { Engineering } from './Engineering';
@@ -15,9 +16,9 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
 
     const [state, dispatch] = useReducer(produce(engineeringTrainingReducer), undefined, getInitialState);
 
-    // Run cleanup action at a regular interval.
+    // Run tick action at a regular interval.
     useEffect(() => {
-        const interval = setInterval(() => dispatch({ type: 'tick', currentTime: Date.now() }), 200);
+        const interval = setInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
 
         return () => clearInterval(interval);
     });

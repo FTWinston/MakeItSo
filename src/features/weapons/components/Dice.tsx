@@ -21,8 +21,8 @@ const Root = styled(Button, { shouldForwardProp: (prop) => prop !== 'value' && p
     gridTemplateColumns: value === 6 ? '3fr 1fr 3fr' : '1fr 1fr 1fr',
     gridTemplateAreas: '"tl . tr" "l m r" "bl . br"',
     color: frozen
-        ? theme.palette.text.primary
-        : theme.palette.primary.main,
+        ? theme.palette.primary.main
+        : theme.palette.text.primary,
 }));
 
 const Dot = styled('div', { shouldForwardProp: () => false })<{ index: number, value: number }>(({ index, value }) => {
