@@ -2,8 +2,9 @@ import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCard } from '../features/Cards';
+import { EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { LogEvent } from '../features/SystemTiles';
-import { SystemStatusEffect } from './SystemStatusEffect';
+import { SystemStatusEffect, SystemStatusEffectType } from './SystemStatusEffect';
 
 export interface EngineeringState {
     systemOrder: ShipSystem[];
@@ -15,12 +16,10 @@ export interface EngineeringState {
     nextEffectId: number;
 }
 
-export type EffectAction = {
-    type: 'effect';
+export type DamageAction = {
+    type: 'damage';
     system: ShipSystem;
-    healthChange?: number;
-    addEffects?: SystemStatusEffect[];
-    events?: LogEvent[];
+    healthChange: number;
 }
 
 export type EngineeringAction = {
@@ -39,6 +38,13 @@ export type EngineeringAction = {
     type: 'draw';
     cardId: number;
 } | {
+    type: 'add custom card';
+    cardType: EngineeringCardType;
+} | {
+    type: 'add custom effect';
+    system: ShipSystem;
+    effectType: SystemStatusEffectType;
+} | {
     type: 'tick';
     currentTime: number;
-} | EffectAction;
+} | DamageAction;

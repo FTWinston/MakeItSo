@@ -1,14 +1,15 @@
 import produce from 'immer';
-import { useEffect, useReducer } from 'react';
+import { Dispatch, useEffect, useReducer } from 'react';
 import { ShipState } from 'src/types/ShipState';
 import { getTime } from 'src/utils/timeSpans';
-import { EffectAction } from '../types/EngineeringState';
+import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';
 import { Engineering } from './Engineering';
 
 interface Props {
     getInitialState: () => ShipState;
-    getEffects: () => EffectAction[];
+    getEffects: () => DamageAction[];
+    customRender?: (dispatch: Dispatch<EngineeringAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
 export const EngineeringTraining: React.FC<Props> = (props) => {
@@ -39,7 +40,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     const { systemOrder, ...otherState } = state.engineering;
     const orderedSystemInfo = systemOrder.map(system => state.systems.get(system));
 
-    return (
+    const defaultRender = () => (
         <Engineering
             {...otherState}
             systems={orderedSystemInfo}
@@ -47,4 +48,6 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
             playCard={(card, targetSystem, repair) => dispatch({ type: 'play', cardId: card.id, targetSystem, repair })}
         />
     );
+
+    return props.customRender?.(dispatch, defaultRender) ?? defaultRender();
 };

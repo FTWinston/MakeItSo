@@ -233,7 +233,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     }],
 ]);
 
-const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
+export const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
     [
         EngineeringCardRarity.Common,
         [

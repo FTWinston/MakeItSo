@@ -5,9 +5,11 @@ import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
 import { adjustDuration, durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { createCards } from '../features/Cards/data/EngineeringCards';
+import { cardsByRarity, createCard, createCards } from '../features/Cards/data/EngineeringCards';
+import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects } from './systemActions';
+import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects, applySingleEffect } from './systemActions';
+import { createEffect } from './SystemStatusEffects';
 
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
     switch (action.type) {
@@ -94,21 +96,31 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
             return state;
         }
 
-        case 'effect': {
+        case 'damage': {
             const affectedSystem = state.systems.get(action.system);
+            adjustHealth(affectedSystem, action.healthChange);
+            return state;
+        }
 
-            if (action.healthChange) {
-                adjustHealth(affectedSystem, action.healthChange);
+        case 'add custom card': {
+            const rarityEntry = [...cardsByRarity.entries()]
+                .find(entry => entry[1].some(type => type === action.cardType));
+            const rarity = rarityEntry?.[0] ?? EngineeringCardRarity.Common;
+
+            const card = createCard(state.engineering.nextCardId++, action.cardType, rarity);
+
+            state.engineering.handCards.push(card);
+
+            if (card.determineAllowedSystems) {
+                card.allowedSystems = card.determineAllowedSystems(state);
             }
 
-            if (action.addEffects) {
-                affectedSystem.effects.push(...action.addEffects);
-            }
+            return state;
+        }
 
-            if (action.events) {
-                affectedSystem.eventLog.push(...action.events);
-            }
-
+        case 'add custom effect': {
+            const affectedSystem = state.systems.get(action.system);
+            applySingleEffect(state.engineering.nextEffectId++, action.effectType, affectedSystem, state);
             return state;
         }
 
