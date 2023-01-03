@@ -1,4 +1,4 @@
-import { BaseStatusEffect, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
+import { BaseStatusEffect, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { PowerLevel, SystemState } from 'src/types/SystemState';
 import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
@@ -74,7 +74,7 @@ export function applyPrimaryEffect(
     ship: ShipState,
     startTime = getTime()
 ): PrimaryStatusEffect {
-    const link: PrimaryEffectLinkInfo = {
+    const link: PrimaryEffectLink = {
         link: 'primary',
         secondaryEffects: [],
     };
@@ -96,10 +96,11 @@ export function applySecondaryEffect(
     canRemove: boolean,
     startTime = getTime()
 ): SecondaryStatusEffect {
-    const link: SecondaryEffectLinkInfo = {
+    const link: SecondaryEffectLink = {
         link: 'secondary',
         primaryEffect: {
             effectId: primaryEffect.id,
+            effectType: primaryEffect.type,
             system: primarySystem.system,
         },
         canRemove
@@ -109,6 +110,7 @@ export function applySecondaryEffect(
 
     primaryEffect.secondaryEffects.push({
         effectId: secondaryEffect.id,
+        effectType: secondaryEffect.type,
         system: targetSystem.system,
     });
 

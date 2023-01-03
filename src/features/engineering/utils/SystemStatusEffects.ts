@@ -3,7 +3,7 @@ import { SystemState } from 'src/types/SystemState';
 import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
-import { BaseStatusEffect, EffectBehavior, EffectLinkInfo, PrimaryEffectLinkInfo, PrimaryStatusEffect, SecondaryEffectLinkInfo, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
+import { BaseStatusEffect, EffectBehavior, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
 import { adjustHealth, adjustPower, effectTickInterval } from './systemActions';
 
 type EffectBehaviorWithoutType = Omit<EffectBehavior, 'type'>;
@@ -182,9 +182,9 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
 
 export function createEffect(id: number, type: SystemStatusEffectType): BaseStatusEffect;
 export function createEffect(id: number, type: SystemStatusEffectType, startTime: number): BaseStatusEffect;
-export function createEffect(id: number, type: SystemStatusEffectType, startTime: number, link: PrimaryEffectLinkInfo): PrimaryStatusEffect;
-export function createEffect(id: number, type: SystemStatusEffectType, startTime: number, link: SecondaryEffectLinkInfo): SecondaryStatusEffect;
-export function createEffect(id: number, type: SystemStatusEffectType, startTime = getTime(), link: EffectLinkInfo | undefined = undefined): SystemStatusEffect {
+export function createEffect(id: number, type: SystemStatusEffectType, startTime: number, link: PrimaryEffectLink): PrimaryStatusEffect;
+export function createEffect(id: number, type: SystemStatusEffectType, startTime: number, link: SecondaryEffectLink): SecondaryStatusEffect;
+export function createEffect(id: number, type: SystemStatusEffectType, startTime = getTime(), link: PrimaryEffectLink | SecondaryEffectLink | undefined = undefined): SystemStatusEffect {
     const behavior = effectBehaviorByIdentifier.get(type);
 
     if (behavior === undefined) {

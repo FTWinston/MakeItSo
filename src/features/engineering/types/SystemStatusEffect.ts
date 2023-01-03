@@ -20,6 +20,7 @@ export enum SystemStatusEffectType {
     Reset = 'reset',
 }
 
+// The "Info" types represent stripped-down versions of the "full" types, for use client-side.
 interface EffectBehaviorInfo {
     type: SystemStatusEffectType;
     duration: number;
@@ -32,40 +33,59 @@ export interface EffectBehavior extends EffectBehaviorInfo {
     tick?: (system: SystemState, ship: ShipState) => void;
 }
 
-export type SystemStatusEffectInfo = Omit<EffectBehaviorInfo, 'duration'> & TimeSpan & {
-    id: number;
-    link?: 'primary' | 'secondary';
+type Primary = 'primary';
+type Secondary = 'secondary'
+
+interface LinkedEffectInfo {
+    effectType: SystemStatusEffectType;
+}
+
+type PrimaryEffectInfo = {
+    link: Primary;
 };
+
+type SecondaryEffectInfo = {
+    link: Secondary;
+    primaryEffect: LinkedEffectInfo;
+}
+
+type BaseStatusEffectInfo = Omit<EffectBehaviorInfo, 'duration'> & TimeSpan & {
+    id: number;
+};
+
+type SecondaryStatusEffectInfo = BaseStatusEffectInfo & SecondaryEffectInfo;
+
+type PrimaryStatusEffectInfo = BaseStatusEffectInfo & PrimaryEffectInfo;
+
+export type SystemStatusEffectInfo = BaseStatusEffectInfo | PrimaryStatusEffectInfo | SecondaryStatusEffectInfo;
 
 export type BaseStatusEffect = Omit<EffectBehavior, 'duration'> & TimeSpan & {
     id: number;
 };
 
-export type TickingStatusEffect = BaseStatusEffect & {
+export interface TickingStatusEffect extends BaseStatusEffect {
     tick: (system: SystemState, ship: ShipState) => void;
     nextTick: number;
 }
 
-export type PrimaryEffectLinkInfo = {
-    link: 'primary';
-    secondaryEffects: LinkedEffectInfo[];
-};
-
-export type SecondaryEffectLinkInfo = {
-    link: 'secondary';
-    primaryEffect: LinkedEffectInfo;
-    canRemove: boolean;
-}
-
-export type LinkedEffectInfo = {
+export interface LinkedEffect extends LinkedEffectInfo {
     effectId: number;
     system: ShipSystem;
 }
 
-export type EffectLinkInfo = PrimaryEffectLinkInfo | SecondaryEffectLinkInfo;
+export interface PrimaryEffectLink {
+    link: Primary;
+    secondaryEffects: LinkedEffect[];
+};
 
-export type SecondaryStatusEffect = BaseStatusEffect & SecondaryEffectLinkInfo;
+export interface SecondaryEffectLink {
+    link: Secondary;
+    primaryEffect: LinkedEffect;
+    canRemove: boolean;
+}
 
-export type PrimaryStatusEffect = BaseStatusEffect & PrimaryEffectLinkInfo;
+export type SecondaryStatusEffect = BaseStatusEffect & SecondaryEffectLink;
+
+export type PrimaryStatusEffect = BaseStatusEffect & PrimaryEffectLink;
 
 export type SystemStatusEffect = BaseStatusEffect | TickingStatusEffect | PrimaryStatusEffect | SecondaryStatusEffect;

@@ -1,11 +1,11 @@
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { Badge, CircularTimer } from 'src/components';
-import { styled, SxProps, useTheme } from '@mui/material/styles';
+import { Avatar, Badge, CircularTimer } from 'src/components';
+import { styled, useTheme } from '@mui/material/styles';
 import Zoom from '@mui/material/Zoom';
 import { useTranslation } from 'react-i18next';
 
-interface Props extends SystemStatusEffectInfo {
+type Props = SystemStatusEffectInfo & {
     className?: string;
 }
 
@@ -13,7 +13,7 @@ const iconSize = '1em';
 export const indicatorSize = '1.3em';
 const timerSize = '1.5em';
 
-const ScaledIcon = styled(EffectIcon)({
+const MainScaledIcon = styled(EffectIcon)({
     position: 'absolute',
     width: iconSize,
     height: iconSize,
@@ -32,12 +32,27 @@ const Timer = styled(CircularTimer
     left: '-0.1em',
 }));
 
+const linkInsetSize = '0.85rem';
+
 const LinkBadge = styled(Badge)({
     verticalAlign: 'baseline',
+    '& > .MuiBadge-standard': {
+        minWidth: linkInsetSize,
+        width: linkInsetSize,
+        height: linkInsetSize,
+    }
 });
 
+const LinkScaledIcon = styled(EffectIcon)({
+    fontSize: '0.75em'
+});
 
-// TODO: a range of bad-to-good colors, from error, warning, primary, success?
+const LinkAvatar = styled(Avatar)(({ theme }) => ({
+    width: linkInsetSize,
+    height: linkInsetSize,
+    backgroundColor: theme.palette.warning.main,
+}));
+
 const Background = styled('div'
     , { shouldForwardProp: (prop) => prop !== 'positive' }
 )<{ positive: boolean }>(({ theme, positive }) => ({
@@ -60,7 +75,7 @@ export const EffectIndicator: React.FC<Props> = props => {
 
     let content = (
         <Background positive={props.positive} role="group" aria-label={t(`effect ${props.type}`)}>
-            <ScaledIcon effect={props.type} />
+            <MainScaledIcon effect={props.type} />
             <Timer
                 aria-label={t('effect duration')}
                 positive={props.positive}
@@ -72,17 +87,35 @@ export const EffectIndicator: React.FC<Props> = props => {
         </Background>
     )
 
-    if (props.link) {
-        content = (
-            <LinkBadge
-                variant="dot"
-                color="warning"
-                overlap="circular"
-                anchorOrigin={{vertical: props.link === 'primary' ? 'top' : 'bottom', horizontal: 'right'}}
-            >
-                {content}   
-            </LinkBadge>
-        );
+    if ('link' in props) {
+        if (props.link === 'primary') {
+            content = (
+                <LinkBadge
+                    variant="dot"
+                    color="warning"
+                    overlap="circular"
+                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                >
+                    {content}   
+                </LinkBadge>
+            );
+        }
+        else if (props.link === 'secondary') {
+            content = (
+                <LinkBadge
+                    color="warning"
+                    overlap="rectangular"
+                    anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
+                    badgeContent={
+                        <LinkAvatar>
+                            <LinkScaledIcon effect={props.primaryEffect.effectType} />
+                        </LinkAvatar>
+                    }
+                >
+                    {content}   
+                </LinkBadge>
+            );
+        }
     }
 
     return (
