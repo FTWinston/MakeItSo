@@ -20,7 +20,7 @@ interface Props {
     effect: SystemStatusEffectType;
 }
 
-type IconType = OverridableComponent<SvgIconTypeMap<{}, "svg">>;
+type IconType = OverridableComponent<SvgIconTypeMap<{}, 'svg'>>;
 
 const iconsByEffectType = new Map<SystemStatusEffectType, IconType>([
     [SystemStatusEffectType.AuxPower, AuxPowerIcon],
