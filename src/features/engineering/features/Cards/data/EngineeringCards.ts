@@ -42,48 +42,23 @@ const getAdjacentIndices = (index: number) => {
 
 type CardBehavior = Omit<EngineeringCard, 'id' | 'type' | 'rarity'>;
 
-function getBoostEffectType(quantity: number) {
-    switch (quantity) {
-        case 0:
-        case 1:
-            return SystemStatusEffectType.Boost1;
-        case 2:
-            return SystemStatusEffectType.Boost2;
-        default:
-            return SystemStatusEffectType.Boost3;
-    }
-}
-
-function getReduceEffectType(quantity: number) {
-    switch (quantity) {
-        case 0:
-        case 1:
-            return SystemStatusEffectType.Reduce1;
-        case 2:
-            return SystemStatusEffectType.Reduce2;
-        default:
-            return SystemStatusEffectType.Reduce3;
-    }
-}
-
 function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
     return {
         play: (system, ship) => {
             const fromSystemState = ship.systems.get(fromSystem);
             
-            if (fromSystemState.power === 0) {
+            if (fromSystemState.power < 2) {
                 return false;
             }
 
-            const boostEffectType = getBoostEffectType(fromSystemState.power);
-            const reduceEffectType = getReduceEffectType(fromSystemState.power);
-
-            const reduceEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, reduceEffectType, fromSystemState, ship);
-            applySecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship, reduceEffect, fromSystemState);
+            const boostEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.DivertTo, system, ship);
+            applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.DivertFrom, fromSystemState, ship, boostEffect, system);
         },
-        determineAllowedSystems: ship => [...ship.systems.values()]
-            .filter(system => system.system !== fromSystem && system.health > 0)
-            .reduce((prev, current) => prev | current.system, 0 as ShipSystem),
+        determineAllowedSystems: ship => ship.systems.get(fromSystem).power >= 2
+            ? [...ship.systems.values()]
+                .filter(system => system.system !== fromSystem && system.health > 0)
+                .reduce((prev, current) => prev | current.system, 0 as ShipSystem)
+            : 0,
     }
 }
 
@@ -184,7 +159,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
             for (const otherSystem of ship.systems.values()) {
                 if (otherSystem.system !== ShipSystem.Reactor) {
-                    applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Boost1, otherSystem, ship, reactorEffect, system);
+                    applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.ReactorSurplus, otherSystem, ship, reactorEffect, system);
                 }
             }
         },
@@ -222,11 +197,25 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
                 .map(index => ship.systems.get(ship.engineering.systemOrder[index]))
                 .filter(system => system.power > 0);
 
-            const boostEffectType = getBoostEffectType(poweredAdjacentSystems.length);
-            const boostEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship);
+            let boostEffectType;
+            switch (poweredAdjacentSystems.length) {
+                case 0:
+                    return false;
+                case 1:
+                    boostEffectType = SystemStatusEffectType.DrawPower1;
+                    break;
+                case 2:
+                    boostEffectType = SystemStatusEffectType.DrawPower2;
+                    break;
+                default:
+                    boostEffectType = SystemStatusEffectType.DrawPower3;
+                    break;
+            }
 
+            const boostEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship);
+            
             for (const adjacentSystem of poweredAdjacentSystems) {
-                applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reduce1, adjacentSystem, ship, boostEffect, system);
+                applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.DrawnPower, adjacentSystem, ship, boostEffect, system);
             }
         },
         determineAllowedSystems: onlyOnlineSystems,

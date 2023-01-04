@@ -42,6 +42,24 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
         }
     ],
     [
+        SystemStatusEffectType.DivertFrom,
+        {
+            positive: false,
+            duration: 20,
+            apply: (system: SystemState) => adjustPower(system, -2),
+            remove: (system: SystemState) => adjustPower(system, 2),
+        }
+    ],
+    [
+        SystemStatusEffectType.DivertTo,
+        {
+            positive: true,
+            duration: 20,
+            apply: (system: SystemState) => adjustPower(system, 2),
+            remove: (system: SystemState) => adjustPower(system, -2),
+        }
+    ],
+    [
         SystemStatusEffectType.Relocating,
         {
             positive: true,
@@ -70,60 +88,6 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             apply: () => {},
             remove: () => {},
         }
-    ],
-    [
-        SystemStatusEffectType.Boost1,
-        {
-            positive: true,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, 1),
-            remove: (system: SystemState) => adjustPower(system, -1),
-        }
-    ],
-    [
-        SystemStatusEffectType.Boost2,
-        {
-            positive: true,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, 2),
-            remove: (system: SystemState) => adjustPower(system, -2),
-        }
-    ],
-    [
-        SystemStatusEffectType.Boost3,
-        {
-            positive: true,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, 3),
-            remove: (system: SystemState) => adjustPower(system, -3),
-        }
-    ],
-    [
-        SystemStatusEffectType.Reduce1,
-        {
-            positive: false,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, -1),
-            remove: (system: SystemState) => adjustPower(system, 1),
-        }
-    ],
-    [
-        SystemStatusEffectType.Reduce2,
-        {
-            positive: false,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, -2),
-            remove: (system: SystemState) => adjustPower(system, 2),
-        },
-    ],
-    [
-        SystemStatusEffectType.Reduce3,
-        {
-            positive: false,
-            duration: 12,
-            apply: (system: SystemState) => adjustPower(system, -3),
-            remove: (system: SystemState) => adjustPower(system, 3),
-        },
     ],
     [
         SystemStatusEffectType.Overcharge,
@@ -160,6 +124,51 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             },
             nextTick: 0
         },
+    ],
+    [
+        SystemStatusEffectType.ReactorSurplus,
+        {
+            positive: true,
+            duration: 15,
+            apply: (system: SystemState) => adjustPower(system, 1),
+            remove: (system: SystemState) => adjustPower(system, -1),
+        }
+    ],
+    [
+        SystemStatusEffectType.DrawPower1,
+        {
+            positive: true,
+            duration: 10,
+            apply: (system: SystemState) => adjustPower(system, 1),
+            remove: (system: SystemState) => adjustPower(system, -1),
+        }
+    ],
+    [
+        SystemStatusEffectType.DrawPower2,
+        {
+            positive: true,
+            duration: 10,
+            apply: (system: SystemState) => adjustPower(system, 2),
+            remove: (system: SystemState) => adjustPower(system, -2),
+        }
+    ],
+    [
+        SystemStatusEffectType.DrawPower3,
+        {
+            positive: true,
+            duration: 10,
+            apply: (system: SystemState) => adjustPower(system, 3),
+            remove: (system: SystemState) => adjustPower(system, -3),
+        }
+    ],
+    [
+        SystemStatusEffectType.DrawnPower,
+        {
+            positive: false,
+            duration: 10,
+            apply: (system: SystemState) => adjustPower(system, -1),
+            remove: (system: SystemState) => adjustPower(system, 1),
+        }
     ],
     [
         SystemStatusEffectType.Reset,

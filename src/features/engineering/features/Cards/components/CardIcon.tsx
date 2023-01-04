@@ -1,8 +1,6 @@
 import RelocateHereIcon from '@mui/icons-material/PanToolAlt';
-import DivertIcon from '@mui/icons-material/Redo';
 import PurgeIcon from '@mui/icons-material/BlurOff';
 import RewindIcon from '@mui/icons-material/Replay';
-import DrawPowerIcon from '@mui/icons-material/Compress';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { EngineeringCardType } from '../types/EngineeringCard';
@@ -32,8 +30,7 @@ export const CardIcon: React.FC<Props> = props => {
     case EngineeringCardType.DivertWeapons:
     case EngineeringCardType.DivertEngines:
     case EngineeringCardType.DivertReactor:
-        Icon = DivertIcon;
-        break;
+        return <EffectIcon effect={SystemStatusEffectType.DivertFrom} className={props.className} />;
     case EngineeringCardType.Overcharge:
         return <EffectIcon effect={SystemStatusEffectType.Overcharge} className={props.className} />;
     case EngineeringCardType.ReactorOverload:
@@ -47,7 +44,7 @@ export const CardIcon: React.FC<Props> = props => {
         Icon = RewindIcon;
         break;
     case EngineeringCardType.DrawPower:
-        Icon = DrawPowerIcon;
+        return <EffectIcon effect={SystemStatusEffectType.DrawnPower} className={props.className} />;
         break;
     default:
         Icon = UnknownIcon;

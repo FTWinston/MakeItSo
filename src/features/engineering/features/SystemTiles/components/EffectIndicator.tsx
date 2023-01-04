@@ -40,6 +40,8 @@ const LinkBadge = styled(Badge)({
         minWidth: linkInsetSize,
         width: linkInsetSize,
         height: linkInsetSize,
+        bottom: '10%',
+        right: '10%',
     }
 });
 
@@ -104,7 +106,7 @@ export const EffectIndicator: React.FC<Props> = props => {
             content = (
                 <LinkBadge
                     color="warning"
-                    overlap="rectangular"
+                    overlap="circular"
                     anchorOrigin={{vertical: 'bottom', horizontal: 'right'}}
                     badgeContent={
                         <LinkAvatar>
