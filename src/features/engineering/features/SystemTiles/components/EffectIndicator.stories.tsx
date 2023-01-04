@@ -21,7 +21,7 @@ export const positive = () => (
         startTime={Date.now()}
         endTime={Date.now() + durationToTicks(15)}
         positive={true}
-        type={SystemStatusEffectType.Boost1}
+        type={SystemStatusEffectType.DrawPower1}
     />
 );
 
@@ -31,7 +31,7 @@ export const negative = () => (
         startTime={Date.now()}
         endTime={Date.now() + durationToTicks(15)}
         positive={false}
-        type={SystemStatusEffectType.Boost2}
+        type={SystemStatusEffectType.DrawnPower}
     />
 );
 
@@ -42,7 +42,7 @@ export const linkPrimary = () => (
         endTime={Date.now() + durationToTicks(15)}
         positive={true}
         link="primary"
-        type={SystemStatusEffectType.Boost1}
+        type={SystemStatusEffectType.DrawPower2}
     />
 );
 
@@ -53,7 +53,7 @@ export const linkSecondary = () => (
         endTime={Date.now() + durationToTicks(15)}
         positive={false}
         link="secondary"
-        type={SystemStatusEffectType.Boost1}
-        primaryEffect={{ effectType: SystemStatusEffectType.Reduce1 }}
+        type={SystemStatusEffectType.DrawnPower}
+        primaryEffect={{ effectType: SystemStatusEffectType.DrawPower1 }}
     />
 );
