@@ -126,26 +126,24 @@ export function applySecondaryEffect(
 }
 
 function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'zeroHealth') {
-    if (removalType === 'early') { 
-        if (isPrimary(effect)) {
-            // Primary effects must also remove their linked secondary effects when they are removed.
-            // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
-            for (const secondaryEffect of effect.secondaryEffects) {
-                const secondarySystem = ship.systems.get(secondaryEffect.system);
+    if (isPrimary(effect) && removalType !== 'complete') {
+        // Primary effects must also remove their linked secondary effects when they are removed.
+        // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
+        for (const secondaryEffect of effect.secondaryEffects) {
+            const secondarySystem = ship.systems.get(secondaryEffect.system);
 
-                const secondaryEffectIndex = secondarySystem.effects.findIndex(effect => effect.id === secondaryEffect.effectId);
+            const secondaryEffectIndex = secondarySystem.effects.findIndex(effect => effect.id === secondaryEffect.effectId);
 
-                if (secondaryEffectIndex !== -1) {
-                    const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
-                    removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, removalType);
-                    secondarySystem.effects.splice(secondaryEffectIndex, 1);
-                }
+            if (secondaryEffectIndex !== -1) {
+                const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
+                removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, removalType);
+                secondarySystem.effects.splice(secondaryEffectIndex, 1);
             }
         }
-        else if (isSecondary(effect)) {
-            // You can't force remove a secondary effect.
-            return; 
-        }   
+    }
+    else if (isSecondary(effect) && removalType === 'early') {
+        // You can't remove a secondary effect early.
+        return; 
     }
 
     effect.remove(system, ship, removalType !== 'complete');
