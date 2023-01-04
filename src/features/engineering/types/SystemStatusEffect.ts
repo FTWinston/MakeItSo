@@ -81,7 +81,6 @@ export interface PrimaryEffectLink {
 export interface SecondaryEffectLink {
     link: Secondary;
     primaryEffect: LinkedEffect;
-    canRemove: boolean;
 }
 
 export type SecondaryStatusEffect = BaseStatusEffect & SecondaryEffectLink;

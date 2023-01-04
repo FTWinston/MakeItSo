@@ -79,7 +79,7 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
             const reduceEffectType = getReduceEffectType(fromSystemState.power);
 
             const reduceEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, reduceEffectType, fromSystemState, ship);
-            applySecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship, reduceEffect, fromSystemState, true);
+            applySecondaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship, reduceEffect, fromSystemState);
         },
         determineAllowedSystems: ship => [...ship.systems.values()]
             .filter(system => system.system !== fromSystem && system.health > 0)
@@ -184,7 +184,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
             for (const otherSystem of ship.systems.values()) {
                 if (otherSystem.system !== ShipSystem.Reactor) {
-                    applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Boost1, otherSystem, ship, reactorEffect, system, false);
+                    applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Boost1, otherSystem, ship, reactorEffect, system);
                 }
             }
         },
@@ -225,8 +225,8 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             const boostEffectType = getBoostEffectType(poweredAdjacentSystems.length);
             const boostEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, boostEffectType, system, ship);
 
-            for (const system of poweredAdjacentSystems) {
-                applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reduce1, system, ship, boostEffect, system, true);
+            for (const adjacentSystem of poweredAdjacentSystems) {
+                applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reduce1, adjacentSystem, ship, boostEffect, system);
             }
         },
         determineAllowedSystems: onlyOnlineSystems,

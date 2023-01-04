@@ -134,8 +134,8 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             remove: (system: SystemState, ship: ShipState, forced: boolean) => {
                 adjustPower(system, -2);
             },
-            tick: (system: SystemState) => {
-                adjustHealth(system, -2);
+            tick: (system: SystemState, ship: ShipState) => {
+                adjustHealth(system, ship, -2);
             }
         },
     ],
@@ -144,19 +144,19 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
         {
             positive: false,
             duration: 15,
-            apply: (system: SystemState) => {
+            apply: (system: SystemState, ship: ShipState) => {
                 adjustPower(system, 1);
-                adjustHealth(system, -10);
+                adjustHealth(system, ship, -10);
             },
             remove: (system: SystemState, ship: ShipState, forced: boolean) => {
                 adjustPower(system, -1);
 
                 if (!forced) {
-                    adjustHealth(system, -50);
+                    adjustHealth(system, ship, -50);
                 }
             },
             tick: (system: SystemState, ship: ShipState) => {
-                adjustHealth(system, -1);
+                adjustHealth(system, ship, -1);
             },
             nextTick: 0
         },

@@ -52,7 +52,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                         return state;
                     }
 
-                    adjustHealth(targetSystem, repairAmount);
+                    adjustHealth(targetSystem, state, repairAmount);
                 }
             }
             else {
@@ -98,7 +98,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
         case 'damage': {
             const affectedSystem = state.systems.get(action.system);
-            adjustHealth(affectedSystem, action.healthChange);
+            adjustHealth(affectedSystem, state, action.healthChange);
             return state;
         }
 

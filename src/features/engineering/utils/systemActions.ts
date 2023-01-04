@@ -20,7 +20,7 @@ export function adjustPower(system: SystemState, adjustment: number) {
     return system.power - before;
 }
 
-export function adjustHealth(system: SystemState, adjustment: number) {
+export function adjustHealth(system: SystemState, ship: ShipState, adjustment: number) {
     const hadHealth = system.health > 0;
 
     system.health = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
@@ -33,6 +33,14 @@ export function adjustHealth(system: SystemState, adjustment: number) {
     }
     else if (system.health === 0) {
         system.restoration = 0;
+
+        if (system.effects.length > 0) {
+            for (const effect of system.effects) {
+                removeEffectInstance(system, ship, effect, 'zeroHealth');
+            }
+
+            system.effects = [];
+        }
     }
 }
 
@@ -93,7 +101,6 @@ export function applySecondaryEffect(
     ship: ShipState,
     primaryEffect: PrimaryStatusEffect,
     primarySystem: SystemState,
-    canRemove: boolean,
     startTime = getTime()
 ): SecondaryStatusEffect {
     const link: SecondaryEffectLink = {
@@ -103,7 +110,6 @@ export function applySecondaryEffect(
             effectType: primaryEffect.type,
             system: primarySystem.system,
         },
-        canRemove
     };
 
     const secondaryEffect = createEffect(id, type, startTime, link);
@@ -119,8 +125,8 @@ export function applySecondaryEffect(
     return secondaryEffect;
 }
 
-function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, forced: boolean) {
-    if (forced) { 
+function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'zeroHealth') {
+    if (removalType === 'early') { 
         if (isPrimary(effect)) {
             // Primary effects must also remove their linked secondary effects when they are removed.
             // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
@@ -131,31 +137,21 @@ function removeEffectInstance(system: SystemState, ship: ShipState, effect: Syst
 
                 if (secondaryEffectIndex !== -1) {
                     const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
-                    removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, forced);
+                    removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, removalType);
                     secondarySystem.effects.splice(secondaryEffectIndex, 1);
                 }
             }
         }
         else if (isSecondary(effect)) {
-            // You can't force remove a secondary effect. Unless it says you can.
-            if (effect.canRemove) {
-                const primarySystem = ship.systems.get(effect.primaryEffect.system);
-                const primaryEffectId = effect.primaryEffect.effectId;
-                const primaryEffect = primarySystem.effects.find(effect => effect.id === primaryEffectId);
-                if (primaryEffect) {
-                    removeEffectInstance(primarySystem, ship, primaryEffect, forced);
-                }
-            }
-
-            // No forced removal of a secondary effect goes ahead directly. Only via the primary, if that's allowed.
+            // You can't force remove a secondary effect.
             return; 
         }   
     }
 
-    effect.remove(system, ship, forced);
+    effect.remove(system, ship, removalType !== 'complete');
 }
 
-export function removeEffect(system: SystemState, ship: ShipState, effectType: SystemStatusEffectType, forced: boolean = true) {
+export function removeEffect(system: SystemState, ship: ShipState, effectType: SystemStatusEffectType) {
     const toRemove = system.effects
         .filter(instance => instance.type === effectType);
 
@@ -164,7 +160,7 @@ export function removeEffect(system: SystemState, ship: ShipState, effectType: S
     }
 
     for (const effect of toRemove) {
-        removeEffectInstance(system, ship, effect, forced);
+        removeEffectInstance(system, ship, effect, 'early');
     }
 
     system.effects = system.effects
@@ -174,7 +170,7 @@ export function removeEffect(system: SystemState, ship: ShipState, effectType: S
 export function removeExpiredEffects(system: SystemState, ship: ShipState, currentTime = getTime()) {
     const filteredEffects = system.effects.filter(effect => {
         if (hasCompleted(effect, currentTime)) {
-            removeEffectInstance(system, ship, effect, false);
+            removeEffectInstance(system, ship, effect, 'complete');
             return false;
         }
 
