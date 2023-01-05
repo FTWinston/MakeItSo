@@ -1,6 +1,10 @@
 import { EffectIndicator, indicatorSize } from './EffectIndicator';
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
-import { styled } from '@mui/material/styles';
+import { styled, useTheme } from '@mui/material/styles';
+import { TransitionGroup } from 'react-transition-group';
+import Zoom from '@mui/material/Zoom';
+import Collapse from '@mui/material/Collapse';
+import { ComponentProps } from 'react';
 
 interface Props {
     className?: string;
@@ -16,24 +20,53 @@ const Root = styled('div')({
 });
 
 const Item = styled('div')({
-    position: 'absolute',
-    top: 0,
-    transition: 'left 1s ease-in-out',
-    width: indicatorSize,
+    width: '1.9em',
     height: indicatorSize,
+    padding: '0 0.3em',
 });
+
+const DelayCollapse = styled(Collapse)({
+    transitionDelay: '5000ms', // TODO: THIS IS ALSO IGNORED
+});
+
+interface WrappedItemProps extends Omit<ComponentProps<typeof Zoom>, 'children'> {
+    effect: SystemStatusEffectInfo;
+}
+
+const WrappedIndicatorItem: React.FC<WrappedItemProps> = props => {
+    const theme = useTheme();
+    
+    const zoomDuration = {
+        enter: theme.transitions.duration.enteringScreen,
+        exit: theme.transitions.duration.leavingScreen,
+    };
+
+    return (
+        <DelayCollapse
+            {...props}
+            orientation="horizontal"
+            timeout={5000} /* TODO: WHY DOES THIS GET IGNORED? I WANT THIS TO BE SLOWER!!! */
+            unmountOnExit
+        >
+            <Item>
+                <Zoom {...props} timeout={zoomDuration}>
+                    <div>
+                        <EffectIndicator {...props.effect} />
+                    </div>
+                </Zoom>
+            </Item>
+        </DelayCollapse>
+    )
+}
 
 export const EffectIndicators: React.FC<Props> = props => {
     return (
         <Root className={props.className}>
-            {props.effects.map((effect, index) => (
-                <Item
-                    key={effect.id}
-                    style={{ left: `calc((100% - ${indicatorSize}) * ${index + 0.5} / ${props.effects.length})` }}
-                >
-                    <EffectIndicator {...effect} />
-                </Item>
-            ))}
+            <TransitionGroup component={null}>
+                {props.effects.map(effect => (        
+                    <WrappedIndicatorItem key={effect.id} effect={effect} />
+                ))}
+            </TransitionGroup>
         </Root>
     );
 };

@@ -1,8 +1,7 @@
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
 import { Avatar, Badge, CircularTimer } from 'src/components';
-import { styled, useTheme } from '@mui/material/styles';
-import Zoom from '@mui/material/Zoom';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 
 type Props = SystemStatusEffectInfo & {
@@ -68,12 +67,6 @@ const Background = styled('div'
 
 export const EffectIndicator: React.FC<Props> = props => {
     const { t } = useTranslation('engineering');
-    const theme = useTheme();
-    
-    const transitionDuration = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen,
-    };
 
     let content = (
         <Background positive={props.positive} role="group" aria-label={t(`effect ${props.type}`)}>
@@ -120,13 +113,5 @@ export const EffectIndicator: React.FC<Props> = props => {
         }
     }
 
-    return (
-        <Zoom
-            in={true}
-            timeout={transitionDuration}
-            unmountOnExit
-        >
-            {content}
-        </Zoom>
-    );
+    return content;
 };
