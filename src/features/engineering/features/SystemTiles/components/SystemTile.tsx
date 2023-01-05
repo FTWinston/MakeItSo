@@ -103,7 +103,7 @@ const HealthPath = styled('path')<{ health: number }>(props => {
         fill: 'none',
         stroke: getHealthColor(healthScale, props.theme),
         strokeDasharray: `${fillDistance}, ${pathPerimeter - fillDistance}`,
-        strokeDashoffset: pathPerimeter - 35,
+        strokeDashoffset: pathPerimeter - 39,
         transition: 'stroke-dasharray 400ms ease-in-out',
     };
 });
