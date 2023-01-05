@@ -10,6 +10,8 @@ import OverchargeIcon from '@mui/icons-material/Whatshot';
 import ReactorOverloadIcon from '@mui/icons-material/Brightness7';
 import ReactorSurplusIcon from '@mui/icons-material/Bolt';
 import ResetIcon from '@mui/icons-material/SettingsBackupRestore';
+import RebuildIcon from '@mui/icons-material/Build';
+import ReplaceIcon from '@mui/icons-material/SettingsSuggest';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
@@ -34,6 +36,8 @@ const iconsByEffectType = new Map<SystemStatusEffectType, IconType>([
     [SystemStatusEffectType.ReactorOverload, ReactorOverloadIcon],
     [SystemStatusEffectType.ReactorSurplus, ReactorSurplusIcon],
     [SystemStatusEffectType.Reset, ResetIcon],
+    [SystemStatusEffectType.Rebuild, RebuildIcon],
+    [SystemStatusEffectType.Replace, ReplaceIcon],
     [SystemStatusEffectType.DrawPower1, DrawPowerIcon],
     [SystemStatusEffectType.DrawPower2, DrawPowerIcon],
     [SystemStatusEffectType.DrawPower3, DrawPowerIcon],

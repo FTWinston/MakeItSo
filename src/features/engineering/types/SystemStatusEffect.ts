@@ -19,6 +19,8 @@ export enum SystemStatusEffectType {
     DrawPower3 = 'drawPower3',
     DrawnPower = 'drawnPower',
     Reset = 'reset',
+    Rebuild = 'rebuild',
+    Replace = 'replace',
 }
 
 // The "Info" types represent stripped-down versions of the "full" types, for use client-side.

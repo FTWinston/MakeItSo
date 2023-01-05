@@ -62,6 +62,15 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
     }
 }
 
+function createReplaceBehavior(system: ShipSystem): CardBehavior {
+    return {
+        play: (system, ship) => {
+            applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Replace, system, ship);
+        },
+        determineAllowedSystems: () => system,
+    }
+}
+
 const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map([
     [EngineeringCardType.AuxPower, {
         play: (system, ship) => {
@@ -147,6 +156,13 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     [EngineeringCardType.DivertEngines, createDivertBehavior(ShipSystem.Engines)],
     [EngineeringCardType.DivertReactor, createDivertBehavior(ShipSystem.Reactor)],
 
+    [EngineeringCardType.ReplaceHull, createReplaceBehavior(ShipSystem.Hull)],
+    [EngineeringCardType.ReplaceShields, createReplaceBehavior(ShipSystem.Shields)],
+    [EngineeringCardType.ReplaceSensors, createReplaceBehavior(ShipSystem.Sensors)],
+    [EngineeringCardType.ReplaceWeapons, createReplaceBehavior(ShipSystem.Weapons)],
+    [EngineeringCardType.ReplaceEngines, createReplaceBehavior(ShipSystem.Engines)],
+    [EngineeringCardType.ReplaceReactor, createReplaceBehavior(ShipSystem.Reactor)],
+
     [EngineeringCardType.Overcharge, {
         play: (system, ship) => {
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Overcharge, system, ship);
@@ -177,6 +193,12 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reset, system, ship);
         },
         determineAllowedSystems: onlyOnlineSystems,
+    }],
+    [EngineeringCardType.Rebuild, {
+        play: (system, ship) => {
+            applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Rebuild, system, ship);
+        },
+        determineAllowedSystems: onlyDamagedSystems,
     }],
     [EngineeringCardType.Rewind, {
         play: (system, ship) => {
@@ -249,6 +271,7 @@ export const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[
             EngineeringCardType.Relocate,
             EngineeringCardType.Overcharge,
             EngineeringCardType.Reset,
+            EngineeringCardType.Rebuild,
             EngineeringCardType.Rewind,
         ]
     ],
@@ -256,6 +279,12 @@ export const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[
         EngineeringCardRarity.Epic,
         [
             EngineeringCardType.ReactorOverload,
+            EngineeringCardType.ReplaceHull,
+            EngineeringCardType.ReplaceShields,
+            EngineeringCardType.ReplaceSensors,
+            EngineeringCardType.ReplaceWeapons,
+            EngineeringCardType.ReplaceEngines,
+            EngineeringCardType.ReplaceReactor,
         ]
     ],
 ]) as DefiniteMap<EngineeringCardRarity, EngineeringCardType[]>;

@@ -4,7 +4,7 @@ import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { BaseStatusEffect, EffectBehavior, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
-import { adjustHealth, adjustPower, effectTickInterval } from './systemActions';
+import { adjustHealth, adjustPower, effectTickInterval, maxSystemHealth, removeEffect, removeEffectInstance } from './systemActions';
 
 type EffectBehaviorWithoutType = Omit<EffectBehavior, 'type'>;
 
@@ -182,6 +182,48 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
                 adjustPower(system, 10);
 
                 if (!forced) {
+                    for (const effect of system.effects) {
+                        removeEffectInstance(system, ship, effect, 'early');
+                    }
+                    system.effects = [];
+                }
+            },
+        },
+    ],
+    [
+        SystemStatusEffectType.Rebuild,
+        {
+            positive: true,
+            duration: 10,
+            apply: (system: SystemState) => {
+                adjustPower(system, -10);
+            },
+            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+                adjustPower(system, 10);
+
+                if (!forced) {
+                    adjustHealth(system, ship, 50);
+                }
+            },
+        },
+    ],
+    [
+        SystemStatusEffectType.Replace,
+        {
+            positive: true,
+            duration: 5,
+            apply: (system: SystemState) => {
+                adjustPower(system, -10);
+            },
+            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+                adjustPower(system, 10);
+
+                if (!forced) {
+                    adjustHealth(system, ship, maxSystemHealth);
+                    
+                    for (const effect of system.effects) {
+                        removeEffectInstance(system, ship, effect, 'early');
+                    }
                     system.effects = [];
                 }
             },

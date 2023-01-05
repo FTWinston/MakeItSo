@@ -26,9 +26,16 @@ const effectTypesByCardType = new Map<EngineeringCardType, SystemStatusEffectTyp
     [EngineeringCardType.DivertWeapons, SystemStatusEffectType.DivertFrom],
     [EngineeringCardType.DivertEngines, SystemStatusEffectType.DivertFrom],
     [EngineeringCardType.DivertReactor, SystemStatusEffectType.DivertFrom],
+    [EngineeringCardType.ReplaceHull, SystemStatusEffectType.Replace],
+    [EngineeringCardType.ReplaceShields, SystemStatusEffectType.Replace],
+    [EngineeringCardType.ReplaceSensors, SystemStatusEffectType.Replace],
+    [EngineeringCardType.ReplaceWeapons, SystemStatusEffectType.Replace],
+    [EngineeringCardType.ReplaceEngines, SystemStatusEffectType.Replace],
+    [EngineeringCardType.ReplaceReactor, SystemStatusEffectType.Replace],
     [EngineeringCardType.Overcharge, SystemStatusEffectType.Overcharge],
     [EngineeringCardType.ReactorOverload, SystemStatusEffectType.ReactorOverload],
     [EngineeringCardType.Reset, SystemStatusEffectType.Reset],
+    [EngineeringCardType.Rebuild, SystemStatusEffectType.Rebuild],
     [EngineeringCardType.DrawPower, SystemStatusEffectType.DrawnPower],
 ]);
 

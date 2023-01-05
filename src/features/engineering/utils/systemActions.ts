@@ -125,7 +125,7 @@ export function applySecondaryEffect(
     return secondaryEffect;
 }
 
-function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'zeroHealth') {
+export function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'zeroHealth') {
     if (isPrimary(effect) && removalType !== 'complete') {
         // Primary effects must also remove their linked secondary effects when they are removed.
         // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
