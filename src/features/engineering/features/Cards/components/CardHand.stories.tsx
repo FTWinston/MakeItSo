@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { stubHeight } from './CardStub';
 import { action } from '@storybook/addon-actions';
 import { EngineeringCardRarity } from '../types/EngineeringCard';
+import { getRandomInt } from 'src/utils/random';
 
 export default {
     title: 'Engineering/Cards/Card Hand',
@@ -45,7 +46,7 @@ export const CardHand = () => {
 
             <button onClick={() => {
                 const newCards = cards.slice();
-                newCards.splice(Math.round(newCards.length / 2), 1);
+                newCards.splice(getRandomInt(newCards.length), 1);
                 setCards(newCards);
             }}>remove card</button>
         </div>

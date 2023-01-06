@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useLayoutEffect } from 'react';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
@@ -58,21 +58,12 @@ export const CardHand: React.FC<Props> = props => {
         exit: 0,
     };
     
-    const [firstRender, setFirstRender] = useState(true);
-
-    useEffect(
-        () => {
-            setFirstRender(false);
-        },
-        []
-    );
-
     const [prevCards, setPrevCards] = useState(props.cards);
     const [addingCards, setAddingCards] = useState<EngineeringCardInfo[]>([]);
     
     const isMouseDown = useRef(false);
 
-    useEffect(
+    useLayoutEffect(
         () => {
             setAddingCards(
                 props.cards
@@ -110,7 +101,7 @@ export const CardHand: React.FC<Props> = props => {
                     const left = `calc(100% * ${screenFraction})`;
                     screenFraction += screenFractionStep;
 
-                    const animateEntrance = !!addingCards.find(c => c.id === card.id);
+                    const animateEntrance = !!addingCards.includes(card);
 
                     const onClick = () => {
                         if (props.selectedCard) {
@@ -145,7 +136,7 @@ export const CardHand: React.FC<Props> = props => {
                             <Slide
                                 in={true}
                                 timeout={transitionDuration}
-                                appear={!firstRender}
+                                appear={animateEntrance}
                                 enter={true}
                                 exit={false}
                                 direction="left"

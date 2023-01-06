@@ -20,7 +20,7 @@ const Root = styled('div')({
 
 const Item = styled('div'
     , { shouldForwardProp: (prop) => prop !== 'showing' }
-)<{ showing: boolean } & Omit<ComponentProps<typeof Zoom>, 'ref'>>(({ theme, showing }) => ({
+)<{ showing: boolean } & Omit<ComponentProps<typeof Zoom>, 'ref'>>(({ showing }) => ({
     boxSizing: 'border-box',
     width: '1.9em',
     maxWidth: showing ? '1.9em' : 0,
