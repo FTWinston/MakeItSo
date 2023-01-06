@@ -1,6 +1,6 @@
 import { EffectIndicator, indicatorSize } from './EffectIndicator';
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { TransitionGroup } from 'react-transition-group';
 import Zoom from '@mui/material/Zoom';
 import Collapse from '@mui/material/Collapse';
@@ -14,48 +14,45 @@ interface Props {
 const Root = styled('div')({
     display: 'flex',
     position: 'relative',
-    width: '100%',
     flexGrow: 1,
     height: indicatorSize,
 });
 
-const Item = styled('div')({
+const Item = styled('div'
+    , { shouldForwardProp: (prop) => prop !== 'showing' }
+)<{ showing: boolean } & Omit<ComponentProps<typeof Zoom>, 'ref'>>(({ theme, showing }) => ({
+    boxSizing: 'border-box',
     width: '1.9em',
+    maxWidth: showing ? '1.9em' : 0,
+    transitionProperty: 'max-width, padding',
+    transitionTimingFunction: 'ease-in-out',
+    transitionDuration: '500ms',
     height: indicatorSize,
-    padding: '0 0.3em',
+    padding: showing ? '0 0.3em' : 0,
+}));
+
+const DelayedCollapse = styled(Collapse)({
+    transitionDelay: '500ms',
 });
 
-const DelayCollapse = styled(Collapse)({
-    transitionDelay: '5000ms', // TODO: THIS IS ALSO IGNORED
-});
 
 interface WrappedItemProps extends Omit<ComponentProps<typeof Zoom>, 'children'> {
     effect: SystemStatusEffectInfo;
 }
 
 const WrappedIndicatorItem: React.FC<WrappedItemProps> = props => {
-    const theme = useTheme();
+    const { effect, ...transitionProps } = props;
     
-    const zoomDuration = {
-        enter: theme.transitions.duration.enteringScreen,
-        exit: theme.transitions.duration.leavingScreen,
-    };
-
     return (
-        <DelayCollapse
-            {...props}
-            orientation="horizontal"
-            timeout={5000} /* TODO: WHY DOES THIS GET IGNORED? I WANT THIS TO BE SLOWER!!! */
-            unmountOnExit
-        >
-            <Item>
-                <Zoom {...props} timeout={zoomDuration}>
+        <DelayedCollapse {...transitionProps} timeout={500} unmountOnExit>
+            <Item showing={transitionProps.in!}>
+                <Zoom {...transitionProps} timeout={500}>
                     <div>
-                        <EffectIndicator {...props.effect} />
+                        <EffectIndicator {...effect} />
                     </div>
                 </Zoom>
             </Item>
-        </DelayCollapse>
+        </DelayedCollapse>
     )
 }
 

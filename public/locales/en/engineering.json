@@ -46,6 +46,7 @@
     "effect drawnPower": "Drawn power",
     "effect reset": "Restarting",
     "effect rebuild": "Rebuilding",
+    "effect replace": "Replacing",
 
     "card auxPower title": "Aux Power",
     "card storeCharge title": "Store Charge",
