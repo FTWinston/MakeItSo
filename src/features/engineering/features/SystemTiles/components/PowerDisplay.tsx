@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { styled, SxProps } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { PowerLevel } from 'src/types/SystemState';
+import { PowerLevel } from 'src/types/ShipSystem';
 
 const Root = styled(Box)({
     display: 'flex',

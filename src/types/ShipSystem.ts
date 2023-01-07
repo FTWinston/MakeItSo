@@ -15,3 +15,5 @@ export enum CrewStation {
     Weapons = ShipSystem.Weapons,
     Engineering = ShipSystem.Reactor,
 }
+
+export type PowerLevel = 0 | 1 | 2 | 3 | 4;

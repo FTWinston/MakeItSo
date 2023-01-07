@@ -1,9 +1,10 @@
 import { BaseStatusEffect, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
-import { PowerLevel, SystemState } from 'src/types/SystemState';
+import { SystemState } from 'src/types/SystemState';
 import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
 import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
+import { PowerLevel } from 'src/types/ShipSystem';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;

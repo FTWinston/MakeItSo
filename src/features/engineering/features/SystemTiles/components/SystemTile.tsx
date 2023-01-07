@@ -5,7 +5,7 @@ import { RGBA } from 'color-blend/dist/types';
 import { useTranslation } from 'react-i18next';
 import { LinearProgress } from 'src/components';
 import { maxSystemHealth } from 'src/features/engineering/utils/systemActions';
-import { PowerLevel } from 'src/types/SystemState';
+import { PowerLevel } from 'src/types/ShipSystem';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
 import { PowerDisplay } from './PowerDisplay';

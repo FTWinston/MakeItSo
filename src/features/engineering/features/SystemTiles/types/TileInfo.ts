@@ -1,6 +1,5 @@
 import { SystemStatusEffectInfo, SystemStatusEffect } from '../../../types/SystemStatusEffect';
-import { ShipSystem } from 'src/types/ShipSystem';
-import type { PowerLevel } from 'src/types/SystemState';
+import { PowerLevel, ShipSystem } from 'src/types/ShipSystem';
 
 export interface TileInfo {
     system: ShipSystem;
