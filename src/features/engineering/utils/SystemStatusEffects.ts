@@ -183,7 +183,9 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
 
                 if (!forced) {
                     for (const effect of system.effects) {
-                        removeEffectInstance(system, ship, effect, 'early');
+                        if (effect.type !== SystemStatusEffectType.Reset) {
+                            removeEffectInstance(system, ship, effect, 'early');
+                        }
                     }
                     system.effects = [];
                 }
@@ -222,7 +224,9 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
                     adjustHealth(system, ship, maxSystemHealth);
                     
                     for (const effect of system.effects) {
-                        removeEffectInstance(system, ship, effect, 'early');
+                        if (effect.type !== SystemStatusEffectType.Replace) {
+                            removeEffectInstance(system, ship, effect, 'early');
+                        }
                     }
                     system.effects = [];
                 }
