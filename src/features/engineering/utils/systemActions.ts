@@ -5,26 +5,60 @@ import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
 import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
 import { PowerLevel } from 'src/types/ShipSystem';
+import { LogEvent } from '../features/SystemTiles';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
 export const maxPowerLevel = 4;
 export const effectTickInterval = durationToTicks(1);
 
+export function logEvent(system: SystemState, event: LogEvent) {
+    system.eventLog.unshift(event);
+
+    if (system.eventLog.length > 20) {
+        system.eventLog.pop();
+    }
+}
+
 export function adjustPower(system: SystemState, adjustment: number) {
     system.unconstrainedPower += adjustment;
     
     const before = system.power;
-    system.power = Math.max(Math.min(system.unconstrainedPower, maxPowerLevel), 0) as PowerLevel;
-    system.powerLevelChanged = true;
+    const after = Math.max(Math.min(system.unconstrainedPower, maxPowerLevel), 0) as PowerLevel;
+    system.power = after;
+    adjustment = system.power - before;
 
-    return system.power - before;
+    if (adjustment !== 0) {
+        system.powerLevelChanged = true;
+
+        if (adjustment > 0) {
+            logEvent(system, {
+                identifier: 'power increase',
+                parameters: {
+                    before,
+                    after,
+                }
+            });
+        }
+        else {
+            logEvent(system, {
+                identifier: 'power decrease',
+                parameters: {
+                    before,
+                    after,
+                }
+            });
+        }
+    }
+
+    return adjustment;
 }
 
 export function adjustHealth(system: SystemState, ship: ShipState, adjustment: number) {
     const hadHealth = system.health > 0;
 
-    system.health = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
+    const newHealth = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
+    system.health = newHealth;
 
     if (!hadHealth) {
         if (adjustment < 0) {
@@ -33,6 +67,13 @@ export function adjustHealth(system: SystemState, ship: ShipState, adjustment: n
         }
     }
     else if (system.health === 0) {
+        logEvent(system, {
+            identifier: 'damage disable',
+            parameters: {
+                damage: -adjustment,
+            }
+        });
+
         system.restoration = 0;
 
         if (system.effects.length > 0) {
@@ -43,6 +84,24 @@ export function adjustHealth(system: SystemState, ship: ShipState, adjustment: n
             system.effects = [];
         }
     }
+    else if (adjustment > 0) {
+        logEvent(system, {
+            identifier: 'heal',
+            parameters: {
+                heal: adjustment,
+                health: newHealth,
+            }
+        });
+    }
+    else {
+        logEvent(system, {
+            identifier: 'damage',
+            parameters: {
+                damage: -adjustment,
+                health: newHealth,
+            }
+        });
+    }
 }
 
 export function adjustRestoration(system: SystemState, adjustment: number) {
@@ -51,9 +110,36 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
     if (newRestorationValue >= maxRestorationValue) {
         system.health = 1;
         delete system.restoration;
+
+        logEvent(system, {
+            identifier: 'restore finished',
+            parameters: {
+                restoration: maxRestorationValue,
+                health: 1,
+            }
+        });
     }
     else {
         system.restoration = newRestorationValue;
+
+        if (adjustment > 0) {
+            logEvent(system, {
+                identifier: 'restore',
+                parameters: {
+                    change: adjustment,
+                    restoration: newRestorationValue,
+                }
+            });
+        }
+        else {
+            logEvent(system, {
+                identifier: 'damage restore',
+                parameters: {
+                    change: -adjustment,                    
+                    restoration: newRestorationValue,
+                }
+            });
+        }
     }
 }
 

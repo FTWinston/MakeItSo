@@ -13,9 +13,18 @@ export interface TileDisplayInfo extends Omit<TileInfo, 'effects'> {
     effects: SystemStatusEffectInfo[];
 }
 
+export type LogIdentifier = 'power increase'
+    | 'power decrease'
+    | 'damage disable'
+    | 'heal'
+    | 'damage'
+    | 'restore finished'
+    | 'restore'
+    | 'damage restore';
+
 export interface LogEvent {
-    identifier: string;
-    parameters: Record<string, string>;
+    identifier: LogIdentifier;
+    parameters: Record<string, string | number>;
 }
 
 type SystemEvents = {

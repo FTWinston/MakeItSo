@@ -22,7 +22,7 @@
     "noHealth": "Disabled",
     "health": "Health",
     "heal amount": "Heal amount",
-    "system event log": "System event log",
+    "event log": "event log",
 
     "rarity 1": "Common",
     "rarity 2": "Uncommon",
@@ -95,5 +95,14 @@
     "card reset desc": "Disable system for 2 seconds, then remove all effects",
     "card rebuild desc": "Disable system for 10 seconds, then repair 50 damage",
     "card rewind desc": "Restarts the progress on all active effects on the target system",
-    "card drawPower desc": "Take 1 power from each adjacent system, add it to the target system for 10s"
+    "card drawPower desc": "Take 1 power from each adjacent system, add it to the target system for 10s",
+
+    "log power increase": "Increased power from {{before}} to {{after}}.",
+    "log power decrease": "Decreased power from {{before}} to {{after}}.",
+    "log damage disable": "Received {{damage}} damage. System health is now 0%. System disabled.",
+    "log heal": "Repaired {{heal}} damage. System health is now {{health}}%.",
+    "log damage": "Received {{damage}} damage. System health is now {{health}}%.",
+    "log restore finished": "Restored {{restoration}}% progress, system has been activated. System health is now {{health}}%.",
+    "log restore": "Restored {{change}}% progress towards system activation. Total progress is now {{restoration}}%.",
+    "log damage restore": "Reduced {{change}}% progress towards system activation. Total progress is now {{restoration}}%."
 }
