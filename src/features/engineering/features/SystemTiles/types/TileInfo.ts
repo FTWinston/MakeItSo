@@ -13,7 +13,13 @@ export interface TileDisplayInfo extends Omit<TileInfo, 'effects'> {
     effects: SystemStatusEffectInfo[];
 }
 
-export type LogIdentifier = 'power increase'
+export type LogIdentifier = 'play card'
+    | 'effect add'
+    | 'effect remove complete'
+    | 'effect remove early'
+    | 'effect remove link'
+    | 'effect remove zeroHealth'
+    | 'power increase'
     | 'power decrease'
     | 'damage disable'
     | 'heal'

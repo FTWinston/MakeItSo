@@ -8,8 +8,7 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { cardsByRarity, createCard, createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { EngineeringAction } from '../types/EngineeringState';
-import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects, applySingleEffect } from './systemActions';
-import { createEffect } from './SystemStatusEffects';
+import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects, applySingleEffect, logEvent } from './systemActions';
 
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
     switch (action.type) {
@@ -63,6 +62,14 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                     // If not allowed to target this system, don't play the card.
                     return state;
                 }
+
+                // If we get this far, the card is being played.
+                logEvent(targetSystem, {
+                    identifier: 'play card',
+                    parameters: {
+                        card: card.type
+                    }
+                })
 
                 card.play(targetSystem, state);
             }

@@ -97,6 +97,12 @@
     "card rewind desc": "Restarts the progress on all active effects on the target system",
     "card drawPower desc": "Take 1 power from each adjacent system, add it to the target system for 10s",
 
+    "log play card": "Engineer played card: {{card}}",
+    "log effect add": "Effect applied: {{effect}}",
+    "log effect remove complete": "Effect removed: {{effect}}",
+    "log effect remove early": "Effect removed: {{effect}}",
+    "log effect remove link": "Effect removed: {{effect}}",
+    "log effect remove zeroHealth": "Effect removed: {{effect}}",
     "log power increase": "Increased power from {{before}} to {{after}}.",
     "log power decrease": "Decreased power from {{before}} to {{after}}.",
     "log damage disable": "Received {{damage}} damage. System health is now 0%. System disabled.",

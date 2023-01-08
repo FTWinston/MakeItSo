@@ -144,6 +144,13 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
 }
 
 function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffect) {
+    logEvent(system, {
+        identifier: 'effect add',
+        parameters: {
+            effect: effect.type,
+        }
+    });
+
     system.effects.push(effect);
     effect.apply(system, ship);
 }
@@ -212,7 +219,7 @@ export function applySecondaryEffect(
     return secondaryEffect;
 }
 
-export function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'zeroHealth') {
+export function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'link' | 'zeroHealth') {
     if (isPrimary(effect) && removalType !== 'complete') {
         // Primary effects must also remove their linked secondary effects when they are removed.
         // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
@@ -223,7 +230,7 @@ export function removeEffectInstance(system: SystemState, ship: ShipState, effec
 
             if (secondaryEffectIndex !== -1) {
                 const secondaryEffectInstance = secondarySystem.effects[secondaryEffectIndex];
-                removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, removalType);
+                removeEffectInstance(secondarySystem, ship, secondaryEffectInstance, 'link');
                 secondarySystem.effects.splice(secondaryEffectIndex, 1);
             }
         }
@@ -232,6 +239,13 @@ export function removeEffectInstance(system: SystemState, ship: ShipState, effec
         // You can't remove a secondary effect early.
         return; 
     }
+
+    logEvent(system, {
+        identifier: `effect remove ${removalType}`,
+        parameters: {
+            effect: effect.type
+        }
+    });
 
     effect.remove(system, ship, removalType !== 'complete');
 }

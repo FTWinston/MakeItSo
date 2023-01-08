@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../types/TileInfo';
+import { LogEntry } from './LogEntry';
 
 interface Props {
     system: ShipSystem;
@@ -15,9 +16,7 @@ export const SystemLog: React.FC<Props> = (props) => {
             <h3>{t(`system ${props.system}`)} {t('event log')}</h3>
 
             <ul>
-                {props.events.map((event, index) => (
-                    <div key={index}>{t(`log ${event.identifier}`, event.parameters)}</div>
-                ))}
+                {props.events.map((event, index) => <LogEntry key={index} event={event} />)}
             </ul>
         </div>
     );
