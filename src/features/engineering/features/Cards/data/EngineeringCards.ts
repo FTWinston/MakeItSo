@@ -47,10 +47,6 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
         play: (system, ship) => {
             const fromSystemState = ship.systems.get(fromSystem);
             
-            if (fromSystemState.power < 2) {
-                return false;
-            }
-
             const boostEffect = applyPrimaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.DivertTo, system, ship);
             applySecondaryEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.DivertFrom, fromSystemState, ship, boostEffect, system);
         },
@@ -115,7 +111,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
                 ?.system
 
             if (!swapWithSystem) {
-                return false;
+                return;
             }
 
             // Swap places with that system.
@@ -123,7 +119,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             const firstIndex = systemOrder.indexOf(system.system);
             const secondIndex = systemOrder.indexOf(swapWithSystem);
             if (firstIndex === -1 || secondIndex === -1) {
-                return false;
+                return;
             }
 
             const firstSystem = systemOrder[firstIndex];
@@ -222,7 +218,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             let boostEffectType;
             switch (poweredAdjacentSystems.length) {
                 case 0:
-                    return false;
+                    return;
                 case 1:
                     boostEffectType = SystemStatusEffectType.DrawPower1;
                     break;

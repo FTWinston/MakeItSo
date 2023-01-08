@@ -56,13 +56,15 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 }
             }
             else {
-                if (card.allowedSystems !== undefined && (card.allowedSystems & action.targetSystem) === 0) {
+                // Recalculate allowed systems at the instant a card is being played.
+                const allowedSystems = card.determineAllowedSystems?.(state);
+                
+                if (allowedSystems !== undefined && (allowedSystems & action.targetSystem) === 0) {
+                    // If not allowed to target this system, don't play the card.
                     return state;
                 }
 
-                if (card.play(targetSystem, state) === false) {
-                    return state;
-                }
+                card.play(targetSystem, state);
             }
 
             const index = state.engineering.handCards.indexOf(card);
