@@ -41,6 +41,7 @@ export interface EngineeringCardInfo {
     type: EngineeringCardType;
     rarity: EngineeringCardRarity;
     allowedSystems?: ShipSystem;
+    descParams?: Partial<Record<string, number | string>>;
 }
 
 export interface EngineeringCard extends EngineeringCardInfo {

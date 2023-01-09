@@ -90,7 +90,7 @@ export const CardDisplay: React.FC<Props> = props => {
             <Content>
                 <ScreenReaderOnly>{t(`rarity ${props.rarity}`)}.</ScreenReaderOnly>
                 <Description disableEffect={props.repairMode}>
-                    {t(`card ${props.type} desc`)}
+                    {t(`card ${props.type} desc`, props.descParams)}
                 </Description>
             </Content>
         </CardRoot>

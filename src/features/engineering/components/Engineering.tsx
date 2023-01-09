@@ -149,8 +149,7 @@ export const Engineering: React.FC<Props> = (props) => {
         ? null
         : (
             <FocusedCardDisplay
-                type={focusedCard.type}
-                rarity={focusedCard.rarity}
+                {...focusedCard}
                 repairMode={repairMode && currentTab === 'systems'}
                 role="presentation"
             />

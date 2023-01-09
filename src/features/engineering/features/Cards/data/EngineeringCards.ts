@@ -55,6 +55,10 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
                 .filter(system => system.system !== fromSystem && system.health > 0)
                 .reduce((prev, current) => prev | current.system, 0 as ShipSystem)
             : 0,
+        descParams: {
+            power: 2,
+            duration: 15,
+        }
     }
 }
 
@@ -64,6 +68,9 @@ function createReplaceBehavior(system: ShipSystem): CardBehavior {
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Replace, system, ship);
         },
         determineAllowedSystems: () => system,
+        descParams: {
+            duration: 5,
+        }
     }
 }
 
@@ -77,6 +84,10 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.AuxPower, system, ship);
         },
         determineAllowedSystems: onlyOnlineSystems,
+        descParams: {
+            power: 1,
+            duration: 60,
+        }
     }],
 
     [EngineeringCardType.StoreCharge, {
@@ -84,6 +95,10 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.StoreCharge, system, ship);
         },
         determineAllowedSystems: onlyPoweredSystems,
+        descParams: {
+            power: 1,
+            duration: 30,
+        }
     }],
 
     [EngineeringCardType.StoredCharge, {
@@ -91,6 +106,10 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.StoredCharge, system, ship);
         },
         determineAllowedSystems: onlyOnlineSystems,
+        descParams: {
+            power: 1,
+            duration: 10,
+        }
     }],
 
     [EngineeringCardType.Relocate, {
@@ -164,6 +183,11 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Overcharge, system, ship);
         },
         determineAllowedSystems: onlyOnlineSystems,
+        descParams: {
+            power: 2,
+            duration: 10,
+            damage: 25,
+        }
     }],
     [EngineeringCardType.ReactorOverload, {
         play: (system, ship) => {
@@ -176,6 +200,11 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             }
         },
         determineAllowedSystems: ship => ship.systems.get(ShipSystem.Reactor).health > 0 ? ShipSystem.Reactor : 0,
+        descParams: {
+            power: 1,
+            duration: 12,
+            damage: 50,
+        }
     }],
     [EngineeringCardType.Purge, {
         play: (system, ship) => {
@@ -189,12 +218,19 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Reset, system, ship);
         },
         determineAllowedSystems: onlyOnlineSystems,
+        descParams: {
+            duration: 2,
+        }
     }],
     [EngineeringCardType.Rebuild, {
         play: (system, ship) => {
             applySingleEffect(ship.engineering.nextEffectId++, SystemStatusEffectType.Rebuild, system, ship);
         },
         determineAllowedSystems: onlyDamagedSystems,
+        descParams: {
+            duration: 10,
+            damage: 50,
+        }
     }],
     [EngineeringCardType.Rewind, {
         play: (system, ship) => {
@@ -237,6 +273,10 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             }
         },
         determineAllowedSystems: onlyOnlineSystems,
+        descParams: {
+            power: 1,
+            duration: 10,
+        }
     }],
 ]);
 
