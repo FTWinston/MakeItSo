@@ -1,4 +1,3 @@
-import React from 'react';
 import { IconColorName } from 'src/types/Colors';
 import { ShipSystem } from 'src/types/ShipSystem';
 import HelmIcon from '@mui/icons-material/NearMe';

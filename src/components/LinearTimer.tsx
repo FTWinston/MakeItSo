@@ -1,16 +1,15 @@
-import React, { useState, useEffect, PropsWithChildren } from 'react';
+import { useState, useEffect, PropsWithChildren, forwardRef } from 'react';
 import { LinearProgress } from './LinearProgress';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { getCompletedFraction } from 'src/utils/timeSpans';
 import { ColorName } from 'src/types/Colors';
-import { styled } from '@mui/material/styles';
 
 interface Props extends TimeSpan {
     className?: string;
     color?: ColorName;
 }
 
-export const LinearTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<Props>>((props, ref) => {
+export const LinearTimer = forwardRef<HTMLDivElement, PropsWithChildren<Props>>((props, ref) => {
     const { startTime, endTime } = props;
     const [value, setValue] = useState(() => 100 * getCompletedFraction(startTime, endTime));
 

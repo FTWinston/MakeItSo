@@ -1,4 +1,4 @@
-import React, { useState, useEffect, PropsWithChildren } from 'react';
+import { useState, useEffect, PropsWithChildren, forwardRef } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { getCompletedFraction } from 'src/utils/timeSpans';
@@ -11,7 +11,7 @@ interface Props extends TimeSpan {
     size?: string | number;
 }
 
-export const CircularTimer = React.forwardRef<HTMLDivElement, PropsWithChildren<Props>>((props, ref) => {
+export const CircularTimer = forwardRef<HTMLDivElement, PropsWithChildren<Props>>((props, ref) => {
     const { startTime, endTime } = props;
     const [value, setValue] = useState(() => 100 * getCompletedFraction(startTime, endTime));
 
