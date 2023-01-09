@@ -1,4 +1,5 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useRef } from 'react';
+import { useIsFirstRender } from 'src/utils/useIsFirstRender';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
@@ -58,25 +59,8 @@ export const CardHand: React.FC<Props> = props => {
         exit: 0,
     };
     
-    const [prevCards, setPrevCards] = useState(props.cards);
-    const [addingCards, setAddingCards] = useState<EngineeringCardInfo[]>([]);
-    
+    const firstRender = useIsFirstRender();
     const isMouseDown = useRef(false);
-
-    useLayoutEffect(
-        () => {
-            setAddingCards(
-                props.cards
-                    .filter(card => !prevCards.find(c => c.id === card.id))
-            );
-            setPrevCards(props.cards);
-
-            const id = setTimeout(() => setAddingCards([]), transitionDuration.enter + exitDuration);
-
-            return () => clearTimeout(id);
-        },
-        [props.cards, transitionDuration.enter] // eslint-disable-line react-hooks/exhaustive-deps
-    );
 
     if (props.cards.length === 0) {
         return (
@@ -101,8 +85,6 @@ export const CardHand: React.FC<Props> = props => {
                     const left = `calc(100% * ${screenFraction})`;
                     screenFraction += screenFractionStep;
 
-                    const animateEntrance = !!addingCards.includes(card);
-
                     const onClick = () => {
                         if (props.selectedCard) {
                             props.clearSelection();
@@ -112,43 +94,37 @@ export const CardHand: React.FC<Props> = props => {
                         }
                     };
 
-                    const cardDisplay = (
-                        <StubWrapper
+                    return (
+                        <Slide
+                            in={true}
+                            timeout={transitionDuration}
+                            appear={!firstRender}
+                            enter={true}
+                            exit={false}
+                            direction="left"
                             key={card.id}
                             style={{
-                                left,
-                                zIndex: props.selectedCard === card ? 999 : props.cards.length - cardIndex,
-                                opacity: props.selectedCard === null || props.selectedCard === card ? undefined : 0.33,
+                                transitionDelay: `${exitDuration}ms`,
                             }}
-                            onMouseEnter={() => { if (!isMouseDown.current && !props.selectedCard) { props.setFocus(card); }}}
-                            onMouseLeave={() => { if (!isMouseDown.current && !props.selectedCard) { props.setFocus(null); }}}
-                            onClick={onClick}
                         >
-                            <EngineeringCardStub
-                                type={card.type}
-                                rarity={card.rarity}
-                            />
-                        </StubWrapper>
-                    );
-
-                    return animateEntrance
-                        ? (
-                            <Slide
-                                in={true}
-                                timeout={transitionDuration}
-                                appear={animateEntrance}
-                                enter={true}
-                                exit={false}
-                                direction="left"
+                            <StubWrapper
                                 key={card.id}
                                 style={{
-                                    transitionDelay: `${exitDuration}ms`,
+                                    left,
+                                    zIndex: props.selectedCard === card ? 999 : props.cards.length - cardIndex,
+                                    opacity: props.selectedCard === null || props.selectedCard === card ? undefined : 0.33,
                                 }}
+                                onMouseEnter={() => { if (!isMouseDown.current && !props.selectedCard) { props.setFocus(card); }}}
+                                onMouseLeave={() => { if (!isMouseDown.current && !props.selectedCard) { props.setFocus(null); }}}
+                                onClick={onClick}
                             >
-                                {cardDisplay}
-                            </Slide>
-                        )
-                        : cardDisplay;
+                                <EngineeringCardStub
+                                    type={card.type}
+                                    rarity={card.rarity}
+                                />
+                            </StubWrapper>
+                        </Slide>
+                    );
                 })}
             </StubsWrapper>
         </Root>

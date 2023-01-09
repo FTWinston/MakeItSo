@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { styled, useTheme } from '@mui/material/styles';
+import { durationToTicks } from 'src/utils/timeSpans';
+import { useIsFirstRender } from 'src/utils/useIsFirstRender';
 import { LinearTimer, Typography } from 'src/components';
 import Slide from '@mui/material/Slide';
 import Zoom from '@mui/material/Zoom';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub } from './CardStub';
-import { useTranslation } from 'react-i18next';
-import { durationToTicks } from 'src/utils/timeSpans';
 
 interface Props {
     cards: EngineeringCardInfo[];
@@ -99,16 +100,9 @@ export const CardChoice: React.FC<Props> = props => {
         },
         [props.cards, transitionDuration.exit]
     );
+
+    const firstRender = useIsFirstRender();
     
-    const [firstRender, setFirstRender] = useState(true);
-
-    useEffect(
-        () => {
-            setFirstRender(false);
-        },
-        []
-    );
-
     const alertMessage = cards.length === 0 || props.numChoices <= 0
         ? t('no choice cards')
         : t('available choices', { count: props.numChoices - 1 });
