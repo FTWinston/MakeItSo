@@ -9,14 +9,23 @@ import { LogEvent } from '../features/SystemTiles';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
+export const defaultPowerLevel = 2;
 export const maxPowerLevel = 4;
 export const effectTickInterval = durationToTicks(1);
 
-export function logEvent(system: SystemState, event: LogEvent) {
-    system.eventLog.unshift(event);
+const maxEventLogEntries = 20;
+export function logEvent(system: SystemState, event: Omit<LogEvent, 'id'>) {
+    system.eventLog.push({ ...event, id: system.nextEventId });
 
-    if (system.eventLog.length > 20) {
-        system.eventLog.pop();
+    if (system.eventLog.length > maxEventLogEntries) {
+        system.eventLog.shift();
+    }
+
+    if (system.nextEventId >= maxEventLogEntries) {
+        system.nextEventId = 1;
+    }
+    else {
+        system.nextEventId++;
     }
 }
 
@@ -63,8 +72,9 @@ export function adjustHealth(system: SystemState, ship: ShipState, adjustment: n
     if (!hadHealth) {
         if (adjustment < 0) {
             // Damage affects restoration even more than health
-            adjustRestoration(system, adjustment * 2.5);
+            adjustment *= 2.5;
         }
+        adjustRestoration(system, adjustment);
     }
     else if (system.health === 0) {
         logEvent(system, {
@@ -75,6 +85,8 @@ export function adjustHealth(system: SystemState, ship: ShipState, adjustment: n
         });
 
         system.restoration = 0;
+
+        adjustPower(system, -system.power);
 
         if (system.effects.length > 0) {
             for (const effect of system.effects) {
@@ -108,7 +120,6 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
     const newRestorationValue = Math.max(0, Math.min(maxRestorationValue, (system.restoration ?? 0) + adjustment));
 
     if (newRestorationValue >= maxRestorationValue) {
-        system.health = 1;
         delete system.restoration;
 
         logEvent(system, {
@@ -118,6 +129,9 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
                 health: 1,
             }
         });
+        
+        system.health = 1;
+        adjustPower(system, defaultPowerLevel - system.power);
     }
     else {
         system.restoration = newRestorationValue;

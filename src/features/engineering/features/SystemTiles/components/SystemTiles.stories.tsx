@@ -29,6 +29,7 @@ export const getBasicStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Shields,
@@ -38,6 +39,7 @@ export const getBasicStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Sensors,
@@ -47,6 +49,7 @@ export const getBasicStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Weapons,
@@ -56,6 +59,7 @@ export const getBasicStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Engines,
@@ -65,6 +69,7 @@ export const getBasicStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Reactor,
@@ -74,6 +79,7 @@ export const getBasicStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
 ];
 
@@ -88,6 +94,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
             createEffect(1, SystemStatusEffectType.ReactorSurplus, getTime() - durationToTicks(10)),
         ],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Shields,
@@ -101,6 +108,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
             createEffect(3, SystemStatusEffectType.DivertFrom, getTime() - durationToTicks(6)),
         ],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Sensors,
@@ -110,6 +118,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Weapons,
@@ -119,6 +128,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Engines,
@@ -128,6 +138,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
     {
         system: ShipSystem.Reactor,
@@ -137,6 +148,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
         powerLevelChanged: false,
         effects: [],
         eventLog: [],
+        nextEventId: 1,
     },
 ];
 

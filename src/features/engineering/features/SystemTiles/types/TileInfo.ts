@@ -29,6 +29,7 @@ export type LogIdentifier = 'play card'
     | 'damage restore';
 
 export interface LogEvent {
+    id: number;
     identifier: LogIdentifier;
     parameters: Record<string, string | number>;
 }

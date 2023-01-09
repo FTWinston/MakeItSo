@@ -1,4 +1,6 @@
+import Collapse from '@mui/material/Collapse';
 import { useTranslation } from 'react-i18next';
+import { TransitionGroup } from 'react-transition-group';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../types/TileInfo';
 import { LogEntry } from './LogEntry';
@@ -15,9 +17,13 @@ export const SystemLog: React.FC<Props> = (props) => {
         <div>
             <h3>{t(`system ${props.system}`)} {t('event log')}</h3>
 
-            <ul>
-                {props.events.map((event, index) => <LogEntry key={index} event={event} />)}
-            </ul>
+            <TransitionGroup component="ul">
+                {props.events.map(event => (
+                    <Collapse key={event.id}>
+                        <LogEntry event={event} />
+                    </Collapse>
+                ))}
+            </TransitionGroup>
         </div>
     );
 };
