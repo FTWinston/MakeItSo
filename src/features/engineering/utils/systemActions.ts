@@ -13,7 +13,7 @@ export const defaultPowerLevel = 2;
 export const maxPowerLevel = 4;
 export const effectTickInterval = durationToTicks(1);
 
-const maxEventLogEntries = 20;
+const maxEventLogEntries = 15;
 export function logEvent(system: SystemState, event: Omit<LogEvent, 'id'>) {
     system.eventLog.push({ ...event, id: system.nextEventId });
 
@@ -21,7 +21,7 @@ export function logEvent(system: SystemState, event: Omit<LogEvent, 'id'>) {
         system.eventLog.shift();
     }
 
-    if (system.nextEventId >= maxEventLogEntries) {
+    if (system.nextEventId > maxEventLogEntries) {
         system.nextEventId = 1;
     }
     else {
@@ -119,7 +119,10 @@ export function adjustHealth(system: SystemState, ship: ShipState, adjustment: n
 export function adjustRestoration(system: SystemState, adjustment: number) {
     const newRestorationValue = Math.max(0, Math.min(maxRestorationValue, (system.restoration ?? 0) + adjustment));
 
-    if (newRestorationValue >= maxRestorationValue) {
+    if (system.restoration === newRestorationValue) {
+        return;
+    }
+    else if (newRestorationValue >= maxRestorationValue) {
         delete system.restoration;
 
         logEvent(system, {

@@ -97,7 +97,7 @@
     "card rewind desc": "Restarts the progress on all active effects on the target system",
     "card drawPower desc": "Take {{power}} power from each adjacent system, add it to the target system for {{duration}}s",
 
-    "log play card": "Engineer played card: {{card}}",
+    "log play card": "Played card: {{card}}",
     "log effect add": "Effect applied: {{effect}}",
     "log effect remove complete": "Effect completed: {{effect}}",
     "log effect remove early": "Effect removed before completion: {{effect}}",
@@ -105,10 +105,10 @@
     "log effect remove zeroHealth": "Effect removed as system is offline: {{effect}}",
     "log power increase": "Increased power from {{before}} to {{after}}.",
     "log power decrease": "Decreased power from {{before}} to {{after}}.",
-    "log damage disable": "Received {{damage}} damage. System health is now 0%. System disabled.",
-    "log heal": "Repaired {{heal}} damage. System health is now {{health}}%.",
-    "log damage": "Received {{damage}} damage. System health is now {{health}}%.",
-    "log restore finished": "Restored {{restoration}}% progress, system has been activated. System health is now {{health}}%.",
-    "log restore": "Restored {{change}}% progress towards system activation. Total progress is now {{restoration}}%.",
-    "log damage restore": "Reduced {{change}}% progress towards system activation. Total progress is now {{restoration}}%."
+    "log damage disable": "Received {{damage}} damage.\nSystem health is now 0%.\nSystem disabled.",
+    "log heal": "Repaired {{heal}} damage.\nSystem health is now {{health}}%.",
+    "log damage": "Received {{damage}} damage.\nSystem health is now {{health}}%.",
+    "log restore finished": "Restored {{restoration}}% progress, system has been activated.\nSystem health is now {{health}}%.",
+    "log restore": "Restored {{change}}% progress towards system activation.\nTotal progress is now {{restoration}}%.",
+    "log damage restore": "Reduced progress towards system activation by {{change}}%.\nTotal progress is now {{restoration}}%."
 }

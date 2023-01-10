@@ -1,9 +1,16 @@
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { LogEvent } from '../types/TileInfo';
 
 interface Props {
     event: LogEvent;
 }
+
+const Entry = styled('div')({
+    fontSize: '0.9em',
+    marginBottom: '0.25em',
+    whiteSpace: 'pre-wrap',
+});
 
 export const LogEntry: React.FC<Props> = (props) => {
     const { t } = useTranslation('engineering');
@@ -28,6 +35,6 @@ export const LogEntry: React.FC<Props> = (props) => {
     const entryText = t(`log ${identifier}`, parameters);
 
     return (
-        <div>{entryText}</div>
+        <Entry>{entryText}</Entry>
     );
 };
