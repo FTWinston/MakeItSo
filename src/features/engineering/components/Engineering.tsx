@@ -2,7 +2,7 @@ import { styled } from '@mui/material/styles';
 import { useLayoutEffect, useState } from 'react';
 import { Stack, Switch, Typography } from 'src/components';
 import { AppBarHeight, Page } from 'src/features/layout';
-import { allSystems, ShipSystem } from 'src/types/ShipSystem';
+import { allSystems, ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';
 import { CardDisplay } from '../features/Cards';
@@ -18,6 +18,7 @@ interface Props {
     choiceCards: EngineeringCardInfo[];
     numChoices: number;
     choiceProgress?: TimeSpan;
+    shipDestroyed?: ShipDestroyingSystem;
     chooseCard: (id: number) => void;
     playCard: (card: EngineeringCardInfo, system: ShipSystem, repair: boolean) => void;
 }
@@ -156,7 +157,7 @@ export const Engineering: React.FC<Props> = (props) => {
         );
 
     return (
-        <Root>
+        <Root shipDestroyed={props.shipDestroyed}>
             <EngineeringAppBar
                 currentTab={currentTab}
                 setCurrentTab={setCurrentTab}

@@ -43,6 +43,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     const defaultRender = () => (
         <Engineering
             {...otherState}
+            shipDestroyed={state.destroyed}
             systems={orderedSystemInfo}
             chooseCard={cardId => dispatch({ type: 'draw', cardId })}
             playCard={(card, targetSystem, repair) => dispatch({ type: 'play', cardId: card.id, targetSystem, repair })}
