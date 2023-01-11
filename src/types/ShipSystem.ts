@@ -16,4 +16,7 @@ export enum CrewStation {
     Engineering = ShipSystem.Reactor,
 }
 
+export type ShipDestroyingSystem = ShipSystem.Hull | ShipSystem.Reactor;
+export const ShipDestroyingSystems = ShipSystem.Hull | ShipSystem.Reactor;
+
 export type PowerLevel = 0 | 1 | 2 | 3 | 4;

@@ -4,7 +4,7 @@ import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
 import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
-import { PowerLevel } from 'src/types/ShipSystem';
+import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems } from 'src/types/ShipSystem';
 import { LogEvent } from '../features/SystemTiles';
 
 export const maxSystemHealth = 100;
@@ -63,6 +63,21 @@ export function adjustPower(system: SystemState, adjustment: number) {
     return adjustment;
 }
 
+function destroyShip(ship: ShipState, destroyedVia: ShipDestroyingSystem) {
+    ship.destroyed = destroyedVia;
+
+    for (const system of ship.systems.values()) {
+        // Clear all effects immediately, without letting them remove themselves.
+        // (This is really just so they don't show in system logs.)
+        system.effects = [];
+
+        // Also remove all power from all systems.
+        system.power = 0;
+        system.unconstrainedPower = 0;
+        system.powerLevelChanged = true;
+    }
+}
+
 export function adjustHealth(system: SystemState, ship: ShipState, adjustment: number) {
     const hadHealth = system.health > 0;
 
@@ -88,7 +103,12 @@ export function adjustHealth(system: SystemState, ship: ShipState, adjustment: n
 
         adjustPower(system, -system.power);
 
-        if (system.effects.length > 0) {
+        // When health is reduced to zero for a "ship destroying" system, the whole ship is destroyed.
+        if ((system.system & ShipDestroyingSystems) !== 0) {
+            destroyShip(ship, system.system as ShipDestroyingSystem);
+        }
+        // Only remove effects "normally" if the whole ship wasn't destroyed.
+        else if (system.effects.length > 0) {
             for (const effect of system.effects) {
                 removeEffectInstance(system, ship, effect, 'zeroHealth');
             }

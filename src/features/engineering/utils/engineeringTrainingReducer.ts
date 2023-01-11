@@ -11,6 +11,10 @@ import { EngineeringAction } from '../types/EngineeringState';
 import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects, applySingleEffect, logEvent } from './systemActions';
 
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
+    if (state.destroyed) {
+        return state;
+    }
+
     switch (action.type) {
         case 'reset':
             const systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
