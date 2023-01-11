@@ -10,6 +10,13 @@
     "system 16": "Reactor",
     "system 32": "Shields",
 
+    "system help 1": "TODO: Describe the effect of varying power levels and damage on the hull.",
+    "system help 2": "TODO: Describe the effect of varying power levels and damage on the engines.",
+    "system help 4": "TODO: Describe the effect of varying power levels and damage on the sensors.",
+    "system help 8": "TODO: Describe the effect of varying power levels and damage on the weapons.",
+    "system help 16": "The reactor is the source of power for all ship systems.\n\nIts power level represents \"excess\" power, for use by the engineer. Higher power levels cause new engineering cards to be generated faster.\n\nDamage causes \"reduced power\" effects to appear on random ship systems.\n\nIf the reactor's integrity reduces to 0%, it explodes and destroys the ship.",
+    "system help 32": "TODO: Describe the effect of varying power levels and damage on the shields.",
+
     "choose cards": "Cards",
     "choose prompt": "Choose one:",
     "generation progress": "Card generation progress",
@@ -23,6 +30,7 @@
     "health": "Health",
     "heal amount": "Heal amount",
     "event log": "event log",
+    "system help": "info",
 
     "rarity 1": "Common",
     "rarity 2": "Uncommon",

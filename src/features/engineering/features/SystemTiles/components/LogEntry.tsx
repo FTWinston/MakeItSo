@@ -6,7 +6,7 @@ interface Props {
     event: LogEvent;
 }
 
-const Entry = styled('div')({
+const Entry = styled('li')({
     fontSize: '0.9em',
     marginBottom: '0.25em',
     whiteSpace: 'pre-wrap',

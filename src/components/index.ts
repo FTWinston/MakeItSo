@@ -3,6 +3,7 @@ export { Badge } from './Badge';
 export { Button } from './Button';
 export { Card, CardContent, CardHeader } from './Card';
 export { CircularTimer } from './CircularTimer';
+export { IconButton } from './IconButton';
 export { LinearProgress } from './LinearProgress';
 export { LinearTimer } from './LinearTimer';
 export { ScreenReaderOnly } from './ScreenReaderOnly';
