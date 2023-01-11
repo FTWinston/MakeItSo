@@ -135,7 +135,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
         case 'add custom effect': {
             const affectedSystem = state.systems.get(action.system);
-            applySingleEffect(state.engineering.nextEffectId++, action.effectType, affectedSystem, state);
+            applySingleEffect(action.effectType, affectedSystem, state);
             return state;
         }
 

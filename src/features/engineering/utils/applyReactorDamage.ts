@@ -35,7 +35,7 @@ export function applyReactorDamage(state: ShipState, currentTime: number) {
     const system = getRandomSystem();
 
     // TODO: create a new effect type for this
-    applySingleEffect(state.engineering.nextEffectId++,  SystemStatusEffectType.DrawnPower, state.systems.get(system), state);
+    applySingleEffect(SystemStatusEffectType.DrawnPower, state.systems.get(system), state);
 
     state.engineering.lastReactorDamageEffect = currentTime;
 }

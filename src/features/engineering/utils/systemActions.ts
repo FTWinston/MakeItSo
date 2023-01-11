@@ -194,12 +194,13 @@ function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusE
 }
 
 export function applySingleEffect(
-    id: number,
     type: SystemStatusEffectType,
     targetSystem: SystemState,
     ship: ShipState,
     startTime = getTime()
 ): BaseStatusEffect {
+    const id = ship.engineering.nextEffectId++;
+
     const effect = createEffect(id, type, startTime);
 
     applyEffect(targetSystem, ship, effect);
@@ -208,7 +209,6 @@ export function applySingleEffect(
 }
 
 export function applyPrimaryEffect(
-    id: number,
     type: SystemStatusEffectType,
     targetSystem: SystemState,
     ship: ShipState,
@@ -219,6 +219,7 @@ export function applyPrimaryEffect(
         secondaryEffects: [],
     };
 
+    const id = ship.engineering.nextEffectId++;
     const effect = createEffect(id, type, startTime, link);
 
     applyEffect(targetSystem, ship, effect);
@@ -227,7 +228,6 @@ export function applyPrimaryEffect(
 }
 
 export function applySecondaryEffect(
-    id: number,
     type: SystemStatusEffectType,
     targetSystem: SystemState,
     ship: ShipState,
@@ -244,6 +244,7 @@ export function applySecondaryEffect(
         },
     };
 
+    const id = ship.engineering.nextEffectId++;
     const secondaryEffect = createEffect(id, type, startTime, link);
 
     primaryEffect.secondaryEffects.push({
