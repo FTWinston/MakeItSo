@@ -233,6 +233,19 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             },
         },
     ],
+    [
+        SystemStatusEffectType.ReactorDamage,
+        {
+            positive: false,
+            duration: 20,
+            apply: (system: SystemState) => {
+                adjustPower(system, -1);
+            },
+            remove: (system: SystemState) => {
+                adjustPower(system, 1);
+            },
+        },
+    ],
 ]);
 
 export function createEffect(id: number, type: SystemStatusEffectType): BaseStatusEffect;

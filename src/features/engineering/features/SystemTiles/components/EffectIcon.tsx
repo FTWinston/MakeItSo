@@ -12,6 +12,7 @@ import ReactorSurplusIcon from '@mui/icons-material/Bolt';
 import ResetIcon from '@mui/icons-material/SettingsBackupRestore';
 import RebuildIcon from '@mui/icons-material/Build';
 import ReplaceIcon from '@mui/icons-material/SettingsSuggest';
+import ReactorDamageIcon from '@mui/icons-material/PowerOff';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { OverridableComponent } from '@mui/material/OverridableComponent';
@@ -42,6 +43,7 @@ const iconsByEffectType = new Map<SystemStatusEffectType, IconType>([
     [SystemStatusEffectType.DrawPower2, DrawPowerIcon],
     [SystemStatusEffectType.DrawPower3, DrawPowerIcon],
     [SystemStatusEffectType.DrawnPower, DrawnPowerIcon],
+    [SystemStatusEffectType.ReactorDamage, ReactorDamageIcon],
 ]);
 
 export const EffectIcon: React.FC<Props> = props => {

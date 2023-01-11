@@ -12,29 +12,29 @@ function scaleNumber(input: number, inputStart: number, inputEnd: number, output
 function getReactorDamageEffectApplicationInterval(reactorHealth: number) {
     let interval: number;
 
-    if (reactorHealth > 80) {
+    if (reactorHealth > 90) {
         return;
     }
-    else if (reactorHealth > 50) {
-        // Apply every 45 seconds at 80% health
-        // Apply every 10 seconds at 50% health
-        interval = scaleNumber(reactorHealth, 50, 80, 10, 45);
+    else if (reactorHealth > 60) {
+        // Apply every 45 seconds at 90% health
+        // Apply every 10 seconds at 60% health
+        interval = scaleNumber(reactorHealth, 60, 90, 10, 45);
     }
-    else if (reactorHealth > 15) {
-        // Apply every 10 seconds at 50% health
-        // Apply every 5 seconds at 15% health
-        interval = scaleNumber(reactorHealth, 15, 50, 5, 10);
+    else if (reactorHealth > 20) {
+        // Apply every 10 seconds at 60% health
+        // Apply every 5 seconds at 20% health
+        interval = scaleNumber(reactorHealth, 20, 60, 5, 10);
     }
     else if (reactorHealth > 1) {
-        // Apply every 5 seconds at 15% health
+        // Apply every 5 seconds at 20% health
         // Apply every 1 seconds at 1% health
-        interval = scaleNumber(reactorHealth, 1, 15, 1, 5);
+        interval = scaleNumber(reactorHealth, 1, 20, 1, 5);
     }
     else {
         // Apply every 1 seconds at 1% health
         interval = 1;
     }
-    
+
     return durationToTicks(interval);
 }
 
@@ -55,8 +55,7 @@ export function applyReactorDamage(state: ShipState, currentTime: number) {
 
     const system = getRandomSystem();
 
-    // TODO: create a new effect type for this
-    applySingleEffect(SystemStatusEffectType.DrawnPower, state.systems.get(system), state);
+    applySingleEffect(SystemStatusEffectType.ReactorDamage, state.systems.get(system), state);
 
     state.engineering.lastReactorDamageEffect = currentTime;
 }

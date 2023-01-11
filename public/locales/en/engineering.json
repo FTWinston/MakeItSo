@@ -47,6 +47,7 @@
     "effect reset": "Restarting",
     "effect rebuild": "Rebuilding",
     "effect replace": "Replacing",
+    "effect reactorDamage": "Reactor Damage",
 
     "card auxPower title": "Aux Power",
     "card storeCharge title": "Store Charge",
