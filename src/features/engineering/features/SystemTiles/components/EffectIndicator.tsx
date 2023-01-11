@@ -3,6 +3,7 @@ import { EffectIcon } from './EffectIcon';
 import { Avatar, Badge, CircularTimer } from 'src/components';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
+import Tooltip from '@mui/material/Tooltip';
 
 type Props = SystemStatusEffectInfo & {
     className?: string;
@@ -68,8 +69,10 @@ const Background = styled('div'
 export const EffectIndicator: React.FC<Props> = props => {
     const { t } = useTranslation('engineering');
 
+    const effectName = t(`effect ${props.type}`);
+
     let content = (
-        <Background positive={props.positive} role="group" aria-label={t(`effect ${props.type}`)}>
+        <Background positive={props.positive} role="group" aria-label={effectName}>
             <MainScaledIcon effect={props.type} />
             <Timer
                 aria-label={t('effect duration')}
@@ -113,5 +116,9 @@ export const EffectIndicator: React.FC<Props> = props => {
         }
     }
 
-    return content;
+    return (
+        <Tooltip disableFocusListener title={effectName} arrow enterTouchDelay={150}>
+            {content}
+        </Tooltip>
+    );
 };
