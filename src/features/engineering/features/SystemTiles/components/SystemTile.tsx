@@ -141,6 +141,12 @@ const SystemPower = styled(PowerDisplay,
     opacity: faint ? 0.3 : undefined
 })));
 
+const Effects = styled(EffectIndicators)({
+    width: '6.64em',
+    maxWidth: '6.64em',
+    overflowX: 'clip',
+})
+
 interface Props extends TileDisplayInfo {
     onClick?: () => void;
     onMouseUp?: () => void;
@@ -179,7 +185,7 @@ export const SystemTile: React.FC<Props> = (props) => {
 
     const effectIndicators = props.health === 0
         ? undefined
-        : <EffectIndicators effects={props.effects} />
+        : <Effects effects={props.effects} />
 
     const powerDisplay = props.health === 0
         ? undefined
