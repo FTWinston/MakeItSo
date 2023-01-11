@@ -369,21 +369,6 @@ export function determineRestoreAmount(cardRarity: EngineeringCardRarity) {
     }
 }
 
-export function determineCardGenerationDuration(power: PowerLevel): number {
-    switch (power) {
-        case 0:
-            return 60;
-        case 1:
-            return 35;
-        case 2:
-            return 15;
-        case 3:
-            return 10;
-        case 4:
-            return 5;
-    }
-}
-
 export function getRandomSystem(): ShipSystem {
     switch (getRandomInt(6)) {
         case 0:
