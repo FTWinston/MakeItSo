@@ -4,8 +4,9 @@ import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
 import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
-import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems } from 'src/types/ShipSystem';
+import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems, ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../features/SystemTiles';
+import { getRandomInt } from 'src/utils/random';
 
 export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
@@ -379,5 +380,22 @@ export function determineCardGenerationDuration(power: PowerLevel): number {
             return 10;
         case 4:
             return 5;
+    }
+}
+
+export function getRandomSystem(): ShipSystem {
+    switch (getRandomInt(6)) {
+        case 0:
+            return ShipSystem.Hull;
+        case 1:
+            return ShipSystem.Engines;
+        case 2:
+            return ShipSystem.Sensors;
+        case 3:
+            return ShipSystem.Weapons;
+        case 4:
+            return ShipSystem.Reactor;
+        default:
+            return ShipSystem.Shields;
     }
 }

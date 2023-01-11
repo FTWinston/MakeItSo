@@ -8,6 +8,8 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { cardsByRarity, createCard, createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { EngineeringAction } from '../types/EngineeringState';
+import { SystemStatusEffectType } from '../types/SystemStatusEffect';
+import { applyReactorDamage } from './applyReactorDamage';
 import { adjustHealth, determineRepairAmount, determineRestoreAmount, removeExpiredEffects, adjustRestoration, determineCardGenerationDuration, tickOngoingEffects, applySingleEffect, logEvent } from './systemActions';
 
 export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
@@ -138,6 +140,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
         }
 
         case 'tick': {
+            const currentTime = getTime();
             const reactorSystem = state.systems.get(ShipSystem.Reactor);
             const powerLevelChanged = reactorSystem.powerLevelChanged;
 
@@ -147,8 +150,8 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
 
             if (!state.engineering.choiceProgress) {
                 state.engineering.choiceProgress = {
-                    startTime: getTime(),
-                    endTime: getTime() + durationToTicks(determineCardGenerationDuration(reactorSystem.power)),
+                    startTime: currentTime,
+                    endTime: currentTime + durationToTicks(determineCardGenerationDuration(reactorSystem.power)),
                 };
             }
             else {
@@ -171,6 +174,8 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                 removeExpiredEffects(system, state, action.currentTime);
                 tickOngoingEffects(system, state, action.currentTime);
             }
+
+            applyReactorDamage(state, currentTime);
 
             for (const card of state.engineering.handCards) {
                 if (card.determineAllowedSystems) {
