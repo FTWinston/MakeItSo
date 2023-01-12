@@ -89,7 +89,7 @@ export const OneEffect: Story = {
         effects: [
             {
                 id: 1,
-                type: SystemStatusEffectType.Boost1,
+                type: SystemStatusEffectType.ReactorSurplus,
                 startTime: Date.now(),
                 endTime: Date.now() + durationToTicks(15),
                 positive: true,
@@ -113,7 +113,7 @@ export const ThreeEffects: Story = {
             },
             {
                 id: 2,
-                type: SystemStatusEffectType.Reduce2,
+                type: SystemStatusEffectType.DrawnPower,
                 startTime: Date.now(),
                 endTime: Date.now() + durationToTicks(12),
                 positive: false,
@@ -129,6 +129,89 @@ export const ThreeEffects: Story = {
     }
 };
 
+export const FourEffects: Story = {
+    args: {
+        system: ShipSystem.Sensors,
+        health: 82,
+        power: 2,
+        effects: [
+            {
+                id: 1,
+                type: SystemStatusEffectType.Overcharge,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(15),
+                positive: true,
+            },
+            {
+                id: 2,
+                type: SystemStatusEffectType.DrawnPower,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(12),
+                positive: false,
+            },
+            {
+                id: 3,
+                type: SystemStatusEffectType.Relocating,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(5),
+                positive: true,
+            },
+            {
+                id: 4,
+                type: SystemStatusEffectType.AuxPower,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(10),
+                positive: true,
+            },
+        ],
+    }
+};
+
+export const FiveEffects: Story = {
+    args: {
+        system: ShipSystem.Sensors,
+        health: 82,
+        power: 2,
+        effects: [
+            {
+                id: 1,
+                type: SystemStatusEffectType.Overcharge,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(15),
+                positive: true,
+            },
+            {
+                id: 2,
+                type: SystemStatusEffectType.DrawnPower,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(12),
+                positive: false,
+            },
+            {
+                id: 3,
+                type: SystemStatusEffectType.Relocating,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(5),
+                positive: true,
+            },
+            {
+                id: 4,
+                type: SystemStatusEffectType.AuxPower,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(10),
+                positive: true,
+            },
+            {
+                id: 5,
+                type: SystemStatusEffectType.Rebuild,
+                startTime: Date.now(),
+                endTime: Date.now() + durationToTicks(15),
+                positive: true,
+            },
+        ],
+    }
+};
+
 export const ValidTarget: Story = {
     args: {
         system: ShipSystem.Weapons,
@@ -138,7 +221,7 @@ export const ValidTarget: Story = {
         effects: [
             {
                 id: 1,
-                type: SystemStatusEffectType.Boost1,
+                type: SystemStatusEffectType.Rebuild,
                 startTime: Date.now(),
                 endTime: Date.now() + durationToTicks(15),
                 positive: true,
@@ -156,7 +239,7 @@ export const InvalidTarget: Story = {
         effects: [
             {
                 id: 1,
-                type: SystemStatusEffectType.Boost1,
+                type: SystemStatusEffectType.StoredCharge,
                 startTime: Date.now(),
                 endTime: Date.now() + durationToTicks(15),
                 positive: true,

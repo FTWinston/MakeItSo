@@ -18,23 +18,26 @@ const Root = styled('div')({
     height: indicatorSize,
 });
 
-const Item = styled('div'
+const IndicatorWrapper = styled('div'
     , { shouldForwardProp: (prop) => prop !== 'showing' }
 )<{ showing: boolean } & Omit<ComponentProps<typeof Zoom>, 'ref'>>(({ showing }) => ({
     boxSizing: 'border-box',
-    width: '1.9em',
     maxWidth: showing ? '1.9em' : 0,
     transitionProperty: 'max-width, padding',
     transitionTimingFunction: 'ease-in-out',
     transitionDuration: '500ms',
     height: indicatorSize,
     padding: showing ? '0 0.3em' : 0,
+    position: 'absolute',
+    width: '1.9em',
 }));
 
 const DelayedCollapse = styled(Collapse)({
     transitionDelay: '500ms',
+    position: 'relative',
+    flexGrow: 1,
+    maxWidth: '1.9em',
 });
-
 
 interface WrappedItemProps extends Omit<ComponentProps<typeof Zoom>, 'children'> {
     effect: SystemStatusEffectInfo;
@@ -45,13 +48,13 @@ const WrappedIndicatorItem: React.FC<WrappedItemProps> = props => {
     
     return (
         <DelayedCollapse {...transitionProps} timeout={500} unmountOnExit>
-            <Item showing={transitionProps.in!}>
+            <IndicatorWrapper showing={transitionProps.in!}>
                 <Zoom {...transitionProps} timeout={500}>
                     <div>
                         <EffectIndicator {...effect} />
                     </div>
                 </Zoom>
-            </Item>
+            </IndicatorWrapper>
         </DelayedCollapse>
     )
 }

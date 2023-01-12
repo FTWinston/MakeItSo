@@ -142,9 +142,7 @@ const SystemPower = styled(PowerDisplay,
 })));
 
 const Effects = styled(EffectIndicators)({
-    width: '6.64em',
-    maxWidth: '6.64em',
-    overflowX: 'clip',
+    paddingRight: '0.5em',
 })
 
 interface Props extends TileDisplayInfo {
