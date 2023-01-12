@@ -51,7 +51,6 @@ export const EngineeringAppBar: React.FC<Props> = (props) => {
                     label={<AppBarBadge badgeContent={props.numChoices} invisible={currentTab === 'draw'} color="secondary">{t('choose cards')}</AppBarBadge>}
                     color="secondary"
                     value="draw"
-                    disabled={numChoices === 0}
                 />
             </Tabs>
         </SystemAppBar>

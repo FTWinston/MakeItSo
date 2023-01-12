@@ -32,6 +32,7 @@ export const Empty: Story = {
                 engineering: {
                     systemOrder: systems.map(system => system.system),
                     handCards: [],
+                    maxHandSize: 7,
                     choiceCards: [],
                     numChoices: 0,
                     nextCardId: 14,
@@ -58,6 +59,7 @@ export const Busy: Story = {
                 engineering: {
                     systemOrder: systems.map(system => system.system),
                     handCards: storyCards,
+                    maxHandSize: 7,
                     choiceCards: createCards([11, 12, 13]),
                     numChoices: 3,
                     nextCardId: 14,
@@ -84,6 +86,7 @@ export const Custom: Story = {
                 engineering: {
                     systemOrder: systems.map(system => system.system),
                     handCards: [],
+                    maxHandSize: 7,
                     choiceCards: [],
                     numChoices: 0,
                     nextCardId: 14,

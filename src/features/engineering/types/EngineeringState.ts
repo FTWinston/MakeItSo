@@ -8,6 +8,7 @@ import { SystemStatusEffectType } from './SystemStatusEffect';
 export interface EngineeringState {
     systemOrder: ShipSystem[];
     handCards: EngineeringCard[];
+    maxHandSize: number;
     choiceCards: EngineeringCard[];
     numChoices: number;
     choiceProgress?: TimeSpan;

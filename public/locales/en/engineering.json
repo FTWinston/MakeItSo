@@ -19,6 +19,7 @@
 
     "choose cards": "Cards",
     "choose prompt": "Choose one:",
+    "hand full": "Hand is full, play some cards!",
     "generation progress": "Card generation progress",
     "no choice cards": "No card choice available. Please wait...",
     "available choices_zero": "No more choices available.",

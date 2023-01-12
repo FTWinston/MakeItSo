@@ -15,6 +15,7 @@ import { maxSystemHealth } from '../utils/systemActions';
 interface Props {
     systems: ClientSystemInfo[];
     handCards: EngineeringCardInfo[];
+    maxHandSize: number;
     choiceCards: EngineeringCardInfo[];
     numChoices: number;
     choiceProgress?: TimeSpan;
@@ -104,6 +105,7 @@ export const Engineering: React.FC<Props> = (props) => {
             <CardChoice
                 cards={props.choiceCards}
                 numChoices={props.numChoices}
+                handFull={props.handCards.length >= props.maxHandSize}
                 focus={setFocusedCard}
                 choose={props.chooseCard}
                 progress={props.choiceProgress}

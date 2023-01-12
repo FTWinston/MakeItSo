@@ -13,6 +13,7 @@ import { EngineeringCardStub } from './CardStub';
 interface Props {
     cards: EngineeringCardInfo[];
     numChoices: number;
+    handFull: boolean;
     focus: (card: EngineeringCardInfo | null) => void;
     progress?: TimeSpan;
     choose: (id: number) => void;
@@ -113,7 +114,7 @@ export const CardChoice: React.FC<Props> = props => {
         )
         : (
             <Prompt hide={props.cards.length === 0}>
-                {t('choose prompt')}
+                {t(props.handFull ? 'hand full' : 'choose prompt')}
             </Prompt>
         );
         
@@ -140,7 +141,7 @@ export const CardChoice: React.FC<Props> = props => {
                             >
                                 <CardWrapper
                                     selected={card === selected}
-                                    onClick={() => { if (selected === undefined) { setSelected(card); props.choose(card.id); } }}
+                                    onClick={() => { if (selected === undefined && !props.handFull) { setSelected(card); props.choose(card.id); } }}
                                     onMouseEnter={() => props.focus(card)}
                                     onMouseLeave={() => props.focus(null)}
                                     tabIndex={0}

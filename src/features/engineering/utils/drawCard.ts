@@ -2,6 +2,10 @@ import type { ShipState } from 'src/types/ShipState';
 import { createCards } from '../features/Cards';
 
 export function drawCard(state: ShipState, drawCardId: number) {
+    if (state.engineering.handCards.length >= state.engineering.maxHandSize) {
+        return;
+    }
+
     const card = state.engineering.choiceCards.find(card => card.id === drawCardId);
 
     if (!card || state.engineering.numChoices <= 0) {

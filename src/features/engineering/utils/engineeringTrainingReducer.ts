@@ -28,6 +28,7 @@ export function engineeringTrainingReducer(state: ShipState, action: Engineering
                     systemOrder: action.systems.map(system => system.system),
                     choiceCards: action.choiceCards,
                     handCards: action.handCards,
+                    maxHandSize: state.engineering.maxHandSize,
                     numChoices: action.numChoices,
                     choiceProgress: action.choiceProcess,
                     nextCardId: 14,
