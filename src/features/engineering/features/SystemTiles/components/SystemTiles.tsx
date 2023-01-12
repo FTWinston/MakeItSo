@@ -51,12 +51,11 @@ export const SystemTiles: React.FC<Props> = props => {
                         effects={tile.effects}
                         onClick={() => {
                             if (isActiveTarget) {
-                                props.tileSelected(tile.system);
+                                props.tileSelected?.(tile.system);
                             } else if (!selectingTarget) {
                                 showDrawer(tile.system);
                             }
                         }}
-                        //onMouseUp={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
                         onDragEnd={isActiveTarget ? () => props.tileSelected(tile.system) : undefined}
                     />
                 );

@@ -1,5 +1,7 @@
 import { styled } from '@mui/material/styles';
-import { useLayoutEffect, useState } from 'react';
+import Box from '@mui/material/Box';
+import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Stack, Switch, Typography } from 'src/components';
 import { AppBarHeight, Page } from 'src/features/layout';
 import { allSystems, ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
@@ -8,8 +10,6 @@ import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../featur
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
 import { EngineeringAppBar } from './EngineeringAppBar';
-import Box from '@mui/material/Box';
-import { useTranslation } from 'react-i18next';
 import { maxSystemHealth } from '../utils/systemActions';
 
 interface Props {
@@ -63,42 +63,9 @@ export const Engineering: React.FC<Props> = (props) => {
             return;
         }
 
-        console.log(`trying to play card ${(focusedCard?.id ?? '<not found>')} on system ${system}`);
-        
         props.playCard(focusedCard, system, repairMode);
         setFocusedCard(null);
-        /*
-        const elements: Element[] = document.elementsFromPoint
-            ? document.elementsFromPoint(x, y)
-            : (document as any).msElementsFromPoint(x, y);
-
-        for (let i=0; i<elements.length; i++) {
-            const element = elements[i];
-            const attrVal = element.getAttribute('data-system');
-            if (attrVal === null) {
-                continue;
-            }
-
-            const system = parseInt(attrVal) as System;
-
-            if (card.allowedSystems === undefined || (card.allowedSystems & system) !== 0) {
-                dispatch({
-                    type: 'eng play',
-                    card: card.id,
-                    system,
-                });
-            }
-            
-            break;
-        }
-        */
     };
-
-    const expandSystem = (system: ShipSystem) => {
-        console.log(`ok, trying to expand system ${system}`);
-    };
-
-    useLayoutEffect(() => setFocusedCard(null), [currentTab]);
     
     const systemsOrChoice = currentTab === 'draw'
         ? (
@@ -117,7 +84,7 @@ export const Engineering: React.FC<Props> = (props) => {
                     systems={props.systems}
                     allowedTargets={validTargetSystems}
                     possibleRepair={cardSelected && focusedCard && repairMode ? focusedCard.rarity : null}
-                    tileSelected={focusedCard ? tryPlayCard : expandSystem}
+                    tileSelected={tryPlayCard}
                 />
                 <Stack
                     direction="row"
@@ -162,7 +129,7 @@ export const Engineering: React.FC<Props> = (props) => {
         <Root shipDestroyed={props.shipDestroyed}>
             <EngineeringAppBar
                 currentTab={currentTab}
-                setCurrentTab={setCurrentTab}
+                setCurrentTab={tab => { setCurrentTab(tab); setFocusedCard(null); }}
                 numChoices={props.numChoices}
                 anyOffline={props.systems.some(system => system.health === 0)}
             />
