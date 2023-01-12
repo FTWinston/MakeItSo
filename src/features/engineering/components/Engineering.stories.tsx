@@ -8,10 +8,11 @@ import { DefiniteMap } from 'src/types/DefiniteMap';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
+import { getDefaultSystemStates, getDefaultTrainingState } from 'src/utils/getDefaultTrainingState';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardType } from '../features/Cards/types/EngineeringCard';
-import { getBasicStoryTiles, getComplexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
+import { getComplexStoryTiles } from '../features/SystemTiles/components/SystemTiles.stories';
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
@@ -26,8 +27,9 @@ type Story = StoryObj<typeof EngineeringTraining>;
 export const Empty: Story = {
     args: {
         getInitialState: () => {
-            const systems = getBasicStoryTiles();
+            const systems = getDefaultSystemStates();
             return {
+                ...getDefaultTrainingState(),
                 systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
                 engineering: {
                     systemOrder: systems.map(system => system.system),
@@ -37,7 +39,7 @@ export const Empty: Story = {
                     numChoices: 0,
                     nextCardId: 14,
                     nextEffectId: 1,
-                }
+                },
             };
         },
         getEffects: () => [
@@ -55,6 +57,7 @@ export const Busy: Story = {
         getInitialState: () => {
             const systems = getComplexStoryTiles();
             return {
+                ...getDefaultTrainingState(),
                 systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
                 engineering: {
                     systemOrder: systems.map(system => system.system),
@@ -64,7 +67,7 @@ export const Busy: Story = {
                     numChoices: 3,
                     nextCardId: 14,
                     nextEffectId: 1,
-                }
+                },
             };
         },
         getEffects: () => [
@@ -80,8 +83,9 @@ export const Busy: Story = {
 export const Custom: Story = {
     args: {
         getInitialState: () => {
-            const systems = getBasicStoryTiles();
+            const systems = getDefaultSystemStates();
             return {
+                ...getDefaultTrainingState(),
                 systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
                 engineering: {
                     systemOrder: systems.map(system => system.system),
@@ -91,7 +95,7 @@ export const Custom: Story = {
                     numChoices: 0,
                     nextCardId: 14,
                     nextEffectId: 1,
-                }
+                },
             };
         },
         getEffects: () => [],

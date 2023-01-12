@@ -6,6 +6,7 @@ import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { SystemState } from 'src/types/SystemState';
 import { createEffect } from 'src/features/engineering/utils/SystemStatusEffects';
+import { getDefaultSystemStates } from 'src/utils/getDefaultTrainingState';
 
 type Story = StoryObj<typeof SystemTiles>;
 
@@ -19,69 +20,6 @@ const meta: Meta<typeof SystemTiles> = {
 };
 
 export default meta;
-
-export const getBasicStoryTiles: () => SystemState[] = () => [
-    {
-        system: ShipSystem.Hull,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Shields,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Sensors,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Weapons,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Engines,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Reactor,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-];
 
 export const getComplexStoryTiles: () => SystemState[] = () => [
     {
@@ -154,7 +92,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
 
 export const BasicTiles: Story = {
     args: {
-        systems: getBasicStoryTiles(),
+        systems: getDefaultSystemStates(),
     }
 };
 
