@@ -19,6 +19,7 @@ interface Props {
 const Root = styled('div')({
     padding: '0.5em',
     width: '16em',
+    overflowX: 'hidden',
 });
 
 const Title = styled('h3')({
