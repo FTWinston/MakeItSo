@@ -1,7 +1,7 @@
 import { Page } from './Page';
 
 export default {
-    title: 'Page',
+    title: 'Layout/Page',
     component: Page,
 };
 

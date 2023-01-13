@@ -1,5 +1,5 @@
 import { BaseStatusEffect, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType } from '../types/SystemStatusEffect';
-import { SystemState } from 'src/types/SystemState';
+import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
 import { ShipState } from 'src/types/ShipState';
@@ -8,7 +8,6 @@ import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems, ShipSystem } f
 import { LogEvent } from '../features/SystemTiles';
 import { getRandomInt } from 'src/utils/random';
 
-export const maxSystemHealth = 100;
 export const maxRestorationValue = 100;
 export const defaultPowerLevel = 2;
 export const maxPowerLevel = 4;

@@ -1,9 +1,8 @@
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { Avatar, Badge, CircularTimer } from 'src/components';
+import { Avatar, Badge, CircularTimer, Tooltip } from 'src/components';
 import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import Tooltip from '@mui/material/Tooltip';
 
 type Props = SystemStatusEffectInfo & {
     className?: string;
@@ -117,7 +116,7 @@ export const EffectIndicator: React.FC<Props> = props => {
     }
 
     return (
-        <Tooltip disableFocusListener title={effectName} arrow enterTouchDelay={150}>
+        <Tooltip title={effectName}>
             {content}
         </Tooltip>
     );

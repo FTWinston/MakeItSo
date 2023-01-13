@@ -10,7 +10,7 @@ import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../featur
 import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
 import { EngineeringAppBar } from './EngineeringAppBar';
-import { maxSystemHealth } from '../utils/systemActions';
+import { maxSystemHealth } from 'src/types/SystemState';
 
 interface Props {
     systems: ClientSystemInfo[];

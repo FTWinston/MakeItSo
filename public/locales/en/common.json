@@ -2,6 +2,7 @@
     "loading": "Loading...",
     "error": "An error has occurred.",
     "menu": "Menu",
+    "system health": "System health",
     "powerLevel0": "Offline",
     "powerLevel1": "Low power",
     "powerLevel2": "Normal power",

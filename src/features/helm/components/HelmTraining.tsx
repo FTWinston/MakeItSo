@@ -1,6 +1,7 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
 import { ShipState } from 'src/types/ShipState';
+import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { helmTrainingReducer } from '../utils/helmTrainingReducer';
 import { Helm } from './Helm';
@@ -22,9 +23,13 @@ export const HelmTraining: React.FC<Props> = (props) => {
         return () => clearInterval(interval);
     });
 
+    const { power, health } = state.systems.get(ShipSystem.Engines);
+
     const defaultRender = () => (
         <Helm
             {...state.helm}
+            power={power}
+            health={health}
             shipDestroyed={state.destroyed}
         />
     );

@@ -1,3 +1,4 @@
+import { Tooltip } from '@mui/material';
 import Box from '@mui/material/Box';
 import { styled, SxProps } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +7,7 @@ import { PowerLevel } from 'src/types/ShipSystem';
 const Root = styled(Box)({
     display: 'flex',
     width: '1.65em',
-    height: '2em',
+    height: '1.75em',
     gap: '0.15em',
     justifyContent: 'center',
     alignItems: 'flex-end',
@@ -68,16 +69,18 @@ export const PowerDisplay: React.FC<Props> = (props) => {
     const description = t(`powerLevel${props.powerLevel}`);
 
     return (
-        <Root
-            role="figure"
-            aria-label={description}
-            className={props.className}
-            sx={props.sx}
-        >
-            <Bar active={props.powerLevel >= 1} level={props.powerLevel} />
-            <Bar active={props.powerLevel >= 2} level={props.powerLevel} />
-            <Bar active={props.powerLevel >= 3} level={props.powerLevel} />
-            <Bar active={props.powerLevel >= 4} level={props.powerLevel} />
-        </Root>
+        <Tooltip title={description}>
+            <Root
+                role="figure"
+                aria-label={description}
+                className={props.className}
+                sx={props.sx}
+            >
+                <Bar active={props.powerLevel >= 1} level={props.powerLevel} />
+                <Bar active={props.powerLevel >= 2} level={props.powerLevel} />
+                <Bar active={props.powerLevel >= 3} level={props.powerLevel} />
+                <Bar active={props.powerLevel >= 4} level={props.powerLevel} />
+            </Root>
+        </Tooltip>
     );
 };

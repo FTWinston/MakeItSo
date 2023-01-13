@@ -1,20 +1,19 @@
 import Button from '@mui/material/Button';
-import { styled, Theme } from '@mui/material/styles';
-import { normal } from 'color-blend';
-import { RGBA } from 'color-blend/dist/types';
+import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { LinearProgress } from 'src/components';
-import { maxSystemHealth } from 'src/features/engineering/utils/systemActions';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
-import { PowerDisplay } from './PowerDisplay';
+import { PowerDisplay } from 'src/features/layout/components/PowerDisplay';
+import { maxSystemHealth } from 'src/types/SystemState';
+import { getHealthColor } from 'src/utils/getHealthColor';
 
 const Root = styled(Button,
     { shouldForwardProp: (prop) => prop !== 'validTarget' && prop !== 'health' && prop !== 'power' }
 )<{ validTarget: boolean | undefined, health: number, power: PowerLevel }>(({ theme, health, power, validTarget }) => {
     let color: string;
-    let backgroundColor = theme.palette.background.paper;
+    let backgroundColor: string = theme.palette.background.paper;
     let hover: object | undefined;
     if (validTarget === true) {
         color = theme.palette.success.light;
@@ -63,45 +62,13 @@ const SvgRoot = styled('svg')({
 
 const pathPerimeter = Math.PI * 2 * 10 + 224;
 
-const hex2rgba = (hex: string, a: number) => {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return { r, g, b, a };
-};
-
-function getHealthColor(healthScale: number, theme: Theme) {
-    let fromColor: string;
-    let toColor: string;
-    let blendAmount: number;
-
-    if (healthScale < 0.5) {
-        fromColor = theme.palette.error.dark;
-        toColor = theme.palette.warning.dark;
-        blendAmount = healthScale * 2;
-    }
-    else {
-        fromColor = theme.palette.warning.dark;
-        toColor = theme.palette.success.dark;
-        blendAmount = (healthScale - 0.5) * 2;
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-    const color: RGBA = normal(
-        hex2rgba(fromColor, 1),
-        hex2rgba(toColor, blendAmount)
-    );
-
-    return `rgb(${color.r},${color.g},${color.b})`;
-}
-
-const HealthPath = styled('path')<{ health: number }>(props => {
-    const healthScale = props.health / maxSystemHealth;
+const HealthPath = styled('path')<{ health: number }>(({ health, theme}) => {
+    const healthScale = health / maxSystemHealth;
     const fillDistance = healthScale * pathPerimeter;
 
     return {
         fill: 'none',
-        stroke: getHealthColor(healthScale, props.theme),
+        stroke: getHealthColor(healthScale, theme),
         strokeDasharray: `${fillDistance}, ${pathPerimeter - fillDistance}`,
         strokeDashoffset: pathPerimeter - 39,
         transition: 'stroke-dasharray 400ms ease-in-out',
@@ -137,7 +104,7 @@ const RestoreProgress = styled(LinearProgress)({
 const SystemPower = styled(PowerDisplay,
     { shouldForwardProp: (prop) => prop !== 'faint' }
 )<{ faint: boolean }>((({ faint }) => ({
-    margin: '0 0.2em 0.6em 0',
+    margin: '0.2em 0.2em 0.6em 0',
     opacity: faint ? 0.3 : undefined
 })));
 

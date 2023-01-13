@@ -1,10 +1,10 @@
 import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../types/EngineeringCard';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
-import { applyPrimaryEffect, applySecondaryEffect, applySingleEffect, maxSystemHealth, removeEffect } from '../../../utils/systemActions';
+import { applyPrimaryEffect, applySecondaryEffect, applySingleEffect, removeEffect } from '../../../utils/systemActions';
 import { getRandomInt } from 'src/utils/random';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { SystemState } from 'src/types/SystemState';
+import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { DefiniteMap } from 'src/types/DefiniteMap';
 import { getTime } from 'src/utils/timeSpans';
 

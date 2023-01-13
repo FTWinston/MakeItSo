@@ -1,10 +1,10 @@
 import { ShipState } from 'src/types/ShipState';
-import { SystemState } from 'src/types/SystemState';
+import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { BaseStatusEffect, EffectBehavior, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
-import { adjustHealth, adjustPower, effectTickInterval, maxSystemHealth, removeEffect, removeEffectInstance } from './systemActions';
+import { adjustHealth, adjustPower, effectTickInterval, removeEffectInstance } from './systemActions';
 
 type EffectBehaviorWithoutType = Omit<EffectBehavior, 'type'>;
 

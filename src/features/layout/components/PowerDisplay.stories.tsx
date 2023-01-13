@@ -3,7 +3,7 @@ import { ComponentProps } from 'react';
 import { PowerDisplay } from './PowerDisplay';
 
 export default {
-    title: 'Engineering/System Tiles/Power Level',
+    title: 'Layout/Shared/Power Level',
     Component: PowerDisplay,
 };
 

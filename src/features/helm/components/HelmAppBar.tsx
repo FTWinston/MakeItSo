@@ -1,19 +1,16 @@
 import HelmIcon from '@mui/icons-material/NearMe';
 import { styled } from '@mui/material/styles';
-import { Badge, Tab, Tabs } from 'src/components';
-import { ComponentProps } from 'react';
-import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
+import { useTranslation } from 'react-i18next';
 import { SystemAppBar } from 'src/features/layout';
+import { PowerLevel } from 'src/types/ShipSystem';
+import { PowerDisplay } from 'src/features/layout/components/PowerDisplay';
+import { HealthDisplay } from 'src/features/layout/components/HealthDisplay';
 
 interface Props {
+    power: PowerLevel;
+    health: number;
 }
-
-const AppBarBadge = styled(Badge)<ComponentProps<typeof Badge>>({
-    '& .MuiBadge-badge': {
-        right: '-0.55em',
-    },
-});
 
 export const HelmAppBar: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
@@ -26,8 +23,9 @@ export const HelmAppBar: React.FC<Props> = (props) => {
                 role="img"
                 color="disabled"
             />
-            <Box sx={{flexGrow: 1}} />
-
+            <Box sx={{flexGrow: 1 }} />
+            <PowerDisplay powerLevel={props.power} />
+            <HealthDisplay health={props.health} />
         </SystemAppBar>
     );
 }
