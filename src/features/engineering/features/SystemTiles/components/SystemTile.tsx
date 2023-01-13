@@ -5,7 +5,7 @@ import { LinearProgress } from 'src/components';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
-import { PowerDisplay } from 'src/features/layout/components/PowerDisplay';
+import { PowerDisplay } from 'src/features/layout';
 import { maxSystemHealth } from 'src/types/SystemState';
 import { getHealthColor } from 'src/utils/getHealthColor';
 

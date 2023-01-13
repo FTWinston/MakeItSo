@@ -4,6 +4,7 @@ import 'i18next';
 import common from '../../public/locales/en/common.json';
 import engineering from '../../public/locales/en/engineering.json';
 import helm from '../../public/locales/en/helm.json';
+import sensors from '../../public/locales/en/sensors.json';
 import weapons from '../../public/locales/en/weapons.json';
 
 declare module 'i18next' {
@@ -16,6 +17,7 @@ declare module 'i18next' {
             common: typeof common;
             engineering: typeof engineering;
             helm: typeof helm;
+            sensors: typeof sensors;
             weapons: typeof weapons;
         };
         // other

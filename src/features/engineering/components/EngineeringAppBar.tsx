@@ -1,10 +1,10 @@
-import EngineeringIcon from '@mui/icons-material/Engineering';
 import { styled } from '@mui/material/styles';
-import { Badge, Tab, Tabs } from 'src/components';
+import { Badge, CrewIcon, Tab, Tabs } from 'src/components';
 import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
 import Box from '@mui/material/Box';
 import { SystemAppBar } from 'src/features/layout';
+import { CrewStation } from 'src/types/ShipSystem';
 
 type TabIdentifiers = 'systems' | 'draw';
 
@@ -31,7 +31,8 @@ export const EngineeringAppBar: React.FC<Props> = (props) => {
 
     return (
         <SystemAppBar>
-            <EngineeringIcon
+            <CrewIcon
+                station={CrewStation.Engineering}
                 fontSize="large"
                 titleAccess={t('title')}
                 role="img"

@@ -3,18 +3,18 @@ import { useEffect, useReducer } from 'react';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
-import { helmTrainingReducer } from '../utils/helmTrainingReducer';
-import { Helm } from './Helm';
+import { sensorsTrainingReducer } from '../utils/sensorsTrainingReducer';
+import { Sensors } from './Sensors';
 
 interface Props {
     getInitialState: () => ShipState;
-    //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
+    //customRender?: (dispatch: Dispatch<SensorsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
-export const HelmTraining: React.FC<Props> = (props) => {
+export const SensorsTraining: React.FC<Props> = (props) => {
     const { getInitialState } = props;
 
-    const [state, dispatch] = useReducer(produce(helmTrainingReducer), undefined, getInitialState);
+    const [state, dispatch] = useReducer(produce(sensorsTrainingReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
     useEffect(() => {
@@ -26,8 +26,8 @@ export const HelmTraining: React.FC<Props> = (props) => {
     const { power, health } = state.systems.get(ShipSystem.Engines);
 
     const defaultRender = () => (
-        <Helm
-            {...state.helm}
+        <Sensors
+            {...state.sensors}
             power={power}
             health={health}
             shipDestroyed={state.destroyed}

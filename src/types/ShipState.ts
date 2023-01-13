@@ -1,12 +1,16 @@
-import { EngineeringState } from 'src/features/engineering/types/EngineeringState';
-import { HelmState } from 'src/features/helm/types/HelmState';
-import { DefiniteMap } from './DefiniteMap';
+import type { EngineeringState } from 'src/features/engineering/types/EngineeringState';
+import type { HelmState } from 'src/features/helm/types/HelmState';
+import type { SensorsState } from 'src/features/sensors/types/SensorsState';
+import type { WeaponsState } from 'src/features/weapons/types/WeaponsState';
+import type { DefiniteMap } from './DefiniteMap';
 import type { ShipDestroyingSystem, ShipSystem } from './ShipSystem';
-import { SystemState } from './SystemState';
+import type { SystemState } from './SystemState';
 
 export interface ShipState {
     destroyed?: ShipDestroyingSystem;
     systems: DefiniteMap<ShipSystem, SystemState>;
     engineering: EngineeringState;
     helm: HelmState;
+    sensors: SensorsState;
+    weapons: WeaponsState;
 }

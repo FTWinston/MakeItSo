@@ -11,13 +11,13 @@ interface Props {
     health: number;
 }
 
-export const HelmAppBar: React.FC<Props> = (props) => {
-    const { t } = useTranslation('helm');
+export const WeaponsAppBar: React.FC<Props> = (props) => {
+    const { t } = useTranslation('weapons');
 
     return (
         <SystemAppBar>
             <CrewIcon
-                station={CrewStation.Helm}
+                station={CrewStation.Weapons}
                 fontSize="large"
                 titleAccess={t('title')}
                 role="img"

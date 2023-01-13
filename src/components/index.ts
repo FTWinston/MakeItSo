@@ -9,7 +9,7 @@ export { LinearTimer } from './LinearTimer';
 export { ScreenReaderOnly } from './ScreenReaderOnly';
 export { Stack } from './Stack';
 export { Switch } from './Switch';
-export { SystemIcon } from './SystemIcon';
+export { CrewIcon } from './CrewIcon';
 export { Tooltip } from './Tooltip';
 export { Tab, Tabs } from './Tabs';
 export { Typography } from './Typography';
