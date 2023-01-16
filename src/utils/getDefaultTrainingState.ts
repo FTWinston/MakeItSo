@@ -4,67 +4,25 @@ import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from './arrays';
 
+export const getDefaultSystemState: (system: ShipSystem) => SystemState = system => ({
+    system,
+    health: 100,
+    power: 2,
+    unconstrainedPower: 2,
+    powerLevelChanged: false,
+    shieldScale: 1,
+    effects: [],
+    eventLog: [],
+    nextEventId: 1,
+});
+
 export const getDefaultSystemStates: () => SystemState[] = () => [
-    {
-        system: ShipSystem.Hull,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Shields,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Sensors,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Weapons,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Engines,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
-    {
-        system: ShipSystem.Reactor,
-        health: 100,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
-    },
+    getDefaultSystemState(ShipSystem.Hull),
+    getDefaultSystemState(ShipSystem.Shields),
+    getDefaultSystemState(ShipSystem.Sensors),
+    getDefaultSystemState(ShipSystem.Weapons),
+    getDefaultSystemState(ShipSystem.Engines),
+    getDefaultSystemState(ShipSystem.Reactor),
 ];
 
 export function getDefaultTrainingState(): ShipState {
@@ -83,6 +41,12 @@ export function getDefaultTrainingState(): ShipState {
         },
         helm: {
             
+        },
+        weapons: {
+
+        },
+        sensors: {
+
         }
     }
 }

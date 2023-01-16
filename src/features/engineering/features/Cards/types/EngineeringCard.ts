@@ -34,6 +34,8 @@ export enum EngineeringCardType {
     Rebuild = 'rebuild',
     Rewind = 'rewind',
     DrawPower = 'drawPower',
+    FocusShields = 'focusShields',
+    BalanceShields = 'balanceShields',
 }
 
 export interface EngineeringCardInfo {

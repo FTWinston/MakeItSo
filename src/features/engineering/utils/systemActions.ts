@@ -63,6 +63,11 @@ export function adjustPower(system: SystemState, adjustment: number) {
     return adjustment;
 }
 
+export function scaleShields(system: SystemState, difference: number) {
+    const newScale = Math.max(0, system.shieldScale + difference);
+    system.shieldScale = newScale;
+}
+
 function destroyShip(ship: ShipState, destroyedVia: ShipDestroyingSystem) {
     ship.destroyed = destroyedVia;
 

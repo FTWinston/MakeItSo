@@ -22,6 +22,7 @@ export enum SystemStatusEffectType {
     Rebuild = 'rebuild',
     Replace = 'replace',
     ReactorDamage = 'reactorDamage',
+    ShieldFocus = 'shieldFocus',
 }
 
 // The "Info" types represent stripped-down versions of the "full" types, for use client-side.

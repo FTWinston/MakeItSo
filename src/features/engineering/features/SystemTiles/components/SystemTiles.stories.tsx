@@ -6,7 +6,7 @@ import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { SystemState } from 'src/types/SystemState';
 import { createEffect } from 'src/features/engineering/utils/SystemStatusEffects';
-import { getDefaultSystemStates } from 'src/utils/getDefaultTrainingState';
+import { getDefaultSystemState, getDefaultSystemStates } from 'src/utils/getDefaultTrainingState';
 
 type Story = StoryObj<typeof SystemTiles>;
 
@@ -23,70 +23,42 @@ export default meta;
 
 export const getComplexStoryTiles: () => SystemState[] = () => [
     {
-        system: ShipSystem.Hull,
+        ...getDefaultSystemState(ShipSystem.Hull),
         health: 3,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
         effects: [
             createEffect(1, SystemStatusEffectType.ReactorSurplus, getTime() - durationToTicks(10)),
         ],
-        eventLog: [],
-        nextEventId: 1,
     },
     {
-        system: ShipSystem.Shields,
+        ...getDefaultSystemState(ShipSystem.Shields),
         health: 62,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
         effects: [
             createEffect(1, SystemStatusEffectType.DivertTo, getTime() - durationToTicks(10)),
             createEffect(2, SystemStatusEffectType.Overcharge, getTime() - durationToTicks(1)),
             createEffect(3, SystemStatusEffectType.DivertFrom, getTime() - durationToTicks(6)),
         ],
-        eventLog: [],
-        nextEventId: 1,
     },
     {
-        system: ShipSystem.Sensors,
+        ...getDefaultSystemState(ShipSystem.Sensors),
         health: 40,
         power: 3,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
+        unconstrainedPower: 3,
     },
     {
-        system: ShipSystem.Weapons,
+        ...getDefaultSystemState(ShipSystem.Weapons),
         health: 97,
         power: 1,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
+        unconstrainedPower: 1,
     },
     {
-        system: ShipSystem.Engines,
+        ...getDefaultSystemState(ShipSystem.Engines),
         health: 81,
         power: 4,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
+        unconstrainedPower: 4,
     },
     {
-        system: ShipSystem.Reactor,
+        ...getDefaultSystemState(ShipSystem.Reactor),
         health: 15,
-        power: 2,
-        unconstrainedPower: 2,
-        powerLevelChanged: false,
-        effects: [],
-        eventLog: [],
-        nextEventId: 1,
     },
 ];
 

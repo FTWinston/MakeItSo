@@ -1,6 +1,7 @@
 import RelocateHereIcon from '@mui/icons-material/PanToolAlt';
 import PurgeIcon from '@mui/icons-material/BlurOff';
 import RewindIcon from '@mui/icons-material/Replay';
+import BalanceShieldsIcon from '@mui/icons-material/GppMaybe';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { EngineeringCardType } from '../types/EngineeringCard';
@@ -37,12 +38,14 @@ const effectTypesByCardType = new Map<EngineeringCardType, SystemStatusEffectTyp
     [EngineeringCardType.Reset, SystemStatusEffectType.Reset],
     [EngineeringCardType.Rebuild, SystemStatusEffectType.Rebuild],
     [EngineeringCardType.DrawPower, SystemStatusEffectType.DrawnPower],
+    [EngineeringCardType.FocusShields, SystemStatusEffectType.ShieldFocus],
 ]);
 
 const iconsByCardType = new Map<EngineeringCardType, IconType>([
     [EngineeringCardType.RelocateHere, RelocateHereIcon],
     [EngineeringCardType.Purge, PurgeIcon],
     [EngineeringCardType.Rewind, RewindIcon],
+    [EngineeringCardType.BalanceShields, BalanceShieldsIcon],
 ]);
 
 export const CardIcon: React.FC<Props> = props => {

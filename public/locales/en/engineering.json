@@ -57,6 +57,7 @@
     "effect rebuild": "Rebuilding",
     "effect replace": "Replacing",
     "effect reactorDamage": "Reactor Damage",
+    "effect shieldFocus": "Focused Shields",
 
     "card auxPower title": "Aux Power",
     "card storeCharge title": "Store Charge",
@@ -82,6 +83,8 @@
     "card rebuild title": "Rebuild System",
     "card rewind title": "Rewind",
     "card drawPower title": "Draw Power",
+    "card focusShields title": "Focus Shields",
+    "card balanceShields title": "Balance Shields",
     "card auxPower desc": "Increases system power by {{power}} for {{duration}}s, removes aux power from other systems",
     "card storeCharge desc": "Decreases system power by {{power}} for {{duration}}s, then adds a Stored Charge card to your hand",
     "card storedCharge desc": "Increases system power by {{power}} for {{duration}}s",
@@ -106,6 +109,8 @@
     "card rebuild desc": "Disable system for {{duration}}s, then repair {{damage}} damage",
     "card rewind desc": "Restarts the progress on all active effects on the target system",
     "card drawPower desc": "Take {{power}} power from each adjacent system, add it to the target system for {{duration}}s",
+    "card focusShields desc": "Double shield protection of target system, half it for other systems, add a Balance Shields card to your hand",
+    "card balanceShields desc": "Remove shield focus, letting shields apply equally to all systems",
 
     "log play card": "Played card: {{card}}",
     "log effect add": "Effect applied: {{effect}}",

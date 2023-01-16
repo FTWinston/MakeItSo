@@ -20,6 +20,8 @@ const onlyOnlineSystemsWithEffects = filterSystems(system => system.health > 0 &
 const onlyOnlineSystemsWithNegativeEffects = filterSystems(system => system.health > 0 && system.effects.some(effect => effect.positive === false));
 const onlyOnlineSystems = filterSystems(system => system.health > 0);
 const onlyPoweredSystems = filterSystems(system => system.power > 0);
+const onlySystemsWithEffect = (effectType: SystemStatusEffectType) => filterSystems(system => system.effects.find(effect => effect.type === effectType) !== undefined);
+const notHullOrShields = filterSystems(system => system.system !== ShipSystem.Hull && system.system !== ShipSystem.Shields);
 
 const getAdjacentIndices = (index: number) => {
     switch (index) {
@@ -278,6 +280,25 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             duration: 10,
         }
     }],
+    [EngineeringCardType.FocusShields, {
+        play: (system, ship) => {
+            for (const otherSystemState of ship.systems.values()) {
+                removeEffect(otherSystemState, ship, SystemStatusEffectType.ShieldFocus);
+            }
+
+            applySingleEffect(SystemStatusEffectType.ShieldFocus, system, ship);
+            
+            const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.BalanceShields, EngineeringCardRarity.Common);
+            ship.engineering.handCards.push(newCard);
+        },
+        determineAllowedSystems: notHullOrShields,
+    }],
+    [EngineeringCardType.BalanceShields, {
+        play: (system, ship) => {
+            removeEffect(system, ship, SystemStatusEffectType.ShieldFocus);
+        },
+        determineAllowedSystems: onlySystemsWithEffect(SystemStatusEffectType.ShieldFocus),
+    }],
 ]);
 
 export const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
@@ -286,6 +307,7 @@ export const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[
         [
             EngineeringCardType.AuxPower,
             EngineeringCardType.StoreCharge,
+            EngineeringCardType.FocusShields,
         ]
     ],
     [

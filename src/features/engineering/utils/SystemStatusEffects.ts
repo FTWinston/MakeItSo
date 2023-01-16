@@ -4,7 +4,7 @@ import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { BaseStatusEffect, EffectBehavior, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
-import { adjustHealth, adjustPower, effectTickInterval, removeEffectInstance } from './systemActions';
+import { adjustHealth, adjustPower, effectTickInterval, removeEffectInstance, scaleShields } from './systemActions';
 
 type EffectBehaviorWithoutType = Omit<EffectBehavior, 'type'>;
 
@@ -243,6 +243,29 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             },
             remove: (system: SystemState) => {
                 adjustPower(system, 1);
+            },
+        },
+    ],
+    [
+        SystemStatusEffectType.ShieldFocus,
+        {
+            positive: true,
+            duration: 30,
+            apply: (system: SystemState, ship: ShipState) => {
+                for (const shipSystem of ship.systems.values()) {
+                    scaleShields(shipSystem, shipSystem.system === system.system ? 1 : -0.5);
+                }
+            },
+            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+                for (const shipSystem of ship.systems.values()) {
+                    scaleShields(shipSystem, shipSystem.system === system.system ? -1 : 0.5);
+                }
+
+                // Remove the Balance Shields card from play.
+                const removeIndex = ship.engineering.handCards.findIndex(card => card.type === EngineeringCardType.BalanceShields);
+                if (removeIndex !== -1) {
+                    ship.engineering.handCards.splice(removeIndex, 1);
+                }
             },
         },
     ],
