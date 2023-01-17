@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { SpaceMap } from './SpaceMap';
 import { styled } from '@mui/material/styles';
 import { Vector2D } from 'src/types/Vector2D';
@@ -13,11 +13,14 @@ const StyledMap = styled(SpaceMap)({
 const Simple = () => {
     const [cellRadius, setCellRadius] = useState(32);
 
+    const canvas = useRef<HTMLCanvasElement>(null);
+    
     const [center, setCenter] = useState<Vector2D>({ x: 0, y: 0 });
 
     return (
         <StyledMap
             gridColor="primary"
+            ref={canvas}
             vessels={[]}
             cellRadius={cellRadius}
             setCellRadius={setCellRadius}

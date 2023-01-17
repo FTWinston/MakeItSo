@@ -80,7 +80,7 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
 
     const bind = useGesture(gestureConfig, {
         drag: {
-            initial: () => [-center.x, -center.y],
+            from: () => [-center.x, -center.y],
             threshold: clickMoveLimit,
             enabled: dragEnabled,
         },
