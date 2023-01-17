@@ -1,4 +1,4 @@
-export type ColorName = 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' | 'inherit';
+export type ColorName = 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning';
 
 export type IconColorName = ColorName | 'action' | 'disabled';
 

@@ -1,3 +1,7 @@
 {
-    "title": "Helm"
+    "title": "Helm",
+    "set maneuver mode": "Switched to manuever mode",
+    "set travel mode": "Switched to travel mode",
+    "travel": "Travel",
+    "maneuver": "Maneuver"
 }

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { styled, useTheme } from '@mui/material/styles';
 import { durationToTicks } from 'src/utils/timeSpans';
-import { useIsFirstRender } from 'src/utils/useIsFirstRender';
+import { useIsFirstRender } from 'src/hooks/useIsFirstRender';
 import { LinearTimer, Typography } from 'src/components';
 import Slide from '@mui/material/Slide';
 import Zoom from '@mui/material/Zoom';

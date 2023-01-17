@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { useIsFirstRender } from 'src/utils/useIsFirstRender';
+import { useIsFirstRender } from 'src/hooks/useIsFirstRender';
 import styled from '@mui/material/styles/styled';
 import Slide from '@mui/material/Slide';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
