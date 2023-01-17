@@ -1,5 +1,5 @@
 import { forwardRef, useRef } from 'react';
-import { AnyHandlerEventTypes, GestureHandlers, useGesture } from '@use-gesture/react'
+import { GestureHandlers, useGesture } from '@use-gesture/react'
 import { SxProps, useTheme } from '@mui/material/styles';
 import { clickMoveLimit } from 'src/hooks/useLongPress';
 import { drawFunction, drawMap } from '../utils/drawMap';
@@ -66,18 +66,31 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         onPinch: ({ da: [distance] }) => {
             const scale = distance / startDistance.current;
             setCellRadius(Math.max(16, cellRadius * scale));
-        },
-        /* TODO: get these events working
-        onMouseDown,
-        onMouseUp,
-        onMouseMove,
-        onMouseLeave,
-        onTouchStart,
-        onTouchEnd,
-        onTouchMove,
-        */
+        }
     };
 
+    if (onMouseDown) {
+        gestureConfig.onMouseDown = ({ event }) => onMouseDown(event as any);
+    }
+    if (onMouseUp) {
+        gestureConfig.onMouseUp = ({ event }) => onMouseUp(event as any);
+    }
+    if (onMouseMove) {
+        gestureConfig.onMouseMove = ({ event }) => onMouseMove(event as any);
+    }
+    if (onMouseLeave) {
+        gestureConfig.onMouseLeave = ({ event }) => onMouseLeave(event as any);
+    }
+    if (onTouchStart) {
+        gestureConfig.onTouchStart = ({ event }) => onTouchStart(event as any);
+    }
+    if (onTouchEnd) {
+        gestureConfig.onTouchEnd = ({ event }) => onTouchEnd(event as any);
+    }
+    if (onTouchMove) {
+        gestureConfig.onTouchMove = ({ event }) => onTouchMove(event as any);
+    }
+    
     const bind = useGesture(gestureConfig, {
         drag: {
             from: () => [-center.x, -center.y],

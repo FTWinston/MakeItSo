@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import { SpaceMap } from './SpaceMap';
 import { styled } from '@mui/material/styles';
 import { Vector2D } from 'src/types/Vector2D';
+import { VesselInfo } from 'src/types/VesselInfo';
+import { durationToTicks, getTime } from 'src/utils/timeSpans';
 
 export default { title: 'Common/Space Map' };
 
@@ -14,6 +16,26 @@ const Simple = () => {
     const [cellRadius, setCellRadius] = useState(32);
 
     const canvas = useRef<HTMLCanvasElement>(null);
+
+    const vessels = useRef<VesselInfo[]>([
+        {
+            position: [{
+                time: getTime(),
+                val: {
+                    x: 0,
+                    y: 0,
+                    angle: 0,
+                }
+            }, {
+                time: getTime() + durationToTicks(3),
+                val: {
+                    x: 50,
+                    y: 0,
+                    angle: Math.PI,
+                }
+            }]
+        }
+    ])
     
     const [center, setCenter] = useState<Vector2D>({ x: 0, y: 0 });
 
@@ -21,7 +43,7 @@ const Simple = () => {
         <StyledMap
             gridColor="primary"
             ref={canvas}
-            vessels={[]}
+            vessels={vessels.current}
             cellRadius={cellRadius}
             setCellRadius={setCellRadius}
             center={center}

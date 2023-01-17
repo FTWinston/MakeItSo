@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Waypoint } from 'src/types/Waypoint';
-import { styled, useTheme } from '@mui/material/styles';
+import { useTheme } from '@mui/material/styles';
 import { determineAngle, Vector2D } from 'src/types/Vector2D';
 import { getPositionValue } from 'src/utils/Animation';
 import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/features/spacemap';
@@ -9,11 +9,6 @@ import { ColorName } from 'src/types/Colors';
 import { drawWaypoint } from '../utils/drawWaypoint';
 import { useLongPress } from 'src/hooks/useLongPress';
 import { VesselInfo } from 'src/types/VesselInfo';
-
-const StyledMap = styled(SpaceMap)(({ theme }) => ({
-    width: '100vw',
-    height: `calc(100vh - ${theme.spacing(7)}px)`,
-}));
 
 interface Props {
     ships: Partial<Record<number, VesselInfo>>;
@@ -152,7 +147,7 @@ export const HelmMap: React.FC<Props> = props => {
     };
 
     return (
-        <StyledMap
+        <SpaceMap
             ref={canvas}
             gridColor={props.replaceMode ? 'secondary' : 'primary'}
             dragEnabled={screenTouchPos === undefined}
