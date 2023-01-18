@@ -1,5 +1,4 @@
-import Drawer from '@mui/material/Drawer';
-import { styled } from '@mui/material/styles';
+import { Drawer, styled } from 'src/lib/mui';
 import { useState } from 'react';
 import { determineRepairAmount, determineRestoreAmount } from 'src/features/engineering/utils/systemActions';
 import { ShipSystem } from 'src/types/ShipSystem';

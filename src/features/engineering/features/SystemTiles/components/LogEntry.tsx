@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'src/lib/mui';
 import { useTranslation } from 'react-i18next';
 import { LogEvent } from '../types/TileInfo';
 

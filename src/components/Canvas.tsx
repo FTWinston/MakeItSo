@@ -1,4 +1,4 @@
-import { styled, SxProps } from '@mui/material/styles';
+import { styled, SxProps } from 'src/lib/mui';
 import { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
 import { TouchEvents } from 'src/types/TouchEvents';
 

@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'src/lib/mui';
 import { ShipDestroyingSystem } from 'src/types/ShipSystem';
 
 interface Props {

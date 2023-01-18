@@ -1,7 +1,5 @@
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { LinearProgress } from 'src/components';
+import { Button, LinearProgress, styled } from 'src/lib/mui';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { TileDisplayInfo } from '../types/TileInfo';
 import { EffectIndicators } from './EffectIndicators';
@@ -43,6 +41,9 @@ const Root = styled(Button,
         width: '9em',
         height: '5.05em',
         paddingTop: '2.95em',
+        paddingLeft: '0.275em',
+        paddingRight: '0.275em',
+        paddingBottom: '0.2em',
         margin: 0,
         borderRadius: '0.75em',
         color,

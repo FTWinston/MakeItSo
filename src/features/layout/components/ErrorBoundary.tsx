@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'src/lib/mui';
 import { Component } from 'react';
 import { Translation } from 'react-i18next';
 

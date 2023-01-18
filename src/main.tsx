@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App'
-import { ThemeProvider } from '@mui/material/styles';
-import { theme } from './utils/muiTheme';
+import { ThemeProvider } from 'src/lib/mui';
+import { theme } from './lib/mui/theme';
 import './language';
 import './base.css'
 

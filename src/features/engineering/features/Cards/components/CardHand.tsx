@@ -1,7 +1,6 @@
 import { useRef } from 'react';
 import { useIsFirstRender } from 'src/hooks/useIsFirstRender';
-import styled from '@mui/material/styles/styled';
-import Slide from '@mui/material/Slide';
+import { SlideTransition, styled } from 'src/lib/mui';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub, stubHeight, stubWidth } from './CardStub';
 import { exitDuration } from './CardChoice';
@@ -95,7 +94,7 @@ export const CardHand: React.FC<Props> = props => {
                     };
 
                     return (
-                        <Slide
+                        <SlideTransition
                             in={true}
                             timeout={transitionDuration}
                             appear={!firstRender}
@@ -123,7 +122,7 @@ export const CardHand: React.FC<Props> = props => {
                                     rarity={card.rarity}
                                 />
                             </StubWrapper>
-                        </Slide>
+                        </SlideTransition>
                     );
                 })}
             </StubsWrapper>

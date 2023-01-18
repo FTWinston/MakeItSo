@@ -1,11 +1,10 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Waypoint } from 'src/types/Waypoint';
-import { useTheme } from '@mui/material/styles';
 import { determineAngle, Vector2D } from 'src/types/Vector2D';
 import { getPositionValue } from 'src/utils/Animation';
 import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/features/spacemap';
 import { TouchEvents } from 'src/types/TouchEvents';
-import { ColorName } from 'src/types/Colors';
+import { ColorName, useTheme } from 'src/lib/mui';
 import { drawWaypoint } from '../utils/drawWaypoint';
 import { useLongPress } from 'src/hooks/useLongPress';
 import { VesselInfo } from 'src/types/VesselInfo';

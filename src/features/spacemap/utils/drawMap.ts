@@ -1,7 +1,6 @@
 import { drawHexGrid } from './drawHexGrid';
 import { Vector2D } from 'src/types/Vector2D';
-import { Theme } from '@mui/material/styles';
-import { ColorName } from 'src/types/Colors';
+import { ColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
 import { getPositionValue } from 'src/utils/Animation';

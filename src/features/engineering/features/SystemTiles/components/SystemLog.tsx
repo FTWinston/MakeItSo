@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { TransitionGroup } from 'react-transition-group';
-import Collapse from '@mui/material/Collapse';
-import { styled } from '@mui/material/styles';
 import LogIcon from '@mui/icons-material/List';
 import HelpIcon from '@mui/icons-material/Help';
 import CloseIcon from '@mui/icons-material/Close';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../types/TileInfo';
 import { LogEntry } from './LogEntry';
-import { IconButton } from 'src/components';
+import { CollapseTransition, IconButton, styled } from 'src/lib/mui';
 
 interface Props {
     system: ShipSystem;
@@ -48,9 +46,9 @@ const HelpText = styled('div')({
 const LogEntries: React.FC<{ events: LogEvent[] }> = props => (
     <TransitionGroup component="ul">
         {props.events.map(event => (
-            <Collapse key={event.id}>
+            <CollapseTransition key={event.id}>
                 <LogEntry event={event} />
-            </Collapse>
+            </CollapseTransition>
         ))}
     </TransitionGroup>
 );

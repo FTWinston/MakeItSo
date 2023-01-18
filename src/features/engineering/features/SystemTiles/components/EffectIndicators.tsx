@@ -1,9 +1,7 @@
 import { EffectIndicator, indicatorSize } from './EffectIndicator';
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
-import { styled } from '@mui/material/styles';
+import { styled, CollapseTransition, ZoomTransition } from 'src/lib/mui';
 import { TransitionGroup } from 'react-transition-group';
-import Zoom from '@mui/material/Zoom';
-import Collapse from '@mui/material/Collapse';
 import { ComponentProps } from 'react';
 
 interface Props {
@@ -20,7 +18,7 @@ const Root = styled('div')({
 
 const IndicatorWrapper = styled('div'
     , { shouldForwardProp: (prop) => prop !== 'showing' }
-)<{ showing: boolean } & Omit<ComponentProps<typeof Zoom>, 'ref'>>(({ showing }) => ({
+)<{ showing: boolean } & Omit<ComponentProps<typeof ZoomTransition>, 'ref'>>(({ showing }) => ({
     boxSizing: 'border-box',
     maxWidth: showing ? '1.9em' : 0,
     transitionProperty: 'max-width, padding',
@@ -32,14 +30,14 @@ const IndicatorWrapper = styled('div'
     width: '1.9em',
 }));
 
-const DelayedCollapse = styled(Collapse)({
+const DelayedCollapse = styled(CollapseTransition)({
     transitionDelay: '500ms',
     position: 'relative',
     flexGrow: 1,
     maxWidth: '1.9em',
 });
 
-interface WrappedItemProps extends Omit<ComponentProps<typeof Zoom>, 'children'> {
+interface WrappedItemProps extends Omit<ComponentProps<typeof ZoomTransition>, 'children'> {
     effect: SystemStatusEffectInfo;
 }
 
@@ -49,11 +47,11 @@ const WrappedIndicatorItem: React.FC<WrappedItemProps> = props => {
     return (
         <DelayedCollapse {...transitionProps} timeout={500} unmountOnExit>
             <IndicatorWrapper showing={transitionProps.in!}>
-                <Zoom {...transitionProps} timeout={500}>
+                <ZoomTransition {...transitionProps} timeout={500}>
                     <div>
                         <EffectIndicator {...effect} />
                     </div>
-                </Zoom>
+                </ZoomTransition>
             </IndicatorWrapper>
         </DelayedCollapse>
     )

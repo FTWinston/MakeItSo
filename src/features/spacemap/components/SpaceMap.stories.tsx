@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
 import { SpaceMap } from './SpaceMap';
-import { styled } from '@mui/material/styles';
+import { styled } from 'src/lib/mui';
 import { Vector2D } from 'src/types/Vector2D';
 import { VesselInfo } from 'src/types/VesselInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';

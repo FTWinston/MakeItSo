@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'src/lib/mui';
 
 export const ScreenReaderOnly = styled('div')({
     position: 'absolute',

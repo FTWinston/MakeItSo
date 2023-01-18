@@ -1,6 +1,4 @@
-import { Tooltip } from '@mui/material';
-import Box from '@mui/material/Box';
-import { styled, SxProps } from '@mui/material/styles';
+import { Box, styled, SxProps, Tooltip } from 'src/lib/mui';
 import { useTranslation } from 'react-i18next';
 import { PowerLevel } from 'src/types/ShipSystem';
 

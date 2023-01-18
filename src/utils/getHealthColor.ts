@@ -1,4 +1,4 @@
-import { Theme } from '@mui/material/styles';
+import { Theme } from 'src/lib/mui';
 import { normal } from 'color-blend';
 import { RGBA } from 'color-blend/dist/types';
 

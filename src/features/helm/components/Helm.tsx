@@ -1,4 +1,4 @@
-import { styled } from '@mui/material/styles';
+import { styled } from 'src/lib/mui';
 import { AppBarHeight, Page } from 'src/features/layout';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';

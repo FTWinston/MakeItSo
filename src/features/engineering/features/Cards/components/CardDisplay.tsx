@@ -1,11 +1,10 @@
 import type { AriaRole } from 'react';
-import { Avatar, Card, CardContent, CardHeader, ScreenReaderOnly, Typography } from 'src/components';
-import { grey, blue, purple, deepOrange } from '@mui/material/colors';
-import { alpha, styled } from '@mui/material/styles';
+import { Avatar, Card, CardContent, CardHeader, MuiColor, Typography, alpha, styled } from 'src/lib/mui';
+import { ScreenReaderOnly } from 'src/components';
 import { useTranslation } from 'react-i18next';
-import { EngineeringCardInfo, EngineeringCardRarity } from '../types/EngineeringCard';
+import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { CardIcon } from './CardIcon';
-import { MuiColor } from 'src/types/Colors';
+import { getRarityColor } from '../utils/getRarityColor';
 
 interface Props extends Omit<EngineeringCardInfo, 'id'> {
     className?: string;
@@ -59,17 +58,7 @@ const Description = styled(Typography, { shouldForwardProp: (prop) => prop !== '
 export const CardDisplay: React.FC<Props> = props => {
     const { t } = useTranslation('engineering');
     
-    let color: MuiColor;
-    switch (props.rarity) {
-    case EngineeringCardRarity.Common:
-        color = grey; break;
-    case EngineeringCardRarity.Uncommon:
-        color = blue; break;
-    case EngineeringCardRarity.Rare:
-        color = purple; break;
-    case EngineeringCardRarity.Epic:
-        color = deepOrange; break;
-    }
+    const color = getRarityColor(props.rarity);
 
     return (
         <CardRoot

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import TravelIcon from '@mui/icons-material/LocationOn';
 import ManeuverIcon from '@mui/icons-material/TrendingUp';
-import { styled, useTheme } from '@mui/material/styles';
-import Zoom from '@mui/material/Zoom';
 import { useTranslation } from 'react-i18next';
-import { Fab, Snackbar } from 'src/components';
+import { Fab, Snackbar, styled, useTheme, ZoomTransition } from 'src/lib/mui';
 
 interface Props {
     maneuverMode: boolean;
@@ -44,7 +42,7 @@ export const ActionButtons: React.FC<Props> = props => {
                 message={props.maneuverMode ? t('set maneuver mode') : t('set travel mode')}
             />
 
-            <Zoom
+            <ZoomTransition
                 in={props.maneuverMode}
                 timeout={transitionDuration}
                 style={{
@@ -59,9 +57,9 @@ export const ActionButtons: React.FC<Props> = props => {
                 >
                     <TravelIcon />
                 </ModeFab>
-            </Zoom>
+            </ZoomTransition>
 
-            <Zoom
+            <ZoomTransition
                 in={!props.maneuverMode}
                 timeout={transitionDuration}
                 style={{
@@ -76,7 +74,7 @@ export const ActionButtons: React.FC<Props> = props => {
                 >
                     <ManeuverIcon />
                 </ModeFab>
-            </Zoom>
+            </ZoomTransition>
         </>
     );
 }

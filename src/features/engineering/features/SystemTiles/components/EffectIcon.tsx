@@ -16,15 +16,12 @@ import ReactorDamageIcon from '@mui/icons-material/PowerOff';
 import ShieldFocusIcon from '@mui/icons-material/Policy';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { SvgIconTypeMap } from '@mui/material/SvgIcon';
+import { IconType } from 'src/lib/mui';
 
 interface Props {
     className?: string;
     effect: SystemStatusEffectType;
 }
-
-type IconType = OverridableComponent<SvgIconTypeMap<{}, 'svg'>>;
 
 const iconsByEffectType = new Map<SystemStatusEffectType, IconType>([
     [SystemStatusEffectType.AuxPower, AuxPowerIcon],

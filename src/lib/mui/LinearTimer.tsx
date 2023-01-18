@@ -2,7 +2,7 @@ import { useState, useEffect, PropsWithChildren, forwardRef } from 'react';
 import { LinearProgress } from './LinearProgress';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { getCompletedFraction } from 'src/utils/timeSpans';
-import { ColorName } from 'src/types/Colors';
+import { ColorName } from './Colors';
 
 interface Props extends TimeSpan {
     className?: string;

@@ -1,11 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { styled, useTheme } from '@mui/material/styles';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { useIsFirstRender } from 'src/hooks/useIsFirstRender';
-import { LinearTimer, Typography } from 'src/components';
-import Slide from '@mui/material/Slide';
-import Zoom from '@mui/material/Zoom';
+import { LinearTimer, Typography, styled, useTheme, SlideTransition, ZoomTransition } from 'src/lib/mui';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCardInfo } from '../types/EngineeringCard';
 import { EngineeringCardStub } from './CardStub';
@@ -124,14 +121,14 @@ export const CardChoice: React.FC<Props> = props => {
             <Cards>
                 {cards.map(card => {
                     return (
-                        <Zoom
+                        <ZoomTransition
                             in={props.cards.indexOf(card) !== -1 || card === selected}
                             timeout={transitionDuration}
                             unmountOnExit
                             key={card.id}
                             appear={!firstRender}
                         >
-                            <Slide
+                            <SlideTransition
                                 in={props.cards.indexOf(card) !== -1 || card !== selected}
                                 timeout={transitionDuration}
                                 appear={false}
@@ -151,8 +148,8 @@ export const CardChoice: React.FC<Props> = props => {
                                         rarity={card.rarity}
                                     />
                                 </CardWrapper>
-                            </Slide>
-                        </Zoom>
+                            </SlideTransition>
+                        </ZoomTransition>
                     );
                 })}
             </Cards>

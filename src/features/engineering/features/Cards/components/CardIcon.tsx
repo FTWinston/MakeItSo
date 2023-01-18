@@ -6,15 +6,12 @@ import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { EngineeringCardType } from '../types/EngineeringCard';
 import { EffectIcon } from '../../SystemTiles';
-import { OverridableComponent } from '@mui/material/OverridableComponent';
-import { SvgIconTypeMap } from '@mui/material/SvgIcon';
+import { IconType } from 'src/lib/mui';
 
 interface Props {
     className?: string;
     card: EngineeringCardType;
 }
-
-type IconType = OverridableComponent<SvgIconTypeMap<{}, 'svg'>>;
 
 const effectTypesByCardType = new Map<EngineeringCardType, SystemStatusEffectType>([
     [EngineeringCardType.AuxPower, SystemStatusEffectType.AuxPower],

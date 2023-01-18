@@ -1,8 +1,6 @@
-import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Stack, Switch, Typography } from 'src/components';
+import { Box, Stack, Switch, Typography, styled } from 'src/lib/mui';
 import { AppBarHeight, Page } from 'src/features/layout';
 import { allSystems, ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';

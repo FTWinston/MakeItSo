@@ -1,11 +1,10 @@
 import { forwardRef, useRef } from 'react';
 import { GestureHandlers, useGesture } from '@use-gesture/react'
-import { SxProps, useTheme } from '@mui/material/styles';
 import { clickMoveLimit } from 'src/hooks/useLongPress';
 import { drawFunction, drawMap } from '../utils/drawMap';
 import { Canvas } from 'src/components/Canvas';
 import { TouchEvents } from 'src/types/TouchEvents';
-import { ColorName } from 'src/types/Colors';
+import { ColorName, SxProps, useTheme } from 'src/lib/mui';
 import { Vector2D } from 'src/types/Vector2D';
 import { VesselInfo } from 'src/types/VesselInfo';
 

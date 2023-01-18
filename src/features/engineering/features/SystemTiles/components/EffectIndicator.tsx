@@ -1,7 +1,6 @@
 import { SystemStatusEffectInfo } from '../../../types/SystemStatusEffect';
 import { EffectIcon } from './EffectIcon';
-import { Avatar, Badge, CircularTimer, Tooltip } from 'src/components';
-import { styled } from '@mui/material/styles';
+import { Avatar, Badge, CircularTimer, Tooltip, styled } from 'src/lib/mui';
 import { useTranslation } from 'react-i18next';
 
 type Props = SystemStatusEffectInfo & {

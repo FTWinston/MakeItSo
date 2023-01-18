@@ -1,9 +1,7 @@
-import Box from '@mui/material/Box';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
 import { StoryObj } from '@storybook/react';
 import { Dispatch, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Box, MenuItem, Select } from 'src/lib/mui';
 import { DefiniteMap } from 'src/types/DefiniteMap';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';

@@ -1,6 +1,5 @@
 import { enableMapSet } from 'immer';
-import { ThemeProvider } from '@mui/material/styles';
-import { theme } from '../src/utils/muiTheme';
+import { ThemeProvider, theme } from '../src/lib/mui';
 import '../src/language';
 import '../src/base.css';
 

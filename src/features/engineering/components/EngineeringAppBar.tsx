@@ -1,9 +1,8 @@
-import { styled } from '@mui/material/styles';
-import { Badge, CrewIcon, Tab, Tabs } from 'src/components';
 import { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
-import Box from '@mui/material/Box';
 import { SystemAppBar } from 'src/features/layout';
+import { Badge, Box, Tab, Tabs, styled } from 'src/lib/mui';
+import { CrewIcon } from 'src/components';
 import { CrewStation } from 'src/types/ShipSystem';
 
 type TabIdentifiers = 'systems' | 'draw';

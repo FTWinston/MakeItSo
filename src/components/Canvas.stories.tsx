@@ -1,5 +1,5 @@
-import { styled, Theme, useTheme } from '@mui/material/styles';
 import { useRef, useCallback } from 'react';
+import { styled, Theme, useTheme } from 'src/lib/mui';
 import { Canvas } from './Canvas';
 
 export default { title: 'Common/Canvas' };

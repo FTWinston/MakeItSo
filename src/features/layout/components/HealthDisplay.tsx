@@ -1,6 +1,5 @@
-import { styled, SxProps } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
-import { Avatar, Tooltip } from 'src/components';
+import { Avatar, Tooltip, styled, SxProps } from 'src/lib/mui';
 import { maxSystemHealth } from 'src/types/SystemState';
 import { getHealthColor } from 'src/utils/getHealthColor';
 

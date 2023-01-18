@@ -1,5 +1,4 @@
-import { Theme } from '@mui/material/styles';
-import { ColorName } from 'src/types/Colors';
+import { ColorName, Theme } from 'src/lib/mui';
 import { Vector2D } from 'src/types/Vector2D';
 
 const packedWidthRatio = 1.7320508075688772;
