@@ -22,6 +22,7 @@ const Display = styled('canvas')({
     right: 0,
     bottom: 0,
     left: 0,
+    touchAction: 'none', // This is wanted for a pannable canvas, but do we want it on all of them?
 });
 
 export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
@@ -36,7 +37,14 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
     
     const [context, setContext] = useState<CanvasRenderingContext2D>();
 
-    const { draw, animate } = props;
+    const {
+        className,
+        sx,
+        animate,
+        boundsChanged,
+        draw,
+        ...gestureProps
+    } = props;
 
     useLayoutEffect(
         () => {    
@@ -109,8 +117,8 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                         displayHeight
                     );
                     
-                    if (props.boundsChanged) {
-                        props.boundsChanged(bounds);
+                    if (boundsChanged) {
+                        boundsChanged(bounds);
                     }
 
                     setBounds(bounds);
@@ -124,22 +132,15 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
 
             return () => resizeObserver.disconnect();
         },
-        [props.boundsChanged]
+        [boundsChanged]
     );
 
     return (
-        <Root className={props.className} sx={props.sx} ref={outerRef}>
+        <Root className={className} sx={sx} ref={outerRef}>
             <Display
                 style={displaySizeStyle}
                 ref={ref}
-                // onClick={props.onClick}
-                onMouseDown={props.onMouseDown}
-                onMouseUp={props.onMouseUp}
-                onMouseMove={props.onMouseMove}
-                onMouseLeave={props.onMouseLeave}
-                onTouchStart={props.onTouchStart}
-                onTouchEnd={props.onTouchEnd}
-                onTouchMove={props.onTouchMove}
+                {...gestureProps}
             />
         </Root>
     );

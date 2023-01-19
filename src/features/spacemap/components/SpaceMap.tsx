@@ -65,6 +65,17 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         onPinch: ({ da: [distance] }) => {
             const scale = distance / startDistance.current;
             setCellRadius(Math.max(16, cellRadius * scale));
+        },
+        onWheel: ({ delta: [startVal, endVal] }) => {
+            const distance = startVal - endVal;
+            if (distance !== 0) {
+                const scale = distance > 0
+                    ? 75 / distance
+                    : -133.33333333333333 / distance;
+
+                const newRadius = Math.min(192, Math.max(16, cellRadius / scale));
+                setCellRadius(newRadius);
+            }
         }
     };
 
