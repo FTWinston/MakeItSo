@@ -30,6 +30,7 @@ export function getDefaultTrainingState(): ShipState {
 
     return {
         systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
+        position: [],
         engineering: {
             systemOrder: systems.map(system => system.system),
             handCards: [],
@@ -40,7 +41,7 @@ export function getDefaultTrainingState(): ShipState {
             nextEffectId: 1,
         },
         helm: {
-            
+            destination: null,
         },
         weapons: {
 

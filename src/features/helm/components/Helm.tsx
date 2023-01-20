@@ -1,16 +1,21 @@
-import { styled } from 'src/lib/mui';
+import { useTranslation } from 'react-i18next';
+import StopIcon from '@mui/icons-material/Clear';
+import { Fab, styled, ZoomTransition } from 'src/lib/mui';
 import { AppBarHeight, Page } from 'src/features/layout';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
-import { useTranslation } from 'react-i18next';
 import { HelmMap } from './HelmMap';
 import { VesselInfo } from 'src/types/VesselInfo';
-import { durationToTicks, getTime } from 'src/utils/timeSpans';
+import { Animation } from 'src/types/Animation';
+import { Position } from 'src/types/Position';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
+    shipPosition: Animation<Position>;
     power: PowerLevel;
     health: number;
+    destination: Position | null;
+    setDestination: (destination: Position | null) => void;
 }
 
 const Root = styled(Page)({
@@ -18,26 +23,19 @@ const Root = styled(Page)({
     gridTemplateRows: `${AppBarHeight} 1fr`,
 });
 
+const StopButton = styled(Fab)({
+    position: 'absolute',
+    right: '1em',
+    bottom: '1em',
+})
+
 export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
 
-    // TODO: from props ... this and everything else, obviously.
     const localShip: VesselInfo = {
-        position: [{
-            time: getTime(),
-            val: {
-                x: 0, y: 0, angle: 0
-            }
-        }, {
-            time: getTime() + durationToTicks(1000),
-            val: {
-                x: 100, y: 0, angle: 0
-            }
-        }]
-    }
+        position: props.shipPosition
+    };
 
-    const setDestination = () => {};
-    
     return (
         <Root shipDestroyed={props.shipDestroyed}>
             <HelmAppBar power={props.power} health={props.health} />
@@ -45,8 +43,19 @@ export const Helm: React.FC<Props> = (props) => {
             <HelmMap
                 ships={[localShip]}
                 localShip={localShip}
-                setDestination={setDestination}
+                destination={props.destination}
+                setDestination={props.setDestination}
             />
+
+            <ZoomTransition in={props.destination !== null}>
+                <StopButton
+                    color="error"
+                    aria-label={t('all stop')}
+                    onClick={() => props.setDestination(null)}
+                >
+                    <StopIcon />
+                </StopButton>
+            </ZoomTransition>
         </Root>
     );
 };

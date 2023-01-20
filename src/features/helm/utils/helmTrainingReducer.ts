@@ -12,11 +12,21 @@ export function helmTrainingReducer(state: ShipState, action: HelmAction): ShipS
             return {
                 ...state,
                 helm: {
-
+                    destination: null
                 }
             };
             
         case 'tick': {
+            return state;
+        }
+
+        case 'set destination': {
+            if (action.destination) {
+                state.helm.destination = { ...action.destination };
+            } else {
+                state.helm.destination = null;
+            }
+            
             return state;
         }
 

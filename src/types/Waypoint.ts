@@ -1,6 +1,5 @@
-import { Vector2D } from './Vector2D';
+import { Position } from './Position';
 
-export interface Waypoint extends Vector2D {
-    angle?: number;
+export interface Waypoint extends Position {
     time?: number;
 }

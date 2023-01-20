@@ -15,7 +15,7 @@ export const Empty: Story = {
             return {
                 ...getDefaultTrainingState(),
                 helm: {
-                    
+                    destination: null,
                 },
             };
         },

@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { Waypoint } from 'src/types/Waypoint';
-import { determineAngle, Vector2D } from 'src/types/Vector2D';
+import { Position } from 'src/types/Position';
+import { determineAngle, distanceSq, Vector2D } from 'src/types/Vector2D';
 import { getPositionValue } from 'src/utils/Animation';
 import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/features/spacemap';
 import { TouchEvents } from 'src/types/TouchEvents';
@@ -13,7 +13,8 @@ import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 interface Props {
     ships: Partial<Record<number, VesselInfo>>;
     localShip: VesselInfo;
-    setDestination: (waypoint: Waypoint) => void;
+    destination: Position | null;
+    setDestination: (waypoint: Position) => void;
 }
 
 export const HelmMap: React.FC<Props> = props => {
@@ -31,13 +32,20 @@ export const HelmMap: React.FC<Props> = props => {
     const [center, setCenter] = useState<Vector2D>(() => getPositionValue(position));
 
     const [screenTouchPos, setScreenTouchPos] = useState<Vector2D>();
-    const [addingDestination, setAddingDestination] = useState<Waypoint>();
+    const [addingDestination, setAddingDestination] = useState<Position>();
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const tap = (pagePos: Vector2D) => {
         const world = getWorldCoordinates(canvas.current!, center, pagePos);
-        props.setDestination(getClosestCellCenter(world.x, world.y, cellRadius));
+        const cellPos = getClosestCellCenter(world.x, world.y, cellRadius);
+
+        const angleFromShipToCellPos = 0; // TODO: this
+        
+        props.setDestination({
+            ...cellPos,
+            angle: angleFromShipToCellPos,
+        });
     };
 
     const longPress = (pagePos: Vector2D) => {
@@ -58,8 +66,17 @@ export const HelmMap: React.FC<Props> = props => {
     };
 
     const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {    
-        if (addingDestination !== undefined) {
+        if (addingDestination) {
             drawWaypoint(ctx, addingDestination, cellRadius, theme, 'secondary');
+        }
+
+        if (props.destination) {
+            // If adjusting destination on the same cell as the curent destination, don't draw both arrows.
+            if (addingDestination && distanceSq(addingDestination, props.destination) < 0.1) {
+                return;
+            }
+
+            drawWaypoint(ctx, props.destination, cellRadius, theme, 'primary');
         }
     };
 
