@@ -25,25 +25,12 @@ export const HelmTraining: React.FC<Props> = (props) => {
 
     const { power, health } = state.systems.get(ShipSystem.Engines);
 
-    // TODO: get this from ... ship state?
-    const shipPosition = [{
-        time: getTime(),
-        val: {
-            x: 0, y: 0, angle: 0
-        }
-    }, {
-        time: getTime() + durationToTicks(1000),
-        val: {
-            x: 100, y: 0, angle: 0
-        }
-    }];
-
     const defaultRender = () => (
         <Helm
             {...state.helm}
             power={power}
             health={health}
-            shipPosition={shipPosition}
+            shipPosition={state.position}
             shipDestroyed={state.destroyed}
             setDestination={destination => dispatch({ type: 'set destination', destination })}
         />

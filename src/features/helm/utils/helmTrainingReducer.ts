@@ -23,8 +23,12 @@ export function helmTrainingReducer(state: ShipState, action: HelmAction): ShipS
         case 'set destination': {
             if (action.destination) {
                 state.helm.destination = { ...action.destination };
+
+                // TODO: calculate ship position
             } else {
                 state.helm.destination = null;
+
+                // TODO: calculate "stopping" ship position
             }
             
             return state;
