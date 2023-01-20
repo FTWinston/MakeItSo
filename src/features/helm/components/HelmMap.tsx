@@ -6,8 +6,9 @@ import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/feature
 import { TouchEvents } from 'src/types/TouchEvents';
 import { ColorName, useTheme } from 'src/lib/mui';
 import { drawWaypoint } from '../utils/drawWaypoint';
-import { useLongPress } from 'src/hooks/useLongPress';
+import { clickMoveLimit, useLongPress } from 'src/hooks/useLongPress';
 import { VesselInfo } from 'src/types/VesselInfo';
+import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 
 interface Props {
     ships: Partial<Record<number, VesselInfo>>;
@@ -145,19 +146,29 @@ export const HelmMap: React.FC<Props> = props => {
         }
     };
 
+    const logPressHandlers = useLongPress(longPress, tap, extraHandlers);
+
+    const bindGestures = usePanAndZoom({
+        center,
+        setCenter: screenTouchPos === undefined ? setCenter : () => {},
+        dragThreshold: clickMoveLimit,
+        zoom: cellRadius,
+        setZoom: setCellRadius,
+        minZoom: 16,
+        maxZoom: 192,
+        extraHandlers: logPressHandlers,
+    });
+
     return (
         <SpaceMap
             ref={canvas}
             gridColor={props.replaceMode ? 'secondary' : 'primary'}
-            dragEnabled={screenTouchPos === undefined}
             cellRadius={cellRadius}
-            setCellRadius={setCellRadius}
             center={center}
-            setCenter={setCenter}
             vessels={ships}
             localVessel={props.localShip}
-            {...useLongPress(longPress, tap, extraHandlers)}
             drawExtraBackground={drawWaypoints}
+            {...bindGestures()}
         />
     );
 }
