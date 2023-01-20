@@ -1,7 +1,7 @@
 import { forwardRef } from 'react';
 import { drawFunction, drawMap } from '../utils/drawMap';
 import { Canvas } from 'src/components/Canvas';
-import { ColorName, SxProps, useTheme } from 'src/lib/mui';
+import { DiscreteColorName, SxProps, useTheme } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { Vector2D } from 'src/types/Vector2D';
 import { VesselInfo } from 'src/types/VesselInfo';
@@ -9,7 +9,7 @@ import { VesselInfo } from 'src/types/VesselInfo';
 interface Props extends TouchEvents {
     className?: string;
     sx?: SxProps;
-    gridColor: ColorName;
+    gridColor: DiscreteColorName;
     vessels: VesselInfo[];
     localVessel?: VesselInfo;
     cellRadius: number;

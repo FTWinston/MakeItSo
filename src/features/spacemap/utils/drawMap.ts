@@ -1,6 +1,6 @@
 import { drawHexGrid } from './drawHexGrid';
 import { Vector2D } from 'src/types/Vector2D';
-import { ColorName, Theme } from 'src/lib/mui';
+import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
 import { getPositionValue } from 'src/types/Animation';
@@ -45,11 +45,13 @@ function drawVessel(
     ctx.translate(-position.x, -position.y);
 }
 
+export const worldScaleCellRadius = 32;
+
 export function drawMap(
     ctx: CanvasRenderingContext2D,
     viewBounds: DOMRect,
     theme: Theme,
-    gridColor: ColorName,
+    gridColor: DiscreteColorName,
     cellRadius: number,
     center: Vector2D,
     vessels: VesselInfo[],
@@ -75,6 +77,8 @@ export function drawMap(
     ctx.globalAlpha = 1;
     const currentTime = getTime();
     
+    ctx.scale(cellRadius / worldScaleCellRadius, cellRadius / worldScaleCellRadius);
+
     for (const vessel of vessels) {
         const position = getPositionValue(vessel.position, currentTime);
         drawVessel(ctx, theme, vessel === localVessel, position);

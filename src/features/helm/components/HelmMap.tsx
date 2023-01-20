@@ -77,7 +77,7 @@ export const HelmMap: React.FC<Props> = props => {
                 return;
             }
 
-            drawWaypoint(ctx, props.destination, cellRadius, theme, addingDestination ? 'secondary' : 'primary');
+            drawWaypoint(ctx, props.destination, cellRadius, theme, addingDestination ? 'warning' : 'primary');
         }
     };
 

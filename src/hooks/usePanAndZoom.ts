@@ -64,10 +64,10 @@ export function usePanAndZoom(config: Config) {
     }
 
     const gestureConfig: GestureHandlers = {
-        onDrag: ({ movement: [mx, my] }) => {
+        onDrag: ({ delta: [dx, dy] }) => {
             config.setCenter({
-                x: -mx,
-                y: -my,
+                x: config.center.x - dx,
+                y: config.center.y - dy,
             });
         },
         onPinchStart: ({ da: [distance] }) => {
@@ -95,7 +95,7 @@ export function usePanAndZoom(config: Config) {
     
     return useGesture(gestureConfig, {
         drag: {
-            from: () => [-config.center.x, -config.center.y],
+            //from: () => [-config.center.x, -config.center.y],
             threshold: config.dragThreshold,
             enabled: !!config.setCenter,
         },

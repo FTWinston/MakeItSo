@@ -1,3 +1,4 @@
+import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/spacemap';
 import { DefiniteMap } from 'src/types/DefiniteMap';
 import { ShipState } from 'src/types/ShipState';
 import { ShipSystem } from 'src/types/ShipSystem';
@@ -28,18 +29,23 @@ export const getDefaultSystemStates: () => SystemState[] = () => [
 export function getDefaultTrainingState(): ShipState {
     const systems = getDefaultSystemStates();
 
+    const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
+    const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
+
     return {
         systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
         position: [
             {
                 time: 0,
                 val: {
-                    x: 0, y: 0, angle: 0
+                    ...fromPos,
+                    angle: 0,
                 }
             }, {
                 time: 5000,
                 val: {
-                    x: 100, y: 0, angle: 0
+                    ...toPos,
+                    angle: 0,
                 }
             }
         ],

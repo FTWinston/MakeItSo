@@ -1,4 +1,4 @@
-import { ColorName, Theme } from 'src/lib/mui';
+import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Vector2D } from 'src/types/Vector2D';
 
 const packedWidthRatio = 1.7320508075688772;
@@ -60,7 +60,7 @@ export function drawHexGrid(
     maxX: number,
     maxY: number,
     theme: Theme,
-    gridColor: ColorName,
+    gridColor: DiscreteColorName,
 ) {
     let currentCell = getClosestCellCenter(
         center.x - viewBounds.width / 2,

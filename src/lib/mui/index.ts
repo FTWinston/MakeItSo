@@ -4,7 +4,7 @@ export { Box } from './Box';
 export { Button } from './Button';
 export { Card, CardContent, CardHeader } from './Card';
 export { CircularTimer } from './CircularTimer';
-export type { ColorName, IconColorName, MuiColor } from './Colors';
+export type { ColorName, DiscreteColorName, IconColorName, MuiColor } from './Colors';
 export { Fab } from './Fab';
 export { IconButton } from './IconButton';
 export { LinearProgress } from './LinearProgress';
