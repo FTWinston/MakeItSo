@@ -67,7 +67,7 @@ export const HelmMap: React.FC<Props> = props => {
 
     const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {    
         if (addingDestination) {
-            drawWaypoint(ctx, addingDestination, cellRadius, theme, 'secondary');
+            drawWaypoint(ctx, addingDestination, cellRadius, theme, 'primary');
         }
 
         if (props.destination) {
@@ -76,7 +76,7 @@ export const HelmMap: React.FC<Props> = props => {
                 return;
             }
 
-            drawWaypoint(ctx, props.destination, cellRadius, theme, 'primary');
+            drawWaypoint(ctx, props.destination, cellRadius, theme, addingDestination ? 'secondary' : 'primary');
         }
     };
 
