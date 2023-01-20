@@ -3,7 +3,7 @@ import { Vector2D } from 'src/types/Vector2D';
 import { ColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
-import { getPositionValue } from 'src/utils/Animation';
+import { getPositionValue } from 'src/types/Animation';
 import { VesselInfo } from 'src/types/VesselInfo';
 
 export type drawFunction = (context: CanvasRenderingContext2D, bounds: DOMRect) => void;

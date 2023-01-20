@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef } from 'react';
 import { Position } from 'src/types/Position';
 import { determineAngle, distanceSq, Vector2D } from 'src/types/Vector2D';
-import { getPositionValue } from 'src/utils/Animation';
+import { getPositionValue, getVectorValue } from 'src/types/Animation';
 import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/features/spacemap';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { useTheme } from 'src/lib/mui';
@@ -38,12 +38,13 @@ export const HelmMap: React.FC<Props> = props => {
 
     const tap = (pagePos: Vector2D) => {
         const world = getWorldCoordinates(canvas.current!, center, pagePos);
-        const cellPos = getClosestCellCenter(world.x, world.y, cellRadius);
+        const shipPos = getVectorValue(props.localShip.position);
+        const targetCellPos = getClosestCellCenter(world.x, world.y, cellRadius);
 
-        const angleFromShipToCellPos = 0; // TODO: this
+        const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
         
         props.setDestination({
-            ...cellPos,
+            ...targetCellPos,
             angle: angleFromShipToCellPos,
         });
     };
