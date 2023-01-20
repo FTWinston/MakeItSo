@@ -4,7 +4,7 @@ import { determineAngle, Vector2D } from 'src/types/Vector2D';
 import { getPositionValue } from 'src/utils/Animation';
 import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/features/spacemap';
 import { TouchEvents } from 'src/types/TouchEvents';
-import { ColorName, useTheme } from 'src/lib/mui';
+import { useTheme } from 'src/lib/mui';
 import { drawWaypoint } from '../utils/drawWaypoint';
 import { clickMoveLimit, useLongPress } from 'src/hooks/useLongPress';
 import { VesselInfo } from 'src/types/VesselInfo';
@@ -12,10 +12,8 @@ import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 
 interface Props {
     ships: Partial<Record<number, VesselInfo>>;
-    addWaypoint: (waypoint: Waypoint) => void;
-    replaceMode: boolean;
     localShip: VesselInfo;
-    waypoints: Waypoint[];
+    setDestination: (waypoint: Waypoint) => void;
 }
 
 export const HelmMap: React.FC<Props> = props => {
@@ -33,20 +31,20 @@ export const HelmMap: React.FC<Props> = props => {
     const [center, setCenter] = useState<Vector2D>(() => getPositionValue(position));
 
     const [screenTouchPos, setScreenTouchPos] = useState<Vector2D>();
-    const [newWaypoint, setNewWaypoint] = useState<Waypoint>();
+    const [addingDestination, setAddingDestination] = useState<Waypoint>();
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const tap = (pagePos: Vector2D) => {
         const world = getWorldCoordinates(canvas.current!, center, pagePos);
-        props.addWaypoint(getClosestCellCenter(world.x, world.y, cellRadius));
+        props.setDestination(getClosestCellCenter(world.x, world.y, cellRadius));
     };
 
     const longPress = (pagePos: Vector2D) => {
         const world = getWorldCoordinates(canvas.current!, center, pagePos);
         const cellCenter = getClosestCellCenter(world.x, world.y, cellRadius);
 
-        setNewWaypoint({
+        setAddingDestination({
             x: cellCenter.x,
             y: cellCenter.y,
             angle: 0,
@@ -59,7 +57,13 @@ export const HelmMap: React.FC<Props> = props => {
         });
     };
 
-    const extraHandlers: TouchEvents | undefined = newWaypoint && screenTouchPos
+    const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {    
+        if (addingDestination !== undefined) {
+            drawWaypoint(ctx, addingDestination, cellRadius, theme, 'secondary');
+        }
+    };
+
+    const extraHandlers: TouchEvents | undefined = addingDestination && screenTouchPos
         ? {
             onMouseMove: (e: React.MouseEvent<Element>) => {
                 const pagePos = {
@@ -67,7 +71,7 @@ export const HelmMap: React.FC<Props> = props => {
                     y: e.pageY,
                 };
 
-                setNewWaypoint(waypoint => ({
+                setAddingDestination(waypoint => ({
                     x: waypoint!.x,
                     y: waypoint!.y,
                     angle: determineAngle(screenTouchPos, pagePos, waypoint!.angle!)
@@ -80,7 +84,7 @@ export const HelmMap: React.FC<Props> = props => {
                         y: e.touches[0].pageY,
                     };
 
-                    setNewWaypoint(waypoint => ({
+                    setAddingDestination(waypoint => ({
                         x: waypoint!.x,
                         y: waypoint!.y,
                         angle: determineAngle(screenTouchPos, pagePos, waypoint!.angle!)
@@ -88,12 +92,12 @@ export const HelmMap: React.FC<Props> = props => {
                 }
             },
             onMouseUp: () => {
-                props.addWaypoint({
-                    x: newWaypoint.x,
-                    y: newWaypoint.y,
-                    angle: newWaypoint.angle,
+                props.setDestination({
+                    x: addingDestination.x,
+                    y: addingDestination.y,
+                    angle: addingDestination.angle,
                 });
-                setNewWaypoint(undefined);
+                setAddingDestination(undefined);
                 setTimeout(
                     () => {
                         setScreenTouchPos(undefined);
@@ -101,12 +105,12 @@ export const HelmMap: React.FC<Props> = props => {
                 , 10);
             },
             onTouchEnd: () => {
-                props.addWaypoint({
-                    x: newWaypoint.x,
-                    y: newWaypoint.y,
-                    angle: newWaypoint.angle,
+                props.setDestination({
+                    x: addingDestination.x,
+                    y: addingDestination.y,
+                    angle: addingDestination.angle,
                 });
-                setNewWaypoint(undefined);
+                setAddingDestination(undefined);
                 setTimeout(
                     () => {
                         setScreenTouchPos(undefined);
@@ -115,36 +119,10 @@ export const HelmMap: React.FC<Props> = props => {
             },
             onMouseLeave: () => {
                 setScreenTouchPos(undefined);
-                setNewWaypoint(undefined);
+                setAddingDestination(undefined);
             },
         }
         : undefined;
-
-    const waypoints = props.waypoints;
-
-    const drawWaypoints = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {    
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.font = `${Math.round(cellRadius * 0.45)}px Jura`;
-
-        const existingNumbers = waypoints.length > 1 || !props.replaceMode;
-
-        for (let i = 0; i < waypoints.length; i++) {
-            const color: ColorName = i === 0
-                ? 'primary'
-                : 'secondary';
-
-            drawWaypoint(ctx, waypoints[i], cellRadius, theme, color, existingNumbers ? i + 1 : undefined);
-        }
-
-        if (newWaypoint !== undefined) {
-            const color: ColorName = waypoints.length === 0
-                ? 'primary'
-                : 'secondary';
-
-            drawWaypoint(ctx, newWaypoint, cellRadius, theme, color, props.replaceMode ? undefined : waypoints.length + 1);
-        }
-    };
 
     const logPressHandlers = useLongPress(longPress, tap, extraHandlers);
 
@@ -154,7 +132,7 @@ export const HelmMap: React.FC<Props> = props => {
         dragThreshold: clickMoveLimit,
         zoom: cellRadius,
         setZoom: setCellRadius,
-        minZoom: 16,
+        minZoom: 12,
         maxZoom: 192,
         extraHandlers: logPressHandlers,
     });
@@ -162,12 +140,12 @@ export const HelmMap: React.FC<Props> = props => {
     return (
         <SpaceMap
             ref={canvas}
-            gridColor={props.replaceMode ? 'secondary' : 'primary'}
+            gridColor="secondary"
             cellRadius={cellRadius}
             center={center}
             vessels={ships}
             localVessel={props.localShip}
-            drawExtraBackground={drawWaypoints}
+            drawExtraBackground={drawDestinations}
             {...bindGestures()}
         />
     );

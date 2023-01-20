@@ -1,5 +1,5 @@
-import { styled, SxProps } from 'src/lib/mui';
 import { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
+import { styled, SxProps } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 
 interface Props extends TouchEvents {
@@ -43,7 +43,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         animate,
         boundsChanged,
         draw,
-        ...gestureProps
+        ...interactionProps
     } = props;
 
     useLayoutEffect(
@@ -140,7 +140,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
             <Display
                 style={displaySizeStyle}
                 ref={ref}
-                {...gestureProps}
+                {...interactionProps}
             />
         </Root>
     );

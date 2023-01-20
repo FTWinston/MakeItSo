@@ -1,5 +1,6 @@
 import { drawHex, getClosestCellCenter } from 'src/features/spacemap';
-import { ColorName, Theme } from 'src/lib/mui';
+import { Theme } from 'src/lib/mui';
+import { DiscreteColorName } from 'src/lib/mui/Colors';
 import { Waypoint } from 'src/types/Waypoint';
 
 export function drawWaypoint(
@@ -7,7 +8,7 @@ export function drawWaypoint(
     waypoint: Waypoint,
     cellRadius: number,
     theme: Theme,
-    fillColor: ColorName,
+    fillColor: DiscreteColorName,
     number?: number,
 ) {
     const cell = getClosestCellCenter(

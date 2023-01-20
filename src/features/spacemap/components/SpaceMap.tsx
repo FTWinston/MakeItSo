@@ -1,14 +1,14 @@
 import { forwardRef } from 'react';
 import { drawFunction, drawMap } from '../utils/drawMap';
 import { Canvas } from 'src/components/Canvas';
-import { TouchEvents } from 'src/types/TouchEvents';
 import { ColorName, SxProps, useTheme } from 'src/lib/mui';
+import { TouchEvents } from 'src/types/TouchEvents';
 import { Vector2D } from 'src/types/Vector2D';
 import { VesselInfo } from 'src/types/VesselInfo';
-import { ReactDOMAttributes } from '@use-gesture/react/dist/declarations/src/types';
 
 interface Props extends TouchEvents {
     className?: string;
+    sx?: SxProps;
     gridColor: ColorName;
     vessels: VesselInfo[];
     localVessel?: VesselInfo;
@@ -16,8 +16,6 @@ interface Props extends TouchEvents {
     center: Vector2D;
     drawExtraForeground?: drawFunction;
     drawExtraBackground?: drawFunction;
-    sx?: SxProps;
-    bindGestures?: (...args: any[]) => ReactDOMAttributes;
 }
 
 export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
@@ -33,7 +31,6 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         drawExtraForeground,
         drawExtraBackground,
         sx,
-        bindGestures,
         ...interactionProps
     } = props;
 
@@ -49,7 +46,6 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
             animate={true}
             draw={draw}
             {...interactionProps}
-            {...bindGestures?.()}
         />
     )
 });
