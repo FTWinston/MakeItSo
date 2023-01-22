@@ -37,6 +37,22 @@ function drawVessel(
 
 export const worldScaleCellRadius = 1;
 
+export function getWorldBounds(canvas: HTMLCanvasElement, cellRadius: number, worldCenter: Vector2D): Rectangle {
+    return getViewWorldBounds(canvas.getBoundingClientRect(), cellRadius, worldCenter);
+}
+
+function getViewWorldBounds(viewBounds: DOMRect, cellRadius: number, worldCenter: Vector2D): Rectangle {
+    const width = viewBounds.width / cellRadius;
+    const height = viewBounds.height / cellRadius;
+
+    return {
+        x: worldCenter.x - width / 2,
+        y: worldCenter.y - height / 2,
+        width,
+        height,
+    };
+}
+
 export function screenToWorld(canvas: HTMLCanvasElement, cellRadius: number, worldCenter: Vector2D, screenPoint: Vector2D): Vector2D {
     const viewBounds = canvas.getBoundingClientRect();
 
@@ -55,18 +71,6 @@ export function screenToWorld(canvas: HTMLCanvasElement, cellRadius: number, wor
     return result;
 }
 
-function getWorldBounds(viewBounds: DOMRect, cellRadius: number, worldCenter: Vector2D): Rectangle {
-    const width = viewBounds.width / cellRadius;
-    const height = viewBounds.height / cellRadius;
-
-    return {
-        x: worldCenter.x - width / 2,
-        y: worldCenter.y - height / 2,
-        width,
-        height,
-    };
-}
-
 export function drawMap(
     ctx: CanvasRenderingContext2D,
     viewBounds: DOMRect,
@@ -82,7 +86,7 @@ export function drawMap(
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const worldBounds = getWorldBounds(viewBounds, cellRadius, center);
+    const worldBounds = getViewWorldBounds(viewBounds, cellRadius, center);
 
     ctx.scale(cellRadius, cellRadius);
     const pixelSize = 1 / cellRadius;

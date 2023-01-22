@@ -60,6 +60,11 @@ export function getDefaultTrainingState(): ShipState {
         },
         helm: {
             destination: null,
+            waypoints: [],
+            forcePositionUpdate: true,
+            rotationalSpeed: 0.75,
+            speedWhileRotating: 0.1,
+            speed: 1,
         },
         weapons: {
 

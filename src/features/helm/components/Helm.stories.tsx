@@ -12,12 +12,7 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
     args: {
         getInitialState: () => {
-            return {
-                ...getDefaultTrainingState(),
-                helm: {
-                    destination: null,
-                },
-            };
+            return getDefaultTrainingState();
         },
     }
 }

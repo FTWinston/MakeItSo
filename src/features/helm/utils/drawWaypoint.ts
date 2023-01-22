@@ -1,10 +1,10 @@
 import { drawHex, getClosestCellCenter } from 'src/features/spacemap';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
-import { Waypoint } from 'src/types/Waypoint';
+import { Position } from 'src/types/Position';
 
 export function drawWaypoint(
     ctx: CanvasRenderingContext2D,
-    waypoint: Waypoint,
+    waypoint: Position,
     cellRadius: number,
     theme: Theme,
     fillColor: DiscreteColorName,
