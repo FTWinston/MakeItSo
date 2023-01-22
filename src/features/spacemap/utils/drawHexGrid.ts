@@ -1,5 +1,4 @@
-import { DiscreteColorName, Theme } from 'src/lib/mui';
-import { Vector2D } from 'src/types/Vector2D';
+import { Rectangle } from 'src/types/Rectangle';
 
 const packedWidthRatio = 1.7320508075688772;
 const packedHeightRatio = 1.5;
@@ -54,17 +53,14 @@ export function getClosestCellCenter(x: number, y: number, cellRadius: number) {
 
 export function drawHexGrid(
     ctx: CanvasRenderingContext2D,
-    viewBounds: DOMRect,
-    center: Vector2D,
+    bounds: Rectangle,
     cellRadius: number,
-    maxX: number,
-    maxY: number,
-    theme: Theme,
-    gridColor: DiscreteColorName,
+    lineWidth: number,
+    strokeStyle: string,
 ) {
     let currentCell = getClosestCellCenter(
-        center.x - viewBounds.width / 2,
-        center.y - viewBounds.height / 2,
+        bounds.x - cellRadius,
+        bounds.y - cellRadius,
         cellRadius
     );
 
@@ -72,9 +68,11 @@ export function drawHexGrid(
     const outsetStartX = currentCell.x - cellRadius * packedWidthRatio / 2;
 
     let outset = true;
-    ctx.lineWidth = 1;
-    ctx.strokeStyle = theme.palette[gridColor].light;
-    ctx.fillStyle = theme.palette.primary.light;
+    ctx.lineWidth = lineWidth;
+    ctx.strokeStyle = strokeStyle;
+
+    const maxX = bounds.x + bounds.width + cellRadius;
+    const maxY = bounds.y + bounds.height + cellRadius;
 
     while (currentCell.y < maxY) {
         while (currentCell.x < maxX) {

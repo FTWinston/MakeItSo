@@ -5,19 +5,9 @@ import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
 import { getPositionValue } from 'src/types/Animation';
 import { VesselInfo } from 'src/types/VesselInfo';
+import { Rectangle } from 'src/types/Rectangle';
 
-export type drawFunction = (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
-
-export function getWorldCoordinates(
-    canvas: HTMLCanvasElement,
-    offset: Vector2D,
-    pagePos: Vector2D,
-): Vector2D {
-    const bounds = canvas.getBoundingClientRect();
-    const x = pagePos.x - bounds.x + offset.x - bounds.width / 2;
-    const y = pagePos.y - bounds.y + offset.y - bounds.height / 2;
-    return { x, y };
-}
+export type drawFunction = (context: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => void;
 
 function drawVessel(
     ctx: CanvasRenderingContext2D,
@@ -34,10 +24,10 @@ function drawVessel(
 
     ctx.beginPath();
 
-    ctx.moveTo(20, 0);
-    ctx.lineTo(-15, 17);
-    ctx.lineTo(-9, 0);
-    ctx.lineTo(-15, -17);
+    ctx.moveTo(0.625, 0);
+    ctx.lineTo(-0.46875, 0.53125);
+    ctx.lineTo(-0.28125, 0);
+    ctx.lineTo(-0.46875, -0.53125);
 
     ctx.fill();
 
@@ -45,7 +35,37 @@ function drawVessel(
     ctx.translate(-position.x, -position.y);
 }
 
-export const worldScaleCellRadius = 32;
+export const worldScaleCellRadius = 1;
+
+export function screenToWorld(canvas: HTMLCanvasElement, cellRadius: number, worldCenter: Vector2D, screenPoint: Vector2D): Vector2D {
+    const viewBounds = canvas.getBoundingClientRect();
+
+    // Get offset from center of canvas to screenPoint.
+    const screenCenterOffset = {
+        x: screenPoint.x - viewBounds.width / 2 - viewBounds.x,
+        y: screenPoint.y - viewBounds.height / 2 - viewBounds.y,
+    }
+
+    // Scale that by cellRadius, add on worldCenter.
+    const result = {
+        x: worldCenter.x + screenCenterOffset.x / cellRadius,
+        y: worldCenter.y + screenCenterOffset.y / cellRadius,
+    };
+
+    return result;
+}
+
+function getWorldBounds(viewBounds: DOMRect, cellRadius: number, worldCenter: Vector2D): Rectangle {
+    const width = viewBounds.width / cellRadius;
+    const height = viewBounds.height / cellRadius;
+
+    return {
+        x: worldCenter.x - width / 2,
+        y: worldCenter.y - height / 2,
+        width,
+        height,
+    };
+}
 
 export function drawMap(
     ctx: CanvasRenderingContext2D,
@@ -62,27 +82,28 @@ export function drawMap(
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    const minX = (viewBounds.width + cellRadius) / 2 + center.x;
-    const minY = (viewBounds.height + cellRadius) / 2 + center.y;
-    const maxX = minX + viewBounds.width + cellRadius;
-    const maxY = minY + viewBounds.height + cellRadius;
+    const worldBounds = getWorldBounds(viewBounds, cellRadius, center);
 
-    ctx.translate(viewBounds.width / 2 - center.x, viewBounds.height / 2 - center.y);
+    ctx.scale(cellRadius, cellRadius);
+    const pixelSize = 1 / cellRadius;
 
-    drawExtraBackground?.(ctx, viewBounds);
+    ctx.translate(-worldBounds.x, -worldBounds.y);
+
+    drawExtraBackground?.(ctx, worldBounds, pixelSize);
 
     ctx.globalAlpha = 0.5;
-    drawHexGrid(ctx, viewBounds, center, cellRadius, maxX, maxY, theme, gridColor);
+
+    const gridStroke = theme.palette[gridColor].light;
+    drawHexGrid(ctx, worldBounds, 1, pixelSize, gridStroke);
 
     ctx.globalAlpha = 1;
+
     const currentTime = getTime();
     
-    ctx.scale(cellRadius / worldScaleCellRadius, cellRadius / worldScaleCellRadius);
-
     for (const vessel of vessels) {
         const position = getPositionValue(vessel.position, currentTime);
         drawVessel(ctx, theme, vessel === localVessel, position);
     }
 
-    drawExtraForeground?.(ctx, viewBounds);
+    drawExtraForeground?.(ctx, worldBounds, pixelSize);
 }

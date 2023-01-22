@@ -29,7 +29,7 @@ export function drawWaypoint(
     ctx.fillStyle = theme.palette.background.default;
 
     if (waypoint.angle !== undefined) {
-        drawArrow(ctx, waypoint.angle, theme, cellRadius);
+        drawArrow(ctx, waypoint.angle, cellRadius);
     }
     else if (number !== undefined) {
         ctx.beginPath();
@@ -45,7 +45,7 @@ export function drawWaypoint(
     ctx.translate(-cell.x, -cell.y);
 }
 
-function drawArrow(ctx: CanvasRenderingContext2D, angle: number, theme: Theme, cellRadius: number) {
+function drawArrow(ctx: CanvasRenderingContext2D, angle: number, cellRadius: number) {
     ctx.rotate(angle);
 
     ctx.beginPath();

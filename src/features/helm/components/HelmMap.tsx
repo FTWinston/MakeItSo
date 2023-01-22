@@ -2,13 +2,14 @@ import React, { useState, useMemo, useRef } from 'react';
 import { Position } from 'src/types/Position';
 import { determineAngle, distanceSq, Vector2D } from 'src/types/Vector2D';
 import { getPositionValue, getVectorValue } from 'src/types/Animation';
-import { getClosestCellCenter, getWorldCoordinates, SpaceMap } from 'src/features/spacemap';
+import { getClosestCellCenter, screenToWorld, SpaceMap } from 'src/features/spacemap';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { useTheme } from 'src/lib/mui';
 import { drawWaypoint } from '../utils/drawWaypoint';
 import { clickMoveLimit, useLongPress } from 'src/hooks/useLongPress';
 import { VesselInfo } from 'src/types/VesselInfo';
 import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
+import { Rectangle } from 'src/types/Rectangle';
 
 interface Props {
     ships: Partial<Record<number, VesselInfo>>;
@@ -25,50 +26,45 @@ export const HelmMap: React.FC<Props> = props => {
         [props.ships]
     );
     
-    const position = props.localShip.position;
-
     const [cellRadius, setCellRadius] = useState(32);
 
-    const [center, setCenter] = useState<Vector2D>(() => getPositionValue(position));
+    const [center, setCenter] = useState<Vector2D>(() => getPositionValue(props.localShip.position));
 
-    const [screenTouchPos, setScreenTouchPos] = useState<Vector2D>();
     const [addingDestination, setAddingDestination] = useState<Position>();
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const tap = (pagePos: Vector2D) => {
-        const world = getWorldCoordinates(canvas.current!, center, pagePos);
+        const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
         const shipPos = getVectorValue(props.localShip.position);
-        const targetCellPos = getClosestCellCenter(world.x, world.y, cellRadius);
+        const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
         const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
         
         props.setDestination({
-            ...targetCellPos,
+            x: targetCellPos.x,
+            y: targetCellPos.y,
             angle: angleFromShipToCellPos,
         });
     };
 
     const longPress = (pagePos: Vector2D) => {
-        const world = getWorldCoordinates(canvas.current!, center, pagePos);
-        const cellCenter = getClosestCellCenter(world.x, world.y, cellRadius);
+        const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
+        const shipPos = getVectorValue(props.localShip.position);
+        const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
+
+        const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
 
         setAddingDestination({
-            x: cellCenter.x,
-            y: cellCenter.y,
-            angle: 0,
-        });
-        
-        // Screen target should be center of closest cell, still.
-        setScreenTouchPos({
-            x: pagePos.x - world.x + cellCenter.x,
-            y: pagePos.y - world.y + cellCenter.y,
+            x: targetCellPos.x,
+            y: targetCellPos.y,
+            angle: angleFromShipToCellPos,
         });
     };
 
-    const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {    
+    const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
         if (addingDestination) {
-            drawWaypoint(ctx, addingDestination, cellRadius, theme, 'primary');
+            drawWaypoint(ctx, addingDestination, 1, theme, 'primary');
         }
 
         if (props.destination) {
@@ -77,35 +73,39 @@ export const HelmMap: React.FC<Props> = props => {
                 return;
             }
 
-            drawWaypoint(ctx, props.destination, cellRadius, theme, addingDestination ? 'warning' : 'primary');
+            drawWaypoint(ctx, props.destination, 1, theme, addingDestination ? 'warning' : 'primary');
         }
     };
 
-    const extraHandlers: TouchEvents | undefined = addingDestination && screenTouchPos
+    const extraHandlers: TouchEvents | undefined = addingDestination
         ? {
             onMouseMove: (e: React.MouseEvent<Element>) => {
-                const pagePos = {
+                const screenPos = {
                     x: e.pageX,
                     y: e.pageY,
                 };
 
+                const worldPos = screenToWorld(canvas.current!, cellRadius, center, screenPos);
+
                 setAddingDestination(waypoint => ({
                     x: waypoint!.x,
                     y: waypoint!.y,
-                    angle: determineAngle(screenTouchPos, pagePos, waypoint!.angle!)
+                    angle: determineAngle(addingDestination, worldPos, waypoint!.angle!)
                 }));
             },
             onTouchMove: (e: React.TouchEvent<Element>) => {
                 if (e.touches.length < 2) {
-                    const pagePos = {
+                    const screenPos = {
                         x: e.touches[0].pageX,
                         y: e.touches[0].pageY,
                     };
 
+                    const worldPos = screenToWorld(canvas.current!, cellRadius, center, screenPos);
+
                     setAddingDestination(waypoint => ({
                         x: waypoint!.x,
                         y: waypoint!.y,
-                        angle: determineAngle(screenTouchPos, pagePos, waypoint!.angle!)
+                        angle: determineAngle(addingDestination, worldPos, waypoint!.angle!)
                     }));
                 }
             },
@@ -116,11 +116,6 @@ export const HelmMap: React.FC<Props> = props => {
                     angle: addingDestination.angle,
                 });
                 setAddingDestination(undefined);
-                setTimeout(
-                    () => {
-                        setScreenTouchPos(undefined);
-                    }
-                , 10);
             },
             onTouchEnd: () => {
                 props.setDestination({
@@ -129,14 +124,8 @@ export const HelmMap: React.FC<Props> = props => {
                     angle: addingDestination.angle,
                 });
                 setAddingDestination(undefined);
-                setTimeout(
-                    () => {
-                        setScreenTouchPos(undefined);
-                    }
-                , 10);
             },
             onMouseLeave: () => {
-                setScreenTouchPos(undefined);
                 setAddingDestination(undefined);
             },
         }
@@ -146,7 +135,7 @@ export const HelmMap: React.FC<Props> = props => {
 
     const bindGestures = usePanAndZoom({
         center,
-        setCenter: screenTouchPos === undefined ? setCenter : () => {},
+        setCenter: addingDestination === undefined ? setCenter : () => {},
         dragThreshold: clickMoveLimit,
         zoom: cellRadius,
         setZoom: setCellRadius,
