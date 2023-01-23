@@ -2,14 +2,14 @@ import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { applyPrimaryEffect, applySecondaryEffect, applySingleEffect, removeEffect } from '../../../utils/systemActions';
 import { getRandomInt } from 'src/utils/random';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { DefiniteMap } from 'src/types/DefiniteMap';
 import { getTime } from 'src/utils/timeSpans';
 
 function filterSystems(filter: (system: SystemState) => boolean) {
-    return (ship: ShipState) =>
+    return (ship: ShipInfo) =>
         [...ship.systems.values()]
         .filter(filter)
         .reduce((prev, current) => prev | current.system, 0 as ShipSystem);

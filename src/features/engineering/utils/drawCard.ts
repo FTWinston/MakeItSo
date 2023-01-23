@@ -1,7 +1,7 @@
-import type { ShipState } from 'src/types/ShipState';
+import type { ShipInfo } from 'src/types/ShipInfo';
 import { createCards } from '../features/Cards';
 
-export function drawCard(state: ShipState, drawCardId: number) {
+export function drawCard(state: ShipInfo, drawCardId: number) {
     if (state.engineering.handCards.length >= state.engineering.maxHandSize) {
         return;
     }

@@ -1,4 +1,4 @@
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 
@@ -47,6 +47,6 @@ export interface EngineeringCardInfo {
 }
 
 export interface EngineeringCard extends EngineeringCardInfo {
-    play: (system: SystemState, ship: ShipState) => void | false;
-    determineAllowedSystems?: (ship: ShipState) => ShipSystem;
+    play: (system: SystemState, ship: ShipInfo) => void | false;
+    determineAllowedSystems?: (ship: ShipInfo) => ShipSystem;
 }

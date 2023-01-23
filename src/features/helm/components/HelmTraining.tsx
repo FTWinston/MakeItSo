@@ -1,13 +1,13 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { helmTrainingReducer } from '../utils/helmTrainingReducer';
 import { Helm } from './Helm';
 
 interface Props {
-    getInitialState: () => ShipState;
+    getInitialState: () => ShipInfo;
     //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 

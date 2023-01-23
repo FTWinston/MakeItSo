@@ -1,4 +1,4 @@
-import type { ShipState } from 'src/types/ShipState';
+import type { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
@@ -38,7 +38,7 @@ function getReactorDamageEffectApplicationInterval(reactorHealth: number) {
     return durationToTicks(interval);
 }
 
-export function applyReactorDamage(state: ShipState, currentTime: number) {
+export function applyReactorDamage(state: ShipInfo, currentTime: number) {
     const reactorHealth = state.systems.get(ShipSystem.Reactor).health;
     
     const interval = getReactorDamageEffectApplicationInterval(reactorHealth);

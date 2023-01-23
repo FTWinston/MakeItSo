@@ -1,10 +1,10 @@
-import type { ShipState } from 'src/types/ShipState';
+import type { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { EngineeringCard } from '../features/Cards';
 import { adjustHealth, adjustRestoration, determineRepairAmount, determineRestoreAmount, logEvent } from './systemActions';
 
-function removeCardFromHand(state: ShipState, card: EngineeringCard) {
+function removeCardFromHand(state: ShipInfo, card: EngineeringCard) {
     const index = state.engineering.handCards.indexOf(card);
 
     if (index !== -1) {
@@ -13,7 +13,7 @@ function removeCardFromHand(state: ShipState, card: EngineeringCard) {
 }
 
 function applyCardEffect(
-    state: ShipState,
+    state: ShipInfo,
     card: EngineeringCard,
     targetSystem: SystemState,
 ) {
@@ -38,7 +38,7 @@ function applyCardEffect(
 }
 
 function applyCardHealing(
-    state: ShipState,
+    state: ShipInfo,
     card: EngineeringCard,
     targetSystem: SystemState,
 ) {
@@ -63,7 +63,7 @@ function applyCardHealing(
 }
 
 export function playCard(
-    state: ShipState,
+    state: ShipInfo,
     cardId: number,
     targetSystem: ShipSystem,
     repairing: boolean,

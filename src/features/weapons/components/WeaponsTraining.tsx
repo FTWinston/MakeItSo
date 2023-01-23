@@ -1,13 +1,13 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { weaponsTrainingReducer } from '../utils/weaponsTrainingReducer';
 import { Weapons } from './Weapons';
 
 interface Props {
-    getInitialState: () => ShipState;
+    getInitialState: () => ShipInfo;
     //customRender?: (dispatch: Dispatch<WeaponsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 

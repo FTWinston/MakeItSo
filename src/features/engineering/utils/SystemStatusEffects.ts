@@ -1,4 +1,4 @@
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
@@ -24,7 +24,7 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             positive: false,
             duration: 20,
             apply: (system: SystemState) => adjustPower(system, -1),
-            remove: (system: SystemState, ship: ShipState) => {
+            remove: (system: SystemState, ship: ShipInfo) => {
                 adjustPower(system, 1);
 
                 const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.StoredCharge, EngineeringCardRarity.Uncommon);
@@ -95,10 +95,10 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             positive: false,
             duration: 10,
             apply: (system: SystemState) => adjustPower(system, 2),
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+            remove: (system: SystemState, ship: ShipInfo, forced: boolean) => {
                 adjustPower(system, -2);
             },
-            tick: (system: SystemState, ship: ShipState) => {
+            tick: (system: SystemState, ship: ShipInfo) => {
                 adjustHealth(system, ship, -2);
             }
         },
@@ -108,18 +108,18 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
         {
             positive: false,
             duration: 15,
-            apply: (system: SystemState, ship: ShipState) => {
+            apply: (system: SystemState, ship: ShipInfo) => {
                 adjustPower(system, 1);
                 adjustHealth(system, ship, -10);
             },
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+            remove: (system: SystemState, ship: ShipInfo, forced: boolean) => {
                 adjustPower(system, -1);
 
                 if (!forced) {
                     adjustHealth(system, ship, -50);
                 }
             },
-            tick: (system: SystemState, ship: ShipState) => {
+            tick: (system: SystemState, ship: ShipInfo) => {
                 adjustHealth(system, ship, -1);
             },
             nextTick: 0
@@ -178,7 +178,7 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             apply: (system: SystemState) => {
                 adjustPower(system, -10);
             },
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+            remove: (system: SystemState, ship: ShipInfo, forced: boolean) => {
                 adjustPower(system, 10);
 
                 if (!forced) {
@@ -200,7 +200,7 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             apply: (system: SystemState) => {
                 adjustPower(system, -10);
             },
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+            remove: (system: SystemState, ship: ShipInfo, forced: boolean) => {
                 adjustPower(system, 10);
 
                 if (!forced) {
@@ -217,7 +217,7 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             apply: (system: SystemState) => {
                 adjustPower(system, -10);
             },
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+            remove: (system: SystemState, ship: ShipInfo, forced: boolean) => {
                 adjustPower(system, 10);
 
                 if (!forced) {
@@ -251,12 +251,12 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
         {
             positive: true,
             duration: 30,
-            apply: (system: SystemState, ship: ShipState) => {
+            apply: (system: SystemState, ship: ShipInfo) => {
                 for (const shipSystem of ship.systems.values()) {
                     scaleShields(shipSystem, shipSystem.system === system.system ? 1 : -0.5);
                 }
             },
-            remove: (system: SystemState, ship: ShipState, forced: boolean) => {
+            remove: (system: SystemState, ship: ShipInfo, forced: boolean) => {
                 for (const shipSystem of ship.systems.values()) {
                     scaleShields(shipSystem, shipSystem.system === system.system ? -1 : 0.5);
                 }

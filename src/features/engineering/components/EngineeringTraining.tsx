@@ -1,13 +1,13 @@
 import produce from 'immer';
 import { Dispatch, useEffect, useReducer } from 'react';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { getTime } from 'src/utils/timeSpans';
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';
 import { Engineering } from './Engineering';
 
 interface Props {
-    getInitialState: () => ShipState;
+    getInitialState: () => ShipInfo;
     getEffects: () => DamageAction[];
     customRender?: (dispatch: Dispatch<EngineeringAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }

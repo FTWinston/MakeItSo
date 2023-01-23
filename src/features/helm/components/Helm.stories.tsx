@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { getDefaultTrainingState } from 'src/utils/getDefaultTrainingState';
+import { getDefaultTrainingState } from 'src/utils/getDefaultSystemStates';
 import { HelmTraining } from './HelmTraining';
 
 export default {

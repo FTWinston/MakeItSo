@@ -1,4 +1,4 @@
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import type { TimeSpan } from 'src/types/TimeSpan';
@@ -33,9 +33,9 @@ interface EffectBehaviorInfo {
 }
 
 export interface EffectBehavior extends EffectBehaviorInfo {
-    apply: (system: SystemState, ship: ShipState) => void;
-    remove: (system: SystemState, ship: ShipState, forced: boolean) => void;
-    tick?: (system: SystemState, ship: ShipState) => void;
+    apply: (system: SystemState, ship: ShipInfo) => void;
+    remove: (system: SystemState, ship: ShipInfo, forced: boolean) => void;
+    tick?: (system: SystemState, ship: ShipInfo) => void;
 }
 
 type Primary = 'primary';
@@ -69,7 +69,7 @@ export type BaseStatusEffect = Omit<EffectBehavior, 'duration'> & TimeSpan & {
 };
 
 export interface TickingStatusEffect extends BaseStatusEffect {
-    tick: (system: SystemState, ship: ShipState) => void;
+    tick: (system: SystemState, ship: ShipInfo) => void;
     nextTick: number;
 }
 

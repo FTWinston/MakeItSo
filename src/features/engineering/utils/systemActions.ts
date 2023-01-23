@@ -2,7 +2,7 @@ import { BaseStatusEffect, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffe
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { durationToTicks, getTime, hasCompleted } from 'src/utils/timeSpans';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
 import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems, ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../features/SystemTiles';
@@ -68,7 +68,7 @@ export function scaleShields(system: SystemState, difference: number) {
     system.shieldScale = newScale;
 }
 
-function destroyShip(ship: ShipState, destroyedVia: ShipDestroyingSystem) {
+function destroyShip(ship: ShipInfo, destroyedVia: ShipDestroyingSystem) {
     ship.destroyed = destroyedVia;
 
     for (const system of ship.systems.values()) {
@@ -83,7 +83,7 @@ function destroyShip(ship: ShipState, destroyedVia: ShipDestroyingSystem) {
     }
 }
 
-export function adjustHealth(system: SystemState, ship: ShipState, adjustment: number) {
+export function adjustHealth(system: SystemState, ship: ShipInfo, adjustment: number) {
     const hadHealth = system.health > 0;
 
     const newHealth = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
@@ -185,7 +185,7 @@ export function adjustRestoration(system: SystemState, adjustment: number) {
     }
 }
 
-function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusEffect) {
+function applyEffect(system: SystemState, ship: ShipInfo, effect: SystemStatusEffect) {
     logEvent(system, {
         identifier: 'effect add',
         parameters: {
@@ -200,7 +200,7 @@ function applyEffect(system: SystemState, ship: ShipState, effect: SystemStatusE
 export function applySingleEffect(
     type: SystemStatusEffectType,
     targetSystem: SystemState,
-    ship: ShipState,
+    ship: ShipInfo,
     startTime = getTime()
 ): BaseStatusEffect {
     const id = ship.engineering.nextEffectId++;
@@ -215,7 +215,7 @@ export function applySingleEffect(
 export function applyPrimaryEffect(
     type: SystemStatusEffectType,
     targetSystem: SystemState,
-    ship: ShipState,
+    ship: ShipInfo,
     startTime = getTime()
 ): PrimaryStatusEffect {
     const link: PrimaryEffectLink = {
@@ -234,7 +234,7 @@ export function applyPrimaryEffect(
 export function applySecondaryEffect(
     type: SystemStatusEffectType,
     targetSystem: SystemState,
-    ship: ShipState,
+    ship: ShipInfo,
     primaryEffect: PrimaryStatusEffect,
     primarySystem: SystemState,
     startTime = getTime()
@@ -262,7 +262,7 @@ export function applySecondaryEffect(
     return secondaryEffect;
 }
 
-export function removeEffectInstance(system: SystemState, ship: ShipState, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'link' | 'zeroHealth') {
+export function removeEffectInstance(system: SystemState, ship: ShipInfo, effect: SystemStatusEffect, removalType: 'complete' | 'early' | 'link' | 'zeroHealth') {
     if (isPrimary(effect) && removalType !== 'complete') {
         // Primary effects must also remove their linked secondary effects when they are removed.
         // (Just needed for forced removal, unless we have secondary effects that would last longer than their primary.)
@@ -293,7 +293,7 @@ export function removeEffectInstance(system: SystemState, ship: ShipState, effec
     effect.remove(system, ship, removalType !== 'complete');
 }
 
-export function removeEffect(system: SystemState, ship: ShipState, effectType: SystemStatusEffectType) {
+export function removeEffect(system: SystemState, ship: ShipInfo, effectType: SystemStatusEffectType) {
     const toRemove = system.effects
         .filter(instance => instance.type === effectType);
 
@@ -309,7 +309,7 @@ export function removeEffect(system: SystemState, ship: ShipState, effectType: S
         .filter(instance => instance.type !== effectType);
 }
 
-export function removeExpiredEffects(system: SystemState, ship: ShipState, currentTime = getTime()) {
+export function removeExpiredEffects(system: SystemState, ship: ShipInfo, currentTime = getTime()) {
     const filteredEffects = system.effects.filter(effect => {
         if (hasCompleted(effect, currentTime)) {
             removeEffectInstance(system, ship, effect, 'complete');
@@ -324,7 +324,7 @@ export function removeExpiredEffects(system: SystemState, ship: ShipState, curre
     }
 }
 
-export function tickOngoingEffects(system: SystemState, ship: ShipState, currentTime = getTime()) {
+export function tickOngoingEffects(system: SystemState, ship: ShipInfo, currentTime = getTime()) {
     for (const effect of system.effects) {
         if (!ticks(effect) || effect.nextTick > currentTime) {
             continue;

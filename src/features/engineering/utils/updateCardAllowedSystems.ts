@@ -1,6 +1,6 @@
-import type { ShipState } from 'src/types/ShipState';
+import type { ShipInfo } from 'src/types/ShipInfo';
 
-export function updateCardAllowedSystems(state: ShipState) {
+export function updateCardAllowedSystems(state: ShipInfo) {
     for (const card of state.engineering.handCards) {
         if (!card.determineAllowedSystems) {
             continue;

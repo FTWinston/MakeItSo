@@ -6,7 +6,7 @@ import { DefiniteMap } from 'src/types/DefiniteMap';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
-import { getDefaultSystemStates, getDefaultTrainingState } from 'src/utils/getDefaultTrainingState';
+import { getDefaultSystemStates, getDefaultTrainingState } from 'src/utils/getDefaultSystemStates';
 import { storyCards } from '../features/Cards/components/CardHand.stories';
 import { createCards } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardType } from '../features/Cards/types/EngineeringCard';
@@ -28,9 +28,9 @@ export const Empty: Story = {
             const systems = getDefaultSystemStates();
             return {
                 ...getDefaultTrainingState(),
-                systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
+                systems,
                 engineering: {
-                    systemOrder: systems.map(system => system.system),
+                    systemOrder: [...systems.keys()],
                     handCards: [],
                     maxHandSize: 7,
                     choiceCards: [],
@@ -84,9 +84,9 @@ export const Custom: Story = {
             const systems = getDefaultSystemStates();
             return {
                 ...getDefaultTrainingState(),
-                systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
+                systems,
                 engineering: {
-                    systemOrder: systems.map(system => system.system),
+                    systemOrder: [...systems.keys()],
                     handCards: [],
                     maxHandSize: 7,
                     choiceCards: [],

@@ -1,11 +1,11 @@
 import { Keyframes, getLastPastFrame, getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
 import { Waypoint } from 'src/types/Waypoint';
 import { durationToTicks } from 'src/utils/timeSpans';
 
-function updateWaypoints(ship: ShipState, currentTime: number) {
+function updateWaypoints(ship: ShipInfo, currentTime: number) {
     if (ship.helm.waypoints.length === 0) {
         return;
     }
@@ -18,7 +18,7 @@ function updateWaypoints(ship: ShipState, currentTime: number) {
     ship.helm.waypoints = ship.helm.waypoints.slice(1);
 }
 
-export function shouldUpdatePosition(ship: ShipState, currentTime: number) {
+export function shouldUpdatePosition(ship: ShipInfo, currentTime: number) {
     updateWaypoints(ship, currentTime);
 
     if (ship.helm.forcePositionUpdate) {
@@ -44,7 +44,7 @@ export function shouldUpdatePosition(ship: ShipState, currentTime: number) {
     return position[testFrame].time <= currentTime;
 }
 
-export function updateShipPosition(ship: ShipState, currentTime: number) {
+export function updateShipPosition(ship: ShipInfo, currentTime: number) {
     if (shouldHoldPosition(ship)) {
         holdPosition(ship, currentTime);
     }
@@ -55,7 +55,7 @@ export function updateShipPosition(ship: ShipState, currentTime: number) {
     ship.helm.forcePositionUpdate = false;
 }
 
-function shouldHoldPosition(ship: ShipState) {
+function shouldHoldPosition(ship: ShipInfo) {
     // Hold position if we've nowhere to go,
     if (ship.helm.waypoints.length === 0) {
         return true;
@@ -72,7 +72,7 @@ function shouldHoldPosition(ship: ShipState) {
     return false;
 }
 
-function holdPosition(ship: ShipState, currentTime: number) {
+function holdPosition(ship: ShipInfo, currentTime: number) {
     const lastFrame = ship.motion[ship.motion.length - 1];
 
     const time = currentTime + durationToTicks(5);
@@ -95,7 +95,7 @@ function holdPosition(ship: ShipState, currentTime: number) {
     ];
 }
 
-function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
+function getExistingFramesToKeep(ship: ShipInfo, currentTime: number) {
     const pastFrames = ship.motion.slice(0, getLastPastFrame(ship.motion, currentTime) + 1);
 
     if (pastFrames.length === 0) {
@@ -128,7 +128,7 @@ function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
     }
 }
 
-function updatePositionValue(ship: ShipState, currentTime: number) {
+function updatePositionValue(ship: ShipInfo, currentTime: number) {
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
     const newFrames = determineFutureFrames(ship, framesToKeep);
 
@@ -145,7 +145,7 @@ function updatePositionValue(ship: ShipState, currentTime: number) {
     ];
 }
 
-function determineFutureFrames(ship: ShipState, framesToKeep: Keyframes<Position>): Keyframes<Position> {
+function determineFutureFrames(ship: ShipInfo, framesToKeep: Keyframes<Position>): Keyframes<Position> {
     let [
         firstWaypoint,
         secondWaypoint,
@@ -255,7 +255,7 @@ function determineFutureFrames(ship: ShipState, framesToKeep: Keyframes<Position
     return results;
 }
 
-export function addWaypoint(ship: ShipState, waypoint: Waypoint) {
+export function addWaypoint(ship: ShipInfo, waypoint: Waypoint) {
     ship.helm.waypoints.push(waypoint);
 
     if (ship.helm.waypoints.length <= 2) {
@@ -263,7 +263,7 @@ export function addWaypoint(ship: ShipState, waypoint: Waypoint) {
     }
 }
 
-export function clearMovement(ship: ShipState) {
+export function clearMovement(ship: ShipInfo) {
     ship.helm.waypoints = [];
 
     // TODO: recalculate movement .. decelerate to a stop
@@ -271,7 +271,7 @@ export function clearMovement(ship: ShipState) {
     ship.helm.forcePositionUpdate = true;
 }
 
-export function adjustSpeed(ship: ShipState, time: number) {
+export function adjustSpeed(ship: ShipInfo, time: number) {
     /*
     const { current, next } = ship.movement;
 

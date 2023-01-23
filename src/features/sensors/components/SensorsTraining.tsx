@@ -1,13 +1,13 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { sensorsTrainingReducer } from '../utils/sensorsTrainingReducer';
 import { Sensors } from './Sensors';
 
 interface Props {
-    getInitialState: () => ShipState;
+    getInitialState: () => ShipInfo;
     //customRender?: (dispatch: Dispatch<SensorsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 

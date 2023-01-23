@@ -1,8 +1,8 @@
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsState';
 
-export function sensorsTrainingReducer(state: ShipState, action: SensorsAction): ShipState {
+export function sensorsTrainingReducer(state: ShipInfo, action: SensorsAction): ShipInfo {
     if (state.destroyed) {
         return state;
     }

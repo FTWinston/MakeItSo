@@ -1,4 +1,4 @@
-import type { ShipState } from 'src/types/ShipState';
+import type { ShipInfo } from 'src/types/ShipInfo';
 import { PowerLevel, ShipSystem } from 'src/types/ShipSystem';
 import { adjustDuration, durationToTicks } from 'src/utils/timeSpans';
 import { createCards } from '../features/Cards';
@@ -18,7 +18,7 @@ function determineCardGenerationDuration(power: PowerLevel): number {
     }
 }
 
-export function updateCardGeneration(state: ShipState, currentTime: number) {
+export function updateCardGeneration(state: ShipInfo, currentTime: number) {
     const reactorSystem = state.systems.get(ShipSystem.Reactor);
     const powerLevelChanged = reactorSystem.powerLevelChanged;
 

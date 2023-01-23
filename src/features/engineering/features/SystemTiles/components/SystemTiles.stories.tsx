@@ -6,7 +6,7 @@ import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from 'src/features/engineering/types/SystemStatusEffect';
 import { SystemState } from 'src/types/SystemState';
 import { createEffect } from 'src/features/engineering/utils/SystemStatusEffects';
-import { getDefaultSystemState, getDefaultSystemStates } from 'src/utils/getDefaultTrainingState';
+import { getDefaultSystemState, getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 
 type Story = StoryObj<typeof SystemTiles>;
 
@@ -64,7 +64,7 @@ export const getComplexStoryTiles: () => SystemState[] = () => [
 
 export const BasicTiles: Story = {
     args: {
-        systems: getDefaultSystemStates(),
+        systems: [...getDefaultSystemStates().values()],
     }
 };
 

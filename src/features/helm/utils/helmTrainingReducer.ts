@@ -1,10 +1,10 @@
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { HelmAction } from '../types/HelmState';
 import { shouldUpdatePosition, updateShipPosition } from './updateShipPosition';
 
-export function helmTrainingReducer(state: ShipState, action: HelmAction): ShipState {
+export function helmTrainingReducer(state: ShipInfo, action: HelmAction): ShipInfo {
     if (state.destroyed) {
         return state;
     }

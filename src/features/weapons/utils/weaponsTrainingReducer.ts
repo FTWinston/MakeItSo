@@ -1,8 +1,8 @@
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { WeaponsAction } from '../types/WeaponsState';
 
-export function weaponsTrainingReducer(state: ShipState, action: WeaponsAction): ShipState {
+export function weaponsTrainingReducer(state: ShipInfo, action: WeaponsAction): ShipInfo {
     if (state.destroyed) {
         return state;
     }

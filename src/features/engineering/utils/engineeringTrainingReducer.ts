@@ -1,5 +1,5 @@
 import { DefiniteMap } from 'src/types/DefiniteMap';
-import { ShipState } from 'src/types/ShipState';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
@@ -14,7 +14,7 @@ import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffe
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
 
-export function engineeringTrainingReducer(state: ShipState, action: EngineeringAction): ShipState {
+export function engineeringTrainingReducer(state: ShipInfo, action: EngineeringAction): ShipInfo {
     if (state.destroyed) {
         return state;
     }

@@ -7,7 +7,7 @@ import type { ShipDestroyingSystem, ShipSystem } from './ShipSystem';
 import type { SystemState } from './SystemState';
 import type { GameObjectInfo } from './GameObjectInfo';
 
-export interface ShipState extends GameObjectInfo {
+export interface ShipInfo extends GameObjectInfo {
     destroyed?: ShipDestroyingSystem;
     systems: DefiniteMap<ShipSystem, SystemState>;
     engineering: EngineeringState;
