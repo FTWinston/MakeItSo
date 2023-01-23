@@ -7,15 +7,15 @@ import { TouchEvents } from 'src/types/TouchEvents';
 import { useTheme } from 'src/lib/mui';
 import { drawWaypoint } from '../utils/drawWaypoint';
 import { clickMoveLimit, useLongPress } from 'src/hooks/useLongPress';
-import { VesselInfo } from 'src/types/VesselInfo';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { isInRectangle, Rectangle } from 'src/types/Rectangle';
 
 interface Props {
     center: Vector2D;
     setCenter: (center: Vector2D) => void;
-    ships: Partial<Record<number, VesselInfo>>;
-    localShip: VesselInfo;
+    ships: Partial<Record<number, GameObjectInfo>>;
+    localShip: GameObjectInfo;
     destination: Position | null;
     setDestination: (waypoint: Position) => void;
     shipVisible: boolean;
@@ -26,7 +26,7 @@ export const HelmMap: React.FC<Props> = props => {
     const theme = useTheme();
 
     const ships = useMemo(
-        () => Object.values(props.ships) as VesselInfo[],
+        () => Object.values(props.ships) as GameObjectInfo[],
         [props.ships]
     );
     

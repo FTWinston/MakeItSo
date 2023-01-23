@@ -4,7 +4,7 @@ import { AppBarHeight, Page } from 'src/features/layout';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';
-import { VesselInfo } from 'src/types/VesselInfo';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Keyframes, getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { useState } from 'react';
@@ -29,7 +29,7 @@ const Root = styled(Page)({
 export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
 
-    const localShip: VesselInfo = {
+    const localShip: GameObjectInfo = {
         motion: props.shipMotion
     };
 

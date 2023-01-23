@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { SpaceMap } from './SpaceMap';
 import { styled } from 'src/lib/mui';
 import { Vector2D } from 'src/types/Vector2D';
-import { VesselInfo } from 'src/types/VesselInfo';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 
 export default { title: 'Common/Space Map' };
@@ -17,7 +17,7 @@ const Simple = () => {
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const vessels = useRef<VesselInfo[]>([
+    const vessels = useRef<GameObjectInfo[]>([
         {
             motion: [{
                 time: getTime(),

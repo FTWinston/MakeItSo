@@ -5,9 +5,9 @@ import type { WeaponsState } from 'src/features/weapons/types/WeaponsState';
 import type { DefiniteMap } from './DefiniteMap';
 import type { ShipDestroyingSystem, ShipSystem } from './ShipSystem';
 import type { SystemState } from './SystemState';
-import type { VesselInfo } from './VesselInfo';
+import type { GameObjectInfo } from './GameObjectInfo';
 
-export interface ShipState extends VesselInfo {
+export interface ShipState extends GameObjectInfo {
     destroyed?: ShipDestroyingSystem;
     systems: DefiniteMap<ShipSystem, SystemState>;
     engineering: EngineeringState;

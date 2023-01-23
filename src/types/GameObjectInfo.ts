@@ -1,6 +1,6 @@
 import { Keyframes } from './Keyframes';
 import { Position } from './Position';
 
-export interface VesselInfo {
+export interface GameObjectInfo {
     motion: Keyframes<Position>;
 }

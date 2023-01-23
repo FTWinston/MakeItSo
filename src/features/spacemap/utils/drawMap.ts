@@ -4,7 +4,7 @@ import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
 import { getPositionValue } from 'src/types/Keyframes';
-import { VesselInfo } from 'src/types/VesselInfo';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Rectangle } from 'src/types/Rectangle';
 
 export type drawFunction = (context: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => void;
@@ -78,8 +78,8 @@ export function drawMap(
     gridColor: DiscreteColorName,
     cellRadius: number,
     center: Vector2D,
-    vessels: VesselInfo[],
-    localVessel?: VesselInfo,
+    vessels: GameObjectInfo[],
+    localVessel?: GameObjectInfo,
     drawExtraBackground?: drawFunction,
     drawExtraForeground?: drawFunction,
 ) {
