@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { getDefaultTrainingState } from 'src/utils/getDefaultSystemStates';
+import { Ship } from 'src/types/Ship';
 import { WeaponsTraining } from './WeaponsTraining';
 
 export default {
@@ -11,13 +11,6 @@ type Story = StoryObj<typeof WeaponsTraining>;
 
 export const Empty: Story = {
     args: {
-        getInitialState: () => {
-            return {
-                ...getDefaultTrainingState(),
-                weapons: {
-                    
-                },
-            };
-        },
+        getInitialState: () => new Ship(),
     }
 }

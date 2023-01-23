@@ -1,5 +1,5 @@
 import { DefiniteMap } from 'src/types/DefiniteMap';
-import { ShipInfo } from 'src/types/ShipInfo';
+import { Ship } from 'src/types/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
@@ -14,27 +14,26 @@ import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffe
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
 
-export function engineeringTrainingReducer(state: ShipInfo, action: EngineeringAction): ShipInfo {
+export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship {
     if (state.destroyed) {
         return state;
     }
 
     switch (action.type) {
         case 'reset':
-            const systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
-            return {
-                systems,
-                engineering: {
-                    systemOrder: action.systems.map(system => system.system),
-                    choiceCards: action.choiceCards,
-                    handCards: action.handCards,
-                    maxHandSize: state.engineering.maxHandSize,
-                    numChoices: action.numChoices,
-                    choiceProgress: action.choiceProcess,
-                    nextCardId: 14,
-                    nextEffectId: 1,
-                }
+            const newState = new Ship();
+            newState.systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
+            newState.engineering = {
+                systemOrder: action.systems.map(system => system.system),
+                choiceCards: action.choiceCards,
+                handCards: action.handCards,
+                maxHandSize: state.engineering.maxHandSize,
+                numChoices: action.numChoices,
+                choiceProgress: action.choiceProcess,
+                nextCardId: 14,
+                nextEffectId: 1,
             };
+            return newState;
             
         case 'play':
             playCard(state, action.cardId, action.targetSystem, action.repair);

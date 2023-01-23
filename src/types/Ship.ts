@@ -25,11 +25,11 @@ export class Ship extends GameObject implements ShipInfo {
     }
 
     destroyed?: ShipDestroyingSystem;
-    readonly systems: DefiniteMap<ShipSystem, SystemState>;
-    readonly engineering: EngineeringState;
-    readonly helm: HelmState;
-    readonly sensors: SensorsState;
-    readonly weapons: WeaponsState;
+    systems: DefiniteMap<ShipSystem, SystemState>;
+    engineering: EngineeringState;
+    helm: HelmState;
+    sensors: SensorsState;
+    weapons: WeaponsState;
 
     updateMotion(currentTime: number): void {
         throw new Error('Method not implemented.');

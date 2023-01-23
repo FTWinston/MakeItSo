@@ -1,27 +1,26 @@
-import { ShipInfo } from 'src/types/ShipInfo';
+import { Ship } from 'src/types/Ship';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { HelmAction } from '../types/HelmState';
 import { shouldUpdatePosition, updateShipPosition } from './updateShipPosition';
 
-export function helmTrainingReducer(state: ShipInfo, action: HelmAction): ShipInfo {
+export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
     if (state.destroyed) {
         return state;
     }
 
     switch (action.type) {
         case 'reset':
-            return {
-                ...state,
-                helm: {
-                    destination: null,
-                    waypoints: [],
-                    forcePositionUpdate: true,
-                    rotationalSpeed: 0.75,
-                    speedWhileRotating: 0.1,
-                    speed: 1,
-                }
+            const newState = new Ship();
+            newState.helm = {
+                destination: null,
+                waypoints: [],
+                forcePositionUpdate: true,
+                rotationalSpeed: 0.75,
+                speedWhileRotating: 0.1,
+                speed: 1,
             };
+            return newState;
             
         case 'tick': {
             if (shouldUpdatePosition(state, action.currentTime)) {

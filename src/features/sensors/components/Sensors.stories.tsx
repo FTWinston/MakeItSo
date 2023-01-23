@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { getDefaultTrainingState } from 'src/utils/getDefaultSystemStates';
+import { Ship } from 'src/types/Ship';
 import { SensorsTraining } from './SensorsTraining';
 
 export default {
@@ -11,13 +11,6 @@ type Story = StoryObj<typeof SensorsTraining>;
 
 export const Empty: Story = {
     args: {
-        getInitialState: () => {
-            return {
-                ...getDefaultTrainingState(),
-                sensors: {
-                    
-                },
-            };
-        },
+        getInitialState: () => new Ship(),
     }
 }

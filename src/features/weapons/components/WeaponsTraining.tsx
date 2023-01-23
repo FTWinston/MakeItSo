@@ -1,13 +1,13 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
-import { ShipInfo } from 'src/types/ShipInfo';
+import { Ship } from 'src/types/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { weaponsTrainingReducer } from '../utils/weaponsTrainingReducer';
 import { Weapons } from './Weapons';
 
 interface Props {
-    getInitialState: () => ShipInfo;
+    getInitialState: () => Ship;
     //customRender?: (dispatch: Dispatch<WeaponsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
@@ -23,7 +23,7 @@ export const WeaponsTraining: React.FC<Props> = (props) => {
         return () => clearInterval(interval);
     });
 
-    const { power, health } = state.systems.get(ShipSystem.Engines);
+    const { power, health } = state.systems.get(ShipSystem.Weapons);
 
     const defaultRender = () => (
         <Weapons
