@@ -3,7 +3,7 @@ import { Vector2D } from 'src/types/Vector2D';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
-import { getPositionValue } from 'src/types/Animation';
+import { getPositionValue } from 'src/types/Keyframes';
 import { VesselInfo } from 'src/types/VesselInfo';
 import { Rectangle } from 'src/types/Rectangle';
 

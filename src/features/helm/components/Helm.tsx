@@ -5,7 +5,7 @@ import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';
 import { VesselInfo } from 'src/types/VesselInfo';
-import { Animation, getPositionValue } from 'src/types/Animation';
+import { Keyframes, getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
@@ -13,7 +13,7 @@ import { StopAndFocus } from './StopAndFocus';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
-    shipPosition: Animation<Position>;
+    shipPosition: Keyframes<Position>;
     power: PowerLevel;
     health: number;
     destination: Position | null;

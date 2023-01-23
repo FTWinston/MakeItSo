@@ -1,6 +1,6 @@
-import { Animation } from './Animation';
+import { Keyframes } from './Keyframes';
 import { Position } from './Position';
 
 export interface VesselInfo {
-    position: Animation<Position>;
+    position: Keyframes<Position>;
 }

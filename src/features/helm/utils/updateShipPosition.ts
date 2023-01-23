@@ -1,4 +1,4 @@
-import { Animation, getLastPastFrame, getPositionValue } from 'src/types/Animation';
+import { Keyframes, getLastPastFrame, getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { ShipState } from 'src/types/ShipState';
 import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
@@ -145,7 +145,7 @@ function updatePositionValue(ship: ShipState, currentTime: number) {
     ];
 }
 
-function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position>): Animation<Position> {
+function determineFutureFrames(ship: ShipState, framesToKeep: Keyframes<Position>): Keyframes<Position> {
     let [
         firstWaypoint,
         secondWaypoint,
@@ -189,7 +189,7 @@ function determineFutureFrames(ship: ShipState, framesToKeep: Animation<Position
         }];
     }
     
-    const results: Animation<Position> = [];
+    const results: Keyframes<Position> = [];
 
     // rotate, go straight, rotate again
     const moveDirection = unit(startPosition, endPosition);

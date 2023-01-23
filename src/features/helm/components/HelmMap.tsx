@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { Position } from 'src/types/Position';
 import { determineAngle, distanceSq, Vector2D } from 'src/types/Vector2D';
-import { getVectorValue } from 'src/types/Animation';
+import { getVectorValue } from 'src/types/Keyframes';
 import { getClosestCellCenter, getWorldBounds, screenToWorld, SpaceMap } from 'src/features/spacemap';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { useTheme } from 'src/lib/mui';

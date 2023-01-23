@@ -4,16 +4,16 @@ import { durationToTicks, getCompletedFraction, getTime } from 'src/utils/timeSp
 
 const endTimespan = durationToTicks(3);
 
-export interface Frame<T> {
+export interface Keyframe<T> {
     time: number;
     val: T;
 }
 
-export type Animation<T> = Array<Frame<T>>;
+export type Keyframes<T> = Array<Keyframe<T>>;
 
-export function getLastPastFrame<T>(animation: Animation<T>, currentTime: number) {
-    for (let i = animation.length - 1; i >= 0; i--) {
-        const frame = animation[i];
+export function getLastPastFrame<T>(keyframes: Keyframes<T>, currentTime: number) {
+    for (let i = keyframes.length - 1; i >= 0; i--) {
+        const frame = keyframes[i];
         if (frame.time < currentTime) {
             return i;
         }
@@ -22,24 +22,24 @@ export function getLastPastFrame<T>(animation: Animation<T>, currentTime: number
     return -1;
 }
 
-type AnimationSegment<T> = [
-    Frame<T>,
-    Frame<T>,
-    Frame<T>,
-    Frame<T>,
+type KeyframesSegment<T> = [
+    Keyframe<T>,
+    Keyframe<T>,
+    Keyframe<T>,
+    Keyframe<T>,
 ];
 
-function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): AnimationSegment<T> {
-    const firstFutureIndex = animation.findIndex(segment => segment.time > currentTime);
+function getCurrentSegment<T>(keyframes: Keyframes<T>, currentTime: number): KeyframesSegment<T> {
+    const firstFutureIndex = keyframes.findIndex(segment => segment.time > currentTime);
 
     if (firstFutureIndex >= 2) {
-        if (animation.length >= firstFutureIndex + 2) {
-            return animation.slice(firstFutureIndex - 2, firstFutureIndex + 2) as AnimationSegment<T>;
+        if (keyframes.length >= firstFutureIndex + 2) {
+            return keyframes.slice(firstFutureIndex - 2, firstFutureIndex + 2) as KeyframesSegment<T>;
         }
         else {
-            const firstFuture = animation[firstFutureIndex];
+            const firstFuture = keyframes[firstFutureIndex];
 
-            const keepFrames = animation.slice(firstFutureIndex - 2);
+            const keepFrames = keyframes.slice(firstFutureIndex - 2);
             
             // Add a "stationary" item on the end on the end.
             keepFrames.push({
@@ -54,12 +54,12 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
                 });
             }
 
-            return keepFrames as AnimationSegment<T>;
+            return keepFrames as KeyframesSegment<T>;
         }
     }
     else if (firstFutureIndex === -1) {
         // It's all in the past...
-        const { val } = animation[animation.length - 1];
+        const { val } = keyframes[keyframes.length - 1];
         return [
             {
                 time: currentTime - endTimespan,
@@ -80,8 +80,8 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
         ]
     }
 
-    let returnVal: Frame<T>[];
-    const firstVal = animation[0];
+    let returnVal: Keyframe<T>[];
+    const firstVal = keyframes[0];
 
     if (firstFutureIndex === 1) {
         // Add one "stationary" item onto the start.
@@ -91,7 +91,7 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
                 val: firstVal.val,
             },
             firstVal,
-            animation[firstFutureIndex],
+            keyframes[firstFutureIndex],
         ];
     }
     else { // firstFutureIndex === 0
@@ -109,7 +109,7 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
         ];
     }
 
-    if (firstFutureIndex === animation.length - 1) {
+    if (firstFutureIndex === keyframes.length - 1) {
         // Add one "stationary" value onto the end.
         const endVal = returnVal[2];
         returnVal.push({
@@ -119,10 +119,10 @@ function getCurrentSegment<T>(animation: Animation<T>, currentTime: number): Ani
     }
     else {
         // Add the last value onto the end.
-        returnVal.push(animation[firstFutureIndex + 1]);
+        returnVal.push(keyframes[firstFutureIndex + 1]);
     }
 
-    return returnVal as AnimationSegment<T>;
+    return returnVal as KeyframesSegment<T>;
 }
 
 function interpolate(val0: number, val1: number, val2: number, val3: number, fraction: number) {
@@ -135,8 +135,8 @@ function interpolate(val0: number, val1: number, val2: number, val3: number, fra
     return a0 * fraction * fraction2 + a1 * fraction2 + a2 * fraction + a3;
 }
 
-export function getNumberValue(animation: Animation<number>, currentTime = getTime()): number {
-    const [val0, val1, val2, val3] = getCurrentSegment(animation, currentTime);
+export function getNumberValue(keyframes: Keyframes<number>, currentTime = getTime()): number {
+    const [val0, val1, val2, val3] = getCurrentSegment(keyframes, currentTime);
 
     const fraction = getCompletedFraction(val1.time, val2.time, currentTime);
 
@@ -170,16 +170,16 @@ function interpolateAngle(angle0: number, angle1: number, angle2: number, angle3
     return clampAngle(result);
 }
 
-export function getAngleValue(animation: Animation<number>, currentTime = getTime()): number {
-    const [val0, val1, val2, val3] = getCurrentSegment(animation, currentTime);
+export function getAngleValue(keyframes: Keyframes<number>, currentTime = getTime()): number {
+    const [val0, val1, val2, val3] = getCurrentSegment(keyframes, currentTime);
 
     const fraction = getCompletedFraction(val1.time, val2.time, currentTime);
 
     return interpolateAngle(val0.val, val1.val, val2.val, val3.val, fraction);
 }
 
-export function getVectorValue(animation: Animation<Vector2D>, currentTime = getTime()): Vector2D {
-    const [val0, val1, val2, val3] = getCurrentSegment(animation, currentTime);
+export function getVectorValue(keyframes: Keyframes<Vector2D>, currentTime = getTime()): Vector2D {
+    const [val0, val1, val2, val3] = getCurrentSegment(keyframes, currentTime);
 
     const fraction = getCompletedFraction(val1.time, val2.time, currentTime);
 
@@ -189,8 +189,8 @@ export function getVectorValue(animation: Animation<Vector2D>, currentTime = get
     };
 }
 
-export function getPositionValue(animation: Animation<Position>, currentTime = getTime()): Position {
-    const [val0, val1, val2, val3] = getCurrentSegment(animation, currentTime);
+export function getPositionValue(keyframes: Keyframes<Position>, currentTime = getTime()): Position {
+    const [val0, val1, val2, val3] = getCurrentSegment(keyframes, currentTime);
     const fraction = getCompletedFraction(val1.time, val2.time, currentTime);
 
     const pos0 = val0.val;
