@@ -34,7 +34,7 @@ export function getDefaultTrainingState(): ShipState {
 
     return {
         systems: arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>,
-        position: [
+        motion: [
             {
                 time: 0,
                 val: {

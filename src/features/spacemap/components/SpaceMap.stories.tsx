@@ -19,7 +19,7 @@ const Simple = () => {
 
     const vessels = useRef<VesselInfo[]>([
         {
-            position: [{
+            motion: [{
                 time: getTime(),
                 val: {
                     x: 0,

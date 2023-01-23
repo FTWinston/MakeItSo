@@ -105,7 +105,7 @@ export function drawMap(
     const currentTime = getTime();
     
     for (const vessel of vessels) {
-        const position = getPositionValue(vessel.position, currentTime);
+        const position = getPositionValue(vessel.motion, currentTime);
         drawVessel(ctx, theme, vessel === localVessel, position);
     }
 

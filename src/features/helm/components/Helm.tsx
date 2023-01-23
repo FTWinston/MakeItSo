@@ -13,7 +13,7 @@ import { StopAndFocus } from './StopAndFocus';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
-    shipPosition: Keyframes<Position>;
+    shipMotion: Keyframes<Position>;
     power: PowerLevel;
     health: number;
     destination: Position | null;
@@ -30,10 +30,10 @@ export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
 
     const localShip: VesselInfo = {
-        position: props.shipPosition
+        motion: props.shipMotion
     };
 
-    const [viewCenter, setViewCenter] = useState<Vector2D>(() => getPositionValue(props.shipPosition));
+    const [viewCenter, setViewCenter] = useState<Vector2D>(() => getPositionValue(props.shipMotion));
 
     const [shipVisible, setShipVisible] = useState(true);
 
@@ -56,7 +56,7 @@ export const Helm: React.FC<Props> = (props) => {
                 shipMoving={props.destination !== null}
                 shipVisible={shipVisible}
                 stop={() => props.setDestination(null)}
-                focus={() => setViewCenter(getPositionValue(props.shipPosition))}
+                focus={() => setViewCenter(getPositionValue(props.shipMotion))}
             />
         </Root>
     );

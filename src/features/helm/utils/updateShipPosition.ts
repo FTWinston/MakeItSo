@@ -25,7 +25,7 @@ export function shouldUpdatePosition(ship: ShipState, currentTime: number) {
         return true;
     }
 
-    const position = ship.position;
+    const position = ship.motion;
 
     if (position.length === 0) {
         return ship.helm.waypoints.length > 0;
@@ -63,7 +63,7 @@ function shouldHoldPosition(ship: ShipState) {
 
     // Or if we've only one waypoint and have plotted a course there already.
     if (ship.helm.waypoints.length === 1) {
-        const lastPos = ship.position[ship.position.length - 1];
+        const lastPos = ship.motion[ship.motion.length - 1];
         const onlyWaypoint = ship.helm.waypoints[0];
 
         return vectorsEqual(lastPos.val, onlyWaypoint);
@@ -73,7 +73,7 @@ function shouldHoldPosition(ship: ShipState) {
 }
 
 function holdPosition(ship: ShipState, currentTime: number) {
-    const lastFrame = ship.position[ship.position.length - 1];
+    const lastFrame = ship.motion[ship.motion.length - 1];
 
     const time = currentTime + durationToTicks(5);
 
@@ -86,7 +86,7 @@ function holdPosition(ship: ShipState, currentTime: number) {
 
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
 
-    ship.position = [
+    ship.motion = [
         ...framesToKeep,
         {
             time,
@@ -96,11 +96,11 @@ function holdPosition(ship: ShipState, currentTime: number) {
 }
 
 function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
-    const pastFrames = ship.position.slice(0, getLastPastFrame(ship.position, currentTime) + 1);
+    const pastFrames = ship.motion.slice(0, getLastPastFrame(ship.motion, currentTime) + 1);
 
     if (pastFrames.length === 0) {
         // console.log('keeping 0 frames, adding current time twice');
-        const currentPos = getPositionValue(ship.position, currentTime);
+        const currentPos = getPositionValue(ship.motion, currentTime);
         return [
             {
                 time: currentTime - durationToTicks(1), // TODO: account for ship acceleration?
@@ -118,13 +118,13 @@ function getExistingFramesToKeep(ship: ShipState, currentTime: number) {
             pastFrames[pastFrames.length - 1],
             {
                 time: currentTime,
-                val: getPositionValue(ship.position, currentTime),
+                val: getPositionValue(ship.motion, currentTime),
             },
         ]
     }
     else {
         // console.log(`keeping ${ship.position.length - numPastFrames} frames`);
-        return ship.position.slice(pastFrames.length - 2);
+        return ship.motion.slice(pastFrames.length - 2);
     }
 }
 
@@ -139,7 +139,7 @@ function updatePositionValue(ship: ShipState, currentTime: number) {
     console.log('');
     */
 
-    ship.position = [
+    ship.motion = [
         ...framesToKeep,
         ...newFrames,
     ];

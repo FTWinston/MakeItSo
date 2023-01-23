@@ -42,7 +42,7 @@ export const HelmMap: React.FC<Props> = props => {
         const bounds = getWorldBounds(canvas.current!, cellRadius, center);
 
         const updateVisibility = () => {
-            const visible = isInRectangle(bounds, getVectorValue(props.localShip.position));
+            const visible = isInRectangle(bounds, getVectorValue(props.localShip.motion));
             if (shipVisible !== visible) {
                 props.setShipVisible(visible);   
             }
@@ -55,7 +55,7 @@ export const HelmMap: React.FC<Props> = props => {
 
     const tap = (pagePos: Vector2D) => {
         const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
-        const shipPos = getVectorValue(props.localShip.position);
+        const shipPos = getVectorValue(props.localShip.motion);
         const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
         const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
@@ -69,7 +69,7 @@ export const HelmMap: React.FC<Props> = props => {
 
     const longPress = (pagePos: Vector2D) => {
         const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
-        const shipPos = getVectorValue(props.localShip.position);
+        const shipPos = getVectorValue(props.localShip.motion);
         const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
         const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
