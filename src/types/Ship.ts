@@ -9,9 +9,10 @@ import { GameObject } from './GameObject';
 import { ShipInfo } from './ShipInfo';
 import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { getDefaultEngineeringState } from 'src/features/engineering';
-import { getDefaultHelmState } from 'src/features/helm';
+import { getDefaultHelmState, shouldUpdateMotion, updateShipMotion } from 'src/features/helm';
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
+import { pruneKeyframes } from './Keyframes';
 
 export class Ship extends GameObject implements ShipInfo {
     constructor() {
@@ -31,7 +32,29 @@ export class Ship extends GameObject implements ShipInfo {
     sensors: SensorsState;
     weapons: WeaponsState;
 
+    /** Remove waypoints that are in the past. */
+    private pruneWaypoints(currentTime: number) {
+        while (true) {
+            const firstWaypoint = this.helm.waypoints[0];
+
+            if (firstWaypoint?.time >= currentTime) {
+                this.helm.waypoints.shift();
+                continue;
+            }
+
+            break;
+        }
+    }
+
     updateMotion(currentTime: number): void {
-        throw new Error('Method not implemented.');
+        const didPrune = pruneKeyframes(this.motion, currentTime);
+
+        this.pruneWaypoints(currentTime)
+
+        // if pruned keyframes from the start, probably need to add new ones to the end.
+
+        if (shouldUpdateMotion(this, currentTime)) {
+            updateShipMotion(this, currentTime);
+        }
     }
 }

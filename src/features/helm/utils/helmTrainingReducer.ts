@@ -2,7 +2,6 @@ import { Ship } from 'src/types/Ship';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { HelmAction } from '../types/HelmState';
-import { shouldUpdatePosition, updateShipPosition } from './updateShipPosition';
 
 export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
     if (state.destroyed) {
@@ -15,7 +14,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             newState.helm = {
                 destination: null,
                 waypoints: [],
-                forcePositionUpdate: true,
+                forceMotionUpdate: true,
                 rotationalSpeed: 0.75,
                 speedWhileRotating: 0.1,
                 speed: 1,
@@ -23,9 +22,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             return newState;
             
         case 'tick': {
-            if (shouldUpdatePosition(state, action.currentTime)) {
-                updateShipPosition(state, action.currentTime);
-            }
+            state.updateMotion(action.currentTime);
             return state;
         }
 
@@ -36,11 +33,11 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
                     ...action.destination,
                     time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
                 }];
-                state.helm.forcePositionUpdate = true;
+                state.helm.forceMotionUpdate = true;
             } else {
                 state.helm.destination = null;
                 state.helm.waypoints = [];
-                state.helm.forcePositionUpdate = true;
+                state.helm.forceMotionUpdate = true;
             }
             
             return state;

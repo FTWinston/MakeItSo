@@ -4,7 +4,7 @@ import { Waypoint } from 'src/types/Waypoint';
 export interface HelmState {
     destination: Position | null;
     waypoints: Waypoint[];
-    forcePositionUpdate: boolean;
+    forceMotionUpdate: boolean;
 
     rotationalSpeed: number;
     speedWhileRotating: number;
