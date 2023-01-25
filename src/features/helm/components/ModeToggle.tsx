@@ -11,10 +11,16 @@ interface Props {
     setMode: (mode: Mode) => void;
 }
 
-const EitherButton = styled(Fab)({
+const TravelButton = styled(Fab)({
     position: 'absolute',
     right: '1em',
     bottom: '5.5em',
+})
+
+const ManeuverButton = styled(Fab)({
+    position: 'absolute',
+    right: '1em',
+    bottom: '1em',
 })
 
 export const ModeToggle: React.FC<Props> = props => {
@@ -39,13 +45,13 @@ export const ModeToggle: React.FC<Props> = props => {
                     transitionDelay: `${showTravel ? transitionDuration.exit : 0}ms`,
                 }}
             >
-                <EitherButton
+                <TravelButton
                     color="secondary"
                     aria-label={t('travel')}
                     onClick={() => props.setMode('travel')}
                 >
                     <TravelIcon />
-                </EitherButton>
+                </TravelButton>
             </ZoomTransition>
             <ZoomTransition
                 in={showManeuver}
@@ -53,13 +59,13 @@ export const ModeToggle: React.FC<Props> = props => {
                     transitionDelay: `${showManeuver ? transitionDuration.exit : 0}ms`,
                 }}
             >
-                <EitherButton
+                <ManeuverButton
                     color="primary"
                     aria-label={t('maneuver')}
                     onClick={() => props.setMode('maneuver')}
                 >
                     <ManeuverIcon />
-                </EitherButton>
+                </ManeuverButton>
             </ZoomTransition>
         </>
     );

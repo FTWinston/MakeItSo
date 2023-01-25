@@ -14,7 +14,7 @@ interface Props {
 const EitherButton = styled(Fab)({
     position: 'absolute',
     right: '1em',
-    bottom: '1em',
+    bottom: '5.5em',
 })
 
 export const StopAndFocus: React.FC<Props> = props => {
