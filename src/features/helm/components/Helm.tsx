@@ -10,6 +10,7 @@ import { Position } from 'src/types/Position';
 import { useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
+import { Mode, ModeToggle } from './ModeToggle';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -20,11 +21,15 @@ interface Props {
     setDestination: (destination: Position | null) => void;
 }
 
-const Root = styled(Page)({
+const Root = styled(
+    Page
+    , { shouldForwardProp: (prop) => prop !== 'mode' }
+)<{ mode: 'travel' | 'maneuver' }>(({ mode }) => ({
     display: 'grid',
-    gridTemplateRows: `${AppBarHeight} 1fr`,
-});
-
+    gridTemplateRows: mode === 'travel'
+        ? `${AppBarHeight} 1fr`
+        : `${AppBarHeight} 1fr 4em`,
+}));
 
 export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
@@ -33,12 +38,25 @@ export const Helm: React.FC<Props> = (props) => {
         motion: props.shipMotion
     };
 
+    const [mode, setMode] = useState<Mode>('travel');
+
     const [viewCenter, setViewCenter] = useState<Vector2D>(() => getPositionValue(props.shipMotion));
 
     const [shipVisible, setShipVisible] = useState(true);
 
+    const maneuverSelection = mode === 'maneuver'
+        ? <div>TODO: maneuver selection</div>
+        : (
+            <StopAndFocus
+                shipMoving={props.destination !== null}
+                shipVisible={shipVisible}
+                stop={() => props.setDestination(null)}
+                focus={() => setViewCenter(getPositionValue(props.shipMotion))}
+            />
+        );
+
     return (
-        <Root shipDestroyed={props.shipDestroyed}>
+        <Root shipDestroyed={props.shipDestroyed} mode={mode}>
             <HelmAppBar power={props.power} health={props.health} />
 
             <HelmMap
@@ -52,12 +70,9 @@ export const Helm: React.FC<Props> = (props) => {
                 setShipVisible={setShipVisible}
             />
 
-            <StopAndFocus
-                shipMoving={props.destination !== null}
-                shipVisible={shipVisible}
-                stop={() => props.setDestination(null)}
-                focus={() => setViewCenter(getPositionValue(props.shipMotion))}
-            />
+            {maneuverSelection}
+
+            <ModeToggle mode={mode} setMode={setMode} />
         </Root>
     );
 };

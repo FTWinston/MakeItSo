@@ -46,7 +46,8 @@ export const StopAndFocus: React.FC<Props> = props => {
                 >
                     <CenterIcon />
                 </EitherButton>
-            </ZoomTransition><ZoomTransition
+            </ZoomTransition>
+            <ZoomTransition
                 in={showStop}
                 style={{
                     transitionDelay: `${showStop ? transitionDuration.exit : 0}ms`,
