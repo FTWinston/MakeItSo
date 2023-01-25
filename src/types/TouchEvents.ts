@@ -1,9 +1,10 @@
-export interface TouchEvents {
-    onMouseDown?: (e: React.MouseEvent<Element, MouseEvent>) => void;
-    onMouseUp?: (e: React.MouseEvent<Element, MouseEvent>) => void;
-    onMouseMove?: (e: React.MouseEvent<Element, MouseEvent>) => void;
-    onMouseLeave?: (e: React.MouseEvent<Element, MouseEvent>) => void;
-    onTouchStart?: (e: React.TouchEvent<Element>) => void;
-    onTouchEnd?: (e: React.TouchEvent<Element>) => void;
-    onTouchMove?: (e: React.TouchEvent<Element>) => void;
+export interface TouchEvents<TElement extends Element = Element> {
+    onClick?: (e: React.MouseEvent<TElement>) => void;
+    onMouseDown?: (e: React.MouseEvent<TElement, MouseEvent>) => void;
+    onMouseUp?: (e: React.MouseEvent<TElement, MouseEvent>) => void;
+    onMouseMove?: (e: React.MouseEvent<TElement, MouseEvent>) => void;
+    onMouseLeave?: (e: React.MouseEvent<TElement, MouseEvent>) => void;
+    onTouchStart?: (e: React.TouchEvent<TElement>) => void;
+    onTouchEnd?: (e: React.TouchEvent<TElement>) => void;
+    onTouchMove?: (e: React.TouchEvent<TElement>) => void;
 }

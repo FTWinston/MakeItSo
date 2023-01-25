@@ -2,7 +2,7 @@ import { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect
 import { styled, SxProps } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 
-interface Props extends TouchEvents {
+interface Props extends TouchEvents<HTMLCanvasElement> {
     className?: string;
     sx?: SxProps;
     animate?: boolean;

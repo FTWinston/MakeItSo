@@ -5,5 +5,13 @@
     "travel": "Travel",
     "maneuver": "Maneuver",
     "all stop": "All Stop",
-    "focus ship": "Focus on ship"
+    "focus ship": "Focus on ship",
+    
+    "maneuver slowForward": "Slow forward",
+    "maneuver sweepLeft": "Sweep left",
+    "maneuver sweepRight": "Sweep right",
+    "maneuver hardLeft": "Hard left",
+    "maneuver hardRight": "Hard right",
+    "maneuver spinCw": "Spin clockwise",
+    "maneuver spinCcw": "Spin counter-clockwise"
 }
