@@ -16,3 +16,10 @@ export const SlowForward: Story = {
         enabled: true,
     }
 }
+
+export const SweepLeft: Story = {
+    args: {
+        ...getManeuver(ManeuverType.SweepLeft),
+        enabled: true,
+    }
+}

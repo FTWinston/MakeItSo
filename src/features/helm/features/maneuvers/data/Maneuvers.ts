@@ -1,4 +1,4 @@
-import { packedWidthRatio } from 'src/features/spacemap';
+import { horizontalHexSpacing, verticalHexSpacing } from 'src/features/spacemap';
 import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
 type ManeuverContent = Omit<ManeuverInfo, 'type'>;
@@ -17,7 +17,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }, {
             time: 2,
             val: {
-                x: packedWidthRatio * 2,
+                x: horizontalHexSpacing * 2,
                 y: 0,
                 angle: 0,
             }
@@ -26,12 +26,40 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     [ManeuverType.SweepLeft, {
         minPower: 2,
         evasion: 15,
-        motion: [] // TODO
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: 0,
+            }
+        }, {
+            time: 2,
+            val: {
+                x: horizontalHexSpacing * 1.5,
+                y: -verticalHexSpacing,
+                angle: -Math.PI / 3,
+            }
+        }]
     }],
     [ManeuverType.SweepRight, {
         minPower: 2,
         evasion: 15,
-        motion: [] // TODO
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: 0,
+            }
+        }, {
+            time: 2,
+            val: {
+                x: horizontalHexSpacing * 1.5,
+                y: verticalHexSpacing,
+                angle: Math.PI / 3,
+            }
+        }]
     }],
     [ManeuverType.HardLeft, {
         minPower: 4,

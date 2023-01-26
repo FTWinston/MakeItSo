@@ -1,16 +1,16 @@
-import { drawHexGrid, packedWidthRatio } from 'src/features/spacemap';
+import { drawHexGrid, horizontalHexSpacing } from 'src/features/spacemap';
 import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
-import { determineAngle, project } from 'src/types/Vector2D';
+import { project } from 'src/types/Vector2D';
 
 function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
     let { x: minX, y: minY } = keyframes[0].val;
     let maxX = minX;
     let maxY = minY;
 
-    const padding = packedWidthRatio * 0.5;
+    const padding = horizontalHexSpacing * 0.5;
     
     for (const keyframe of keyframes) {
         if (keyframe.val.x < minX) {
@@ -101,20 +101,18 @@ export function drawManeuver(
     ctx.beginPath();
 
     let point = motion[0].val;
-    let prevPoint = point;
     ctx.moveTo(point.x, point.y);
 
     // TODO: interpolate these keyframes.
     for (let i=1; i<motion.length; i++) {
-        prevPoint = point;
         point = motion[i].val;
         ctx.lineTo(point.x, point.y);
     }
 
     // Now draw an arrowhead.
-    const endPoint1 = project(point, determineAngle(point, prevPoint, 0) + 0.75, worldBounds.width * 0.225);
+    const endPoint1 = project(point, point.angle - Math.PI * 0.74, worldBounds.width * 0.225);
     ctx.lineTo(endPoint1.x, endPoint1.y);
-    const endPoint2 = project(point, determineAngle(point, prevPoint, 0) - 0.75, worldBounds.width * 0.225);
+    const endPoint2 = project(point, point.angle + Math.PI * 0.74, worldBounds.width * 0.225);
     ctx.moveTo(point.x, point.y);
     ctx.lineTo(endPoint2.x, endPoint2.y);
 

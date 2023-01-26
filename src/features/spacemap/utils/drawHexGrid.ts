@@ -1,7 +1,7 @@
 import { Rectangle } from 'src/types/Rectangle';
 
-export const packedWidthRatio = 1.7320508075688772;
-export const packedHeightRatio = 1.5;
+export const horizontalHexSpacing = 1.7320508075688772;
+export const verticalHexSpacing = 1.5;
 
 export function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number) {
     ctx.beginPath();
@@ -43,8 +43,8 @@ export function getClosestCellCenter(x: number, y: number, cellRadius: number) {
     }
 
     return {
-        x: packedWidthRatio * (iCol + iRow / 2) * cellRadius,
-        y: packedHeightRatio * iRow * cellRadius,
+        x: horizontalHexSpacing * (iCol + iRow / 2) * cellRadius,
+        y: verticalHexSpacing * iRow * cellRadius,
     }
 }
 
@@ -62,7 +62,7 @@ export function drawHexGrid(
     );
 
     const insetStartX = currentCell.x;
-    const outsetStartX = currentCell.x - cellRadius * packedWidthRatio / 2;
+    const outsetStartX = currentCell.x - cellRadius * horizontalHexSpacing / 2;
 
     let outset = true;
     ctx.lineWidth = lineWidth;
@@ -80,10 +80,10 @@ export function drawHexGrid(
 
             ctx.translate(-currentCell.x, -currentCell.y);
 
-            currentCell.x += packedWidthRatio * cellRadius;
+            currentCell.x += horizontalHexSpacing * cellRadius;
         }
 
-        currentCell.y += packedHeightRatio * cellRadius;
+        currentCell.y += verticalHexSpacing * cellRadius;
         currentCell.x = outset
             ? outsetStartX
             : insetStartX;
