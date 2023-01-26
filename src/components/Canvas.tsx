@@ -5,6 +5,7 @@ import { TouchEvents } from 'src/types/TouchEvents';
 interface Props extends TouchEvents<HTMLCanvasElement> {
     className?: string;
     sx?: SxProps;
+    'aria-label'?: string;
     animate?: boolean;
     boundsChanged?: (bounds: DOMRect) => void;
     draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
@@ -43,6 +44,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         animate,
         boundsChanged,
         draw,
+        'aria-label': label,
         ...interactionProps
     } = props;
 
@@ -136,7 +138,12 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
     );
 
     return (
-        <Root className={className} sx={sx} ref={outerRef}>
+        <Root
+            className={className}
+            sx={sx}
+            ref={outerRef}
+            aria-label={label}
+        >
             <Display
                 style={displaySizeStyle}
                 ref={ref}

@@ -1,3 +1,4 @@
+import { packedWidthRatio } from 'src/features/spacemap';
 import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
 type ManeuverContent = Omit<ManeuverInfo, 'type'>;
@@ -16,7 +17,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }, {
             time: 2,
             val: {
-                x: 2,
+                x: packedWidthRatio * 2,
                 y: 0,
                 angle: 0,
             }

@@ -68,3 +68,10 @@ export function combineAngles(angle1: number, angle2: number) {
 
     return clampAngle(midAngle);
 }
+
+export function project(fromPos: Vector2D, angle: number, distance: number) {
+    return {
+        x: fromPos.x + distance * Math.cos(angle),
+        y: fromPos.y + distance * Math.sin(angle),
+    }
+}

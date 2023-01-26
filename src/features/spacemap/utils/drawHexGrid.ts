@@ -1,7 +1,7 @@
 import { Rectangle } from 'src/types/Rectangle';
 
-const packedWidthRatio = 1.7320508075688772;
-const packedHeightRatio = 1.5;
+export const packedWidthRatio = 1.7320508075688772;
+export const packedHeightRatio = 1.5;
 
 export function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints: number) {
     ctx.beginPath();
@@ -21,9 +21,6 @@ export function drawHex(ctx: CanvasRenderingContext2D, radius: number, numPoints
 }
 
 export function getClosestCellCenter(x: number, y: number, cellRadius: number) {
-    x -= cellRadius;
-    y -= cellRadius;
-
     const fCol = (x * Math.sqrt(3) - y) / 3 / cellRadius;
     const fRow = y * 2 / 3 / cellRadius;
     const fThirdCoord = -fCol - fRow;
@@ -46,8 +43,8 @@ export function getClosestCellCenter(x: number, y: number, cellRadius: number) {
     }
 
     return {
-        x: packedWidthRatio * (iCol + iRow / 2) * cellRadius + cellRadius,
-        y: packedHeightRatio * iRow * cellRadius + cellRadius,
+        x: packedWidthRatio * (iCol + iRow / 2) * cellRadius,
+        y: packedHeightRatio * iRow * cellRadius,
     }
 }
 

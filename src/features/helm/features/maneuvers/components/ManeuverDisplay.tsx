@@ -21,12 +21,13 @@ export const ManeuverDisplay: React.FC<Props> = props => {
     const { t } = useTranslation('helm');
     
     return (
-        <Tooltip title={t(`maneuver ${props.type}`)}>
+        //<Tooltip title={t(`maneuver ${props.type}`)}>
             <SizedCanvas
+                aria-label={t(`maneuver ${props.type}`)}
                 ref={canvas}
-                draw={ctx => drawManeuver(ctx, props.motion, props.minPower, props.enabled)}
+                draw={(ctx, bounds) => drawManeuver(ctx, bounds, props.motion, props.minPower, props.enabled)}
                 onClick={props.enabled ? props.onClick : undefined}
             />
-        </Tooltip>
+        //</Tooltip>
     );
 }
