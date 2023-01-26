@@ -108,14 +108,15 @@ export function drawManeuver(
         point = motion[i].val;
         ctx.lineTo(point.x, point.y);
     }
+    ctx.stroke();
 
     // Now draw an arrowhead.
+    ctx.beginPath();
     const endPoint1 = project(point, point.angle - Math.PI * 0.74, worldBounds.width * 0.225);
-    ctx.lineTo(endPoint1.x, endPoint1.y);
+    ctx.moveTo(endPoint1.x, endPoint1.y);
     const endPoint2 = project(point, point.angle + Math.PI * 0.74, worldBounds.width * 0.225);
-    ctx.moveTo(point.x, point.y);
+    ctx.lineTo(point.x, point.y);
     ctx.lineTo(endPoint2.x, endPoint2.y);
-
     ctx.stroke();
 
     if (!enabled) {
