@@ -1,5 +1,5 @@
 import { drawHexGrid, horizontalHexSpacing } from 'src/features/spacemap';
-import { Keyframes } from 'src/types/Keyframes';
+import { getEndTime, getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
@@ -86,36 +86,41 @@ export function drawManeuver(
     minPower: PowerLevel,
     enabled: boolean
 ) {
-    if (!enabled) {
-        ctx.globalAlpha = 0.6;
-    }
-
     const worldBounds = getSquareBounds(motion);
     const pixelSize = fitCanvasToBounds(ctx, bounds, worldBounds);
 
     drawHexGrid(ctx, worldBounds, 1, pixelSize, '#333');
 
+    if (!enabled) {
+        ctx.globalAlpha = 0.6;
+    }
+
     ctx.strokeStyle = pickColor(minPower, enabled);
     ctx.lineWidth = 0.1;
 
+    const startPoint = motion[0].val;
+    const { val: endPoint, time: endTime } = motion[motion.length - 1];
+    
+    // Interpolate from startPoint to endPoint
     ctx.beginPath();
+    const timeStep = (endTime /*- motion[0].time*/) / 50;    
+    ctx.moveTo(startPoint.x, startPoint.y);
 
-    let point = motion[0].val;
-    ctx.moveTo(point.x, point.y);
-
-    // TODO: interpolate these keyframes.
-    for (let i=1; i<motion.length; i++) {
-        point = motion[i].val;
+    for (let t = timeStep; t < endTime; t += timeStep) {
+        const point = getVectorValue(motion, t);
         ctx.lineTo(point.x, point.y);
     }
+    ctx.lineTo(endPoint.x, endPoint.y);
     ctx.stroke();
+
+
 
     // Now draw an arrowhead.
     ctx.beginPath();
-    const endPoint1 = project(point, point.angle - Math.PI * 0.74, worldBounds.width * 0.225);
+    const endPoint1 = project(endPoint, endPoint.angle - Math.PI * 0.74, worldBounds.width * 0.225);
     ctx.moveTo(endPoint1.x, endPoint1.y);
-    const endPoint2 = project(point, point.angle + Math.PI * 0.74, worldBounds.width * 0.225);
-    ctx.lineTo(point.x, point.y);
+    const endPoint2 = project(endPoint, endPoint.angle + Math.PI * 0.74, worldBounds.width * 0.225);
+    ctx.lineTo(endPoint.x, endPoint.y);
     ctx.lineTo(endPoint2.x, endPoint2.y);
     ctx.stroke();
 

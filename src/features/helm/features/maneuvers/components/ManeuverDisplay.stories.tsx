@@ -23,3 +23,10 @@ export const SweepLeft: Story = {
         enabled: true,
     }
 }
+
+export const SweepRight: Story = {
+    args: {
+        ...getManeuver(ManeuverType.SweepRight),
+        enabled: false,
+    }
+}

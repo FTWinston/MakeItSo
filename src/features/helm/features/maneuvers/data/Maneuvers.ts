@@ -3,6 +3,15 @@ import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
 type ManeuverContent = Omit<ManeuverInfo, 'type'>;
 
+// These all assume that 0 is to the right
+const angleRight = 0;
+const angleUpRight = -Math.PI / 3;
+const angleDownRight = Math.PI / 3;
+const angleUpLeft = -2 * Math.PI / 3;
+const angleDownLeft = 2 * Math.PI / 3;
+const angleLeft = Math.PI;
+
+
 const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     [ManeuverType.SlowForward, {
         minPower: 1,
@@ -12,14 +21,14 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
             val: {
                 x: 0,
                 y: 0,
-                angle: 0,
+                angle: angleRight,
             }
         }, {
             time: 2,
             val: {
                 x: horizontalHexSpacing * 2,
                 y: 0,
-                angle: 0,
+                angle: angleRight,
             }
         }]
     }],
@@ -31,14 +40,21 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
             val: {
                 x: 0,
                 y: 0,
-                angle: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: 1,
+            val: {
+                x: horizontalHexSpacing * 0.89,
+                y: -verticalHexSpacing * 0.23,
+                angle: (angleRight + angleUpRight) / 2,
             }
         }, {
             time: 2,
             val: {
                 x: horizontalHexSpacing * 1.5,
                 y: -verticalHexSpacing,
-                angle: -Math.PI / 3,
+                angle: angleUpRight,
             }
         }]
     }],
@@ -50,14 +66,21 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
             val: {
                 x: 0,
                 y: 0,
-                angle: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: 1,
+            val: {
+                x: horizontalHexSpacing * 0.89,
+                y: verticalHexSpacing * 0.23,
+                angle: (angleRight + angleUpRight) / 2,
             }
         }, {
             time: 2,
             val: {
                 x: horizontalHexSpacing * 1.5,
                 y: verticalHexSpacing,
-                angle: Math.PI / 3,
+                angle: angleDownRight,
             }
         }]
     }],
