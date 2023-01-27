@@ -1,5 +1,6 @@
 import { Position } from 'src/types/Position';
 import { Waypoint } from 'src/types/Waypoint';
+import { ManeuverChoice, ManeuverType } from '../features/maneuvers';
 
 export interface HelmState {
     destination: Position | null;
@@ -9,6 +10,10 @@ export interface HelmState {
     rotationalSpeed: number;
     speedWhileRotating: number;
     speed: number;
+
+    maneuverChoice: ManeuverChoice;
+    manueverDrawPile: ManeuverChoice[];
+    manueverDiscardPile: ManeuverChoice[];
 }
 
 export type HelmAction = {
@@ -19,4 +24,7 @@ export type HelmAction = {
 } | {
     type: 'set destination';
     destination: Position | null;
+} | {
+    type: 'maneuver';
+    choice: ManeuverType;
 };

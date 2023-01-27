@@ -1,11 +1,11 @@
 import { Card, styled } from 'src/lib/mui';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { getManeuver } from '../data/Maneuvers';
-import { ManeuverType } from '../types/ManeuverType';
+import { ManeuverChoice, ManeuverType } from '../types/ManeuverType';
 import { ManeuverDisplay } from './ManeuverDisplay';
 
 interface Props {
-    maneuvers: [ManeuverType, ManeuverType, ManeuverType];
+    maneuvers: ManeuverChoice;
     currentPower: PowerLevel;
     selectManeuver: (type: ManeuverType) => void;
 }
@@ -13,9 +13,9 @@ interface Props {
 const CardRoot = styled(Card)(({ theme }) => ({
     width: '15em',
     height: '4em',
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr 1fr',
-    gridTemplateRows: '1fr',
+    display: 'flex',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
     borderWidth: '0.1em',
     backgroundColor: 'background.paper',
     borderColor: theme.palette.divider,

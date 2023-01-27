@@ -1,5 +1,5 @@
 import { drawHexGrid, horizontalHexSpacing } from 'src/features/spacemap';
-import { getEndTime, getVectorValue, Keyframes } from 'src/types/Keyframes';
+import { getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
@@ -96,7 +96,7 @@ export function drawManeuver(
     }
 
     ctx.strokeStyle = pickColor(minPower, enabled);
-    ctx.lineWidth = 0.1;
+    ctx.lineWidth = 0.15;
 
     const startPoint = motion[0].val;
     const { val: endPoint, time: endTime } = motion[motion.length - 1];

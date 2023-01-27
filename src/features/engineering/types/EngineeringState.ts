@@ -10,6 +10,7 @@ export interface EngineeringState {
     handCards: EngineeringCard[];
     maxHandSize: number;
     choiceCards: EngineeringCard[];
+    // TODO: draw pile and discard pile. Reshuffle!
     numChoices: number;
     choiceProgress?: TimeSpan;
     nextCardId: number;

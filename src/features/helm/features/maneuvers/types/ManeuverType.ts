@@ -18,3 +18,5 @@ export interface ManeuverInfo {
     evasion: number;
     motion: Keyframes<Position>;
 }
+
+export type ManeuverChoice = [ManeuverType, ManeuverType, ManeuverType];

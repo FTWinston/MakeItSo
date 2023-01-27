@@ -4,7 +4,7 @@ import { ManeuverType } from '../types/ManeuverType';
 import { ManeuverDisplay } from './ManeuverDisplay';
 
 export default {
-    title: 'Helm/Maneuvers/ManeuverDisplay',
+    title: 'Helm/Maneuvers/Maneuver Display',
     component: ManeuverDisplay,
 };
 

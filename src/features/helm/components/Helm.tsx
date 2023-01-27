@@ -11,12 +11,14 @@ import { useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
+import { ManeuverCard, ManeuverChoice } from '../features/maneuvers';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
     shipMotion: Keyframes<Position>;
     power: PowerLevel;
     health: number;
+    maneuverChoice: ManeuverChoice;
     destination: Position | null;
     setDestination: (destination: Position | null) => void;
 }
@@ -45,7 +47,13 @@ export const Helm: React.FC<Props> = (props) => {
     const [shipVisible, setShipVisible] = useState(true);
 
     const maneuverSelection = mode === 'maneuver'
-        ? <div>TODO: maneuver selection</div>
+        ? (
+            <ManeuverCard
+                currentPower={props.power}
+                maneuvers={props.maneuverChoice}
+                selectManeuver={() => {}}
+            />
+        )
         : (
             <StopAndFocus
                 shipMoving={props.destination !== null}

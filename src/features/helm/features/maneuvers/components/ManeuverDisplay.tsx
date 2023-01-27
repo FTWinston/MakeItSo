@@ -10,10 +10,14 @@ interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower'> {
     onClick: () => void;
 }
 
-const SizedCanvas = styled(Canvas)({
+const SizedCanvas = styled(Canvas)<{ enabled: boolean }>(({ enabled }) => ({
     width: '3.5em',
     height: '3.5em',
-});
+    borderStyle: 'solid',
+    borderWidth: '0.05em',
+    borderRadius: '0.1em',
+    borderColor: enabled ? '#ccc' : '#666',
+}));
 
 export const ManeuverDisplay: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
@@ -23,6 +27,7 @@ export const ManeuverDisplay: React.FC<Props> = props => {
     return (
         //<Tooltip title={t(`maneuver ${props.type}`)}>
             <SizedCanvas
+                enabled={props.enabled}
                 aria-label={t(`maneuver ${props.type}`)}
                 ref={canvas}
                 draw={(ctx, bounds) => drawManeuver(ctx, bounds, props.motion, props.minPower, props.enabled)}
