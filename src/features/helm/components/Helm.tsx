@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
-import { ManeuverCard, ManeuverChoice } from '../features/maneuvers';
+import { ManeuverCard, ManeuverChoice, maneuverCardHeight } from '../features/maneuvers';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -30,7 +30,7 @@ const Root = styled(
     display: 'grid',
     gridTemplateRows: mode === 'travel'
         ? `${AppBarHeight} 1fr`
-        : `${AppBarHeight} 1fr 4em`,
+        : `${AppBarHeight} 1fr ${maneuverCardHeight}`,
 }));
 
 export const Helm: React.FC<Props> = (props) => {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Card, styled } from 'src/lib/mui';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { getManeuver } from '../data/Maneuvers';
@@ -10,14 +11,18 @@ interface Props {
     selectManeuver: (type: ManeuverType) => void;
 }
 
+export const maneuverCardHeight = '4.4em';
+
 const CardRoot = styled(Card)(({ theme }) => ({
-    width: '15em',
-    height: '4em',
+    width: '16em',
+    height: maneuverCardHeight,
+    padding: '0.4em',
+    gap: '0.4em',
     display: 'flex',
     justifyContent: 'space-evenly',
     alignItems: 'center',
     borderWidth: '0.1em',
-    backgroundColor: 'background.paper',
+    backgroundColor: '#282828',
     borderColor: theme.palette.divider,
     '&:hover': {
         borderColor: theme.palette.grey,
@@ -41,7 +46,7 @@ export const ManeuverCard: React.FC<Props> = props => {
         });
 
     return (
-        <CardRoot>
+        <CardRoot variant="outlined">
             {maneuvers}
         </CardRoot>
     );

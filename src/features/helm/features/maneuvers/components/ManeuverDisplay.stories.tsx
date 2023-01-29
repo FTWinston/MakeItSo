@@ -26,7 +26,7 @@ export const SweepLeft: Story = {
 
 export const SweepRight: Story = {
     args: {
-        ...getManeuver(ManeuverType.SweepRight),
+        ...getManeuver(ManeuverType.HardRight),
         enabled: false,
     }
 }

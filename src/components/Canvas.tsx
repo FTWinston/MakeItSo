@@ -1,4 +1,4 @@
-import { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect } from 'react';
+import { useRef, useEffect, forwardRef, useState, CSSProperties, useLayoutEffect, PropsWithChildren } from 'react';
 import { styled, SxProps } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 
@@ -15,6 +15,10 @@ const defaultBounds = new DOMRect(0, 0, 1, 1);
 
 const Root = styled('div')({
     position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
 });
 
 const Display = styled('canvas')({
@@ -26,7 +30,7 @@ const Display = styled('canvas')({
     touchAction: 'none', // This is wanted for a pannable canvas, but do we want it on all of them?
 });
 
-export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
+export const Canvas = forwardRef<HTMLCanvasElement, PropsWithChildren<Props>>((props, ref) => {
     const outerRef = useRef<HTMLDivElement>(null);
     let canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -149,6 +153,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
                 ref={ref}
                 {...interactionProps}
             />
+            {props.children}
         </Root>
     );
 })

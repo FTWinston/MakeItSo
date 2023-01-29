@@ -89,10 +89,14 @@ export function drawManeuver(
     const worldBounds = getSquareBounds(motion);
     const pixelSize = fitCanvasToBounds(ctx, bounds, worldBounds);
 
+    if (!enabled) {
+        ctx.globalAlpha = 0.5;
+    }
+    
     drawHexGrid(ctx, worldBounds, 1, pixelSize, '#333');
 
     if (!enabled) {
-        ctx.globalAlpha = 0.6;
+        ctx.globalAlpha = 0.2;
     }
 
     ctx.strokeStyle = pickColor(minPower, enabled);
