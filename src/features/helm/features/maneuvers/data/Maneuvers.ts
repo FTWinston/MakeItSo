@@ -87,12 +87,54 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     [ManeuverType.HardLeft, {
         minPower: 4,
         evasion: 30,
-        motion: [] // TODO
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: 1,
+            val: {
+                x: horizontalHexSpacing * 0.8,
+                y: -verticalHexSpacing * 0.25,
+                angle: angleUpRight,
+            }
+        }, {
+            time: 2,
+            val: {
+                x: horizontalHexSpacing * 0.5,
+                y: -verticalHexSpacing,
+                angle: angleUpLeft,
+            }
+        }]
     }],
     [ManeuverType.HardRight, {
         minPower: 4,
         evasion: 30,
-        motion: [] // TODO
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: 1,
+            val: {
+                x: horizontalHexSpacing * 0.8,
+                y: verticalHexSpacing * 0.25,
+                angle: angleDownRight,
+            }
+        }, {
+            time: 2,
+            val: {
+                x: horizontalHexSpacing * 0.5,
+                y: verticalHexSpacing,
+                angle: angleDownLeft,
+            }
+        }]
     }],
     [ManeuverType.ClockwiseSpin, {
         minPower: 3,

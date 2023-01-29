@@ -8,11 +8,11 @@ export const getDefaultHelmState: () => HelmState = () => ({
     rotationalSpeed: 0.75,
     speedWhileRotating: 0.1,
     speed: 1,
-    maneuverChoice: [ManeuverType.SlowForward, ManeuverType.SweepLeft, ManeuverType.SweepRight],
+    maneuverChoice: [ManeuverType.SlowForward, ManeuverType.SweepLeft, ManeuverType.SweepRight, ManeuverType.HardLeft],
     manueverDrawPile: [
-        [ManeuverType.SweepLeft, ManeuverType.SlowForward, ManeuverType.SweepRight],
-        [ManeuverType.SweepRight, ManeuverType.SweepLeft, ManeuverType.SlowForward],
-        [ManeuverType.SweepRight, ManeuverType.SlowForward, ManeuverType.SweepLeft],
+        [ManeuverType.SweepLeft, ManeuverType.SlowForward, ManeuverType.SweepRight, ManeuverType.HardRight],
+        [ManeuverType.SweepLeft, ManeuverType.SweepRight, ManeuverType.HardLeft, ManeuverType.HardRight],
+        [ManeuverType.SweepRight, ManeuverType.SlowForward, ManeuverType.HardLeft, ManeuverType.HardRight],
     ],
     manueverDiscardPile: []
 });

@@ -19,4 +19,4 @@ export interface ManeuverInfo {
     motion: Keyframes<Position>;
 }
 
-export type ManeuverChoice = [ManeuverType, ManeuverType, ManeuverType];
+export type ManeuverChoice = [ManeuverType, ManeuverType, ManeuverType, ManeuverType];
