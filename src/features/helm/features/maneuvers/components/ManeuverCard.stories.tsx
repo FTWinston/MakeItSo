@@ -11,7 +11,10 @@ type Story = StoryObj<typeof ManeuverCard>;
 
 export const SimpleCard: Story = {
     args: {
-        maneuvers: [ManeuverType.SlowForward, ManeuverType.SweepLeft, ManeuverType.SweepRight, ManeuverType.HardLeft],
+        maneuvers: {
+            id: 1,
+            options: [ManeuverType.SlowForward, ManeuverType.SweepLeft, ManeuverType.SweepRight, ManeuverType.HardLeft],
+        },
         currentPower: 2,
     }
 }

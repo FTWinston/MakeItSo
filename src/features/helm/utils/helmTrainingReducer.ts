@@ -39,12 +39,12 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
         }
 
         case 'maneuver': {
-            if (!state.helm.maneuverChoice.includes(action.choice)) {
+            if (!state.helm.maneuverChoice.options.includes(action.choice)) {
                 return state;
             }
 
             const maneuver = getManeuver(action.choice);
-            if (state.systems.get(ShipSystem.Engines).power <= maneuver.minPower) {
+            if (state.systems.get(ShipSystem.Engines).power < maneuver.minPower) {
                 return state;
             }
 

@@ -7,11 +7,11 @@ import { HelmMap } from './HelmMap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Keyframes, getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
-import { ManeuverCard, ManeuverChoice, maneuverCardHeight, ManeuverType } from '../features/maneuvers';
+import { ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -19,6 +19,7 @@ interface Props {
     power: PowerLevel;
     health: number;
     maneuverChoice: ManeuverChoice;
+    maneuver: (type: ManeuverType) => void;
     destination: Position | null;
     setDestination: (destination: Position | null) => void;
 }
@@ -50,29 +51,14 @@ export const Helm: React.FC<Props> = (props) => {
 
     const [shipVisible, setShipVisible] = useState(true);
 
-    // TODO: don't store this here, it goes in game state. Use this for preview tho.
-    const [nextManeuver, setNextManeuver] = useState<ManeuverType | null>(null);
+    const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
 
-    const maneuverSelection = (
-        <SlideTransition
-            in={mode === 'maneuver' && nextManeuver === null}
-            direction="up"
-        >
-            <ZoomTransition /* TODO: this "out-only-when-selected" transition aint working */
-                in={mode === 'maneuver' && nextManeuver !== null}
-                appear={false}
-            >
-                <CardWrapper>
-                    <ManeuverCard
-                        currentPower={props.power}
-                        maneuvers={props.maneuverChoice}
-                        selectManeuver={type => { console.log(`select maneuver ${type}`); setNextManeuver(type); }}
-                        previewManeuver={type => { console.log(`preview maneuver ${type}`)}}
-                    />
-                </CardWrapper>
-            </ZoomTransition>
-        </SlideTransition>
-    );
+    const prevManeuver = useRef(props.maneuverChoice.id);
+    
+    const maneuverChanged = props.maneuverChoice.id !== prevManeuver.current;
+    if (maneuverChanged) {
+        prevManeuver.current = props.maneuverChoice.id;
+    }
 
     const extraTravelButtons = mode === 'travel'
         ? (
@@ -100,9 +86,34 @@ export const Helm: React.FC<Props> = (props) => {
                 setShipVisible={setShipVisible}
             />
 
-            {maneuverSelection}
+            <SlideTransition
+                in={mode === 'maneuver'}
+                direction="up"
+                appear={false}
+                exit={true}
+            >
+                <CardWrapper>
+                    <ZoomTransition
+                        in={true}
+                        appear={true}
+                        enter={true}
+                        exit={false}
+                        key={props.maneuverChoice.id}
+                    >
+                        <div>
+                            <ManeuverCard
+                                currentPower={props.power}
+                                maneuvers={props.maneuverChoice}
+                                selectManeuver={props.maneuver}
+                                previewManeuver={setPreviewManeuver}
+                            />
+                        </div>
+                    </ZoomTransition>
+                </CardWrapper>
+            </SlideTransition>
 
             {extraTravelButtons}
+
             <ModeToggle mode={mode} setMode={setMode} />
         </Root>
     );

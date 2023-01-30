@@ -44,7 +44,7 @@ const Prompt = styled(Typography)(({ theme }) => ({
 export const ManeuverCard: React.FC<Props> = props => {
     const { t } = useTranslation('helm');
     
-    const maneuvers = props.maneuvers
+    const maneuvers = props.maneuvers.options
         .map((type, index) => {
             const maneuver = getManeuver(type);
             return (
