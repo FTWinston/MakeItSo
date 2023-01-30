@@ -85,7 +85,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }]
     }],
     [ManeuverType.HardLeft, {
-        minPower: 4,
+        minPower: 3,
         evasion: 30,
         motion: [{
             time: 0,
@@ -111,7 +111,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }]
     }],
     [ManeuverType.HardRight, {
-        minPower: 4,
+        minPower: 3,
         evasion: 30,
         motion: [{
             time: 0,

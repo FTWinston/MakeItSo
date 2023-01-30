@@ -134,7 +134,6 @@ export const CardChoice: React.FC<Props> = props => {
                                 appear={false}
                                 direction="left"
                                 unmountOnExit
-                                key={card.id}
                             >
                                 <CardWrapper
                                     selected={card === selected}

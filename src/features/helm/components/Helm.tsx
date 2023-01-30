@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { styled } from 'src/lib/mui';
+import { Box, SlideTransition, styled, ZoomTransition } from 'src/lib/mui';
 import { AppBarHeight, Page } from 'src/features/layout';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
@@ -11,7 +11,7 @@ import { useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
-import { ManeuverCard, ManeuverChoice, maneuverCardHeight } from '../features/maneuvers';
+import { ManeuverCard, ManeuverChoice, maneuverCardHeight, ManeuverType } from '../features/maneuvers';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -28,10 +28,14 @@ const Root = styled(
     , { shouldForwardProp: (prop) => prop !== 'mode' }
 )<{ mode: 'travel' | 'maneuver' }>(({ mode }) => ({
     display: 'grid',
-    gridTemplateRows: mode === 'travel'
-        ? `${AppBarHeight} 1fr`
-        : `${AppBarHeight} 1fr ${maneuverCardHeight}`,
+    gridTemplateRows: `${AppBarHeight} 1fr`,
 }));
+
+const CardWrapper = styled(Box)({
+    position: 'absolute',
+    left: '0.25em',
+    bottom: '0.25em',
+})
 
 export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
@@ -46,22 +50,40 @@ export const Helm: React.FC<Props> = (props) => {
 
     const [shipVisible, setShipVisible] = useState(true);
 
-    const maneuverSelection = mode === 'maneuver'
+    // TODO: don't store this here, it goes in game state. Use this for preview tho.
+    const [nextManeuver, setNextManeuver] = useState<ManeuverType | null>(null);
+
+    const maneuverSelection = (
+        <SlideTransition
+            in={mode === 'maneuver' && nextManeuver === null}
+            direction="up"
+        >
+            <ZoomTransition /* TODO: this "out-only-when-selected" transition aint working */
+                in={mode === 'maneuver' && nextManeuver !== null}
+                appear={false}
+            >
+                <CardWrapper>
+                    <ManeuverCard
+                        currentPower={props.power}
+                        maneuvers={props.maneuverChoice}
+                        selectManeuver={type => { console.log(`select maneuver ${type}`); setNextManeuver(type); }}
+                        previewManeuver={type => { console.log(`preview maneuver ${type}`)}}
+                    />
+                </CardWrapper>
+            </ZoomTransition>
+        </SlideTransition>
+    );
+
+    const extraTravelButtons = mode === 'travel'
         ? (
-            <ManeuverCard
-                currentPower={props.power}
-                maneuvers={props.maneuverChoice}
-                selectManeuver={() => {}}
-            />
-        )
-        : (
             <StopAndFocus
                 shipMoving={props.destination !== null}
                 shipVisible={shipVisible}
                 stop={() => props.setDestination(null)}
                 focus={() => setViewCenter(getPositionValue(props.shipMotion))}
             />
-        );
+        )
+        : undefined;
 
     return (
         <Root shipDestroyed={props.shipDestroyed} mode={mode}>
@@ -80,6 +102,7 @@ export const Helm: React.FC<Props> = (props) => {
 
             {maneuverSelection}
 
+            {extraTravelButtons}
             <ModeToggle mode={mode} setMode={setMode} />
         </Root>
     );

@@ -65,11 +65,11 @@ function fitCanvasToBounds(
     return 1 / scale;
 }
 
-function pickColor(minPower: PowerLevel, enabled: boolean) {
+export function pickColor(minPower: PowerLevel, enabled: boolean) {
     switch (minPower) {
         case 0:
         case 1:
-            return '#757575';
+            return '#999';
         case 2:
             return '#1e88e5';
         case 3:

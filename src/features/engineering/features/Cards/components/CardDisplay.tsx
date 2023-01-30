@@ -20,7 +20,7 @@ interface RootProps {
     palette: MuiColor;
 }
 
-const CardRoot = styled(Card    
+const CardRoot = styled(Card
     , { shouldForwardProp: (prop) => prop !== 'palette' }
 )<RootProps>(({ palette }) => ({
     width: cardWidth,
