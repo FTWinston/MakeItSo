@@ -13,9 +13,7 @@ export function vectorsEqual(v1: Vector2D, v2: Vector2D) {
 }
 
 export function distanceSq(v1: Vector2D, v2: Vector2D) {
-    const dx = v1.x - v2.x;
-    const dy = v1.y - v2.y;
-    return dx * dx + dy * dy;
+    return getMagnitudeSq(v1.x - v2.x, v1.y - v2.y);
 }
 
 export function distance(v1: Vector2D, v2: Vector2D) {
@@ -31,16 +29,28 @@ export function unit(v1: Vector2D, v2: Vector2D) {
     };
 }
 
+function getMagnitudeSq(dx: number, dy: number) {
+    return dx * dx + dy * dy;
+}
+
+function getMagnitude(dx: number, dy: number) {
+    return Math.sqrt(getMagnitudeSq(dx, dy));
+}
+
+function getAngle(dx: number, dy: number) {
+    return Math.atan2(dy, dx);
+}
+
 export function determineAngle(fromPos: Vector2D, toPos: Vector2D, valueIfEqual: number) {
     return vectorsEqual(fromPos, toPos)
         ? valueIfEqual
-        : Math.atan2(toPos.y - fromPos.y, toPos.x - fromPos.x);
+        : getAngle(toPos.x - fromPos.x, toPos.y - fromPos.y);
 }
 
 export function determineMidAngle(fromPos: Vector2D, midPos: Vector2D, endPos: Vector2D, valueIfEqual: number) {
     const firstAngle = determineAngle(fromPos, midPos, valueIfEqual);
     const secondAngle = determineAngle(midPos, endPos, valueIfEqual);
-    return combineAngles(firstAngle, secondAngle);
+    return getMidAngle(firstAngle, secondAngle);
 }
 
 export function clampAngle(angle: number) {
@@ -55,7 +65,7 @@ export function clampAngle(angle: number) {
     return angle;
 }
 
-export function combineAngles(angle1: number, angle2: number) {
+function getMidAngle(angle1: number, angle2: number) {
     if (angle2 < angle1) {
         [angle1, angle2] = [angle2, angle1];
     }
@@ -69,9 +79,15 @@ export function combineAngles(angle1: number, angle2: number) {
     return clampAngle(midAngle);
 }
 
-export function project(fromPos: Vector2D, angle: number, distance: number) {
+export function polarToCartesian(angle: number, distance: number) {
     return {
-        x: fromPos.x + distance * Math.cos(angle),
-        y: fromPos.y + distance * Math.sin(angle),
+        x: distance * Math.cos(angle),
+        y: distance * Math.sin(angle),
     }
+}
+
+export function rotatePolar(fromPos: Vector2D, rotateAngle: number) {
+    const polarAngle = getAngle(fromPos.x, fromPos.y);
+    const distance = getMagnitude(fromPos.x, fromPos.y);
+    return polarToCartesian(polarAngle + rotateAngle, distance);
 }

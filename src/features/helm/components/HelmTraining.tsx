@@ -32,6 +32,7 @@ export const HelmTraining: React.FC<Props> = (props) => {
             health={health}
             shipMotion={state.motion}
             shipDestroyed={state.destroyed}
+            maneuvers={state.helm.maneuvers}
             maneuverChoice={state.helm.maneuverChoice}
             setDestination={destination => dispatch({ type: 'set destination', destination })}
             maneuver={choice => dispatch({ type: 'maneuver', choice })}

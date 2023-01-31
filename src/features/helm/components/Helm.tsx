@@ -12,12 +12,14 @@ import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
 import { ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
+import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
     shipMotion: Keyframes<Position>;
     power: PowerLevel;
     health: number;
+    maneuvers: ManeuverInfo[];
     maneuverChoice: ManeuverChoice;
     maneuver: (type: ManeuverType) => void;
     destination: Position | null;

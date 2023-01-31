@@ -1,4 +1,6 @@
 import { horizontalHexSpacing, verticalHexSpacing } from 'src/features/spacemap';
+import { Keyframes } from 'src/types/Keyframes';
+import { Position } from 'src/types/Position';
 import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
 type ManeuverContent = Omit<ManeuverInfo, 'type'>;

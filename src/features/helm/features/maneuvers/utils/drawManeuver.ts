@@ -3,7 +3,7 @@ import { getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
-import { project } from 'src/types/Vector2D';
+import { polarToCartesian } from 'src/types/Vector2D';
 
 function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
     let { x: minX, y: minY } = keyframes[0].val;
@@ -102,30 +102,28 @@ export function drawManeuver(
     ctx.strokeStyle = pickColor(minPower, enabled);
     ctx.lineWidth = 0.15;
 
-    const startPoint = motion[0].val;
+    const { val: startPoint, time: startTime } = motion[0];
     const { val: endPoint, time: endTime } = motion[motion.length - 1];
     
     // Interpolate from startPoint to endPoint
     ctx.beginPath();
-    const timeStep = (endTime /*- motion[0].time*/) / 50;    
+    const timeStep = (endTime - startTime) / 50;    
     ctx.moveTo(startPoint.x, startPoint.y);
 
-    for (let t = timeStep; t < endTime; t += timeStep) {
+    for (let t = startTime + timeStep; t < endTime; t += timeStep) {
         const point = getVectorValue(motion, t);
         ctx.lineTo(point.x, point.y);
     }
     ctx.lineTo(endPoint.x, endPoint.y);
     ctx.stroke();
 
-
-
     // Now draw an arrowhead.
     ctx.beginPath();
-    const endPoint1 = project(endPoint, endPoint.angle - Math.PI * 0.74, worldBounds.width * 0.225);
-    ctx.moveTo(endPoint1.x, endPoint1.y);
-    const endPoint2 = project(endPoint, endPoint.angle + Math.PI * 0.74, worldBounds.width * 0.225);
+    const endOffset1 = polarToCartesian(endPoint.angle - Math.PI * 0.74, worldBounds.width * 0.225);
+    ctx.moveTo(endPoint.x + endOffset1.x, endPoint.y + endOffset1.y);
+    const endOffset2 = polarToCartesian(endPoint.angle + Math.PI * 0.74, worldBounds.width * 0.225);
     ctx.lineTo(endPoint.x, endPoint.y);
-    ctx.lineTo(endPoint2.x, endPoint2.y);
+    ctx.lineTo(endPoint.x + endOffset2.x, endPoint.y + endOffset2.y);
     ctx.stroke();
 
     if (!enabled) {

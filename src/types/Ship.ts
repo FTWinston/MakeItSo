@@ -46,10 +46,25 @@ export class Ship extends GameObject implements ShipInfo {
         }
     }
 
+    private pruneManeuvers(currentTime: number) {
+        while (this.helm.maneuvers.length > 0) {
+            const firstManeuverKeyframes = this.helm.maneuvers[0].motion;
+            const lastKeyframe = firstManeuverKeyframes[firstManeuverKeyframes.length - 1];
+
+            if (lastKeyframe.time >= currentTime) {
+                this.helm.maneuvers.shift();
+                continue;
+            }
+
+            break;
+        }
+    }
+
     updateMotion(currentTime: number): void {
         const didPrune = pruneKeyframes(this.motion, currentTime);
 
-        this.pruneWaypoints(currentTime)
+        this.pruneWaypoints(currentTime);
+        this.pruneManeuvers(currentTime);
 
         // if pruned keyframes from the start, probably need to add new ones to the end.
 
