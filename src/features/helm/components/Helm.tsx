@@ -5,9 +5,9 @@ import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
-import { Keyframes, getPositionValue } from 'src/types/Keyframes';
+import { Keyframes, getPositionValue, getLastFrame } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
@@ -62,6 +62,15 @@ export const Helm: React.FC<Props> = (props) => {
         prevManeuver.current = props.maneuverChoice.id;
     }
 
+    // In maneuver mode, center the view on the end of the first maneuver.
+    const firstManeuver = props.maneuvers[0];
+    const currentMoveEndPosition = firstManeuver ? getLastFrame(firstManeuver.motion) : getLastFrame(props.shipMotion);
+    useEffect(() => {
+        if (currentMoveEndPosition && mode === 'maneuver') {
+            setViewCenter(currentMoveEndPosition.val);
+        }
+    }, [currentMoveEndPosition, mode])
+
     const extraTravelButtons = mode === 'travel'
         ? (
             <StopAndFocus
@@ -79,7 +88,7 @@ export const Helm: React.FC<Props> = (props) => {
 
             <HelmMap
                 center={viewCenter}
-                setCenter={setViewCenter}
+                setCenter={mode === 'maneuver' ? () => {} : setViewCenter /* This is an inelegant hack */}
                 ships={[localShip]}
                 localShip={localShip}
                 destination={props.destination}
