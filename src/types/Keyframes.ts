@@ -55,6 +55,10 @@ type KeyframesSegment<T> = [
     Keyframe<T> | undefined,
 ];
 
+export function getLastFrame<T>(keyframes: Keyframes<T>) {
+    return keyframes[keyframes.length - 1];
+}
+
 function getSegmentToInterpolate<T>(keyframes: Keyframes<T>, currentTime: number): KeyframesSegment<T> {
     const firstFutureIndex = keyframes.findIndex(segment => segment.time > currentTime);
 
@@ -66,7 +70,7 @@ function getSegmentToInterpolate<T>(keyframes: Keyframes<T>, currentTime: number
         // All keyframes are in the past. Now immobile.
         return [
             undefined,
-            keyframes[keyframes.length - 1],
+            getLastFrame(keyframes),
             undefined,
             undefined,
         ];

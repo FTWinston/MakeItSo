@@ -1,4 +1,4 @@
-import { Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes } from 'src/types/Keyframes';
+import { Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getLastFrame } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
@@ -38,7 +38,7 @@ function shouldHoldPosition(ship: Ship) {
 
     // Or if we've only one waypoint and have plotted a course there already.
     if (ship.helm.waypoints.length === 1) {
-        const lastPos = ship.motion[ship.motion.length - 1];
+        const lastPos = getLastFrame(ship.motion);
         const onlyWaypoint = ship.helm.waypoints[0];
 
         return vectorsEqual(lastPos.val, onlyWaypoint);
@@ -48,7 +48,7 @@ function shouldHoldPosition(ship: Ship) {
 }
 
 function holdPosition(ship: Ship, currentTime: number) {
-    const lastFrame = ship.motion[ship.motion.length - 1];
+    const lastFrame = getLastFrame(ship.motion);
 
     const time = currentTime + durationToTicks(5);
 
@@ -90,7 +90,7 @@ function getExistingFramesToKeep(ship: Ship, currentTime: number) {
     else if (ship.helm.forceMotionUpdate || pastFrames.length === 1) {
         // console.log('keeping 1 frame, adding current time');
         return [
-            pastFrames[pastFrames.length - 1],
+            getLastFrame(pastFrames),
             {
                 time: currentTime,
                 val: getPositionValue(ship.motion, currentTime),
@@ -132,7 +132,7 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
         secondWaypoint = thirdWaypoint;
     }
 
-    const { val: startPosition, time: startTime } = framesToKeep[framesToKeep.length - 1];
+    const { val: startPosition, time: startTime } = getLastFrame(framesToKeep);
     const moveAngle = determineAngle(startPosition, firstWaypoint, startPosition.angle);
 
     const endPosition = firstWaypoint.angle === undefined

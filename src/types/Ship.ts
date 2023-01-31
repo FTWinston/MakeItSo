@@ -12,7 +12,7 @@ import { getDefaultEngineeringState } from 'src/features/engineering';
 import { getDefaultHelmState, shouldUpdateMotion, updateShipMotion } from 'src/features/helm';
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
-import { pruneKeyframes } from './Keyframes';
+import { getLastFrame, pruneKeyframes } from './Keyframes';
 
 export class Ship extends GameObject implements ShipInfo {
     constructor() {
@@ -49,7 +49,7 @@ export class Ship extends GameObject implements ShipInfo {
     private pruneManeuvers(currentTime: number) {
         while (this.helm.maneuvers.length > 0) {
             const firstManeuverKeyframes = this.helm.maneuvers[0].motion;
-            const lastKeyframe = firstManeuverKeyframes[firstManeuverKeyframes.length - 1];
+            const lastKeyframe = getLastFrame(firstManeuverKeyframes);
 
             if (lastKeyframe.time >= currentTime) {
                 this.helm.maneuvers.shift();

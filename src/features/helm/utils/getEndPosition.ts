@@ -1,4 +1,4 @@
-import { Keyframe } from 'src/types/Keyframes';
+import { getLastFrame, Keyframe } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 
@@ -8,5 +8,5 @@ export function getEndPosition(ship: Ship): Keyframe<Position> {
         ? ship.helm.maneuvers[ship.helm.maneuvers.length - 1].motion
         : ship.motion;
 
-    return keyframes[keyframes.length - 1];
+    return getLastFrame(keyframes);
 }

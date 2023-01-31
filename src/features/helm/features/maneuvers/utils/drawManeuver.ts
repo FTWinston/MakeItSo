@@ -1,5 +1,5 @@
 import { drawHexGrid, horizontalHexSpacing } from 'src/features/spacemap';
-import { getVectorValue, Keyframes } from 'src/types/Keyframes';
+import { getLastFrame, getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
@@ -103,7 +103,7 @@ export function drawManeuver(
     ctx.lineWidth = 0.15;
 
     const { val: startPoint, time: startTime } = motion[0];
-    const { val: endPoint, time: endTime } = motion[motion.length - 1];
+    const { val: endPoint, time: endTime } = getLastFrame(motion);
     
     // Interpolate from startPoint to endPoint
     ctx.beginPath();
