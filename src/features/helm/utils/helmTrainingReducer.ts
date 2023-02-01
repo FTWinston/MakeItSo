@@ -22,20 +22,23 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             return state;
         }
 
-        case 'set destination': {
-            if (action.destination) {
-                state.helm.destination = { ...action.destination };
-                state.helm.waypoints = [{
-                    ...action.destination,
-                    time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
-                }];
-                state.helm.forceMotionUpdate = true;
-            } else {
-                state.helm.destination = null;
-                state.helm.waypoints = [];
-                state.helm.forceMotionUpdate = true;
-            }
+        case 'stop': {
+            state.helm.destination = null;
+            state.helm.waypoints = [];
+            state.helm.maneuvers = [];
+            state.helm.forceMotionUpdate = true;
             
+            return state;
+        }
+
+        case 'set destination': {
+            state.helm.destination = { ...action.destination };
+            state.helm.waypoints = [{
+                ...action.destination,
+                time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
+            }];
+            state.helm.forceMotionUpdate = true;
+
             return state;
         }
 

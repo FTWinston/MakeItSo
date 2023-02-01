@@ -24,8 +24,10 @@ export type HelmAction = {
     type: 'tick';
     currentTime: number;
 } | {
+    type: 'stop';
+} | {
     type: 'set destination';
-    destination: Position | null;
+    destination: Position;
 } | {
     type: 'maneuver';
     choice: ManeuverType;

@@ -19,11 +19,12 @@ interface Props {
     shipMotion: Keyframes<Position>;
     power: PowerLevel;
     health: number;
+    stop: () => void;
     maneuvers: ManeuverInfo[];
     maneuverChoice: ManeuverChoice;
     maneuver: (type: ManeuverType) => void;
     destination: Position | null;
-    setDestination: (destination: Position | null) => void;
+    setDestination: (destination: Position) => void;
 }
 
 const Root = styled(
@@ -84,9 +85,9 @@ export const Helm: React.FC<Props> = (props) => {
     const extraTravelButtons = mode === 'travel'
         ? (
             <StopAndFocus
-                shipMoving={props.destination !== null}
+                shipMoving={props.destination !== null || props.maneuvers.length > 0}
                 shipVisible={shipVisible}
-                stop={() => props.setDestination(null)}
+                stop={props.stop}
                 focus={() => setViewCenter(getPositionValue(props.shipMotion))}
             />
         )
