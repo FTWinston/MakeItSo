@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Canvas } from 'src/components';
 import { Box, styled, Tooltip, Typography } from 'src/lib/mui';
 import { ManeuverInfo } from '../types/ManeuverType';
-import { drawManeuver } from '../utils/drawManeuver';
+import { drawManeuverWithGrid } from '../utils/drawManeuver';
 
 interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower'> {
     enabled: boolean;
@@ -51,7 +51,7 @@ export const ManeuverDisplay: React.FC<Props> = props => {
                     enabled={props.enabled}
                     aria-label={t(`maneuver ${props.type}`)}
                     ref={canvas}
-                    draw={(ctx, bounds) => drawManeuver(ctx, bounds, props.motion, props.minPower, props.enabled)}                    
+                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, props.motion, props.minPower, props.enabled)}                    
                     onClick={props.onClick}
                     onMouseEnter={props.onFocusStart}
                     onMouseLeave={props.onFocusEnd}

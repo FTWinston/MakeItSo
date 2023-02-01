@@ -65,7 +65,7 @@ function fitCanvasToBounds(
     return 1 / scale;
 }
 
-export function pickColor(minPower: PowerLevel, enabled: boolean) {
+export function pickColor(minPower: PowerLevel) {
     switch (minPower) {
         case 0:
         case 1:
@@ -81,25 +81,10 @@ export function pickColor(minPower: PowerLevel, enabled: boolean) {
 
 export function drawManeuver(
     ctx: CanvasRenderingContext2D,
-    bounds: DOMRect,
     motion: Keyframes<Position>,
-    minPower: PowerLevel,
-    enabled: boolean
+    minPower: PowerLevel
 ) {
-    const worldBounds = getSquareBounds(motion);
-    const pixelSize = fitCanvasToBounds(ctx, bounds, worldBounds);
-
-    if (!enabled) {
-        ctx.globalAlpha = 0.5;
-    }
-    
-    drawHexGrid(ctx, worldBounds, 1, pixelSize, '#333');
-
-    if (!enabled) {
-        ctx.globalAlpha = 0.2;
-    }
-
-    ctx.strokeStyle = pickColor(minPower, enabled);
+    ctx.strokeStyle = pickColor(minPower);
     ctx.lineWidth = 0.15;
 
     const { val: startPoint, time: startTime } = motion[0];
@@ -119,12 +104,35 @@ export function drawManeuver(
 
     // Now draw an arrowhead.
     ctx.beginPath();
-    const endOffset1 = polarToCartesian(endPoint.angle - Math.PI * 0.74, worldBounds.width * 0.225);
+    const endOffset1 = polarToCartesian(endPoint.angle - Math.PI * 0.74, 0.85);
     ctx.moveTo(endPoint.x + endOffset1.x, endPoint.y + endOffset1.y);
-    const endOffset2 = polarToCartesian(endPoint.angle + Math.PI * 0.74, worldBounds.width * 0.225);
+    const endOffset2 = polarToCartesian(endPoint.angle + Math.PI * 0.74, 0.85);
     ctx.lineTo(endPoint.x, endPoint.y);
     ctx.lineTo(endPoint.x + endOffset2.x, endPoint.y + endOffset2.y);
     ctx.stroke();
+}
+
+export function drawManeuverWithGrid(
+    ctx: CanvasRenderingContext2D,
+    bounds: Rectangle,
+    motion: Keyframes<Position>,
+    minPower: PowerLevel,
+    enabled: boolean
+) {
+    const worldBounds = getSquareBounds(motion);
+    const pixelSize = fitCanvasToBounds(ctx, bounds, worldBounds);
+
+    if (!enabled) {
+        ctx.globalAlpha = 0.5;
+    }
+    
+    drawHexGrid(ctx, worldBounds, 1, pixelSize, '#333');
+
+    if (!enabled) {
+        ctx.globalAlpha = 0.2;
+    }
+
+    drawManeuver(ctx, motion, minPower);
 
     if (!enabled) {
         ctx.globalAlpha = 1;

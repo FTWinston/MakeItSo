@@ -10,6 +10,7 @@ import { clickMoveLimit, useLongPress } from 'src/hooks/useLongPress';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { isInRectangle, Rectangle } from 'src/types/Rectangle';
+import { drawManeuver, ManeuverInfo } from '../features/maneuvers';
 
 interface Props {
     center: Vector2D;
@@ -17,6 +18,7 @@ interface Props {
     ships: Partial<Record<number, GameObjectInfo>>;
     localShip: GameObjectInfo;
     destination: Position | null;
+    maneuvers: ManeuverInfo[];
     setDestination: (waypoint: Position) => void;
     shipVisible: boolean;
     setShipVisible: (visible: boolean) => void;
@@ -37,12 +39,13 @@ export const HelmMap: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const { center, localShip, shipVisible } = props;
+    const { motion } = localShip;
 
     useEffect(() => {
         const bounds = getWorldBounds(canvas.current!, cellRadius, center);
 
         const updateVisibility = () => {
-            const visible = isInRectangle(bounds, getVectorValue(props.localShip.motion));
+            const visible = isInRectangle(bounds, getVectorValue(motion));
             if (shipVisible !== visible) {
                 props.setShipVisible(visible);   
             }
@@ -51,7 +54,7 @@ export const HelmMap: React.FC<Props> = props => {
         updateVisibility();
         const interval = setInterval(updateVisibility, 250);
         return () => clearInterval(interval);
-    }, [localShip, center, shipVisible]);
+    }, [motion, center, shipVisible]);
 
     const tap = (pagePos: Vector2D) => {
         const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
@@ -79,21 +82,6 @@ export const HelmMap: React.FC<Props> = props => {
             y: targetCellPos.y,
             angle: angleFromShipToCellPos,
         });
-    };
-
-    const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
-        if (addingDestination) {
-            drawWaypoint(ctx, addingDestination, 1, theme, 'primary');
-        }
-
-        if (props.destination) {
-            // If adjusting destination on the same cell as the curent destination, don't draw both arrows.
-            if (addingDestination && distanceSq(addingDestination, props.destination) < 0.1) {
-                return;
-            }
-
-            drawWaypoint(ctx, props.destination, 1, theme, addingDestination ? 'warning' : 'primary');
-        }
     };
 
     const extraHandlers: TouchEvents | undefined = addingDestination
@@ -162,6 +150,25 @@ export const HelmMap: React.FC<Props> = props => {
         maxZoom: 192,
         extraHandlers: logPressHandlers,
     });
+
+    const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
+        if (addingDestination) {
+            drawWaypoint(ctx, addingDestination, 1, theme, 'primary');
+        }
+
+        if (props.destination) {
+            // If adjusting destination on the same cell as the curent destination, don't draw both arrows.
+            if (addingDestination && distanceSq(addingDestination, props.destination) < 0.1) {
+                return;
+            }
+
+            drawWaypoint(ctx, props.destination, 1, theme, addingDestination ? 'warning' : 'primary');
+        }
+
+        for (const maneuver of props.maneuvers) {
+            drawManeuver(ctx, maneuver.motion, maneuver.minPower);
+        }
+    };
 
     return (
         <SpaceMap

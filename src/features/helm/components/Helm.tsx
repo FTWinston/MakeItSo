@@ -7,11 +7,11 @@ import { HelmMap } from './HelmMap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Keyframes, getPositionValue, getLastFrame } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
-import { ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
+import { applyOffset, getManeuver, ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 
 interface Props {
@@ -55,11 +55,11 @@ export const Helm: React.FC<Props> = (props) => {
 
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
 
-    const prevManeuver = useRef(props.maneuverChoice.id);
+    const previousManeuver = useRef(props.maneuverChoice.id);
     
-    const maneuverChanged = props.maneuverChoice.id !== prevManeuver.current;
+    const maneuverChanged = props.maneuverChoice.id !== previousManeuver.current;
     if (maneuverChanged) {
-        prevManeuver.current = props.maneuverChoice.id;
+        previousManeuver.current = props.maneuverChoice.id;
     }
 
     // In maneuver mode, center the view on the end of the first maneuver.
@@ -70,6 +70,16 @@ export const Helm: React.FC<Props> = (props) => {
             setViewCenter(currentMoveEndPosition.val);
         }
     }, [currentMoveEndPosition, mode])
+
+    const maneuvers = useMemo(() => {
+        if (!previewManeuver) {
+            return props.maneuvers;
+        }
+
+        const actualPreviewManeuever = getManeuver(previewManeuver);
+        actualPreviewManeuever.motion = applyOffset(actualPreviewManeuever.motion, currentMoveEndPosition.val, currentMoveEndPosition.time);
+        return [...props.maneuvers, actualPreviewManeuever];
+    }, [previewManeuver, props.maneuvers])
 
     const extraTravelButtons = mode === 'travel'
         ? (
@@ -91,6 +101,7 @@ export const Helm: React.FC<Props> = (props) => {
                 setCenter={mode === 'maneuver' ? () => {} : setViewCenter /* This is an inelegant hack */}
                 ships={[localShip]}
                 localShip={localShip}
+                maneuvers={maneuvers}
                 destination={props.destination}
                 setDestination={props.setDestination}
                 shipVisible={shipVisible}
