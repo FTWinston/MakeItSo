@@ -1,3 +1,4 @@
+import { current } from 'immer';
 import { drawHexGrid, horizontalHexSpacing } from 'src/features/spacemap';
 import { getLastFrame, getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
@@ -79,37 +80,57 @@ export function pickColor(minPower: PowerLevel) {
     }
 }
 
+export function drawArrowHead(
+    ctx: CanvasRenderingContext2D,
+    position: Position,
+) {
+    ctx.beginPath();
+
+    const armEnd1 = polarToCartesian(position.angle - Math.PI * 0.74, 0.85);
+    const armEnd2 = polarToCartesian(position.angle + Math.PI * 0.74, 0.85);
+
+    ctx.moveTo(position.x + armEnd1.x, position.y + armEnd1.y);
+    ctx.lineTo(position.x, position.y);
+    ctx.lineTo(position.x + armEnd2.x, position.y + armEnd2.y);
+
+    ctx.stroke();
+}
+
 export function drawManeuver(
     ctx: CanvasRenderingContext2D,
     motion: Keyframes<Position>,
-    minPower: PowerLevel
+    minPower: PowerLevel,
+    drawArrow: boolean,
+    currentTime = 0,
 ) {
     ctx.strokeStyle = pickColor(minPower);
     ctx.lineWidth = 0.15;
 
-    const { val: startPoint, time: startTime } = motion[0];
-    const { val: endPoint, time: endTime } = getLastFrame(motion);
+    const { time: startTime } = motion[0];
+    const { time: endTime, val: endPoint } = getLastFrame(motion);
     
-    // Interpolate from startPoint to endPoint
+    // Interpolate from startPoint (or the current point, if a time is given) to endPoint.
     ctx.beginPath();
-    const timeStep = (endTime - startTime) / 50;    
-    ctx.moveTo(startPoint.x, startPoint.y);
+    const timeStep = (endTime - startTime) / 50;
 
-    for (let t = startTime + timeStep; t < endTime; t += timeStep) {
+    let first = true;
+    for (let t = Math.max(startTime, currentTime); t < endTime; t += timeStep) {
         const point = getVectorValue(motion, t);
-        ctx.lineTo(point.x, point.y);
+
+        if (first) {
+            ctx.moveTo(point.x, point.y);
+            first = false;
+        }
+        else {
+            ctx.lineTo(point.x, point.y);
+        }
     }
     ctx.lineTo(endPoint.x, endPoint.y);
     ctx.stroke();
 
-    // Now draw an arrowhead.
-    ctx.beginPath();
-    const endOffset1 = polarToCartesian(endPoint.angle - Math.PI * 0.74, 0.85);
-    ctx.moveTo(endPoint.x + endOffset1.x, endPoint.y + endOffset1.y);
-    const endOffset2 = polarToCartesian(endPoint.angle + Math.PI * 0.74, 0.85);
-    ctx.lineTo(endPoint.x, endPoint.y);
-    ctx.lineTo(endPoint.x + endOffset2.x, endPoint.y + endOffset2.y);
-    ctx.stroke();
+    if (drawArrow) {
+        drawArrowHead(ctx, endPoint);
+    }
 }
 
 export function drawManeuverWithGrid(
@@ -117,7 +138,7 @@ export function drawManeuverWithGrid(
     bounds: Rectangle,
     motion: Keyframes<Position>,
     minPower: PowerLevel,
-    enabled: boolean
+    enabled: boolean,
 ) {
     const worldBounds = getSquareBounds(motion);
     const pixelSize = fitCanvasToBounds(ctx, bounds, worldBounds);
@@ -132,7 +153,7 @@ export function drawManeuverWithGrid(
         ctx.globalAlpha = 0.2;
     }
 
-    drawManeuver(ctx, motion, minPower);
+    drawManeuver(ctx, motion, minPower, true);
 
     if (!enabled) {
         ctx.globalAlpha = 1;

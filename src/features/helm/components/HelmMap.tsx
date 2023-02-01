@@ -11,6 +11,8 @@ import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { isInRectangle, Rectangle } from 'src/types/Rectangle';
 import { drawManeuver, ManeuverInfo } from '../features/maneuvers';
+import { getTime } from 'src/utils/timeSpans';
+import { current } from 'immer';
 
 interface Props {
     center: Vector2D;
@@ -158,15 +160,16 @@ export const HelmMap: React.FC<Props> = props => {
 
         if (props.destination) {
             // If adjusting destination on the same cell as the curent destination, don't draw both arrows.
-            if (addingDestination && distanceSq(addingDestination, props.destination) < 0.1) {
-                return;
+            if (!addingDestination || distanceSq(addingDestination, props.destination) >= 0.1) {
+                drawWaypoint(ctx, props.destination, 1, theme, addingDestination ? 'warning' : 'primary');
             }
-
-            drawWaypoint(ctx, props.destination, 1, theme, addingDestination ? 'warning' : 'primary');
         }
 
-        for (const maneuver of props.maneuvers) {
-            drawManeuver(ctx, maneuver.motion, maneuver.minPower);
+        const currentTime = getTime();
+        
+        for (let i=0; i < props.maneuvers.length; i++) {
+            const maneuver = props.maneuvers[i];
+            drawManeuver(ctx, maneuver.motion, maneuver.minPower, i === props.maneuvers.length - 1, currentTime);
         }
     };
 
