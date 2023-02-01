@@ -27,7 +27,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             state.helm.waypoints = [];
             state.helm.maneuvers = [];
             state.helm.forceMotionUpdate = true;
-            
+
             return state;
         }
 
@@ -65,6 +65,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             }
 
             state.helm.maneuvers.push(maneuver);
+            state.motion.push(...maneuver.motion);
 
             return state;
         }
