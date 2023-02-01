@@ -54,7 +54,7 @@ export const ManeuverCard: React.FC<Props> = props => {
                     motion={maneuver.motion}
                     minPower={maneuver.minPower}
                     enabled={props.currentPower >= maneuver.minPower}
-                    onClick={() => { if (props.currentPower >= maneuver.minPower) { props.selectManeuver(maneuver.type) }}}
+                    onClick={() => { if (props.currentPower >= maneuver.minPower) { props.selectManeuver(maneuver.type); props.previewManeuver(null); }}}
                     onFocusStart={() => props.previewManeuver(maneuver.type)}
                     onFocusEnd={() => props.previewManeuver(null)}
                 />

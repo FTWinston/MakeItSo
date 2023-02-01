@@ -63,13 +63,13 @@ export const Helm: React.FC<Props> = (props) => {
     }
 
     // In maneuver mode, center the view on the end of the first maneuver.
-    const firstManeuver = props.maneuvers[0];
-    const currentMoveEndPosition = firstManeuver ? getLastFrame(firstManeuver.motion) : getLastFrame(props.shipMotion);
+    const lastManeuver = props.maneuvers[props.maneuvers.length - 1];
+    const lastMoveEndPosition = lastManeuver ? getLastFrame(lastManeuver.motion) : getLastFrame(props.shipMotion);
     useEffect(() => {
-        if (currentMoveEndPosition && mode === 'maneuver') {
-            setViewCenter(currentMoveEndPosition.val);
+        if (lastMoveEndPosition && mode === 'maneuver') {
+            setViewCenter(lastMoveEndPosition.val);
         }
-    }, [currentMoveEndPosition, mode])
+    }, [lastMoveEndPosition, mode])
 
     const maneuvers = useMemo(() => {
         if (!previewManeuver) {
@@ -77,7 +77,7 @@ export const Helm: React.FC<Props> = (props) => {
         }
 
         const actualPreviewManeuever = getManeuver(previewManeuver);
-        actualPreviewManeuever.motion = applyOffset(actualPreviewManeuever.motion, currentMoveEndPosition.val, currentMoveEndPosition.time);
+        actualPreviewManeuever.motion = applyOffset(actualPreviewManeuever.motion, lastMoveEndPosition.val, lastMoveEndPosition.time);
         return [...props.maneuvers, actualPreviewManeuever];
     }, [previewManeuver, props.maneuvers])
 
@@ -98,7 +98,7 @@ export const Helm: React.FC<Props> = (props) => {
 
             <HelmMap
                 center={viewCenter}
-                setCenter={mode === 'maneuver' ? () => {} : setViewCenter /* This is an inelegant hack */}
+                setCenter={setViewCenter}
                 ships={[localShip]}
                 localShip={localShip}
                 maneuvers={maneuvers}
