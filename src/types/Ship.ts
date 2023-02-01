@@ -13,6 +13,7 @@ import { getDefaultHelmState, shouldUpdateMotion, updateShipMotion } from 'src/f
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
 import { getLastFrame, pruneKeyframes } from './Keyframes';
+import { current } from 'immer';
 
 export class Ship extends GameObject implements ShipInfo {
     constructor() {
@@ -37,7 +38,7 @@ export class Ship extends GameObject implements ShipInfo {
         while (true) {
             const firstWaypoint = this.helm.waypoints[0];
 
-            if (firstWaypoint?.time >= currentTime) {
+            if (firstWaypoint?.time < currentTime) {
                 this.helm.waypoints.shift();
                 continue;
             }
@@ -51,7 +52,7 @@ export class Ship extends GameObject implements ShipInfo {
             const firstManeuverKeyframes = this.helm.maneuvers[0].motion;
             const lastKeyframe = getLastFrame(firstManeuverKeyframes);
 
-            if (lastKeyframe.time >= currentTime) {
+            if (lastKeyframe.time < currentTime) {
                 this.helm.maneuvers.shift();
                 continue;
             }

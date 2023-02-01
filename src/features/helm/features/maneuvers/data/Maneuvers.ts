@@ -1,6 +1,5 @@
 import { horizontalHexSpacing, verticalHexSpacing } from 'src/features/spacemap';
-import { Keyframes } from 'src/types/Keyframes';
-import { Position } from 'src/types/Position';
+import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
 type ManeuverContent = Omit<ManeuverInfo, 'type'>;
@@ -26,7 +25,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: 2,
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 2,
                 y: 0,
@@ -45,14 +44,14 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: 1,
+            time: durationToTicks(1),
             val: {
                 x: horizontalHexSpacing * 0.89,
                 y: -verticalHexSpacing * 0.23,
                 angle: (angleRight + angleUpRight) / 2,
             }
         }, {
-            time: 2,
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 1.5,
                 y: -verticalHexSpacing,
@@ -71,14 +70,14 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: 1,
+            time: durationToTicks(1),
             val: {
                 x: horizontalHexSpacing * 0.89,
                 y: verticalHexSpacing * 0.23,
                 angle: (angleRight + angleUpRight) / 2,
             }
         }, {
-            time: 2,
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 1.5,
                 y: verticalHexSpacing,
@@ -97,14 +96,14 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: 1,
+            time: durationToTicks(1),
             val: {
                 x: horizontalHexSpacing * 0.8,
                 y: -verticalHexSpacing * 0.25,
                 angle: angleUpRight,
             }
         }, {
-            time: 2,
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 0.5,
                 y: -verticalHexSpacing,
@@ -123,14 +122,14 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: 1,
+            time: durationToTicks(1),
             val: {
                 x: horizontalHexSpacing * 0.8,
                 y: verticalHexSpacing * 0.25,
                 angle: angleDownRight,
             }
         }, {
-            time: 2,
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 0.5,
                 y: verticalHexSpacing,
