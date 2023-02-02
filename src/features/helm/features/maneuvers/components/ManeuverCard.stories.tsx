@@ -17,5 +17,7 @@ export const SimpleCard: Story = {
         },
         currentPower: 2,
         startAngle: 0,
+        previewManeuver: () => {},
+        selectManeuver: () => {},
     }
 }
