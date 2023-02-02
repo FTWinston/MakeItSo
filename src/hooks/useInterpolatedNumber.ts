@@ -7,7 +7,6 @@ export function useInterpolatedNumber(value: number): () => number {
     const springValue = useSpringValue(value);
 
     if (prevValue.current !== value) {
-        springValue.set(prevValue.current);
         springValue.start(value);
         prevValue.current = value;
     }

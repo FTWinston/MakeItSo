@@ -9,9 +9,7 @@ export function useInterpolatedVector2D(value: Vector2D): () => Vector2D {
     const springValueY = useSpringValue(value.y);
 
     if (prevValue.current !== value) {
-        springValueX.set(prevValue.current.x);
         springValueX.start(value.x);
-        springValueY.set(prevValue.current.y);
         springValueY.start(value.y);
         prevValue.current = value;
     }
