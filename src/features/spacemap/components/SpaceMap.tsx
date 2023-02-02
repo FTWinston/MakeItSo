@@ -5,6 +5,7 @@ import { DiscreteColorName, SxProps, useTheme } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { Vector2D } from 'src/types/Vector2D';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
+import { useInterpolatedVector2D } from 'src/hooks/useInterpolatedVector2D';
 
 interface Props extends TouchEvents {
     className?: string;
@@ -34,9 +35,10 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         ...interactionProps
     } = props;
 
-    
+    const getCenter = useInterpolatedVector2D(center);
+
     const draw = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {
-        drawMap(ctx, bounds, theme, gridColor, cellRadius, center, vessels, localVessel, drawExtraBackground, drawExtraForeground);
+        drawMap(ctx, bounds, theme, gridColor, cellRadius, getCenter(), vessels, localVessel, drawExtraBackground, drawExtraForeground);
     };
 
     return (
