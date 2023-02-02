@@ -12,24 +12,21 @@ type Story = StoryObj<typeof ManeuverDisplay>;
 
 export const SlowForward: Story = {
     args: {
-        ...getManeuver(ManeuverType.SlowForward),
-        startAngle: 0,
+        ...getManeuver(ManeuverType.SlowForward, { val: { x: 0, y: 0, angle: 0 }, time: 0 }),
         enabled: true,
     }
 }
 
 export const SweepLeft: Story = {
     args: {
-        ...getManeuver(ManeuverType.SweepLeft),
-        startAngle: 0,
+        ...getManeuver(ManeuverType.SweepLeft, { val: { x: 0, y: 0, angle: 0 }, time: 0 }),
         enabled: true,
     }
 }
 
 export const SweepRight: Story = {
     args: {
-        ...getManeuver(ManeuverType.HardRight),
-        startAngle: 0,
+        ...getManeuver(ManeuverType.HardRight, { val: { x: 0, y: 0, angle: 0 }, time: 0 }),
         enabled: false,
     }
 }

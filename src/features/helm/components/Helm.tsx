@@ -11,7 +11,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
-import { applyOffset, getManeuver, ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
+import { getManeuver, ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 
 interface Props {
@@ -77,8 +77,7 @@ export const Helm: React.FC<Props> = (props) => {
             return props.maneuvers;
         }
 
-        const actualPreviewManeuever = getManeuver(previewManeuver);
-        actualPreviewManeuever.motion = applyOffset(actualPreviewManeuever.motion, lastMoveEndPosition.val, lastMoveEndPosition.time);
+        const actualPreviewManeuever = getManeuver(previewManeuver, lastMoveEndPosition);
         return [...props.maneuvers, actualPreviewManeuever];
     }, [previewManeuver, props.maneuvers])
 

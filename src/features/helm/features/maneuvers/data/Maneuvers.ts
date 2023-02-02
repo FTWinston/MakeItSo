@@ -1,4 +1,7 @@
 import { horizontalHexSpacing, verticalHexSpacing } from 'src/features/spacemap';
+import { Keyframe, Keyframes } from 'src/types/Keyframes';
+import { Position } from 'src/types/Position';
+import { clampAngle, rotatePolar } from 'src/types/Vector2D';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
@@ -11,7 +14,6 @@ const angleDownRight = Math.PI / 3;
 const angleUpLeft = -2 * Math.PI / 3;
 const angleDownLeft = 2 * Math.PI / 3;
 const angleLeft = Math.PI;
-
 
 const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     [ManeuverType.SlowForward, {
@@ -149,10 +151,31 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     }],
 ]);
 
-export function getManeuver(type: ManeuverType): ManeuverInfo {
-    // TODO: if we don't care about adding in a unique ID here,
-    // then don't bother assembling an object to return. Just store the final deal!
+const factor = Math.PI / 3;
+/* Get the closest multiple of Pi / 3 */
+function getStartAngle(angle: number) {
+    return Math.round(angle / factor) * factor;
+}
 
+function applyOffset(motion: Keyframes<Position>, offset: Keyframe<Position>): Keyframes<Position> {
+    const roundedOffsetAngle = getStartAngle(offset.val.angle);
+
+    return motion
+        .map(keyframe => {
+            const rotatedPosition = rotatePolar(keyframe.val, roundedOffsetAngle);
+
+            return {
+                time: keyframe.time + offset.time,
+                val: {
+                    angle: clampAngle(keyframe.val.angle + roundedOffsetAngle),
+                    x: rotatedPosition.x + offset.val.x,
+                    y: rotatedPosition.y + offset.val.y,
+                }
+            };
+        });
+}
+
+export function getManeuver(type: ManeuverType, offset: Keyframe<Position>): ManeuverInfo {
     const data = maneuverDataByIdentifier.get(type);
     
     if (data === undefined) {
@@ -161,6 +184,8 @@ export function getManeuver(type: ManeuverType): ManeuverInfo {
 
     return {
         type,
-        ...data,
+        minPower: data.minPower,
+        evasion: data.evasion,
+        motion: applyOffset(data.motion, offset),
     }
 }

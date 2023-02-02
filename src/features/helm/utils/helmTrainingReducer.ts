@@ -3,7 +3,7 @@ import { ShipSystem } from 'src/types/ShipSystem';
 import { drawCard } from 'src/utils/drawCard';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { applyOffset, getManeuver } from '../features/maneuvers';
+import { getManeuver } from '../features/maneuvers';
 import { HelmAction } from '../types/HelmState';
 import { getEndPosition } from './getEndPosition';
 
@@ -47,14 +47,12 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
                 return state;
             }
 
-            const maneuver = getManeuver(action.choice);
+            const startPosition = getEndPosition(state);
+            const maneuver = getManeuver(action.choice, startPosition);
             
             if (state.systems.get(ShipSystem.Engines).power < maneuver.minPower) {
                 return state;
             }
-
-            const startPosition = getEndPosition(state);
-            maneuver.motion = applyOffset(maneuver.motion, startPosition.val, startPosition.time);
 
             // Discard current choice, and get a new choice. Shuffle if needed.
             const [newChoice, didShuffle] = drawCard(state.helm.manueverDrawPile, state.helm.manueverDiscardPile, state.helm.maneuverChoice);
