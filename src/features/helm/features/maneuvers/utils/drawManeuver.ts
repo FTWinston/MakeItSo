@@ -61,10 +61,6 @@ function fitCanvasToBounds(
     const yScale = canvasBounds.height / contentBounds.height;
     const scale = Math.min(xScale, yScale);
 
-    console.log(`canvasWidth ${canvasBounds.width}, canvasHeight  ${canvasBounds.height}`);
-    console.log(`contentWidth ${contentBounds.width}, contentHeight  ${contentBounds.height}`);
-    console.log(`scale ${scale}`);
-    
     ctx.scale(scale, scale);
     ctx.translate(-contentBounds.x, -contentBounds.y);
 
