@@ -9,6 +9,7 @@ import { ManeuverDisplay } from './ManeuverDisplay';
 interface Props {
     maneuvers: ManeuverChoice;
     currentPower: PowerLevel;
+    startAngle: number;
     previewManeuver: (type: ManeuverType | null) => void;
     selectManeuver: (type: ManeuverType) => void;
 }
@@ -53,6 +54,7 @@ export const ManeuverCard: React.FC<Props> = props => {
                     type={maneuver.type}
                     motion={maneuver.motion}
                     minPower={maneuver.minPower}
+                    startAngle={props.startAngle}
                     enabled={props.currentPower >= maneuver.minPower}
                     onClick={() => { if (props.currentPower >= maneuver.minPower) { props.selectManeuver(maneuver.type); props.previewManeuver(null); }}}
                     onFocusStart={() => props.previewManeuver(maneuver.type)}

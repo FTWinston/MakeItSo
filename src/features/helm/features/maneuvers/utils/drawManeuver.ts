@@ -1,5 +1,4 @@
-import { current } from 'immer';
-import { drawHexGrid, horizontalHexSpacing } from 'src/features/spacemap';
+import { drawHexGrid } from 'src/features/spacemap';
 import { getLastFrame, getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
@@ -11,7 +10,7 @@ function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
     let maxX = minX;
     let maxY = minY;
 
-    const padding = horizontalHexSpacing * 0.5;
+    const padding = 0.9; // Multiple of a cell radius.
     
     for (const keyframe of keyframes) {
         if (keyframe.val.x < minX) {
@@ -24,8 +23,8 @@ function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
         if (keyframe.val.y < minY) {
             minY = keyframe.val.y;
         }
-        else if (keyframe.val.y > minY) {
-            minY = keyframe.val.y;
+        else if (keyframe.val.y > maxY) {
+            maxY = keyframe.val.y;
         }
     }
 
@@ -36,11 +35,13 @@ function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
         let midX = (maxX + minX) / 2;
         minX = midX - height / 2;
         width = height;
+        maxX = minX + width;
     }
     else {
         let midY = (maxY + minY) / 2;
         minY = midY - width / 2;
         height = width;
+        maxY = minY + height;
     }
 
     return {
@@ -60,6 +61,10 @@ function fitCanvasToBounds(
     const yScale = canvasBounds.height / contentBounds.height;
     const scale = Math.min(xScale, yScale);
 
+    console.log(`canvasWidth ${canvasBounds.width}, canvasHeight  ${canvasBounds.height}`);
+    console.log(`contentWidth ${contentBounds.width}, contentHeight  ${contentBounds.height}`);
+    console.log(`scale ${scale}`);
+    
     ctx.scale(scale, scale);
     ctx.translate(-contentBounds.x, -contentBounds.y);
 

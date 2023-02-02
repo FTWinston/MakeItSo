@@ -3,10 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { Canvas } from 'src/components';
 import { Box, styled, Tooltip, Typography } from 'src/lib/mui';
 import { ManeuverInfo } from '../types/ManeuverType';
+import { applyOffset } from '../utils/applyOffset';
 import { drawManeuverWithGrid } from '../utils/drawManeuver';
 
 interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower'> {
     enabled: boolean;
+    startAngle: number;
     onClick?: () => void;
     onFocusStart?: () => void;
     onFocusEnd?: () => void;
@@ -44,6 +46,8 @@ export const ManeuverDisplay: React.FC<Props> = props => {
         ? undefined
         : <Message color="error" textTransform="uppercase">{t('power too low')}</Message>;
     
+    const motion = applyOffset(props.motion, { x: 0, y: 0, angle: props.startAngle }, 0);
+
     return (
         <Tooltip title={t(`maneuver ${props.type}`)}>
             <Wrapper>
@@ -51,7 +55,7 @@ export const ManeuverDisplay: React.FC<Props> = props => {
                     enabled={props.enabled}
                     aria-label={t(`maneuver ${props.type}`)}
                     ref={canvas}
-                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, props.motion, props.minPower, props.enabled)}                    
+                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, motion, props.minPower, props.enabled)}                    
                     onClick={props.onClick}
                     onMouseEnter={props.onFocusStart}
                     onMouseLeave={props.onFocusEnd}

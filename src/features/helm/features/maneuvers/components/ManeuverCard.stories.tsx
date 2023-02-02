@@ -16,5 +16,6 @@ export const SimpleCard: Story = {
             options: [ManeuverType.SlowForward, ManeuverType.SweepLeft, ManeuverType.SweepRight, ManeuverType.HardLeft],
         },
         currentPower: 2,
+        startAngle: 0,
     }
 }

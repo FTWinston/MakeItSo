@@ -129,6 +129,7 @@ export const Helm: React.FC<Props> = (props) => {
                                 maneuvers={props.maneuverChoice}
                                 selectManeuver={props.maneuver}
                                 previewManeuver={setPreviewManeuver}
+                                startAngle={lastMoveEndPosition.val.angle}
                             />
                         </div>
                     </ZoomTransition>
