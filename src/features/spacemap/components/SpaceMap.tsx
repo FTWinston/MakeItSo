@@ -34,6 +34,7 @@ export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {
         ...interactionProps
     } = props;
 
+    
     const draw = (ctx: CanvasRenderingContext2D, bounds: DOMRect) => {
         drawMap(ctx, bounds, theme, gridColor, cellRadius, center, vessels, localVessel, drawExtraBackground, drawExtraForeground);
     };
