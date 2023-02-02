@@ -76,7 +76,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
             val: {
                 x: horizontalHexSpacing * 0.89,
                 y: verticalHexSpacing * 0.23,
-                angle: (angleRight + angleUpRight) / 2,
+                angle: (angleRight + angleDownRight) / 2,
             }
         }, {
             time: durationToTicks(2),
