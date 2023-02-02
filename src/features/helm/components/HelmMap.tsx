@@ -20,7 +20,7 @@ interface Props {
     ships: Partial<Record<number, GameObjectInfo>>;
     localShip: GameObjectInfo;
     destination: Position | null;
-    maneuvers: ManeuverInfo[];
+    maneuvers: ManeuverInfo[][];
     setDestination: (waypoint: Position) => void;
     shipVisible: boolean;
     setShipVisible: (visible: boolean) => void;
@@ -167,9 +167,11 @@ export const HelmMap: React.FC<Props> = props => {
 
         const currentTime = getTime();
         
-        for (let i=0; i < props.maneuvers.length; i++) {
-            const maneuver = props.maneuvers[i];
-            drawManeuver(ctx, maneuver.motion, maneuver.minPower, i === props.maneuvers.length - 1, currentTime);
+        for (const maneuverSet of props.maneuvers) {
+            for (let i=0; i < maneuverSet.length; i++) {
+                const maneuver = maneuverSet[i];
+                drawManeuver(ctx, maneuver.motion, maneuver.minPower, i === maneuverSet.length - 1, currentTime);
+            }
         }
     };
 

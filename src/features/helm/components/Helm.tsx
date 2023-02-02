@@ -74,11 +74,11 @@ export const Helm: React.FC<Props> = (props) => {
 
     const maneuvers = useMemo(() => {
         if (!previewManeuver) {
-            return props.maneuvers;
+            return [props.maneuvers];
         }
 
         const actualPreviewManeuever = getManeuver(previewManeuver, lastMoveEndPosition);
-        return [...props.maneuvers, actualPreviewManeuever];
+        return [props.maneuvers, [actualPreviewManeuever]];
     }, [previewManeuver, props.maneuvers])
 
     const extraTravelButtons = mode === 'travel'
