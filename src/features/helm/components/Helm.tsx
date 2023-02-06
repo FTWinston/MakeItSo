@@ -7,12 +7,12 @@ import { HelmMap } from './HelmMap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Keyframes, getPositionValue, getLastFrame } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Vector2D } from 'src/types/Vector2D';
+import { useMemo, useRef, useState } from 'react';
 import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
 import { getManeuver, ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
+import { useHasChanged } from 'src/hooks/useHasChanged';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -50,8 +50,6 @@ export const Helm: React.FC<Props> = (props) => {
 
     const [mode, setMode] = useState<Mode>('travel');
 
-    const [viewCenter, setViewCenter] = useState<Vector2D>(() => getPositionValue(props.shipMotion));
-
     const [shipVisible, setShipVisible] = useState(true);
 
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
@@ -66,11 +64,13 @@ export const Helm: React.FC<Props> = (props) => {
     // In maneuver mode, center the view on the end of the first maneuver.
     const lastManeuver = props.maneuvers[props.maneuvers.length - 1];
     const lastMoveEndPosition = lastManeuver ? getLastFrame(lastManeuver.motion) : getLastFrame(props.shipMotion);
-    useEffect(() => {
-        if (lastMoveEndPosition && mode === 'maneuver') {
-            setViewCenter(lastMoveEndPosition.val);
-        }
-    }, [lastMoveEndPosition, mode])
+
+    const hasJustChanged = useHasChanged(lastMoveEndPosition);
+
+    // TODO: reconsider this. It sucks a bit.
+    let forceViewCenter = hasJustChanged && lastMoveEndPosition && mode === 'maneuver'
+        ? lastMoveEndPosition.val
+        : undefined;
 
     const maneuvers = useMemo(() => {
         if (!previewManeuver) {
@@ -87,7 +87,8 @@ export const Helm: React.FC<Props> = (props) => {
                 shipMoving={props.destination !== null || props.maneuvers.length > 0}
                 shipVisible={shipVisible}
                 stop={props.stop}
-                focus={() => setViewCenter(getPositionValue(props.shipMotion))}
+                // TODO: and this sucks more!
+                focus={() => forceViewCenter = getPositionValue(props.shipMotion)}
             />
         )
         : undefined;
@@ -97,8 +98,8 @@ export const Helm: React.FC<Props> = (props) => {
             <HelmAppBar power={props.power} health={props.health} />
 
             <HelmMap
-                center={viewCenter}
-                setCenter={setViewCenter}
+                getInitialCenter={() => getPositionValue(props.shipMotion)}
+                forceCenter={forceViewCenter}
                 ships={[localShip]}
                 localShip={localShip}
                 maneuvers={maneuvers}

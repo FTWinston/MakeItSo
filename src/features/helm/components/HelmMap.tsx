@@ -12,11 +12,10 @@ import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { isInRectangle, Rectangle } from 'src/types/Rectangle';
 import { drawManeuver, ManeuverInfo } from '../features/maneuvers';
 import { getTime } from 'src/utils/timeSpans';
-import { current } from 'immer';
 
 interface Props {
-    center: Vector2D;
-    setCenter: (center: Vector2D) => void;
+    getInitialCenter: () => Vector2D;
+    forceCenter?: Vector2D;
     ships: Partial<Record<number, GameObjectInfo>>;
     localShip: GameObjectInfo;
     destination: Position | null;
@@ -28,23 +27,42 @@ interface Props {
 
 export const HelmMap: React.FC<Props> = props => {
     const theme = useTheme();
+    
+    const {
+        getCenter: getViewCenter,
+        setCenter: setViewCenter,
+        getZoom: getCellRadius,
+        bindGestures,
+    } = usePanAndZoom({
+        getInitialCenter: props.getInitialCenter,
+        getInitialZoom: () => 32,
+        minZoom: 12,
+        maxZoom: 192,
+        dragThreshold: clickMoveLimit,
+        extraHandlers: longPressHandlers,
+    });
+
+    if (props.forceCenter) {
+        setViewCenter(props.forceCenter);
+    }
 
     const ships = useMemo(
         () => Object.values(props.ships) as GameObjectInfo[],
         [props.ships]
     );
     
-    const [cellRadius, setCellRadius] = useState(32);
-
     const [addingDestination, setAddingDestination] = useState<Position>();
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const { center, localShip, shipVisible } = props;
+    const { localShip, shipVisible } = props;
     const { motion } = localShip;
 
+    const viewCenter = getViewCenter();
+    const cellRadius = getCellRadius();
+
     useEffect(() => {
-        const bounds = getWorldBounds(canvas.current!, cellRadius, center);
+        const bounds = getWorldBounds(canvas.current!, cellRadius, viewCenter);
 
         const updateVisibility = () => {
             const visible = isInRectangle(bounds, getVectorValue(motion));
@@ -56,10 +74,10 @@ export const HelmMap: React.FC<Props> = props => {
         updateVisibility();
         const interval = setInterval(updateVisibility, 250);
         return () => clearInterval(interval);
-    }, [motion, center, shipVisible]);
+    }, [motion, viewCenter, shipVisible]);
 
     const tap = (pagePos: Vector2D) => {
-        const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
+        const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
         const shipPos = getVectorValue(props.localShip.motion);
         const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
@@ -73,7 +91,7 @@ export const HelmMap: React.FC<Props> = props => {
     };
 
     const longPress = (pagePos: Vector2D) => {
-        const worldPos = screenToWorld(canvas.current!, cellRadius, center, pagePos);
+        const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
         const shipPos = getVectorValue(props.localShip.motion);
         const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
@@ -94,7 +112,7 @@ export const HelmMap: React.FC<Props> = props => {
                     y: e.pageY,
                 };
 
-                const worldPos = screenToWorld(canvas.current!, cellRadius, center, screenPos);
+                const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, screenPos);
 
                 setAddingDestination(waypoint => ({
                     x: waypoint!.x,
@@ -109,7 +127,7 @@ export const HelmMap: React.FC<Props> = props => {
                         y: e.touches[0].pageY,
                     };
 
-                    const worldPos = screenToWorld(canvas.current!, cellRadius, center, screenPos);
+                    const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, screenPos);
 
                     setAddingDestination(waypoint => ({
                         x: waypoint!.x,
@@ -140,18 +158,7 @@ export const HelmMap: React.FC<Props> = props => {
         }
         : undefined;
 
-    const logPressHandlers = useLongPress(longPress, tap, extraHandlers);
-
-    const bindGestures = usePanAndZoom({
-        center: center,
-        setCenter: addingDestination === undefined ? props.setCenter : () => {},
-        dragThreshold: clickMoveLimit,
-        zoom: cellRadius,
-        setZoom: setCellRadius,
-        minZoom: 12,
-        maxZoom: 192,
-        extraHandlers: logPressHandlers,
-    });
+    const longPressHandlers = useLongPress(longPress, tap, extraHandlers);
 
     const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
         if (addingDestination) {
@@ -179,8 +186,8 @@ export const HelmMap: React.FC<Props> = props => {
         <SpaceMap
             ref={canvas}
             gridColor="secondary"
-            cellRadius={cellRadius}
-            center={center}
+            getCellRadius={getCellRadius}
+            getCenter={getViewCenter}
             vessels={ships}
             localVessel={props.localShip}
             drawExtraBackground={drawDestinations}

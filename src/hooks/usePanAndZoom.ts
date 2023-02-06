@@ -1,17 +1,30 @@
 import { GestureHandlers, useGesture } from '@use-gesture/react';
-import { useRef } from 'react';
+import { ReactDOMAttributes } from '@use-gesture/react/dist/declarations/src/types';
+import { useRef, useState } from 'react';
 import type { TouchEvents } from 'src/types/TouchEvents';
 import type { Vector2D } from 'src/types/Vector2D';
+import { useInterpolatedNumber } from './useInterpolatedNumber';
+import { useInterpolatedVector2D } from './useInterpolatedVector2D';
 
 interface Config {
-    center: Vector2D,
-    setCenter: (newCenter: Vector2D) => void,
+    getInitialCenter: () => Vector2D,
     dragThreshold?: number;
-    zoom: number,
-    setZoom: (newZoomAmount: number) => void,
+    getInitialZoom: () => number,
     minZoom?: number;
     maxZoom?: number;
+    allowPan?: boolean;
+    allowZoom?: boolean;
     extraHandlers?: TouchEvents;
+}
+
+export type GestureBinding = () => ReactDOMAttributes;
+
+interface Output {
+    getCenter: () => Vector2D,
+    setCenter: (newCenter: Vector2D) => void,
+    getZoom: () => number;
+    setZoom: (newZoom: number) => void;
+    bindGestures: GestureBinding;
 }
 
 function addExtraHandlers(gestureConfig: GestureHandlers, extraHandlers: TouchEvents) {
@@ -48,10 +61,16 @@ function addExtraHandlers(gestureConfig: GestureHandlers, extraHandlers: TouchEv
     }
 }
 
-export function usePanAndZoom(config: Config) {
-    const startScale = useRef<number>(config.zoom);
+export function usePanAndZoom(config: Config): Output {
+    const [center, setCenter] = useState<Vector2D>(config.getInitialCenter());
+    const [zoom, setZoomUnbounded] = useState<number>(config.getInitialZoom());
 
-    const setZoom = (amount: number) => {
+    const getCenter = useInterpolatedVector2D(center);
+    const getZoom = useInterpolatedNumber(zoom);
+
+    const startScale = useRef<number>(zoom);
+
+    const setZoomBounded = (amount: number) => {
         if (config.minZoom !== undefined) {
             amount = Math.max(config.minZoom, amount);
         }
@@ -60,14 +79,14 @@ export function usePanAndZoom(config: Config) {
             amount = Math.min(config.maxZoom, amount);
         }
 
-        config.setZoom(amount);
+        setZoomUnbounded(amount);
     }
 
     const gestureConfig: GestureHandlers = {
         onDrag: ({ delta: [dx, dy] }) => {
-            config.setCenter({
-                x: config.center.x - dx / config.zoom,
-                y: config.center.y - dy / config.zoom,
+            setCenter({
+                x: center.x - dx / zoom * 1.85,
+                y: center.y - dy / zoom * 1.85,
             });
         },
         onPinchStart: ({ da: [distance] }) => {
@@ -75,7 +94,7 @@ export function usePanAndZoom(config: Config) {
         },
         onPinch: ({ da: [distance] }) => {
             const scale = distance / startScale.current;
-            setZoom(config.zoom * scale);
+            setZoomUnbounded(zoom * scale);
         },
         onWheel: ({ delta: [startVal, endVal] }) => {
             const distance = startVal - endVal;
@@ -84,7 +103,7 @@ export function usePanAndZoom(config: Config) {
                     ? 75 / distance
                     : -133.33333333333333 / distance;
 
-                setZoom(config.zoom / scale);
+                setZoomUnbounded(zoom / scale);
             }
         },
     };
@@ -93,11 +112,19 @@ export function usePanAndZoom(config: Config) {
         addExtraHandlers(gestureConfig, config.extraHandlers);
     }
     
-    return useGesture(gestureConfig, {
+    const bindGestures = useGesture(gestureConfig, {
         drag: {
-            //from: () => [-config.center.x, -config.center.y],
+            //from: () => [-center.x, -center.y],
             threshold: config.dragThreshold,
-            enabled: !!config.setCenter,
+            enabled: config.allowPan !== false,
         },
     });
+
+    return {
+        getCenter,
+        setCenter,
+        getZoom,
+        setZoom: setZoomBounded,
+        bindGestures,
+    };
 };
