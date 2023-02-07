@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Position } from 'src/types/Position';
 import { determineAngle, distanceSq, Vector2D } from 'src/types/Vector2D';
 import { getVectorValue } from 'src/types/Keyframes';
@@ -12,10 +12,11 @@ import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { isInRectangle, Rectangle } from 'src/types/Rectangle';
 import { drawManeuver, ManeuverInfo } from '../features/maneuvers';
 import { getTime } from 'src/utils/timeSpans';
+import { useHasChanged } from 'src/hooks/useHasChanged';
 
 interface Props {
     getInitialCenter: () => Vector2D;
-    forceCenter?: Vector2D;
+    forceViewCenter?: Vector2D;
     ships: Partial<Record<number, GameObjectInfo>>;
     localShip: GameObjectInfo;
     destination: Position | null;
@@ -39,11 +40,12 @@ export const HelmMap: React.FC<Props> = props => {
         minZoom: 12,
         maxZoom: 192,
         dragThreshold: clickMoveLimit,
-        extraHandlers: longPressHandlers,
+        //extraHandlers, // TODO: get these working!
     });
 
-    if (props.forceCenter) {
-        setViewCenter(props.forceCenter);
+    const forceCenterChanged = useHasChanged(props.forceViewCenter);
+    if (props.forceViewCenter && forceCenterChanged) {
+        setViewCenter(props.forceViewCenter);
     }
 
     const ships = useMemo(
@@ -62,9 +64,8 @@ export const HelmMap: React.FC<Props> = props => {
     const cellRadius = getCellRadius();
 
     useEffect(() => {
-        const bounds = getWorldBounds(canvas.current!, cellRadius, viewCenter);
-
         const updateVisibility = () => {
+            const bounds = getWorldBounds(canvas.current!, getCellRadius(), getViewCenter());
             const visible = isInRectangle(bounds, getVectorValue(motion));
             if (shipVisible !== visible) {
                 props.setShipVisible(visible);   
@@ -74,7 +75,7 @@ export const HelmMap: React.FC<Props> = props => {
         updateVisibility();
         const interval = setInterval(updateVisibility, 250);
         return () => clearInterval(interval);
-    }, [motion, viewCenter, shipVisible]);
+    }, [motion]);
 
     const tap = (pagePos: Vector2D) => {
         const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
@@ -104,7 +105,7 @@ export const HelmMap: React.FC<Props> = props => {
         });
     };
 
-    const extraHandlers: TouchEvents | undefined = addingDestination
+    let extraHandlers: TouchEvents | undefined = addingDestination
         ? {
             onMouseMove: (e: React.MouseEvent<Element>) => {
                 const screenPos = {
@@ -158,7 +159,7 @@ export const HelmMap: React.FC<Props> = props => {
         }
         : undefined;
 
-    const longPressHandlers = useLongPress(longPress, tap, extraHandlers);
+    extraHandlers = useLongPress(longPress, tap, extraHandlers);
 
     const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
         if (addingDestination) {

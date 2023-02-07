@@ -12,7 +12,6 @@ import { StopAndFocus } from './StopAndFocus';
 import { Mode, ModeToggle } from './ModeToggle';
 import { getManeuver, ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
-import { useHasChanged } from 'src/hooks/useHasChanged';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -65,10 +64,7 @@ export const Helm: React.FC<Props> = (props) => {
     const lastManeuver = props.maneuvers[props.maneuvers.length - 1];
     const lastMoveEndPosition = lastManeuver ? getLastFrame(lastManeuver.motion) : getLastFrame(props.shipMotion);
 
-    const hasJustChanged = useHasChanged(lastMoveEndPosition);
-
-    // TODO: reconsider this. It sucks a bit.
-    let forceViewCenter = hasJustChanged && lastMoveEndPosition && mode === 'maneuver'
+    let forceViewCenter = lastMoveEndPosition && mode === 'maneuver'
         ? lastMoveEndPosition.val
         : undefined;
 
@@ -99,7 +95,7 @@ export const Helm: React.FC<Props> = (props) => {
 
             <HelmMap
                 getInitialCenter={() => getPositionValue(props.shipMotion)}
-                forceCenter={forceViewCenter}
+                forceViewCenter={forceViewCenter}
                 ships={[localShip]}
                 localShip={localShip}
                 maneuvers={maneuvers}
