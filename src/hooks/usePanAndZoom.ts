@@ -14,7 +14,7 @@ interface Config {
     maxZoom?: number;
     allowPan?: boolean;
     allowZoom?: boolean;
-    extraHandlers?: TouchEvents;
+    getExtraHandlers?: (center: Vector2D, zoom: number) => TouchEvents;
 }
 
 export type GestureBinding = () => ReactDOMAttributes;
@@ -108,8 +108,8 @@ export function usePanAndZoom(config: Config): Output {
         },
     };
 
-    if (config.extraHandlers) {
-        addExtraHandlers(gestureConfig, config.extraHandlers);
+    if (config.getExtraHandlers) {
+        addExtraHandlers(gestureConfig, config.getExtraHandlers(center, zoom));
     }
     
     const bindGestures = useGesture(gestureConfig, {
