@@ -65,8 +65,8 @@ export function usePanAndZoom(config: Config): Output {
     const [center, setCenter] = useState<Vector2D>(config.getInitialCenter());
     const [zoom, setZoomUnbounded] = useState<number>(config.getInitialZoom());
 
-    const getCenter = useInterpolatedVector2D(center);
-    const getZoom = useInterpolatedNumber(zoom);
+    const getCenter = useInterpolatedVector2D(center/*, 0*/);
+    const getZoom = useInterpolatedNumber(zoom/*, 0*/);
 
     const startScale = useRef<number>(zoom);
 
