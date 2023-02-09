@@ -61,18 +61,18 @@ function addExtraHandlers(gestureConfig: GestureHandlers, extraHandlers: TouchEv
     }
 }
 
-type Interpolated<T> = {
+type WithInterpFlag<T> = {
     val: T;
     interp: boolean;
 }
 
 export function usePanAndZoom(config: Config): Output {
-    const [center, setCenter] = useState<Interpolated<Vector2D>>(() => ({
+    const [center, setCenter] = useState<WithInterpFlag<Vector2D>>(() => ({
         val: config.getInitialCenter(),
         interp: false,
     }));
 
-    const [zoom, setZoom] = useState<Interpolated<number>>(() => ({
+    const [zoom, setZoom] = useState<WithInterpFlag<number>>(() => ({
         val: config.getInitialZoom(),
         interp: false,
     }));
@@ -89,7 +89,7 @@ export function usePanAndZoom(config: Config): Output {
         });
     }
 
-    const setZoomInterpolate = (amount: number) => {
+    const applyZoomBounds = (amount: number) => {
         if (config.minZoom !== undefined) {
             amount = Math.max(config.minZoom, amount);
         }
@@ -98,11 +98,13 @@ export function usePanAndZoom(config: Config): Output {
             amount = Math.min(config.maxZoom, amount);
         }
 
-        setZoom({
-            val: amount,
-            interp: true,
-        });
-    }
+        return amount;
+    };
+    
+    const setZoomInterpolate = (amount: number) => setZoom({
+        val: applyZoomBounds(amount),
+        interp: true
+    });
 
     const gestureConfig: GestureHandlers = {
         onDrag: ({ delta: [dx, dy] }) => {
@@ -120,7 +122,7 @@ export function usePanAndZoom(config: Config): Output {
         onPinch: ({ da: [distance] }) => {
             const scale = distance / startScale.current;
             setZoom(current => ({
-                val: current.val * scale,
+                val: applyZoomBounds(current.val * scale),
                 interp: false,
             }));
         },
@@ -132,7 +134,7 @@ export function usePanAndZoom(config: Config): Output {
                     : -133.33333333333333 / distance;
 
                 setZoom(current => ({
-                    val: current.val / scale,
+                    val: applyZoomBounds(current.val / scale),
                     interp: true,
                 }));
             }

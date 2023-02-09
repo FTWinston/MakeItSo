@@ -126,6 +126,7 @@ export function useHelmMapInteractions(
 
     return {
         getViewCenter,
+        setViewCenter,
         getCellRadius,
         addingDestination,
         bindGestures,
