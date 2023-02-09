@@ -6,6 +6,7 @@ import { getTime } from 'src/utils/timeSpans';
 import { getPositionValue } from 'src/types/Keyframes';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Rectangle } from 'src/types/Rectangle';
+import { scaleToRange } from 'src/utils/scaleToRange';
 
 export type drawFunction = (context: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => void;
 
@@ -71,6 +72,10 @@ export function screenToWorld(canvas: HTMLCanvasElement, cellRadius: number, wor
     return result;
 }
 
+function getGridAlpha(cellRadius: number): number {
+    return scaleToRange(cellRadius, [16, 160], [0.15, 0.5]);
+}
+
 export function drawMap(
     ctx: CanvasRenderingContext2D,
     viewBounds: DOMRect,
@@ -95,7 +100,7 @@ export function drawMap(
 
     drawExtraBackground?.(ctx, worldBounds, pixelSize);
 
-    ctx.globalAlpha = 0.5;
+    ctx.globalAlpha = getGridAlpha(cellRadius);
 
     const gridStroke = theme.palette[gridColor].light;
     drawHexGrid(ctx, worldBounds, 1, pixelSize, gridStroke);
