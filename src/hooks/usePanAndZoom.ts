@@ -108,8 +108,8 @@ export function usePanAndZoom(config: Config): Output {
         onDrag: ({ delta: [dx, dy] }) => {
             setCenter(current => ({
                 val: {
-                    x: current.val.x - dx / zoom.val * 1.85,
-                    y: current.val.y - dy / zoom.val * 1.85,
+                    x: current.val.x - dx / zoom.val,
+                    y: current.val.y - dy / zoom.val,
                 },
                 interp: false,
             }));
