@@ -1,18 +1,15 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 import { Position } from 'src/types/Position';
-import { determineAngle, distanceSq, Vector2D } from 'src/types/Vector2D';
+import { distanceSq, Vector2D } from 'src/types/Vector2D';
 import { getVectorValue } from 'src/types/Keyframes';
-import { getClosestCellCenter, getWorldBounds, screenToWorld, SpaceMap } from 'src/features/spacemap';
-import { TouchEvents } from 'src/types/TouchEvents';
+import { getWorldBounds, SpaceMap } from 'src/features/spacemap';
 import { useTheme } from 'src/lib/mui';
 import { drawWaypoint } from '../utils/drawWaypoint';
-import { clickMoveLimit, useLongPress } from 'src/hooks/useLongPress';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
-import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { isInRectangle, Rectangle } from 'src/types/Rectangle';
 import { drawManeuver, ManeuverInfo } from '../features/maneuvers';
 import { getTime } from 'src/utils/timeSpans';
-import { useHasChanged } from 'src/hooks/useHasChanged';
+import { useHelmMapInteractions } from '../hooks/useHelmMapInteractions';
 
 interface Props {
     getInitialCenter: () => Vector2D;
@@ -34,118 +31,17 @@ export const HelmMap: React.FC<Props> = props => {
         [props.ships]
     );
     
-    const [addingDestination, setAddingDestination] = useState<Position>();
-
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const { localShip, shipVisible } = props;
+    const { localShip, shipVisible, setDestination, getInitialCenter, forceViewCenter } = props;
     const { motion } = localShip;
     
-    const getExtraHandlers = (viewCenter: Vector2D, cellRadius: number) => {
-        const tap = (pagePos: Vector2D) => {
-            const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
-            const shipPos = getVectorValue(props.localShip.motion);
-            const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
-
-            const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
-            
-            props.setDestination({
-                x: targetCellPos.x,
-                y: targetCellPos.y,
-                angle: angleFromShipToCellPos,
-            });
-        };
-
-        const longPress = (pagePos: Vector2D) => {
-            const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
-            const shipPos = getVectorValue(props.localShip.motion);
-            const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
-
-            const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
-
-            setAddingDestination({
-                x: targetCellPos.x,
-                y: targetCellPos.y,
-                angle: angleFromShipToCellPos,
-            });
-        };
-
-        let extraHandlers: TouchEvents | undefined = addingDestination
-            ? {
-                onMouseMove: (e: React.MouseEvent<Element>) => {
-                    const screenPos = {
-                        x: e.pageX,
-                        y: e.pageY,
-                    };
-
-                    const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, screenPos);
-
-                    setAddingDestination(waypoint => ({
-                        x: waypoint!.x,
-                        y: waypoint!.y,
-                        angle: determineAngle(addingDestination, worldPos, waypoint!.angle!)
-                    }));
-                },
-                onTouchMove: (e: React.TouchEvent<Element>) => {
-                    if (e.touches.length < 2) {
-                        const screenPos = {
-                            x: e.touches[0].pageX,
-                            y: e.touches[0].pageY,
-                        };
-
-                        const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, screenPos);
-
-                        setAddingDestination(waypoint => ({
-                            x: waypoint!.x,
-                            y: waypoint!.y,
-                            angle: determineAngle(addingDestination, worldPos, waypoint!.angle!)
-                        }));
-                    }
-                },
-                onMouseUp: () => {
-                    props.setDestination({
-                        x: addingDestination.x,
-                        y: addingDestination.y,
-                        angle: addingDestination.angle,
-                    });
-                    setAddingDestination(undefined);
-                },
-                onTouchEnd: () => {
-                    props.setDestination({
-                        x: addingDestination.x,
-                        y: addingDestination.y,
-                        angle: addingDestination.angle,
-                    });
-                    setAddingDestination(undefined);
-                },
-                onMouseLeave: () => {
-                    setAddingDestination(undefined);
-                },
-            }
-            : undefined;
-
-        extraHandlers = useLongPress(longPress, tap, extraHandlers);
-        return extraHandlers;
-    }
-
     const {
-        getCenter: getViewCenter,
-        setCenter: setViewCenter,
-        getZoom: getCellRadius,
+        getViewCenter,
+        getCellRadius,
+        addingDestination,
         bindGestures,
-    } = usePanAndZoom({
-        getInitialCenter: props.getInitialCenter,
-        getInitialZoom: () => 32,
-        minZoom: 12,
-        maxZoom: 192,
-        dragThreshold: clickMoveLimit,
-        getExtraHandlers,
-    });
-
-    const forceCenterChanged = useHasChanged(props.forceViewCenter);
-    if (props.forceViewCenter && forceCenterChanged) {
-        setViewCenter(props.forceViewCenter);
-    }
+    } = useHelmMapInteractions(canvas, motion, setDestination, getInitialCenter, forceViewCenter);
 
     useEffect(() => {
         const updateVisibility = () => {
