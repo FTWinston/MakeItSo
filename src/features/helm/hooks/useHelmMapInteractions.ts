@@ -115,6 +115,7 @@ export function useHelmMapInteractions(
         minZoom: 12,
         maxZoom: 192,
         dragThreshold: clickMoveLimit,
+        allowPan: addingDestination === undefined,
         getExtraHandlers,
     });
 
