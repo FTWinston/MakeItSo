@@ -61,16 +61,35 @@ function addExtraHandlers(gestureConfig: GestureHandlers, extraHandlers: TouchEv
     }
 }
 
+type Interpolated<T> = {
+    val: T;
+    interp: boolean;
+}
+
 export function usePanAndZoom(config: Config): Output {
-    const [center, setCenter] = useState<Vector2D>(config.getInitialCenter());
-    const [zoom, setZoomUnbounded] = useState<number>(config.getInitialZoom());
+    const [center, setCenter] = useState<Interpolated<Vector2D>>(() => ({
+        val: config.getInitialCenter(),
+        interp: false,
+    }));
 
-    const getCenter = useInterpolatedVector2D(center/*, 0*/);
-    const getZoom = useInterpolatedNumber(zoom/*, 0*/);
+    const [zoom, setZoom] = useState<Interpolated<number>>(() => ({
+        val: config.getInitialZoom(),
+        interp: false,
+    }));
 
-    const startScale = useRef<number>(zoom);
+    const getCenterValue = useInterpolatedVector2D(center.val, center.interp);
+    const getZoomValue = useInterpolatedNumber(zoom.val, zoom.interp);
 
-    const setZoomBounded = (amount: number) => {
+    const startScale = useRef<number>(zoom.val);
+
+    const setCenterInterpolate = (center: Vector2D) => {
+        setCenter({
+            val: center,
+            interp: true, 
+        });
+    }
+
+    const setZoomInterpolate = (amount: number) => {
         if (config.minZoom !== undefined) {
             amount = Math.max(config.minZoom, amount);
         }
@@ -79,22 +98,31 @@ export function usePanAndZoom(config: Config): Output {
             amount = Math.min(config.maxZoom, amount);
         }
 
-        setZoomUnbounded(amount);
+        setZoom({
+            val: amount,
+            interp: true,
+        });
     }
 
     const gestureConfig: GestureHandlers = {
         onDrag: ({ delta: [dx, dy] }) => {
-            setCenter({
-                x: center.x - dx / zoom * 1.85,
-                y: center.y - dy / zoom * 1.85,
-            });
+            setCenter(current => ({
+                val: {
+                    x: current.val.x - dx / zoom.val * 1.85,
+                    y: current.val.y - dy / zoom.val * 1.85,
+                },
+                interp: false,
+            }));
         },
         onPinchStart: ({ da: [distance] }) => {
             startScale.current = distance;
         },
         onPinch: ({ da: [distance] }) => {
             const scale = distance / startScale.current;
-            setZoomUnbounded(zoom * scale);
+            setZoom(current => ({
+                val: current.val * scale,
+                interp: false,
+            }));
         },
         onWheel: ({ delta: [startVal, endVal] }) => {
             const distance = startVal - endVal;
@@ -103,28 +131,30 @@ export function usePanAndZoom(config: Config): Output {
                     ? 75 / distance
                     : -133.33333333333333 / distance;
 
-                setZoomUnbounded(zoom / scale);
+                setZoom(current => ({
+                    val: current.val / scale,
+                    interp: true,
+                }));
             }
         },
     };
 
     if (config.getExtraHandlers) {
-        addExtraHandlers(gestureConfig, config.getExtraHandlers(center, zoom));
+        addExtraHandlers(gestureConfig, config.getExtraHandlers(center.val, zoom.val));
     }
     
     const bindGestures = useGesture(gestureConfig, {
         drag: {
-            //from: () => [-center.x, -center.y],
             threshold: config.dragThreshold,
             enabled: config.allowPan !== false,
         },
     });
 
     return {
-        getCenter,
-        setCenter,
-        getZoom,
-        setZoom: setZoomBounded,
+        getCenter: getCenterValue,
+        setCenter: setCenterInterpolate,
+        getZoom: getZoomValue,
+        setZoom: setZoomInterpolate,
         bindGestures,
     };
 };

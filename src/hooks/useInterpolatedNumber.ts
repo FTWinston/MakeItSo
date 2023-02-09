@@ -1,14 +1,14 @@
 import { useSpringValue } from '@react-spring/web';
 import { useRef } from 'react';
 
-export function useInterpolatedNumber(value: number, springMass?: number): () => number {
+export function useInterpolatedNumber(value: number, interpolate?: boolean): () => number {
     const prevValue = useRef(value);
 
     const params = {
         config: {
-            mass: springMass,
+            mass: interpolate === false ? 0 : 1,
         }
-    }
+    };
 
     const springValue = useSpringValue(value, params);
 

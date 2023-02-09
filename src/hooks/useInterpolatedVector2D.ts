@@ -2,12 +2,12 @@ import { useSpringValue } from '@react-spring/web';
 import { useRef } from 'react';
 import { Vector2D } from 'src/types/Vector2D';
 
-export function useInterpolatedVector2D(value: Vector2D, springMass?: number): () => Vector2D {
+export function useInterpolatedVector2D(value: Vector2D, interpolate?: boolean): () => Vector2D {
     const prevValue = useRef(value);
 
     const params = {
         config: {
-            mass: springMass
+            mass: interpolate === false ? 0 : 1,
         }
     };
 
