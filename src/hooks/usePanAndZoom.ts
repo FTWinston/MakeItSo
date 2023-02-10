@@ -127,17 +127,18 @@ export function usePanAndZoom(config: Config): Output {
             }));
         },
         onWheel: ({ delta: [startVal, endVal] }) => {
-            const distance = startVal - endVal;
-            if (distance !== 0) {
-                const scale = distance > 0
-                    ? 75 / distance
-                    : -133.33333333333333 / distance;
-
-                setZoom(current => ({
-                    val: applyZoomBounds(current.val / scale),
-                    interp: true,
-                }));
+            const distance = endVal - startVal;
+            if (distance === 0) {
+                return;
             }
+
+            // 100 or -100 would be a "normal" step distance. This nicely accomodates different step sizes, in both directions.
+            const scale = Math.pow(0.75, distance / 100);
+
+            setZoom(current => ({
+                val: applyZoomBounds(current.val * scale),
+                interp: true,
+            }));
         },
     };
 
