@@ -20,6 +20,7 @@ interface Props {
     stop: () => void;
     maneuvers: ManeuverInfo[];
     maneuverChoice: ManeuverChoice;
+    discardManeuverCard: () => void;
     maneuver: (type: ManeuverType) => void;
     destination: Position | null;
     setDestination: (destination: Position) => void;
@@ -84,6 +85,7 @@ export const Helm: React.FC<Props> = (props) => {
                                 maneuvers={props.maneuverChoice}
                                 selectManeuver={props.maneuver}
                                 previewManeuver={setPreviewManeuver}
+                                discard={props.discardManeuverCard}
                                 startAngle={currentMotionEndAngle}
                             />
                         </div>

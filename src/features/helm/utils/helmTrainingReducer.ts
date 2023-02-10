@@ -6,6 +6,7 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { getManeuver } from '../features/maneuvers';
 import { HelmAction } from '../types/HelmState';
 import { getEndPosition } from './getEndPosition';
+import { moveToNextManeuverCard } from './moveToNextManeuverCard';
 
 export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
     if (state.destroyed) {
@@ -42,6 +43,11 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             return state;
         }
 
+        case 'discard': {
+            moveToNextManeuverCard(state);
+            return state;
+        }
+
         case 'maneuver': {
             if (!state.helm.maneuverChoice.options.includes(action.choice)) {
                 return state;
@@ -54,13 +60,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
                 return state;
             }
 
-            // Discard current choice, and get a new choice. Shuffle if needed.
-            const [newChoice, didShuffle] = drawCard(state.helm.manueverDrawPile, state.helm.manueverDiscardPile, state.helm.maneuverChoice);
-            state.helm.maneuverChoice = newChoice;
-
-            if (didShuffle) {
-                // TODO: indicate shuffle?
-            }
+            moveToNextManeuverCard(state);
 
             state.helm.maneuvers.push(maneuver);
             state.motion.push(...maneuver.motion);
@@ -72,3 +72,4 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             throw new UnexpectedValueError(action);
     }
 }
+

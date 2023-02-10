@@ -29,6 +29,8 @@ export type HelmAction = {
     type: 'set destination';
     destination: Position;
 } | {
+    type: 'discard';
+} | {
     type: 'maneuver';
     choice: ManeuverType;
 };

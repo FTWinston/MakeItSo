@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Card, styled, Typography } from 'src/lib/mui';
+import { Button, Card, styled, Typography } from 'src/lib/mui';
 import { Keyframe } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { PowerLevel } from 'src/types/ShipSystem';
@@ -13,12 +13,13 @@ interface Props {
     startAngle: number;
     previewManeuver: (type: ManeuverType | null) => void;
     selectManeuver: (type: ManeuverType) => void;
+    discard: () => void;
 }
 
 export const maneuverCardHeight = '5.7em';
 
 const CardRoot = styled(Card)(({ theme }) => ({
-    width: '16em',
+    width: '18.4em',
     height: maneuverCardHeight,
     padding: '0.4em',
     gap: '0.4em',
@@ -42,6 +43,18 @@ const Prompt = styled(Typography)(({ theme }) => ({
     fontSize: '0.9em',
     fontWeight: 'bold',
 }));
+
+const DiscardButton = styled(Button)({
+    width: '2em',
+    minWidth: 'unset',
+    height: '3.5em',
+    padding: 0,
+});
+
+const DiscardText = styled('div')({
+    fontSize: '0.7em',
+    writingMode: 'vertical-rl',
+})
 
 export const ManeuverCard: React.FC<Props> = props => {
     const { t } = useTranslation('helm');
@@ -69,6 +82,13 @@ export const ManeuverCard: React.FC<Props> = props => {
         <CardRoot variant="outlined">
             <Prompt textTransform="uppercase">{t('choose maneuver')}</Prompt>
             {maneuvers}
+            
+            <DiscardButton
+                color="warning"
+                onClick={props.discard}
+            >
+                <DiscardText>{t('discard card')}</DiscardText>
+            </DiscardButton>
         </CardRoot>
     );
 }
