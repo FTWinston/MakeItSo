@@ -4,7 +4,8 @@ import { useRef } from 'react';
 export function useInterpolatedNumber(value: number, interpolate?: boolean): () => number {
     const params = {
         config: {
-            mass: interpolate === false ? 0 : 1,
+            tension: interpolate ? 170 : 10000,
+            friction: interpolate ? 26 : 100,
         }
     };
     

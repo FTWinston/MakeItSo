@@ -5,7 +5,8 @@ import { Vector2D } from 'src/types/Vector2D';
 export function useInterpolatedVector2D(value: Vector2D, interpolate?: boolean): () => Vector2D {
     const params = {
         config: {
-            mass: interpolate === false ? 0 : 1,
+            tension: interpolate ? 170 : 10000,
+            friction: interpolate ? 26 : 100,
         }
     };
 
