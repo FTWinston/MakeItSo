@@ -1,8 +1,7 @@
-import { useState } from 'react';
 import TravelIcon from '@mui/icons-material/LocationOn';
 import ManeuverIcon from '@mui/icons-material/TrendingUp';
 import { useTranslation } from 'react-i18next';
-import { Fab, Snackbar, styled, useTheme, ZoomTransition } from 'src/lib/mui';
+import { Fab, styled, useTheme, ZoomTransition } from 'src/lib/mui';
 
 interface Props {
     maneuverMode: boolean;
@@ -15,11 +14,6 @@ const ModeFab = styled(Fab)(({ theme }) => ({
     right: theme.spacing(2),
 }));
 
-const ChangedMode = styled(Snackbar)({
-    maxWidth: '60vw',
-    opacity: 0.75,
-})
-
 export const ActionButtons: React.FC<Props> = props => {
     const theme = useTheme();
     const { t } = useTranslation('helm');
@@ -29,19 +23,8 @@ export const ActionButtons: React.FC<Props> = props => {
         exit: theme.transitions.duration.leavingScreen,
     };
 
-    const [showSnack, setShowSnack] = useState(false);
-
     return (
-        <>    
-            <ChangedMode
-                key={props.maneuverMode ? 'replace' : 'add'}
-                open={showSnack}
-                onClose={() => setShowSnack(false)}
-                autoHideDuration={3000}
-                anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                message={props.maneuverMode ? t('set maneuver mode') : t('set travel mode')}
-            />
-
+        <>
             <ZoomTransition
                 in={props.maneuverMode}
                 timeout={transitionDuration}
@@ -53,7 +36,7 @@ export const ActionButtons: React.FC<Props> = props => {
                 <ModeFab
                     color="primary"
                     aria-label={t('travel')}
-                    onClick={() => { props.setManeuverMode(false); setShowSnack(true); }}
+                    onClick={() => props.setManeuverMode(false)}
                 >
                     <TravelIcon />
                 </ModeFab>
@@ -70,7 +53,7 @@ export const ActionButtons: React.FC<Props> = props => {
                 <ModeFab
                     color="secondary"
                     aria-label={t('maneuver')}
-                    onClick={() => { props.setManeuverMode(true); setShowSnack(true); }}
+                    onClick={() => props.setManeuverMode(true)}
                 >
                     <ManeuverIcon />
                 </ModeFab>
