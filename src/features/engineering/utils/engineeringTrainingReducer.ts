@@ -14,9 +14,9 @@ import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffe
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
 
-export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship {
+export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship | void {
     if (state.destroyed) {
-        return state;
+        return;
     }
 
     switch (action.type) {
@@ -37,17 +37,17 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
             
         case 'play':
             playCard(state, action.cardId, action.targetSystem, action.repair);
-            return state;
+            break;
 
         case 'draw': {
             drawCard(state, action.cardId);
-            return state;
+            break;
         }
 
         case 'damage': {
             const affectedSystem = state.systems.get(action.system);
             adjustHealth(affectedSystem, state, action.healthChange);
-            return state;
+            break;
         }
 
         case 'add custom card': {
@@ -63,13 +63,13 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
                 card.allowedSystems = card.determineAllowedSystems(state);
             }
 
-            return state;
+            break;
         }
 
         case 'add custom effect': {
             const affectedSystem = state.systems.get(action.system);
             applySingleEffect(action.effectType, affectedSystem, state);
-            return state;
+            break;
         }
 
         case 'tick': {
@@ -83,8 +83,7 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
             applyReactorDamage(state, action.currentTime);
 
             updateCardAllowedSystems(state);
-
-            return state;
+            break;
         }
 
         default:

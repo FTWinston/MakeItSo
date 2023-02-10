@@ -8,9 +8,9 @@ import { HelmAction } from '../types/HelmState';
 import { getEndPosition } from './getEndPosition';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
 
-export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
+export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | void {
     if (state.destroyed) {
-        return state;
+        return;
     }
 
     switch (action.type) {
@@ -20,7 +20,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             
         case 'tick': {
             state.updateMotion(action.currentTime);
-            return state;
+            break;
         }
 
         case 'stop': {
@@ -28,8 +28,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
             state.helm.waypoints = [];
             state.helm.maneuvers = [];
             state.helm.forceMotionUpdate = true;
-
-            return state;
+            break;
         }
 
         case 'set destination': {
@@ -39,33 +38,31 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship {
                 time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
             }];
             state.helm.forceMotionUpdate = true;
-
-            return state;
+            break;
         }
 
         case 'discard': {
             moveToNextManeuverCard(state);
-            return state;
+            break;
         }
 
         case 'maneuver': {
             if (!state.helm.maneuverChoice.options.includes(action.choice)) {
-                return state;
+                break;
             }
 
             const startPosition = getEndPosition(state);
             const maneuver = getManeuver(action.choice, startPosition);
             
             if (state.systems.get(ShipSystem.Engines).power < maneuver.minPower) {
-                return state;
+                break;
             }
 
             moveToNextManeuverCard(state);
 
             state.helm.maneuvers.push(maneuver);
             state.motion.push(...maneuver.motion);
-
-            return state;
+            break;
         }
 
         default:
