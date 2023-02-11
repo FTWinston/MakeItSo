@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { Button, Card, styled, Typography } from 'src/lib/mui';
+import CloseIcon from '@mui/icons-material/Close';
+import { Card, IconButton, styled, Typography } from 'src/lib/mui';
 import { Keyframe } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { PowerLevel } from 'src/types/ShipSystem';
@@ -19,7 +20,7 @@ interface Props {
 export const maneuverCardHeight = '5.7em';
 
 const CardRoot = styled(Card)(({ theme }) => ({
-    width: '18.4em',
+    width: '16em',
     height: maneuverCardHeight,
     padding: '0.4em',
     gap: '0.4em',
@@ -44,17 +45,13 @@ const Prompt = styled(Typography)(({ theme }) => ({
     fontWeight: 'bold',
 }));
 
-const DiscardButton = styled(Button)({
-    width: '2em',
-    minWidth: 'unset',
-    height: '3.5em',
+const DiscardButton = styled(IconButton)(({ theme }) => ({
+    color: theme.palette.text.secondary,
+    position: 'absolute',
+    top: '0.125em',
+    right: '0.125em',
     padding: 0,
-});
-
-const DiscardText = styled('div')({
-    fontSize: '0.7em',
-    writingMode: 'vertical-rl',
-})
+}));
 
 export const ManeuverCard: React.FC<Props> = props => {
     const { t } = useTranslation('helm');
@@ -84,10 +81,10 @@ export const ManeuverCard: React.FC<Props> = props => {
             {maneuvers}
             
             <DiscardButton
-                color="warning"
                 onClick={props.discard}
+                aria-label={t('discard card')}
             >
-                <DiscardText>{t('discard card')}</DiscardText>
+                <CloseIcon />
             </DiscardButton>
         </CardRoot>
     );
