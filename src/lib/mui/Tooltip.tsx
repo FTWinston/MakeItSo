@@ -5,7 +5,7 @@ type Props = Omit<ComponentProps<typeof MuiTooltip>, 'arrow' | 'disableFocusList
 
 export const Tooltip: React.FC<Props> = props => {
     return (
-        <MuiTooltip disableFocusListener title={props.title} arrow enterTouchDelay={150}>
+        <MuiTooltip disableFocusListener arrow enterTouchDelay={150} {...props}>
             {props.children}
         </MuiTooltip>
     );

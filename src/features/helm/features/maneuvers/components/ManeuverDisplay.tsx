@@ -49,7 +49,6 @@ export const ManeuverDisplay: React.FC<Props> = props => {
             <Wrapper>
                 <SizedCanvas
                     enabled={props.enabled}
-                    aria-label={t(`maneuver ${props.type}`)}
                     ref={canvas}
                     draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, props.motion, props.minPower, props.enabled)}                    
                     onClick={props.onClick}

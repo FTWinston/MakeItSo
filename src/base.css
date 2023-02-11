@@ -95,3 +95,7 @@ button:active, button:focus {
 	outline: 1px dotted #aaa;
 	outline-offset: 2px;
 }
+
+.MuiTooltip-popper {
+	pointer-events: none !important;
+}
