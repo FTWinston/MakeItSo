@@ -25,6 +25,14 @@ const ShipMotion: React.FC<GameObjectInfo> = (props) => {
             getCenter={() => ({ x: 0, y: 0 })}
             vessels={[ship]}
             localVessel={ship}
+            drawExtraBackground={(ctx) => {
+                ctx.fillStyle = 'green';
+                for (const keyframe of props.motion) {
+                    ctx.beginPath();
+                    ctx.ellipse(keyframe.val.x, keyframe.val.y, 0.1, 0.1, 0, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }}
             sx={{
                 height: '100vh',
             }}
