@@ -10,10 +10,8 @@ export function shouldUpdateMotion(ship: Ship, currentTime: number) {
         return true;
     }
 
-    const motion = ship.motion;
-
-    if (motion.length === 0) {
-        return ship.helm.destination !== null;
+    if (ship.motion.length === 0) {
+        return ship.helm.destination || ship.helm.maneuvers.length > 0;
     }
 
     return wantsMoreKeyframes(ship.motion, currentTime);
@@ -24,7 +22,7 @@ export function updateShipMotion(ship: Ship, currentTime: number) {
         holdPosition(ship, currentTime);
     }
     else {
-        updatePositionValue(ship, currentTime);
+        updateMotionValue(ship, currentTime);
     }
 
     ship.helm.forceMotionUpdate = false;
@@ -32,14 +30,16 @@ export function updateShipMotion(ship: Ship, currentTime: number) {
 
 function shouldHoldPosition(ship: Ship) {
     // Hold position if we've nowhere to go,
-    if (ship.helm.destination === null) {
+    if (ship.helm.destination === null && ship.helm.maneuvers.length === 0) {
         return true;
     }
 
     // Or if we've got a destination and have plotted a course there already.
     const lastPos = getLastFrame(ship.motion);
 
-    return vectorsEqual(lastPos.val, ship.helm.destination);
+    const lastPlanned = ship.helm.destination ?? getLastFrame(ship.helm.maneuvers[ship.helm.maneuvers.length - 1].motion).val;
+
+    return vectorsEqual(lastPos.val, lastPlanned);
 }
 
 function holdPosition(ship: Ship, currentTime: number) {
@@ -47,6 +47,7 @@ function holdPosition(ship: Ship, currentTime: number) {
     const time = currentTime + durationToTicks(5);
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
 
+    // TODO: only add a frame here if we need future frames. Otherwise, this may end up adding too many.
     ship.motion = [
         ...framesToKeep,
         {
@@ -89,7 +90,7 @@ function getExistingFramesToKeep(ship: Ship, currentTime: number) {
     }
 }
 
-function updatePositionValue(ship: Ship, currentTime: number) {
+function updateMotionValue(ship: Ship, currentTime: number) {
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
     const newFrames = determineFutureFrames(ship, framesToKeep);
 

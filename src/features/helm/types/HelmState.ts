@@ -4,7 +4,7 @@ import { ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 
 export interface HelmState {
-    destination: Waypoint | null;
+    destination: Waypoint | null; // TODO: Keyframe<Position>
     maneuvers: ManeuverInfo[];
     forceMotionUpdate: boolean;
 
