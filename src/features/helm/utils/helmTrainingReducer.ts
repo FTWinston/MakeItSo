@@ -5,6 +5,7 @@ import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { getManeuver } from '../features/maneuvers';
 import { HelmAction } from '../types/HelmState';
+import { appendMotion } from './appendMotion';
 import { getEndPosition } from './getEndPosition';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
 
@@ -61,7 +62,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
             moveToNextManeuverCard(state);
 
             state.helm.maneuvers.push(maneuver);
-            state.motion.push(...maneuver.motion);
+            appendMotion(state.motion, maneuver.motion);
             break;
         }
 

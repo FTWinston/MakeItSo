@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { SpaceMap } from 'src/features/spacemap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
+import { getManeuver, ManeuverType } from '../features/maneuvers';
 
 const ShipMotion: React.FC<GameObjectInfo> = (props) => {
     const canvas = useRef<HTMLCanvasElement>(null);
@@ -86,6 +87,29 @@ export const Rotate: Story = {
     }
 }
 
+export const Straight: Story = {
+    args: {
+        motion: [
+            {
+                time: 0,
+                val: {
+                    x: 0,
+                    y: 0,
+                    angle: 0,
+                },
+            },
+            {
+                time: durationToTicks(4),
+                val: {
+                    x: 10,
+                    y: 0,
+                    angle: 0,
+                },
+            },
+        ]
+    }
+}
+
 export const Square: Story = {
     args: {
         motion: [
@@ -130,5 +154,26 @@ export const Square: Story = {
                 },
             },
         ]
+    }
+}
+
+export const StraightManeuver: Story = {
+    args: {
+        motion: [
+            ...getManeuver(ManeuverType.SlowForward, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion,
+            getManeuver(ManeuverType.SlowForward, { time: 2000, val: { x: 3.5, y: 0, angle: 0 }}).motion[1],
+        ]
+    }
+}
+
+export const SweepRightManeuver: Story = {
+    args: {
+        motion: getManeuver(ManeuverType.SweepRight, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+    }
+}
+
+export const HardLeftManeuver: Story = {
+    args: {
+        motion: getManeuver(ManeuverType.HardLeft, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
     }
 }

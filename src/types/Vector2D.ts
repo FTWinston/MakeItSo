@@ -5,11 +5,13 @@ export interface Vector2D {
 
 const tolerance = 0.001;
 
+export function numbersEqual(num1: number, num2: number) {
+    return num1 >= num2 - tolerance
+        && num1 <= num2 + tolerance
+}
+
 export function vectorsEqual(v1: Vector2D, v2: Vector2D) {
-    return v1.x >= v2.x - tolerance
-        && v1.x <= v2.x + tolerance
-        && v1.y >= v2.y - tolerance
-        && v1.y <= v2.y + tolerance;
+    return numbersEqual(v1.x, v2.x) && numbersEqual(v1.y, v2.y);
 }
 
 export function distanceSq(v1: Vector2D, v2: Vector2D) {
