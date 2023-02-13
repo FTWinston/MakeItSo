@@ -13,7 +13,7 @@ export function shouldUpdateMotion(ship: Ship, currentTime: number) {
     const motion = ship.motion;
 
     if (motion.length === 0) {
-        return ship.helm.waypoints.length > 0;
+        return ship.helm.destination !== null;
     }
 
     return wantsMoreKeyframes(ship.motion, currentTime);
@@ -32,33 +32,19 @@ export function updateShipMotion(ship: Ship, currentTime: number) {
 
 function shouldHoldPosition(ship: Ship) {
     // Hold position if we've nowhere to go,
-    if (ship.helm.waypoints.length === 0) {
+    if (ship.helm.destination === null) {
         return true;
     }
 
-    // Or if we've only one waypoint and have plotted a course there already.
-    if (ship.helm.waypoints.length === 1) {
-        const lastPos = getLastFrame(ship.motion);
-        const onlyWaypoint = ship.helm.waypoints[0];
+    // Or if we've got a destination and have plotted a course there already.
+    const lastPos = getLastFrame(ship.motion);
 
-        return vectorsEqual(lastPos.val, onlyWaypoint);
-    }
-
-    return false;
+    return vectorsEqual(lastPos.val, ship.helm.destination);
 }
 
 function holdPosition(ship: Ship, currentTime: number) {
     const lastFrame = getLastFrame(ship.motion);
-
     const time = currentTime + durationToTicks(5);
-
-    if (ship.helm.waypoints.length > 0) {
-        const waypoint = ship.helm.waypoints[0];
-        if (waypoint.time === undefined) {
-            waypoint.time = time;
-        }
-    }
-
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
 
     ship.motion = [
@@ -121,13 +107,23 @@ function updatePositionValue(ship: Ship, currentTime: number) {
 }
 
 function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): Keyframes<Position> {
+    // TODO: THIS FOR MANEUVERS?
+    /*
     let [
         firstWaypoint,
         secondWaypoint,
         thirdWaypoint,
     ] = ship.helm.waypoints;
+    */
+    let firstWaypoint = ship.helm.destination ?? undefined;
+    if (firstWaypoint === undefined) {
+        return [];
+    }
+    let secondWaypoint: Waypoint | undefined = undefined;
+    let thirdWaypoint: Waypoint | undefined = undefined;
 
-    if (firstWaypoint.time !== undefined && !ship.helm.forceMotionUpdate) {
+    // Is this just ASSUMING firstWaypoint is in the past?
+    if (firstWaypoint.time !== undefined && !ship.helm.forceMotionUpdate && secondWaypoint) {
         firstWaypoint = secondWaypoint;
         secondWaypoint = thirdWaypoint;
     }
@@ -226,24 +222,8 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
     });
 
     firstWaypoint.time = latestTime;
-
+    
     return results;
-}
-
-export function addWaypoint(ship: Ship, waypoint: Waypoint) {
-    ship.helm.waypoints.push(waypoint);
-
-    if (ship.helm.waypoints.length <= 2) {
-        ship.helm.forceMotionUpdate = true;
-    }
-}
-
-export function clearMovement(ship: Ship) {
-    ship.helm.waypoints = [];
-
-    // TODO: recalculate movement .. decelerate to a stop
-
-    ship.helm.forceMotionUpdate = true;
 }
 
 export function adjustSpeed(ship: Ship, time: number) {

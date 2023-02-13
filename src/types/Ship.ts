@@ -13,7 +13,6 @@ import { getDefaultHelmState, shouldUpdateMotion, updateShipMotion } from 'src/f
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
 import { getLastFrame, pruneKeyframes } from './Keyframes';
-import { current } from 'immer';
 
 export class Ship extends GameObject implements ShipInfo {
     constructor() {
@@ -33,17 +32,10 @@ export class Ship extends GameObject implements ShipInfo {
     sensors: SensorsState;
     weapons: WeaponsState;
 
-    /** Remove waypoints that are in the past. */
-    private pruneWaypoints(currentTime: number) {
-        while (true) {
-            const firstWaypoint = this.helm.waypoints[0];
-
-            if (firstWaypoint?.time < currentTime) {
-                this.helm.waypoints.shift();
-                continue;
-            }
-
-            break;
+    /** Remove destination if it is in the past. */
+    private pruneDestination(currentTime: number) {
+        if (this.helm.destination && this.helm.destination.time < currentTime) {
+            this.helm.destination = null;
         }
     }
 
@@ -64,11 +56,11 @@ export class Ship extends GameObject implements ShipInfo {
     updateMotion(currentTime: number): void {
         const didPrune = pruneKeyframes(this.motion, currentTime);
 
-        this.pruneWaypoints(currentTime);
+        this.pruneDestination(currentTime);
         this.pruneManeuvers(currentTime);
 
-        // if pruned keyframes from the start, probably need to add new ones to the end.
-
+        // If pruned keyframes from the start, probably need to add new ones to the end.
+        // TODO: use didPrune?
         if (shouldUpdateMotion(this, currentTime)) {
             updateShipMotion(this, currentTime);
         }

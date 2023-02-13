@@ -1,6 +1,5 @@
 import { Ship } from 'src/types/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { drawCard } from 'src/utils/drawCard';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { getManeuver } from '../features/maneuvers';
@@ -26,18 +25,16 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
 
         case 'stop': {
             state.helm.destination = null;
-            state.helm.waypoints = [];
             state.helm.maneuvers = [];
             state.helm.forceMotionUpdate = true;
             break;
         }
 
         case 'set destination': {
-            state.helm.destination = { ...action.destination };
-            state.helm.waypoints = [{
+            state.helm.destination = {
                 ...action.destination,
                 time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
-            }];
+            };
             state.helm.forceMotionUpdate = true;
             break;
         }
@@ -61,8 +58,9 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
 
             moveToNextManeuverCard(state);
 
+            state.helm.destination = null;
             state.helm.maneuvers.push(maneuver);
-            appendMotion(state.motion, maneuver.motion);
+            appendMotion(state.motion, maneuver.motion); // TODO: don't do this here
             break;
         }
 
