@@ -2,7 +2,7 @@ import { drawHex, getClosestCellCenter } from 'src/features/spacemap';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 
-export function drawWaypoint(
+export function drawDestination(
     ctx: CanvasRenderingContext2D,
     waypoint: Position,
     cellRadius: number,

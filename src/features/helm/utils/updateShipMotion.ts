@@ -1,8 +1,7 @@
-import { Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getLastFrame } from 'src/types/Keyframes';
+import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getLastFrame } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
-import { Waypoint } from 'src/types/Waypoint';
 import { durationToTicks } from 'src/utils/timeSpans';
 
 export function shouldUpdateMotion(ship: Ship, currentTime: number) {
@@ -37,9 +36,9 @@ function shouldHoldPosition(ship: Ship) {
     // Or if we've got a destination and have plotted a course there already.
     const lastPos = getLastFrame(ship.motion);
 
-    const lastPlanned = ship.helm.destination ?? getLastFrame(ship.helm.maneuvers[ship.helm.maneuvers.length - 1].motion).val;
+    const lastPlanned = ship.helm.destination ?? getLastFrame(ship.helm.maneuvers[ship.helm.maneuvers.length - 1].motion);
 
-    return vectorsEqual(lastPos.val, lastPlanned);
+    return vectorsEqual(lastPos.val, lastPlanned.val);
 }
 
 function holdPosition(ship: Ship, currentTime: number) {
@@ -120,8 +119,8 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
     if (firstWaypoint === undefined) {
         return [];
     }
-    let secondWaypoint: Waypoint | undefined = undefined;
-    let thirdWaypoint: Waypoint | undefined = undefined;
+    let secondWaypoint: Keyframe<Position> | undefined = undefined;
+    let thirdWaypoint: Keyframe<Position> | undefined = undefined;
 
     // Is this just ASSUMING firstWaypoint is in the past?
     if (firstWaypoint.time !== undefined && !ship.helm.forceMotionUpdate && secondWaypoint) {
@@ -130,17 +129,17 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
     }
 
     const { val: startPosition, time: startTime } = getLastFrame(framesToKeep);
-    const moveAngle = determineAngle(startPosition, firstWaypoint, startPosition.angle);
+    const moveAngle = determineAngle(startPosition, firstWaypoint.val, startPosition.angle);
 
-    const endPosition = firstWaypoint.angle === undefined
+    const endPosition = firstWaypoint.val.angle === undefined
         ? {
-            x: firstWaypoint.x,
-            y: firstWaypoint.y,
+            x: firstWaypoint.val.x,
+            y: firstWaypoint.val.y,
             angle: secondWaypoint
-                ? determineMidAngle(startPosition, firstWaypoint, secondWaypoint, startPosition.angle)
+                ? determineMidAngle(startPosition, firstWaypoint.val, secondWaypoint/*.val*/, startPosition.angle)
                 : moveAngle,
         }
-        : firstWaypoint as Position;
+        : firstWaypoint.val;
 
     const startRotationAngularDistance = clampAngle(startPosition.angle - moveAngle);
     const startRotationDuration = Math.abs(startRotationAngularDistance / ship.helm.rotationalSpeed);

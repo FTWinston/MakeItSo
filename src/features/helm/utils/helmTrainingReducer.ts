@@ -32,7 +32,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
 
         case 'set destination': {
             state.helm.destination = {
-                ...action.destination,
+                val: { ...action.destination },
                 time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
             };
             state.helm.forceMotionUpdate = true;

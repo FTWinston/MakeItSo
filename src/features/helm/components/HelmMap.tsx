@@ -4,7 +4,7 @@ import { distanceSq, Vector2D } from 'src/types/Vector2D';
 import { getLastFrame, getPositionValue } from 'src/types/Keyframes';
 import { SpaceMap } from 'src/features/spacemap';
 import { useTheme } from 'src/lib/mui';
-import { drawWaypoint } from '../utils/drawWaypoint';
+import { drawDestination } from '../utils/drawDestination';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Rectangle } from 'src/types/Rectangle';
 import { drawManeuver, getManeuver, ManeuverInfo, ManeuverType } from '../features/maneuvers';
@@ -37,7 +37,7 @@ export const HelmMap: React.FC<Props> = props => {
     
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const { maneuvers, previewManeuver, localShip, setDestination, getInitialCenter } = props;
+    const { destination, maneuvers, previewManeuver, localShip, setDestination, getInitialCenter } = props;
     const { motion } = localShip;
     
     const {
@@ -71,13 +71,13 @@ export const HelmMap: React.FC<Props> = props => {
 
     const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
         if (addingDestination) {
-            drawWaypoint(ctx, addingDestination, 1, theme, 'primary');
+            drawDestination(ctx, addingDestination, 1, theme, 'primary');
         }
 
-        if (props.destination) {
+        if (destination) {
             // If adjusting destination on the same cell as the curent destination, don't draw both arrows.
-            if (!addingDestination || distanceSq(addingDestination, props.destination) >= 0.1) {
-                drawWaypoint(ctx, props.destination, 1, theme, addingDestination ? 'warning' : 'primary');
+            if (!addingDestination || distanceSq(addingDestination, destination) >= 0.1) {
+                drawDestination(ctx, destination, 1, theme, addingDestination ? 'warning' : 'primary');
             }
         }
 
@@ -94,7 +94,7 @@ export const HelmMap: React.FC<Props> = props => {
     const extraTravelButtons = props.mode === 'travel'
         ? (
             <StopAndFocus
-                shipMoving={props.destination !== null || props.maneuvers.length > 0}
+                shipMoving={destination !== null || maneuvers.length > 0}
                 shipVisible={shipVisible}
                 stop={props.stop}
                 focus={() => setViewCenter(getPositionValue(props.localShip.motion))}
