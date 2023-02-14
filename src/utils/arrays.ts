@@ -68,3 +68,7 @@ export function arrayToMap<TKey, TValue>(
         items.map(item => [getKey(item), item])
     );
 }
+
+export function getLast<TValue>(values: TValue[]) {
+    return values[values.length - 1];
+}

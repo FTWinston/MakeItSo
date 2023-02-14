@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react';
 import { Position } from 'src/types/Position';
 import { distanceSq, Vector2D } from 'src/types/Vector2D';
-import { getLastFrame, getPositionValue } from 'src/types/Keyframes';
+import { getPositionValue } from 'src/types/Keyframes';
 import { SpaceMap } from 'src/features/spacemap';
 import { useTheme } from 'src/lib/mui';
 import { drawDestination } from '../utils/drawDestination';
@@ -14,6 +14,7 @@ import { StopAndFocus } from './StopAndFocus';
 import { Mode } from './ModeToggle';
 import { useHasChanged } from 'src/hooks/useHasChanged';
 import { useShipVisibility } from '../hooks/useShipVisibility';
+import { getLast } from 'src/utils/arrays';
 
 interface Props {
     mode: Mode;
@@ -49,7 +50,7 @@ export const HelmMap: React.FC<Props> = props => {
     } = useHelmMapInteractions(canvas, motion, setDestination, getInitialCenter);
 
     // In maneuver mode, center the view on the end of the ship's planned motion.
-    const lastMoveEndPosition = getLastFrame(motion);
+    const lastMoveEndPosition = getLast(motion);
     let autoFocusPoint = lastMoveEndPosition && props.mode === 'maneuver'
         ? lastMoveEndPosition.val
         : undefined;

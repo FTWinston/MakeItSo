@@ -5,12 +5,13 @@ import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
-import { Keyframes, getPositionValue, getLastFrame } from 'src/types/Keyframes';
+import { Keyframes, getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { useState } from 'react';
 import { Mode, ModeToggle } from './ModeToggle';
 import { ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
+import { getLast } from 'src/utils/arrays';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -47,7 +48,7 @@ export const Helm: React.FC<Props> = (props) => {
     const [mode, setMode] = useState<Mode>('travel');
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
     
-    const currentMotionEndAngle = getLastFrame(localShip.motion).val.angle;
+    const currentMotionEndAngle = getLast(localShip.motion).val.angle;
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>

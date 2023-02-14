@@ -1,7 +1,8 @@
-import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getLastFrame } from 'src/types/Keyframes';
+import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
+import { getLast } from 'src/utils/arrays';
 import { durationToTicks } from 'src/utils/timeSpans';
 
 export function shouldUpdateMotion(ship: Ship, currentTime: number) {
@@ -33,16 +34,16 @@ function shouldHoldPosition(ship: Ship) {
         return true;
     }
 
-    // Or if we've got a destination and have plotted a course there already.
-    const lastPos = getLastFrame(ship.motion);
+    // Or if our motion already leads to our last-planned destination
+    const lastMotionPos = getLast(ship.motion);
 
-    const lastPlanned = ship.helm.destination ?? getLastFrame(ship.helm.maneuvers[ship.helm.maneuvers.length - 1].motion);
+    const lastPlannedPos = ship.helm.destination ?? getLast(getLast(ship.helm.maneuvers).motion);
 
-    return vectorsEqual(lastPos.val, lastPlanned.val);
+    return vectorsEqual(lastMotionPos.val, lastPlannedPos.val);
 }
 
 function holdPosition(ship: Ship, currentTime: number) {
-    const lastFrame = getLastFrame(ship.motion);
+    const lastFrame = getLast(ship.motion);
     const time = currentTime + durationToTicks(5);
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
 
@@ -76,7 +77,7 @@ function getExistingFramesToKeep(ship: Ship, currentTime: number) {
     else if (ship.helm.forceMotionUpdate || pastFrames.length === 1) {
         // console.log('keeping 1 frame, adding current time');
         return [
-            getLastFrame(pastFrames),
+            getLast(pastFrames),
             {
                 time: currentTime,
                 val: getPositionValue(ship.motion, currentTime),
@@ -128,7 +129,7 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
         secondWaypoint = thirdWaypoint;
     }
 
-    const { val: startPosition, time: startTime } = getLastFrame(framesToKeep);
+    const { val: startPosition, time: startTime } = getLast(framesToKeep);
     const moveAngle = determineAngle(startPosition, firstWaypoint.val, startPosition.angle);
 
     const endPosition = firstWaypoint.val.angle === undefined
