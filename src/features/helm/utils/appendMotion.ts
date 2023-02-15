@@ -1,6 +1,7 @@
 import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { numbersEqual } from 'src/types/Vector2D';
+import { getLast } from 'src/utils/arrays';
 
 function keyframesEqual(keyframe1: Keyframe<Position>, keyframe2: Keyframe<Position>) {
     return numbersEqual(keyframe1.time, keyframe2.time)
