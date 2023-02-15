@@ -1,4 +1,4 @@
-import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes } from 'src/types/Keyframes';
+import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getFirstFutureIndex } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
@@ -47,7 +47,11 @@ function holdPosition(ship: Ship, currentTime: number) {
     const time = currentTime + durationToTicks(5);
     const framesToKeep = getExistingFramesToKeep(ship, currentTime);
 
-    // TODO: only add a frame here if we need future frames. Otherwise, this may end up adding too many.
+    const hasAtLeastTwoFutureFrames = getFirstFutureIndex(framesToKeep, currentTime) < framesToKeep.length - 1;
+    if (hasAtLeastTwoFutureFrames) {
+        return;
+    }
+
     ship.motion = [
         ...framesToKeep,
         {
