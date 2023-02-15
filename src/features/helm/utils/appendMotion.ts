@@ -1,4 +1,4 @@
-import { getLastFrame, Keyframe, Keyframes } from 'src/types/Keyframes';
+import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { numbersEqual } from 'src/types/Vector2D';
 
@@ -15,7 +15,7 @@ export function appendMotion(target: Keyframes<Position>, toAdd: Keyframes<Posit
         return;
     }
 
-    const lastExisting = getLastFrame(target);
+    const lastExisting = getLast(target);
     const firstNew = toAdd[0];
 
     // If the first keyframe new is the same as the last existing one, don't add that frame,

@@ -10,9 +10,13 @@ export interface Keyframe<T> {
 
 export type Keyframes<T> = Array<Keyframe<T>>;
 
+export function getFirstFutureIndex<T>(keyframes: Keyframes<T>, currentTime: number): number {
+    return keyframes.findIndex(keyframe => keyframe.time > currentTime);
+}
+
 /** Remove keyframes that are more than 2 frames into the past. Return true if any were removed. */
 export function pruneKeyframes(keyframes: Keyframes<unknown>, currentTime: number): boolean {
-    const firstFutureIndex = keyframes.findIndex(segment => segment.time > currentTime);
+    const firstFutureIndex = getFirstFutureIndex(keyframes, currentTime);
 
     if (firstFutureIndex >= 2) {
         keyframes.splice(0, firstFutureIndex - 2);
@@ -57,7 +61,7 @@ type KeyframesSegment<T> = [
 ];
 
 function getSegmentToInterpolate<T>(keyframes: Keyframes<T>, currentTime: number): KeyframesSegment<T> {
-    const firstFutureIndex = keyframes.findIndex(segment => segment.time > currentTime);
+    const firstFutureIndex = getFirstFutureIndex(keyframes, currentTime);
 
     if (firstFutureIndex >= 2) {
         // Get 4 full keyframes spaced around the current time interval.

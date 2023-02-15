@@ -1,9 +1,10 @@
 import { drawHexGrid } from 'src/features/spacemap';
-import { getLastFrame, getVectorValue, Keyframes } from 'src/types/Keyframes';
+import { getVectorValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { polarToCartesian } from 'src/types/Vector2D';
+import { getLast } from 'src/utils/arrays';
 
 function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
     let { x: minX, y: minY } = keyframes[0].val;
@@ -108,7 +109,7 @@ export function drawManeuver(
     ctx.lineWidth = 0.15;
 
     const { time: startTime } = motion[0];
-    const { time: endTime, val: endPoint } = getLastFrame(motion);
+    const { time: endTime, val: endPoint } = getLast(motion);
     
     // Interpolate from startPoint (or the current point, if a time is given) to endPoint.
     ctx.beginPath();

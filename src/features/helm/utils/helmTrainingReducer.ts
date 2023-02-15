@@ -60,7 +60,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
 
             state.helm.destination = null;
             state.helm.maneuvers.push(maneuver);
-            appendMotion(state.motion, maneuver.motion); // TODO: don't do this here
+            state.helm.forceMotionUpdate = true;
             break;
         }
 
