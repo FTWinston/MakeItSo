@@ -6,6 +6,7 @@ import { getLast } from 'src/utils/arrays';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo } from '../features/maneuvers';
 import { MotionConfiguration } from '../types/HelmState';
+import { appendMotion } from './appendMotion';
 
 export function shouldUpdateMotion(ship: Ship, currentTime: number) {
     if (ship.helm.forceMotionUpdate) {
@@ -99,8 +100,10 @@ function getPastFrames(ship: Ship, currentTime: number) {
 
 function updateMotionValue(ship: Ship, currentTime: number) {
     const pastFrames = getPastFrames(ship, currentTime);
+    const startPosition = getLast(pastFrames);
+
     const newFrames = ship.helm.destination
-        ? getMotionBetweenPositions(getLast(pastFrames), ship.helm.destination, ship.helm)
+        ? getMotionBetweenPositions(startPosition, ship.helm.destination, ship.helm)
         : getMotionFromManeuvers(ship.helm.maneuvers, currentTime)
 
     /*
@@ -212,6 +215,12 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
 
 function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number) {
     let results: Keyframes<Position> = [];
+
+    for (const maneuver of maneuvers) {
+        appendMotion(results, maneuver.motion);
+    }
+
+    /*
     const numFramesWanted = 2;
 
     for (const maneuver of maneuvers) {
@@ -233,7 +242,7 @@ function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number) 
             break;
         }
     }
-    
+    */   
     return results;
 }
 
