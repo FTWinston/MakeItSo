@@ -8,7 +8,7 @@ export interface Keyframe<T> {
     val: T;
 }
 
-export type Keyframes<T> = Array<Keyframe<T>>;
+export type Keyframes<T> = Keyframe<T>[];
 
 export function getFirstFutureIndex<T>(keyframes: Keyframes<T>, currentTime: number): number {
     return keyframes.findIndex(keyframe => keyframe.time > currentTime);

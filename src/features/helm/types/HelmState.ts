@@ -3,14 +3,16 @@ import { Position } from 'src/types/Position';
 import { ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 
-export interface HelmState {
-    destination: Keyframe<Position> | null; // TODO: Keyframe<Position>
-    maneuvers: ManeuverInfo[];
-    forceMotionUpdate: boolean;
-
+export interface MotionConfiguration {
     rotationalSpeed: number;
     speedWhileRotating: number;
     speed: number;
+}
+
+export interface HelmState extends MotionConfiguration {
+    destination: Keyframe<Position> | null;
+    maneuvers: ManeuverInfo[];
+    forceMotionUpdate: boolean;
 
     maneuverChoice: ManeuverChoice;
     manueverDrawPile: ManeuverChoice[];

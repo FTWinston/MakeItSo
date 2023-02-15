@@ -1,8 +1,12 @@
-import { Keyframe } from 'src/types/Keyframes';
+import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { Ship } from 'src/types/Ship';
 import { getLast } from 'src/utils/arrays';
+import { ManeuverInfo } from '../features/maneuvers';
 
-export function getEndPosition(ship: Ship): Keyframe<Position> {
-    return getLast(ship.motion);
+export function getEndPosition(motion: Keyframes<Position>, maneuvers: ManeuverInfo[]): Keyframe<Position> {
+    const keyframes = maneuvers.length > 0
+        ? getLast(maneuvers).motion
+        : motion;
+    
+    return getLast(keyframes);
 }

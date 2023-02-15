@@ -12,6 +12,7 @@ import { Mode, ModeToggle } from './ModeToggle';
 import { ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuvers';
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 import { getLast } from 'src/utils/arrays';
+import { getEndPosition } from '../utils/getEndPosition';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -48,7 +49,7 @@ export const Helm: React.FC<Props> = (props) => {
     const [mode, setMode] = useState<Mode>('travel');
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
     
-    const currentMotionEndAngle = getLast(localShip.motion).val.angle;
+    const currentMotionEndAngle = getEndPosition(localShip.motion, props.maneuvers).val.angle;
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>

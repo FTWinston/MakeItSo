@@ -4,7 +4,6 @@ import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { getManeuver } from '../features/maneuvers';
 import { HelmAction } from '../types/HelmState';
-import { appendMotion } from './appendMotion';
 import { getEndPosition } from './getEndPosition';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
 
@@ -49,7 +48,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
                 break;
             }
 
-            const startPosition = getEndPosition(state);
+            const startPosition = getEndPosition(state.motion, state.helm.maneuvers);
             const maneuver = getManeuver(action.choice, startPosition);
             
             if (state.systems.get(ShipSystem.Engines).power < maneuver.minPower) {

@@ -14,7 +14,7 @@ import { StopAndFocus } from './StopAndFocus';
 import { Mode } from './ModeToggle';
 import { useHasChanged } from 'src/hooks/useHasChanged';
 import { useShipVisibility } from '../hooks/useShipVisibility';
-import { getLast } from 'src/utils/arrays';
+import { getEndPosition } from '../utils/getEndPosition';
 
 interface Props {
     mode: Mode;
@@ -50,22 +50,21 @@ export const HelmMap: React.FC<Props> = props => {
     } = useHelmMapInteractions(canvas, motion, setDestination, getInitialCenter);
 
     // In maneuver mode, center the view on the end of the ship's planned motion.
-    const lastMoveEndPosition = getLast(motion);
-    let autoFocusPoint = lastMoveEndPosition && props.mode === 'maneuver'
-        ? lastMoveEndPosition.val
+    let autoFocusPoint = props.mode === 'maneuver'
+        ? getEndPosition(motion, maneuvers)
         : undefined;
 
     const maneuverSets = useMemo(() => {
-        if (!previewManeuver) {
+        if (!previewManeuver || !autoFocusPoint) {
             return [maneuvers];
         }
 
-        const actualPreviewManeuever = getManeuver(previewManeuver, lastMoveEndPosition);
+        const actualPreviewManeuever = getManeuver(previewManeuver, autoFocusPoint);
         return [maneuvers, [actualPreviewManeuever]];
-    }, [previewManeuver, maneuvers])
+    }, [previewManeuver, maneuvers, autoFocusPoint])
     
     if (useHasChanged(autoFocusPoint) && autoFocusPoint) {
-        setViewCenter(autoFocusPoint);
+        setViewCenter(autoFocusPoint.val);
     }
 
     const shipVisible = useShipVisibility(canvas, motion, getViewCenter, getCellRadius);

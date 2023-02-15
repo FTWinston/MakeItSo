@@ -1,9 +1,11 @@
 import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getFirstFutureIndex } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
-import { vectorsEqual, determineAngle, determineMidAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
+import { vectorsEqual, determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
 import { durationToTicks } from 'src/utils/timeSpans';
+import { ManeuverInfo } from '../features/maneuvers';
+import { MotionConfiguration } from '../types/HelmState';
 
 export function shouldUpdateMotion(ship: Ship, currentTime: number) {
     if (ship.helm.forceMotionUpdate) {
@@ -45,9 +47,10 @@ function shouldHoldPosition(ship: Ship) {
 function holdPosition(ship: Ship, currentTime: number) {
     const lastFrame = getLast(ship.motion);
     const time = currentTime + durationToTicks(5);
-    const framesToKeep = getExistingFramesToKeep(ship, currentTime);
+    const framesToKeep = getPastFrames(ship, currentTime);
+    const firstFutureIndex = getFirstFutureIndex(framesToKeep, currentTime);
 
-    const hasAtLeastTwoFutureFrames = getFirstFutureIndex(framesToKeep, currentTime) < framesToKeep.length - 1;
+    const hasAtLeastTwoFutureFrames = firstFutureIndex !== -1 && firstFutureIndex < framesToKeep.length - 1;
     if (hasAtLeastTwoFutureFrames) {
         return;
     }
@@ -61,7 +64,7 @@ function holdPosition(ship: Ship, currentTime: number) {
     ];
 }
 
-function getExistingFramesToKeep(ship: Ship, currentTime: number) {
+function getPastFrames(ship: Ship, currentTime: number) {
     const pastFrames = ship.motion.slice(0, getLastPastFrame(ship.motion, currentTime) + 1);
 
     if (pastFrames.length === 0) {
@@ -95,8 +98,10 @@ function getExistingFramesToKeep(ship: Ship, currentTime: number) {
 }
 
 function updateMotionValue(ship: Ship, currentTime: number) {
-    const framesToKeep = getExistingFramesToKeep(ship, currentTime);
-    const newFrames = determineFutureFrames(ship, framesToKeep);
+    const pastFrames = getPastFrames(ship, currentTime);
+    const newFrames = ship.helm.destination
+        ? getMotionBetweenPositions(getLast(pastFrames), ship.helm.destination, ship.helm)
+        : getMotionFromManeuvers(ship.helm.maneuvers, currentTime)
 
     /*
     console.log(`updating position ... time is ${currentTime}`);
@@ -106,58 +111,31 @@ function updateMotionValue(ship: Ship, currentTime: number) {
     */
 
     ship.motion = [
-        ...framesToKeep,
+        ...pastFrames,
         ...newFrames,
     ];
 }
 
-function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): Keyframes<Position> {
-    // TODO: THIS FOR MANEUVERS?
-    /*
-    let [
-        firstWaypoint,
-        secondWaypoint,
-        thirdWaypoint,
-    ] = ship.helm.waypoints;
-    */
-    let firstWaypoint = ship.helm.destination ?? undefined;
-    if (firstWaypoint === undefined) {
-        return [];
-    }
-    let secondWaypoint: Keyframe<Position> | undefined = undefined;
-    let thirdWaypoint: Keyframe<Position> | undefined = undefined;
+function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Keyframe<Position>, config: MotionConfiguration): Keyframes<Position> {
+    const { val: startPosition, time: startTime } = startFrame;
+    const { val: endPosition/*, time: endTime*/ } = endFrame;
 
-    // Is this just ASSUMING firstWaypoint is in the past?
-    if (firstWaypoint.time !== undefined && !ship.helm.forceMotionUpdate && secondWaypoint) {
-        firstWaypoint = secondWaypoint;
-        secondWaypoint = thirdWaypoint;
-    }
-
-    const { val: startPosition, time: startTime } = getLast(framesToKeep);
-    const moveAngle = determineAngle(startPosition, firstWaypoint.val, startPosition.angle);
-
-    const endPosition = firstWaypoint.val.angle === undefined
-        ? {
-            x: firstWaypoint.val.x,
-            y: firstWaypoint.val.y,
-            angle: secondWaypoint
-                ? determineMidAngle(startPosition, firstWaypoint.val, secondWaypoint/*.val*/, startPosition.angle)
-                : moveAngle,
-        }
-        : firstWaypoint.val;
+    const moveAngle = determineAngle(startPosition, endPosition, startPosition.angle);
 
     const startRotationAngularDistance = clampAngle(startPosition.angle - moveAngle);
-    const startRotationDuration = Math.abs(startRotationAngularDistance / ship.helm.rotationalSpeed);
+    const startRotationDuration = Math.abs(startRotationAngularDistance / config.rotationalSpeed);
 
     const endRotationAngularDistance = clampAngle(endPosition.angle - moveAngle);
-    const endRotationDuration = Math.abs(endRotationAngularDistance / ship.helm.rotationalSpeed);
+    const endRotationDuration = Math.abs(endRotationAngularDistance / config.rotationalSpeed);
 
-    const fullRotationDuration = distance(startPosition, endPosition) / ship.helm.speedWhileRotating;
+    const fullRotationDuration = distance(startPosition, endPosition) / config.speedWhileRotating;
 
     if (startRotationDuration + endRotationDuration >= fullRotationDuration) {
-        // rotate directly to the end position
+        // Rotate directly to the end position.
         const endTime = startTime + durationToTicks(fullRotationDuration);
-        firstWaypoint.time = endTime;
+
+        // Update time on endFrame that was passed in.
+        endFrame.time = endTime;
 
         return [{
             val: endPosition,
@@ -167,14 +145,14 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
     
     const results: Keyframes<Position> = [];
 
-    // rotate, go straight, rotate again
+    // Rotate, go straight, rotate again.
     const moveDirection = unit(startPosition, endPosition);
 
     let latestTime = startTime;
     let startStraightPos: Position;
 
     if (startRotationDuration > 0.01) {
-        const startRotationDistance = ship.helm.speedWhileRotating * startRotationDuration;
+        const startRotationDistance = config.speedWhileRotating * startRotationDuration;
 
         startStraightPos = {
             x: startPosition.x + moveDirection.x * startRotationDistance,
@@ -196,7 +174,7 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
     let endStraightPos: Position;
 
     if (endRotationDuration > 0.01) {
-        const endRotationDistance = ship.helm.speedWhileRotating * endRotationDuration;
+        const endRotationDistance = config.speedWhileRotating * endRotationDuration;
 
         endStraightPos = {
             x: endPosition.x - moveDirection.x * endRotationDistance,
@@ -208,7 +186,7 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
         endStraightPos = endPosition;
     }
     
-    const straightTimeSpan = durationToTicks(distance(startStraightPos, endStraightPos) / ship.helm.speed);
+    const straightTimeSpan = durationToTicks(distance(startStraightPos, endStraightPos) / config.speed);
 
     latestTime += straightTimeSpan;
     
@@ -226,7 +204,35 @@ function determineFutureFrames(ship: Ship, framesToKeep: Keyframes<Position>): K
         time: latestTime,
     });
 
-    firstWaypoint.time = latestTime;
+    // Update time on endFrame that was passed in.
+    endFrame.time = latestTime;
+    
+    return results;
+}
+
+function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number) {
+    let results: Keyframes<Position> = [];
+    const numFramesWanted = 2;
+
+    for (const maneuver of maneuvers) {
+        let firstIndexToTake = getFirstFutureIndex(maneuver.motion, currentTime);
+        if (firstIndexToTake === -1) {
+            continue;
+        }
+        
+        // The first frame of a maneuver will be the same as the last frame as the previous one,
+        // so skip it if we have a previous.
+        if (firstIndexToTake === 0 && results.length > 0) {
+            firstIndexToTake = 1;
+        }
+
+        const framesFromManeuver = maneuver.motion.slice(firstIndexToTake, numFramesWanted);
+        results.push(...framesFromManeuver);
+
+        if (results.length >= numFramesWanted) {
+            break;
+        }
+    }
     
     return results;
 }
