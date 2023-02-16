@@ -43,6 +43,12 @@ function getAngle(dx: number, dy: number) {
     return Math.atan2(dy, dx);
 }
 
+const factor = Math.PI / 3;
+/* Get the closest multiple of Pi / 3 */
+export function getClosestOrthogonalAngle(angle: number) {
+    return Math.round(angle / factor) * factor;
+}
+
 export function determineAngle(fromPos: Vector2D, toPos: Vector2D, valueIfEqual: number) {
     return vectorsEqual(fromPos, toPos)
         ? valueIfEqual

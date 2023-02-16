@@ -41,18 +41,6 @@ function getCompletedFraction(startFrame: Keyframe<unknown>, endFrame: Keyframe<
     return Math.max(0, Math.min(1, fraction));
 }
 
-// TODO: possibly for removal?
-export function getLastPastFrame(keyframes: Keyframes<unknown>, currentTime: number) {
-    for (let i = keyframes.length - 1; i >= 0; i--) {
-        const frame = keyframes[i];
-        if (frame.time < currentTime) {
-            return i;
-        }
-    }
-
-    return -1;
-}
-
 type KeyframesSegment<T> = [
     Keyframe<T> | undefined,
     Keyframe<T>,

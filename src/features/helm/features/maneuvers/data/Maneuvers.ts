@@ -1,7 +1,7 @@
 import { horizontalHexSpacing, verticalHexSpacing } from 'src/features/spacemap';
 import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { clampAngle, rotatePolar } from 'src/types/Vector2D';
+import { clampAngle, getClosestOrthogonalAngle, rotatePolar } from 'src/types/Vector2D';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo, ManeuverType } from '../types/ManeuverType';
 
@@ -151,14 +151,8 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     }],
 ]);
 
-const factor = Math.PI / 3;
-/* Get the closest multiple of Pi / 3 */
-function getStartAngle(angle: number) {
-    return Math.round(angle / factor) * factor;
-}
-
 function applyOffset(motion: Keyframes<Position>, offset: Keyframe<Position>): Keyframes<Position> {
-    const roundedOffsetAngle = getStartAngle(offset.val.angle);
+    const roundedOffsetAngle = getClosestOrthogonalAngle(offset.val.angle);
 
     return motion
         .map(keyframe => {
