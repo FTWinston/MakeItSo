@@ -11,42 +11,47 @@ import { determineAngle, Vector2D } from 'src/types/Vector2D';
 export function useHelmMapInteractions(
     canvas: RefObject<HTMLCanvasElement>,
     shipMotion: Keyframes<Position>,
-    setDestination: (destination: Position) => void,
+    allowPanning: boolean,
+    setDestination: undefined | ((destination: Position) => void),
     getInitialCenter: () => Vector2D,
     forceViewCenter?: Vector2D,
 ) { 
     const [addingDestination, setAddingDestination] = useState<Position>();
 
     const getExtraHandlers = (viewCenter: Vector2D, cellRadius: number) => {
-        const tap = (pagePos: Vector2D) => {
-            const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
-            const shipPos = getVectorValue(shipMotion);
-            const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
+        const tap = setDestination
+            ? (pagePos: Vector2D) => {
+                const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
+                const shipPos = getVectorValue(shipMotion);
+                const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
-            const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
-            
-            setDestination({
-                x: targetCellPos.x,
-                y: targetCellPos.y,
-                angle: angleFromShipToCellPos,
-            });
-        };
+                const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
+                
+                setDestination({
+                    x: targetCellPos.x,
+                    y: targetCellPos.y,
+                    angle: angleFromShipToCellPos,
+                });
+            }
+            : () => {};
 
-        const longPress = (pagePos: Vector2D) => {
-            const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
-            const shipPos = getVectorValue(shipMotion);
-            const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
+        const longPress = setDestination
+            ? (pagePos: Vector2D) => {
+                const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
+                const shipPos = getVectorValue(shipMotion);
+                const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
-            const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
+                const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
 
-            setAddingDestination({
-                x: targetCellPos.x,
-                y: targetCellPos.y,
-                angle: angleFromShipToCellPos,
-            });
-        };
+                setAddingDestination({
+                    x: targetCellPos.x,
+                    y: targetCellPos.y,
+                    angle: angleFromShipToCellPos,
+                });
+            }
+            : () => {};
 
-        let extraHandlers: TouchEvents | undefined = addingDestination
+        let extraHandlers: TouchEvents | undefined = setDestination && addingDestination
             ? {
                 onMouseMove: (e: React.MouseEvent<Element>) => {
                     const screenPos = {
@@ -115,7 +120,7 @@ export function useHelmMapInteractions(
         minZoom: 12,
         maxZoom: 192,
         dragThreshold: clickMoveLimit,
-        allowPan: addingDestination === undefined,
+        allowPan: allowPanning && addingDestination === undefined,
         getExtraHandlers,
     });
 

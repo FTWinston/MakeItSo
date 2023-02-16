@@ -41,16 +41,18 @@ export const HelmMap: React.FC<Props> = props => {
     const { destination, maneuvers, previewManeuver, localShip, setDestination, getInitialCenter } = props;
     const { motion } = localShip;
     
+    const inManeuverMode = props.mode === 'maneuver';
+
     const {
         getViewCenter,
         setViewCenter,
         getCellRadius,
         addingDestination,
         bindGestures,
-    } = useHelmMapInteractions(canvas, motion, setDestination, getInitialCenter);
+    } = useHelmMapInteractions(canvas, motion, !inManeuverMode, inManeuverMode ? undefined : setDestination, getInitialCenter);
 
     // In maneuver mode, center the view on the end of the ship's planned motion.
-    let autoFocusPoint = props.mode === 'maneuver'
+    let autoFocusPoint = inManeuverMode
         ? getEndPosition(motion, maneuvers)
         : undefined;
 

@@ -1,4 +1,4 @@
-import { Keyframe, Keyframes, getLastPastFrame, getPositionValue, wantsMoreKeyframes, getFirstFutureIndex } from 'src/types/Keyframes';
+import { Keyframe, Keyframes, getPositionValue, wantsMoreKeyframes, getFirstFutureIndex } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 import { vectorsEqual, determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
@@ -66,7 +66,8 @@ function holdPosition(ship: Ship, currentTime: number) {
 }
 
 function getPastFrames(ship: Ship, currentTime: number) {
-    const pastFrames = ship.motion.slice(0, getLastPastFrame(ship.motion, currentTime) + 1);
+    const firstFutureIndex = getFirstFutureIndex(ship.motion, currentTime);
+    const pastFrames = ship.motion.slice(0, firstFutureIndex === -1 ? ship.motion.length : firstFutureIndex);
 
     if (pastFrames.length === 0) {
         // console.log('keeping 0 frames, adding current time twice');
@@ -105,13 +106,6 @@ function updateMotionValue(ship: Ship, currentTime: number) {
     const newFrames = ship.helm.destination
         ? getMotionBetweenPositions(startPosition, ship.helm.destination, ship.helm)
         : getMotionFromManeuvers(ship.helm.maneuvers, currentTime)
-
-    /*
-    console.log(`updating position ... time is ${currentTime}`);
-    console.log('updating position ... frames to keep are', JSON.parse(JSON.stringify(framesToKeep)));
-    console.log('updating position ... new frames are', JSON.parse(JSON.stringify(newFrames)));
-    console.log('');
-    */
 
     ship.motion = [
         ...pastFrames,
