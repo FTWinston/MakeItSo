@@ -84,7 +84,7 @@ export const HelmMap: React.FC<Props> = props => {
         }
 
         const actualPreviewManeuever = getManeuver(previewManeuver, previewStartPosition);
-        return [maneuvers, [actualPreviewManeuever]];
+        return [[actualPreviewManeuever], maneuvers];
     }, [previewManeuver, maneuvers, previewStartPosition])
     
     if (useHasChanged(autoFocusPoint) && autoFocusPoint) {
