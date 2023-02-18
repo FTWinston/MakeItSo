@@ -112,8 +112,6 @@ export const HelmMap: React.FC<Props> = props => {
                 const maneuver = maneuverSet[i];
                 drawManeuver(ctx, maneuver.motion, maneuver.minPower, i === maneuverSet.length - 1, currentTime);
             }
-
-            currentTime = 0; // Ensure that "preview" maneuvers are always fully rendered, as if they're in the future. This is a hack on account of them sometimes being in the past.
         }
     };
 
