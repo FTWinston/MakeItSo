@@ -24,6 +24,7 @@ interface Props {
     localShip: GameObjectInfo;
     destination: Position | null;
     maneuvers: ManeuverInfo[];
+    speedToManeuver: number;
     setDestination: (waypoint: Position) => void;
     stop: () => void;
 }
@@ -55,7 +56,7 @@ export const HelmMap: React.FC<Props> = props => {
     const currentTime = getTime();
 
     const previewStartPosition = inManeuverMode
-        ? getManeuverStartPosition(motion, maneuvers, currentTime)
+        ? getManeuverStartPosition(motion, maneuvers, props.speedToManeuver, currentTime)
         : undefined;
 
     const autoFocusPoint = inManeuverMode

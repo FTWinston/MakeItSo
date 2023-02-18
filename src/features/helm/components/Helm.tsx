@@ -17,6 +17,7 @@ import { getTime } from 'src/utils/timeSpans';
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
     shipMotion: Keyframes<Position>;
+    speedToManeuver: number;
     power: PowerLevel;
     health: number;
     stop: () => void;
@@ -49,7 +50,7 @@ export const Helm: React.FC<Props> = (props) => {
     const [mode, setMode] = useState<Mode>('travel');
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
     
-    const currentMotionEndAngle = getManeuverStartPosition(localShip.motion, props.maneuvers, getTime()).val.angle;
+    const currentMotionEndAngle = getManeuverStartPosition(localShip.motion, props.maneuvers, props.speedToManeuver, getTime()).val.angle;
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>
@@ -63,6 +64,7 @@ export const Helm: React.FC<Props> = (props) => {
                 localShip={localShip}
                 maneuvers={props.maneuvers}
                 previewManeuver={previewManeuver}
+                speedToManeuver={props.speedToManeuver}
                 destination={props.destination}
                 setDestination={props.setDestination}
             />

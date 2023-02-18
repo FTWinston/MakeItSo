@@ -48,7 +48,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
                 break;
             }
 
-            const startPosition = getManeuverStartPosition(state.motion, state.helm.maneuvers, getTime());
+            const startPosition = getManeuverStartPosition(state.motion, state.helm.maneuvers, state.helm.speed, getTime());
             const maneuver = getManeuver(action.choice, startPosition);
             
             if (state.systems.get(ShipSystem.Engines).power < maneuver.minPower) {
