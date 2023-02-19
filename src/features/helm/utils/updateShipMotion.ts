@@ -81,7 +81,9 @@ function changeMotionToNewDestination(ship: GameObject, config: MotionConfigurat
 
     ship.motion = [
         ...pastFrames,
+        pastFrames[pastFrames.length - 1], // Bookend the new movement, to stop "pull back" movement.
         ...newFrames,
+        newFrames[newFrames.length - 1], // Repeat the final frame, to stop "overshoot" movement.
     ];
 }
 
