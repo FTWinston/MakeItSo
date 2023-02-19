@@ -5,7 +5,6 @@ import { distance, getClosestOrthogonalAngle } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo } from '../features/maneuvers';
-import { MotionConfiguration } from '../types/HelmState';
 
 export function getManeuverStartPosition(motion: Keyframes<Position>, maneuvers: ManeuverInfo[], speedToStart: number, currentTime: number): Keyframe<Position> {
     // If existing maneuvers are queued, start from the end of them.
@@ -20,7 +19,7 @@ export function getManeuverStartPosition(motion: Keyframes<Position>, maneuvers:
     
     // Leave time to move to cellCenter before starting maneuver.
     const distanceToStart = distance(currentPos, cellCenter);
-    const timeToStart = speedToStart / distanceToStart;
+    const timeToStart = distanceToStart < 0.1 ? 0 : speedToStart / distanceToStart;
 
     return {
         time: currentTime + durationToTicks(timeToStart),

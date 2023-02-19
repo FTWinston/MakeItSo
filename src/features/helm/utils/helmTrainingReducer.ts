@@ -34,7 +34,10 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
                 val: { ...action.destination },
                 time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
             };
-            state.helm.forceMotionUpdate = true;
+            
+            if (state.helm.maneuvers.length === 0) {
+                state.helm.forceMotionUpdate = true;
+            }
             break;
         }
 

@@ -1,71 +1,50 @@
-import { Keyframe, Keyframes, getPositionValue, wantsMoreKeyframes, getFirstFutureIndex } from 'src/types/Keyframes';
+import { GameObject } from 'src/types/GameObject';
+import { Keyframe, Keyframes, getPositionValue, getFirstFutureIndex, wantsMoreKeyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
-import { vectorsEqual, determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
+import { determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo } from '../features/maneuvers';
 import { MotionConfiguration } from '../types/HelmState';
-import { appendMotion } from './appendMotion';
 
-export function shouldUpdateMotion(ship: Ship, currentTime: number) {
-    if (ship.helm.forceMotionUpdate) {
-        return true;
-    }
-
-    if (ship.motion.length === 0) {
-        return ship.helm.destination || ship.helm.maneuvers.length > 0;
-    }
-
-    return wantsMoreKeyframes(ship.motion, currentTime);
-}
-
-export function updateShipMotion(ship: Ship, currentTime: number) {
-    if (shouldHoldPosition(ship)) {
-        holdPosition(ship, currentTime);
-    }
-    else {
-        updateMotionValue(ship, currentTime);
-    }
-
-    ship.helm.forceMotionUpdate = false;
-}
-
-function shouldHoldPosition(ship: Ship) {
-    // Hold position if we've nowhere to go,
-    if (ship.helm.destination === null && ship.helm.maneuvers.length === 0) {
-        return true;
-    }
-
-    // Or if our motion already leads to our last-planned destination
-    const lastMotionPos = getLast(ship.motion);
-
-    const lastPlannedPos = ship.helm.destination ?? getLast(getLast(ship.helm.maneuvers).motion);
-
-    return vectorsEqual(lastMotionPos.val, lastPlannedPos.val);
-}
-
-function holdPosition(ship: Ship, currentTime: number) {
-    const lastFrame = getLast(ship.motion);
-    const time = currentTime + durationToTicks(5);
-    const framesToKeep = getPastFrames(ship, currentTime);
-    const firstFutureIndex = getFirstFutureIndex(framesToKeep, currentTime);
-
-    const hasAtLeastTwoFutureFrames = firstFutureIndex !== -1 && firstFutureIndex < framesToKeep.length - 1;
-    if (hasAtLeastTwoFutureFrames) {
-        return;
-    }
-
-    ship.motion = [
-        ...framesToKeep,
-        {
-            time,
-            val: lastFrame.val,
+export function updateShipMotion(
+    ship: GameObject,
+    config: MotionConfiguration,
+    changeMotion: boolean,
+    destination: Keyframe<Position> | null,
+    maneuvers: ManeuverInfo[],
+    currentTime: number,
+) {
+    if (changeMotion) {
+        if (maneuvers.length > 0) {
+            changeMotionToNewManeuver(ship, config, maneuvers, currentTime);
+            return;
         }
-    ];
+        else if (destination) {
+            changeMotionToNewDestination(ship, config, destination, currentTime);
+            return;
+        }
+    }
+    
+    if (wantsMoreKeyframes(ship.motion, currentTime)) {
+        if (!updateMotionFromManeuvers(ship, maneuvers, currentTime)) {
+            holdLastPosition(ship);
+        }
+    }
 }
 
-function getPastFrames(ship: Ship, currentTime: number) {
+function holdLastPosition(ship: GameObject) {
+    const lastFrame = getLast(ship.motion);
+    const time = lastFrame.time + durationToTicks(5);
+
+    ship.motion.push({
+        val: lastFrame.val,
+        time,
+    });
+}
+
+function getPastFrames(ship: GameObject, currentTime: number) {
     const firstFutureIndex = getFirstFutureIndex(ship.motion, currentTime);
     const pastFrames = ship.motion.slice(0, firstFutureIndex === -1 ? ship.motion.length : firstFutureIndex);
 
@@ -83,7 +62,7 @@ function getPastFrames(ship: Ship, currentTime: number) {
             },
         ];
     }
-    else if (ship.helm.forceMotionUpdate || pastFrames.length === 1) {
+    else {
         // console.log('keeping 1 frame, adding current time');
         return [
             getLast(pastFrames),
@@ -93,19 +72,22 @@ function getPastFrames(ship: Ship, currentTime: number) {
             },
         ]
     }
-    else {
-        // console.log(`keeping ${ship.position.length - numPastFrames} frames`);
-        return ship.motion.slice(pastFrames.length - 2);
-    }
 }
 
-function updateMotionValue(ship: Ship, currentTime: number) {
+function changeMotionToNewDestination(ship: GameObject, config: MotionConfiguration, destination: Keyframe<Position>, currentTime: number) {
     const pastFrames = getPastFrames(ship, currentTime);
     const startPosition = getLast(pastFrames);
+    const newFrames = getMotionBetweenPositions(startPosition, destination, config);
 
-    const newFrames = ship.helm.destination
-        ? getMotionBetweenPositions(startPosition, ship.helm.destination, ship.helm)
-        : getMotionFromManeuvers(ship.helm.maneuvers, currentTime)
+    ship.motion = [
+        ...pastFrames,
+        ...newFrames,
+    ];
+}
+
+function changeMotionToNewManeuver(ship: GameObject, config: MotionConfiguration, maneuvers: ManeuverInfo[], currentTime: number) {
+    const pastFrames = getPastFrames(ship, currentTime);
+    const newFrames = getMotionFromManeuvers(maneuvers, currentTime, 3);
 
     ship.motion = [
         ...pastFrames,
@@ -115,7 +97,7 @@ function updateMotionValue(ship: Ship, currentTime: number) {
 
 function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Keyframe<Position>, config: MotionConfiguration): Keyframes<Position> {
     const { val: startPosition, time: startTime } = startFrame;
-    const { val: endPosition/*, time: endTime*/ } = endFrame;
+    const { val: endPosition } = endFrame;
 
     const moveAngle = determineAngle(startPosition, endPosition, startPosition.angle);
 
@@ -207,15 +189,30 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
     return results;
 }
 
-function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number) {
+function updateMotionFromManeuvers(ship: GameObject, maneuvers: ManeuverInfo[], currentTime: number) {
+    const firstFutureIndex = getFirstFutureIndex(ship.motion, currentTime);
+
+    const numFramesWanted = firstFutureIndex === -1
+        ? 3
+        : 3 + firstFutureIndex - ship.motion.length;
+
+    if (numFramesWanted <= 0) {
+        return true; // No more frames required.
+    }
+
+    const results = getMotionFromManeuvers(maneuvers, currentTime, numFramesWanted);
+    ship.motion.push(...results);
+    return results.length >= numFramesWanted;
+}
+
+function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number, numFramesWanted: number) {
     let results: Keyframes<Position> = [];
 
+    /*
     for (const maneuver of maneuvers) {
         appendMotion(results, maneuver.motion);
     }
-
-    /*
-    const numFramesWanted = 2;
+    */
 
     for (const maneuver of maneuvers) {
         let firstIndexToTake = getFirstFutureIndex(maneuver.motion, currentTime);
@@ -236,7 +233,7 @@ function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number) 
             break;
         }
     }
-    */   
+    
     return results;
 }
 

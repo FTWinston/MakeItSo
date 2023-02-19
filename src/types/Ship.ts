@@ -9,7 +9,7 @@ import { GameObject } from './GameObject';
 import { ShipInfo } from './ShipInfo';
 import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { getDefaultEngineeringState } from 'src/features/engineering';
-import { getDefaultHelmState, shouldUpdateMotion, updateShipMotion } from 'src/features/helm';
+import { getDefaultHelmState, updateShipMotion } from 'src/features/helm';
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
 import { pruneKeyframes } from './Keyframes';
@@ -33,13 +33,17 @@ export class Ship extends GameObject implements ShipInfo {
     sensors: SensorsState;
     weapons: WeaponsState;
 
-    /** Remove destination if it is in the past. */
+    /** Remove destination if it is in the past. Return true if it is removed. */
     private pruneDestination(currentTime: number) {
         if (this.helm.destination && this.helm.destination.time < currentTime) {
             this.helm.destination = null;
+            return true;
         }
+
+        return false;
     }
 
+    /** Remove manuevers that end in the past. Return true if none are left. */
     private pruneManeuvers(currentTime: number) {
         while (this.helm.maneuvers.length > 0) {
             const firstManeuverKeyframes = this.helm.maneuvers[0].motion;
@@ -52,18 +56,18 @@ export class Ship extends GameObject implements ShipInfo {
 
             break;
         }
+
+        return this.helm.maneuvers.length === 0;
     }
 
     updateMotion(currentTime: number): void {
-        const didPrune = pruneKeyframes(this.motion, currentTime);
-
+        pruneKeyframes(this.motion, currentTime);
         this.pruneDestination(currentTime);
-        this.pruneManeuvers(currentTime);
+        const prunedLastManeuver = this.pruneManeuvers(currentTime);
 
-        // If pruned keyframes from the start, probably need to add new ones to the end.
-        // TODO: use didPrune?
-        if (shouldUpdateMotion(this, currentTime)) {
-            updateShipMotion(this, currentTime);
-        }
+        const changeMotion = this.helm.forceMotionUpdate || (prunedLastManeuver && this.helm.destination !== null);
+        this.helm.forceMotionUpdate = false;
+
+        updateShipMotion(this, this.helm, changeMotion, this.helm.destination, this.helm.maneuvers, currentTime);
     }
 }
