@@ -12,7 +12,7 @@ export interface MotionConfiguration {
 export interface HelmState extends MotionConfiguration {
     destination: Keyframe<Position> | null;
     maneuvers: ManeuverInfo[];
-    forceMotionUpdate: boolean;
+    replaceMotion: boolean;
 
     maneuverChoice: ManeuverChoice;
     manueverDrawPile: ManeuverChoice[];

@@ -25,7 +25,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
         case 'stop': {
             state.helm.destination = null;
             state.helm.maneuvers = [];
-            state.helm.forceMotionUpdate = true;
+            state.helm.replaceMotion = true;
             break;
         }
 
@@ -36,7 +36,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
             };
             
             if (state.helm.maneuvers.length === 0) {
-                state.helm.forceMotionUpdate = true;
+                state.helm.replaceMotion = true;
             }
             break;
         }
@@ -62,7 +62,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
 
             state.helm.destination = null;
             state.helm.maneuvers.push(maneuver);
-            state.helm.forceMotionUpdate = true;
+            state.helm.replaceMotion = state.helm.maneuvers.length < 3;
             break;
         }
 

@@ -4,7 +4,7 @@ import { HelmState } from '../types/HelmState';
 export const getDefaultHelmState: () => HelmState = () => ({
     destination: null,
     maneuvers: [],
-    forceMotionUpdate: true,
+    replaceMotion: true,
     rotationalSpeed: 0.75,
     speedWhileRotating: 0.1,
     speed: 1,

@@ -67,8 +67,8 @@ export class Ship extends GameObject implements ShipInfo {
         this.pruneDestination(currentTime);
         const prunedLastManeuver = this.pruneManeuvers(currentTime);
 
-        const changeMotion = this.helm.forceMotionUpdate || (prunedLastManeuver && this.helm.destination !== null);
-        this.helm.forceMotionUpdate = false;
+        const changeMotion = this.helm.replaceMotion || (prunedLastManeuver && this.helm.destination !== null);
+        this.helm.replaceMotion = false;
 
         updateShipMotion(this, this.helm, changeMotion, this.helm.destination, this.helm.maneuvers, currentTime);
     }

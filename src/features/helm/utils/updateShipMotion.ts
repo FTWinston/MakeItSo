@@ -190,19 +190,26 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
 }
 
 function updateMotionFromManeuvers(ship: GameObject, maneuvers: ManeuverInfo[], currentTime: number) {
+    if (maneuvers.length === 0) {
+        return false;
+    }
+    
     const firstFutureIndex = getFirstFutureIndex(ship.motion, currentTime);
 
-    const numFramesWanted = firstFutureIndex === -1
-        ? 3
-        : 3 + firstFutureIndex - ship.motion.length;
+    const pastFrames = firstFutureIndex === -1
+        ? ship.motion
+        : ship.motion.slice(0, firstFutureIndex);
 
-    if (numFramesWanted <= 0) {
-        return true; // No more frames required.
-    }
+    const numFramesWanted = 3;
 
-    const results = getMotionFromManeuvers(maneuvers, currentTime, numFramesWanted);
-    ship.motion.push(...results);
-    return results.length >= numFramesWanted;
+    const futureFrames = getMotionFromManeuvers(maneuvers, currentTime, numFramesWanted);
+    
+    ship.motion = [
+        ...pastFrames,
+        ...futureFrames,
+    ];
+
+    return futureFrames.length >= numFramesWanted;
 }
 
 function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number, numFramesWanted: number) {
