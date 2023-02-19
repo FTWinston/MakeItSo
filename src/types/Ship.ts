@@ -45,19 +45,21 @@ export class Ship extends GameObject implements ShipInfo {
 
     /** Remove manuevers that end in the past. Return true if none are left. */
     private pruneManeuvers(currentTime: number) {
+        let pruned = false;
         while (this.helm.maneuvers.length > 0) {
             const firstManeuverKeyframes = this.helm.maneuvers[0].motion;
             const lastKeyframe = getLast(firstManeuverKeyframes);
 
             if (lastKeyframe.time < currentTime) {
                 this.helm.maneuvers.shift();
+                pruned = true;
                 continue;
             }
 
             break;
         }
 
-        return this.helm.maneuvers.length === 0;
+        return pruned && this.helm.maneuvers.length === 0;
     }
 
     updateMotion(currentTime: number): void {
