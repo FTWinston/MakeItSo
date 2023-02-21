@@ -94,13 +94,13 @@ function interpolate(val0: number | undefined, val1: number, val2: number, val3:
 
     // Interpolate a Centripetal Catmull-Rom spline.
     // Note that this is only accurate if time steps are equal.
-    const fraction2 = fraction * fraction;
-    const a0 = -0.5 * val0 + 1.5 * val1 - 1.5 * val2 + 0.5 * val3;
-    const a1 = val0 - 2.5 * val1 + 2 * val2 - 0.5 * val3;
-    const a2 = 0.5 * (val2 - val0);
-    const a3 = val1;
-    
-    return a0 * fraction * fraction2 + a1 * fraction2 + a2 * fraction + a3;
+    const L01 = val0 * -fraction + val1 * (fraction + 1);
+    const L12 = val1 * (1 - fraction) + val2 * fraction;
+    const L23 = val2 * (2 - fraction) + val3 * (fraction - 1);
+    const L012 = L01 * (1 - fraction) / 2 + L12 * (fraction + 1) / 2;
+    const L123 = L12 * (2 - fraction) / 2 + L23 * fraction / 2;
+    const C12 = L012 * (1 - fraction) + L123 * fraction;
+    return C12;
 }
 
 export function getNumberValue(keyframes: Keyframes<number>, currentTime = getTime()): number {

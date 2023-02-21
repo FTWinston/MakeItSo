@@ -44,51 +44,34 @@ function holdLastPosition(ship: GameObject) {
     });
 }
 
-function getPastFrames(ship: GameObject, currentTime: number) {
-    const firstFutureIndex = getFirstFutureIndex(ship.motion, currentTime);
-    const pastFrames = ship.motion.slice(0, firstFutureIndex === -1 ? ship.motion.length : firstFutureIndex);
+function getPastFramesForNewMotion(ship: GameObject, currentTime: number) {
+    const pastTime = currentTime - durationToTicks(0.2);
 
-    if (pastFrames.length === 0) {
-        // console.log('keeping 0 frames, adding current time twice');
-        const currentPos = getPositionValue(ship.motion, currentTime);
-        return [
-            {
-                time: currentTime - durationToTicks(1), // TODO: account for ship acceleration?
-                val: currentPos,
-            },
-            {
-                time: currentTime,
-                val: currentPos,
-            },
-        ];
-    }
-    else {
-        // console.log('keeping 1 frame, adding current time');
-        return [
-            getLast(pastFrames),
-            {
-                time: currentTime,
-                val: getPositionValue(ship.motion, currentTime),
-            },
-        ]
-    }
+    return [
+        {
+            time: pastTime,
+            val: getPositionValue(ship.motion, pastTime),
+        },
+        {
+            time: currentTime,
+            val: getPositionValue(ship.motion, currentTime),
+        }
+    ];
 }
 
 function changeMotionToNewDestination(ship: GameObject, config: MotionConfiguration, destination: Keyframe<Position>, currentTime: number) {
-    const pastFrames = getPastFrames(ship, currentTime);
+    const pastFrames = getPastFramesForNewMotion(ship, currentTime);
     const startPosition = getLast(pastFrames);
     const newFrames = getMotionBetweenPositions(startPosition, destination, config);
 
     ship.motion = [
         ...pastFrames,
-        pastFrames[pastFrames.length - 1], // Bookend the new movement, to stop "pull back" movement.
         ...newFrames,
-        newFrames[newFrames.length - 1], // Repeat the final frame, to stop "overshoot" movement.
     ];
 }
 
 function changeMotionToNewManeuver(ship: GameObject, config: MotionConfiguration, maneuvers: ManeuverInfo[], currentTime: number) {
-    const pastFrames = getPastFrames(ship, currentTime);
+    const pastFrames = getPastFramesForNewMotion(ship, currentTime);
     const newFrames = getMotionFromManeuvers(maneuvers, currentTime, 3);
 
     ship.motion = [
@@ -168,6 +151,16 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
     }
     
     const straightTimeSpan = durationToTicks(distance(startStraightPos, endStraightPos) / config.speed);
+
+    // Add a "part way" keyframe so the ship gets pointing straight.
+    results.push({
+        time: latestTime + straightTimeSpan / 2,
+        val: {
+            x: (startStraightPos.x + endStraightPos.x) / 2,
+            y: (startStraightPos.y + endStraightPos.y) / 2,
+            angle: moveAngle,
+        }
+    });
 
     latestTime += straightTimeSpan;
     

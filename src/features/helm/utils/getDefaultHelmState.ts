@@ -6,7 +6,7 @@ export const getDefaultHelmState: () => HelmState = () => ({
     maneuvers: [],
     replaceMotion: true,
     rotationalSpeed: 0.75,
-    speedWhileRotating: 0.1,
+    speedWhileRotating: 0.2,
     speed: 1,
     maneuverChoice: {
         id: 1,
