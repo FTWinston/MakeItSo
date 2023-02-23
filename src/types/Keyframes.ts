@@ -84,6 +84,12 @@ function getSegmentToInterpolate<T>(keyframes: Keyframes<T>, currentTime: number
     }
 }
 
+// Don't let the distance between two values ever actually be zero, or we get divide by zero errors.
+function distance(from: number, to: number) {
+    let distance = Math.abs(to - from);
+    return Math.max(distance, 0.00000001);
+}
+
 function interpolate(val0: number | undefined, val1: number, val2: number, val3: number | undefined, fraction: number) {
     if (val0 === undefined) {
         val0 = val1;
@@ -92,15 +98,24 @@ function interpolate(val0: number | undefined, val1: number, val2: number, val3:
         val3 = val2;
     }
 
-    // Interpolate a Centripetal Catmull-Rom spline.
-    // Note that this is only accurate if time steps are equal.
-    const L01 = val0 * -fraction + val1 * (fraction + 1);
-    const L12 = val1 * (1 - fraction) + val2 * fraction;
-    const L23 = val2 * (2 - fraction) + val3 * (fraction - 1);
-    const L012 = L01 * (1 - fraction) / 2 + L12 * (fraction + 1) / 2;
-    const L123 = L12 * (2 - fraction) / 2 + L23 * fraction / 2;
-    const C12 = L012 * (1 - fraction) + L123 * fraction;
-    return C12;
+    // Exponent of 0.5 makes this a centripetal Catmull-Rom spline.
+    const t01 = Math.pow(distance(val0, val1), 0.5);
+    const t12 = Math.pow(distance(val1, val2), 0.5);
+    const t23 = Math.pow(distance(val2, val3), 0.5);
+
+    const m1 = val2 - val1 + t12 * ((val1 - val0) / t01 - (val2 - val0) / (t01 + t12));
+    const m2 = val2 - val1 + t12 * ((val3 - val2) / t23 - (val3 - val1) / (t12 + t23));
+
+    const a = 2 * (val1 - val2) + m1 + m2;
+    const b = -3 * (val1 - val2) - m1 - m1 - m2;
+    const c = m1;
+    const d = val1;
+    // Note: everything prior to here could be pre-calculated for each segment.
+
+    return a * fraction * fraction * fraction
+         + b * fraction * fraction
+         + c * fraction
+         + d;
 }
 
 export function getNumberValue(keyframes: Keyframes<number>, currentTime = getTime()): number {
