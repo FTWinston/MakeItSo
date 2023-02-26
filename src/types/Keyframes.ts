@@ -1,15 +1,24 @@
 import { clampAngle, Vector2D } from './Vector2D';
 import { Position } from './Position';
 import { getTime } from 'src/utils/timeSpans';
-import { getLast } from 'src/utils/arrays';
+
+interface CurveParameters<T> {
+    a: T;
+    b: T;
+    c: T;
+}
 
 export interface Keyframe<T> {
     time: number;
     val: T;
+    curve?: CurveParameters<T>;
 }
+
+type ResolvedKeyframe<T> = Required<Keyframe<T>>;
 
 export type Keyframes<T> = Keyframe<T>[];
 
+/** Get the index of the first keyframe whose time is greater than currentTime. */
 export function getFirstFutureIndex<T>(keyframes: Keyframes<T>, currentTime: number): number {
     return keyframes.findIndex(keyframe => keyframe.time > currentTime);
 }
@@ -26,6 +35,7 @@ export function pruneKeyframes(keyframes: Keyframes<unknown>, currentTime: numbe
     return false;
 }
 
+/** Indicates whether additional frames should be added to properly animate these keyframes. */
 export function wantsMoreKeyframes(keyframes: Keyframes<unknown>, currentTime: number): boolean {
     if (keyframes.length < 2) {
         return true;
@@ -35,65 +45,20 @@ export function wantsMoreKeyframes(keyframes: Keyframes<unknown>, currentTime: n
     return keyframes[keyframes.length - 2].time <= currentTime;
 }
 
-function getCompletedFraction(startFrame: Keyframe<unknown>, endFrame: Keyframe<unknown>, currentTime: number) {
-    const fraction = (currentTime - startFrame.time) / (endFrame.time - startFrame.time);
-
-    return Math.max(0, Math.min(1, fraction));
-}
-
-type KeyframesSegment<T> = [
-    Keyframe<T> | undefined,
-    Keyframe<T>,
-    Keyframe<T> | undefined,
-    Keyframe<T> | undefined,
-];
-
-function getSegmentToInterpolate<T>(keyframes: Keyframes<T>, currentTime: number): KeyframesSegment<T> {
-    const firstFutureIndex = getFirstFutureIndex(keyframes, currentTime);
-
-    if (firstFutureIndex >= 2) {
-        // Get 4 full keyframes spaced around the current time interval.
-        return keyframes.slice(firstFutureIndex - 2, firstFutureIndex + 2) as KeyframesSegment<T>;
-    }
-    else if (firstFutureIndex === -1) {
-        // All keyframes are in the past. Now immobile.
-        return [
-            undefined,
-            getLast(keyframes),
-            undefined,
-            undefined,
-        ];
-    }
-    else if (firstFutureIndex === 1) {
-        // Animation starts from the first keyframe.
-        return [
-            undefined,
-            keyframes[0],
-            keyframes[1],
-            keyframes[2],
-        ];
-    }
-    else {
-        // All keyframes are in the future... Currently immobile.
-        return [
-            undefined,
-            keyframes[0],
-            undefined,
-            undefined,
-        ];
-    }
-}
-
-// Don't let the distance between two values ever actually be zero, or we get divide by zero errors.
+/** Get a non-zero distance between two keypoints. Don't let the distance between two values ever actually be zero, or we get divide by zero errors. */
 function distance(from: number, to: number) {
     let distance = Math.abs(to - from);
     return Math.max(distance, 0.00000001);
 }
 
-function interpolate(val0: number | undefined, val1: number, val2: number, val3: number | undefined, fraction: number) {
+
+// Value resolving layer 1, part 1: determining curve parameters for a keypoint, based on values of surrounding keypoints.
+
+function determineCurveParameters(val0: number | undefined, val1: number, val2: number, val3: number | undefined): CurveParameters<number> {
     if (val0 === undefined) {
         val0 = val1;
     }
+
     if (val3 === undefined) {
         val3 = val2;
     }
@@ -106,31 +71,14 @@ function interpolate(val0: number | undefined, val1: number, val2: number, val3:
     const m1 = val2 - val1 + t12 * ((val1 - val0) / t01 - (val2 - val0) / (t01 + t12));
     const m2 = val2 - val1 + t12 * ((val3 - val2) / t23 - (val3 - val1) / (t12 + t23));
 
-    const a = 2 * (val1 - val2) + m1 + m2;
-    const b = -3 * (val1 - val2) - m1 - m1 - m2;
-    const c = m1;
-    const d = val1;
-    // Note: everything prior to here could be pre-calculated for each segment.
-
-    return a * fraction * fraction * fraction
-         + b * fraction * fraction
-         + c * fraction
-         + d;
+    return {
+        a: 2 * (val1 - val2) + m1 + m2,
+        b: -3 * (val1 - val2) - m1 - m1 - m2,
+        c: m1,
+    };
 }
 
-export function getNumberValue(keyframes: Keyframes<number>, currentTime = getTime()): number {
-    const [val0, val1, val2, val3] = getSegmentToInterpolate(keyframes, currentTime);
-
-    if (!val2) {
-        return val1.val;
-    }
-
-    const fraction = getCompletedFraction(val1, val2, currentTime);
-
-    return interpolate(val0?.val, val1.val, val2.val, val3?.val, fraction);
-}
-
-function interpolateAngle(angle0: number | undefined, angle1: number, angle2: number, angle3: number | undefined, fraction: number) {
+function determineCurveParametersForAngle(angle0: number | undefined, angle1: number, angle2: number, angle3: number | undefined) {
     if (angle3 !== undefined) {
         while (angle3 - angle2 > Math.PI) {
             angle3 -= Math.PI * 2;
@@ -156,50 +104,155 @@ function interpolateAngle(angle0: number | undefined, angle1: number, angle2: nu
         }
     }
 
-    const result = interpolate(angle0, angle1, angle2, angle3, fraction);
-    
-    return clampAngle(result);
+    return determineCurveParameters(angle0, angle1, angle2, angle3);
+}
+
+function determineCurveForObject<T extends object>(
+    keyframes: Keyframes<T>,
+    frame1: Keyframe<T>,
+    frame2: Keyframe<T>,
+    index2: number,
+    keys: Array<keyof T & string>
+): CurveParameters<T> {
+    const frame0 = keyframes[index2 - 2];
+    const frame3 = keyframes[index2 + 1];
+
+    const a: Partial<Record<keyof T, number>> = {};
+    const b: Partial<Record<keyof T, number>> = {};
+    const c: Partial<Record<keyof T, number>> = {};
+
+    const val0 = (frame0?.val ?? {}) as Record<keyof T, number>;
+    const val1 = frame1.val as Record<keyof T, number>;
+    const val2 = frame2.val as Record<keyof T, number>;
+    const val3 = (frame3?.val ?? {})  as Record<keyof T, number>;
+
+    for (const key of keys) {
+        const keyCurve = determineCurveParameters(val0[key], val1[key], val2[key], val3[key]);
+
+        a[key] = keyCurve.a;
+        b[key] = keyCurve.b;
+        c[key] = keyCurve.c;
+    }
+
+    return { a, b, c } as CurveParameters<T>;
+}
+
+
+// Value rendering layer 1, part 2: Resolving values based on last keypoint's parameters.
+
+function resolveNumberValue(a: number, b: number, c: number, d: number, fraction: number) {
+    return a * fraction * fraction * fraction
+         + b * fraction * fraction
+         + c * fraction
+         + d;
+}
+
+function resolveAngleValue(a: number, b: number, c: number, d: number, fraction: number) {
+    const unclamped = resolveNumberValue(a, b, c, d, fraction);
+
+    return clampAngle(unclamped);
+}
+
+function resolveObjValue<T extends object>(keyframe: ResolvedKeyframe<T>, fraction: number, keys: Array<keyof T & string>): T {
+    const result: Partial<Record<keyof T, number>> = {};
+
+    const a = keyframe.curve.a as Record<keyof T, number>;
+    const b = keyframe.curve.b as Record<keyof T, number>;
+    const c = keyframe.curve.c as Record<keyof T, number>;
+    const val = keyframe.val as Record<keyof T, number>;
+
+    for (const key of keys) {
+        result[key] = a[key] * fraction * fraction * fraction
+            + b[key] * fraction * fraction
+            + c[key] * fraction
+            + val[key];
+    }
+
+    return result as T;
+}
+
+
+
+// Value resolving layer 2: numeric and object-property-looping implementations.
+
+function getCompletedFraction(startFrame: Keyframe<unknown>, endFrame: Keyframe<unknown>, currentTime: number) {
+    const fraction = (currentTime - startFrame.time) / (endFrame.time - startFrame.time);
+
+    return Math.max(0, Math.min(1, fraction));
+}
+
+function getNumericValue(
+    keyframes: Keyframes<number>,
+    currentTime: number,
+    determineCurve: typeof determineCurveParameters,
+    resolveValue: typeof resolveNumberValue,
+): number {
+    const index2 = getFirstFutureIndex(keyframes, currentTime);
+
+    if (index2 === -1) {
+        // If the whole curve is in the past, hold on the last position.
+        return keyframes[keyframes.length - 1].val;
+    }
+
+    const frame2 = keyframes[index2];
+
+    if (index2 === 0) {
+        // If the whole curve is in the future, hold on the first position.
+        return frame2.val;
+    }
+
+    const frame1 = keyframes[index2 - 1];
+
+    if (!frame1.curve) {
+        const frame0 = keyframes[index2 - 2];
+        const frame3 = keyframes[index2 + 1];
+        frame1.curve = determineCurve(frame0?.val, frame1.val, frame2.val, frame3?.val);
+    }
+
+    const fraction = getCompletedFraction(frame1, frame2, currentTime);
+    return resolveValue(frame1.curve.a, frame1.curve.b, frame1.curve.c, frame1.val, fraction);
+}
+
+function getObjectValue<T extends object>(keyframes: Keyframes<T>, currentTime: number, keys: Array<keyof T & string>): T {
+    const index2 = getFirstFutureIndex(keyframes, currentTime);
+
+    if (index2 === -1) {
+        // If the whole curve is in the past, hold on the last position.
+        return keyframes[keyframes.length - 1].val;
+    }
+
+    const frame2 = keyframes[index2];
+
+    if (index2 === 0) {
+        // If the whole curve is in the future, hold on the first position.
+        return frame2.val;
+    }
+
+    const frame1 = keyframes[index2 - 1];
+
+    if (!frame1.curve) {
+        frame1.curve = determineCurveForObject<T>(keyframes, frame1, frame2, index2, keys);
+    }
+
+    const fraction = getCompletedFraction(frame1, frame2, currentTime);
+    return resolveObjValue<T>(frame1 as Required<typeof frame1>, fraction, keys);
+}
+
+
+// Value resolving layer 3: type-specific functions.
+
+export function getNumberValue(keyframes: Keyframes<number>, currentTime = getTime()): number {
+    return getNumericValue(keyframes, currentTime, determineCurveParameters, resolveNumberValue);
 }
 
 export function getAngleValue(keyframes: Keyframes<number>, currentTime = getTime()): number {
-    const [val0, val1, val2, val3] = getSegmentToInterpolate(keyframes, currentTime);
-
-    if (val2 === undefined) {
-        return val1.val;
-    }
-
-    const fraction = getCompletedFraction(val1, val2, currentTime);
-
-    return interpolateAngle(val0?.val, val1.val, val2.val, val3?.val, fraction);
+    return getNumericValue(keyframes, currentTime, determineCurveParametersForAngle, resolveAngleValue);
 }
 
 export function getVectorValue(keyframes: Keyframes<Vector2D>, currentTime = getTime()): Vector2D {
-    const [val0, val1, val2, val3] = getSegmentToInterpolate(keyframes, currentTime);
-
-    if (val2 === undefined) {
-        return val1.val;
-    }
-
-    const fraction = getCompletedFraction(val1, val2, currentTime);
-
-    return {
-        x: interpolate(val0?.val.x, val1.val.x, val2.val.x, val3?.val.x, fraction),
-        y: interpolate(val0?.val.y, val1.val.y, val2.val.y, val3?.val.y, fraction),
-    };
+    return getObjectValue<Vector2D>(keyframes, currentTime, ['x', 'y']);
 }
 
 export function getPositionValue(keyframes: Keyframes<Position>, currentTime = getTime()): Position {
-    const [val0, val1, val2, val3] = getSegmentToInterpolate(keyframes, currentTime);
-
-    if (val2 === undefined) {
-        return val1.val;
-    }
-
-    const fraction = getCompletedFraction(val1, val2, currentTime);
-
-    return {
-        x: interpolate(val0?.val.x, val1.val.x, val2.val.x, val3?.val.x, fraction),
-        y: interpolate(val0?.val.y, val1.val.y, val2.val.y, val3?.val.y, fraction),
-        angle: interpolateAngle(val0?.val.angle, val1.val.angle, val2.val.angle, val3?.val.angle, fraction),
-    };
+    return getObjectValue<Position>(keyframes, currentTime, ['x', 'y', 'angle']);
 }
