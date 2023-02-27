@@ -112,7 +112,7 @@ function determineCurveForObject<T extends object>(
     frame1: Keyframe<T>,
     frame2: Keyframe<T>,
     index2: number,
-    keys: Array<keyof T & string>
+    keys: ReadonlyArray<keyof T & string>
 ): CurveParameters<T> {
     const frame0 = keyframes[index2 - 2];
     const frame3 = keyframes[index2 + 1];
@@ -153,7 +153,7 @@ function resolveAngleValue(a: number, b: number, c: number, d: number, fraction:
     return clampAngle(unclamped);
 }
 
-function resolveObjValue<T extends object>(keyframe: ResolvedKeyframe<T>, fraction: number, keys: Array<keyof T & string>): T {
+function resolveObjValue<T extends object>(keyframe: ResolvedKeyframe<T>, fraction: number, keys: ReadonlyArray<keyof T & string>): T {
     const result: Partial<Record<keyof T, number>> = {};
 
     const a = keyframe.curve.a as Record<keyof T, number>;
@@ -170,7 +170,6 @@ function resolveObjValue<T extends object>(keyframe: ResolvedKeyframe<T>, fracti
 
     return result as T;
 }
-
 
 
 // Value resolving layer 2: numeric and object-property-looping implementations.
@@ -213,7 +212,7 @@ function getNumericValue(
     return resolveValue(frame1.curve.a, frame1.curve.b, frame1.curve.c, frame1.val, fraction);
 }
 
-function getObjectValue<T extends object>(keyframes: Keyframes<T>, currentTime: number, keys: Array<keyof T & string>): T {
+function getObjectValue<T extends object>(keyframes: Keyframes<T>, currentTime: number, keys: ReadonlyArray<keyof T & string>): T {
     const index2 = getFirstFutureIndex(keyframes, currentTime);
 
     if (index2 === -1) {
@@ -249,10 +248,12 @@ export function getAngleValue(keyframes: Keyframes<number>, currentTime = getTim
     return getNumericValue(keyframes, currentTime, determineCurveParametersForAngle, resolveAngleValue);
 }
 
+const vectorKeys: ReadonlyArray<keyof Vector2D> = ['x', 'y'];
 export function getVectorValue(keyframes: Keyframes<Vector2D>, currentTime = getTime()): Vector2D {
-    return getObjectValue<Vector2D>(keyframes, currentTime, ['x', 'y']);
+    return getObjectValue<Vector2D>(keyframes, currentTime, vectorKeys);
 }
 
+const positionKeys: ReadonlyArray<keyof Position> = ['x', 'y', 'angle'];
 export function getPositionValue(keyframes: Keyframes<Position>, currentTime = getTime()): Position {
-    return getObjectValue<Position>(keyframes, currentTime, ['x', 'y', 'angle']);
+    return getObjectValue<Position>(keyframes, currentTime, positionKeys);
 }
