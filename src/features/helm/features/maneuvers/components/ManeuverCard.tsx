@@ -58,7 +58,7 @@ export const ManeuverCard: React.FC<Props> = props => {
     
     const maneuvers = props.maneuvers.options
         .map((type, index) => {
-            const offset: Keyframe<Position> = { val: { x: 0, y: 0, angle: props.startAngle }, time: 0 };
+            const offset: Keyframe<Position> = { val: { x: 0, y: 0, angle: props.startAngle, evade: 0 }, time: 0 };
             const maneuver = getManeuver(type, offset);
             
             return (

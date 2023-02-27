@@ -57,6 +57,7 @@ export const Rotate: Story = {
                     x: 0,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 },
             },
             {
@@ -65,6 +66,7 @@ export const Rotate: Story = {
                     x: 0,
                     y: 0,
                     angle: Math.PI * 0.6667,
+                    evade: 0,
                 },
             },
             {
@@ -73,6 +75,7 @@ export const Rotate: Story = {
                     x: 0,
                     y: 0,
                     angle: Math.PI * 1.3333,
+                    evade: 0,
                 },
             },
             {
@@ -81,6 +84,7 @@ export const Rotate: Story = {
                     x: 0,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 },
             }
         ]
@@ -96,6 +100,7 @@ export const Straight: Story = {
                     x: 0,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 },
             },
             {
@@ -104,6 +109,7 @@ export const Straight: Story = {
                     x: 10,
                     y: 0,
                     angle: 0,
+                    evade: 0.5,
                 },
             },
         ]
@@ -119,6 +125,7 @@ export const Square: Story = {
                     x: 0,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 },
             },
             {
@@ -127,6 +134,7 @@ export const Square: Story = {
                     x: 5,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 },
             },
             {
@@ -135,6 +143,7 @@ export const Square: Story = {
                     x: 5,
                     y: 5,
                     angle: 0,
+                    evade: 0,
                 },
             },
             {
@@ -143,6 +152,7 @@ export const Square: Story = {
                     x: 0,
                     y: 5,
                     angle: 0,
+                    evade: 0,
                 },
             },
             {
@@ -151,6 +161,7 @@ export const Square: Story = {
                     x: 0,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 },
             },
         ]
@@ -160,20 +171,20 @@ export const Square: Story = {
 export const StraightManeuver: Story = {
     args: {
         motion: [
-            ...getManeuver(ManeuverType.SlowForward, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion,
-            getManeuver(ManeuverType.SlowForward, { time: 2000, val: { x: 3.5, y: 0, angle: 0 }}).motion[1],
+            ...getManeuver(ManeuverType.SlowForward, { time: 0, val: { x: 0, y: 0, angle: 0, evade: 0 }}).motion,
+            getManeuver(ManeuverType.SlowForward, { time: 2000, val: { x: 3.5, y: 0, angle: 0, evade: 0 }}).motion[1],
         ]
     }
 }
 
 export const SweepRightManeuver: Story = {
     args: {
-        motion: getManeuver(ManeuverType.SweepRight, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+        motion: getManeuver(ManeuverType.SweepRight, { time: 0, val: { x: 0, y: 0, angle: 0, evade: 0 }}).motion
     }
 }
 
 export const HardLeftManeuver: Story = {
     args: {
-        motion: getManeuver(ManeuverType.HardLeft, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+        motion: getManeuver(ManeuverType.HardLeft, { time: 0, val: { x: 0, y: 0, angle: 0, evade: 0 }}).motion
     }
 }

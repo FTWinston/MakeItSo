@@ -25,6 +25,7 @@ const Simple = () => {
                     x: 0,
                     y: 0,
                     angle: 0,
+                    evade: 0,
                 }
             }, {
                 time: getTime() + durationToTicks(3),
@@ -32,6 +33,7 @@ const Simple = () => {
                     x: 50,
                     y: 0,
                     angle: Math.PI,
+                    evade: 0,
                 }
             }]
         }

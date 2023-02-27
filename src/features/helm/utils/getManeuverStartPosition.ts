@@ -27,6 +27,7 @@ export function getManeuverStartPosition(motion: Keyframes<Position>, maneuvers:
             x: cellCenter.x,
             y: cellCenter.y,
             angle: getClosestOrthogonalAngle(nearFuturePosition.angle),
+            evade: nearFuturePosition.evade,
         }
     };
 }

@@ -122,6 +122,7 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
             x: startPosition.x + moveDirection.x * startRotationDistance,
             y: startPosition.y + moveDirection.y * startRotationDistance,
             angle: moveAngle,
+            evade: 0,
         };
 
         latestTime += durationToTicks(startRotationDuration);
@@ -144,6 +145,7 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
             x: endPosition.x - moveDirection.x * endRotationDistance,
             y: endPosition.y - moveDirection.y * endRotationDistance,
             angle: moveAngle,
+            evade: 0,
         };
     }
     else {
@@ -159,6 +161,7 @@ function getMotionBetweenPositions(startFrame: Keyframe<Position>, endFrame: Key
             x: (startStraightPos.x + endStraightPos.x) / 2,
             y: (startStraightPos.y + endStraightPos.y) / 2,
             angle: moveAngle,
+            evade: 0,
         }
     });
 

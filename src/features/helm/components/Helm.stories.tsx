@@ -24,12 +24,14 @@ export const Empty: Story = {
                     val: {
                         ...fromPos,
                         angle: 0,
+                        evade: 0,
                     }
                 }, {
                     time: 5000,
                     val: {
                         ...toPos,
                         angle: 0,
+                        evade: 0,
                     }
                 }
             ];

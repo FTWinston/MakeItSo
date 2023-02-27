@@ -249,11 +249,13 @@ export function getAngleValue(keyframes: Keyframes<number>, currentTime = getTim
 }
 
 const vectorKeys: ReadonlyArray<keyof Vector2D> = ['x', 'y'];
+
 export function getVectorValue(keyframes: Keyframes<Vector2D>, currentTime = getTime()): Vector2D {
     return getObjectValue<Vector2D>(keyframes, currentTime, vectorKeys);
 }
 
 const positionKeys: ReadonlyArray<keyof Position> = ['x', 'y', 'angle'];
+
 export function getPositionValue(keyframes: Keyframes<Position>, currentTime = getTime()): Position {
     return getObjectValue<Position>(keyframes, currentTime, positionKeys);
 }

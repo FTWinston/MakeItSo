@@ -31,6 +31,7 @@ export function useHelmMapInteractions(
                     x: targetCellPos.x,
                     y: targetCellPos.y,
                     angle: angleFromShipToCellPos,
+                    evade: 0,
                 });
             }
             : () => {};
@@ -47,6 +48,7 @@ export function useHelmMapInteractions(
                     x: targetCellPos.x,
                     y: targetCellPos.y,
                     angle: angleFromShipToCellPos,
+                    evade: 0,
                 });
             }
             : () => {};
@@ -64,7 +66,8 @@ export function useHelmMapInteractions(
                     setAddingDestination(waypoint => ({
                         x: waypoint!.x,
                         y: waypoint!.y,
-                        angle: determineAngle(addingDestination, worldPos, waypoint!.angle!)
+                        angle: determineAngle(addingDestination, worldPos, waypoint!.angle!),
+                        evade: 0,
                     }));
                 },
                 onTouchMove: (e: React.TouchEvent<Element>) => {
@@ -79,7 +82,8 @@ export function useHelmMapInteractions(
                         setAddingDestination(waypoint => ({
                             x: waypoint!.x,
                             y: waypoint!.y,
-                            angle: determineAngle(addingDestination, worldPos, waypoint!.angle!)
+                            angle: determineAngle(addingDestination, worldPos, waypoint!.angle!),
+                            evade: 0,
                         }));
                     }
                 },
@@ -88,6 +92,7 @@ export function useHelmMapInteractions(
                         x: addingDestination.x,
                         y: addingDestination.y,
                         angle: addingDestination.angle,
+                        evade: 0,
                     });
                     setAddingDestination(undefined);
                 },
@@ -96,6 +101,7 @@ export function useHelmMapInteractions(
                         x: addingDestination.x,
                         y: addingDestination.y,
                         angle: addingDestination.angle,
+                        evade: 0,
                     });
                     setAddingDestination(undefined);
                 },

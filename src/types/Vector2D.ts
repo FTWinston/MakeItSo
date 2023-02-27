@@ -44,7 +44,7 @@ function getAngle(dx: number, dy: number) {
 }
 
 const factor = Math.PI / 3;
-/* Get the closest multiple of Pi / 3 */
+/** Get the closest multiple of Pi / 3 */
 export function getClosestOrthogonalAngle(angle: number) {
     return Math.round(angle / factor) * factor;
 }
