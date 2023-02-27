@@ -254,7 +254,7 @@ export function getVectorValue(keyframes: Keyframes<Vector2D>, currentTime = get
     return getObjectValue<Vector2D>(keyframes, currentTime, vectorKeys);
 }
 
-const positionKeys: ReadonlyArray<keyof Position> = ['x', 'y', 'angle'];
+const positionKeys: ReadonlyArray<keyof Position> = ['x', 'y', 'angle', 'evade'];
 
 export function getPositionValue(keyframes: Keyframes<Position>, currentTime = getTime()): Position {
     return getObjectValue<Position>(keyframes, currentTime, positionKeys);

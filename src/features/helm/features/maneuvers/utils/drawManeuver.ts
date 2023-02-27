@@ -1,10 +1,11 @@
 import { drawHexGrid } from 'src/features/spacemap';
-import { getVectorValue, Keyframes } from 'src/types/Keyframes';
+import { getPositionValue, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { polarToCartesian } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
+import { scaleToRange } from 'src/utils/scaleToRange';
 
 function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
     let { x: minX, y: minY } = keyframes[0].val;
@@ -82,10 +83,18 @@ export function pickColor(minPower: PowerLevel) {
     }
 }
 
+const evasionRange: readonly [number, number] = [0, 0.75];
+const lineWidthRange: readonly [number, number] = [0.1, 0.5];
+
+function determineLineWidth(evade: number): number {
+    return scaleToRange(evade, evasionRange, lineWidthRange);
+}
+
 export function drawArrowHead(
     ctx: CanvasRenderingContext2D,
     position: Position,
 ) {
+    ctx.lineWidth = 0.15;
     ctx.beginPath();
 
     const armEnd1 = polarToCartesian(position.angle - Math.PI * 0.74, 0.85);
@@ -106,29 +115,29 @@ export function drawManeuver(
     currentTime = 0,
 ) {
     ctx.strokeStyle = pickColor(minPower);
+    ctx.lineCap = 'round';
     ctx.lineWidth = 0.15;
 
     const { time: startTime } = motion[0];
     const { time: endTime, val: endPoint } = getLast(motion);
     
     // Interpolate from startPoint (or the current point, if a time is given) to endPoint.
-    ctx.beginPath();
+    
     const timeStep = (endTime - startTime) / 50;
 
-    let first = true;
-    for (let t = Math.max(startTime, currentTime); t < endTime; t += timeStep) {
-        const point = getVectorValue(motion, t);
-
-        if (first) {
-            ctx.moveTo(point.x, point.y);
-            first = false;
-        }
-        else {
+    let prevPoint: Position | undefined = undefined;
+    for (let t = Math.max(startTime, currentTime); t <= endTime; t += timeStep) {
+        const point = getPositionValue(motion, t);
+        
+        if (prevPoint) {
+            ctx.lineWidth = determineLineWidth(point.evade);
+            ctx.beginPath();
+            ctx.moveTo(prevPoint.x, prevPoint.y);
             ctx.lineTo(point.x, point.y);
+            ctx.stroke();
         }
+        prevPoint = point;
     }
-    ctx.lineTo(endPoint.x, endPoint.y);
-    ctx.stroke();
 
     if (drawArrow) {
         drawArrowHead(ctx, endPoint);

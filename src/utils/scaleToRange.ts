@@ -1,4 +1,4 @@
-function getClampedFraction(value: number, range: [number, number]) {
+function getClampedFraction(value: number, range: readonly [number, number]) {
     const [rangeMin, rangeMax] = range;
 
     if (value <= rangeMin) {
@@ -11,7 +11,7 @@ function getClampedFraction(value: number, range: [number, number]) {
     return (value - rangeMin) / (rangeMax - rangeMin);
 }
 
-export function scaleToRange(value: number, inputRange: [number, number], outputRange: [number, number]) {
+export function scaleToRange(value: number, inputRange: readonly [number, number], outputRange: readonly [number, number]) {
     var clampedValue = getClampedFraction(value, inputRange);
 
     const [outputMin, outputMax] = outputRange;
