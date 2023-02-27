@@ -46,11 +46,8 @@ const Simple = () => {
             gridColor="primary"
             ref={canvas}
             vessels={vessels.current}
-            cellRadius={cellRadius}
-            setCellRadius={setCellRadius}
-            center={center}
-            setCenter={setCenter}
-            dragEnabled={false}
+            getCellRadius={() => cellRadius}
+            getCenter={() => center}
         />
     )
 }
