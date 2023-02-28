@@ -20,8 +20,8 @@ interface Props {
     mode: Mode;
     previewManeuver: ManeuverType | null;
     getInitialCenter: () => Vector2D;
-    ships: Partial<Record<number, GameObjectInfo>>;
-    localShip: GameObjectInfo;
+    ship: GameObjectInfo;
+    otherObjects: GameObjectInfo[];
     destination: Position | null;
     maneuvers: ManeuverInfo[];
     speedToManeuver: number;
@@ -32,15 +32,9 @@ interface Props {
 export const HelmMap: React.FC<Props> = props => {
     const theme = useTheme();
 
-    const ships = useMemo(
-        () => Object.values(props.ships) as GameObjectInfo[],
-        [props.ships]
-    );
-    
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const { destination, maneuvers, previewManeuver, localShip, setDestination, getInitialCenter } = props;
-    const { motion } = localShip;
+    const { destination, maneuvers, previewManeuver, ship, setDestination, getInitialCenter } = props;
     
     const inManeuverMode = props.mode === 'maneuver';
 
@@ -50,13 +44,13 @@ export const HelmMap: React.FC<Props> = props => {
         getCellRadius,
         addingDestination,
         bindGestures,
-    } = useHelmMapInteractions(canvas, motion, !inManeuverMode, inManeuverMode ? undefined : setDestination, getInitialCenter);
+    } = useHelmMapInteractions(canvas, ship.motion, !inManeuverMode, inManeuverMode ? undefined : setDestination, getInitialCenter);
 
     // In maneuver mode, center the view on the end of the ship's planned motion.
     const currentTime = getTime();
 
     const previewStartPosition = inManeuverMode
-        ? getManeuverStartPosition(motion, maneuvers, props.speedToManeuver, currentTime)
+        ? getManeuverStartPosition(ship.motion, maneuvers, props.speedToManeuver, currentTime)
         : undefined;
 
     const autoFocusPoint = inManeuverMode
@@ -72,12 +66,12 @@ export const HelmMap: React.FC<Props> = props => {
         }
 
         const interval = setInterval(() => {
-            const shipPos = getVectorValue(motion, getTime());
+            const shipPos = getVectorValue(ship.motion, getTime());
             setViewCenter(shipPos);
         }, 100);
 
         return () => clearInterval(interval);
-    }, [inManeuverMode, maneuvers, motion])
+    }, [inManeuverMode, maneuvers, ship.motion])
 
     const maneuverSets = useMemo(() => {
         if (!previewManeuver || !previewStartPosition) {
@@ -92,7 +86,7 @@ export const HelmMap: React.FC<Props> = props => {
         setViewCenter(autoFocusPoint);
     }
 
-    const shipVisible = useShipVisibility(canvas, motion, getViewCenter, getCellRadius);
+    const shipVisible = useShipVisibility(canvas, ship.motion, getViewCenter, getCellRadius);
 
     const drawDestinations = (ctx: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => {    
         if (addingDestination) {
@@ -122,7 +116,7 @@ export const HelmMap: React.FC<Props> = props => {
                 shipMoving={destination !== null || maneuvers.length > 0}
                 shipVisible={shipVisible}
                 stop={props.stop}
-                focus={() => setViewCenter(getPositionValue(props.localShip.motion))}
+                focus={() => setViewCenter(getPositionValue(ship.motion))}
             />
         )
         : undefined;
@@ -134,8 +128,7 @@ export const HelmMap: React.FC<Props> = props => {
                 gridColor="secondary"
                 getCellRadius={getCellRadius}
                 getCenter={getViewCenter}
-                vessels={ships}
-                localVessel={props.localShip}
+                objects={[props.ship, ...props.otherObjects]}
                 drawExtraBackground={drawDestinations}
                 {...bindGestures()}
             />

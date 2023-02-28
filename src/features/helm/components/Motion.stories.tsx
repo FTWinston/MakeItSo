@@ -24,8 +24,7 @@ const ShipMotion: React.FC<GameObjectInfo> = (props) => {
             gridColor="secondary"
             getCellRadius={() => 32}
             getCenter={() => ({ x: 0, y: 0 })}
-            vessels={[ship]}
-            localVessel={ship}
+            objects={[ship]}
             drawExtraBackground={(ctx) => {
                 ctx.fillStyle = 'green';
                 for (const keyframe of props.motion) {

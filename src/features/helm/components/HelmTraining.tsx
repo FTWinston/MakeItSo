@@ -1,5 +1,7 @@
 import produce from 'immer';
-import { useEffect, useReducer } from 'react';
+import { useEffect, useReducer, useRef } from 'react';
+import { GameObject } from 'src/types/GameObject';
+import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
 import { Ship } from 'src/types/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
@@ -8,13 +10,15 @@ import { Helm } from './Helm';
 
 interface Props {
     getInitialState: () => Ship;
+    getOtherObjects: () => GameObject[]
     //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
 export const HelmTraining: React.FC<Props> = (props) => {
-    const { getInitialState } = props;
+    const [ship, dispatch] = useReducer(produce(helmTrainingReducer), undefined, props.getInitialState);
+    const otherObjects = useRef<GameObject[]>(props.getOtherObjects());
 
-    const [state, dispatch] = useReducer(produce(helmTrainingReducer), undefined, getInitialState);
+    const ships = new Map<ObjectId, GameObjectInfo>([[ship.id, ship]]);
 
     // Run tick action at a regular interval.
     useEffect(() => {
@@ -23,21 +27,22 @@ export const HelmTraining: React.FC<Props> = (props) => {
         return () => clearInterval(interval);
     });
 
-    const { power, health } = state.systems.get(ShipSystem.Engines);
+    const { power, health } = ship.systems.get(ShipSystem.Engines);
 
     const defaultRender = () => (
         <Helm
-            {...state.helm}
+            {...ship.helm}
             power={power}
             health={health}
-            shipMotion={state.motion}
-            shipDestroyed={state.destroyed}
+            ship={ship}
+            shipDestroyed={ship.destroyed}
+            otherObjects={otherObjects.current}
             stop={() => dispatch({ type: 'stop' })}
             discardManeuverCard={() => dispatch({ type: 'discard' })}
-            maneuvers={state.helm.maneuvers}
-            maneuverChoice={state.helm.maneuverChoice}
-            speedToManeuver={state.helm.speed}
-            destination={state.helm.destination?.val ?? null}
+            maneuvers={ship.helm.maneuvers}
+            maneuverChoice={ship.helm.maneuverChoice}
+            speedToManeuver={ship.helm.speed}
+            destination={ship.helm.destination?.val ?? null}
             setDestination={destination => dispatch({ type: 'set destination', destination })}
             maneuver={choice => dispatch({ type: 'maneuver', choice })}
         />

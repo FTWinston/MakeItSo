@@ -14,10 +14,11 @@ import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
 import { pruneKeyframes } from './Keyframes';
 import { getLast } from 'src/utils/arrays';
+import { ObjectId } from './GameObjectInfo';
 
 export class Ship extends GameObject implements ShipInfo {
-    constructor() {
-        super();
+    constructor(id: ObjectId) {
+        super(id);
 
         this.systems = getDefaultSystemStates();
         this.engineering = getDefaultEngineeringState();

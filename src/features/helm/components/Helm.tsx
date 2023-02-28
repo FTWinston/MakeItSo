@@ -4,8 +4,8 @@ import { AppBarHeight, Page } from 'src/features/layout';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';
-import { GameObjectInfo } from 'src/types/GameObjectInfo';
-import { Keyframes, getPositionValue } from 'src/types/Keyframes';
+import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
+import { getPositionValue } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { useState } from 'react';
 import { Mode, ModeToggle } from './ModeToggle';
@@ -16,7 +16,8 @@ import { getTime } from 'src/utils/timeSpans';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
-    shipMotion: Keyframes<Position>;
+    ship: GameObjectInfo;
+    otherObjects: GameObjectInfo[];
     speedToManeuver: number;
     power: PowerLevel;
     health: number;
@@ -43,14 +44,10 @@ const CardWrapper = styled(Box)({
 export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
 
-    const localShip: GameObjectInfo = {
-        motion: props.shipMotion
-    };
-
     const [mode, setMode] = useState<Mode>('travel');
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
     
-    const currentMotionEndAngle = getManeuverStartPosition(localShip.motion, props.maneuvers, props.speedToManeuver, getTime()).val.angle;
+    const currentMotionEndAngle = getManeuverStartPosition(props.ship.motion, props.maneuvers, props.speedToManeuver, getTime()).val.angle;
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>
@@ -59,9 +56,9 @@ export const Helm: React.FC<Props> = (props) => {
             <HelmMap
                 mode={mode}
                 stop={props.stop}
-                getInitialCenter={() => getPositionValue(props.shipMotion)}
-                ships={[localShip]}
-                localShip={localShip}
+                getInitialCenter={() => getPositionValue(props.ship.motion)}
+                ship={props.ship}
+                otherObjects={props.otherObjects}
                 maneuvers={props.maneuvers}
                 previewManeuver={previewManeuver}
                 speedToManeuver={props.speedToManeuver}

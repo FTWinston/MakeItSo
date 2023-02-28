@@ -17,8 +17,9 @@ const Simple = () => {
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const vessels = useRef<GameObjectInfo[]>([
+    const objects = [
         {
+            id: 1,
             motion: [{
                 time: getTime(),
                 val: {
@@ -37,7 +38,7 @@ const Simple = () => {
                 }
             }]
         }
-    ])
+    ];
     
     const [center, setCenter] = useState<Vector2D>({ x: 0, y: 0 });
 
@@ -45,7 +46,7 @@ const Simple = () => {
         <StyledMap
             gridColor="primary"
             ref={canvas}
-            vessels={vessels.current}
+            objects={objects}
             getCellRadius={() => cellRadius}
             getCenter={() => center}
         />

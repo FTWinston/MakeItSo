@@ -4,7 +4,7 @@ import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
 import { getPositionValue } from 'src/types/Keyframes';
-import { GameObjectInfo } from 'src/types/GameObjectInfo';
+import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
 import { Rectangle } from 'src/types/Rectangle';
 import { scaleToRange } from 'src/utils/scaleToRange';
 
@@ -21,7 +21,7 @@ function drawVessel(
     
     ctx.fillStyle = isLocal
         ? theme.palette.text.primary
-        : theme.palette.text.secondary;
+        : theme.palette.text.disabled;
 
     ctx.beginPath();
 
@@ -83,8 +83,7 @@ export function drawMap(
     gridColor: DiscreteColorName,
     cellRadius: number,
     center: Vector2D,
-    vessels: GameObjectInfo[],
-    localVessel?: GameObjectInfo,
+    objects: GameObjectInfo[],
     drawExtraBackground?: drawFunction,
     drawExtraForeground?: drawFunction,
 ) {
@@ -109,9 +108,11 @@ export function drawMap(
 
     const currentTime = getTime();
     
-    for (const vessel of vessels) {
-        const position = getPositionValue(vessel.motion, currentTime);
-        drawVessel(ctx, theme, vessel === localVessel, position);
+    let first = true;
+    for (const ship of objects) {
+        const position = getPositionValue(ship.motion, currentTime);
+        drawVessel(ctx, theme, first, position);
+        first = false;
     }
 
     drawExtraForeground?.(ctx, worldBounds, pixelSize);
