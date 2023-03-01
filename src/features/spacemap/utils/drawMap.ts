@@ -1,40 +1,14 @@
 import { drawHexGrid } from './drawHexGrid';
 import { Vector2D } from 'src/types/Vector2D';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
-import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Rectangle } from 'src/types/Rectangle';
 import { scaleToRange } from 'src/utils/scaleToRange';
 import { interpolatePosition } from 'src/utils/interpolate';
+import { drawObject } from './drawObject';
 
 export type drawFunction = (context: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => void;
-
-function drawVessel(
-    ctx: CanvasRenderingContext2D,
-    theme: Theme,
-    isLocal: boolean,
-    position: Position,
-) {
-    ctx.translate(position.x, position.y);
-    ctx.rotate(position.angle);
-    
-    ctx.fillStyle = isLocal
-        ? theme.palette.text.primary
-        : theme.palette.text.disabled;
-
-    ctx.beginPath();
-
-    ctx.moveTo(0.625, 0);
-    ctx.lineTo(-0.46875, 0.53125);
-    ctx.lineTo(-0.28125, 0);
-    ctx.lineTo(-0.46875, -0.53125);
-
-    ctx.fill();
-
-    ctx.rotate(-position.angle);
-    ctx.translate(-position.x, -position.y);
-}
 
 export const worldScaleCellRadius = 1;
 
@@ -108,11 +82,16 @@ export function drawMap(
 
     const currentTime = getTime();
     
-    let first = true;
-    for (const ship of objects) {
-        const position = interpolatePosition(ship.motion, currentTime);
-        drawVessel(ctx, theme, first, position);
-        first = false;
+    for (const obj of objects) {
+        const position = interpolatePosition(obj.motion, currentTime);
+
+        ctx.translate(position.x, position.y);
+        ctx.rotate(position.angle);
+
+        drawObject(ctx, theme, obj.draw);
+        
+        ctx.rotate(-position.angle);
+        ctx.translate(-position.x, -position.y);
     }
 
     drawExtraForeground?.(ctx, worldBounds, pixelSize);

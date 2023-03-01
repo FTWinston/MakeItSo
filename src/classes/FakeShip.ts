@@ -1,4 +1,3 @@
-import { GameObject } from './GameObject';
 import { updateShipMotion } from 'src/features/helm';
 import { getLast } from 'src/utils/arrays';
 import { ObjectId } from 'src/types/GameObjectInfo';
@@ -7,21 +6,15 @@ import { getManeuver, ManeuverInfo, ManeuverType } from 'src/features/helm/featu
 import { getManeuverStartPosition } from 'src/features/helm/utils/getManeuverStartPosition';
 import { MotionConfiguration } from 'src/features/helm/types/HelmState';
 import { Position } from 'src/types/Position';
+import { MobileObject } from './MobileObject';
 
-export class FakeShip extends GameObject {
+export class FakeShip extends MobileObject {
     constructor(
         id: ObjectId,
         startPosition: Position,
         readonly maneuverSequence: readonly ManeuverType[]
     ) {
-        super(id);
-
-        this.motion = [
-            {
-                time: 0,
-                val: startPosition,
-            }
-        ];
+        super(id, 'neutral', startPosition);
     }
 
     private nextManeuverIndex = 0;

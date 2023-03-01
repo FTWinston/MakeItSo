@@ -18,7 +18,7 @@ import { pruneKeyframes } from 'src/utils/interpolate';
 
 export class Ship extends GameObject implements ShipInfo {
     constructor(id: ObjectId) {
-        super(id);
+        super(id, 'ship');
 
         this.systems = getDefaultSystemStates();
         this.engineering = getDefaultEngineeringState();

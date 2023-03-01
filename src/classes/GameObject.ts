@@ -1,6 +1,7 @@
 import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
+import { ObjectAppearance } from 'src/types/ObjectAppearance';
 import { immerable } from 'immer';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { Vector2D } from 'src/types/Vector2D';
@@ -11,7 +12,7 @@ const twoTicks = durationToTicks(2);
 export abstract class GameObject implements GameObjectInfo {
     [immerable] = true;
 
-    constructor(public readonly id: ObjectId) {}
+    constructor(public readonly id: ObjectId, public readonly draw: ObjectAppearance) {}
 
     motion: Keyframes<Position> = [];
 
