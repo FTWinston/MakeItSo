@@ -1,4 +1,4 @@
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';

@@ -1,9 +1,10 @@
 import { GameObject } from './GameObject';
-import { Position } from './Position';
+import { ObjectId } from '../types/GameObjectInfo';
+import { Position } from '../types/Position';
 
 export class StaticObject extends GameObject {
-    constructor(position: Position) {
-        super();
+    constructor(id: ObjectId, position: Position) {
+        super(id);
         this.motion.push({ val: position, time: 0 });
     }
     

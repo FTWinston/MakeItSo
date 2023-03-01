@@ -1,5 +1,4 @@
-import { Ship } from 'src/types/Ship';
-import { ShipInfo } from 'src/types/ShipInfo';
+import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsState';
 
@@ -10,7 +9,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship();
+            const newState = new Ship(1);
             newState.sensors = {
 
             };

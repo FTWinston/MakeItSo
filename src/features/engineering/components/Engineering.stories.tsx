@@ -3,7 +3,7 @@ import { Dispatch, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, MenuItem, Select } from 'src/lib/mui';
 import { DefiniteMap } from 'src/types/DefiniteMap';
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
@@ -24,7 +24,7 @@ type Story = StoryObj<typeof EngineeringTraining>;
 
 export const Empty: Story = {
     args: {
-        getInitialState: () => new Ship(),
+        getInitialState: () => new Ship(1),
         getEffects: () => [
             {
                 type: 'damage',
@@ -38,7 +38,7 @@ export const Empty: Story = {
 export const Busy: Story = {
     args: {
         getInitialState: () => {
-            const ship = new Ship();
+            const ship = new Ship(1);
             const systems = getComplexStoryTiles();
 
             ship.systems = arrayToMap(systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
@@ -66,7 +66,7 @@ export const Busy: Story = {
 
 export const Custom: Story = {
     args: {
-        getInitialState: () => new Ship(),
+        getInitialState: () => new Ship(1),
         getEffects: () => [],
     },
     render: (props) => {

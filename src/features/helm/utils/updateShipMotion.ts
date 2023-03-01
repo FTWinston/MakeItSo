@@ -1,7 +1,7 @@
-import { GameObject } from 'src/types/GameObject';
+import { GameObject } from 'src/classes/GameObject';
 import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
 import { wantsMoreKeyframes, interpolatePosition, getFirstFutureIndex } from 'src/utils/interpolate';

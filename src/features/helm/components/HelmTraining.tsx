@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { useEffect, useReducer } from 'react';
-import { GameObject } from 'src/types/GameObject';
-import { Ship } from 'src/types/Ship';
+import { GameObject } from 'src/classes/GameObject';
+import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { helmTrainingReducer } from '../utils/helmTrainingReducer';

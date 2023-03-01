@@ -1,7 +1,7 @@
 import { StoryObj } from '@storybook/react';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/spacemap';
-import { FakeShip } from 'src/types/FakeShip';
-import { Ship } from 'src/types/Ship';
+import { FakeShip } from 'src/classes/FakeShip';
+import { Ship } from 'src/classes/Ship';
 import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 

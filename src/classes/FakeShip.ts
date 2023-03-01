@@ -1,12 +1,12 @@
 import { GameObject } from './GameObject';
 import { updateShipMotion } from 'src/features/helm';
 import { getLast } from 'src/utils/arrays';
-import { ObjectId } from './GameObjectInfo';
+import { ObjectId } from 'src/types/GameObjectInfo';
 import { pruneKeyframes } from 'src/utils/interpolate';
 import { getManeuver, ManeuverInfo, ManeuverType } from 'src/features/helm/features/maneuvers';
 import { getManeuverStartPosition } from 'src/features/helm/utils/getManeuverStartPosition';
 import { MotionConfiguration } from 'src/features/helm/types/HelmState';
-import { Position } from './Position';
+import { Position } from 'src/types/Position';
 
 export class FakeShip extends GameObject {
     constructor(

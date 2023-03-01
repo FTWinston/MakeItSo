@@ -1,4 +1,4 @@
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { WeaponsAction } from '../types/WeaponsState';
 
@@ -9,7 +9,7 @@ export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship();
+            const newState = new Ship(state.id);
             newState.weapons = {
 
             };

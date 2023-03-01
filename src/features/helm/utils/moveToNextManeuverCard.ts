@@ -1,4 +1,4 @@
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { drawCard } from 'src/utils/drawCard';
 
 export function moveToNextManeuverCard(state: Ship) {

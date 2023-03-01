@@ -1,4 +1,4 @@
-import { GameObject } from 'src/types/GameObject';
+import { GameObject } from 'src/classes/GameObject';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 

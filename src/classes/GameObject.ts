@@ -1,9 +1,9 @@
-import { Keyframes } from './Keyframes';
-import { Position } from './Position';
-import { GameObjectInfo, ObjectId } from './GameObjectInfo';
+import { Keyframes } from 'src/types/Keyframes';
+import { Position } from 'src/types/Position';
+import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
 import { immerable } from 'immer';
 import { durationToTicks } from 'src/utils/timeSpans';
-import { Vector2D } from './Vector2D';
+import { Vector2D } from 'src/types/Vector2D';
 import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 
 const twoTicks = durationToTicks(2);

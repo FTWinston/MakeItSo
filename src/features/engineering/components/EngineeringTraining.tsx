@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { Dispatch, useEffect, useReducer } from 'react';
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { getTime } from 'src/utils/timeSpans';
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';

@@ -1,5 +1,5 @@
 import { DefiniteMap } from 'src/types/DefiniteMap';
-import { Ship } from 'src/types/Ship';
+import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
@@ -21,7 +21,7 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship();
+            const newState = new Ship(state.id);
             newState.systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
             newState.engineering = {
                 systemOrder: action.systems.map(system => system.system),

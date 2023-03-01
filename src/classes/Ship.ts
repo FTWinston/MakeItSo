@@ -2,18 +2,18 @@ import type { EngineeringState } from 'src/features/engineering/types/Engineerin
 import type { HelmState } from 'src/features/helm/types/HelmState';
 import type { SensorsState } from 'src/features/sensors/types/SensorsState';
 import type { WeaponsState } from 'src/features/weapons/types/WeaponsState';
-import type { DefiniteMap } from './DefiniteMap';
-import type { ShipDestroyingSystem, ShipSystem } from './ShipSystem';
-import type { SystemState } from './SystemState';
+import type { DefiniteMap } from 'src/types/DefiniteMap';
+import type { ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
+import type { SystemState } from 'src/types/SystemState';
 import { GameObject } from './GameObject';
-import { ShipInfo } from './ShipInfo';
+import { ShipInfo } from 'src/types/ShipInfo';
 import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { getDefaultEngineeringState } from 'src/features/engineering';
 import { getDefaultHelmState, updateShipMotion } from 'src/features/helm';
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
 import { getLast } from 'src/utils/arrays';
-import { ObjectId } from './GameObjectInfo';
+import { ObjectId } from 'src/types/GameObjectInfo';
 import { pruneKeyframes } from 'src/utils/interpolate';
 
 export class Ship extends GameObject implements ShipInfo {
