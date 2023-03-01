@@ -83,7 +83,7 @@ export function drawMap(
     gridColor: DiscreteColorName,
     cellRadius: number,
     center: Vector2D,
-    objects: GameObjectInfo[],
+    objects: Iterable<GameObjectInfo>,
     drawExtraBackground?: drawFunction,
     drawExtraForeground?: drawFunction,
 ) {

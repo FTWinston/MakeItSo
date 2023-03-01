@@ -21,7 +21,7 @@ interface Props {
     previewManeuver: ManeuverType | null;
     getInitialCenter: () => Vector2D;
     ship: GameObjectInfo;
-    otherObjects: GameObjectInfo[];
+    otherObjects: Iterable<GameObjectInfo>;
     destination: Position | null;
     maneuvers: ManeuverInfo[];
     speedToManeuver: number;

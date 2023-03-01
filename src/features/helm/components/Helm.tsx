@@ -17,7 +17,7 @@ import { getTime } from 'src/utils/timeSpans';
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
     ship: GameObjectInfo;
-    otherObjects: GameObjectInfo[];
+    otherObjects: Iterable<GameObjectInfo>;
     speedToManeuver: number;
     power: PowerLevel;
     health: number;

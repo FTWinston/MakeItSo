@@ -4,13 +4,13 @@ import { Canvas } from 'src/components/Canvas';
 import { DiscreteColorName, SxProps, useTheme } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { Vector2D } from 'src/types/Vector2D';
-import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 
 interface Props extends TouchEvents {
     className?: string;
     sx?: SxProps;
     gridColor: DiscreteColorName;
-    objects: GameObjectInfo[];
+    objects: Iterable<GameObjectInfo>;
     getCenter: () => Vector2D;
     getCellRadius: () => number;
     drawExtraForeground?: drawFunction;
