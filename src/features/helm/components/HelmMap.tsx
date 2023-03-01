@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { Position } from 'src/types/Position';
 import { distanceSq, Vector2D } from 'src/types/Vector2D';
-import { getPositionValue, getVectorValue } from 'src/types/Keyframes';
+import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 import { SpaceMap } from 'src/features/spacemap';
 import { useTheme } from 'src/lib/mui';
 import { drawDestination } from '../utils/drawDestination';
@@ -56,7 +56,7 @@ export const HelmMap: React.FC<Props> = props => {
     const autoFocusPoint = inManeuverMode
         ? maneuvers.length > 0 && previewStartPosition
             ? previewStartPosition.val
-            : undefined//getPositionValue(motion, currentTime)
+            : undefined//interpolatePosition(motion, currentTime)
         : undefined;
 
     // In maneuver mode, with no maneuvers, the camera should lock to the ship.
@@ -66,7 +66,7 @@ export const HelmMap: React.FC<Props> = props => {
         }
 
         const interval = setInterval(() => {
-            const shipPos = getVectorValue(ship.motion, getTime());
+            const shipPos = interpolateVector(ship.motion, getTime());
             setViewCenter(shipPos);
         }, 100);
 
@@ -116,7 +116,7 @@ export const HelmMap: React.FC<Props> = props => {
                 shipMoving={destination !== null || maneuvers.length > 0}
                 shipVisible={shipVisible}
                 stop={props.stop}
-                focus={() => setViewCenter(getPositionValue(ship.motion))}
+                focus={() => setViewCenter(interpolatePosition(ship.motion))}
             />
         )
         : undefined;

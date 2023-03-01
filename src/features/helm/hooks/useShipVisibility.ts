@@ -1,9 +1,10 @@
 import { RefObject, useEffect, useState } from 'react';
 import { getWorldBounds } from 'src/features/spacemap';
-import { getVectorValue, Keyframes } from 'src/types/Keyframes';
+import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { isInRectangle } from 'src/types/Rectangle';
 import { Vector2D } from 'src/types/Vector2D';
+import { interpolateVector } from 'src/utils/interpolate';
 
 export function useShipVisibility(
     canvas: RefObject<HTMLCanvasElement>,
@@ -16,7 +17,7 @@ export function useShipVisibility(
     useEffect(() => {
         const updateVisibility = () => {
             const bounds = getWorldBounds(canvas.current!, getCellRadius(), getViewCenter());
-            const visible = isInRectangle(bounds, getVectorValue(motion));
+            const visible = isInRectangle(bounds, interpolateVector(motion));
             if (shipVisible !== visible) {
                 setShipVisible(visible);   
             }

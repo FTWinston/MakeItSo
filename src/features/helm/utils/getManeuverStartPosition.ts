@@ -1,8 +1,9 @@
 import { getClosestCellCenter } from 'src/features/spacemap';
-import { getPositionValue, Keyframe, Keyframes } from 'src/types/Keyframes';
+import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { distance, getClosestOrthogonalAngle } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
+import { interpolatePosition } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo } from '../features/maneuvers';
 
@@ -13,8 +14,8 @@ export function getManeuverStartPosition(motion: Keyframes<Position>, maneuvers:
     }
 
     // Find a cell center AHEAD of the ship rather than behind. Search 1 second ahead, as a quick workaround.
-    const currentPos = getPositionValue(motion, currentTime);
-    const nearFuturePosition = getPositionValue(motion, currentTime + durationToTicks(1));
+    const currentPos = interpolatePosition(motion, currentTime);
+    const nearFuturePosition = interpolatePosition(motion, currentTime + durationToTicks(1));
     const cellCenter = getClosestCellCenter(nearFuturePosition.x, nearFuturePosition.y, 1);
     
     // Leave time to move to cellCenter before starting maneuver.

@@ -4,8 +4,8 @@ import { AppBarHeight, Page } from 'src/features/layout';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';
-import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
-import { getPositionValue } from 'src/types/Keyframes';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
+import { interpolatePosition } from 'src/utils/interpolate';
 import { Position } from 'src/types/Position';
 import { useState } from 'react';
 import { Mode, ModeToggle } from './ModeToggle';
@@ -56,7 +56,7 @@ export const Helm: React.FC<Props> = (props) => {
             <HelmMap
                 mode={mode}
                 stop={props.stop}
-                getInitialCenter={() => getPositionValue(props.ship.motion)}
+                getInitialCenter={() => interpolatePosition(props.ship.motion)}
                 ship={props.ship}
                 otherObjects={props.otherObjects}
                 maneuvers={props.maneuvers}

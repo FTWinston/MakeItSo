@@ -12,9 +12,9 @@ import { getDefaultEngineeringState } from 'src/features/engineering';
 import { getDefaultHelmState, updateShipMotion } from 'src/features/helm';
 import { getDefaultSensorsState } from 'src/features/sensors';
 import { getDefaultWeaponsState } from 'src/features/weapons';
-import { pruneKeyframes } from './Keyframes';
 import { getLast } from 'src/utils/arrays';
 import { ObjectId } from './GameObjectInfo';
+import { pruneKeyframes } from 'src/utils/interpolate';
 
 export class Ship extends GameObject implements ShipInfo {
     constructor(id: ObjectId) {

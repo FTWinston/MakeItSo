@@ -1,9 +1,10 @@
 import { GameObject } from 'src/types/GameObject';
-import { Keyframe, Keyframes, getPositionValue, getFirstFutureIndex, wantsMoreKeyframes } from 'src/types/Keyframes';
+import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Ship } from 'src/types/Ship';
 import { determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
+import { wantsMoreKeyframes, interpolatePosition, getFirstFutureIndex } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo } from '../features/maneuvers';
 import { MotionConfiguration } from '../types/HelmState';
@@ -50,11 +51,11 @@ function getPastFramesForNewMotion(ship: GameObject, currentTime: number) {
     return [
         {
             time: pastTime,
-            val: getPositionValue(ship.motion, pastTime),
+            val: interpolatePosition(ship.motion, pastTime),
         },
         {
             time: currentTime,
-            val: getPositionValue(ship.motion, currentTime),
+            val: interpolatePosition(ship.motion, currentTime),
         }
     ];
 }

@@ -3,10 +3,10 @@ import { Vector2D } from 'src/types/Vector2D';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 import { getTime } from 'src/utils/timeSpans';
-import { getPositionValue } from 'src/types/Keyframes';
-import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { Rectangle } from 'src/types/Rectangle';
 import { scaleToRange } from 'src/utils/scaleToRange';
+import { interpolatePosition } from 'src/utils/interpolate';
 
 export type drawFunction = (context: CanvasRenderingContext2D, bounds: Rectangle, pixelSize: number) => void;
 
@@ -110,7 +110,7 @@ export function drawMap(
     
     let first = true;
     for (const ship of objects) {
-        const position = getPositionValue(ship.motion, currentTime);
+        const position = interpolatePosition(ship.motion, currentTime);
         drawVessel(ctx, theme, first, position);
         first = false;
     }
