@@ -17,9 +17,10 @@ const Simple = () => {
 
     const canvas = useRef<HTMLCanvasElement>(null);
 
-    const objects = [
+    const objects: GameObjectInfo[] = [
         {
             id: 1,
+            draw: 'ship',
             motion: [{
                 time: getTime(),
                 val: {
@@ -31,7 +32,7 @@ const Simple = () => {
             }, {
                 time: getTime() + durationToTicks(3),
                 val: {
-                    x: 50,
+                    x: 5,
                     y: 0,
                     angle: Math.PI,
                     evade: 0,
