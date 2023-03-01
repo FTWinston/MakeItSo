@@ -1,11 +1,11 @@
 import produce from 'immer';
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useReducer } from 'react';
 import { GameObject } from 'src/types/GameObject';
-import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
 import { Ship } from 'src/types/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { helmTrainingReducer } from '../utils/helmTrainingReducer';
+import { otherObjectsTrainingReducer } from '../utils/otherObjectsTrainingReducer';
 import { Helm } from './Helm';
 
 interface Props {
@@ -15,14 +15,16 @@ interface Props {
 }
 
 export const HelmTraining: React.FC<Props> = (props) => {
-    const [ship, dispatch] = useReducer(produce(helmTrainingReducer), undefined, props.getInitialState);
-    const otherObjects = useRef<GameObject[]>(props.getOtherObjects());
+    const [ship, helmDispatch] = useReducer(produce(helmTrainingReducer), undefined, props.getInitialState);
+    const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), undefined, props.getOtherObjects);
 
-    const ships = new Map<ObjectId, GameObjectInfo>([[ship.id, ship]]);
-
-    // Run tick action at a regular interval.
+    // Run tick actions at a regular interval.
     useEffect(() => {
-        const interval = setInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
+        const interval = setInterval(() => {
+            const tick = { type: 'tick', currentTime: getTime() } as const;
+            helmDispatch(tick);
+            otherDispatch(tick);
+        }, 200);
 
         return () => clearInterval(interval);
     });
@@ -36,15 +38,15 @@ export const HelmTraining: React.FC<Props> = (props) => {
             health={health}
             ship={ship}
             shipDestroyed={ship.destroyed}
-            otherObjects={otherObjects.current}
-            stop={() => dispatch({ type: 'stop' })}
-            discardManeuverCard={() => dispatch({ type: 'discard' })}
+            otherObjects={otherObjects}
+            stop={() => helmDispatch({ type: 'stop' })}
+            discardManeuverCard={() => helmDispatch({ type: 'discard' })}
             maneuvers={ship.helm.maneuvers}
             maneuverChoice={ship.helm.maneuverChoice}
             speedToManeuver={ship.helm.speed}
             destination={ship.helm.destination?.val ?? null}
-            setDestination={destination => dispatch({ type: 'set destination', destination })}
-            maneuver={choice => dispatch({ type: 'maneuver', choice })}
+            setDestination={destination => helmDispatch({ type: 'set destination', destination })}
+            maneuver={choice => helmDispatch({ type: 'maneuver', choice })}
         />
     );
 
