@@ -1,4 +1,5 @@
 import { Theme } from 'src/lib/mui';
+import { shipPath } from './drawShip';
 
 export function drawEnemy(
     ctx: CanvasRenderingContext2D,
@@ -6,11 +7,6 @@ export function drawEnemy(
 ) {
     ctx.fillStyle = theme.palette.error.dark;
     ctx.beginPath();
-
-    ctx.moveTo(0.625, 0);
-    ctx.lineTo(-0.46875, 0.53125);
-    ctx.lineTo(-0.28125, 0);
-    ctx.lineTo(-0.46875, -0.53125);
-
+    shipPath(ctx);
     ctx.fill();
 }

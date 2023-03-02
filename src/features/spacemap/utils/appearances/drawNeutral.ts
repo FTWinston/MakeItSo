@@ -1,4 +1,5 @@
 import { Theme } from 'src/lib/mui';
+import { shipPath } from './drawShip';
 
 export function drawNeutral(
     ctx: CanvasRenderingContext2D,
@@ -6,11 +7,6 @@ export function drawNeutral(
 ) {
     ctx.fillStyle = theme.palette.text.disabled;
     ctx.beginPath();
-
-    ctx.moveTo(0.625, 0);
-    ctx.lineTo(-0.46875, 0.53125);
-    ctx.lineTo(-0.28125, 0);
-    ctx.lineTo(-0.46875, -0.53125);
-
+    shipPath(ctx);
     ctx.fill();
 }
