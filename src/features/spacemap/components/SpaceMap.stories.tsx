@@ -17,17 +17,12 @@ const StyledMap = styled(SpaceMap)({
 const CanvasContainer = styled(Box)({
     display: 'flex',
     gap: '0.25em',
-    padding: '0.25em',
     flexWrap: 'wrap',
-    backgroundColor: '#333',
-    width: '100vw',
-    height: '100vh',
 });
 
 const IndividualCanvas = styled(Canvas)({
     width: '3em',
     height: '3em',
-    backgroundColor: 'rgb(33,33,33)',
 });
 
 export const example = () => {
@@ -77,8 +72,8 @@ export const appearances = () => {
 
     const canvases = Object.entries(drawFunctions).map((entry, index) => (
         <IndividualCanvas
-            draw={ctx => {
-                ctx.scale(32, 32);
+            draw={(ctx, bounds) => {
+                ctx.scale(bounds.width / 2, bounds.height / 2);
                 ctx.translate(1, 1);
                 entry[1](ctx, theme);
             }}
