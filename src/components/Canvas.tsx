@@ -7,6 +7,7 @@ interface Props extends TouchEvents<HTMLCanvasElement> {
     sx?: SxProps;
     'aria-label'?: string;
     animate?: boolean;
+    title?: string;
     boundsChanged?: (bounds: DOMRect) => void;
     draw: (context: CanvasRenderingContext2D, bounds: DOMRect) => void;
 }
@@ -48,6 +49,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, PropsWithChildren<Props>>((p
         animate,
         boundsChanged,
         draw,
+        title,
         'aria-label': label,
         ...interactionProps
     } = props;
@@ -146,6 +148,7 @@ export const Canvas = forwardRef<HTMLCanvasElement, PropsWithChildren<Props>>((p
             className={className}
             sx={sx}
             ref={outerRef}
+            title={title}
             aria-label={label}
         >
             <Display

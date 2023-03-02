@@ -5,7 +5,7 @@ import { drawNeutral } from './appearances/drawNeutral';
 import { drawEnemy } from './appearances/drawEnemy';
 import { drawShip } from './appearances/drawShip';
 
-const drawFunctions: Record<ObjectAppearance, DrawFunction> = {
+export const drawFunctions: Record<ObjectAppearance, DrawFunction> = {
     ship: drawShip,
     neutral: drawNeutral,
     enemy: drawEnemy,
