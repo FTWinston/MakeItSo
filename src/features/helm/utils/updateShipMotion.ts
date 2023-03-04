@@ -1,13 +1,13 @@
 import { GameObject } from 'src/classes/GameObject';
 import { Keyframe, Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
-import { Ship } from 'src/classes/Ship';
 import { determineAngle, clampAngle, distance, unit } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
 import { wantsMoreKeyframes, interpolatePosition, getFirstFutureIndex } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { ManeuverInfo } from '../features/maneuvers';
 import { MotionConfiguration } from '../types/HelmState';
+import { getStopPosition } from './getStopPosition';
 
 export function updateShipMotion(
     ship: GameObject,
@@ -25,6 +25,9 @@ export function updateShipMotion(
         else if (destination) {
             changeMotionToNewDestination(ship, config, destination, currentTime);
             return;
+        }
+        else {
+            stopMotion(ship, config, currentTime);
         }
     }
     
@@ -243,7 +246,17 @@ function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number, 
     return results;
 }
 
-export function adjustSpeed(ship: Ship, time: number) {
+function stopMotion(ship: GameObject, config: MotionConfiguration, currentTime: number) {
+    const pastFrames = getPastFramesForNewMotion(ship, currentTime);
+    const stopPosition = getStopPosition(ship.motion, config.speed, currentTime);
+    
+    ship.motion = [
+        ...pastFrames,
+        stopPosition,
+    ]
+}
+
+export function adjustSpeed(ship: GameObject, time: number) {
     /*
     const { current, next } = ship.movement;
 
