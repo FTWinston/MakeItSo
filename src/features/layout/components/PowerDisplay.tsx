@@ -1,5 +1,4 @@
-import { Box, styled, SxProps, Tooltip } from 'src/lib/mui';
-import { useTranslation } from 'react-i18next';
+import { Box, styled, SxProps } from 'src/lib/mui';
 import { PowerLevel } from 'src/types/ShipSystem';
 
 const Root = styled(Box)({
@@ -12,16 +11,26 @@ const Root = styled(Box)({
     fontSize: '1em',
 });
 
+type DisplayMode = 'normal' | 'success' | 'fail';
+
+interface BarProps {
+    active: boolean;
+    level: PowerLevel;
+    mode: DisplayMode;
+}
+
 const Bar = styled(Box,
     { shouldForwardProp: (prop) => prop !== 'active' && prop !== 'level' }
-)<{ active: boolean, level: PowerLevel }>((({ active, level, theme }) => {
+)<BarProps>((({ active, level, mode, theme }) => {
     let backgroundColor;
     let opacity;
 
     if (active) {
-        backgroundColor = level >= 4
+        backgroundColor = mode === 'success'
             ? theme.palette.success.light
-            : theme.palette.text.primary;
+            : mode === 'fail'
+                ? theme.palette.warning.main
+                : theme.palette.text.primary;
     }
     else {
         backgroundColor = level === 0
@@ -42,7 +51,6 @@ const Bar = styled(Box,
 
         '&:nth-of-type(1)': {
             height: '0.25em',
-            backgroundColor: level === 1 ? theme.palette.warning.main : undefined,
         },
         '&:nth-of-type(2)': {
             height: '0.75em'
@@ -58,27 +66,24 @@ const Bar = styled(Box,
 
 interface Props {
     powerLevel: PowerLevel;
+    mode: DisplayMode;
+    label?: string;
     className?: string;
     sx?: SxProps;
 }
 
 export const PowerDisplay: React.FC<Props> = (props) => {
-    const { t } = useTranslation('common');
-    const description = t(`powerLevel${props.powerLevel}`);
-
     return (
-        <Tooltip title={description}>
-            <Root
-                role="figure"
-                aria-label={description}
-                className={props.className}
-                sx={props.sx}
-            >
-                <Bar active={props.powerLevel >= 1} level={props.powerLevel} />
-                <Bar active={props.powerLevel >= 2} level={props.powerLevel} />
-                <Bar active={props.powerLevel >= 3} level={props.powerLevel} />
-                <Bar active={props.powerLevel >= 4} level={props.powerLevel} />
-            </Root>
-        </Tooltip>
+        <Root
+            role="figure"
+            aria-label={props.label}
+            className={props.className}
+            sx={props.sx}
+        >
+            <Bar active={props.powerLevel >= 1} mode={props.mode} level={props.powerLevel} />
+            <Bar active={props.powerLevel >= 2} mode={props.mode} level={props.powerLevel} />
+            <Bar active={props.powerLevel >= 3} mode={props.mode} level={props.powerLevel} />
+            <Bar active={props.powerLevel >= 4} mode={props.mode} level={props.powerLevel} />
+        </Root>
     );
 };

@@ -1,12 +1,14 @@
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Canvas } from 'src/components';
+import { PowerDisplay } from 'src/features/layout';
 import { Box, styled, Tooltip, Typography } from 'src/lib/mui';
+import { PowerLevel } from 'src/types/ShipSystem';
 import { ManeuverInfo } from '../types/ManeuverType';
 import { drawManeuverWithGrid } from '../utils/drawManeuver';
 
 interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower'> {
-    enabled: boolean;
+    currentPower: PowerLevel;
     onClick?: () => void;
     onFocusStart?: () => void;
     onFocusEnd?: () => void;
@@ -33,14 +35,24 @@ const Message = styled(Typography)({
     fontSize: '0.9em',
     lineHeight: 1.05,
     textShadow: '0 0 0.2em black, 0 0 0.2em black, 0 0 0.2em black',
-})
+});
+
+const ManeuverPower = styled(PowerDisplay)({
+    fontSize: '0.667em',
+    position: 'absolute',
+    right: '0.2em',
+    bottom: '0.2em',
+    opacity: 0.75,
+});
 
 export const ManeuverDisplay: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const { t } = useTranslation('helm');
 
-    const message = props.enabled
+    const enabled = props.currentPower >= props.minPower;
+
+    const message = enabled
         ? undefined
         : <Message color="error" textTransform="uppercase">{t('power too low')}</Message>;
     
@@ -48,9 +60,9 @@ export const ManeuverDisplay: React.FC<Props> = props => {
         <Tooltip title={t(`maneuver ${props.type}`)}>
             <Wrapper>
                 <SizedCanvas
-                    enabled={props.enabled}
+                    enabled={enabled}
                     ref={canvas}
-                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, props.motion, props.minPower, props.enabled)}                    
+                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, props.motion, props.minPower, enabled)}                    
                     onClick={props.onClick}
                     onMouseEnter={props.onFocusStart}
                     onMouseLeave={props.onFocusEnd}
@@ -58,6 +70,8 @@ export const ManeuverDisplay: React.FC<Props> = props => {
                     onTouchEnd={props.onFocusEnd}
                 >
                     {message}
+
+                    <ManeuverPower powerLevel={props.minPower} mode={enabled ? 'success' : 'fail'} />
                 </SizedCanvas>
             </Wrapper>
         </Tooltip>

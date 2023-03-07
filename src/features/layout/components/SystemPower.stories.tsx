@@ -1,15 +1,14 @@
 import { StoryFn } from '@storybook/react';
 import { ComponentProps } from 'react';
-import { PowerDisplay } from './PowerDisplay';
+import { SystemPower } from './SystemPower';
 
 export default {
     title: 'Layout/Shared/Power Level',
-    Component: PowerDisplay,
+    Component: SystemPower,
 };
 
-
-const Template: StoryFn<ComponentProps<typeof PowerDisplay>> = (args) => (
-    <PowerDisplay {...args} />
+const Template: StoryFn<ComponentProps<typeof SystemPower>> = (args) => (
+    <SystemPower {...args} />
 );
 
 export const Zero = Template.bind({});
