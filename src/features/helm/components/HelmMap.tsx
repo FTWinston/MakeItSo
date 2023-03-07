@@ -110,17 +110,6 @@ export const HelmMap: React.FC<Props> = props => {
         }
     };
 
-    const extraTravelButtons = props.mode === 'travel'
-        ? (
-            <StopAndFocus
-                shipMoving={destination !== null || maneuvers.length > 0}
-                shipVisible={shipVisible}
-                stop={props.stop}
-                focus={() => setViewCenter(interpolatePosition(ship.motion))}
-            />
-        )
-        : undefined;
-
     return (
         <>
             <SpaceMap
@@ -132,7 +121,13 @@ export const HelmMap: React.FC<Props> = props => {
                 drawExtraBackground={drawDestinations}
                 {...bindGestures()}
             />
-            {extraTravelButtons}
+
+            <StopAndFocus
+                shipMoving={props.mode === 'travel' && (destination !== null || maneuvers.length > 0)}
+                shipVisible={props.mode !== 'travel' || shipVisible}
+                stop={props.stop}
+                focus={() => setViewCenter(interpolatePosition(ship.motion))}
+            />
         </>
     );
 }
