@@ -1,4 +1,4 @@
-import { Box, styled, SxProps } from 'src/lib/mui';
+import { Box, styled, SxProps, Theme } from 'src/lib/mui';
 import { PowerLevel } from 'src/types/ShipSystem';
 
 const Root = styled(Box)({
@@ -11,12 +11,25 @@ const Root = styled(Box)({
     fontSize: '1em',
 });
 
-type DisplayMode = 'normal' | 'success' | 'fail';
+type DisplayMode = 'normal' | 'success' | 'error' | 'warn';
 
 interface BarProps {
     active: boolean;
     level: PowerLevel;
     mode: DisplayMode;
+}
+
+function pickColor(theme: Theme, mode: DisplayMode) {
+    switch (mode) {
+        case 'success':
+            return theme.palette.success.light;
+        case 'error':
+            return theme.palette.error.main;
+        case 'warn':
+            return theme.palette.warning.main;
+        default:
+            return theme.palette.text.primary;
+    }
 }
 
 const Bar = styled(Box,
@@ -26,11 +39,7 @@ const Bar = styled(Box,
     let opacity;
 
     if (active) {
-        backgroundColor = mode === 'success'
-            ? theme.palette.success.light
-            : mode === 'fail'
-                ? theme.palette.warning.main
-                : theme.palette.text.primary;
+        backgroundColor = pickColor(theme, mode);
     }
     else {
         backgroundColor = level === 0

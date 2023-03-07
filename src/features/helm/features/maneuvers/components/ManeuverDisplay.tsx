@@ -71,7 +71,7 @@ export const ManeuverDisplay: React.FC<Props> = props => {
                 >
                     {message}
 
-                    <ManeuverPower powerLevel={props.minPower} mode={enabled ? 'success' : 'fail'} />
+                    <ManeuverPower powerLevel={props.minPower} mode={enabled ? 'success' : 'error'} />
                 </SizedCanvas>
             </Wrapper>
         </Tooltip>

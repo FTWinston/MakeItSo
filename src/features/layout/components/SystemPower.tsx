@@ -16,7 +16,7 @@ export const SystemPower: React.FC<Props> = (props) => {
     const mode = props.powerLevel >= 4
         ? 'success'
         : props.powerLevel === 1
-            ? 'fail'
+            ? 'warn'
             : 'normal';
 
     return (
