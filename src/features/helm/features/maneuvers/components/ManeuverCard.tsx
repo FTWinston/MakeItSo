@@ -17,11 +17,9 @@ interface Props {
     discard: () => void;
 }
 
-export const maneuverCardHeight = '5.7em';
-
 const CardRoot = styled(Card)(({ theme }) => ({
-    width: '16em',
-    height: maneuverCardHeight,
+    flexGrow: 1,
+    height: '7em',
     padding: '0.4em',
     gap: '0.4em',
     position: 'relative',

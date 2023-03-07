@@ -13,8 +13,8 @@ interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower'> {
 }
 
 const Wrapper = styled(Box)({
-    width: '3.5em',
-    height: '3.5em',
+    width: '4.75em',
+    height: '4.75em',
     display: 'flex',
 })
 

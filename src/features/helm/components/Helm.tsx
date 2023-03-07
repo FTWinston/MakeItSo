@@ -38,8 +38,15 @@ const Root = styled(Page)({
 const CardWrapper = styled(Box)({
     position: 'absolute',
     left: '0.25em',
+    right: '0.25em',
     bottom: '0.25em',
-})
+    display: 'flex',
+});
+
+const InnerCardWrapper = styled(Box)({
+    display: 'flex',
+    flexGrow: 1,
+});
 
 export const Helm: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
@@ -80,7 +87,7 @@ export const Helm: React.FC<Props> = (props) => {
                         exit={false}
                         key={props.maneuverChoice.id}
                     >
-                        <div>
+                        <InnerCardWrapper>
                             <ManeuverCard
                                 currentPower={props.power}
                                 maneuvers={props.maneuverChoice}
@@ -89,7 +96,7 @@ export const Helm: React.FC<Props> = (props) => {
                                 discard={props.discardManeuverCard}
                                 startAngle={currentMotionEndAngle}
                             />
-                        </div>
+                        </InnerCardWrapper>
                     </ZoomTransition>
                 </CardWrapper>
             </SlideTransition>
