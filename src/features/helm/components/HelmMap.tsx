@@ -67,7 +67,7 @@ export const HelmMap: React.FC<Props> = props => {
 
         const interval = setInterval(() => {
             const shipPos = interpolateVector(ship.motion, getTime());
-            setViewCenter(shipPos);
+            setViewCenter(shipPos, true);
         }, 100);
 
         return () => clearInterval(interval);
@@ -83,7 +83,7 @@ export const HelmMap: React.FC<Props> = props => {
     }, [previewManeuver, maneuvers, previewStartPosition])
     
     if (useHasChanged(autoFocusPoint) && autoFocusPoint) {
-        setViewCenter(autoFocusPoint);
+        setViewCenter(autoFocusPoint, true);
     }
 
     const shipVisible = useShipVisibility(canvas, ship.motion, getViewCenter, getCellRadius);
@@ -126,7 +126,7 @@ export const HelmMap: React.FC<Props> = props => {
                 shipMoving={props.mode === 'travel' && (destination !== null || maneuvers.length > 0)}
                 shipVisible={props.mode !== 'travel' || shipVisible}
                 stop={props.stop}
-                focus={() => setViewCenter(interpolatePosition(ship.motion))}
+                focus={() => setViewCenter(interpolatePosition(ship.motion), false)}
             />
         </>
     );
