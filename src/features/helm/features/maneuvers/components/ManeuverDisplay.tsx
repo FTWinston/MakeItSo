@@ -36,6 +36,7 @@ const Message = styled(Typography)({
     opacity: 0.9,
     lineHeight: 1.05,
     textShadow: '0 0 0.2em black, 0 0 0.2em black, 0 0 0.2em black',
+    pointerEvents: 'none',
 });
 
 const ManeuverPower = styled(PowerDisplay)({
@@ -44,6 +45,7 @@ const ManeuverPower = styled(PowerDisplay)({
     right: '0.2em',
     bottom: '0.2em',
     opacity: 0.75,
+    pointerEvents: 'none',
 });
 
 export const ManeuverDisplay: React.FC<Props> = props => {
