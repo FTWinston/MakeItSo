@@ -25,7 +25,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: 0,
                 y: 0,
                 angle: angleRight,
-                evade: 0,
             }
         }, {
             time: durationToTicks(2),
@@ -33,7 +32,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 2,
                 y: 0,
                 angle: angleRight,
-                evade: 0,
             }
         }]
     }],
@@ -46,7 +44,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: 0,
                 y: 0,
                 angle: angleRight,
-                evade: 0.05,
             }
         }, {
             time: durationToTicks(1),
@@ -54,7 +51,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 0.89,
                 y: -verticalHexSpacing * 0.23,
                 angle: (angleRight + angleUpRight) / 2,
-                evade: 0.15,
             }
         }, {
             time: durationToTicks(2),
@@ -62,7 +58,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 1.5,
                 y: -verticalHexSpacing,
                 angle: angleUpRight,
-                evade: 0.05,
             }
         }]
     }],
@@ -75,7 +70,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: 0,
                 y: 0,
                 angle: angleRight,
-                evade: 0.05,
             }
         }, {
             time: durationToTicks(1),
@@ -83,7 +77,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 0.89,
                 y: verticalHexSpacing * 0.23,
                 angle: (angleRight + angleDownRight) / 2,
-                evade: 0.15,
             }
         }, {
             time: durationToTicks(2),
@@ -91,7 +84,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 1.5,
                 y: verticalHexSpacing,
                 angle: angleDownRight,
-                evade: 0.05,
             }
         }]
     }],
@@ -104,7 +96,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: 0,
                 y: 0,
                 angle: angleRight,
-                evade: 0.15,
             }
         }, {
             time: durationToTicks(1),
@@ -112,7 +103,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 0.8,
                 y: -verticalHexSpacing * 0.25,
                 angle: angleUpRight,
-                evade: 0.4,
             }
         }, {
             time: durationToTicks(2),
@@ -120,7 +110,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 0.5,
                 y: -verticalHexSpacing,
                 angle: angleUpLeft,
-                evade: 0.15,
             }
         }]
     }],
@@ -133,7 +122,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: 0,
                 y: 0,
                 angle: angleRight,
-                evade: 0.15,
             }
         }, {
             time: durationToTicks(1),
@@ -141,7 +129,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 0.8,
                 y: verticalHexSpacing * 0.25,
                 angle: angleDownRight,
-                evade: 0.4,
             }
         }, {
             time: durationToTicks(2),
@@ -149,7 +136,6 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 x: horizontalHexSpacing * 0.5,
                 y: verticalHexSpacing,
                 angle: angleDownLeft,
-                evade: 0.15,
             }
         }]
     }],
@@ -178,7 +164,6 @@ function applyOffset(motion: Keyframes<Position>, offset: Keyframe<Position>): K
                     x: rotatedPosition.x + offset.val.x,
                     y: rotatedPosition.y + offset.val.y,
                     angle: clampAngle(keyframe.val.angle + roundedOffsetAngle),
-                    evade: keyframe.val.evade,
                 }
             };
         });

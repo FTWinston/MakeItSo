@@ -33,6 +33,7 @@ const SizedCanvas = styled(Canvas
 
 const Message = styled(Typography)({
     fontSize: '0.9em',
+    opacity: 0.9,
     lineHeight: 1.05,
     textShadow: '0 0 0.2em black, 0 0 0.2em black, 0 0 0.2em black',
 });

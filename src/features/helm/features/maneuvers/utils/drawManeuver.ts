@@ -84,13 +84,6 @@ export function pickColor(minPower: PowerLevel) {
     }
 }
 
-const evasionRange: readonly [number, number] = [0, 0.75];
-const lineWidthRange: readonly [number, number] = [0.1, 0.5];
-
-function determineLineWidth(evade: number): number {
-    return scaleToRange(evade, evasionRange, lineWidthRange);
-}
-
 export function drawArrowHead(
     ctx: CanvasRenderingContext2D,
     position: Position,
@@ -131,7 +124,7 @@ export function drawManeuver(
         const point = interpolatePosition(motion, t);
         
         if (prevPoint) {
-            ctx.lineWidth = determineLineWidth(point.evade);
+            ctx.lineWidth = 0.15;
             ctx.beginPath();
             ctx.moveTo(prevPoint.x, prevPoint.y);
             ctx.lineTo(point.x, point.y);

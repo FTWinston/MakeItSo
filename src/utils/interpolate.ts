@@ -129,9 +129,9 @@ function interpolateNumeric(
     return resolveValue(frame0?.val, frame1.val, frame2.val, frame3?.val, fraction);
 }
 
-type KeyCurveResolution<T> = Readonly<Record<keyof T, typeof resolveCurveValue>>;
+type KeyCurveResolution<T> = ReadonlyArray<[keyof T, typeof resolveCurveValue]>;
 
-function interpolateObjectKeys<T extends object>(keyframes: Keyframes<T>, currentTime: number, keys: KeyCurveResolution<T>): T {
+function interpolateObjectKeys<T extends object>(keyframes: Keyframes<T>, currentTime: number, fieldResolution: KeyCurveResolution<T>): T {
     const index2 = getFirstFutureIndex(keyframes, currentTime);
 
     if (index2 === -1) {
@@ -158,7 +158,7 @@ function interpolateObjectKeys<T extends object>(keyframes: Keyframes<T>, curren
     const fraction = getCompletedFraction(frame1, frame2, currentTime);
     const result = {} as Record<keyof T, number>;
 
-    for (const [keyName, resolveValue] of Object.entries<typeof resolveCurveValue>(keys)) {
+    for (const [keyName, resolveValue] of fieldResolution) {
         const key = keyName as keyof T;
         result[key] = resolveValue(val0[key], val1[key], val2[key], val3[key], fraction);
     }
@@ -174,21 +174,20 @@ export function interpolateAngle(keyframes: Keyframes<number>, currentTime = get
     return interpolateNumeric(keyframes, currentTime, resolveCurveValueForAngle);
 }
 
-const vectorKeys: KeyCurveResolution<Vector2D> = {
+const vectorKeys = Object.entries({
     x: resolveCurveValue,
     y: resolveCurveValue,
-};
+}) as KeyCurveResolution<Vector2D>;
 
 export function interpolateVector(keyframes: Keyframes<Vector2D>, currentTime = getTime()): Vector2D {
     return interpolateObjectKeys<Vector2D>(keyframes, currentTime, vectorKeys);
 }
 
-const positionKeys: KeyCurveResolution<Position> = {
+const positionKeys = Object.entries({
     x: resolveCurveValue,
     y: resolveCurveValue,
     angle: resolveCurveValueForAngle,
-    evade: resolveCurveValue,
-};
+}) as KeyCurveResolution<Position>;
 
 export function interpolatePosition(keyframes: Keyframes<Position>, currentTime = getTime()): Position {
     return interpolateObjectKeys<Position>(keyframes, currentTime, positionKeys);

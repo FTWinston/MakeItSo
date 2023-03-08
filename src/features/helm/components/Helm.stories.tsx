@@ -26,14 +26,12 @@ export const Empty: Story = {
                     val: {
                         ...fromPos,
                         angle: 0,
-                        evade: 0,
                     }
                 }, {
                     time: 5000,
                     val: {
                         ...toPos,
                         angle: 0,
-                        evade: 0,
                     }
                 }
             ];
@@ -56,7 +54,6 @@ export const Others: Story = {
                 {
                     ...getClosestCellCenter(103, 5, worldScaleCellRadius),
                     angle: Math.PI * 4 / 3,
-                    evade: 0,  
                 },
                 [ManeuverType.HardLeft, ManeuverType.SlowForward]
             );
@@ -65,7 +62,6 @@ export const Others: Story = {
                 {
                     ...getClosestCellCenter(98, -5, worldScaleCellRadius),
                     angle: Math.PI / 3,
-                    evade: 0,
                 },
                 [ManeuverType.SweepRight]
             );

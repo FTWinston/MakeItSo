@@ -21,7 +21,6 @@ export function getStopPosition(motion: Keyframes<Position>, speedToStart: numbe
             x: cellCenter.x,
             y: cellCenter.y,
             angle: getClosestOrthogonalAngle(nearFuturePosition.angle),
-            evade: nearFuturePosition.evade,
         }
     };
 }

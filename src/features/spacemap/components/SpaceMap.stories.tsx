@@ -39,7 +39,6 @@ export const example = () => {
                     x: 0,
                     y: 0,
                     angle: 0,
-                    evade: 0,
                 }
             }, {
                 time: getTime() + durationToTicks(3),
@@ -47,7 +46,6 @@ export const example = () => {
                     x: 5,
                     y: 0,
                     angle: Math.PI,
-                    evade: 0,
                 }
             }]
         }
