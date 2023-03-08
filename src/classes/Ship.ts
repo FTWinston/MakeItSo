@@ -73,4 +73,8 @@ export class Ship extends GameObject implements ShipInfo {
 
         updateShipMotion(this, this.helm, changeMotion, this.helm.destination, this.helm.maneuvers, currentTime);
     }
+
+    public get evasionChance(): number {
+        return this.helm.maneuvers[0]?.evasion ?? 0;
+    }
 }

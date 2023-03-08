@@ -26,6 +26,10 @@ export class FakeShip extends MobileObject {
         speed: 1,
     }
 
+    public get evasionChance(): number {
+        return this.maneuvers[0]?.evasion ?? 0;
+    }
+
     /** Remove manuevers that end in the past. Return true if none are left. */
     private pruneManeuvers(currentTime: number) {
         while (this.maneuvers.length > 0) {

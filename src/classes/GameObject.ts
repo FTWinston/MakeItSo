@@ -18,6 +18,8 @@ export abstract class GameObject implements GameObjectInfo {
 
     abstract updateMotion(currentTime: number): void;
 
+    public get evasionChance() { return 0; }
+
     getPosition(currentTime: number): Position {
         return interpolatePosition(this.motion, currentTime);
     }
