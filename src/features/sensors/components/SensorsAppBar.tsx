@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next';
-import { SystemAppBar } from 'src/features/layout';
+import { HealthDisplay, SystemAppBar, SystemPower } from 'src/features/layout';
 import { CrewStation, PowerLevel } from 'src/types/ShipSystem';
-import { HealthDisplay, PowerDisplay } from 'src/features/layout';
 import { CrewIcon } from 'src/components';
 import { Box } from 'src/lib/mui';
 
@@ -23,7 +22,7 @@ export const SensorsAppBar: React.FC<Props> = (props) => {
                 color="disabled"
             />
             <Box sx={{flexGrow: 1 }} />
-            <PowerDisplay powerLevel={props.power} />
+            <SystemPower powerLevel={props.power} />
             <HealthDisplay health={props.health} />
         </SystemAppBar>
     );

@@ -21,6 +21,7 @@ interface Props {
     speedToManeuver: number;
     power: PowerLevel;
     health: number;
+    evasion: number;
     stop: () => void;
     maneuvers: ManeuverInfo[];
     maneuverChoice: ManeuverChoice;
@@ -58,7 +59,7 @@ export const Helm: React.FC<Props> = (props) => {
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>
-            <HelmAppBar power={props.power} health={props.health} />
+            <HelmAppBar power={props.power} health={props.health} evasion={props.evasion} />
 
             <HelmMap
                 mode={mode}

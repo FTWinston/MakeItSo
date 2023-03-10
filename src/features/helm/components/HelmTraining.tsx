@@ -36,6 +36,7 @@ export const HelmTraining: React.FC<Props> = (props) => {
             {...ship.helm}
             power={power}
             health={health}
+            evasion={ship.evasionChance}
             ship={ship}
             shipDestroyed={ship.destroyed}
             otherObjects={otherObjects}

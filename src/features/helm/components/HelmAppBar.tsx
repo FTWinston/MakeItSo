@@ -1,14 +1,22 @@
 import { useTranslation } from 'react-i18next';
-import { SystemAppBar } from 'src/features/layout';
+import ManeuverIcon from '@mui/icons-material/Moving';
+import { HealthDisplay, SystemAppBar, SystemPower } from 'src/features/layout';
 import { CrewStation, PowerLevel } from 'src/types/ShipSystem';
-import { HealthDisplay, PowerDisplay } from 'src/features/layout';
 import { CrewIcon } from 'src/components';
-import { Box } from 'src/lib/mui';
+import { Box, Chip, styled } from 'src/lib/mui';
 
 interface Props {
     power: PowerLevel;
+    evasion: number;
     health: number;
 }
+
+const EvasionChip = styled(Chip)({  
+    '& .MuiChip-label': {
+        minWidth: '3.25em',
+        textAlign: 'right',
+    }
+});
 
 export const HelmAppBar: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
@@ -22,8 +30,15 @@ export const HelmAppBar: React.FC<Props> = (props) => {
                 role="img"
                 color="disabled"
             />
-            <Box sx={{flexGrow: 1 }} />
-            <PowerDisplay powerLevel={props.power} />
+            <Box display="flex" justifyContent="center" flexGrow={1}>
+                <EvasionChip
+                    variant="filled"
+                    icon={<ManeuverIcon color="primary" />}
+                    label={Math.round(props.evasion/* * 100 */) + '%'}
+                    title="Evasion chance"
+                />
+            </Box>
+            <SystemPower powerLevel={props.power} />
             <HealthDisplay health={props.health} />
         </SystemAppBar>
     );

@@ -3,6 +3,7 @@ export { Badge } from './Badge';
 export { Box } from './Box';
 export { Button } from './Button';
 export { Card, CardContent, CardHeader } from './Card';
+export { Chip } from './Chip';
 export { CircularTimer } from './CircularTimer';
 export type { ColorName, DiscreteColorName, IconColorName, MuiColor } from './Colors';
 export { Divider } from './Divider';
