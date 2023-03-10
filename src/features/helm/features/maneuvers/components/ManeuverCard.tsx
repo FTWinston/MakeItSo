@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import CloseIcon from '@mui/icons-material/Close';
+import DiscardIcon from '@mui/icons-material/Refresh';
 import { Card, IconButton, styled, Typography } from 'src/lib/mui';
 import { Keyframe } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
@@ -82,7 +82,7 @@ export const ManeuverCard: React.FC<Props> = props => {
                 onClick={props.discard}
                 aria-label={t('discard card')}
             >
-                <CloseIcon />
+                <DiscardIcon />
             </DiscardButton>
         </CardRoot>
     );
