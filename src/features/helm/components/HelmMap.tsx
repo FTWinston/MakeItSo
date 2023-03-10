@@ -46,6 +46,9 @@ export const HelmMap: React.FC<Props> = props => {
         bindGestures,
     } = useHelmMapInteractions(canvas, ship.motion, !inManeuverMode, inManeuverMode ? undefined : setDestination, getInitialCenter);
 
+    // In manuever mode, view centering should be offset, so that the "center" is the center of the space not covered by the maneuver card.
+    const getManueverViewOffset = () => 0.09 * document.body.offsetHeight / getCellRadius();
+
     // In maneuver mode, center the view on the end of the ship's planned motion.
     const currentTime = getTime();
 
@@ -56,7 +59,7 @@ export const HelmMap: React.FC<Props> = props => {
     const autoFocusPoint = inManeuverMode
         ? maneuvers.length > 0 && previewStartPosition
             ? previewStartPosition.val
-            : undefined//interpolatePosition(motion, currentTime)
+            : undefined
         : undefined;
 
     // In maneuver mode, with no maneuvers, the camera should lock to the ship.
@@ -67,7 +70,7 @@ export const HelmMap: React.FC<Props> = props => {
 
         const interval = setInterval(() => {
             const shipPos = interpolateVector(ship.motion, getTime());
-            setViewCenter(shipPos, true);
+            setViewCenter({ x: shipPos.x , y: shipPos.y + getManueverViewOffset() });
         }, 100);
 
         return () => clearInterval(interval);
@@ -83,7 +86,7 @@ export const HelmMap: React.FC<Props> = props => {
     }, [previewManeuver, maneuvers, previewStartPosition])
     
     if (useHasChanged(autoFocusPoint) && autoFocusPoint) {
-        setViewCenter(autoFocusPoint, true);
+        setViewCenter({ x: autoFocusPoint.x, y: autoFocusPoint.y + getManueverViewOffset() });
     }
 
     const shipVisible = useShipVisibility(canvas, ship.motion, getViewCenter, getCellRadius);
@@ -126,7 +129,7 @@ export const HelmMap: React.FC<Props> = props => {
                 shipMoving={props.mode === 'travel' && (destination !== null || maneuvers.length > 0)}
                 shipVisible={props.mode !== 'travel' || shipVisible}
                 stop={props.stop}
-                focus={() => setViewCenter(interpolatePosition(ship.motion), false)}
+                focus={() => setViewCenter(interpolatePosition(ship.motion))}
             />
         </>
     );

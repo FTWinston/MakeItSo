@@ -9,8 +9,6 @@ import { TouchEvents } from 'src/types/TouchEvents';
 import { determineAngle, Vector2D } from 'src/types/Vector2D';
 import { interpolateVector } from 'src/utils/interpolate';
 
-const initialZoom = 32;
-
 export function useHelmMapInteractions(
     canvas: RefObject<HTMLCanvasElement>,
     shipMotion: Keyframes<Position>,
@@ -118,14 +116,8 @@ export function useHelmMapInteractions(
         getZoom: getCellRadius,
         bindGestures,
     } = usePanAndZoom({
-        getInitialCenter: () => {
-            const actualCenter = getInitialCenter();
-            return {
-                x: actualCenter.x,
-                y: actualCenter.y - 0.09 * document.body.offsetHeight / initialZoom
-            };
-        },
-        getInitialZoom: () => initialZoom,
+        getInitialCenter,
+        getInitialZoom: () => 32,
         minZoom: 12,
         maxZoom: 192,
         dragThreshold: clickMoveLimit,
@@ -138,24 +130,9 @@ export function useHelmMapInteractions(
         setViewCenter(forceViewCenter);
     }
 
-    // Half of how much a maneuver card obscures the canvas, in world space.
-    const getViewOffset = () => 0.09 * document.body.offsetHeight / getCellRadius();
-
     return {
-        getViewCenter: () => {
-            const actualCenter = getViewCenter();
-            return { x: actualCenter.x, y: actualCenter.y + getViewOffset() };
-        },
-        setViewCenter: (actualCenter: Vector2D, fitAroundManeuverCard: boolean) => {
-            setViewCenter(
-                fitAroundManeuverCard
-                    ? actualCenter
-                    : {
-                        x: actualCenter.x,
-                        y: actualCenter.y - getViewOffset(),
-                    }
-            );
-        },
+        getViewCenter,
+        setViewCenter,
         getCellRadius,
         addingDestination,
         bindGestures,
