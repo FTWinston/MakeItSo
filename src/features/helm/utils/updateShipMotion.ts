@@ -245,7 +245,7 @@ function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number, 
 
 function stopMotion(ship: GameObject, config: MotionConfiguration, currentTime: number) {
     const pastFrames = getPastFramesForNewMotion(ship, currentTime);
-    const stopPosition = getStopPosition(ship.motion, config.speed, currentTime);
+    const stopPosition = getStopPosition(ship.motion, config, currentTime);
     
     ship.motion = [
         ...pastFrames,

@@ -20,7 +20,7 @@ export class FakeShip extends MobileObject {
     private nextManeuverIndex = 0;
     private maneuvers: ManeuverInfo[] = [];
     
-    private unusedMotionConfig: MotionConfiguration = {
+    private motionConfig: MotionConfiguration = {
         rotationalSpeed: 0.2,
         speedWhileRotating: 0.2,
         speed: 1,
@@ -53,7 +53,7 @@ export class FakeShip extends MobileObject {
         const changeMotion = this.maneuvers.length <= 1;
 
         if (changeMotion) {
-            const startPosition = getManeuverStartPosition(this.motion, this.maneuvers, 0.1, currentTime);
+            const startPosition = getManeuverStartPosition(this.motion, this.maneuvers, this.motionConfig, currentTime);
             const maneuver = getManeuver(this.maneuverSequence[this.nextManeuverIndex++], startPosition);
             this.maneuvers.push(maneuver);
             
@@ -62,6 +62,6 @@ export class FakeShip extends MobileObject {
             }
         }
 
-        updateShipMotion(this, this.unusedMotionConfig, changeMotion, null, this.maneuvers, currentTime);
+        updateShipMotion(this, this.motionConfig, changeMotion, null, this.maneuvers, currentTime);
     }
 }

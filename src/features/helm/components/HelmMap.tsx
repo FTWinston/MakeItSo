@@ -15,8 +15,9 @@ import { Mode } from './ModeToggle';
 import { useHasChanged } from 'src/hooks/useHasChanged';
 import { useShipVisibility } from '../hooks/useShipVisibility';
 import { getManeuverStartPosition } from '../utils/getManeuverStartPosition';
+import { MotionConfiguration } from '../types/HelmState';
 
-interface Props {
+interface Props extends MotionConfiguration {
     mode: Mode;
     previewManeuver: ManeuverType | null;
     getInitialCenter: () => Vector2D;
@@ -24,7 +25,6 @@ interface Props {
     otherObjects: Iterable<GameObjectInfo>;
     destination: Position | null;
     maneuvers: ManeuverInfo[];
-    speedToManeuver: number;
     setDestination: (waypoint: Position) => void;
     stop: () => void;
 }
@@ -53,7 +53,7 @@ export const HelmMap: React.FC<Props> = props => {
     const currentTime = getTime();
 
     const previewStartPosition = inManeuverMode
-        ? getManeuverStartPosition(ship.motion, maneuvers, props.speedToManeuver, currentTime)
+        ? getManeuverStartPosition(ship.motion, maneuvers, props, currentTime)
         : undefined;
 
     const autoFocusPoint = inManeuverMode

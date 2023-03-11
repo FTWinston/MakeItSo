@@ -13,12 +13,12 @@ import { ManeuverCard, ManeuverChoice, ManeuverType } from '../features/maneuver
 import { ManeuverInfo } from '../features/maneuvers/types/ManeuverType';
 import { getManeuverStartPosition } from '../utils/getManeuverStartPosition';
 import { getTime } from 'src/utils/timeSpans';
+import { MotionConfiguration } from '../types/HelmState';
 
-interface Props {
+interface Props extends MotionConfiguration {
     shipDestroyed?: ShipDestroyingSystem;
     ship: GameObjectInfo;
     otherObjects: Iterable<GameObjectInfo>;
-    speedToManeuver: number;
     power: PowerLevel;
     health: number;
     evasion: number;
@@ -55,7 +55,7 @@ export const Helm: React.FC<Props> = (props) => {
     const [mode, setMode] = useState<Mode>('travel');
     const [previewManeuver, setPreviewManeuver] = useState<ManeuverType | null>(null);
     
-    const currentMotionEndAngle = getManeuverStartPosition(props.ship.motion, props.maneuvers, props.speedToManeuver, getTime()).val.angle;
+    const currentMotionEndAngle = getManeuverStartPosition(props.ship.motion, props.maneuvers, props, getTime()).val.angle;
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>
@@ -69,7 +69,9 @@ export const Helm: React.FC<Props> = (props) => {
                 otherObjects={props.otherObjects}
                 maneuvers={props.maneuvers}
                 previewManeuver={previewManeuver}
-                speedToManeuver={props.speedToManeuver}
+                speed={props.speed}
+                speedWhileRotating={props.speedWhileRotating}
+                rotationalSpeed={props.rotationalSpeed}
                 destination={props.destination}
                 setDestination={props.setDestination}
             />

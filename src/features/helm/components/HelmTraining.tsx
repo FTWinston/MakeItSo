@@ -33,7 +33,6 @@ export const HelmTraining: React.FC<Props> = (props) => {
 
     const defaultRender = () => (
         <Helm
-            {...ship.helm}
             power={power}
             health={health}
             evasion={ship.evasionChance}
@@ -44,7 +43,9 @@ export const HelmTraining: React.FC<Props> = (props) => {
             discardManeuverCard={() => helmDispatch({ type: 'discard' })}
             maneuvers={ship.helm.maneuvers}
             maneuverChoice={ship.helm.maneuverChoice}
-            speedToManeuver={ship.helm.speed}
+            speed={ship.helm.speed}
+            speedWhileRotating={ship.helm.speedWhileRotating}
+            rotationalSpeed={ship.helm.rotationalSpeed}
             destination={ship.helm.destination?.val ?? null}
             setDestination={destination => helmDispatch({ type: 'set destination', destination })}
             maneuver={choice => helmDispatch({ type: 'maneuver', choice })}
