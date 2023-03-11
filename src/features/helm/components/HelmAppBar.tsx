@@ -13,8 +13,12 @@ interface Props {
 
 const EvasionChip = styled(Chip)({  
     '& .MuiChip-label': {
-        minWidth: '3.25em',
+        minWidth: '3em',
         textAlign: 'right',
+        '&:after': {
+            content: '"%"',
+            fontSize: '0.75em',
+        }
     }
 });
 
@@ -34,7 +38,7 @@ export const HelmAppBar: React.FC<Props> = (props) => {
                 <EvasionChip
                     variant="filled"
                     icon={<ManeuverIcon color="primary" />}
-                    label={Math.round(props.evasion/* * 100 */) + '%'}
+                    label={Math.round(props.evasion/* * 100 */)}
                     title="Evasion chance"
                 />
             </Box>
