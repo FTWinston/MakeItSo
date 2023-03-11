@@ -1,10 +1,12 @@
 import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { interpolatePosition } from 'src/utils/interpolate';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { getManeuver } from '../features/maneuvers';
 import { HelmAction } from '../types/HelmState';
 import { getManeuverStartPosition } from './getManeuverStartPosition';
+import { getTravelTime } from './getTravelTime';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
 
 export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | void {
@@ -30,9 +32,13 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
         }
 
         case 'set destination': {
+            const currentTime = getTime();
+            const currentPos = interpolatePosition(state.motion, currentTime);
+            const timeToReachDestination = getTravelTime(currentPos, action.destination, state.helm);
+
             state.helm.destination = {
                 val: { ...action.destination },
-                time: getTime() + durationToTicks(5000), // TODO: determine time to reach destination
+                time: currentTime + durationToTicks(timeToReachDestination),
             };
             
             if (state.helm.maneuvers.length === 0) {
