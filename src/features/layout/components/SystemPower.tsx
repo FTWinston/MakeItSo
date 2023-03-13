@@ -21,13 +21,15 @@ export const SystemPower: React.FC<Props> = (props) => {
 
     return (
         <Tooltip title={description}>
+            <div>
             <PowerDisplay
                 powerLevel={props.powerLevel}
                 mode={mode}
-                label={description}
+                aria-label={description}
                 className={props.className}
                 sx={props.sx}
             />
+            </div>
         </Tooltip>
     );
 };

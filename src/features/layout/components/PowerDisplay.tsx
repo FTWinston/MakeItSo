@@ -11,7 +11,7 @@ const Root = styled(Box)({
     fontSize: '1em',
 });
 
-type DisplayMode = 'normal' | 'success' | 'error' | 'warn';
+export type DisplayMode = 'normal' | 'success' | 'error' | 'warn';
 
 interface BarProps {
     active: boolean;
@@ -76,23 +76,23 @@ const Bar = styled(Box,
 interface Props {
     powerLevel: PowerLevel;
     mode: DisplayMode;
-    label?: string;
+    ['aria-label']?: string;
     className?: string;
     sx?: SxProps;
 }
 
 export const PowerDisplay: React.FC<Props> = (props) => {
+    const { powerLevel, mode, ...otherProps } = props;
+
     return (
         <Root
             role="figure"
-            aria-label={props.label}
-            className={props.className}
-            sx={props.sx}
+            {...otherProps}
         >
-            <Bar active={props.powerLevel >= 1} mode={props.mode} level={props.powerLevel} />
-            <Bar active={props.powerLevel >= 2} mode={props.mode} level={props.powerLevel} />
-            <Bar active={props.powerLevel >= 3} mode={props.mode} level={props.powerLevel} />
-            <Bar active={props.powerLevel >= 4} mode={props.mode} level={props.powerLevel} />
+            <Bar active={powerLevel >= 1} mode={mode} level={powerLevel} />
+            <Bar active={powerLevel >= 2} mode={mode} level={powerLevel} />
+            <Bar active={powerLevel >= 3} mode={mode} level={powerLevel} />
+            <Bar active={powerLevel >= 4} mode={mode} level={powerLevel} />
         </Root>
     );
 };
