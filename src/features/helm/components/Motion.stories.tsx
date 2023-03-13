@@ -5,12 +5,16 @@ import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { getManeuver, ManeuverType } from '../features/maneuvers';
 
-const ShipMotion: React.FC<GameObjectInfo> = (props) => {
+type PartialPropsWithMotion = Partial<GameObjectInfo> & Pick<GameObjectInfo, 'motion'>;
+
+const ShipMotion: React.FC<PartialPropsWithMotion> = (props) => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const currentTime = getTime();
 
-    const ship = {
+    const ship: GameObjectInfo = {
+        id: 1,
+        draw: 'ship',
         ...props,
         motion: props.motion.map(frame => ({
             ...frame,
