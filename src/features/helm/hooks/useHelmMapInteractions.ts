@@ -7,7 +7,7 @@ import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { determineAngle, Vector2D } from 'src/types/Vector2D';
-import { interpolateVector } from 'src/utils/interpolate';
+import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 
 export function useHelmMapInteractions(
     canvas: RefObject<HTMLCanvasElement>,
@@ -23,10 +23,10 @@ export function useHelmMapInteractions(
         const tap = setDestination
             ? (pagePos: Vector2D) => {
                 const worldPos = screenToWorld(canvas.current!, cellRadius, viewCenter, pagePos);
-                const shipPos = interpolateVector(shipMotion);
+                const shipPos = interpolatePosition(shipMotion);
                 const targetCellPos = getClosestCellCenter(worldPos.x, worldPos.y, 1);
 
-                const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, 0);
+                const angleFromShipToCellPos = determineAngle(shipPos, targetCellPos, shipPos.angle);
                 
                 setDestination({
                     x: targetCellPos.x,
