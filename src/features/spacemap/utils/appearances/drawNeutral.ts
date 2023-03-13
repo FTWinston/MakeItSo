@@ -5,7 +5,7 @@ export function drawNeutral(
     ctx: CanvasRenderingContext2D,
     theme: Theme
 ) {
-    ctx.fillStyle = theme.palette.text.disabled;
+    ctx.fillStyle = theme.palette.grey[600];
     ctx.beginPath();
     shipPath(ctx);
     ctx.fill();
