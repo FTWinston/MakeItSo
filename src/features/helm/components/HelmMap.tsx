@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Position } from 'src/types/Position';
 import { distanceSq, Vector2D } from 'src/types/Vector2D';
 import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
@@ -16,6 +16,7 @@ import { useHasChanged } from 'src/hooks/useHasChanged';
 import { useShipVisibility } from '../hooks/useShipVisibility';
 import { getManeuverStartPosition } from '../utils/getManeuverStartPosition';
 import { MotionConfiguration } from '../types/HelmState';
+import { useInterval } from 'src/hooks/useInterval';
 
 interface Props extends MotionConfiguration {
     mode: Mode;
@@ -63,18 +64,12 @@ export const HelmMap: React.FC<Props> = props => {
         : undefined;
 
     // In maneuver mode, with no maneuvers, the camera should lock to the ship.
-    useEffect(() => {
-        if (!inManeuverMode || maneuvers.length > 0) {
-            return;
-        }
-
-        const interval = setInterval(() => {
+    useInterval(
+        () => {
             const shipPos = interpolateVector(ship.motion, getTime());
             setViewCenter({ x: shipPos.x , y: shipPos.y + getManueverViewOffset() });
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, [inManeuverMode, maneuvers, ship.motion])
+        }, 100, [inManeuverMode, maneuvers, ship.motion], inManeuverMode && maneuvers.length === 0
+    )
 
     const maneuverSets = useMemo(() => {
         if (!previewManeuver || !previewStartPosition) {

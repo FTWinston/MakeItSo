@@ -1,6 +1,7 @@
 import produce from 'immer';
-import { Dispatch, useEffect, useReducer } from 'react';
+import { Dispatch, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
+import { useInterval } from 'src/hooks/useInterval';
 import { getTime } from 'src/utils/timeSpans';
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { engineeringTrainingReducer } from '../utils/engineeringTrainingReducer';
@@ -18,24 +19,16 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     const [state, dispatch] = useReducer(produce(engineeringTrainingReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
-    useEffect(() => {
-        const interval = setInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
-
-        return () => clearInterval(interval);
-    });
+    useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
 
     // Check for new effects and apply them at a less frequent interval.
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const effects = getEffects();
+    useInterval(() => {
+        const effects = getEffects();
 
-            for (const effect of effects) {
-                dispatch(effect);
-            }
-        }, 1500);
-
-        return () => clearInterval(interval);
-    }, [getEffects]);
+        for (const effect of effects) {
+            dispatch(effect);
+        }
+    }, 1500, [getEffects]);
 
     const { systemOrder, ...otherState } = state.engineering;
     const orderedSystemInfo = systemOrder.map(system => state.systems.get(system));

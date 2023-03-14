@@ -2,7 +2,8 @@
 import { EffectIndicators as IndicatorsComponent } from './EffectIndicators';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { determineEndTime, getTime, durationToTicks } from 'src/utils/timeSpans';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useInterval } from 'src/hooks/useInterval';
 
 export default {
     title: 'Engineering/System Tiles/Effect Indicators',
@@ -30,17 +31,11 @@ export const EffectIndicators = () => {
         ];
     });
 
-    useEffect(
+    useInterval(
         () => {
-            const checkEffects = () => {
-                const now = getTime();
-                setEffects(effects.filter(effect => effect.endTime >= now));
-            };
-
-            const interval = setInterval(checkEffects, 100);
-            return () => clearInterval(interval);
-        },
-        [effects]
+            const now = getTime();
+            setEffects(effects.filter(effect => effect.endTime >= now));
+        }, 100, [effects]
     );
 
     return (

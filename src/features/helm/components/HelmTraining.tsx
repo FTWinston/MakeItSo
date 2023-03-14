@@ -1,7 +1,8 @@
 import produce from 'immer';
-import { useEffect, useReducer } from 'react';
+import { useReducer } from 'react';
 import { GameObject } from 'src/classes/GameObject';
 import { Ship } from 'src/classes/Ship';
+import { useInterval } from 'src/hooks/useInterval';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
 import { helmTrainingReducer } from '../utils/helmTrainingReducer';
@@ -19,15 +20,11 @@ export const HelmTraining: React.FC<Props> = (props) => {
     const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), undefined, props.getOtherObjects);
 
     // Run tick actions at a regular interval.
-    useEffect(() => {
-        const interval = setInterval(() => {
-            const tick = { type: 'tick', currentTime: getTime() } as const;
-            helmDispatch(tick);
-            otherDispatch(tick);
-        }, 200);
-
-        return () => clearInterval(interval);
-    });
+    useInterval(() => {
+        const tick = { type: 'tick', currentTime: getTime() } as const;
+        helmDispatch(tick);
+        otherDispatch(tick);
+    }, 200);
 
     const { power, health } = ship.systems.get(ShipSystem.Engines);
 

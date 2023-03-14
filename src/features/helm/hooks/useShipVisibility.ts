@@ -1,5 +1,6 @@
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useState } from 'react';
 import { getWorldBounds } from 'src/features/spacemap';
+import { useInterval } from 'src/hooks/useInterval';
 import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { isInRectangle } from 'src/types/Rectangle';
@@ -14,19 +15,13 @@ export function useShipVisibility(
 ) {
     const [shipVisible, setShipVisible] = useState(true);
 
-    useEffect(() => {
-        const updateVisibility = () => {
-            const bounds = getWorldBounds(canvas.current!, getCellRadius(), getViewCenter());
-            const visible = isInRectangle(bounds, interpolateVector(motion));
-            if (shipVisible !== visible) {
-                setShipVisible(visible);   
-            }
+    useInterval(() => {
+        const bounds = getWorldBounds(canvas.current!, getCellRadius(), getViewCenter());
+        const visible = isInRectangle(bounds, interpolateVector(motion));
+        if (shipVisible !== visible) {
+            setShipVisible(visible);   
         }
-
-        updateVisibility();
-        const interval = setInterval(updateVisibility, 250);
-        return () => clearInterval(interval);
-    }, [motion]);
+    }, 250, [motion], true, true);
 
     return shipVisible;
 }

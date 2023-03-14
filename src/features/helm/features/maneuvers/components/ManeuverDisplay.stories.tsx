@@ -1,5 +1,6 @@
 import { StoryObj } from '@storybook/react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useInterval } from 'src/hooks/useInterval';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { getManeuver } from '../data/Maneuvers';
 import { ManeuverType } from '../types/ManeuverType';
@@ -13,17 +14,13 @@ interface Props {
 const RotatingManeuver: React.FC<Props> = props => {
     const [angle, setAngle] = useState(0);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            let newAngle = angle + 1;
-            if (newAngle >= 6) {
-                newAngle = 0;
-            }
-            setAngle(newAngle);
-        }, 1000);
-
-        return () => clearInterval(interval);
-    });
+    useInterval(() => {
+        let newAngle = angle + 1;
+        if (newAngle >= 6) {
+            newAngle = 0;
+        }
+        setAngle(newAngle);
+    }, 1000);
 
     return <ManeuverDisplay
         currentPower={props.currentPower}
