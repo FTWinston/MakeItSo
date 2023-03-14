@@ -1,32 +1,61 @@
 import { StoryObj } from '@storybook/react';
+import { useEffect, useState } from 'react';
+import { PowerLevel } from 'src/types/ShipSystem';
 import { getManeuver } from '../data/Maneuvers';
 import { ManeuverType } from '../types/ManeuverType';
 import { ManeuverDisplay } from './ManeuverDisplay';
 
+interface Props {
+    maneuver: ManeuverType;
+    currentPower: PowerLevel;
+}
+
+const RotatingManeuver: React.FC<Props> = props => {
+    const [angle, setAngle] = useState(0);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            let newAngle = angle + 1;
+            if (newAngle >= 6) {
+                newAngle = 0;
+            }
+            setAngle(newAngle);
+        }, 1000);
+
+        return () => clearInterval(interval);
+    });
+
+    return <ManeuverDisplay
+        currentPower={props.currentPower}
+        {...getManeuver(props.maneuver, { val: { x: 0, y: 0, angle: angle * Math.PI / 3 }, time: 0 })}
+    />
+}
+
 export default {
     title: 'Helm/Maneuvers/Maneuver Display',
-    component: ManeuverDisplay,
+    component: RotatingManeuver,
 };
 
-type Story = StoryObj<typeof ManeuverDisplay>;
+
+type Story = StoryObj<typeof RotatingManeuver>;
 
 export const SlowForward: Story = {
     args: {
-        ...getManeuver(ManeuverType.SlowForward, { val: { x: 0, y: 0, angle: 0 }, time: 0 }),
+        maneuver: ManeuverType.SlowForward,
         currentPower: 1,
     }
 }
 
 export const SweepLeft: Story = {
     args: {
-        ...getManeuver(ManeuverType.SweepLeft, { val: { x: 0, y: 0, angle: 0 }, time: 0 }),
+        maneuver: ManeuverType.SweepLeft,
         currentPower: 2,
     }
 }
 
 export const HardRight: Story = {
     args: {
-        ...getManeuver(ManeuverType.HardRight, { val: { x: 0, y: 0, angle: 0 }, time: 0 }),
+        maneuver: ManeuverType.HardRight,
         currentPower: 3,
     }
 }
