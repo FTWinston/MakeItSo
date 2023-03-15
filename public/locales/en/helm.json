@@ -18,5 +18,7 @@
     "maneuver driftLeft": "Drift left",
     "maneuver driftRight": "Drift right",
     "maneuver spinCw": "Spin clockwise",
-    "maneuver spinCcw": "Spin counter-clockwise"
+    "maneuver spinCcw": "Spin counter-clockwise",
+    "maneuver backslide": "Backslide",
+    "maneuver aboutTurn": "Flip and burn"
 }

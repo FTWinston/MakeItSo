@@ -12,6 +12,8 @@ export enum ManeuverType {
     DriftRight = 'driftRight',
     ClockwiseSpin = 'spinCw',
     CounterclockwiseSpin = 'spinCcw',
+    Backslide = 'backslide',
+    AboutTurn = 'aboutTurn',
 }
 
 export interface ManeuverInfo {

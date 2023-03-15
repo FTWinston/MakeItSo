@@ -275,6 +275,92 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }],
         ghostFrames: [1, 2],
     }],
+    [ManeuverType.AboutTurn, {
+        minPower: 3,
+        evasion: 30,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: (angleDownRight + angleDownLeft) / 2,
+            }
+        }, {
+            time: durationToTicks(2),
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleLeft,
+            }
+        }],
+    }],
+    [ManeuverType.AboutTurn, {
+        minPower: 3,
+        evasion: 30,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: (angleDownRight + angleDownLeft) / 2,
+            }
+        }, {
+            time: durationToTicks(2),
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleLeft,
+            }
+        }],
+    }],
+    [ManeuverType.Backslide, {
+        minPower: 4,
+        evasion: 40,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: angleLeft,
+            }
+        }, {
+            time: durationToTicks(2),
+            val: {
+                x: horizontalHexSpacing * 2,
+                y: 0,
+                angle: angleLeft,
+            }
+        }, {
+            time: durationToTicks(3),
+            val: {
+                x: horizontalHexSpacing * 3,
+                y: 0,
+                angle: angleRight,
+            }
+        }],
+        ghostFrames: [1, 2],
+    }],
 ]);
 
 function applyOffset(motion: Keyframes<Position>, offset: Keyframe<Position>): Keyframes<Position> {

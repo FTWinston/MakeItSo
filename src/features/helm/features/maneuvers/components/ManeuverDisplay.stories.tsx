@@ -70,3 +70,17 @@ export const ClockwiseSpin: Story = {
         currentPower: 4,
     }
 }
+
+export const Backslide: Story = {
+    args: {
+        maneuver: ManeuverType.Backslide,
+        currentPower: 4,
+    }
+}
+
+export const AboutTurn: Story = {
+    args: {
+        maneuver: ManeuverType.AboutTurn,
+        currentPower: 3,
+    }
+}

@@ -192,3 +192,15 @@ export const ClockwiseSpinManeuver: Story = {
         motion: getManeuver(ManeuverType.ClockwiseSpin, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
     }
 }
+
+export const AboutTurn: Story = {
+    args: {
+        motion: getManeuver(ManeuverType.AboutTurn, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+    }
+}
+
+export const Backslide: Story = {
+    args: {
+        motion: getManeuver(ManeuverType.Backslide, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+    }
+}
