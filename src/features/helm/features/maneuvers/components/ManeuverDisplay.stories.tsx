@@ -80,7 +80,7 @@ export const Backslide: Story = {
 
 export const AboutTurn: Story = {
     args: {
-        maneuver: ManeuverType.AboutTurn,
+        maneuver: ManeuverType.LeftUTurn,
         currentPower: 3,
     }
 }

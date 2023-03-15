@@ -20,5 +20,6 @@
     "maneuver spinCw": "Spin clockwise",
     "maneuver spinCcw": "Spin counter-clockwise",
     "maneuver backslide": "Backslide",
-    "maneuver aboutTurn": "Flip and burn"
+    "maneuver leftUTurn": "Left U-turn",
+    "maneuver rightUTurn": "Right U-turn"
 }

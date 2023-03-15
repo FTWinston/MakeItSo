@@ -275,7 +275,7 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }],
         ghostFrames: [1, 2],
     }],
-    [ManeuverType.AboutTurn, {
+    [ManeuverType.LeftUTurn, {
         minPower: 3,
         evasion: 30,
         motion: [{
@@ -288,20 +288,27 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }, {
             time: durationToTicks(1),
             val: {
-                x: horizontalHexSpacing,
-                y: 0,
-                angle: (angleDownRight + angleDownLeft) / 2,
+                x: horizontalHexSpacing / 2,
+                y: -verticalHexSpacing / 3,
+                angle: angleUpRight,
             }
         }, {
-            time: durationToTicks(2),
+            time: durationToTicks(1.5),
             val: {
-                x: 0,
-                y: 0,
+                x: horizontalHexSpacing / 3,
+                y: -verticalHexSpacing * 2 / 3,
+                angle: angleUpLeft,
+            }
+        }, {
+            time: durationToTicks(2.5),
+            val: {
+                x: -horizontalHexSpacing / 2,
+                y: -verticalHexSpacing,
                 angle: angleLeft,
             }
         }],
     }],
-    [ManeuverType.AboutTurn, {
+    [ManeuverType.RightUTurn, {
         minPower: 3,
         evasion: 30,
         motion: [{
@@ -314,15 +321,22 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }, {
             time: durationToTicks(1),
             val: {
-                x: horizontalHexSpacing,
-                y: 0,
-                angle: (angleDownRight + angleDownLeft) / 2,
+                x: horizontalHexSpacing / 2,
+                y: verticalHexSpacing / 3,
+                angle: angleDownRight,
             }
         }, {
-            time: durationToTicks(2),
+            time: durationToTicks(1.5),
             val: {
-                x: 0,
-                y: 0,
+                x: horizontalHexSpacing / 3,
+                y: verticalHexSpacing * 2 / 3,
+                angle: angleDownLeft,
+            }
+        }, {
+            time: durationToTicks(2.5),
+            val: {
+                x: -horizontalHexSpacing / 2,
+                y: verticalHexSpacing,
                 angle: angleLeft,
             }
         }],

@@ -193,9 +193,9 @@ export const ClockwiseSpinManeuver: Story = {
     }
 }
 
-export const AboutTurn: Story = {
+export const LeftUTurn: Story = {
     args: {
-        motion: getManeuver(ManeuverType.AboutTurn, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+        motion: getManeuver(ManeuverType.LeftUTurn, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
     }
 }
 

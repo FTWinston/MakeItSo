@@ -13,7 +13,8 @@ export enum ManeuverType {
     ClockwiseSpin = 'spinCw',
     CounterclockwiseSpin = 'spinCcw',
     Backslide = 'backslide',
-    AboutTurn = 'aboutTurn',
+    LeftUTurn = 'leftUTurn',
+    RightUTurn = 'rightUTurn',
 }
 
 export interface ManeuverInfo {

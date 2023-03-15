@@ -15,7 +15,7 @@ export const getDefaultHelmState: () => HelmState = () => ({
     manueverDrawPile: [
         {
             id: 2,
-            options: [ManeuverType.SweepLeft, ManeuverType.HardLeft, ManeuverType.HardRight, ManeuverType.AboutTurn],
+            options: [ManeuverType.SweepLeft, ManeuverType.HardLeft, ManeuverType.HardRight, ManeuverType.RightUTurn],
         },
         {
             id: 3,
