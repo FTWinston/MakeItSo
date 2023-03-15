@@ -1,4 +1,4 @@
-import { drawHex, getBackgroundColor, getClosestCellCenter, shipPath, transformFrom, transformTo } from 'src/features/spacemap';
+import { drawHex, getBackgroundColor, getClosestCellCenter, shipPath } from 'src/features/spacemap';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 
