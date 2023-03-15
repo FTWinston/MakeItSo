@@ -20,7 +20,7 @@ const RotatingManeuver: React.FC<Props> = props => {
             newAngle = 0;
         }
         setAngle(newAngle);
-    }, 1000);
+    }, 2000);
 
     return <ManeuverDisplay
         currentPower={props.currentPower}
@@ -60,6 +60,13 @@ export const HardRight: Story = {
 export const DriftLeft: Story = {
     args: {
         maneuver: ManeuverType.DriftLeft,
-        currentPower: 3,
+        currentPower: 4,
+    }
+}
+
+export const ClockwiseSpin: Story = {
+    args: {
+        maneuver: ManeuverType.ClockwiseSpin,
+        currentPower: 4,
     }
 }

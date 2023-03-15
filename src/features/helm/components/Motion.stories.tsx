@@ -186,3 +186,9 @@ export const DriftRightManeuver: Story = {
         motion: getManeuver(ManeuverType.DriftRight, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
     }
 }
+
+export const ClockwiseSpinManeuver: Story = {
+    args: {
+        motion: getManeuver(ManeuverType.ClockwiseSpin, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+    }
+}

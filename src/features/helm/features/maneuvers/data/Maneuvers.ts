@@ -140,8 +140,8 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         }]
     }],
     [ManeuverType.DriftLeft, {
-        minPower: 3,
-        evasion: 30,
+        minPower: 4,
+        evasion: 40,
         motion: [{
             time: 0,
             val: {
@@ -174,8 +174,8 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
         ghostFrames: [1],
     }],
     [ManeuverType.DriftRight, {
-        minPower: 3,
-        evasion: 30,
+        minPower: 4,
+        evasion: 40,
         motion: [{
             time: 0,
             val: {
@@ -209,13 +209,71 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
     }],
     [ManeuverType.ClockwiseSpin, {
         minPower: 3,
-        evasion: 40,
-        motion: [] // TODO
+        evasion: 30,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: angleDownLeft,
+            }
+        }, {
+            time: durationToTicks(2),
+            val: {
+                x: horizontalHexSpacing * 2,
+                y: 0,
+                angle: angleUpLeft,
+            }
+        }, {
+            time: durationToTicks(3),
+            val: {
+                x: horizontalHexSpacing * 3,
+                y: 0,
+                angle: angleRight,
+            }
+        }],
+        ghostFrames: [1, 2],
     }],
     [ManeuverType.CounterclockwiseSpin, {
         minPower: 3,
-        evasion: 40,
-        motion: [] // TODO
+        evasion: 30,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: angleUpLeft,
+            }
+        }, {
+            time: durationToTicks(2),
+            val: {
+                x: horizontalHexSpacing * 2,
+                y: 0,
+                angle: angleDownLeft,
+            }
+        }, {
+            time: durationToTicks(3),
+            val: {
+                x: horizontalHexSpacing * 3,
+                y: 0,
+                angle: angleRight,
+            }
+        }],
+        ghostFrames: [1, 2],
     }],
 ]);
 
