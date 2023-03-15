@@ -8,6 +8,8 @@ export enum ManeuverType {
     SweepRight = 'sweepRight',
     HardLeft = 'hardLeft',
     HardRight = 'hardRight',
+    DriftLeft = 'driftLeft',
+    DriftRight = 'driftRight',
     ClockwiseSpin = 'spinCw',
     CounterclockwiseSpin = 'spinCcw',
 }
@@ -17,6 +19,7 @@ export interface ManeuverInfo {
     minPower: PowerLevel;
     evasion: number;
     motion: Keyframes<Position>;
+    ghostFrames?: number[];
 }
 
 export type ManeuverChoice = {

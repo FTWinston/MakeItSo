@@ -1,4 +1,4 @@
-import { drawHex, getClosestCellCenter, shipPath } from 'src/features/spacemap';
+import { drawHex, getBackgroundColor, getClosestCellCenter, shipPath, transformFrom, transformTo } from 'src/features/spacemap';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 
@@ -26,7 +26,7 @@ export function drawDestination(
 
     ctx.globalAlpha = 1;
 
-    ctx.fillStyle = theme.palette.grey[900],
+    ctx.fillStyle = getBackgroundColor(theme);
 
     ctx.rotate(destination.angle);
 
@@ -35,7 +35,6 @@ export function drawDestination(
     ctx.fill();
 
     ctx.rotate(-destination.angle);
-
     ctx.translate(-cell.x, -cell.y);
     ctx.scale(cellRadius, cellRadius);
 }

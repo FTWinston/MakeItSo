@@ -1,4 +1,5 @@
-import { drawHexGrid } from 'src/features/spacemap';
+import { drawHexGrid, getBackgroundColor, shipPath } from 'src/features/spacemap';
+import { Theme } from 'src/lib/mui';
 import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { Rectangle } from 'src/types/Rectangle';
@@ -6,7 +7,6 @@ import { PowerLevel } from 'src/types/ShipSystem';
 import { polarToCartesian } from 'src/types/Vector2D';
 import { getLast } from 'src/utils/arrays';
 import { interpolatePosition } from 'src/utils/interpolate';
-import { scaleToRange } from 'src/utils/scaleToRange';
 
 function getSquareBounds(keyframes: Keyframes<Position>): Rectangle {
     let { x: minX, y: minY } = keyframes[0].val;
@@ -141,24 +141,42 @@ export function drawManeuver(
 export function drawManeuverWithGrid(
     ctx: CanvasRenderingContext2D,
     bounds: Rectangle,
+    theme: Theme,
     motion: Keyframes<Position>,
     minPower: PowerLevel,
     enabled: boolean,
+    ghostFrames?: number[]
 ) {
     const worldBounds = getSquareBounds(motion);
-    const pixelSize = fitCanvasToBounds(ctx, bounds, worldBounds);
+    const cellRadius = fitCanvasToBounds(ctx, bounds, worldBounds);
 
     if (!enabled) {
         ctx.globalAlpha = 0.5;
     }
     
-    drawHexGrid(ctx, worldBounds, 1, pixelSize, '#333');
+    drawHexGrid(ctx, worldBounds, 1, cellRadius, '#333');
 
     if (!enabled) {
         ctx.globalAlpha = 0.2;
     }
 
     drawManeuver(ctx, motion, minPower, true);
+
+    if (ghostFrames) {
+        ctx.fillStyle = getBackgroundColor(theme);
+        ctx.strokeStyle = '#aaa';
+        for (const index of ghostFrames) {
+            const position = motion[index].val;
+            ctx.translate(position.x, position.y);
+            ctx.rotate(position.angle);
+            ctx.beginPath();
+            shipPath(ctx);
+            ctx.fill();
+            ctx.stroke();
+            ctx.rotate(-position.angle);
+            ctx.translate(-position.x, -position.y);
+        }
+    }
 
     if (!enabled) {
         ctx.globalAlpha = 1;

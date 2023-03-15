@@ -15,6 +15,8 @@
     "maneuver sweepRight": "Sweep right",
     "maneuver hardLeft": "Hard left",
     "maneuver hardRight": "Hard right",
+    "maneuver driftLeft": "Drift left",
+    "maneuver driftRight": "Drift right",
     "maneuver spinCw": "Spin clockwise",
     "maneuver spinCcw": "Spin counter-clockwise"
 }

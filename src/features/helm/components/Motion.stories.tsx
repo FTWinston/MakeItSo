@@ -180,3 +180,9 @@ export const HardLeftManeuver: Story = {
         motion: getManeuver(ManeuverType.HardLeft, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
     }
 }
+
+export const DriftRightManeuver: Story = {
+    args: {
+        motion: getManeuver(ManeuverType.DriftRight, { time: 0, val: { x: 0, y: 0, angle: 0 }}).motion
+    }
+}

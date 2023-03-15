@@ -2,12 +2,12 @@ import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Canvas } from 'src/components';
 import { PowerDisplay } from 'src/features/layout';
-import { Box, styled, Tooltip, Typography } from 'src/lib/mui';
+import { Box, styled, Tooltip, Typography, useTheme } from 'src/lib/mui';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { ManeuverInfo } from '../types/ManeuverType';
 import { drawManeuverWithGrid } from '../utils/drawManeuver';
 
-interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower'> {
+interface Props extends Pick<ManeuverInfo, 'type' | 'motion' | 'minPower' | 'ghostFrames'> {
     currentPower: PowerLevel;
     onClick?: () => void;
     onFocusStart?: () => void;
@@ -52,6 +52,7 @@ export const ManeuverDisplay: React.FC<Props> = props => {
     const canvas = useRef<HTMLCanvasElement>(null);
 
     const { t } = useTranslation('helm');
+    const theme = useTheme();
 
     const enabled = props.currentPower >= props.minPower;
 
@@ -65,7 +66,7 @@ export const ManeuverDisplay: React.FC<Props> = props => {
                 <SizedCanvas
                     enabled={enabled}
                     ref={canvas}
-                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, props.motion, props.minPower, enabled)}                    
+                    draw={(ctx, bounds) => drawManeuverWithGrid(ctx, bounds, theme, props.motion, props.minPower, enabled, props.ghostFrames)}                    
                     onClick={props.onClick}
                     onMouseEnter={props.onFocusStart}
                     onMouseLeave={props.onFocusEnd}

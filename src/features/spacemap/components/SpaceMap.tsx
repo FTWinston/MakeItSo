@@ -5,6 +5,7 @@ import { DiscreteColorName, styled, SxProps, useTheme } from 'src/lib/mui';
 import { TouchEvents } from 'src/types/TouchEvents';
 import { Vector2D } from 'src/types/Vector2D';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
+import { getBackgroundColor } from '../utils/getBackgroundColor';
 
 interface Props extends TouchEvents {
     className?: string;
@@ -18,7 +19,7 @@ interface Props extends TouchEvents {
 }
 
 const StyledCanvas = styled(Canvas)(({ theme }) => ({
-    backgroundColor: theme.palette.grey[900],
+    backgroundColor: getBackgroundColor(theme),
 }));
 
 export const SpaceMap = forwardRef<HTMLCanvasElement, Props>((props, ref) => {

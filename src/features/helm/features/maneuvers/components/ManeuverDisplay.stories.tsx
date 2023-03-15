@@ -56,3 +56,10 @@ export const HardRight: Story = {
         currentPower: 3,
     }
 }
+
+export const DriftLeft: Story = {
+    args: {
+        maneuver: ManeuverType.DriftLeft,
+        currentPower: 3,
+    }
+}

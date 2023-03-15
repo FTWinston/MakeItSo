@@ -139,6 +139,60 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
             }
         }]
     }],
+    [ManeuverType.DriftLeft, {
+        minPower: 3,
+        evasion: 30,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1.25),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: (angleUpLeft + angleUpRight) / 2,
+            }
+        }, {
+            time: durationToTicks(2.5),
+            val: {
+                x: horizontalHexSpacing * 2,
+                y: 0,
+                angle: angleRight,
+            }
+        }],
+        ghostFrames: [1],
+    }],
+    [ManeuverType.DriftRight, {
+        minPower: 3,
+        evasion: 30,
+        motion: [{
+            time: 0,
+            val: {
+                x: 0,
+                y: 0,
+                angle: angleRight,
+            }
+        }, {
+            time: durationToTicks(1.25),
+            val: {
+                x: horizontalHexSpacing,
+                y: 0,
+                angle: (angleDownLeft + angleDownRight) / 2,
+            }
+        }, {
+            time: durationToTicks(2.5),
+            val: {
+                x: horizontalHexSpacing * 2,
+                y: 0,
+                angle: angleRight,
+            }
+        }],
+        ghostFrames: [1],
+    }],
     [ManeuverType.ClockwiseSpin, {
         minPower: 3,
         evasion: 40,
@@ -181,5 +235,6 @@ export function getManeuver(type: ManeuverType, offset: Keyframe<Position>): Man
         minPower: data.minPower,
         evasion: data.evasion,
         motion: applyOffset(data.motion, offset),
+        ghostFrames: data.ghostFrames,
     }
 }
