@@ -150,18 +150,25 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: durationToTicks(1.25),
+            time: durationToTicks(1),
             val: {
                 x: horizontalHexSpacing,
                 y: 0,
                 angle: (angleUpLeft + angleUpRight) / 2,
             }
         }, {
-            time: durationToTicks(2.5),
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 2,
-                y: 0,
-                angle: angleRight,
+                y: -verticalHexSpacing * 0.3,
+                angle: (angleUpLeft + angleUpRight) / 2,
+            }
+        }, {
+            time: durationToTicks(3),
+            val: {
+                x: horizontalHexSpacing * 2.5,
+                y: -verticalHexSpacing,
+                angle: angleUpRight,
             }
         }],
         ghostFrames: [1],
@@ -177,18 +184,25 @@ const maneuverDataByIdentifier: Map<ManeuverType, ManeuverContent> = new Map([
                 angle: angleRight,
             }
         }, {
-            time: durationToTicks(1.25),
+            time: durationToTicks(1),
             val: {
                 x: horizontalHexSpacing,
                 y: 0,
                 angle: (angleDownLeft + angleDownRight) / 2,
             }
         }, {
-            time: durationToTicks(2.5),
+            time: durationToTicks(2),
             val: {
                 x: horizontalHexSpacing * 2,
-                y: 0,
-                angle: angleRight,
+                y: verticalHexSpacing * 0.3,
+                angle: (angleDownLeft + angleDownRight) / 2,
+            }
+        }, {
+            time: durationToTicks(3),
+            val: {
+                x: horizontalHexSpacing * 2.5,
+                y: verticalHexSpacing,
+                angle: angleDownRight,
             }
         }],
         ghostFrames: [1],
