@@ -4,6 +4,7 @@ import { FakeShip } from 'src/classes/FakeShip';
 import { Ship } from 'src/classes/Ship';
 import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
+import { ShipSystem } from 'src/types/ShipSystem';
 
 export default {
     title: 'Helm',
@@ -46,7 +47,11 @@ export const Empty: Story = {
 
 export const Others: Story = {
     args: {
-        getInitialState: Empty.args?.getInitialState,
+        getInitialState: () => {
+            const state = Empty.args!.getInitialState!()
+            state.systems.get(ShipSystem.Engines).power = 4;
+            return state;
+        },
 
         getOtherObjects: () => {
             const other1 = new FakeShip(

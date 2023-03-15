@@ -15,15 +15,15 @@ export const getDefaultHelmState: () => HelmState = () => ({
     manueverDrawPile: [
         {
             id: 2,
-            options: [ManeuverType.SweepLeft, ManeuverType.SlowForward, ManeuverType.SweepRight, ManeuverType.HardRight],
+            options: [ManeuverType.SweepLeft, ManeuverType.HardLeft, ManeuverType.HardRight, ManeuverType.AboutTurn],
         },
         {
             id: 3,
-            options: [ManeuverType.SweepLeft, ManeuverType.SweepRight, ManeuverType.HardLeft, ManeuverType.HardRight],
+            options: [ManeuverType.SlowForward, ManeuverType.SweepRight, ManeuverType.ClockwiseSpin, ManeuverType.DriftLeft],
         },
         {
             id: 4,
-            options: [ManeuverType.SweepRight, ManeuverType.SlowForward, ManeuverType.HardLeft, ManeuverType.HardRight],
+            options: [ManeuverType.SweepRight, ManeuverType.CounterclockwiseSpin, ManeuverType.DriftRight, ManeuverType.Backslide],
         },
     ],
     manueverDiscardPile: []
