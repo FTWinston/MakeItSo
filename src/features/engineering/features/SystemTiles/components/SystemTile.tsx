@@ -155,7 +155,7 @@ export const SystemTile: React.FC<Props> = (props) => {
 
     const powerDisplay = props.health === 0
         ? undefined
-        : <SystemPower powerLevel={props.power} faint={props.healAmount > 0} />
+        : <SystemPower powerLevel={props.power} mode="normal" faint={props.healAmount > 0} />
     
     return (
         <Root
