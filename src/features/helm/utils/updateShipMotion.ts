@@ -214,12 +214,6 @@ function updateMotionFromManeuvers(ship: GameObject, maneuvers: ManeuverInfo[], 
 function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number, numFramesWanted: number) {
     let results: Keyframes<Position> = [];
 
-    /*
-    for (const maneuver of maneuvers) {
-        appendMotion(results, maneuver.motion);
-    }
-    */
-
     for (const maneuver of maneuvers) {
         let firstIndexToTake = getFirstFutureIndex(maneuver.motion, currentTime);
         if (firstIndexToTake === -1) {
