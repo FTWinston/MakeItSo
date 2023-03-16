@@ -219,14 +219,14 @@ function getMotionFromManeuvers(maneuvers: ManeuverInfo[], currentTime: number, 
         if (firstIndexToTake === -1) {
             continue;
         }
-        
+
         // The first frame of a maneuver will be the same as the last frame as the previous one,
         // so skip it if we have a previous.
         if (firstIndexToTake === 0 && results.length > 0) {
             firstIndexToTake = 1;
         }
 
-        const framesFromManeuver = maneuver.motion.slice(firstIndexToTake, numFramesWanted);
+        const framesFromManeuver = maneuver.motion.slice(firstIndexToTake, firstIndexToTake + numFramesWanted - results.length);
         results.push(...framesFromManeuver);
 
         if (results.length >= numFramesWanted) {
