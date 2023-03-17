@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { LandingPage } from 'src/features/landingpage';
-import { Overview } from 'src/features/training/components/Overview';
+import { Overview } from 'src/features/training';
 import { SuspenseOutlet } from 'src/components/SuspenseOutlet';
 
 export const createRouter = () => createBrowserRouter([
