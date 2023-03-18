@@ -1,6 +1,5 @@
 import { RefObject, useState } from 'react';
 import { getClosestCellCenter, screenToWorld } from 'src/features/spacemap';
-import { useHasChanged } from 'src/hooks/useHasChanged';
 import { useLongPress, clickMoveLimit } from 'src/hooks/useLongPress';
 import { usePanAndZoom } from 'src/hooks/usePanAndZoom';
 import { Keyframes } from 'src/types/Keyframes';
@@ -14,8 +13,7 @@ export function useHelmMapInteractions(
     shipMotion: Keyframes<Position>,
     allowPanning: boolean,
     setDestination: undefined | ((destination: Position) => void),
-    getInitialCenter: () => Vector2D,
-    forceViewCenter?: Vector2D,
+    getInitialCenter: () => Vector2D
 ) { 
     const [addingDestination, setAddingDestination] = useState<Position>();
 
@@ -124,11 +122,6 @@ export function useHelmMapInteractions(
         allowPan: allowPanning && addingDestination === undefined,
         getExtraHandlers,
     });
-
-    const forceCenterChanged = useHasChanged(forceViewCenter);
-    if (forceViewCenter && forceCenterChanged) {
-        setViewCenter(forceViewCenter);
-    }
 
     return {
         getViewCenter,
