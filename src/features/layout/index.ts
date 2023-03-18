@@ -1,5 +1,4 @@
 export { ErrorBoundary } from './components/ErrorBoundary';
-export { Loading } from './components/Loading';
 export { Page } from './components/Page';
 export { PowerDisplay } from './components/PowerDisplay';
 export { SystemPower } from './components/SystemPower';
