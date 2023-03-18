@@ -68,7 +68,7 @@ export const HelmMap: React.FC<Props> = props => {
         () => {
             const shipPos = interpolateVector(ship.motion, getTime());
             setViewCenter({ x: shipPos.x , y: shipPos.y + getManueverViewOffset() });
-        }, 100, [inManeuverMode, maneuvers, ship.motion], inManeuverMode && maneuvers.length === 0
+        }, 100, [inManeuverMode, maneuvers, ship.motion], inManeuverMode, true
     )
 
     const maneuverSets = useMemo(() => {
