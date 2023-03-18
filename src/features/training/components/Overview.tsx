@@ -1,14 +1,21 @@
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom'
+import { Box, styled } from 'src/lib/mui';
+
+const Intro = styled(Box)({
+    whiteSpace: 'pre-wrap',
+})
 
 export const Overview: React.FC = () => {
+    const { t } = useTranslation('common');
+
     return (
         <div>
-            This is the training section.<br/>
-            Here you can run practice versions of the game in isolation, without any crewmates.
+            <Intro as="p">{t('training intro')}</Intro>
 
             <ul>
-                <li><Link to="helm">Helm</Link></li>
-                <li><Link to="engineering">Engineering</Link></li>
+                <li><Link to="helm">{t('station helm')}</Link></li>
+                <li><Link to="engineering">{t('station engineer')}</Link></li>
             </ul>
         </div>
     );
