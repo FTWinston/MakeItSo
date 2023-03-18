@@ -14,7 +14,7 @@ interface Props {
 const TravelButton = styled(Fab)({
     position: 'absolute',
     right: '1em',
-    bottom: '9.3em',
+    bottom: 'min(9.3em, 1em + 34vw)',
 })
 
 const ManeuverButton = styled(Fab)({
