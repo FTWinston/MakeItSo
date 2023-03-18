@@ -18,6 +18,7 @@ interface Props {
 }
 
 const CardRoot = styled(Card)(({ theme }) => ({
+    fontSize: 'min(1em, 4.6vw)',
     flexGrow: 1,
     height: '7em',
     padding: '0.4em',
