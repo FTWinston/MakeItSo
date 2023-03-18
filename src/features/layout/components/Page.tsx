@@ -15,9 +15,9 @@ const Outer = styled('div')(({ theme }) => ({
 const Inner = styled('div'
     , { shouldForwardProp: (prop) => prop !== 'destroyed' }
 )<{ destroyed?: ShipDestroyingSystem }>(({ destroyed, theme}) => ({
-    maxWidth: 'calc(100vh * 2 / 3)',
+    maxWidth: 'calc(100svh * 2 / 3)',
     width: '100vw',
-    height: '100vh',
+    height: '100svh',
     backgroundColor: theme.palette.grey[900],
     position: 'relative',
     overflow: 'hidden',

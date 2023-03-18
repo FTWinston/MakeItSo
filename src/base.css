@@ -1,6 +1,6 @@
 html {
 	box-sizing: border-box;
-	font-size: calc(0.03 * 100vh);
+	font-size: calc(0.03 * 100svh);
 }
 
 /*
@@ -25,9 +25,6 @@ body {
 	background-color: #212121;
 	color: #fff;
 	color-scheme: dark;
-	
-	min-width: 320px;
-	min-height: 100vh;
 }
 
 body,
