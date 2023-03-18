@@ -120,7 +120,8 @@ export function usePanAndZoom(config: Config): Output {
             startScale.current = distance;
         },
         onPinch: ({ da: [distance] }) => {
-            const scale = distance / startScale.current;
+            const scale = Math.pow(distance / startScale.current, 0.05);
+
             setZoom(current => ({
                 val: applyZoomBounds(current.val * scale),
                 interp: false,
