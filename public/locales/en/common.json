@@ -1,5 +1,7 @@
 {
     "loading": "Loading...",
+    "fullscreen enter": "Enable fullscreen",
+    "fullscreen exit": "Exit fullscreen",
     "error": "An error has occurred.",
     "landing intro": "This is the landing page.",
     "training link": "Try the training",

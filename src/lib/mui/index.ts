@@ -11,6 +11,10 @@ export { Fab } from './Fab';
 export { IconButton } from './IconButton';
 export { LinearProgress } from './LinearProgress';
 export { LinearTimer } from './LinearTimer';
+export { ListItemIcon } from './ListItemIcon';
+export { ListItemText } from './ListItemText';
+export { Menu } from './Menu';
+export { MenuItem } from './MenuItem';
 export { Snackbar } from './Snackbar';
 export { Stack } from './Stack';
 export { Switch } from './Switch';
@@ -31,7 +35,6 @@ export { grey as colorGrey, blue as colorBlue, purple as colorPurple, deepOrange
 export { default as AppBar } from '@mui/material/AppBar';
 export { default as Drawer } from '@mui/material/Drawer';
 export { default as MenuIcon } from '@mui/icons-material/Menu';
-export { default as MenuItem } from '@mui/material/MenuItem';
 export { default as Select } from '@mui/material/Select';
 export { default as Toolbar } from '@mui/material/Toolbar';
 
