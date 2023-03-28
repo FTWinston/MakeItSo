@@ -1,7 +1,6 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom'
-import { exitFullscreen } from 'src/features/layout';
+import { useExitFullscreen } from 'src/features/layout';
 import { Box, styled } from 'src/lib/mui';
 
 const Intro = styled(Box)({
@@ -9,8 +8,8 @@ const Intro = styled(Box)({
 })
 
 export const Overview: React.FC = () => {
+    useExitFullscreen();
     const { t } = useTranslation('common');
-    useEffect(() => { exitFullscreen() }, []);
 
     return (
         <div>

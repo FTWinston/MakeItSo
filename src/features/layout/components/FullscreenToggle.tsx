@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { default as EnterIcon } from '@mui/icons-material/Fullscreen';
 import { default as ExitIcon } from '@mui/icons-material/FullscreenExit';
 import { Global, Interpolation, Theme } from '@emotion/react';
+import { enterFullscreen, exitFullscreen } from '../utils/fullscreen';
 
 interface Props {
     onClick?: () => void;
@@ -33,9 +34,6 @@ const globalStyle: Interpolation<Theme> = {
         display: 'none',
     }
 }
-
-export const enterFullscreen = () => document.body.requestFullscreen().catch(() => {});
-export const exitFullscreen = () => document.exitFullscreen().catch(() => {});
 
 export const FullscreenToggle: React.FC<Props> = (props) => {
     const { t } = useTranslation('common');
