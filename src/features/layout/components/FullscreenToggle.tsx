@@ -34,8 +34,8 @@ const globalStyle: Interpolation<Theme> = {
     }
 }
 
-export const enterFullscreen = () => document.body.requestFullscreen();
-export const exitFullscreen = () => document.exitFullscreen();
+export const enterFullscreen = () => document.body.requestFullscreen().catch(() => {});
+export const exitFullscreen = () => document.exitFullscreen().catch(() => {});
 
 export const FullscreenToggle: React.FC<Props> = (props) => {
     const { t } = useTranslation('common');

@@ -1,8 +1,13 @@
+import { useEffect } from 'react';
 import { Ship } from 'src/classes/Ship';
 import { HelmTraining } from 'src/features/helm';
+import { enterFullscreen } from 'src/features/layout';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/spacemap';
 
-export const Component: React.FC = () => (
+export const Component: React.FC = () => {
+    useEffect(() => { enterFullscreen() }, []);
+    
+    return (
     <HelmTraining
         getInitialState={() => {
             const ship = new Ship(1);
@@ -30,4 +35,5 @@ export const Component: React.FC = () => (
         }}
         getOtherObjects={() => []}
     />
-)
+    );
+}
