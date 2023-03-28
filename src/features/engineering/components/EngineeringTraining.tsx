@@ -11,6 +11,7 @@ interface Props {
     getInitialState: () => Ship;
     getEffects: () => DamageAction[];
     customRender?: (dispatch: Dispatch<EngineeringAction>, defaultRender: () => JSX.Element) => JSX.Element;
+    renderMenuItems?: () => JSX.Element;
 }
 
 export const EngineeringTraining: React.FC<Props> = (props) => {
@@ -36,6 +37,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     const defaultRender = () => (
         <Engineering
             {...otherState}
+            renderMenuItems={props.renderMenuItems}
             shipDestroyed={state.destroyed}
             systems={orderedSystemInfo}
             chooseCard={cardId => dispatch({ type: 'draw', cardId })}

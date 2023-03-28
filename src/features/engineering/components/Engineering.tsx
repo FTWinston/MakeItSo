@@ -20,6 +20,7 @@ interface Props {
     shipDestroyed?: ShipDestroyingSystem;
     chooseCard: (id: number) => void;
     playCard: (card: EngineeringCardInfo, system: ShipSystem, repair: boolean) => void;
+    renderMenuItems?: () => JSX.Element;
 }
 
 const Root = styled(Page)({
@@ -126,6 +127,7 @@ export const Engineering: React.FC<Props> = (props) => {
     return (
         <Root shipDestroyed={props.shipDestroyed}>
             <EngineeringAppBar
+                renderMenuItems={props.renderMenuItems}
                 currentTab={currentTab}
                 setCurrentTab={tab => { setCurrentTab(tab); setFocusedCard(null); }}
                 numChoices={props.numChoices}

@@ -13,6 +13,7 @@ interface Props {
     getInitialState: () => Ship;
     getOtherObjects: () => GameObject[]
     //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
+    renderMenuItems?: () => JSX.Element;
 }
 
 export const HelmTraining: React.FC<Props> = (props) => {
@@ -46,6 +47,7 @@ export const HelmTraining: React.FC<Props> = (props) => {
             destination={ship.helm.destination?.val ?? null}
             setDestination={destination => helmDispatch({ type: 'set destination', destination })}
             maneuver={choice => helmDispatch({ type: 'maneuver', choice })}
+            renderMenuItems={props.renderMenuItems}
         />
     );
 

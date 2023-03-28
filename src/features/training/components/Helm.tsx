@@ -1,11 +1,16 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Ship } from 'src/classes/Ship';
 import { HelmTraining } from 'src/features/helm';
 import { enterFullscreen } from 'src/features/layout';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/spacemap';
+import { MenuItem } from 'src/lib/mui';
 
 export const Component: React.FC = () => {
     useEffect(() => { enterFullscreen() }, []);
+    const navigate = useNavigate();
+    const { t } = useTranslation('common');
     
     return (
     <HelmTraining
@@ -34,6 +39,7 @@ export const Component: React.FC = () => {
             return ship;
         }}
         getOtherObjects={() => []}
+        renderMenuItems={() => <MenuItem onClick={() => navigate('..')}>{t('training back')}</MenuItem>}
     />
     );
 }

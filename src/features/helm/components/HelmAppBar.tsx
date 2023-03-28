@@ -9,6 +9,7 @@ interface Props {
     power: PowerLevel;
     evasion: number;
     health: number;
+    renderMenuItems?: () => JSX.Element;
 }
 
 const EvasionChip = styled(Chip)({  
@@ -26,7 +27,7 @@ export const HelmAppBar: React.FC<Props> = (props) => {
     const { t } = useTranslation('helm');
 
     return (
-        <SystemAppBar>
+        <SystemAppBar renderMenuItems={props.renderMenuItems}>
             <CrewIcon
                 station={CrewStation.Helm}
                 fontSize="large"

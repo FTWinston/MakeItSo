@@ -29,6 +29,7 @@ interface Props extends MotionConfiguration {
     maneuver: (type: ManeuverType) => void;
     destination: Position | null;
     setDestination: (destination: Position) => void;
+    renderMenuItems?: () => JSX.Element;
 }
 
 const Root = styled(Page)({
@@ -59,7 +60,12 @@ export const Helm: React.FC<Props> = (props) => {
 
     return (
         <Root shipDestroyed={props.shipDestroyed}>
-            <HelmAppBar power={props.power} health={props.health} evasion={props.evasion} />
+            <HelmAppBar
+                power={props.power}
+                health={props.health}
+                evasion={props.evasion}
+                renderMenuItems={props.renderMenuItems}
+            />
 
             <HelmMap
                 mode={mode}

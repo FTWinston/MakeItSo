@@ -12,6 +12,7 @@ interface Props {
     setCurrentTab: (tab: TabIdentifiers) => void;
     numChoices: number;
     anyOffline: boolean;
+    renderMenuItems?: () => JSX.Element;
 }
 
 const AppBarTab = styled(Tab)<ComponentProps<typeof Tab>>({
@@ -26,10 +27,10 @@ const AppBarBadge = styled(Badge)<ComponentProps<typeof Badge>>({
 
 export const EngineeringAppBar: React.FC<Props> = (props) => {
     const { t } = useTranslation('engineering');
-    const { currentTab, setCurrentTab, numChoices, anyOffline } = props;
+    const { currentTab, setCurrentTab, renderMenuItems, anyOffline } = props;
 
     return (
-        <SystemAppBar>
+        <SystemAppBar renderMenuItems={renderMenuItems}>
             <CrewIcon
                 station={CrewStation.Engineering}
                 fontSize="large"
