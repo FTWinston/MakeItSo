@@ -69,7 +69,6 @@ export const SystemAppBar: React.FC<React.PropsWithChildren<Props>> = (props) =>
                     onClose={closeMenu}
                 >
                     <FullscreenToggle onClick={closeMenu} />
-                    {props.renderMenuItems ? <Divider /> : undefined}
                     {props.renderMenuItems?.()}
                 </Menu>
                 
