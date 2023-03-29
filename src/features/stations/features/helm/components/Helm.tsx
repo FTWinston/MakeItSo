@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Box, SlideTransition, styled, ZoomTransition } from 'src/lib/mui';
-import { AppBarHeight, Page } from '../../appbar';
+import { AppBarHeight } from '../../appbar';
+import { Page } from '../../../components/Page';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { HelmAppBar } from './HelmAppBar';
 import { HelmMap } from './HelmMap';

@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, Stack, Switch, Typography, styled } from 'src/lib/mui';
-import { AppBarHeight, Page } from '../../appbar';
+import { AppBarHeight } from '../../appbar';
+import { Page } from '../../../components/Page';
 import { allSystems, ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { CardHand, stubHeight, EngineeringCardInfo, CardChoice } from '../features/Cards';

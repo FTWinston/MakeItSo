@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import { SystemTiles } from './SystemTiles';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { Page } from '../../../../appbar';
+import { Page } from '../../../../../components/Page';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { SystemState } from 'src/types/SystemState';

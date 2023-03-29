@@ -1,5 +1,6 @@
 import { styled } from 'src/lib/mui';
-import { AppBarHeight, Page } from '../../appbar';
+import { AppBarHeight } from '../../appbar';
+import { Page } from '../../../components/Page';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { WeaponsAppBar } from './WeaponsAppBar';
 import { useTranslation } from 'react-i18next';
