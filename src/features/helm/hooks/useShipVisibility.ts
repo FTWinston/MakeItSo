@@ -21,7 +21,7 @@ export function useShipVisibility(
         if (shipVisible !== visible) {
             setShipVisible(visible);   
         }
-    }, 250, [motion], true, true);
+    }, 250, [motion, getViewCenter, getCellRadius], true, false);
 
     return shipVisible;
 }
