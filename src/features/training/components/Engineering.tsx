@@ -1,6 +1,6 @@
 import { Ship } from 'src/classes/Ship';
-import { EngineeringTraining } from 'src/features/engineering';
-import { useFullscreen } from 'src/features/layout';
+import { EngineeringTraining } from 'src/features/stations/features/engineering';
+import { useFullscreen } from 'src/hooks/useFullscreen';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { BackButton } from './BackButton';
 

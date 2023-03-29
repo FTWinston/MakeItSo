@@ -1,6 +1,6 @@
 import { GameObject } from './GameObject';
-import { ObjectId } from '../types/GameObjectInfo';
-import { Position } from '../types/Position';
+import { ObjectId } from 'src/types/GameObjectInfo';
+import { Position } from 'src/types/Position';
 import { ObjectAppearance } from 'src/types/ObjectAppearance';
 
 export class StaticObject extends GameObject {

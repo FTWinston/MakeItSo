@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom'
-import { useExitFullscreen } from 'src/features/layout';
+import { useExitFullscreen } from 'src/hooks/useExitFullscreen';
 import { Box, styled } from 'src/lib/mui';
 
 const Intro = styled(Box)({

@@ -1,7 +1,7 @@
 import { Ship } from 'src/classes/Ship';
-import { HelmTraining } from 'src/features/helm';
-import { useFullscreen } from 'src/features/layout';
-import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/spacemap';
+import { HelmTraining } from 'src/features/stations/features/helm';
+import { useFullscreen } from 'src/hooks/useFullscreen';
+import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 import { BackButton } from './BackButton';
 
 export const Component: React.FC = () => {

@@ -1,4 +1,4 @@
-import { SystemInfo } from 'src/features/engineering';
+import { SystemInfo } from 'src/features/stations';
 
 export const maxSystemHealth = 100;
 

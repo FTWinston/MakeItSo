@@ -1,10 +1,8 @@
-import { updateShipMotion } from 'src/features/helm';
+import { updateShipMotion } from '../features/stations/features/helm';
 import { getLast } from 'src/utils/arrays';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { pruneKeyframes } from 'src/utils/interpolate';
-import { getManeuver, ManeuverInfo, ManeuverType } from 'src/features/helm/features/maneuvers';
-import { getManeuverStartPosition } from 'src/features/helm/utils/getManeuverStartPosition';
-import { MotionConfiguration } from 'src/features/helm/types/HelmState';
+import { getManeuver, ManeuverInfo, ManeuverType, getManeuverStartPosition, MotionConfiguration } from 'src/features/stations/features/helm';
 import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
 
