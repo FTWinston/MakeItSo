@@ -50,7 +50,7 @@ const CardWrapper = styled('div')<{ selected: boolean }>(({ selected }) => ({
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
-    padding: '0 1em',
+    padding: '0 min(1em, 4vw)',
     cursor: 'pointer',
     zIndex: selected ? 1 : undefined,
     '&:focus > *': {

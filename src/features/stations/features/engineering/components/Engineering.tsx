@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { Box, Stack, Switch, Typography, styled } from 'src/lib/mui';
+import { Box, styled } from 'src/lib/mui';
 import { AppBarHeight } from '../../appbar';
 import { Page } from '../../../components/Page';
 import { allSystems, ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
@@ -10,6 +9,7 @@ import { CardDisplay } from '../features/Cards';
 import { SystemTiles, ClientSystemInfo } from '../features/SystemTiles';
 import { EngineeringAppBar } from './EngineeringAppBar';
 import { maxSystemHealth } from 'src/types/SystemState';
+import { ModeToggle } from './ModeToggle';
 
 interface Props {
     systems: ClientSystemInfo[];
@@ -47,7 +47,6 @@ const FocusedCardDisplay = styled(CardDisplay)({
 });
 
 export const Engineering: React.FC<Props> = (props) => {
-    const { t } = useTranslation('engineering');
     const [focusedCard, setFocusedCard] = useState<EngineeringCardInfo | null>(null);
     const [cardSelected, setCardSelected] = useState(false);
     const [repairMode, setRepairMode] = useState(false);
@@ -86,32 +85,10 @@ export const Engineering: React.FC<Props> = (props) => {
                     possibleRepair={cardSelected && focusedCard && repairMode ? focusedCard.rarity : null}
                     tileSelected={tryPlayCard}
                 />
-                <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                    justifySelf="center"
-                    component="label"
-                >
-                    <Typography
-                        variant="button"
-                        color={repairMode ? 'grey' : undefined}
-                        role="none"
-                    >
-                        {t('effect mode')}
-                    </Typography>
-                    <Switch
-                        color="error"
-                        checked={repairMode}
-                        onChange={e => setRepairMode(e.target.checked)}
-                    />
-                    <Typography
-                        variant="button"
-                        color={repairMode ? undefined : 'grey'}
-                    >
-                        {t('repair mode')}
-                    </Typography>
-                </Stack>
+                <ModeToggle
+                    repairMode={repairMode}
+                    setRepairMode={setRepairMode}
+                />
             </SystemsAndCardMode>
         );
 

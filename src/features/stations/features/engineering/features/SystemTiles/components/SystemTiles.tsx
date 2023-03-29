@@ -16,9 +16,10 @@ interface Props {
 
 const Root = styled('div')({
     display: 'grid',
+    fontSize: 'min(1em, 5.1vw)',
     gridTemplateColumns: '1fr 1fr',
     margin: '0.5em 0.25em 0 0.25em',
-    gap: '0.25em',
+    gap: '0.25em 0',
     placeItems: 'center',
 });
 
