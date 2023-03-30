@@ -1,10 +1,14 @@
-import { AppBar, Toolbar, MenuIcon, IconButton, styled, Menu } from 'src/lib/mui';
+import { AppBar, Toolbar, MenuIcon, IconButton, styled, Menu, Box, SxProps, Theme } from 'src/lib/mui';
 import { useTranslation } from 'react-i18next';
 import { useRef, useState } from 'react';
 import { FullscreenToggle } from './FullscreenToggle';
+import { CrewStation } from 'src/types/ShipSystem';
+import { CrewIcon } from 'src/components';
 
 interface Props {
     renderMenuItems?: () => JSX.Element;
+    station: CrewStation;
+    justifyContent?: 'flex-start' | 'flex-end' | 'center';
 }
 
 const MainToolbar = styled(Toolbar)({
@@ -16,10 +20,18 @@ const MainToolbar = styled(Toolbar)({
 const MenuButton = styled(IconButton)({
     fontSize: '0.8em',
     padding: '1em',
+    marginLeft: '-1em',
 });
 
 const MenuIconImage = styled(MenuIcon)({
     fontSize: '2em',
+});
+
+const StationIcon = styled(CrewIcon)({
+    fontSize: '1.5em',
+    '@media (min-width: 500px)': {
+        fontSize: '2.2em',
+    },
 });
 
 export const AppBarHeight = '3em';
@@ -71,8 +83,14 @@ export const SystemAppBar: React.FC<React.PropsWithChildren<Props>> = (props) =>
                     <FullscreenToggle onClick={closeMenu} />
                     {props.renderMenuItems?.()}
                 </Menu>
-                
-                {props.children}
+                <StationIcon
+                    station={props.station}
+                    role="img"
+                    color="disabled"
+                />
+                <Box sx={{flexGrow: 1, display: 'flex', justifyContent: props.justifyContent, alignItems: 'center'}}>
+                    {props.children}
+                </Box>
             </MainToolbar>
         </AppBar>
     );
