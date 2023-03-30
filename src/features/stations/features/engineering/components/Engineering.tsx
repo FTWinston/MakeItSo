@@ -37,7 +37,7 @@ const SystemsAndCardMode = styled(Box)({
 const FocusedCardDisplay = styled(CardDisplay)({
     pointerEvents: 'none',
     zIndex: 2,
-    fontSize: '1.5em',
+    fontSize: 'min(1.5em, 8.9vw)',
     position: 'absolute',
     bottom: '10vh',
     marginLeft: 'auto',
