@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { HealthDisplay, SystemAppBar, SystemPower } from '../../appbar';
+import { SystemAppBar } from '../../appbar';
 import { CrewStation, PowerLevel } from 'src/types/ShipSystem';
 
 interface Props {
@@ -15,10 +15,10 @@ export const SensorsAppBar: React.FC<Props> = (props) => {
         <SystemAppBar
             renderMenuItems={props.renderMenuItems}
             station={CrewStation.Sensors}
-            justifyContent="flex-end"
+            power={props.power}
+            health={props.health}
         >
-            <SystemPower powerLevel={props.power} />
-            <HealthDisplay health={props.health} />
+            
         </SystemAppBar>
     );
 }

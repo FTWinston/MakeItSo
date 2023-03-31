@@ -2,13 +2,17 @@ import { AppBar, Toolbar, MenuIcon, IconButton, styled, Menu, Box, SxProps, Them
 import { useTranslation } from 'react-i18next';
 import { useRef, useState } from 'react';
 import { FullscreenToggle } from './FullscreenToggle';
-import { CrewStation } from 'src/types/ShipSystem';
+import { CrewStation, PowerLevel } from 'src/types/ShipSystem';
 import { CrewIcon } from 'src/components';
+import { SystemPower } from './SystemPower';
+import { HealthDisplay } from './HealthDisplay';
 
 interface Props {
     renderMenuItems?: () => JSX.Element;
     station: CrewStation;
     justifyContent?: 'flex-start' | 'flex-end' | 'center';
+    power?: PowerLevel;
+    health?: number;
 }
 
 const MainToolbar = styled(Toolbar)({
@@ -51,6 +55,14 @@ export const SystemAppBar: React.FC<React.PropsWithChildren<Props>> = (props) =>
         setAnchorEl(null);
     };
 
+    const power = props.power === undefined
+        ? undefined
+        : <SystemPower powerLevel={props.power} />;
+
+    const health = props.health === undefined
+        ? undefined
+        : <HealthDisplay health={props.health} />;
+
     return (
         <AppBar position="static" ref={menuRoot}>
             <MainToolbar>
@@ -83,13 +95,17 @@ export const SystemAppBar: React.FC<React.PropsWithChildren<Props>> = (props) =>
                     <FullscreenToggle onClick={closeMenu} />
                     {props.renderMenuItems?.()}
                 </Menu>
-                <StationIcon
-                    station={props.station}
-                    role="img"
-                    color="disabled"
-                />
-                <Box sx={{flexGrow: 1, display: 'flex', justifyContent: props.justifyContent, alignItems: 'center'}}>
-                    {props.children}
+                <Box sx={{flexGrow: 1, display: 'flex', alignItems: 'center'}}>
+                    <StationIcon
+                        station={props.station}
+                        role="img"
+                        color="disabled"
+                    />
+                    <Box sx={{flexGrow: 1, display: 'flex', justifyContent: props.justifyContent}}>
+                        {props.children}
+                    </Box>
+                    {power}
+                    {health}
                 </Box>
             </MainToolbar>
         </AppBar>
