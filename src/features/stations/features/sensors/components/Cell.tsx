@@ -1,25 +1,25 @@
 import { Box, styled } from 'src/lib/mui'
-import { CellState, CountType } from '../types/CellState';
+import { CellType, CountType } from '../types/CellState';
 
 interface Props {
-    state: CellState;
+    cellType: CellType;
     countType?: CountType;
     number?: number;
     onClick?: () => void;
 }
 
-const Wrapper = styled(Box)(({ theme }) => ({
+const Shadow = styled(Box)({
     filter: 'drop-shadow(-0.15em 0.1em 0.1em rgba(0, 0, 0, 0.4))',
-}));
+});
 
-const OuterHexagon = styled(Box)<{ state: CellState }>(({ state, theme }) => {
+const OuterHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' })<{ state: CellType }>(({ state, theme }) => {
     let backgroundColor, cursor;
     switch (state) {
-        case CellState.IndicatorVertical:
-        case CellState.IndicatorTLBR:
-        case CellState.IndicatorTRBL:
+        case CellType.IndicatorVertical:
+        case CellType.IndicatorTLBR:
+        case CellType.IndicatorTRBL:
             break;
-        case CellState.Obscured:
+        case CellType.Obscured:
             cursor = 'pointer';
         default:
             backgroundColor = theme.palette.text.primary;
@@ -38,35 +38,35 @@ const OuterHexagon = styled(Box)<{ state: CellState }>(({ state, theme }) => {
     }
 });
 
-const InnerHexagon = styled(Box)<{ state: CellState, countType?: CountType }>(({ state, countType, theme }) => {
+const InnerHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })<{ state: CellType, countType?: CountType }>(({ state, countType, theme }) => {
     let backgroundColor, color, transform;
     switch (state) {
-        case CellState.Obscured:
+        case CellType.Obscured:
             backgroundColor = theme.palette.warning.main;
             color = backgroundColor;
             break;
-        case CellState.Flagged:
+        case CellType.Flagged:
             backgroundColor = theme.palette.primary.dark;
             color = backgroundColor;
             break;
-        case CellState.Revealed:
+        case CellType.Revealed:
             backgroundColor = countType === CountType.DoubleRadius
                 ? theme.palette.primary.dark
                 : theme.palette.background.paper;
             color = theme.palette.text.primary;
             break;
-        case CellState.Unknown:
+        case CellType.Unknown:
             backgroundColor = theme.palette.background.paper;
             color = theme.palette.text.secondary;
             break;
-        case CellState.IndicatorVertical:
+        case CellType.IndicatorVertical:
             color = theme.palette.background.paper;
             break;
-        case CellState.IndicatorTLBR:
+        case CellType.IndicatorTLBR:
             color = theme.palette.background.paper;
             transform = 'rotate(-60deg)';
             break;
-        case CellState.IndicatorTRBL:
+        case CellType.IndicatorTRBL:
             color = theme.palette.background.paper;
             transform = 'rotate(60deg)';
             break;
@@ -91,11 +91,11 @@ const InnerHexagon = styled(Box)<{ state: CellState, countType?: CountType }>(({
 export const Cell: React.FC<Props> = props => {
     let content;
 
-    switch (props.state) {
-        case CellState.Revealed:
-        case CellState.IndicatorVertical:
-        case CellState.IndicatorTLBR:
-        case CellState.IndicatorTRBL:
+    switch (props.cellType) {
+        case CellType.Revealed:
+        case CellType.IndicatorVertical:
+        case CellType.IndicatorTLBR:
+        case CellType.IndicatorTRBL:
             switch (props.countType) {
                 case CountType.Split:
                     content = `-${props.number}-`;
@@ -109,27 +109,27 @@ export const Cell: React.FC<Props> = props => {
                     break;
             }
             break;
-        case CellState.Unknown:
+        case CellType.Unknown:
             content = '?';
             break;
     }
 
     const hexagons = (
-        <OuterHexagon state={props.state} onClick={props.onClick}>
-            <InnerHexagon state={props.state} countType={props.countType}>
+        <OuterHexagon state={props.cellType} onClick={props.onClick}>
+            <InnerHexagon state={props.cellType} countType={props.countType}>
                 {content}
             </InnerHexagon>
         </OuterHexagon>
     );
 
     // Don't do a drop shadow wrapper for indicators, only "real" cells.
-    if (props.state === CellState.IndicatorVertical
-        || props.state === CellState.IndicatorTLBR
-        || props.state === CellState.IndicatorTRBL) {
+    if (props.cellType === CellType.IndicatorVertical
+        || props.cellType === CellType.IndicatorTLBR
+        || props.cellType === CellType.IndicatorTRBL) {
         return hexagons;
     }
 
     return (
-        <Wrapper>{hexagons}</Wrapper>
+        <Shadow>{hexagons}</Shadow>
     );
 }
