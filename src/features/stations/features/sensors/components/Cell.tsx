@@ -11,7 +11,7 @@ interface Props {
 export const cellWidth = 2.3094;
 export const cellHeight = 2;
 
-const OuterHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' })<{ state: CellType }>(({ state, theme }) => {
+const OuterBorderHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' })<{ state: CellType }>(({ state, theme }) => {
     let backgroundColor, cursor;
     switch (state) {
         case CellType.IndicatorVertical:
@@ -37,7 +37,7 @@ const OuterHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state'
     }
 });
 
-const InnerHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })<{ state: CellType, countType?: CountType }>(({ state, countType, theme }) => {
+const InnerFillHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })<{ state: CellType, countType?: CountType }>(({ state, countType, theme }) => {
     let backgroundColor, color, transform;
     switch (state) {
         case CellType.Obscured:
@@ -82,10 +82,26 @@ const InnerHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state'
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        fontWeight: 'bold',
         transition: 'color 0.25s, background-color 0.25s',
     }
 });
+
+
+const GlowHexagon = styled(Box)({
+    fontSize: '0.85em',
+    width: `${cellWidth}em`,
+    height: `${cellHeight}em`,
+    clipPath: 'polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255,255,255, 0.15)',
+});
+
+const Text = styled(Box)({
+    fontWeight: 'bold',
+    fontSize: '1.2em',
+})
 
 export const Cell: React.FC<Props> = props => {
     let content;
@@ -114,10 +130,14 @@ export const Cell: React.FC<Props> = props => {
     }
 
     return (
-        <OuterHexagon state={props.cellType} onClick={props.onClick}>
-            <InnerHexagon state={props.cellType} countType={props.countType}>
-                {content}
-            </InnerHexagon>
-        </OuterHexagon>
+        <OuterBorderHexagon state={props.cellType} onClick={props.onClick}>
+            <InnerFillHexagon state={props.cellType} countType={props.countType}>
+                <GlowHexagon>
+                    <Text>
+                        {content}
+                    </Text>
+                </GlowHexagon>
+            </InnerFillHexagon>
+        </OuterBorderHexagon>
     );
 }

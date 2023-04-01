@@ -16,7 +16,7 @@ const Root = styled('ul')(({ theme }) => ({
     margin: 0,
     padding: '0.25em',
     gridGap: `${gapSize}em ${gapSize * 2}em`,
-    filter: 'drop-shadow(-0.15em 0.1em 0.1em rgba(0, 0, 0, 0.4))',
+    filter: 'drop-shadow(-0.15em 0.1em 0.1em rgba(0, 0, 0, 0.25))',
 }));
 
 const CellWrapper = styled('li')({
