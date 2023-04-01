@@ -27,9 +27,9 @@ const OuterHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state'
     }
     
     return {
-        width: '2em',
-        height: 'calc(2 * 1.1547em)',
-        clipPath: 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
+        width: 'calc(2 * 1.1547em)',
+        height: '2em',
+        clipPath: 'polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0)',
         backgroundColor,
         cursor,
         display: 'flex',
@@ -74,9 +74,9 @@ const InnerHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state'
     
     return {
         fontSize: '0.95em',
-        width: '2em',
-        height: 'calc(2 * 1.1547em)',
-        clipPath: 'polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%)',
+        width: 'calc(2 * 1.1547em)',
+        height: '2em',
+        clipPath: 'polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0)',
         backgroundColor,
         color,
         transform,
