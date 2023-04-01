@@ -2,10 +2,11 @@ export enum CellType {
     Obscured = 1,
     Flagged = 2,
     Revealed = 3,
-    Unknown = 4, // Revealed, but showing a ?
-    IndicatorVertical = 5,
-    IndicatorTLBR = 6,
-    IndicatorTRBL = 7,
+    Bomb = 4,
+    Unknown = 5, // Revealed, but showing a ?
+    IndicatorVertical = 6,
+    IndicatorTLBR = 7,
+    IndicatorTRBL = 8,
 }
 
 export enum CountType {

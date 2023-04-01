@@ -21,6 +21,12 @@ export const Flagged: Story = {
     }
 }
 
+export const Bomb: Story = {
+    args: {
+        cellType: CellType.Bomb
+    }
+}
+
 export const Unknown: Story = {
     args: {
         cellType: CellType.Unknown

@@ -48,6 +48,10 @@ const InnerFillHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'st
             backgroundColor = theme.palette.primary.dark;
             color = backgroundColor;
             break;
+        case CellType.Bomb:
+            backgroundColor = theme.palette.error.dark;
+            color = backgroundColor;
+            break;
         case CellType.Revealed:
             backgroundColor = countType === CountType.DoubleRadius
                 ? theme.palette.primary.dark
