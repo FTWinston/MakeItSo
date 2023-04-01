@@ -1,6 +1,6 @@
 import { StoryObj } from '@storybook/react';
 import { CellType, CountType } from '../types/CellState';
-import { Cell } from './Cell';
+import { Cell, Special } from './Cell';
 
 export default {
     title: 'Sensors/Cell',
@@ -24,6 +24,20 @@ export const Flagged: Story = {
 export const Bomb: Story = {
     args: {
         cellType: CellType.Bomb
+    }
+}
+
+export const Revealing: Story = {
+    args: {
+        cellType: CellType.Obscured,
+        special: Special.Revealing,
+    }
+}
+
+export const Error: Story = {
+    args: {
+        cellType: CellType.Obscured,
+        special: Special.Error,
     }
 }
 

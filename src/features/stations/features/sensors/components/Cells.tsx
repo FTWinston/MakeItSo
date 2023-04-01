@@ -1,6 +1,7 @@
+import { useEffect, useState } from 'react';
 import { styled } from 'src/lib/mui'
 import { CellState } from '../types/CellState';
-import { Cell, cellHeight, cellWidth } from './Cell';
+import { Cell, cellHeight, cellWidth, Special } from './Cell';
 
 interface Props {
     columns: number;
@@ -25,6 +26,7 @@ const CellWrapper = styled('li')({
 
 export const Cells: React.FC<Props> = props => {
     const { columns, cells } = props;
+    const [errorIndex, setErrorIndex] = useState<number | null>();
 
     let contents = cells.map((cell, index) => {
         if (cell === null) {
@@ -43,6 +45,10 @@ export const Cells: React.FC<Props> = props => {
             gridColumn: `${col} / span 3`,
             gridRow: `${row} / span 2`,
         };
+
+        const special = errorIndex === index
+            ? Special.Error
+            : undefined;
         
         return (
             <CellWrapper key={index} style={wrapperStyle}>
@@ -50,11 +56,20 @@ export const Cells: React.FC<Props> = props => {
                     cellType={cell.type}
                     countType={(cell as any).countType}
                     number={(cell as any).number}
-                    onClick={() => props.onClick(index)}
+                    special={special}
+                    onClick={() => {
+                        setErrorIndex(index);
+                        props.onClick(index);
+                    }}
                 />
             </CellWrapper>
         )
     });
+
+    useEffect(() => {
+        const interval = setTimeout(() => setErrorIndex(null), 500);
+        return () => clearInterval(interval);
+    }, [errorIndex]);
 
     const rows = Math.ceil(cells.length / columns);
     const rootStyle: React.CSSProperties = {
