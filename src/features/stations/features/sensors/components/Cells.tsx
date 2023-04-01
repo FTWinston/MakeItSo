@@ -56,7 +56,7 @@ export const Cells: React.FC<Props> = props => {
         )
     });
 
-    const rows = 3;
+    const rows = Math.ceil(cells.length / columns);
     const rootStyle: React.CSSProperties = {
         gridTemplateColumns: `repeat(${columns}, ${cellWidth * 0.25 + gapSize * 0.5}em ${cellWidth * 0.5 + gapSize}em ) ${cellWidth * 0.25 + gapSize * 0.5}em`,
         gridTemplateRows: `repeat(${rows * 2}, ${cellHeight / 2 + gapSize}em)`,
