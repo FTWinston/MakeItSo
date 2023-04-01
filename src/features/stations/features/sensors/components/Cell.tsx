@@ -8,9 +8,8 @@ interface Props {
     onClick?: () => void;
 }
 
-const Shadow = styled(Box)({
-    filter: 'drop-shadow(-0.15em 0.1em 0.1em rgba(0, 0, 0, 0.4))',
-});
+export const cellWidth = 2.3094;
+export const cellHeight = 2;
 
 const OuterHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' })<{ state: CellType }>(({ state, theme }) => {
     let backgroundColor, cursor;
@@ -27,8 +26,8 @@ const OuterHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state'
     }
     
     return {
-        width: 'calc(2 * 1.1547em)',
-        height: '2em',
+        width: `${cellWidth}em`,
+        height: `${cellHeight}em`,
         clipPath: 'polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0)',
         backgroundColor,
         cursor,
@@ -74,8 +73,8 @@ const InnerHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state'
     
     return {
         fontSize: '0.95em',
-        width: 'calc(2 * 1.1547em)',
-        height: '2em',
+        width: `${cellWidth}em`,
+        height: `${cellHeight}em`,
         clipPath: 'polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0)',
         backgroundColor,
         color,
@@ -114,22 +113,11 @@ export const Cell: React.FC<Props> = props => {
             break;
     }
 
-    const hexagons = (
+    return (
         <OuterHexagon state={props.cellType} onClick={props.onClick}>
             <InnerHexagon state={props.cellType} countType={props.countType}>
                 {content}
             </InnerHexagon>
         </OuterHexagon>
-    );
-
-    // Don't do a drop shadow wrapper for indicators, only "real" cells.
-    if (props.cellType === CellType.IndicatorVertical
-        || props.cellType === CellType.IndicatorTLBR
-        || props.cellType === CellType.IndicatorTRBL) {
-        return hexagons;
-    }
-
-    return (
-        <Shadow>{hexagons}</Shadow>
     );
 }

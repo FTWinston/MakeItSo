@@ -1,6 +1,6 @@
 import { styled } from 'src/lib/mui'
 import { CellState } from '../types/CellState';
-import { Cell } from './Cell';
+import { Cell, cellHeight, cellWidth } from './Cell';
 
 interface Props {
     columns: number;
@@ -8,15 +8,18 @@ interface Props {
     onClick: (index: number) => void;
 }
 
+const gapSize = 0.025;
+
 const Root = styled('ul', { shouldForwardProp: (prop) => prop !== 'columns' })<{ columns: number }>(({ columns, theme }) => {
     return {
         display: 'grid',
         listStyleType: 'none',
         margin: 0,
         padding: '0.25em',
-        gridGap: '0.125em 0.25em',
-        gridTemplateColumns: `repeat(${columns}, 0.5em 1.25em ) 0.5em`,
-        gridTemplateRows: '1.2em 1.2em 1.2em 1.2em 1.2em 1.2em'
+        gridGap: `${gapSize}em ${gapSize * 2}em`,
+        gridTemplateColumns: `repeat(${columns}, ${cellWidth * 0.25 + gapSize * 0.5}em ${cellWidth * 0.5 + gapSize}em ) ${cellWidth * 0.25 + gapSize * 0.5}em`,
+        gridTemplateRows: `repeat(6, ${cellHeight / 2 + gapSize}em)`,
+        filter: 'drop-shadow(-0.15em 0.1em 0.1em rgba(0, 0, 0, 0.4))',
     };
 });
 
@@ -29,7 +32,7 @@ export const Cells: React.FC<Props> = props => {
 
     let contents = cells.map((cell, index) => {
         if (cell === null) {
-            return <div />;
+            return null;
         }
 
         let row = Math.floor(index / columns) * 2 + 1;
