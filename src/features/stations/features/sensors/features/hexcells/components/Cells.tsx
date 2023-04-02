@@ -7,6 +7,7 @@ import { Cell, cellHeight, cellWidth, Special } from './Cell';
 
 interface Props extends CellBoardInfo {
     revealCell: (index: number) => void;
+    flagCell: (index: number) => void;
     errorIndex?: number;
 }
 
@@ -64,13 +65,18 @@ export const Cells: React.FC<Props> = props => {
                     number={(cell as any).number}
                     special={special}
                     onClick={() => {
-                        if (cell.type === CellType.Obscured && props.result === undefined) {
+                        if (cell.type === CellType.Obscured && !props.result) {
                             props.revealCell(index);
                         }
                         if (cell.type === CellType.IndicatorVertical
                             || cell.type === CellType.IndicatorTLBR
                             || cell.type === CellType.IndicatorTRBL) {
                             // TODO: toggle indicator
+                        }
+                    }}
+                    onLongPress={() => {
+                        if (cell.type === CellType.Obscured && !props.result) {
+                            props.flagCell(index);
                         }
                     }}
                 />

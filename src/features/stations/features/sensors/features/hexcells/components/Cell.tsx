@@ -1,3 +1,4 @@
+import { useLongPress } from 'src/hooks/useLongPress';
 import { Box, styled } from 'src/lib/mui'
 import { CellType, CountType } from '../types/CellState';
 import './Cell.css';
@@ -13,6 +14,7 @@ interface Props {
     number?: number;
     special?: Special;
     onClick?: () => void;
+    onLongPress?: () => void;
 }
 
 export const cellWidth = 2.3094;
@@ -172,8 +174,14 @@ export const Cell: React.FC<Props> = props => {
             break;
     }
 
+    const handlers = useLongPress(props.onLongPress, props.onClick);
+
     return (
-        <OuterBorderHexagon state={props.cellType} onClick={props.onClick} error={props.special === Special.Error}>
+        <OuterBorderHexagon
+            state={props.cellType}
+            error={props.special === Special.Error}
+            {...handlers}
+        >
             <InnerFillHexagon state={props.cellType} countType={props.countType} revealing={props.special === Special.Revealing}>
                 <GlowHexagon state={props.cellType}>
                     <Text>

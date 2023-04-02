@@ -8,7 +8,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
     }
 
     switch (action.type) {
-        case 'reveal':
+        case 'reveal': {
             const currentState = state.cells[action.index];
             if (!currentState || currentState?.type !== CellType.Obscured) {
                 return;
@@ -27,11 +27,31 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                 state.result = 'success';
             }
             return;
+        }
+        case 'flag': {
+            const currentState = state.cells[action.index];
+            if (!currentState || currentState?.type !== CellType.Obscured) {
+                return;
+            }
 
-        case 'flag':
-            // TODO: flag action
+            const underlyingState = state.underlying[action.index];
+            if (underlyingState?.type === CellType.Bomb) {
+                state.cells[action.index] = {
+                    type: CellType.Flagged,
+                };
+                
+                // TODO: detect completion
+                if (false) {
+                    state.result = 'success';
+                }
+            }
+            else {
+                state.errorIndex = action.index;
+                // TODO: penalty for mis-flagging
+            }
+
             return;
-        
+        }
         default:
             throw new UnexpectedValueError(action);
     }
