@@ -1,17 +1,20 @@
 import { CellState, UnderlyingCellState } from './CellState';
 
-export interface CellBoardInfo {
-    cells: Array<CellState | null>;
+export interface CellBoardDefinition {
     columns: number;
+    cells: Array<CellState | null>;
+    underlying: Array<UnderlyingCellState | null>;
+}
+
+interface InstanceInfo {
+    numErrors: 0;
     result?: 'success' | 'failure';
     errorIndex?: number;
 }
 
-export interface CellBoard extends CellBoardInfo {
-    underlying: Array<UnderlyingCellState | null>;
-}
+export type CellBoardInfo = Omit<CellBoardDefinition, 'underlying'> & InstanceInfo
 
-export type CellBoardDefinition = Omit<CellBoard, 'result'>;
+export type CellBoard = CellBoardDefinition & InstanceInfo;
 
 export type CellBoardAction = {
     type: 'reveal';

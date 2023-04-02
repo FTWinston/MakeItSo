@@ -3,11 +3,12 @@ import produce from 'immer';
 import { useReducer } from 'react';
 import { CellBoardDefinition } from '../types/CellBoard';
 import { CellType, CountType } from '../types/CellState';
+import { createCellBoardInstance } from '../utils/createCellBoardInstance';
 import { hexCellReducer } from '../utils/hexCellReducer';
 import { Cells } from './Cells';
 
-const CellsWithReducer: React.FC<CellBoardDefinition> = props => {
-    const [board, dispatch] = useReducer(produce(hexCellReducer), props);
+const CellsWithReducer: React.FC<CellBoardDefinition> = definition => {
+    const [board, dispatch] = useReducer(produce(hexCellReducer), undefined, () => createCellBoardInstance(definition));
 
     return (
         <Cells
@@ -15,6 +16,7 @@ const CellsWithReducer: React.FC<CellBoardDefinition> = props => {
             columns={board.columns}
             revealCell={index => dispatch({ type: 'reveal', index })}
             flagCell={index => dispatch({ type: 'flag', index })}
+            numErrors={board.numErrors}
             result={board.result}
             errorIndex={board.errorIndex}
         />
