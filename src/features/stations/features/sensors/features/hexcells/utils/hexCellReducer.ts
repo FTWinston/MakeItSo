@@ -40,8 +40,8 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                     type: CellType.Flagged,
                 };
                 
-                // Success when the last obscured cell is flagged.
-                if (!state.cells.some(cell => cell?.type === CellType.Obscured)) {
+                // Success when the last bomb is flagged, even if there are still obscured cells
+                if (state.cells.filter(cell => cell?.type === CellType.Bomb).length === state.numBombs) {
                     state.result = 'success';
                 }
             }
