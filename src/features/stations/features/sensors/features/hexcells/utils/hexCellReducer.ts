@@ -47,7 +47,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
             else {
                 state.errorIndex = action.index;
-                // TODO: penalty for mis-flagging
+                state.numErrors ++;
             }
 
             return;
