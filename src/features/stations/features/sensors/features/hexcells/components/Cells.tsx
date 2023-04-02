@@ -66,6 +66,7 @@ export const Cells: React.FC<Props> = props => {
                     special={special}
                     onClick={() => {
                         if (cell.type === CellType.Obscured && !props.result) {
+                            // TODO: mark cell as "revealing"
                             props.revealCell(index);
                         }
                         if (cell.type === CellType.IndicatorVertical
@@ -76,6 +77,7 @@ export const Cells: React.FC<Props> = props => {
                     }}
                     onLongPress={() => {
                         if (cell.type === CellType.Obscured && !props.result) {
+                            // TODO: mark cell as "revealing"
                             props.flagCell(index);
                         }
                     }}

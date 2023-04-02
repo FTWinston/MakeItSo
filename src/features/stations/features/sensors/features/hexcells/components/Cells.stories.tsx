@@ -14,8 +14,8 @@ const CellsWithReducer: React.FC<CellBoardDefinition> = definition => {
         <Cells
             cells={board.cells}
             columns={board.columns}
-            revealCell={index => dispatch({ type: 'reveal', index })}
-            flagCell={index => dispatch({ type: 'flag', index })}
+            revealCell={index => setTimeout(() => dispatch({ type: 'reveal', index }), 200)}
+            flagCell={index => setTimeout(() => dispatch({ type: 'flag', index }), 200)}
             numErrors={board.numErrors}
             result={board.result}
             errorIndex={board.errorIndex}
