@@ -41,6 +41,6 @@ export const Simple: Story = {
                 type: CellType.Obscured,
             }
         ],
-        onClick: index => console.log(`Clicked cell #${index}`),
+        revealCell: index => console.log(`Reveal cell #${index}`),
     }
 }

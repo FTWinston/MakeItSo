@@ -16,14 +16,18 @@ export enum CountType {
     DoubleRadius = 4,
 }
 
-export type CellState = {
+export type UnderlyingCellState = {
     type: CellType.Revealed;
     countType: CountType;
     number: number;
 } | {
-    type: CellType.Obscured | CellType.Flagged | CellType.Unknown;
+    type: CellType.Unknown | CellType.Bomb;
 } | {
     type: CellType.IndicatorVertical | CellType.IndicatorTLBR | CellType.IndicatorTRBL;
     countType: CountType.Normal | CountType.Contiguous | CountType.Split; // No double radius
     number: number;
+}
+
+export type CellState = UnderlyingCellState | {
+    type: CellType.Obscured | CellType.Flagged | CellType.Unknown | CellType.Bomb;
 }

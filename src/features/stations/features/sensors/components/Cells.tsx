@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { styled } from 'src/lib/mui'
-import { CellState } from '../types/CellState';
+import { useCellCascade } from '../hooks/useCellCascade';
+import { CellState, CellType } from '../types/CellState';
 import { Cell, cellHeight, cellWidth, Special } from './Cell';
 
 interface Props {
     columns: number;
     cells: Array<CellState | null>;
-    onClick: (index: number) => void;
+    revealCell: (index: number) => void;
 }
 
 const gapSize = 0.025;
@@ -26,7 +27,11 @@ const CellWrapper = styled('li')({
 
 export const Cells: React.FC<Props> = props => {
     const { columns, cells } = props;
+    const rows = Math.ceil(cells.length / columns);
+
     const [errorIndex, setErrorIndex] = useState<number | null>();
+    const bombIndex = cells.findIndex(cell => cell?.type === CellType.Bomb);
+    const bombCascadeCells = useCellCascade(bombIndex !== -1, columns, rows);
 
     let contents = cells.map((cell, index) => {
         if (cell === null) {
@@ -53,13 +58,16 @@ export const Cells: React.FC<Props> = props => {
         return (
             <CellWrapper key={index} style={wrapperStyle}>
                 <Cell
-                    cellType={cell.type}
+                    cellType={bombCascadeCells.has(index) ? CellType.Bomb : cell.type}
                     countType={(cell as any).countType}
                     number={(cell as any).number}
                     special={special}
                     onClick={() => {
                         setErrorIndex(index);
-                        props.onClick(index);
+
+                        if (cell.type === CellType.Obscured) {
+                            props.revealCell(index);
+                        }
                     }}
                 />
             </CellWrapper>
@@ -71,7 +79,6 @@ export const Cells: React.FC<Props> = props => {
         return () => clearInterval(interval);
     }, [errorIndex]);
 
-    const rows = Math.ceil(cells.length / columns);
     const rootStyle: React.CSSProperties = {
         gridTemplateColumns: `repeat(${columns}, ${cellWidth * 0.25 + gapSize * 0.5}em ${cellWidth * 0.5 + gapSize}em ) ${cellWidth * 0.25 + gapSize * 0.5}em`,
         gridTemplateRows: `repeat(${rows * 2}, ${cellHeight / 2 + gapSize}em)`,
