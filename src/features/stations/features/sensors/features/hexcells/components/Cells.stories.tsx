@@ -14,6 +14,7 @@ const CellsWithReducer: React.FC<CellBoardDefinition> = props => {
             cells={board.cells}
             columns={board.columns}
             revealCell={index => dispatch({ type: 'reveal', index })}
+            result={board.result}
         />
     )
 }
@@ -40,7 +41,7 @@ export const Simple: Story = {
                 type: CellType.Obscured,
             },
             {
-                type: CellType.Flagged,
+                type: CellType.Obscured,
             },
             {
                 type: CellType.Revealed,
@@ -48,7 +49,7 @@ export const Simple: Story = {
                 number: 2,
             },
             {
-                type: CellType.Flagged,
+                type: CellType.Obscured,
             },
             {
                 type: CellType.Obscured,
@@ -62,7 +63,7 @@ export const Simple: Story = {
             {
                 type: CellType.Revealed,
                 countType: CountType.Normal,
-                number: 0,
+                number: 1,
             },
             {
                 type: CellType.Revealed,
@@ -72,12 +73,10 @@ export const Simple: Story = {
             {
                 type: CellType.Revealed,
                 countType: CountType.Normal,
-                number: 0,
+                number: 1,
             },
             {
-                type: CellType.Revealed,
-                countType: CountType.Normal,
-                number: 0,
+                type: CellType.Bomb,
             },
             {
                 type: CellType.Revealed,
@@ -90,11 +89,13 @@ export const Simple: Story = {
             {
                 type: CellType.Revealed,
                 countType: CountType.Normal,
-                number: 0,
+                number: 1,
             },
             null,
             {
-                type: CellType.Bomb,
+                type: CellType.Revealed,
+                countType: CountType.Normal,
+                number: 1,
             }
         ],
     }

@@ -30,7 +30,7 @@ export const Cells: React.FC<Props> = props => {
 
     const [errorIndex, setErrorIndex] = useState<number | null>();
     const bombIndex = cells.findIndex(cell => cell?.type === CellType.Bomb);
-    const bombCascadeCells = useCellCascade(bombIndex !== -1, columns, rows);
+    const bombCascadeCells = useCellCascade(bombIndex, columns, rows);
 
     let contents = cells.map((cell, index) => {
         if (cell === null) {

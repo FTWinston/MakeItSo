@@ -3,6 +3,10 @@ import { CellBoard, CellBoardAction } from '../types/CellBoard';
 import { CellType } from '../types/CellState';
 
 export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellBoard | void {
+    if (state.result) {
+        return;
+    }
+    
     switch (action.type) {
         case 'reveal':
             const currentState = state.cells[action.index];
