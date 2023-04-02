@@ -41,7 +41,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                 };
                 
                 // Success when the last bomb is flagged, even if there are still obscured cells
-                if (state.cells.filter(cell => cell?.type === CellType.Bomb).length === state.numBombs) {
+                if (state.cells.filter(cell => cell?.type === CellType.Flagged).length === state.numBombs) {
                     state.result = 'success';
                 }
             }
