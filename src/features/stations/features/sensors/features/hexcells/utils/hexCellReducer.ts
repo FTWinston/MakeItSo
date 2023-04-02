@@ -22,8 +22,8 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                 state.errorIndex = action.index;
             }
 
-            // TODO: detect completion
-            if (false) {
+            // Success when the last obscured cell is revealed.
+            if (!state.cells.some(cell => cell?.type === CellType.Obscured)) {
                 state.result = 'success';
             }
             return;
@@ -40,8 +40,8 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                     type: CellType.Flagged,
                 };
                 
-                // TODO: detect completion
-                if (false) {
+                // Success when the last obscured cell is flagged.
+                if (!state.cells.some(cell => cell?.type === CellType.Obscured)) {
                     state.result = 'success';
                 }
             }
