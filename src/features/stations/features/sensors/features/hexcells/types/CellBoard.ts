@@ -7,7 +7,8 @@ export interface CellBoardDefinition {
 }
 
 interface InstanceInfo {
-    numErrors: 0;
+    numBombs: number;
+    numErrors: number;
     result?: 'success' | 'failure';
     errorIndex?: number;
 }

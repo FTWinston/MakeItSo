@@ -4,6 +4,7 @@ import { useReducer } from 'react';
 import { CellBoardDefinition } from '../types/CellBoard';
 import { CellType, CountType } from '../types/CellState';
 import { createCellBoardInstance } from '../utils/createCellBoardInstance';
+import { generateBoard } from '../utils/generateBoard';
 import { hexCellReducer } from '../utils/hexCellReducer';
 import { Cells } from './Cells';
 
@@ -16,6 +17,7 @@ const CellsWithReducer: React.FC<CellBoardDefinition> = definition => {
             columns={board.columns}
             revealCell={index => setTimeout(() => dispatch({ type: 'reveal', index }), 200)}
             flagCell={index => setTimeout(() => dispatch({ type: 'flag', index }), 200)}
+            numBombs={board.numBombs}
             numErrors={board.numErrors}
             result={board.result}
             errorIndex={board.errorIndex}
@@ -103,4 +105,8 @@ export const Simple: Story = {
             }
         ],
     }
+}
+
+export const Random: Story = {
+    args: generateBoard(26, 5),
 }
