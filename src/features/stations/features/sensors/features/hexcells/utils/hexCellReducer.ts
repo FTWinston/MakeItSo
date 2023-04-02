@@ -6,7 +6,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
     if (state.result) {
         return;
     }
-    
+
     switch (action.type) {
         case 'reveal':
             const currentState = state.cells[action.index];
@@ -19,6 +19,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
 
             if (underlyingState?.type === CellType.Bomb) {
                 state.result = 'failure';
+                state.errorIndex = action.index;
             }
 
             // TODO: detect completion

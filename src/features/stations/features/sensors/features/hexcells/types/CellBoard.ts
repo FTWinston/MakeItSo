@@ -4,6 +4,7 @@ export interface CellBoardInfo {
     cells: Array<CellState | null>;
     columns: number;
     result?: 'success' | 'failure';
+    errorIndex?: number;
 }
 
 export interface CellBoard extends CellBoardInfo {

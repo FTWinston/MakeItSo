@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react';
 import { styled } from 'src/lib/mui'
 import { useCellCascade } from '../hooks/useCellCascade';
+import { useTemporaryValue } from 'src/hooks/useTemporaryValue';
 import { CellBoardInfo } from '../types/CellBoard';
 import { CellType } from '../types/CellState';
 import { Cell, cellHeight, cellWidth, Special } from './Cell';
 
 interface Props extends CellBoardInfo {
     revealCell: (index: number) => void;
+    errorIndex?: number;
 }
 
 const gapSize = 0.025;
@@ -28,9 +29,10 @@ export const Cells: React.FC<Props> = props => {
     const { columns, cells } = props;
     const rows = Math.ceil(cells.length / columns);
 
-    const [errorIndex, setErrorIndex] = useState<number | null>();
     const bombIndex = cells.findIndex(cell => cell?.type === CellType.Bomb);
     const bombCascadeCells = useCellCascade(bombIndex, columns, rows);
+
+    const errorIndex = useTemporaryValue(props.errorIndex, undefined, 500);
 
     let contents = cells.map((cell, index) => {
         if (cell === null) {
@@ -62,8 +64,6 @@ export const Cells: React.FC<Props> = props => {
                     number={(cell as any).number}
                     special={special}
                     onClick={() => {
-                        setErrorIndex(index);
-
                         if (cell.type === CellType.Obscured && props.result === undefined) {
                             props.revealCell(index);
                         }
@@ -77,11 +77,6 @@ export const Cells: React.FC<Props> = props => {
             </CellWrapper>
         )
     });
-
-    useEffect(() => {
-        const interval = setTimeout(() => setErrorIndex(null), 500);
-        return () => clearInterval(interval);
-    }, [errorIndex]);
 
     const rootStyle: React.CSSProperties = {
         gridTemplateColumns: `repeat(${columns}, ${cellWidth * 0.25 + gapSize * 0.5}em ${cellWidth * 0.5 + gapSize}em ) ${cellWidth * 0.25 + gapSize * 0.5}em`,

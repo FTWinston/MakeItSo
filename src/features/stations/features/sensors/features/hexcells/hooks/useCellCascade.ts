@@ -1,38 +1,40 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { getAdjacentCells } from '../utils/getAdjacentCells';
 
 /** Return a set of cell indexes that, once cascading is true, expands at a regular interval, adding all adjacent cells each time. */
 export function useCellCascade(bombIndex: number, columns: number, rows: number): Set<number> {
-    const cascadeCellsRef = useRef(new Set<number>());
+    const [cascadeCells, setCascadeCells] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         if (bombIndex < 0) {
             return;
         }
         
-        cascadeCellsRef.current.add(bombIndex);
+        setCascadeCells(cells => new Set([...cells, bombIndex]));
 
-        const interval = setTimeout(() => {
-            const cascadeCells = cascadeCellsRef.current;
+        const interval = setInterval(() => {            
+            setCascadeCells(cells => {
+                // Add any cells that were expanded into to the list of bombed cells.
+                const expandedCells = new Set([
+                    ...[...cells]
+                        .flatMap(cellIndex => getAdjacentCells(cellIndex, columns, rows)),
+                    ...cells
+                ]);
 
-            const expandedCells = new Set(
-                [...cascadeCells]
-                    .flatMap(cellIndex => getAdjacentCells(cellIndex, columns, rows))
-            );
-            
-            if (expandedCells.size === cascadeCells.size) {
-                // Didn't expand to any new cells, so end the cascade.
-                clearInterval(interval);
-            }
-            else {
-                // Did expand to new cells, so add the expanded set to the list of bombed cells.
-                for (const cell of expandedCells) {
-                    cascadeCells.add(cell);
+                if (cells.size === expandedCells.size) {
+                    // Didn't expand to any new cells, so end the cascade.
+                    clearInterval(interval);
+                    console.log('cascade complete');
+                    return cells;
                 }
-            }
+                else {
+                    console.log('cascading');
+                    return expandedCells;
+                }
+            });
         }, 333);
         return () => clearInterval(interval);
     }, [bombIndex]);
 
-    return cascadeCellsRef.current;
+    return cascadeCells;
 }
