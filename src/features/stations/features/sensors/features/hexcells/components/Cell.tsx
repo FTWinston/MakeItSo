@@ -57,50 +57,44 @@ const OuterBorderHexagon = styled(Box,
 });
 
 const InnerFillHexagon = styled(Box,
-    { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' && prop !== 'revealing' })
-    <{ state: CellType, revealing: boolean, countType?: CountType }>
-(({ state, countType, revealing, theme }) => {
+    { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })
+    <{ state: CellType, countType?: CountType }>
+(({ state, countType, theme }) => {
     let backgroundColor, color, transform;
-    if (revealing) {
-        backgroundColor = theme.palette.common.white;
-        color = backgroundColor;
-    }
-    else {
-        switch (state) {
-            case CellType.Obscured:
-                backgroundColor = theme.palette.warning.main;
-                color = backgroundColor;
-                break;
-            case CellType.Flagged:
-                backgroundColor = theme.palette.primary.dark;
-                color = backgroundColor;
-                break;
-            case CellType.Bomb:
-                backgroundColor = theme.palette.error.dark;
-                color = backgroundColor;
-                break;
-            case CellType.Revealed:
-                backgroundColor = countType === CountType.DoubleRadius
-                    ? theme.palette.primary.dark
-                    : theme.palette.background.paper;
-                color = theme.palette.text.primary;
-                break;
-            case CellType.Unknown:
-                backgroundColor = theme.palette.background.paper;
-                color = theme.palette.text.secondary;
-                break;
-            case CellType.IndicatorVertical:
-                color = theme.palette.background.paper;
-                break;
-            case CellType.IndicatorTLBR:
-                color = theme.palette.background.paper;
-                transform = 'rotate(-60deg)';
-                break;
-            case CellType.IndicatorTRBL:
-                color = theme.palette.background.paper;
-                transform = 'rotate(60deg)';
-                break;
-        }
+    switch (state) {
+        case CellType.Obscured:
+            backgroundColor = theme.palette.warning.main;
+            color = backgroundColor;
+            break;
+        case CellType.Flagged:
+            backgroundColor = theme.palette.primary.dark;
+            color = backgroundColor;
+            break;
+        case CellType.Bomb:
+            backgroundColor = theme.palette.error.dark;
+            color = backgroundColor;
+            break;
+        case CellType.Revealed:
+            backgroundColor = countType === CountType.DoubleRadius
+                ? theme.palette.primary.dark
+                : theme.palette.background.paper;
+            color = theme.palette.text.primary;
+            break;
+        case CellType.Unknown:
+            backgroundColor = theme.palette.background.paper;
+            color = theme.palette.text.secondary;
+            break;
+        case CellType.IndicatorVertical:
+            color = theme.palette.background.paper;
+            break;
+        case CellType.IndicatorTLBR:
+            color = theme.palette.background.paper;
+            transform = 'rotate(-60deg)';
+            break;
+        case CellType.IndicatorTRBL:
+            color = theme.palette.background.paper;
+            transform = 'rotate(60deg)';
+            break;
     }
     
     return {
@@ -118,7 +112,8 @@ const InnerFillHexagon = styled(Box,
     }
 });
 
-const GlowHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' })<{ state: CellType }>(({ state }) => {
+const GlowHexagon = styled(Box,
+    { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'revealing' })<{ state: CellType, revealing: boolean }>(({ state, revealing }) => {
     let backgroundColor;
 
     switch (state) {
@@ -127,7 +122,9 @@ const GlowHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' 
         case CellType.IndicatorTRBL:
             break;
         default:
-            backgroundColor = 'rgba(255,255,255, 0.15)';
+            backgroundColor = revealing
+                ? 'rgba(255,255,255, 0.75)'
+                : 'rgba(255,255,255, 0.15)';
             break;
     }
 
@@ -140,6 +137,7 @@ const GlowHexagon = styled(Box, { shouldForwardProp: (prop) => prop !== 'state' 
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor,
+        transition: 'background-color 0.5s',
     };
 });
 
@@ -182,8 +180,8 @@ export const Cell: React.FC<Props> = props => {
             error={props.special === Special.Error}
             {...handlers}
         >
-            <InnerFillHexagon state={props.cellType} countType={props.countType} revealing={props.special === Special.Revealing}>
-                <GlowHexagon state={props.cellType}>
+            <InnerFillHexagon state={props.cellType} countType={props.countType}>
+                <GlowHexagon state={props.cellType} revealing={props.special === Special.Revealing}>
                     <Text>
                         {content}
                     </Text>

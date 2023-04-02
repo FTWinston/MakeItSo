@@ -4,6 +4,7 @@ import { useTemporaryValue } from 'src/hooks/useTemporaryValue';
 import { CellBoardInfo } from '../types/CellBoard';
 import { CellType } from '../types/CellState';
 import { Cell, cellHeight, cellWidth, Special } from './Cell';
+import { useState } from 'react';
 
 interface Props extends CellBoardInfo {
     revealCell: (index: number) => void;
@@ -30,6 +31,8 @@ export const Cells: React.FC<Props> = props => {
     const { columns, cells } = props;
     const rows = Math.ceil(cells.length / columns);
 
+    const [revealingIndex, setRevealingIndex] = useState<number | undefined>(undefined);
+
     const bombIndex = cells.findIndex(cell => cell?.type === CellType.Bomb);
     const bombCascadeCells = useCellCascade(bombIndex, columns, rows);
 
@@ -55,7 +58,9 @@ export const Cells: React.FC<Props> = props => {
 
         const special = errorIndex === index
             ? Special.Error
-            : undefined;
+            : cell.type === CellType.Obscured && revealingIndex === index
+                ? Special.Revealing
+                : undefined;
         
         return (
             <CellWrapper key={index} style={wrapperStyle}>
@@ -66,7 +71,7 @@ export const Cells: React.FC<Props> = props => {
                     special={special}
                     onClick={() => {
                         if (cell.type === CellType.Obscured && !props.result) {
-                            // TODO: mark cell as "revealing"
+                            setRevealingIndex(index);
                             props.revealCell(index);
                         }
                         if (cell.type === CellType.IndicatorVertical
@@ -77,7 +82,7 @@ export const Cells: React.FC<Props> = props => {
                     }}
                     onLongPress={() => {
                         if (cell.type === CellType.Obscured && !props.result) {
-                            // TODO: mark cell as "revealing"
+                            setRevealingIndex(index);
                             props.flagCell(index);
                         }
                     }}
