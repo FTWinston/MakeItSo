@@ -24,11 +24,9 @@ export function useCellCascade(bombIndex: number, columns: number, rows: number)
                 if (cells.size === expandedCells.size) {
                     // Didn't expand to any new cells, so end the cascade.
                     clearInterval(interval);
-                    console.log('cascade complete');
                     return cells;
                 }
                 else {
-                    console.log('cascading');
                     return expandedCells;
                 }
             });
