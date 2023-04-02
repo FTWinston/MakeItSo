@@ -11,13 +11,16 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
 
             const underlyingState = state.underlying[action.index];
+            state.cells[action.index] = underlyingState;
+
             if (underlyingState?.type === CellType.Bomb) {
-                // TODO: fail for bomb stuff?
+                state.result = 'failure';
             }
 
-            // TODO: detect completion?
-
-            state.cells[action.index] = underlyingState;
+            // TODO: detect completion
+            if (false) {
+                state.result = 'success';
+            }
             return;
 
         case 'flag':

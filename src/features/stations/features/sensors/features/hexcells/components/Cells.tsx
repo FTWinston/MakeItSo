@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { styled } from 'src/lib/mui'
 import { useCellCascade } from '../hooks/useCellCascade';
-import { CellState, CellType } from '../types/CellState';
+import { CellBoardInfo } from '../types/CellBoard';
+import { CellType } from '../types/CellState';
 import { Cell, cellHeight, cellWidth, Special } from './Cell';
 
-interface Props {
-    columns: number;
-    cells: Array<CellState | null>;
+interface Props extends CellBoardInfo {
     revealCell: (index: number) => void;
 }
 
@@ -65,8 +64,13 @@ export const Cells: React.FC<Props> = props => {
                     onClick={() => {
                         setErrorIndex(index);
 
-                        if (cell.type === CellType.Obscured) {
+                        if (cell.type === CellType.Obscured && props.result === undefined) {
                             props.revealCell(index);
+                        }
+                        if (cell.type === CellType.IndicatorVertical
+                            || cell.type === CellType.IndicatorTLBR
+                            || cell.type === CellType.IndicatorTRBL) {
+                            // TODO: toggle indicator
                         }
                     }}
                 />
