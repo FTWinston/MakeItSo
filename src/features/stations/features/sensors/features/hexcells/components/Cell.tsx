@@ -58,8 +58,8 @@ const OuterBorderHexagon = styled(Box,
 
 const InnerFillHexagon = styled(Box,
     { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })
-    <{ state: CellType, countType?: CountType }>
-(({ state, countType, theme }) => {
+    <{ state: CellType }>
+(({ state, theme }) => {
     let backgroundColor, color, transform;
     switch (state) {
         case CellType.Obscured:
@@ -74,15 +74,17 @@ const InnerFillHexagon = styled(Box,
             backgroundColor = theme.palette.error.dark;
             color = backgroundColor;
             break;
-        case CellType.Revealed:
-            backgroundColor = countType === CountType.DoubleRadius
-                ? theme.palette.primary.dark
-                : theme.palette.background.paper;
+        case CellType.Empty:
+            backgroundColor = theme.palette.background.paper;
             color = theme.palette.text.primary;
             break;
         case CellType.Unknown:
             backgroundColor = theme.palette.background.paper;
             color = theme.palette.text.secondary;
+            break;
+        case CellType.RadiusClue:
+            backgroundColor = theme.palette.primary.dark;
+            color = theme.palette.text.primary;
             break;
         case CellType.IndicatorVertical:
             color = theme.palette.background.paper;
@@ -150,7 +152,8 @@ export const Cell: React.FC<Props> = props => {
     let content;
 
     switch (props.cellType) {
-        case CellType.Revealed:
+        case CellType.Empty:
+        case CellType.RadiusClue:
         case CellType.IndicatorVertical:
         case CellType.IndicatorTLBR:
         case CellType.IndicatorTRBL:
@@ -180,7 +183,7 @@ export const Cell: React.FC<Props> = props => {
             error={props.special === Special.Error}
             {...handlers}
         >
-            <InnerFillHexagon state={props.cellType} countType={props.countType}>
+            <InnerFillHexagon state={props.cellType}>
                 <GlowHexagon state={props.cellType} revealing={props.special === Special.Revealing}>
                     <Text>
                         {content}

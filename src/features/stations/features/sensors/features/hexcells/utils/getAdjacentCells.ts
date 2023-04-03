@@ -14,9 +14,7 @@ function indexFromCoordinate(coordinate: Coordinate, columns: number): number {
     return coordinate.row * columns + coordinate.col;
 }
 
-export function getAdjacentCells(index: number, columns: number, rows: number): number[] {
-    const { row, col } = coordinateFromIndex(index, columns);
-
+function getAdjacentCoordinates(col: number, row: number, columns: number, rows: number): Coordinate[] {
     const adjacentCoords: Coordinate[] = [];
 
     if (row > 0) {
@@ -58,6 +56,29 @@ export function getAdjacentCells(index: number, columns: number, rows: number): 
         }
     }
 
-    return adjacentCoords
+    return adjacentCoords;
+}
+
+export function getAdjacentCells(index: number, columns: number, rows: number): number[] {
+    const { row, col } = coordinateFromIndex(index, columns);
+
+    return getAdjacentCoordinates(col, row, columns, rows)
         .map(coord => indexFromCoordinate(coord, columns));
+}
+
+export function getCellsInRadius(index: number, columns: number, rows: number): number[] {
+    // TODO: this could be done a lot more efficiently.
+    const { row, col } = coordinateFromIndex(index, columns);
+
+    const results = new Set<number>();
+    for (const { row: adjRow, col: adjCol } of getAdjacentCoordinates(col, row, columns, rows)) {
+        const adjacentAdjacent = getAdjacentCoordinates(adjCol, adjRow, columns, rows);
+
+        for (const coord of adjacentAdjacent) {
+            results.add(indexFromCoordinate(coord, columns));
+        }
+    }
+
+    results.delete(index);
+    return [...results];
 }
