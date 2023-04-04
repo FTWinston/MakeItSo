@@ -29,13 +29,13 @@ function getAdjacentCoordinates(col: number, row: number, columns: number, rows:
         if (col > 0) {
             adjacentCoords.push({ row, col: col - 1 });
             if (row < rows - 1) {
-                adjacentCoords.push({ row: row + 1, col: col - 1 })
+                adjacentCoords.push({ row: row + 1, col: col - 1 });
             }
         }
         if (col < columns - 1) {
             adjacentCoords.push({ row, col: col + 1 });
             if (row < rows - 1) {
-                adjacentCoords.push({ row: row + 1, col: col + 1 })
+                adjacentCoords.push({ row: row + 1, col: col + 1 });
             }
         }
     }
@@ -67,18 +67,75 @@ export function getAdjacentCells(index: number, columns: number, rows: number): 
 }
 
 export function getCellsInRadius(index: number, columns: number, rows: number): number[] {
-    // TODO: this could be done a lot more efficiently.
     const { row, col } = coordinateFromIndex(index, columns);
 
-    const results = new Set<number>();
-    for (const { row: adjRow, col: adjCol } of getAdjacentCoordinates(col, row, columns, rows)) {
-        const adjacentAdjacent = getAdjacentCoordinates(adjCol, adjRow, columns, rows);
+    const coordsInRadius = getAdjacentCoordinates(col, row, columns, rows);
 
-        for (const coord of adjacentAdjacent) {
-            results.add(indexFromCoordinate(coord, columns));
+    if (row > 1) {
+        coordsInRadius.push({ row: row - 2, col });
+    }
+    if (row < rows - 2) {
+        coordsInRadius.push({ row: row + 2, col });
+    }
+
+    if (col % 2 === 0) {
+        // Even columns are shifted down.
+        if (col > 0) {
+            if (row > 1) {
+                coordsInRadius.push({ row: row - 1, col: col - 1 });
+            }
+            if (row < rows - 1) {
+                coordsInRadius.push({ row: row + 2, col: col - 1 });
+            }
+        }
+        if (col < columns - 1) {
+            if (row > 1) {
+                coordsInRadius.push({ row: row - 1, col: col + 1 });
+            }
+            if (row < rows - 1) {
+                coordsInRadius.push({ row: row + 2, col: col + 1 });
+            }
+        }
+    }
+    else {
+        // Odd columns are shifted up.
+        if (col > 0) {
+            if (row > 1) {
+                coordsInRadius.push({ row: row - 2, col: col - 1 });
+            }
+            if (row < rows - 1) {
+                coordsInRadius.push({ row: row + 1, col: col - 1 });
+            }
+        }
+        if (col < columns - 1) {
+            if (row > 1) {
+                coordsInRadius.push({ row: row - 2, col: col + 1 });
+            }
+            if (row < rows - 1) {
+                coordsInRadius.push({ row: row + 1, col: col + 1 });
+            }
         }
     }
 
-    results.delete(index);
-    return [...results];
+    if (col > 1) {
+        if (row > 0) {
+            coordsInRadius.push({ row: row - 1, col: col - 2 });
+        }
+        coordsInRadius.push({ row, col: col - 2 });
+        if (row < rows - 1) {
+            coordsInRadius.push({ row: row + 1, col: col - 2 });
+        }
+    }
+    if (col < columns - 2) {
+        if (row > 0) {
+            coordsInRadius.push({ row: row - 1, col: col + 2 });
+        }
+        coordsInRadius.push({ row, col: col + 2 });
+        if (row < rows - 1) {
+            coordsInRadius.push({ row: row + 1, col: col + 2 });
+        }
+    }
+
+    return coordsInRadius
+        .map(coord => indexFromCoordinate(coord, columns));
 }
