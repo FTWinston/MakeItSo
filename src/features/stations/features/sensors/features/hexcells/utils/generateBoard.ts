@@ -56,17 +56,58 @@ function revealCells(underlying: Array<UnderlyingCellState | null>, display: Arr
     }
 }
 
+/** Returns true of there are `numTrue` true values consecutively in `values`, looping from the end of the array back to the start. */
+function areContiguous(values: boolean[], numTrue: number) {
+    const startIndex = values[0]
+        ? values.lastIndexOf(false) // If first value is true, start at last false value.
+        : values.indexOf(true) - 1; // If first value is false, start at first true value - 1.
+
+    for (let i = startIndex + 1; numTrue > 0; i++, numTrue--) {
+        if (i >= values.length) {
+            i = 0;
+        }
+
+        if (!values[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /** Count number of adjacent bombs for each cell. */
-function setCounts(board: Array<UnderlyingCellState | null>, columns: number, rows: number) {
+function setCounts(
+    board: Array<UnderlyingCellState | null>,
+    columns: number,
+    rows: number,
+    contiguousClueFraction: number,
+    splitClueFraction: number,
+) {
     for (let i = 0; i < board.length; i++) {
         const cell = board[i];
         if (cell?.type === CellType.Empty) {
-            const numAdjacent = getAdjacentCells(i, columns, rows)
-                .filter(test => board[test]?.type === CellType.Bomb)
-                .length;
+            const adjacentCellsAreBombs = getAdjacentCells(i, columns, rows)
+                .map(test => test !== null && board[test]?.type === CellType.Bomb);
+
+            const numAdjacent = adjacentCellsAreBombs.filter(isBomb => isBomb).length;
 
             cell.countType = CountType.Normal;
             cell.number = numAdjacent;
+
+            if (numAdjacent > 1) {
+                if (areContiguous(adjacentCellsAreBombs, numAdjacent)) {
+                    console.log(`contiguous cell`, JSON.stringify(adjacentCellsAreBombs));
+                    if (Math.random() < contiguousClueFraction) {
+                        cell.countType = CountType.Contiguous;
+                    }
+                }
+                else {
+                    console.log(`split cell`, JSON.stringify(adjacentCellsAreBombs));
+                    if (Math.random() < splitClueFraction) {
+                        cell.countType = CountType.Split;
+                    }
+                }
+            }
         }
         else if (cell?.type === CellType.RadiusClue) {
             const numInRadius = getCellsInRadius(i, columns, rows)
@@ -157,8 +198,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
 
     // TODO: use rowClueFraction
 
-    // TODO: assign numbers for radiusClue cells
-    setCounts(underlying, columns, rows);
+    setCounts(underlying, columns, rows, config.contiguousClueFraction ?? 0, config.splitClueFraction ?? 0);
 
     const display: Array<CellState | null> = underlying
         .map(cell => mustStartedRevealed(cell) ? cell : { type: CellType.Obscured });
