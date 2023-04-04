@@ -96,16 +96,12 @@ function setCounts(
 
             if (numAdjacent > 1) {
                 if (areContiguous(adjacentCellsAreBombs, numAdjacent)) {
-                    console.log(`contiguous cell`, JSON.stringify(adjacentCellsAreBombs));
                     if (Math.random() < contiguousClueFraction) {
                         cell.countType = CountType.Contiguous;
                     }
                 }
-                else {
-                    console.log(`split cell`, JSON.stringify(adjacentCellsAreBombs));
-                    if (Math.random() < splitClueFraction) {
-                        cell.countType = CountType.Split;
-                    }
+                else if (Math.random() < splitClueFraction) {
+                    cell.countType = CountType.Split;
                 }
             }
         }
@@ -151,7 +147,7 @@ export interface GenerationConfig {
     splitClueFraction?: number;
 }
 
-export function mustStartedRevealed(cell: UnderlyingCellState | null) {
+function mustStartedRevealed(cell: UnderlyingCellState | null) {
     return cell === null
         || cell.type === CellType.RadiusClue
         || cell.type === CellType.IndicatorVertical
