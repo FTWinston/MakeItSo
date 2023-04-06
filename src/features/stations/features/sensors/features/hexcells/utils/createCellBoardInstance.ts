@@ -5,7 +5,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
     return {
         ...definition,
         numErrors: 0,
-        numBombs: definition.cells
+        numBombs: definition.underlying
             .filter(cell => cell?.type === CellType.Bomb)
             .length
     };
