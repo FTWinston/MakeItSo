@@ -46,7 +46,7 @@ function placeNulls(board: Array<UnderlyingCellState | null>, rows: number, colu
         }
     }
     
-    for (let i = 0; i < numToAssign; i++) {
+    for (numToAssign; numToAssign > 0; numToAssign--) {
         let boardIndex: number;
         let indexIndex: number;
 
@@ -58,9 +58,9 @@ function placeNulls(board: Array<UnderlyingCellState | null>, rows: number, colu
         board[boardIndex] = null;
 
         let mirroredBoardIndex = mirroredIndexes[indexIndex];
-        if (board[mirroredBoardIndex] !== null) {
+        if (board[mirroredBoardIndex] !== null && numToAssign > 0) {
             board[mirroredBoardIndex] = null;
-            i++;
+            numToAssign--;
         }
     }
 }
@@ -74,7 +74,7 @@ function assignCells(board: Array<UnderlyingCellState | null>, numToAssign: numb
         do {
             boardIndex = getRandomInt(board.length);
             existingCell = board[boardIndex];
-        } while (existingCell === null || existingCell.type !== CellType.Empty);
+        } while (existingCell?.type !== CellType.Empty);
 
         board[boardIndex] = { ...assignTemplate };
     }
