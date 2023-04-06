@@ -22,20 +22,61 @@ function determineSize(landscapeOrientation: boolean, numCells: number, numGaps:
     return { rows, columns };
 }
 
-/** Replace random cells with copies of the given template. */
-function assignCells(board: Array<UnderlyingCellState | null>, numToAssign: number, assignTemplate: UnderlyingCellState | null) {
+/** Replace random cells with null, but do so symmetrically, either rotationally or mirrored. */
+function placeNulls(board: Array<UnderlyingCellState | null>, rows: number, columns: number, numToAssign: number) {
+    let primaryIndexes: number[] = [];
+    let mirroredIndexes: number[] = [];
+
+    if (columns % 2 === 0) {
+        // Rotational mirror
+        const middleIndex = Math.ceil(board.length / 2);
+        primaryIndexes = Array(middleIndex + 1).fill(0).map((_, i) => i);
+        mirroredIndexes = Array(middleIndex + 1).fill(0).map((_, i) => board.length - i - 1);
+    }
+    else {
+        // Horizontal reflection mirror
+        const middlestColumn = Math.ceil(columns / 2);
+        const getIndex = (row: number, col: number) => row * columns + col;
+
+        for (let row = 0; row <= rows; row++) {
+            for (let col = 0; col <= middlestColumn; col++) {
+                primaryIndexes.push(getIndex(row, col));
+                mirroredIndexes.push(getIndex(row, columns - col - 1));
+            }
+        }
+    }
+    
     for (let i = 0; i < numToAssign; i++) {
-        let testIndex: number;
-        let testCell: UnderlyingCellState | null;
+        let boardIndex: number;
+        let indexIndex: number;
 
         do {
-            testIndex = getRandomInt(board.length);
-            testCell = board[testIndex];
-        } while (testCell === null || testCell.type !== CellType.Empty);
+            indexIndex = getRandomInt(primaryIndexes.length);
+            boardIndex = primaryIndexes[indexIndex];
+        } while (board[boardIndex] === null);
 
-        board[testIndex] = assignTemplate === null
-            ? null
-            : { ...assignTemplate };
+        board[boardIndex] = null;
+
+        let mirroredBoardIndex = mirroredIndexes[indexIndex];
+        if (board[mirroredBoardIndex] !== null) {
+            board[mirroredBoardIndex] = null;
+            i++;
+        }
+    }
+}
+
+/** Replace random cells with copies of the given template. */
+function assignCells(board: Array<UnderlyingCellState | null>, numToAssign: number, assignTemplate: UnderlyingCellState) {
+    for (let i = 0; i < numToAssign; i++) {
+        let boardIndex: number;
+        let existingCell: UnderlyingCellState | null;
+
+        do {
+            boardIndex = getRandomInt(board.length);
+            existingCell = board[boardIndex];
+        } while (existingCell === null || existingCell.type !== CellType.Empty);
+
+        board[boardIndex] = { ...assignTemplate };
     }
 }
 
@@ -170,7 +211,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
     
     const numToRemove = underlying.length - config.numCells
     if (numToRemove > 0) {
-        assignCells(underlying, numToRemove, null);
+        placeNulls(underlying, rows, columns, numToRemove);
         numNormalCells -= numToRemove;
     }
     
