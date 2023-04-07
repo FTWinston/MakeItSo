@@ -1,4 +1,4 @@
-import { styled } from 'src/lib/mui'
+import { Box, styled, Typography } from 'src/lib/mui'
 import { useCellCascade } from '../hooks/useCellCascade';
 import { useTemporaryValue } from 'src/hooks/useTemporaryValue';
 import { CellBoardInfo } from '../types/CellBoard';
@@ -14,11 +14,19 @@ interface Props extends CellBoardInfo {
 
 const gapSize = 0.025;
 
-const Root = styled('ul')(({ theme }) => ({
+const Root = styled(Box)({
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100svh',
+    position: 'relative',
+    padding: '0.25em 0.25em 3em 0.25em', // Extra bottom padding to fit letters in.
+});
+
+const CellContainer = styled('ul')(({ theme }) => ({
     display: 'grid',
     listStyleType: 'none',
     margin: 0,
-    padding: '0.25em',
     gridGap: `${gapSize}em ${gapSize * 2}em`,
     filter: 'drop-shadow(-0.15em 0.125em 0.1em rgba(0, 0, 0, 0.25))',
 }));
@@ -91,14 +99,44 @@ export const Cells: React.FC<Props> = props => {
         )
     });
 
-    const rootStyle: React.CSSProperties = {
+    const cellSizeLimitByWidth = `calc((100vw - 0.5em) / ${columns + 1} / ${cellWidth * 0.75 - gapSize})`;
+    const cellSizeLimitByHeight = `calc((100svh - 3.5em) / ${rows + 0.75} / ${cellHeight + gapSize})`;
+    const containerStyle: React.CSSProperties = {
         gridTemplateColumns: `repeat(${columns}, ${cellWidth * 0.25 + gapSize * 0.5}em ${cellWidth * 0.5 + gapSize}em ) ${cellWidth * 0.25 + gapSize * 0.5}em`,
         gridTemplateRows: `repeat(${rows * 2}, ${cellHeight / 2 + gapSize}em)`,
+        fontSize: `min(${cellSizeLimitByWidth}, ${cellSizeLimitByHeight}, 20rem)`,
     };
 
     return (
-        <Root style={rootStyle}>
-            {contents}
+        <Root>
+            <CellContainer style={containerStyle}>
+                {contents}
+            </CellContainer>
+            
+            <Typography
+                fontSize="2em !important"
+                color="primary"
+                fontWeight="bold"
+                position="absolute"
+                bottom="0"
+                left="0"
+                margin="0 0.25em"
+                title="Bombs remaining"
+            >
+                {props.numBombs}
+            </Typography>
+            <Typography
+                fontSize="2em !important"
+                color="secondary"
+                fontWeight="bold"
+                position="absolute"
+                bottom="0"
+                right="0"
+                margin="0 0.25em"
+                title="Mistakes made"
+            >
+                {props.numErrors}
+            </Typography>
         </Root>
     );
 }
