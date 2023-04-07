@@ -24,6 +24,10 @@ export const createRouter = () => createBrowserRouter([
             {
                 path: "engineering",
                 lazy: () => import('src/features/training/components/Engineering'),
+            },
+            {
+                path: "hexcells",
+                lazy: () => import('src/features/training/components/HexCells'),
             }
         ]
     },

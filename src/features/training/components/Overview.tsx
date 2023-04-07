@@ -18,6 +18,7 @@ export const Overview: React.FC = () => {
             <ul>
                 <li><Link to="helm">{t('station helm')}</Link></li>
                 <li><Link to="engineering">{t('station engineer')}</Link></li>
+                <li><Link to="hexcells">{t('station science')}</Link></li>
             </ul>
         </div>
     );
