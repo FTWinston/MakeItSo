@@ -2,11 +2,16 @@ import { useEffect, useState } from 'react';
 import { getAdjacentCells } from '../utils/getAdjacentCells';
 
 /** Return a set of cell indexes that, once cascading is true, expands at a regular interval, adding all adjacent cells each time. */
-export function useCellCascade(bombIndex: number, columns: number, rows: number): Set<number> {
+export function useCellCascade(
+    bombIndex: number,
+    columns: number,
+    rows: number
+): Set<number> {
     const [cascadeCells, setCascadeCells] = useState<Set<number>>(new Set());
 
     useEffect(() => {
         if (bombIndex < 0) {
+            setCascadeCells(new Set());
             return;
         }
         
@@ -15,9 +20,9 @@ export function useCellCascade(bombIndex: number, columns: number, rows: number)
         const interval = setInterval(() => {            
             setCascadeCells(cells => {
                 // Add any cells that were expanded into to the list of bombed cells.
-                const expandedCells = new Set([
+                const expandedCells = new Set<number>([
                     ...[...cells]
-                        .flatMap(cellIndex => getAdjacentCells(cellIndex, columns, rows)),
+                        .flatMap(cellIndex => getAdjacentCells(cellIndex, columns, rows).filter(cell => cell) as number[]),
                     ...cells
                 ]);
 

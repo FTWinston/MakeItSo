@@ -23,4 +23,7 @@ export type CellBoardAction = {
 } | {
     type: 'flag';
     index: number;
+} | {
+    type: 'new';
+    board: CellBoard;
 }

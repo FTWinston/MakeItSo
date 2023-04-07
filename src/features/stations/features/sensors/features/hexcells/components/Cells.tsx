@@ -84,7 +84,8 @@ export const Cells: React.FC<Props> = props => {
                         }
                         if (cell.type === CellType.IndicatorVertical
                             || cell.type === CellType.IndicatorTLBR
-                            || cell.type === CellType.IndicatorTRBL) {
+                            || cell.type === CellType.IndicatorTRBL
+                            || cell.type === CellType.RadiusClue) {
                             // TODO: toggle indicator
                         }
                     }}
