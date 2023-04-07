@@ -22,7 +22,7 @@ export function useCellCascade(
                 // Add any cells that were expanded into to the list of bombed cells.
                 const expandedCells = new Set<number>([
                     ...[...cells]
-                        .flatMap(cellIndex => getAdjacentCells(cellIndex, columns, rows).filter(cell => cell) as number[]),
+                        .flatMap(cellIndex => getAdjacentCells(cellIndex, columns, rows).filter(cell => cell !== null) as number[]),
                     ...cells
                 ]);
 
