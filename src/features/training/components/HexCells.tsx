@@ -23,29 +23,14 @@ export const Component: React.FC = () => {
     const [board, dispatch] = useReducer(produce(hexCellReducer), undefined, () => createCellBoardInstance(generateBoard(config)));
 
     const [generatedToggle, onRegenerated] = useToggle();
-    const [showError, setShowError] = useState(false);
-    const [showSuccess, setShowSuccess] = useState(false);
+    
     const regenerate = () => {
-        setShowSuccess(false);
-        setShowError(false);
-        onRegenerated();
         dispatch({
             type: 'new',
             board: createCellBoardInstance(generateBoard(config)),
         });
+        onRegenerated();
     }
-
-    useEffect(
-        () => { 
-            if (board.result === 'success') {
-                setShowSuccess(true);
-            }
-            else if (board.result === 'failure') {
-                setShowError(true);
-            }
-        },
-        [board.result]
-    );
 
     return (
         <>
@@ -60,14 +45,14 @@ export const Component: React.FC = () => {
                 result={board.result}
                 errorIndex={board.errorIndex}
             />
-            <Snackbar open={showError}>
+            <Snackbar open={board.result === 'failure'} transitionDuration={1000}>
                 <Alert severity="error" sx={{ width: '100%' }} action={
                     <Button color="inherit" size="small" onClick={regenerate}>Regenerate</Button>
                 }>
                     You failed!
                 </Alert>
             </Snackbar>
-            <Snackbar open={showSuccess}>
+            <Snackbar open={board.result === 'success'} transitionDuration={1000}>
                 <Alert severity="success" sx={{ width: '100%' }} action={
                     <Button color="inherit" size="small" onClick={regenerate}>Regenerate</Button>
                 }>
