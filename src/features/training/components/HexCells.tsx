@@ -1,11 +1,10 @@
-import { Alert } from '@mui/material';
 import produce from 'immer';
-import { useEffect, useReducer, useState } from 'react';
+import { useReducer } from 'react';
 import { Cells, hexCellReducer } from 'src/features/stations/features/sensors/features/hexcells';
 import { createCellBoardInstance } from 'src/features/stations/features/sensors/features/hexcells/utils/createCellBoardInstance';
 import { GenerationConfig, generateBoard } from 'src/features/stations/features/sensors/features/hexcells/utils/generateBoard';
 import { useToggle } from 'src/hooks/useToggle';
-import { Button, Snackbar } from 'src/lib/mui';
+import { Alert, Button, Snackbar } from 'src/lib/mui';
 
 const config: GenerationConfig = {
     orientation: 'portrait',
