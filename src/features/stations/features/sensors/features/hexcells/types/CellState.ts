@@ -16,11 +16,14 @@ export enum CountType {
     Split = 3,
 }
 
-export type UnderlyingCellState = {
+export type EmptyCell = {
     type: CellType.Empty;
     countType: CountType;
     number: number;
-} | {
+};
+
+export type UnderlyingCellState = EmptyCell
+ | {
     type: CellType.Unknown | CellType.Bomb;
 } | {
     type: CellType.IndicatorVertical | CellType.IndicatorTLBR | CellType.IndicatorTRBL;
