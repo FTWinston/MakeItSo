@@ -34,6 +34,8 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
     
     const results: ResolvableCells = new Map();
 
+    let numBombsRemainingTotal = board.numBombs;
+
     for (const revealedCell of revealedCells) {
         const adjacentCells = getAdjacentCells(revealedCell.index, board.columns, rows)
             .reduce((output, index) => {
@@ -47,53 +49,57 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
                 return output;
             }, [] as CellWithIndex[]);
 
-        const numRevealedBombs = adjacentCells.filter(adjacent => adjacent.cell.type === CellType.Flagged).length
-        const numUnrevealedBombs = revealedCell.cell.number
-            - numRevealedBombs;
+        const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent.cell.type === CellType.Flagged).length
+        const numUnrevealedBombsAdjacent = revealedCell.cell.number - numRevealedBombsAdjacent;
 
         const adjacentObscuredCellIndexes = adjacentCells
-            .reduce((output, adjacent) => {
+            .reduce((adjacencyResults, adjacent) => {
                 if (adjacent.cell.type === CellType.Obscured) {
-                    output.push(adjacent.index);
+                    adjacencyResults.push(adjacent.index);
                 }
-                return output;
+                return adjacencyResults;
             }, [] as number[]);
 
         // Where the number on an empty cell exactly matches the number of adjacent obscured cells minus the number of adjacent bombs,
         // all adjacent obscured cells can be resolved to be bombs.
-        if (adjacentObscuredCellIndexes.length === numUnrevealedBombs) {
+        if (adjacentObscuredCellIndexes.length === numUnrevealedBombsAdjacent) {
             for (const adjacentObscuredCellIndex of adjacentObscuredCellIndexes) {
                 results.set(adjacentObscuredCellIndex, CellType.Bomb);
+                numBombsRemainingTotal--;
             }
         }
 
         // Where the number on an empty cell exactly matches the number of adjacent bombs,
         // all adjacent obscured cells can be resolved to be empty.
-        else if (numUnrevealedBombs === 0) {
+        else if (numUnrevealedBombsAdjacent === 0) {
             for (const adjacentObscuredCellIndex of adjacentObscuredCellIndexes) {
                 results.set(adjacentObscuredCellIndex, CellType.Empty);
             }
         }
 
         // If we have more bombs than we have obscured cells, we have a problem.
-        else if (numUnrevealedBombs > adjacentObscuredCellIndexes.length) {
-            throw new Error(`Cell ${revealedCell.index}'s number (${revealedCell.cell.number}) is greater than the number of bombs that could surround it. (${adjacentObscuredCellIndexes.length} obscured cells, ${numRevealedBombs} bombs)`);
+        else if (numUnrevealedBombsAdjacent > adjacentObscuredCellIndexes.length) {
+            throw new Error(`Cell ${revealedCell.index}'s number (${revealedCell.cell.number}) is greater than the number of bombs that could surround it. (${adjacentObscuredCellIndexes.length} obscured cells, ${numRevealedBombsAdjacent} bombs)`);
         }
 
-        else if (numUnrevealedBombs > board.numBombs) {
-            throw new Error(`Cell ${revealedCell.index} has more bombs still to reveal (${numUnrevealedBombs}) than the number of bombs remaining on the board (${board.numBombs}).`);
+        else if (numUnrevealedBombsAdjacent > numBombsRemainingTotal) {
+            throw new Error(`Cell ${revealedCell.index} has more bombs still to reveal (${numUnrevealedBombsAdjacent}) than the number of bombs remaining on the board (${numBombsRemainingTotal}).`);
+        }
+
+        if (numBombsRemainingTotal < 0) {
+            throw new Error('Allocated more bombs than there are remaining on the board.');
         }
     }
 
     const allObscuredCellIndexes = board.cells
         .reduce((output, cell, index) => {
-            if (cell?.type === CellType.Obscured) {
+            if (cell?.type === CellType.Obscured && !results.has(index)) {
                 output.push(index);
             }
             return output;
         }, [] as number[]);
 
-    if (board.numBombs === 0) {
+    if (numBombsRemainingTotal === 0) {
         // No bombs left, every obscured cell can resolve to being empty.
         for (const obscuredCellIndex of allObscuredCellIndexes) {
             if (results.get(obscuredCellIndex) === CellType.Bomb) {
@@ -102,7 +108,7 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
             results.set(obscuredCellIndex, CellType.Empty);
         }
     }
-    else if (board.numBombs === allObscuredCellIndexes.length) {
+    else if (numBombsRemainingTotal === allObscuredCellIndexes.length) {
         // Number of bombs left matches the number of obscured cells left.
         for (const obscuredCellIndex of allObscuredCellIndexes) {
             if (results.get(obscuredCellIndex) === CellType.Empty) {
@@ -111,9 +117,9 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
             results.set(obscuredCellIndex, CellType.Bomb);
         }
     }
-    else if (board.numBombs > allObscuredCellIndexes.length) {
+    else if (numBombsRemainingTotal > allObscuredCellIndexes.length) {
         // Number of bombs left is greater than the number of obscured cells left.
-        throw new Error(`Board has ${board.numBombs} left, but only ${allObscuredCellIndexes.length} obscured cells.`);
+        throw new Error(`Board has ${numBombsRemainingTotal} bomb left, but only ${allObscuredCellIndexes.length} obscured cells.`);
     }
 
     return results;
