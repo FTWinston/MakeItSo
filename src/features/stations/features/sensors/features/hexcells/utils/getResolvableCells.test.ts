@@ -1031,3 +1031,100 @@ describe('two by two', () => {
         ]));
     });
 });
+
+describe('Circle of seven cells', () => {
+    test('0 in the middle', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 0,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 0,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 0, CellType.Empty ],
+            [ 1, CellType.Empty ],
+            [ 2, CellType.Empty ],
+            [ 3, CellType.Empty ],
+            [ 5, CellType.Empty ],
+            [ 7, CellType.Empty ],
+        ]));
+    });
+    
+    test('1 in the middle', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 1,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map());
+    });
+    
+    test('6 in the middle', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 6,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 6,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 0, CellType.Bomb ],
+            [ 1, CellType.Bomb ],
+            [ 2, CellType.Bomb ],
+            [ 3, CellType.Bomb ],
+            [ 5, CellType.Bomb ],
+            [ 7, CellType.Bomb ],
+        ]));
+    });
+});
