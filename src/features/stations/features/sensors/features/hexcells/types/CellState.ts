@@ -36,5 +36,5 @@ export type UnderlyingCellState = EmptyCell
 }
 
 export type CellState = UnderlyingCellState | {
-    type: CellType.Obscured | CellType.Flagged | CellType.Unknown | CellType.Bomb;
+    type: CellType.Obscured | CellType.Flagged;
 }

@@ -4,11 +4,6 @@ import { getAdjacentCells } from './getAdjacentCells';
 
 export type BoardInfoIgnoringErrors = Omit<CellBoardInfo, 'numErrors'>;
 
-interface ResolvableCell {
-    index: number;
-    type: CellType.Bomb | CellType.Empty;
-}
-
 interface CellWithIndex {
     index: number;
     cell: CellState;
@@ -21,22 +16,41 @@ interface EmptyCellWithIndex {
 
 type ResolvableCells = Map<number, CellType.Bomb | CellType.Empty>;
 
+interface CellGroup {
+    indexes: number[];
+    numBombs: number;
+}
+
 export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCells {
     const rows = Math.ceil(board.cells.length / board.columns);
 
-    const revealedCells = board.cells
+    const allRevealedCells = board.cells
         .reduce((output, cell, index) => {
             if (cell?.type === CellType.Empty) {
                 output.push({ index, cell });
             }
             return output;
         }, [] as EmptyCellWithIndex[]);
-    
+
+    const allObscuredCellIndexes = new Set(
+        board.cells
+        .reduce((output, cell, index) => {
+            if (cell?.type === CellType.Obscured) {
+                output.push(index);
+            }
+            return output;
+        }, [] as number[])
+    );
+
+    // TODO: account for scenarios where these groups overlap.
+    const cellGroups: CellGroup[] = [];
+    const cellIndexesInAtLeastOneGroup = new Set<number>();
+
     const results: ResolvableCells = new Map();
 
     let numBombsRemainingTotal = board.numBombs;
 
-    for (const revealedCell of revealedCells) {
+    for (const revealedCell of allRevealedCells) {
         const adjacentCells = getAdjacentCells(revealedCell.index, board.columns, rows)
             .reduce((output, index) => {
                 if (index !== null) {
@@ -64,8 +78,11 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         // all adjacent obscured cells can be resolved to be bombs.
         if (adjacentObscuredCellIndexes.length === numUnrevealedBombsAdjacent) {
             for (const adjacentObscuredCellIndex of adjacentObscuredCellIndexes) {
-                results.set(adjacentObscuredCellIndex, CellType.Bomb);
-                numBombsRemainingTotal--;
+                if (!results.has(adjacentObscuredCellIndex)) {
+                    results.set(adjacentObscuredCellIndex, CellType.Bomb);
+                    allObscuredCellIndexes.delete(adjacentObscuredCellIndex);
+                    numBombsRemainingTotal--;
+                }
             }
         }
 
@@ -73,7 +90,10 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         // all adjacent obscured cells can be resolved to be empty.
         else if (numUnrevealedBombsAdjacent === 0) {
             for (const adjacentObscuredCellIndex of adjacentObscuredCellIndexes) {
-                results.set(adjacentObscuredCellIndex, CellType.Empty);
+                if (!results.has(adjacentObscuredCellIndex)) {
+                    results.set(adjacentObscuredCellIndex, CellType.Empty);
+                    allObscuredCellIndexes.delete(adjacentObscuredCellIndex);
+                }
             }
         }
 
@@ -85,19 +105,28 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         else if (numUnrevealedBombsAdjacent > numBombsRemainingTotal) {
             throw new Error(`Cell ${revealedCell.index} has more bombs still to reveal (${numUnrevealedBombsAdjacent}) than the number of bombs remaining on the board (${numBombsRemainingTotal}).`);
         }
+        else {
+            cellGroups.push({
+                numBombs: numUnrevealedBombsAdjacent,
+                indexes: adjacentObscuredCellIndexes,
+            });
+            for (const index of adjacentObscuredCellIndexes) {
+                cellIndexesInAtLeastOneGroup.add(index);
+            }
+        }
 
         if (numBombsRemainingTotal < 0) {
             throw new Error('Allocated more bombs than there are remaining on the board.');
         }
     }
 
-    const allObscuredCellIndexes = board.cells
-        .reduce((output, cell, index) => {
-            if (cell?.type === CellType.Obscured && !results.has(index)) {
-                output.push(index);
-            }
-            return output;
-        }, [] as number[]);
+    // At this point, discard all cell groups, before considering the remaining cells and the number of bombs.
+    for (const index of cellIndexesInAtLeastOneGroup) {
+        allObscuredCellIndexes.delete(index);
+    }
+    for (const group of cellGroups) {
+        numBombsRemainingTotal -= group.numBombs; // FIXME: This doesn't account for overlapping groups.
+    }
 
     if (numBombsRemainingTotal === 0) {
         // No bombs left, every obscured cell can resolve to being empty.
@@ -108,7 +137,7 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
             results.set(obscuredCellIndex, CellType.Empty);
         }
     }
-    else if (numBombsRemainingTotal === allObscuredCellIndexes.length) {
+    else if (numBombsRemainingTotal === allObscuredCellIndexes.size) {
         // Number of bombs left matches the number of obscured cells left.
         for (const obscuredCellIndex of allObscuredCellIndexes) {
             if (results.get(obscuredCellIndex) === CellType.Empty) {
@@ -117,9 +146,9 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
             results.set(obscuredCellIndex, CellType.Bomb);
         }
     }
-    else if (numBombsRemainingTotal > allObscuredCellIndexes.length) {
+    else if (numBombsRemainingTotal > allObscuredCellIndexes.size) {
         // Number of bombs left is greater than the number of obscured cells left.
-        throw new Error(`Board has ${numBombsRemainingTotal} bomb left, but only ${allObscuredCellIndexes.length} obscured cells.`);
+        throw new Error(`Board has ${numBombsRemainingTotal} bomb(s) left, but only ${allObscuredCellIndexes.size} obscured cells.`);
     }
 
     return results;
