@@ -120,6 +120,13 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         }
     }
 
+    // TODO: for each cell group, see if all of the group's bombs have been marked by other resolutions.
+    // If so, remove those cells from cellIndexesInAtLeastOneGroup, and remove the group from cellGroups.
+    // (This will allow them to, in theory, be resolved by the final step.)
+    for (const cellGroup of cellGroups) {
+
+    }
+
     // At this point, discard all cell groups, before considering the remaining cells and the number of bombs.
     for (const index of cellIndexesInAtLeastOneGroup) {
         allObscuredCellIndexes.delete(index);
@@ -128,6 +135,9 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         numBombsRemainingTotal -= group.numBombs; // FIXME: This doesn't account for overlapping groups.
     }
 
+    // TODO: Should this use board.numBombs instead of numBombsRemainingTotal?
+    // These aren't cells that should show up in a hint, as that would be skipping the clues that led to them.
+    // OTOH, changing this gets rid of group-based inference. Tricky!
     if (numBombsRemainingTotal === 0) {
         // No bombs left, every obscured cell can resolve to being empty.
         for (const obscuredCellIndex of allObscuredCellIndexes) {

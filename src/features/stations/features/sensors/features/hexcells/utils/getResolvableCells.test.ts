@@ -431,7 +431,7 @@ describe('four cells in a line', () => {
         ]));
     });
 
-    test('obscured, obscured, obscured, 1: two bomb', () => {
+    test('obscured, obscured, obscured, 1: two bombs', () => {
         const board: BoardInfoIgnoringErrors = {
             columns: 4,
             cells: [{
@@ -1125,6 +1125,219 @@ describe('Circle of seven cells', () => {
             [ 3, CellType.Bomb ],
             [ 5, CellType.Bomb ],
             [ 7, CellType.Bomb ],
+        ]));
+    });
+
+    test('1 on either side: one bomb', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 1,
+        }
+        
+        // FIXME: This is one of those "overlapping set" situations.
+        // Only the cell in both sets can be the bomb.
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 1, CellType.Empty ],
+            [ 2, CellType.Empty ],
+            [ 3, CellType.Empty ],
+            [ 4, CellType.Bomb ],
+            [ 7, CellType.Empty ],
+        ]));
+    });
+
+    test('1 on three sides: one bomb', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, null],
+            numBombs: 1,
+        }
+        
+        // FIXME: This is the same "overlapping set" situation as above.
+        // Only the cell in all three sets sets can be the bomb.
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 1, CellType.Empty ],
+            [ 3, CellType.Empty ],
+            [ 4, CellType.Bomb ],
+            [ 7, CellType.Empty ],
+        ]));
+    });
+
+    test('1 on either side: two bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 1,
+        }
+        
+        // FIXME: More complicated "overlapping set" situation.
+        // If the cell in both sets was the bomb, no one other cell could be the remaining bomb.
+        // So the cell in both sets cannot be the bomb.
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 4, CellType.Empty ],
+        ]));
+    });
+
+    test('1 on three sides: three bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, null],
+            numBombs: 3,
+        }
+        
+        // FIXME: More complicated version of the "overlapping set" situation as above.
+        // If the cell in all three sets was the bomb, no combination of other cells leaves two bombs touching each clue.
+        // So the cell in all three sets cannot be the bomb.
+        // Hence, the other three cells must be bombs.
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 1, CellType.Bomb ],
+            [ 3, CellType.Bomb ],
+            [ 4, CellType.Empty ],
+            [ 7, CellType.Bomb ],
+        ]));
+    });
+
+    test('1, 2 on adjacent sides: three bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 2,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 3,
+        }
+
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 2, CellType.Bomb ],
+            [ 4, CellType.Bomb ],
+        ]));
+    });
+
+    test('2, 1 on adjacent sides: three bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 2,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, 
+            null, {
+                type: CellType.Obscured,
+            }, null],
+            numBombs: 3,
+        }
+
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 3, CellType.Bomb ],
+            [ 4, CellType.Bomb ],
         ]));
     });
 });
