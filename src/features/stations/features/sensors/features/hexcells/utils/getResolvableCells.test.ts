@@ -297,176 +297,121 @@ describe('two cells', () => {
 });
 
 describe('four cells in a line', () => {
-    /*
-    test('obscured, 0, obscured', () => {
+    test('obscured, obscured, obscured, 0: no bombs', () => {
         const board: BoardInfoIgnoringErrors = {
-            columns: 3,
+            columns: 4,
             cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
                 type: CellType.Obscured,
             }, {
                 type: CellType.Empty,
                 countType: CountType.Normal,
                 number: 0,
-            }, {
-                type: CellType.Obscured,
             }],
             numBombs: 0,
         }
         
         expect(getResolvableCells(board)).toEqual(new Map([
             [ 0, CellType.Empty ],
+            [ 1, CellType.Empty ],
             [ 2, CellType.Empty ]
         ]));
     });
-    
-    test('obscured, 1, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
-            columns: 3,
-            cells: [{
-                type: CellType.Obscured,
-            }, {
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 1,
-            }, {
-                type: CellType.Obscured,
-            }],
-            numBombs: 0,
-        }
 
-        expect(getResolvableCells(board)).toEqual(new Map());
-    });
-    
-    test('obscured, 2, obscured', () => {
+    test('obscured, obscured, obscured, 0: one bomb', () => {
         const board: BoardInfoIgnoringErrors = {
-            columns: 3,
+            columns: 4,
             cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
                 type: CellType.Obscured,
             }, {
                 type: CellType.Empty,
                 countType: CountType.Normal,
-                number: 2,
+                number: 0,
+            }],
+            numBombs: 1,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 2, CellType.Empty ]
+        ]));
+    });
+
+    test('obscured, obscured, obscured, 0: two bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 4,
+            cells: [{
+                type: CellType.Obscured,
             }, {
                 type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 0,
             }],
             numBombs: 2,
         }
         
         expect(getResolvableCells(board)).toEqual(new Map([
-            [ 0, CellType.Bomb ],
-            [ 2, CellType.Bomb ]
+            [ 2, CellType.Empty ]
         ]));
     });
-    
-    test('0, obscured, obscured', () => {
+
+    test('obscured, obscured, obscured, 0: three bombs', () => {
         const board: BoardInfoIgnoringErrors = {
-            columns: 3,
+            columns: 4,
             cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
                 type: CellType.Empty,
                 countType: CountType.Normal,
                 number: 0,
-            }, {
+            }],
+            numBombs: 3,
+        }
+        
+        expect(() => getResolvableCells(board)).toThrowError();
+    });
+
+    test('obscured, obscured, obscured, 1: no bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 4,
+            cells: [{
                 type: CellType.Obscured,
             }, {
                 type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
             }],
             numBombs: 0,
         }
         
-        expect(getResolvableCells(board)).toEqual(new Map([
-            [ 1, CellType.Empty ]
-        ]));
+        expect(() => getResolvableCells(board)).toThrowError();
     });
-    
-    test('1, obscured, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
-            columns: 3,
-            cells: [{
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 1,
-            }, {
-                type: CellType.Obscured,
-            }, {
-                type: CellType.Obscured,
-            }],
-            numBombs: 0,
-        }
 
-        expect(getResolvableCells(board)).toEqual(new Map([
-            [ 1, CellType.Bomb ]
-        ]));
-    });
-    
-    test('obscured, obscured, 0', () => {
+    test('obscured, obscured, obscured, 1: one bomb', () => {
         const board: BoardInfoIgnoringErrors = {
-            columns: 3,
+            columns: 4,
             cells: [{
                 type: CellType.Obscured,
             }, {
                 type: CellType.Obscured,
-            }, {
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 0,
-            }],
-            numBombs: 0,
-        }
-
-        expect(getResolvableCells(board)).toEqual(new Map([
-            [ 1, CellType.Empty ]
-        ]));
-    });
-    
-    test('obscured, obscured, 1', () => {
-        const board: BoardInfoIgnoringErrors = {
-            columns: 3,
-            cells: [{
-                type: CellType.Obscured,
-            }, {
-                type: CellType.Obscured,
-            }, {
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 1,
-            }],
-            numBombs: 2,
-        }
-
-        expect(getResolvableCells(board)).toEqual(new Map([
-            [ 1, CellType.Bomb ]
-        ]));
-    });
-    
-    test('0, obscured, 0', () => {
-        const board: BoardInfoIgnoringErrors = {
-            columns: 3,
-            cells: [{
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 0,
-            }, {
-                type: CellType.Obscured,
-            }, {
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 0,
-            }],
-            numBombs: 0,
-        }
-
-        expect(getResolvableCells(board)).toEqual(new Map([
-            [ 1, CellType.Empty ]
-        ]));
-    });
-    
-    test('1, obscured, 1', () => {
-        const board: BoardInfoIgnoringErrors = {
-            columns: 3,
-            cells: [{
-                type: CellType.Empty,
-                countType: CountType.Normal,
-                number: 1,
             }, {
                 type: CellType.Obscured,
             }, {
@@ -478,14 +423,57 @@ describe('four cells in a line', () => {
         }
         
         expect(getResolvableCells(board)).toEqual(new Map([
-            [ 1, CellType.Bomb ]
+            [ 2, CellType.Bomb ]
         ]));
     });
 
-    // TODO: test invalid scenarios, e.g. 1, obscured, 0
+    test('obscured, obscured, obscured, 1: two bomb', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 4,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }],
+            numBombs: 2,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 2, CellType.Bomb ]
+        ]));
+    });
 
-    // TODO: test scenarios with revealed bombs
-    */
+    test('obscured, obscured, obscured, 1: three bombs', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 4,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Normal,
+                number: 1,
+            }],
+            numBombs: 3,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 0, CellType.Bomb ],
+            [ 1, CellType.Bomb ],
+            [ 2, CellType.Bomb ]
+        ]));
+    });
+    
+    // TODO: test other combinations
 });
 
 // TODO: 4 cells not in a line

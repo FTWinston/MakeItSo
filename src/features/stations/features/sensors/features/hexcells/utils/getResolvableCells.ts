@@ -79,6 +79,10 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         else if (numUnrevealedBombs > adjacentObscuredCellIndexes.length) {
             throw new Error(`Cell ${revealedCell.index}'s number (${revealedCell.cell.number}) is greater than the number of bombs that could surround it. (${adjacentObscuredCellIndexes.length} obscured cells, ${numRevealedBombs} bombs)`);
         }
+
+        else if (numUnrevealedBombs > board.numBombs) {
+            throw new Error(`Cell ${revealedCell.index} has more bombs still to reveal (${numUnrevealedBombs}) than the number of bombs remaining on the board (${board.numBombs}).`);
+        }
     }
 
     const allObscuredCellIndexes = board.cells
@@ -92,12 +96,18 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
     if (board.numBombs === 0) {
         // No bombs left, every obscured cell can resolve to being empty.
         for (const obscuredCellIndex of allObscuredCellIndexes) {
+            if (results.get(obscuredCellIndex) === CellType.Bomb) {
+                throw new Error(`Trying to mark cell ${obscuredCellIndex} as a bomb and empty at the same time`);
+            }
             results.set(obscuredCellIndex, CellType.Empty);
         }
     }
     else if (board.numBombs === allObscuredCellIndexes.length) {
         // Number of bombs left matches the number of obscured cells left.
         for (const obscuredCellIndex of allObscuredCellIndexes) {
+            if (results.get(obscuredCellIndex) === CellType.Empty) {
+                throw new Error(`Trying to mark cell ${obscuredCellIndex} as empty and a bomb at the same time`);
+            }
             results.set(obscuredCellIndex, CellType.Bomb);
         }
     }
