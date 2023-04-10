@@ -19,7 +19,9 @@ interface EmptyCellWithIndex {
     cell: EmptyCell;
 }
 
-export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCell[] {
+type ResolvableCells = Map<number, CellType.Bomb | CellType.Empty>;
+
+export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCells {
     const rows = Math.ceil(board.cells.length / board.columns);
 
     const revealedCells = board.cells
@@ -30,7 +32,7 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
             return output;
         }, [] as EmptyCellWithIndex[]);
     
-    const results: ResolvableCell[] = [];
+    const results: ResolvableCells = new Map();
 
     for (const revealedCell of revealedCells) {
         const adjacentCells = getAdjacentCells(revealedCell.index, board.columns, rows)
@@ -60,10 +62,7 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         // all adjacent obscured cells can be resolved to be bombs.
         if (adjacentObscuredCellIndexes.length === numberUnrevealedBombs) {
             for (const adjacentObscuredCellIndex of adjacentObscuredCellIndexes) {
-                results.push({
-                    index: adjacentObscuredCellIndex,
-                    type: CellType.Bomb,
-                });
+                results.set(adjacentObscuredCellIndex, CellType.Bomb)
             }
         }
 
@@ -71,10 +70,7 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         // all adjacent obscured cells can be resolved to be empty.
         else if (numberUnrevealedBombs === 0) {
             for (const adjacentObscuredCellIndex of adjacentObscuredCellIndexes) {
-                results.push({
-                    index: adjacentObscuredCellIndex,
-                    type: CellType.Empty,
-                });
+                results.set(adjacentObscuredCellIndex, CellType.Empty);
             }
         }
     }
