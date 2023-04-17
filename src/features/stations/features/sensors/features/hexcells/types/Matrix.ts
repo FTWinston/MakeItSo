@@ -17,11 +17,6 @@ export class Matrix {
             if (data[i].length !== this._columns) {
                 throw new RangeError('Inconsistent array dimensions');
             }
-            /*
-            if (!isArrayOfNumbers(_data[i])) {
-                throw new TypeError('Input data contains non-numeric values');
-            }
-            */
         }
     }
 
@@ -54,7 +49,7 @@ export class Matrix {
     removeRow(index: number) {
         checkRowIndex(this, index);
         this.data.splice(index, 1);
-        this._rows -= 1;
+        this._rows --;
         return this;
     };
   
@@ -71,7 +66,7 @@ export class Matrix {
         }
 
         this.data.splice(index, 0, array);
-        this._rows += 1;
+        this._rows ++;
         return this;
     }
   }

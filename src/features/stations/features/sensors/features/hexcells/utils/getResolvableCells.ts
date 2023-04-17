@@ -1,5 +1,6 @@
 import type { CellBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, EmptyCell } from '../types/CellState';
+import { Matrix } from '../types/Matrix';
 import { getAdjacentCells } from './getAdjacentCells';
 
 export type BoardInfoIgnoringErrors = Omit<CellBoardInfo, 'numErrors'>;
@@ -137,6 +138,61 @@ function resolveCellsUsingBombCount(obscuredCellIndexes: Set<number>, numBombs: 
 
     return results;
 }
+
+function buildCellMatrix(revealedCells: Set<RevealedCellInfo>, numBombs: number): [Matrix, number[], Map<number, number>] {
+    const matrixCellIndexMap = new Map<number, number>();
+
+    const cellData: number[][] = [];
+    const totals: number[] = [];
+
+    for (const revealedCell of revealedCells) {
+        // Get a unique matrix index from this cell index. Doesn't matter what, as long as we can "undo" them again later.
+        const matrixIndexesFromCellIndexes = revealedCell.adjacentObscuredCellIndexes
+            .map(cellIndex => {
+                let matrixIndex = matrixCellIndexMap.get(cellIndex);
+                if (matrixIndex === undefined) {
+                    matrixIndex = matrixCellIndexMap.size;
+                    matrixCellIndexMap.set(cellIndex, matrixIndex);
+                }
+                return matrixIndex;
+            })
+
+        // Build a (jagged) cell row out of matrixIndexesFromCellIndexes.
+        const cellRow = new Array(matrixCellIndexMap.size).fill(0);
+        for (const matrixIndex of matrixIndexesFromCellIndexes) {
+            cellRow[matrixIndex] = 1;
+        }
+
+        cellData.push(cellRow);
+        totals.push(revealedCell.numUnrevealedBombsAdjacent);
+    }
+
+    // Fill out the remainder of each cell row with zeroes, so they're all the same length: matrixCellIndexMap.size
+    for (const cellRow of cellData) {
+        const prevLength = cellRow.length;
+        cellRow.length = matrixCellIndexMap.size;
+        cellRow.fill(0, prevLength);
+    }
+
+    // Add a "every bomb combined adds up to number of bombs" row.
+    cellData.unshift(new Array(matrixCellIndexMap.size).fill(1));
+    totals.unshift(numBombs);
+
+    return [new Matrix(cellData), totals, matrixCellIndexMap];
+}
+
+function resolveCellsUsingMatrix(revealedCells: Set<RevealedCellInfo>, numBombs: number) {
+    const [cellMatrix, valueArray, matrixIndexesFromCellIndexes] = buildCellMatrix(revealedCells, numBombs);
+
+    // TODO: resolve this matrix!
+
+    const results: ResolvableCells = new Map();
+
+    // TODO: read-off any cell values we can determine absolutely into results
+
+    return results;
+}
+
 
 function discardObscuredCellsAdjacentToOnlyOneRevealedCell(
     obscuredCellIndexes: Set<number>,
@@ -278,11 +334,17 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
     let numBombs = board.numBombs;
     results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs);
 
+    if (results.size > 0 || revealedCells.size === 0) {
+        return results;
+    }
+
+    results = resolveCellsUsingMatrix(revealedCells, numBombs);
     if (results.size > 0) {
         return results;
     }
 
     // Now resolve "related" groups of cells, where some info is known. Each group should not overlap at all.
+    // TODO: can remove this once resolveCellsUsingMatrix is fully implemented.
     const relatedCellGroups = groupRelatedCells(revealedCells);
 
     for (const relatedCellGroup of relatedCellGroups) {

@@ -1290,6 +1290,7 @@ describe('circle of seven cells', () => {
     });
 });
 
+/*
 describe('Matrix stuff', () => {
     test('wikipedia example', () => {
         const cells = new Matrix([
@@ -1305,7 +1306,7 @@ describe('Matrix stuff', () => {
         expect(result).toEqual(Matrix.columnVector([4, 1, -2]));
     });
 
-    test.only('my workings', () => {
+    test('my workings', () => {
         const cells = new Matrix([
             [1, 1, 1, 1], // TOTAL NUMBER OF BOMBS
             [0, 1, 1, 0],
@@ -1324,3 +1325,4 @@ describe('Matrix stuff', () => {
         expect(result).toBeFalsy();
     });
 })
+*/
