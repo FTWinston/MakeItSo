@@ -1,3 +1,4 @@
+import Matrix, { QrDecomposition, solve } from 'ml-matrix';
 import { CellType, CountType } from '../types/CellState';
 import { BoardInfoIgnoringErrors, getResolvableCells } from './getResolvableCells';
 
@@ -979,7 +980,7 @@ describe('two by two', () => {
     });
 });
 
-describe('Circle of seven cells', () => {
+describe('circle of seven cells', () => {
     test('0 in the middle', () => {
         const board: BoardInfoIgnoringErrors = {
             columns: 3,
@@ -1288,3 +1289,38 @@ describe('Circle of seven cells', () => {
         ]));
     });
 });
+
+describe('Matrix stuff', () => {
+    test('wikipedia example', () => {
+        const cells = new Matrix([
+            [1, 2, 3],
+            [3, 4, 7],
+            [6, 5, 9],
+        ]);
+
+        const solutions = Matrix.columnVector([0, 2, 11]);
+        
+        const result = solve(cells, solutions);
+
+        expect(result).toEqual(Matrix.columnVector([4, 1, -2]));
+    });
+
+    test.only('my workings', () => {
+        const cells = new Matrix([
+            [1, 1, 1, 1], // TOTAL NUMBER OF BOMBS
+            [0, 1, 1, 0],
+            [1, 0, 1, 0],
+            [0, 1, 1, 1],
+        ]);
+
+        const solutions = Matrix.columnVector([1, 2, 2, 2]);
+
+        const QR = new QrDecomposition(cells);
+
+        const result = QR.solve(solutions);
+
+        //const result = solve(cells, solutions);
+
+        expect(result).toBeFalsy();
+    });
+})
