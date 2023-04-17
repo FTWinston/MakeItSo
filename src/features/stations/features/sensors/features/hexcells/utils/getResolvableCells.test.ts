@@ -1101,7 +1101,7 @@ describe('Circle of seven cells', () => {
             numBombs: 1,
         }
         
-        // FIXME: This is one of those "overlapping set" situations.
+        // This is one of those "overlapping set" situations.
         // Only the cell in both sets can be the bomb.
         expect(getResolvableCells(board)).toEqual(new Map([
             [ 1, CellType.Empty ],
@@ -1212,7 +1212,7 @@ describe('Circle of seven cells', () => {
             numBombs: 3,
         }
         
-        // FIXME: More complicated version of the "overlapping set" situation as above.
+        // More complicated version of the "overlapping set" situation as above.
         // If the cell in all three sets was the bomb, no combination of other cells leaves two bombs touching each clue.
         // So the cell in all three sets cannot be the bomb.
         // Hence, the other three cells must be bombs.

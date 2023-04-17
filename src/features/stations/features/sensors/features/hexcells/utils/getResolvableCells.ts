@@ -1,4 +1,3 @@
-import { current } from 'immer';
 import type { CellBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, EmptyCell } from '../types/CellState';
 import { getAdjacentCells } from './getAdjacentCells';
@@ -106,10 +105,8 @@ function resolveIndividualCellCounts(revealedCells: Map<number, RevealedCellInfo
     return results;
 }
 
-function resolveRemainingBombCount(board: BoardInfoIgnoringErrors): ResolvableCells {
-    const results: ResolvableCells = new Map();
-    
-    const allObscuredCellIndexes = board.cells
+function getAllObscuredCellIndexes(board: BoardInfoIgnoringErrors): Set<number> {
+    const indexes = board.cells
         .reduce((output, cell, index) => {
             if (cell?.type === CellType.Obscured) {
                 output.push(index);
@@ -117,30 +114,67 @@ function resolveRemainingBombCount(board: BoardInfoIgnoringErrors): ResolvableCe
             return output;
         }, [] as number[]);
 
-    if (board.numBombs === 0) {
+    return new Set(indexes);
+}
+
+function resolveCellsUsingBombCount(obscuredCellIndexes: Set<number>, numBombs: number): ResolvableCells {
+    const results: ResolvableCells = new Map();
+    
+    if (numBombs === 0) {
         // If there's no bombs left, every obscured cell can resolve to being empty.
-        for (const obscuredCellIndex of allObscuredCellIndexes) {
-            if (results.get(obscuredCellIndex) === CellType.Bomb) {
-                throw new Error(`Trying to mark cell ${obscuredCellIndex} as a bomb and empty at the same time`);
-            }
+        for (const obscuredCellIndex of obscuredCellIndexes) {
             results.set(obscuredCellIndex, CellType.Empty);
         }
     }
-    else if (board.numBombs === allObscuredCellIndexes.length) {
+    else if (numBombs === obscuredCellIndexes.size) {
         // If the number of bombs left matches the number of obscured cells left.
-        for (const obscuredCellIndex of allObscuredCellIndexes) {
-            if (results.get(obscuredCellIndex) === CellType.Empty) {
-                throw new Error(`Trying to mark cell ${obscuredCellIndex} as empty and a bomb at the same time`);
-            }
+        for (const obscuredCellIndex of obscuredCellIndexes) {
             results.set(obscuredCellIndex, CellType.Bomb);
         }
     }
-    else if (board.numBombs > allObscuredCellIndexes.length) {
+    else if (numBombs > obscuredCellIndexes.size) {
         // Number of bombs left is greater than the number of obscured cells left.
-        throw new Error(`Board has ${board.numBombs} bomb(s) left, but only ${allObscuredCellIndexes.length} obscured cells.`);
+        throw new Error(`Board has ${numBombs} bomb(s) left, but only ${obscuredCellIndexes.size} obscured cells.`);
     }
 
     return results;
+}
+
+function discardObscuredCellsAdjacentToOnlyOneRevealedCell(
+    obscuredCellIndexes: Set<number>,
+    revealedCells: Map<number, RevealedCellInfo>,
+): number {
+    const revealedCellsByExclusiveAdjacentObscuredCellIndex = new Map<number, RevealedCellInfo>();
+    const revealedCellsWithOnlyExclusiveAdjacentObscuredCells = new Set<RevealedCellInfo>(revealedCells.values());
+
+    // Filter out any revealed cells whose adjacent cells aren't exclusive.
+    for (const revealedCell of revealedCells.values()) {
+        for (const obscuredCell of revealedCell.adjacentObscuredCellIndexes) {
+            if (revealedCellsByExclusiveAdjacentObscuredCellIndex.has(obscuredCell)) {
+                // This cell index isn't exclusive! gasp.
+                revealedCellsWithOnlyExclusiveAdjacentObscuredCells.delete(revealedCell);
+            }
+            else {
+                // This cell index is exclusive, so far.
+                revealedCellsByExclusiveAdjacentObscuredCellIndex.set(obscuredCell, revealedCell);
+            }
+        }
+    }
+
+    if (revealedCellsWithOnlyExclusiveAdjacentObscuredCells.size === 0) {
+        return 0;
+    }
+
+    // For each "all exclusive" revealed cell, reduce the bomb count by its value, and remove its adjacent cells from the set.
+    let numBombsDiscarded = 0;
+    for (const revealedCell of revealedCellsWithOnlyExclusiveAdjacentObscuredCells) {
+        numBombsDiscarded += revealedCell.numUnrevealedBombsAdjacent;
+        for (const obscuredCellIndex of revealedCell.adjacentObscuredCellIndexes) {
+            obscuredCellIndexes.delete(obscuredCellIndex);
+        }
+    }
+    
+    return numBombsDiscarded;
 }
 
 function groupRelatedCells(revealedCells: Map<number, RevealedCellInfo>): RevealedCellInfo[][] {
@@ -239,22 +273,37 @@ export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCe
         return results;
     }
 
-    // Next up, use the number of bombs remaining.
-    // TODO: may be able to discard "single cell groups" (from the below relatedCellGroups) to reduce the number of remaining bombs here.
-    results = resolveRemainingBombCount(board);
+    // Get all obscured cell indexes remaining on the board.
+    const obscuredCellIndexes = getAllObscuredCellIndexes(board);
+
+    // If the number in that set matches the number of bombs remaining, then we know what they all are.
+    let numBombs = board.numBombs;
+    results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs);
 
     if (results.size > 0) {
         return results;
     }
 
+    // Now resolve "related" groups of cells, where some info is known. Each group should not overlap at all.
     const relatedCellGroups = groupRelatedCells(revealedCells);
 
     for (const relatedCellGroup of relatedCellGroups) {
-        const groupResults = resolveRelatedCellGroup(relatedCellGroup, board.numBombs);
+        // See if there's a single, unique combination for all cells in this group.
+        const groupResults = resolveRelatedCellGroup(relatedCellGroup, numBombs);
         
         if (groupResults) {
             groupResults.forEach((value, index) => results.set(index, value));
         }
+    }
+
+    if (results.size > 0) {
+        return results;
+    }
+
+    // Discard any cells from obscuredCellIndexes that are adjacent to only one revealed cell, reduce numBombs by that cell's amount, and re-run resolveCellsUsingBombCount on the obscured cells that remain.
+    const numRemainingBombsDiscarded = discardObscuredCellsAdjacentToOnlyOneRevealedCell(obscuredCellIndexes, revealedCells);
+    if (numRemainingBombsDiscarded > 0) {
+        results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs - numRemainingBombsDiscarded);
     }
 
     return results;
