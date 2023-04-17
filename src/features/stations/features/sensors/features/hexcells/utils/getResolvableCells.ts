@@ -63,19 +63,17 @@ export function getRevealedCellInfo(board: BoardInfoIgnoringErrors) {
             return output;
         }, [] as EmptyCellWithIndex[]);
 
-    return new Map(
+    return new Set(
         allRevealedCells
-            .map(revealedCell => [
-                    revealedCell.index,
-                    getCellInfo(revealedCell.index, revealedCell.cell, board, rows)
-            ])
+            .map(revealedCell => getCellInfo(revealedCell.index, revealedCell.cell, board, rows))
+            .filter(revealedCell => revealedCell.adjacentObscuredCellIndexes.length > 0)
     );
 }
 
-function resolveIndividualCellCounts(revealedCells: Map<number, RevealedCellInfo>, board: BoardInfoIgnoringErrors) {
+function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board: BoardInfoIgnoringErrors) {
     const results: ResolvableCells = new Map();
 
-    for (const revealedCell of revealedCells.values()) {
+    for (const revealedCell of revealedCells) {
         // Where the number on an empty cell exactly matches the number of adjacent obscured cells minus the number of adjacent bombs,
         // all adjacent obscured cells can be resolved to be bombs.
         if (revealedCell.adjacentObscuredCellIndexes.length === revealedCell.numUnrevealedBombsAdjacent) {
@@ -142,10 +140,10 @@ function resolveCellsUsingBombCount(obscuredCellIndexes: Set<number>, numBombs: 
 
 function discardObscuredCellsAdjacentToOnlyOneRevealedCell(
     obscuredCellIndexes: Set<number>,
-    revealedCells: Map<number, RevealedCellInfo>,
+    revealedCells: Set<RevealedCellInfo>,
 ): number {
     const revealedCellsByExclusiveAdjacentObscuredCellIndex = new Map<number, RevealedCellInfo>();
-    const revealedCellsWithOnlyExclusiveAdjacentObscuredCells = new Set<RevealedCellInfo>(revealedCells.values());
+    const revealedCellsWithOnlyExclusiveAdjacentObscuredCells = new Set<RevealedCellInfo>(revealedCells);
 
     // Filter out any revealed cells whose adjacent cells aren't exclusive.
     for (const revealedCell of revealedCells.values()) {
@@ -173,11 +171,11 @@ function discardObscuredCellsAdjacentToOnlyOneRevealedCell(
             obscuredCellIndexes.delete(obscuredCellIndex);
         }
     }
-    
+
     return numBombsDiscarded;
 }
 
-function groupRelatedCells(revealedCells: Map<number, RevealedCellInfo>): RevealedCellInfo[][] {
+function groupRelatedCells(revealedCells: Set<RevealedCellInfo>): RevealedCellInfo[][] {
     /*
     const results: RevealedCellInfo[][] = [];
 
@@ -188,7 +186,7 @@ function groupRelatedCells(revealedCells: Map<number, RevealedCellInfo>): Reveal
     return results;
     */
 
-    return [[...revealedCells.values()]];
+    return [[...revealedCells]];
 }
 
 function cellCheckIsSatified(cellCheck: RevealedCellInfo, resolutions: ResolvableCells) {
