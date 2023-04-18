@@ -1,5 +1,5 @@
 import type { CellBoardInfo } from '../types/CellBoard';
-import { CellState, CellType, EmptyCell } from '../types/CellState';
+import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { getAdjacentCells } from './getAdjacentCells';
 
 export type BoardInfoIgnoringErrors = Omit<CellBoardInfo, 'numErrors'>;
@@ -20,31 +20,41 @@ type ResolvableCells = Map<number, ResolutionResult>;
 
 interface RevealedCellInfo {
     cellIndex: number;
+    countType: CountType;
     numUnrevealedBombsAdjacent: number;
     adjacentObscuredCellIndexes: number[];
+    adjacentCells: Array<CellWithIndex | null>;
 }
 
 function getCellInfo(cellIndex: number, cell: EmptyCell, board: BoardInfoIgnoringErrors, rows: number): RevealedCellInfo {
     const adjacentCells = getAdjacentCells(cellIndex, board.columns, rows)
         .reduce((output, index) => {
-            if (index !== null) {
+            if (index === null) {
+                output.push(null);
+            }
+            else {
                 const cell = board.cells[index];
                 
                 if (cell !== null) {
                     output.push({ index, cell });
                 }
+                else {
+                    output.push(null);
+                }
             }
             return output;
-        }, [] as CellWithIndex[]);
+        }, [] as Array<CellWithIndex | null>);
         
-    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent.cell.type === CellType.Flagged).length;
+    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Flagged).length;
 
     return {
         cellIndex,
+        countType: cell.countType,
         numUnrevealedBombsAdjacent: cell.number - numRevealedBombsAdjacent,
+        adjacentCells,
         adjacentObscuredCellIndexes: adjacentCells
             .reduce((adjacencyResults, adjacent) => {
-                if (adjacent.cell.type === CellType.Obscured) {
+                if (adjacent?.cell.type === CellType.Obscured) {
                     adjacencyResults.push(adjacent.index);
                 }
                 return adjacencyResults;
@@ -88,6 +98,14 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
             for (const adjacentObscuredCellIndex of revealedCell.adjacentObscuredCellIndexes) {
                 results.set(adjacentObscuredCellIndex, CellType.Empty);
             }
+        }
+
+        else if (revealedCell.countType === CountType.Contiguous) {
+            // TODO: Solve contiguous. Find cells that must be bombs, and also cells that can't be.
+        }
+
+        else if (revealedCell.countType === CountType.Split) {
+            // TODO: Solve split. Find cells that must be bombs, and also cells that can't be.
         }
 
         // If we have more bombs than we have obscured cells, we have a problem.

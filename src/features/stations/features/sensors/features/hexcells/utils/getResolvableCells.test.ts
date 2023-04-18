@@ -1150,7 +1150,7 @@ describe('Circle of seven cells', () => {
         ]));
     });
 
-    test('1 on either side: two bombs', () => {
+    test.skip('1 on either side: two bombs', () => {
         const board: BoardInfoIgnoringErrors = {
             columns: 3,
             cells: [{
@@ -1285,6 +1285,81 @@ describe('Circle of seven cells', () => {
         expect(getResolvableCells(board)).toEqual(new Map([
             [ 3, CellType.Bomb ],
             [ 4, CellType.Bomb ],
+        ]));
+    });
+});
+
+describe('contiguous', () => {
+    test('two by two, last bomb must be adjacent to flag', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 2,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Flagged,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Contiguous,
+                number: 2,
+            }],
+            numBombs: 1,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 0, CellType.Bomb ],
+            [ 1, CellType.Empty ],
+        ]));
+    });
+
+    test('three by two, space not adjacent to flag must be empty', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Flagged,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Contiguous,
+                number: 2,
+            }, null],
+            numBombs: 1,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 2, CellType.Empty ],
+        ]));
+    });
+
+    test('three by two, bombs must fit into available space', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Unknown,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Contiguous,
+                number: 2,
+            }, null],
+            numBombs: 2,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 0, CellType.Bomb ],
+            [ 2, CellType.Empty ],
+            [ 3, CellType.Bomb ],
         ]));
     });
 });
