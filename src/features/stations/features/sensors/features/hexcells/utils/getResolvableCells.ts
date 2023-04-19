@@ -1,3 +1,4 @@
+import { current } from 'immer';
 import type { CellBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { getAdjacentCells } from './getAdjacentCells';
@@ -80,6 +81,78 @@ export function getRevealedCellInfo(board: BoardInfoIgnoringErrors) {
     );
 }
 
+function incrementCombination<TOtherValue = never>(combination: Array<ResolutionResult | TOtherValue>) {
+    // Treat combination as a binary number, but potentially with holes in it. (i.e. indexes that aren't empty or bomb, to be ignored.)
+    // Starting at the end, change every bomb value to be empty, until we find an empty value.
+    // Change that empty value to a bomb and return true (there may be more combinations possible), or false if it's not found (all combinations have been handled.)
+    let currentIndex = combination.length - 1;
+    while (currentIndex >= 0 && combination[currentIndex] !== CellType.Empty) {
+        if (combination[currentIndex] === CellType.Bomb) {
+            combination[currentIndex] = CellType.Empty;
+        }
+        currentIndex--;
+    }
+
+    if (currentIndex >= 0) {
+        combination[currentIndex] = CellType.Bomb;
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
+function resolveContiguousCells(
+    results: ResolvableCells,
+    numUnrevealedBombs: number,
+    cells: (CellWithIndex | null)[],
+    cellsAreLooped: boolean
+) {
+    const cellsThatCanBeEmpty = new Array<boolean>(cells.length).fill(false);
+    const cellsThatCanBeBombs = new Array<boolean>(cells.length).fill(false);
+
+    const currentCombination = new Array<ResolutionResult>(cells.length).fill(CellType.Empty);
+
+    // Test every possible contiguous combination. If a cell is a bomb or empty in every combination, add that to results.
+    while (true) {
+        if (currentCombination.filter(value => value === CellType.Bomb).length === numUnrevealedBombs) {
+            // TODO: test currentCombination and update cellsThatCanBeEmpty & cellsThatCanBeBombs with the results.
+            // Potentially don't want those to be arrays, something like a map of cell indexes?
+        }
+        
+        if (!incrementCombination(currentCombination)) {
+            break;
+        }
+    }
+
+    // If a cell is a bomb or empty in every combination, add that to results.
+    // TODO: move this into a common function shared with resolveSplitCells
+    // updateResults(results, cellsThatCanBeBombs, cellsThatCanBeEmpty); 
+    for (let i=0; i<cells.length; i++) {
+        const cell = cells[i];
+        if (cell === null) {
+            continue;
+        }
+
+        const canBeEmpty = cellsThatCanBeEmpty[i];
+        const canBeBomb = cellsThatCanBeBombs[i];
+
+        if (canBeBomb !== canBeEmpty) {
+            results.set(cell.index, canBeBomb ? CellType.Bomb : CellType.Empty);
+        }
+    }
+}
+
+function resolveSplitCells(
+    results: ResolvableCells,
+    numUnrevealedBombs: number,
+    cells: (CellWithIndex | null)[],
+    cellsAreLooped: boolean
+) {
+    // Find every possible split combination. If a cell is a bomb or empty in every combination, add that to results.
+    throw new Error('Function not implemented.');
+}
+
 function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board: BoardInfoIgnoringErrors) {
     const results: ResolvableCells = new Map();
 
@@ -100,14 +173,6 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
             }
         }
 
-        else if (revealedCell.countType === CountType.Contiguous) {
-            // TODO: Solve contiguous. Find cells that must be bombs, and also cells that can't be.
-        }
-
-        else if (revealedCell.countType === CountType.Split) {
-            // TODO: Solve split. Find cells that must be bombs, and also cells that can't be.
-        }
-
         // If we have more bombs than we have obscured cells, we have a problem.
         else if (revealedCell.numUnrevealedBombsAdjacent > revealedCell.adjacentObscuredCellIndexes.length) {
             throw new Error(`Cell ${revealedCell.cellIndex}'s number is greater than the number of bombs that could surround it. (${revealedCell.adjacentObscuredCellIndexes.length} obscured cells, ${revealedCell.numUnrevealedBombsAdjacent} bombs remaining)`);
@@ -115,6 +180,14 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
 
         else if (revealedCell.numUnrevealedBombsAdjacent > board.numBombs) {
             throw new Error(`Cell ${revealedCell.cellIndex} has more bombs still to reveal (${revealedCell.numUnrevealedBombsAdjacent}) than the number of bombs remaining on the board (${board.numBombs}).`);
+        }
+
+        else if (revealedCell.countType === CountType.Contiguous) {
+            resolveContiguousCells(results, revealedCell.numUnrevealedBombsAdjacent, revealedCell.adjacentCells, true);
+        }
+
+        else if (revealedCell.countType === CountType.Split) {
+            resolveSplitCells(results, revealedCell.numUnrevealedBombsAdjacent, revealedCell.adjacentCells, true);
         }
     }
 
@@ -257,16 +330,7 @@ function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs: nu
         }
 
         // Treat currentCombination as a binary number, with CellTypes of Empty & Bomb in place of 0 and 1. Increment it by one each time.
-        let currentIndex = currentCombination.length - 1;
-        while (currentCombination[currentIndex] === CellType.Bomb) {
-            currentCombination[currentIndex] = CellType.Empty;
-            currentIndex--;
-        }
-
-        if (currentIndex >= 0) {
-            currentCombination[currentIndex] = CellType.Bomb;
-        }
-        else {
+        if (!incrementCombination(currentCombination)) {
             break;
         }
     };
