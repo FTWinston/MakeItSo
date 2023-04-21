@@ -1289,8 +1289,8 @@ describe('Circle of seven cells', () => {
     });
 });
 
-describe('contiguous', () => {
-    test('two by two, last bomb must be adjacent to flag', () => {
+describe('contiguous & split', () => {
+    test('two by two contiguous, last bomb must be adjacent to flag', () => {
         const board: BoardInfoIgnoringErrors = {
             columns: 2,
             cells: [{
@@ -1313,7 +1313,7 @@ describe('contiguous', () => {
         ]));
     });
 
-    test('three by two, space not adjacent to flag must be empty', () => {
+    test('three by two contiguous, space not adjacent to flag must be empty', () => {
         const board: BoardInfoIgnoringErrors = {
             columns: 3,
             cells: [{
@@ -1337,7 +1337,33 @@ describe('contiguous', () => {
         ]));
     });
 
-    test('three by two, bombs must fit into available space', () => {
+    test('three by two split, space not adjacent to flag must be bomb', () => {
+        const board: BoardInfoIgnoringErrors = {
+            columns: 3,
+            cells: [{
+                type: CellType.Flagged,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Obscured,
+            }, {
+                type: CellType.Empty,
+                countType: CountType.Split,
+                number: 2,
+            }, null],
+            numBombs: 1,
+        }
+        
+        expect(getResolvableCells(board)).toEqual(new Map([
+            [ 1, CellType.Empty ],
+            [ 2, CellType.Bomb ],
+            [ 3, CellType.Empty ],
+        ]));
+    });
+
+    test('three by two contiguous, bombs must fit into available space', () => {
         const board: BoardInfoIgnoringErrors = {
             columns: 3,
             cells: [{

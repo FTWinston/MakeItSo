@@ -1,4 +1,3 @@
-import { current } from 'immer';
 import type { CellBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { getAdjacentCells } from './getAdjacentCells';
