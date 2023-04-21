@@ -102,22 +102,87 @@ function incrementCombination<TOtherValue = never>(combination: Array<Resolution
     }
 }
 
-function resolveContiguousCells(
+function areBombsContiguous(cells: CellType[], looped: boolean) {
+    const isBomb = (type: CellType) => type === CellType.Bomb || type === CellType.Flagged;
+
+    let firstBomb: number;
+    let lastBomb: number;
+
+    if (looped) {
+        // Find a bomb immediately preceded by an non-bomb. That's the first bomb.
+        // Working back from there, find a bomb. That's the last bomb.
+        // (In each case, loop if needed.)
+        firstBomb = lastBomb = cells.findIndex((cell, index) => isBomb(cell) && !isBomb(cells[index === 0 ? cells.length - 1 : index - 1]));
+        for (let i = firstBomb - 2; i !== firstBomb; i--) {
+            if (i < 0) {
+                i = cells.length - 1;
+            }
+            if (isBomb(cells[i])) {
+                lastBomb = i;
+                break;
+            }
+        }
+    }
+
+    else {
+        // When not looped, determining the first and last bombs are simple.
+        firstBomb = cells.findIndex(isBomb);
+        lastBomb = Math.max(cells.lastIndexOf(CellType.Bomb), cells.lastIndexOf(CellType.Flagged));
+    }
+
+    // If there's a non-bomb between these two, return false.
+    for (let i = firstBomb + 1; i !== lastBomb; i++) {
+        if (i >= cells.length) {
+            // This can only happen when looped is true. Otherwise, lastBomb will always be greater or equal to firstBomb. Either way, lastBomb is less than cellTypes.length.
+            if (lastBomb === 0) {
+                break;
+            }
+            i = 0;
+        }
+        if (!isBomb(cells[i])) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+function resolveContiguousOrSplitCells(
     results: ResolvableCells,
     numUnrevealedBombs: number,
     cells: (CellWithIndex | null)[],
+    contiguous: boolean,
     cellsAreLooped: boolean
 ) {
     const cellsThatCanBeEmpty = new Array<boolean>(cells.length).fill(false);
     const cellsThatCanBeBombs = new Array<boolean>(cells.length).fill(false);
 
-    const currentCombination = new Array<ResolutionResult>(cells.length).fill(CellType.Empty);
+    // Create an initial combination that won't bugger up based on existing values.
+    const currentCombination = cells.map(cell => {
+        if (cell === null || cell.cell.type === CellType.Empty) {
+            return CellType.Unknown;
+        }
+        if (cell.cell.type === CellType.Obscured) {
+            return CellType.Empty;
+        }
+        return cell.cell.type;
+    });
 
-    // Test every possible contiguous combination. If a cell is a bomb or empty in every combination, add that to results.
+    // Consider every valid combination (right number of bombs, bombs are contiguous or not).
     while (true) {
-        if (currentCombination.filter(value => value === CellType.Bomb).length === numUnrevealedBombs) {
-            // TODO: test currentCombination and update cellsThatCanBeEmpty & cellsThatCanBeBombs with the results.
-            // Potentially don't want those to be arrays, something like a map of cell indexes?
+        if (currentCombination.filter(value => value === CellType.Bomb).length === numUnrevealedBombs
+            && areBombsContiguous(currentCombination, cellsAreLooped) === contiguous) {
+            
+            // Update cellsThatCanBeEmpty & cellsThatCanBeBombs with the results of this combination.
+            for (let i = 0; i < currentCombination.length; i++) {
+                const currentValue = currentCombination[i];
+                if (currentValue === CellType.Bomb) {
+                    cellsThatCanBeBombs[i] = true;
+                }
+                else if (currentValue === CellType.Empty) {
+                    cellsThatCanBeEmpty[i] = true;
+                }
+            }
         }
         
         if (!incrementCombination(currentCombination)) {
@@ -126,9 +191,7 @@ function resolveContiguousCells(
     }
 
     // If a cell is a bomb or empty in every combination, add that to results.
-    // TODO: move this into a common function shared with resolveSplitCells
-    // updateResults(results, cellsThatCanBeBombs, cellsThatCanBeEmpty); 
-    for (let i=0; i<cells.length; i++) {
+    for (let i = 0; i < cells.length; i++) {
         const cell = cells[i];
         if (cell === null) {
             continue;
@@ -141,16 +204,6 @@ function resolveContiguousCells(
             results.set(cell.index, canBeBomb ? CellType.Bomb : CellType.Empty);
         }
     }
-}
-
-function resolveSplitCells(
-    results: ResolvableCells,
-    numUnrevealedBombs: number,
-    cells: (CellWithIndex | null)[],
-    cellsAreLooped: boolean
-) {
-    // Find every possible split combination. If a cell is a bomb or empty in every combination, add that to results.
-    throw new Error('Function not implemented.');
 }
 
 function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board: BoardInfoIgnoringErrors) {
@@ -182,12 +235,14 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
             throw new Error(`Cell ${revealedCell.cellIndex} has more bombs still to reveal (${revealedCell.numUnrevealedBombsAdjacent}) than the number of bombs remaining on the board (${board.numBombs}).`);
         }
 
-        else if (revealedCell.countType === CountType.Contiguous) {
-            resolveContiguousCells(results, revealedCell.numUnrevealedBombsAdjacent, revealedCell.adjacentCells, true);
-        }
-
-        else if (revealedCell.countType === CountType.Split) {
-            resolveSplitCells(results, revealedCell.numUnrevealedBombsAdjacent, revealedCell.adjacentCells, true);
+        else if (revealedCell.countType === CountType.Contiguous || revealedCell.countType === CountType.Split) {
+            resolveContiguousOrSplitCells(
+                results,
+                revealedCell.numUnrevealedBombsAdjacent,
+                revealedCell.adjacentCells,
+                revealedCell.countType === CountType.Contiguous,
+                true
+            );
         }
     }
 
