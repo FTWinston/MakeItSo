@@ -128,7 +128,11 @@ function mustStartedRevealed(cell: UnderlyingCellState | null) {
 }
 
 export function generateBoard(config: GenerationConfig): CellBoardDefinition { 
-    const { rows, columns, cells: underlying } = generateBoardShape(config);
+    const { rows, columns, cells: underlying } = generateBoardShape(config, {
+        type: CellType.Empty,
+        countType: CountType.Normal,
+        number: 0,
+    });
 
     let numNormalCells = config.numCells;
     

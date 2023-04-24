@@ -73,16 +73,11 @@ function placeNulls(board: Array<UnderlyingCellState | null>, rows: number, colu
     }
 }
 
-export function generateBoardShape(config: ShapeConfig) {
+export function generateBoardShape(config: ShapeConfig, cell: UnderlyingCellState) {
     const { rows, columns } = determineSize(config.orientation === 'landscape', config.numCells, Math.round(config.gapFraction * config.numCells));
 
     const cells: Array<UnderlyingCellState | null> = new Array(rows * columns)
-        .fill(0)
-        .map(() => ({
-            type: CellType.Empty,
-            countType: CountType.Normal,
-            number: 0,
-        }));
+        .fill(cell);
     
     const numToRemove = cells.length - config.numCells
     if (numToRemove > 0) {
