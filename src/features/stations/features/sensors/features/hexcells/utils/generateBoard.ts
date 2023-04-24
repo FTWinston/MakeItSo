@@ -3,6 +3,7 @@ import type { CellBoardDefinition } from '../types/CellBoard';
 import { CellState, CellType, CountType, UnderlyingCellState } from '../types/CellState';
 import { getAdjacentCells, getCellsInRadius } from './getAdjacentCells';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
+import { areValuesContiguous } from './areValuesContiguous';
 
 /** Replace random cells with copies of the given template. */
 function assignCells(board: Array<UnderlyingCellState | null>, numToAssign: number, assignTemplate: UnderlyingCellState) {
@@ -36,25 +37,6 @@ function revealCells(underlying: Array<UnderlyingCellState | null>, display: Arr
     }
 }
 
-/** Returns true of there are `numTrue` true values consecutively in `values`, looping from the end of the array back to the start. */
-function areContiguous(values: boolean[], numTrue: number) {
-    const startIndex = values[0]
-        ? values.lastIndexOf(false) // If first value is true, start at last false value.
-        : values.indexOf(true) - 1; // If first value is false, start at first true value - 1.
-
-    for (let i = startIndex + 1; numTrue > 0; i++, numTrue--) {
-        if (i >= values.length) {
-            i = 0;
-        }
-
-        if (!values[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 /** Count number of adjacent bombs for each cell. */
 function setCounts(
     board: Array<UnderlyingCellState | null>,
@@ -75,7 +57,7 @@ function setCounts(
             cell.number = numAdjacent;
 
             if (numAdjacent > 1) {
-                if (areContiguous(adjacentCellsAreBombs, numAdjacent)) {
+                if (areValuesContiguous(adjacentCellsAreBombs, isBomb => isBomb, true)) {
                     if (Math.random() < contiguousClueFraction) {
                         cell.countType = CountType.Contiguous;
                     }

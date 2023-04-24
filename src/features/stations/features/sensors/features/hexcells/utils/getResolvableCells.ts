@@ -1,5 +1,6 @@
 import type { CellBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
+import { areValuesContiguous } from './areValuesContiguous';
 import { getAdjacentCells } from './getAdjacentCells';
 
 export type BoardInfoIgnoringErrors = Omit<CellBoardInfo, 'numErrors'>;
@@ -101,51 +102,6 @@ function incrementCombination<TOtherValue = never>(combination: Array<Resolution
     }
 }
 
-function areBombsContiguous(cells: CellType[], looped: boolean) {
-    const isBomb = (type: CellType) => type === CellType.Bomb || type === CellType.Flagged;
-
-    let firstBomb: number;
-    let lastBomb: number;
-
-    if (looped) {
-        // Find a bomb immediately preceded by an non-bomb. That's the first bomb.
-        // Working back from there, find a bomb. That's the last bomb.
-        // (In each case, loop if needed.)
-        firstBomb = lastBomb = cells.findIndex((cell, index) => isBomb(cell) && !isBomb(cells[index === 0 ? cells.length - 1 : index - 1]));
-        for (let i = firstBomb - 2; i !== firstBomb; i--) {
-            if (i < 0) {
-                i = cells.length - 1;
-            }
-            if (isBomb(cells[i])) {
-                lastBomb = i;
-                break;
-            }
-        }
-    }
-
-    else {
-        // When not looped, determining the first and last bombs are simple.
-        firstBomb = cells.findIndex(isBomb);
-        lastBomb = Math.max(cells.lastIndexOf(CellType.Bomb), cells.lastIndexOf(CellType.Flagged));
-    }
-
-    // If there's a non-bomb between these two, return false.
-    for (let i = firstBomb + 1; i !== lastBomb; i++) {
-        if (i >= cells.length) {
-            // This can only happen when looped is true. Otherwise, lastBomb will always be greater or equal to firstBomb. Either way, lastBomb is less than cellTypes.length.
-            if (lastBomb === 0) {
-                break;
-            }
-            i = 0;
-        }
-        if (!isBomb(cells[i])) {
-            return false;
-        }
-    }
-
-    return true;
-}
-
 function resolveContiguousOrSplitCells(
     results: ResolvableCells,
     numUnrevealedBombs: number,
@@ -167,10 +123,12 @@ function resolveContiguousOrSplitCells(
         return cell.cell.type;
     });
 
+    const isBomb = (type: CellType) => type === CellType.Bomb || type === CellType.Flagged;
+
     // Consider every valid combination (right number of bombs, bombs are contiguous or not).
     while (true) {
         if (currentCombination.filter(value => value === CellType.Bomb).length === numUnrevealedBombs
-            && areBombsContiguous(currentCombination, cellsAreLooped) === contiguous) {
+            && areValuesContiguous(currentCombination, isBomb, cellsAreLooped) === contiguous) {
             
             // Update cellsThatCanBeEmpty & cellsThatCanBeBombs with the results of this combination.
             for (let i = 0; i < currentCombination.length; i++) {
