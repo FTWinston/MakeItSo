@@ -3,7 +3,7 @@ import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { areValuesContiguous } from './areValuesContiguous';
 import { getAdjacentIndexes } from './getAdjacentIndexes';
 
-export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns' | 'numBombs'>;
+export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns'> & Partial<Pick<CellBoardInfo, 'numBombs'>>;
 
 interface CellWithIndex {
     index: number;
@@ -27,8 +27,8 @@ interface RevealedCellInfo {
     adjacentCells: Array<CellWithIndex | null>;
 }
 
-function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
-    const adjacentCells = getAdjacentIndexes(cellIndex, board.columns, rows)
+export function getAdjacentCells(cellIndex: number, board: MinimumResolvableBoardInfo, rows: number) {
+    return getAdjacentIndexes(cellIndex, board.columns, rows)
         .reduce((output, index) => {
             if (index === null) {
                 output.push(null);
@@ -45,6 +45,10 @@ function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvabl
             }
             return output;
         }, [] as Array<CellWithIndex | null>);
+}
+
+function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
+    const adjacentCells = getAdjacentCells(cellIndex, board, rows);
         
     const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Flagged).length;
 
@@ -188,7 +192,7 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
             throw new Error(`Cell ${revealedCell.cellIndex}'s number is greater than the number of bombs that could surround it. (${revealedCell.adjacentObscuredCellIndexes.length} obscured cells, ${revealedCell.numUnrevealedBombsAdjacent} bombs remaining)`);
         }
 
-        else if (revealedCell.numUnrevealedBombsAdjacent > board.numBombs) {
+        else if (board.numBombs !== undefined && revealedCell.numUnrevealedBombsAdjacent > board.numBombs) {
             throw new Error(`Cell ${revealedCell.cellIndex} has more bombs still to reveal (${revealedCell.numUnrevealedBombsAdjacent}) than the number of bombs remaining on the board (${board.numBombs}).`);
         }
 
@@ -300,7 +304,7 @@ function cellCheckIsSatified(cellCheck: RevealedCellInfo, resolutions: Resolvabl
     return numBombsInResolution === cellCheck.numUnrevealedBombsAdjacent;
 }
 
-function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs: number): ResolvableCells | null {
+function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs?: number): ResolvableCells | null {
     const allObscuredCellIndexes = [...cellChecks.reduce((obscuredCellIndexes, cell) => {
         for (const obscuredCellIndex of cell.adjacentObscuredCellIndexes) {
             obscuredCellIndexes.add(obscuredCellIndex);
@@ -314,7 +318,7 @@ function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs: nu
 
     while (true) {
         // Don't consider combinations with more bombs than remain on the board.
-        if (currentCombination.filter(value => value === CellType.Bomb).length <= maxNumBombs) {
+        if (maxNumBombs === undefined || currentCombination.filter(value => value === CellType.Bomb).length <= maxNumBombs) {
             const potentialResult = new Map(
                 allObscuredCellIndexes.map((obscuredCellIndex, lookupIndex) => [obscuredCellIndex, currentCombination[lookupIndex]])
             );
@@ -370,10 +374,12 @@ export function getResolvableCells(board: MinimumResolvableBoardInfo): Resolvabl
 
     // If the number in that set matches the number of bombs remaining, then we know what they all are.
     let numBombs = board.numBombs;
-    results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs);
+    if (numBombs !== undefined) {
+        results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs);
 
-    if (results.size > 0) {
-        return results;
+        if (results.size > 0) {
+            return results;
+        }
     }
 
     // Now resolve "related" groups of cells, where some info is known. Each group should not overlap at all.
@@ -393,9 +399,11 @@ export function getResolvableCells(board: MinimumResolvableBoardInfo): Resolvabl
     }
 
     // Discard any cells from obscuredCellIndexes that are adjacent to only one revealed cell, reduce numBombs by that cell's amount, and re-run resolveCellsUsingBombCount on the obscured cells that remain.
-    const numRemainingBombsDiscarded = discardObscuredCellsAdjacentToOnlyOneRevealedCell(obscuredCellIndexes, revealedCells);
-    if (numRemainingBombsDiscarded > 0) {
-        results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs - numRemainingBombsDiscarded);
+    if (numBombs !== undefined) {
+        const numRemainingBombsDiscarded = discardObscuredCellsAdjacentToOnlyOneRevealedCell(obscuredCellIndexes, revealedCells);
+        if (numRemainingBombsDiscarded > 0) {
+            results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs - numRemainingBombsDiscarded);
+        }
     }
 
     return results;
