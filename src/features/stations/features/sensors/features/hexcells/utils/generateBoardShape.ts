@@ -1,5 +1,4 @@
 import { getRandomInt } from 'src/utils/random';
-import { CellType, CountType, UnderlyingCellState } from '../types/CellState';
 
 export interface ShapeConfig {
     orientation?: 'portrait' | 'landscape';
@@ -31,7 +30,7 @@ function determineSize(landscapeOrientation: boolean, numCells: number, numGaps:
 }
 
 /** Replace random cells with null, but do so symmetrically, either rotationally or mirrored. */
-function placeNulls(board: Array<UnderlyingCellState | null>, rows: number, columns: number, numToAssign: number) {
+function placeNulls<TCellState>(board: Array<TCellState | null>, rows: number, columns: number, numToAssign: number) {
     let primaryIndexes: number[] = [];
     let mirroredIndexes: number[] = [];
 
@@ -73,10 +72,10 @@ function placeNulls(board: Array<UnderlyingCellState | null>, rows: number, colu
     }
 }
 
-export function generateBoardShape(config: ShapeConfig, cell: UnderlyingCellState) {
+export function generateBoardShape<TCellState>(config: ShapeConfig, cell: TCellState) {
     const { rows, columns } = determineSize(config.orientation === 'landscape', config.numCells, Math.round(config.gapFraction * config.numCells));
 
-    const cells: Array<UnderlyingCellState | null> = new Array(rows * columns)
+    const cells: Array<TCellState | null> = new Array(rows * columns)
         .fill(cell);
     
     const numToRemove = cells.length - config.numCells
