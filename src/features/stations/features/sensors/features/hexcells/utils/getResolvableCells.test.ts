@@ -1,9 +1,9 @@
 import { CellType, CountType } from '../types/CellState';
-import { BoardInfoIgnoringErrors, getResolvableCells } from './getResolvableCells';
+import { MinimumResolvableBoardInfo, getResolvableCells } from './getResolvableCells';
 
 describe('two cells', () => {
     test('obscured, 1', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -21,7 +21,7 @@ describe('two cells', () => {
     });
 
     test('1, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Empty,
@@ -39,7 +39,7 @@ describe('two cells', () => {
     });
     
     test('obscured, 0', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -57,7 +57,7 @@ describe('two cells', () => {
     });
     
     test('0, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Empty,
@@ -75,7 +75,7 @@ describe('two cells', () => {
     });
     
     test('obscured, obscured: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -92,7 +92,7 @@ describe('two cells', () => {
     });
 
     test('obscured, obscured: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -109,7 +109,7 @@ describe('two cells', () => {
     });
 
     test('obscured, obscured: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -123,7 +123,7 @@ describe('two cells', () => {
     });
     
     test('flag, flag', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -137,7 +137,7 @@ describe('two cells', () => {
     });
     
     test('2, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Empty,
@@ -153,7 +153,7 @@ describe('two cells', () => {
     });
 
     test('obscured, 2', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -169,7 +169,7 @@ describe('two cells', () => {
     });
     
     test('flagged, 1', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -185,7 +185,7 @@ describe('two cells', () => {
     });
 
     test('1, flagged', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Empty,
@@ -201,7 +201,7 @@ describe('two cells', () => {
     });
     
     test('flagged, 0', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -217,7 +217,7 @@ describe('two cells', () => {
     });
     
     test('0, flagged', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Empty,
@@ -233,7 +233,7 @@ describe('two cells', () => {
     });
     
     test('flagged, obscured: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -249,7 +249,7 @@ describe('two cells', () => {
     });
 
     test('flagged, obscured: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -264,7 +264,7 @@ describe('two cells', () => {
         ]));
     });
     test('obscured, flagged: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -280,7 +280,7 @@ describe('two cells', () => {
     });
 
     test('obscured, flagged: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -298,7 +298,7 @@ describe('two cells', () => {
 
 describe('four cells in a line', () => {
     test('obscured, obscured, obscured, 0: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -320,7 +320,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, obscured, 0: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -342,7 +342,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, obscured, 0: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -364,7 +364,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, obscured, 1: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -386,7 +386,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, bomb, bomb: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -407,7 +407,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, bomb, bomb: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -425,7 +425,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, bomb, bomb: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -446,7 +446,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, obscured, 1: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -468,7 +468,7 @@ describe('four cells in a line', () => {
     });
     
     test('obscured, obscured, 0, obscured: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -491,7 +491,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 0, obscured: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -514,7 +514,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 1, obscured: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -534,7 +534,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 1, obscured: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -556,7 +556,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 1, obscured: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -578,7 +578,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 2, obscured: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -598,7 +598,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 2, obscured: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -621,7 +621,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, obscured, 2, obscured: three bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -644,7 +644,7 @@ describe('four cells in a line', () => {
     });
 
     test('1, obscured, obscured, 1', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Empty,
@@ -669,7 +669,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, 1, 1, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -694,7 +694,7 @@ describe('four cells in a line', () => {
     });
 
     test('0, obscured, obscured, 0', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Empty,
@@ -719,7 +719,7 @@ describe('four cells in a line', () => {
     });
 
     test('obscured, 0, 0, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Obscured,
@@ -744,7 +744,7 @@ describe('four cells in a line', () => {
     });
 
     test('1, obscured, 2, obscured: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 4,
             cells: [{
                 type: CellType.Empty,
@@ -771,7 +771,7 @@ describe('four cells in a line', () => {
 
 describe('two by two', () => {
     test('obscured, obscured, 0, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -794,7 +794,7 @@ describe('two by two', () => {
     });
 
     test('obscured, obscured, 1, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -816,7 +816,7 @@ describe('two by two', () => {
     });
 
     test('obscured, obscured, 2, obscured: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -839,7 +839,7 @@ describe('two by two', () => {
     });
 
     test('flag, obscured, 2, flag: no bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -861,7 +861,7 @@ describe('two by two', () => {
     });
 
     test('flag, obscured, 2, flag: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Flagged,
@@ -883,7 +883,7 @@ describe('two by two', () => {
     });
 
     test('obscured, obscured, 2, obscured: three bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -906,7 +906,7 @@ describe('two by two', () => {
     });
 
     test('obscured, 2, 2, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -931,7 +931,7 @@ describe('two by two', () => {
     });
 
     test('obscured, 1, 1, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -953,7 +953,7 @@ describe('two by two', () => {
     });
 
     test('1, 1, 1, obscured', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Empty,
@@ -981,7 +981,7 @@ describe('two by two', () => {
 
 describe('Circle of seven cells', () => {
     test('0 in the middle', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Obscured,
@@ -1015,7 +1015,7 @@ describe('Circle of seven cells', () => {
     });
     
     test('1 in the middle', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Obscured,
@@ -1042,7 +1042,7 @@ describe('Circle of seven cells', () => {
     });
     
     test('6 in the middle', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Obscured,
@@ -1076,7 +1076,7 @@ describe('Circle of seven cells', () => {
     });
 
     test('1 on either side: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Empty,
@@ -1113,7 +1113,7 @@ describe('Circle of seven cells', () => {
     });
 
     test('1 on three sides: one bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Empty,
@@ -1151,7 +1151,7 @@ describe('Circle of seven cells', () => {
     });
 
     test.skip('1 on either side: two bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Empty,
@@ -1185,7 +1185,7 @@ describe('Circle of seven cells', () => {
     });
 
     test('2 on three sides: three bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Empty,
@@ -1225,7 +1225,7 @@ describe('Circle of seven cells', () => {
     });
 
     test('1, 2 on adjacent sides: three bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Empty,
@@ -1257,7 +1257,7 @@ describe('Circle of seven cells', () => {
     });
 
     test('2, 1 on adjacent sides: three bombs', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Empty,
@@ -1291,7 +1291,7 @@ describe('Circle of seven cells', () => {
 
 describe('contiguous & split', () => {
     test('two by two contiguous, last bomb must be adjacent to flag', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
                 type: CellType.Obscured,
@@ -1314,7 +1314,7 @@ describe('contiguous & split', () => {
     });
 
     test('three by two contiguous, space not adjacent to flag must be empty', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Flagged,
@@ -1338,7 +1338,7 @@ describe('contiguous & split', () => {
     });
 
     test('three by two split, space not adjacent to flag must be bomb', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Flagged,
@@ -1364,7 +1364,7 @@ describe('contiguous & split', () => {
     });
 
     test('three by two contiguous, bombs must fit into available space', () => {
-        const board: BoardInfoIgnoringErrors = {
+        const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
                 type: CellType.Obscured,

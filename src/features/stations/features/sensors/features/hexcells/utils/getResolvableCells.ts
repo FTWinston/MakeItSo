@@ -3,7 +3,7 @@ import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { areValuesContiguous } from './areValuesContiguous';
 import { getAdjacentCells } from './getAdjacentCells';
 
-export type BoardInfoIgnoringErrors = Omit<CellBoardInfo, 'numErrors'>;
+export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns' | 'numBombs'>;
 
 interface CellWithIndex {
     index: number;
@@ -15,9 +15,9 @@ interface EmptyCellWithIndex {
     cell: EmptyCell;
 }
 
-type ResolutionResult = CellType.Empty | CellType.Bomb;
+export type ResolutionResult = CellType.Empty | CellType.Bomb;
 
-type ResolvableCells = Map<number, ResolutionResult>;
+export type ResolvableCells = Map<number, ResolutionResult>;
 
 interface RevealedCellInfo {
     cellIndex: number;
@@ -27,7 +27,7 @@ interface RevealedCellInfo {
     adjacentCells: Array<CellWithIndex | null>;
 }
 
-function getCellInfo(cellIndex: number, cell: EmptyCell, board: BoardInfoIgnoringErrors, rows: number): RevealedCellInfo {
+function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
     const adjacentCells = getAdjacentCells(cellIndex, board.columns, rows)
         .reduce((output, index) => {
             if (index === null) {
@@ -63,7 +63,7 @@ function getCellInfo(cellIndex: number, cell: EmptyCell, board: BoardInfoIgnorin
     };
 }
 
-export function getRevealedCellInfo(board: BoardInfoIgnoringErrors) {
+export function getRevealedCellInfo(board: MinimumResolvableBoardInfo) {
     const rows = Math.ceil(board.cells.length / board.columns);
 
     const allRevealedCells = board.cells
@@ -163,7 +163,7 @@ function resolveContiguousOrSplitCells(
     }
 }
 
-function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board: BoardInfoIgnoringErrors) {
+function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board: MinimumResolvableBoardInfo) {
     const results: ResolvableCells = new Map();
 
     for (const revealedCell of revealedCells) {
@@ -206,7 +206,7 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
     return results;
 }
 
-function getAllObscuredCellIndexes(board: BoardInfoIgnoringErrors): Set<number> {
+function getAllObscuredCellIndexes(board: MinimumResolvableBoardInfo): Set<number> {
     const indexes = board.cells
         .reduce((output, cell, index) => {
             if (cell?.type === CellType.Obscured) {
@@ -352,7 +352,7 @@ function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs: nu
     // From reading around, this could also be done with matrices.
 }
 
-export function getResolvableCells(board: BoardInfoIgnoringErrors): ResolvableCells {
+export function getResolvableCells(board: MinimumResolvableBoardInfo): ResolvableCells {
     let results: ResolvableCells;
     const revealedCells = getRevealedCellInfo(board);
 
