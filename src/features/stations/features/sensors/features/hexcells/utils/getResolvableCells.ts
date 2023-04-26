@@ -50,7 +50,7 @@ export function getAdjacentCells(cellIndex: number, board: MinimumResolvableBoar
 function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
     const adjacentCells = getAdjacentCells(cellIndex, board, rows);
         
-    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Flagged).length;
+    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Flagged || adjacent?.cell.type === CellType.Bomb).length;
 
     return {
         cellIndex,
