@@ -1,7 +1,7 @@
 import type { CellBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { areValuesContiguous } from './areValuesContiguous';
-import { getAdjacentCells } from './getAdjacentCells';
+import { getAdjacentIndexes } from './getAdjacentIndexes';
 
 export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns' | 'numBombs'>;
 
@@ -28,7 +28,7 @@ interface RevealedCellInfo {
 }
 
 function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
-    const adjacentCells = getAdjacentCells(cellIndex, board.columns, rows)
+    const adjacentCells = getAdjacentIndexes(cellIndex, board.columns, rows)
         .reduce((output, index) => {
             if (index === null) {
                 output.push(null);

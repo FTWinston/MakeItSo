@@ -34,14 +34,14 @@ function getAdjacentCoordinates(col: number, row: number, columns: number, rows:
         ];
 }
 
-export function getAdjacentCells(index: number, columns: number, rows: number): Array<number | null> {
+export function getAdjacentIndexes(index: number, columns: number, rows: number): Array<number | null> {
     const { row, col } = coordinateFromIndex(index, columns);
 
     return getAdjacentCoordinates(col, row, columns, rows)
         .map(coord => coord === null ? null : indexFromCoordinate(coord!, columns));
 }
 
-export function getCellsInRadius(index: number, columns: number, rows: number): number[] {
+export function getIndexesInRadius(index: number, columns: number, rows: number): number[] {
     const { row, col } = coordinateFromIndex(index, columns);
 
     const coordsInRadius = getAdjacentCoordinates(col, row, columns, rows)

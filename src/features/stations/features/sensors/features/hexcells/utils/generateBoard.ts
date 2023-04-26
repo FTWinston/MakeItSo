@@ -1,7 +1,7 @@
 import { getRandomInt } from 'src/utils/random';
 import type { CellBoardDefinition } from '../types/CellBoard';
 import { CellState, CellType, CountType, UnderlyingCellState } from '../types/CellState';
-import { getAdjacentCells, getCellsInRadius } from './getAdjacentCells';
+import { getAdjacentIndexes, getIndexesInRadius } from './getAdjacentIndexes';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { areValuesContiguous } from './areValuesContiguous';
 
@@ -48,7 +48,7 @@ function setCounts(
     for (let i = 0; i < board.length; i++) {
         const cell = board[i];
         if (cell?.type === CellType.Empty) {
-            const adjacentCellsAreBombs = getAdjacentCells(i, columns, rows)
+            const adjacentCellsAreBombs = getAdjacentIndexes(i, columns, rows)
                 .map(test => test !== null && board[test]?.type === CellType.Bomb);
 
             const numAdjacent = adjacentCellsAreBombs.filter(isBomb => isBomb).length;
@@ -68,7 +68,7 @@ function setCounts(
             }
         }
         else if (cell?.type === CellType.RadiusClue) {
-            const numInRadius = getCellsInRadius(i, columns, rows)
+            const numInRadius = getIndexesInRadius(i, columns, rows)
                 .filter(test => board[test]?.type === CellType.Bomb)
                 .length;
 
