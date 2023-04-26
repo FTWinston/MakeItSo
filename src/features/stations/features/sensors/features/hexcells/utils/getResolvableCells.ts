@@ -189,7 +189,7 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
 
         // If we have more bombs than we have obscured cells, we have a problem.
         else if (revealedCell.numUnrevealedBombsAdjacent > revealedCell.adjacentObscuredCellIndexes.length) {
-            throw new Error(`Cell ${revealedCell.cellIndex}'s number is greater than the number of bombs that could surround it. (${revealedCell.adjacentObscuredCellIndexes.length} obscured cells, ${revealedCell.numUnrevealedBombsAdjacent} bombs remaining)`);
+            throw new Error(`Cell ${revealedCell.cellIndex}'s number is greater than the number of bombs that could surround it. (${revealedCell.adjacentObscuredCellIndexes.length} obscured cells, ${revealedCell.numUnrevealedBombsAdjacent} bombs in them)`);
         }
 
         else if (board.numBombs !== undefined && revealedCell.numUnrevealedBombsAdjacent > board.numBombs) {
