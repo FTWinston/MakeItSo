@@ -107,8 +107,7 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
     // Allocate adjacent cells now, so that our clue won't be made incorrect by a later allocation.
     // But leave these cells obscured, for now.
     for (const unallocatedCell of unallocated) {
-        // TODO: account for varying bomb density, in state.config?
-        const addBomb = getRandomInt(5) < 2;
+        const addBomb = Math.random() < state.config.bombFraction;
 
         if (addBomb) {
             numBombs ++;
