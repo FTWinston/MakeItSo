@@ -75,13 +75,31 @@ function resolveCells(state: GeneratingState) {
     for (const [index, cellType] of resolvableCells) {
         state.obscuredIndexes.delete(index);
 
+        const existingType = state.underlying[index]!.type;
+
         if (cellType === CellType.Bomb) {
             state.cells[index] = state.underlying[index] = { type: CellType.Bomb };
             state.numBombsSoFar++;
+            console.log(`Resolved cell ${index} to be a bomb, revealing`);
+
+            if (existingType === CellType.Bomb) {
+                console.log('...and it already was');
+            }
+            else if ((existingType as CellType) !== CellType.Exploded) {
+                console.error(`...but it was already a ${CellType[existingType]}`);
+            }
         }
         else {
             state.underlying[index] = { type: CellType.Unknown };
             revealableIndexes.push(index);
+            console.log(`Resolved cell ${index} to be empty, not yet revealing`);
+
+            if (existingType === CellType.Unknown) {
+                console.log('...and it already was (unknown)');
+            }
+            else if ((existingType as CellType) !== CellType.Exploded) {
+                console.error(`...but it was already a ${CellType[existingType]}`);
+            }
         }
     }
 
@@ -113,11 +131,13 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
         if (addBomb) {
             numBombs ++;
 
+            console.log(`allocated cell #${unallocatedCell.index} to be a bomb, but not revealing it.`);
             state.underlying[unallocatedCell.index] = {
                 type: CellType.Bomb,
             }
         }
         else {
+            console.log(`allocated cell #${unallocatedCell.index} to be empty (unknown), but not revealing it.`);
             state.underlying[unallocatedCell.index] = {
                 type: CellType.Unknown,
             }
@@ -125,6 +145,8 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
     }
 
     // TODO: generate "excess" contiguous / split clues here?
+
+    console.log(`REVEALED cell #${index} to be empty, with a count of ${numBombs}`);
 
     state.cells[index] = state.underlying[index] = {
         type: CellType.Empty,
@@ -146,6 +168,8 @@ function addClues(state: GeneratingState, revealableIndexes: number[]) {
         // TODO: instead of revealing a new cell, consider adding an area clue.
         // TODO: instead of revealing a new cell, consider setting numBombs to 0, or to the number of remaining cells.
         const index = chooseInitiallyRevealedCell(state);
+
+        console.log(`As there were no resolvable cells, chose cell #${index} to be initially revealed`);
 
         state.initiallyRevealedIndexes.add(index);
         state.obscuredIndexes.delete(index);
@@ -181,6 +205,7 @@ function createBoardDefinition(state: GeneratingState) {
 }
 
 export function generateBoard(config: GenerationConfig): CellBoardDefinition {
+    console.clear();
     const state: GeneratingState = createInitialState(config);
 
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
@@ -188,7 +213,31 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
         const revealableIndexes = resolveCells(state);
         
         addClues(state, revealableIndexes);
+        console.log('');
     }
 
+    validateClues(state);
+    
     return createBoardDefinition(state);
 }
+
+function validateClues(state: GeneratingState) {
+    const cells = state.underlying;
+
+    for (let index = 0; index<cells.length; index++) {
+        const cell = cells[index];
+
+        if (cell?.type !== CellType.Empty) {
+            continue;
+        }
+        
+        const numBombs = getAdjacentCells(index, cells, state.columns, state.rows)
+            .filter(cell => cell?.cell.type === CellType.Bomb)
+            .length;
+
+        if (cell.number !== numBombs) {
+            console.error(`Cell #${index} says its has ${cell.number} bombs adjacent, but actually has ${numBombs}`);
+        }
+    }
+}
+
