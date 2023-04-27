@@ -66,12 +66,8 @@ const InnerFillHexagon = styled(Box,
             backgroundColor = theme.palette.warning.main;
             color = backgroundColor;
             break;
-        case CellType.Flagged:
-            backgroundColor = theme.palette.primary.dark;
-            color = backgroundColor;
-            break;
         case CellType.Bomb:
-            backgroundColor = theme.palette.error.dark;
+            backgroundColor = theme.palette.primary.dark;
             color = backgroundColor;
             break;
         case CellType.Empty:
@@ -96,6 +92,14 @@ const InnerFillHexagon = styled(Box,
         case CellType.IndicatorTRBL:
             color = theme.palette.background.paper;
             transform = 'rotate(60deg)';
+            break;
+        case CellType.Exploded:
+            backgroundColor = theme.palette.error.dark;
+            color = backgroundColor;
+            break;
+        case CellType.Hint:
+            backgroundColor = theme.palette.success.main;
+            color = theme.palette.text.primary;
             break;
     }
     

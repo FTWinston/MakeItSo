@@ -41,8 +41,8 @@ export const Cells: React.FC<Props> = props => {
 
     const [revealingIndex, setRevealingIndex] = useState<number | undefined>(undefined);
 
-    const bombIndex = cells.findIndex(cell => cell?.type === CellType.Bomb);
-    const bombCascadeCells = useCellCascade(bombIndex, columns, rows);
+    const explodedIndex = cells.findIndex(cell => cell?.type === CellType.Exploded);
+    const explosionCascadeCells = useCellCascade(explodedIndex, columns, rows);
 
     const errorIndex = useTemporaryValue(props.errorIndex, undefined, 500);
 
@@ -73,7 +73,7 @@ export const Cells: React.FC<Props> = props => {
         return (
             <CellWrapper key={index} style={wrapperStyle}>
                 <Cell
-                    cellType={bombCascadeCells.has(index) ? CellType.Bomb : cell.type}
+                    cellType={explosionCascadeCells.has(index) ? CellType.Exploded : cell.type}
                     countType={(cell as any).countType}
                     number={(cell as any).number}
                     special={special}

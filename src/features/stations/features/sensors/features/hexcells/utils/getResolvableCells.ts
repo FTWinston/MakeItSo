@@ -50,7 +50,7 @@ export function getAdjacentCells(cellIndex: number, board: MinimumResolvableBoar
 function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
     const adjacentCells = getAdjacentCells(cellIndex, board, rows);
         
-    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Flagged || adjacent?.cell.type === CellType.Bomb).length;
+    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Bomb).length;
 
     return {
         cellIndex,
@@ -117,17 +117,20 @@ function resolveContiguousOrSplitCells(
     const cellsThatCanBeBombs = new Array<boolean>(cells.length).fill(false);
 
     // Create an initial combination that won't bugger up based on existing values.
-    const currentCombination = cells.map(cell => {
+    const currentCombination: CellType[] = cells.map(cell => {
         if (cell === null || cell.cell.type === CellType.Empty) {
             return CellType.Unknown;
         }
         if (cell.cell.type === CellType.Obscured) {
             return CellType.Empty;
         }
+        if (cell.cell.type === CellType.Bomb) {
+            return CellType.Exploded;
+        }
         return cell.cell.type;
     });
 
-    const isBomb = (type: CellType) => type === CellType.Bomb || type === CellType.Flagged;
+    const isBomb = (type: CellType) => type === CellType.Bomb || type === CellType.Exploded;
 
     // Consider every valid combination (right number of bombs, bombs are contiguous or not).
     while (true) {

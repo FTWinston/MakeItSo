@@ -15,12 +15,18 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
 
             const underlyingState = state.underlying[action.index];
-            state.cells[action.index] = underlyingState;
 
             if (underlyingState?.type === CellType.Bomb) {
+                state.cells[action.index] = {
+                    type: CellType.Exploded,
+                };
+
                 state.result = 'failure';
                 state.errorIndex = action.index;
                 state.numErrors ++;
+            }
+            else {    
+                state.cells[action.index] = underlyingState;
             }
 
             // Success when the last obscured cell is revealed.
@@ -42,7 +48,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             const underlyingState = state.underlying[action.index];
             if (underlyingState?.type === CellType.Bomb) {
                 state.cells[action.index] = {
-                    type: CellType.Flagged,
+                    type: CellType.Bomb,
                 };
 
                 state.numBombs--;

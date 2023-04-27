@@ -1,13 +1,14 @@
 export enum CellType {
     Obscured = 1,
-    Flagged = 2,
-    Empty = 3,
-    Bomb = 4,
-    Unknown = 5, // Revealed, but showing a ?
-    RadiusClue = 6,
-    IndicatorVertical = 7,
-    IndicatorTLBR = 8,
-    IndicatorTRBL = 9,
+    Empty = 2,
+    Bomb = 3,
+    Unknown = 4, // Revealed, but showing a ?
+    RadiusClue = 5,
+    IndicatorVertical = 6,
+    IndicatorTLBR = 7,
+    IndicatorTRBL = 8,
+    Exploded = 9,
+    Hint = 10,
 }
 
 export enum CountType {
@@ -36,5 +37,5 @@ export type UnderlyingCellState = EmptyCell
 }
 
 export type CellState = UnderlyingCellState | {
-    type: CellType.Obscured | CellType.Flagged;
+    type: CellType.Obscured | CellType.Exploded | CellType.Hint;
 }

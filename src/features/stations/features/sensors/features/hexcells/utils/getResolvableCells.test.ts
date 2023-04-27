@@ -126,9 +126,9 @@ describe('two cells', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 0,
         }
@@ -172,7 +172,7 @@ describe('two cells', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Empty,
                 countType: CountType.Normal,
@@ -192,7 +192,7 @@ describe('two cells', () => {
                 countType: CountType.Normal,
                 number: 1,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 0,
         }
@@ -204,7 +204,7 @@ describe('two cells', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Empty,
                 countType: CountType.Normal,
@@ -224,7 +224,7 @@ describe('two cells', () => {
                 countType: CountType.Normal,
                 number: 0,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 1,
         }
@@ -236,7 +236,7 @@ describe('two cells', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Obscured,
             }],
@@ -252,7 +252,7 @@ describe('two cells', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Obscured,
             }],
@@ -269,7 +269,7 @@ describe('two cells', () => {
             cells: [{
                 type: CellType.Obscured,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 1,
         }
@@ -285,7 +285,7 @@ describe('two cells', () => {
             cells: [{
                 type: CellType.Obscured,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 0,
         }
@@ -393,9 +393,9 @@ describe('four cells in a line', () => {
             }, {
                 type: CellType.Obscured,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 0,
         }
@@ -414,9 +414,9 @@ describe('four cells in a line', () => {
             }, {
                 type: CellType.Obscured,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 1,
         }
@@ -432,9 +432,9 @@ describe('four cells in a line', () => {
             }, {
                 type: CellType.Obscured,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 2,
         }
@@ -842,7 +842,7 @@ describe('two by two', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Obscured,
             }, {
@@ -850,7 +850,7 @@ describe('two by two', () => {
                 countType: CountType.Normal,
                 number: 2,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 0,
         }
@@ -864,7 +864,7 @@ describe('two by two', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 2,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Obscured,
             }, {
@@ -872,7 +872,7 @@ describe('two by two', () => {
                 countType: CountType.Normal,
                 number: 2,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }],
             numBombs: 1,
         }
@@ -1298,7 +1298,7 @@ describe('contiguous & split', () => {
             }, {
                 type: CellType.Obscured,
             }, {
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Empty,
                 countType: CountType.Contiguous,
@@ -1317,7 +1317,7 @@ describe('contiguous & split', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Obscured,
             }, {
@@ -1341,7 +1341,7 @@ describe('contiguous & split', () => {
         const board: MinimumResolvableBoardInfo = {
             columns: 3,
             cells: [{
-                type: CellType.Flagged,
+                type: CellType.Bomb,
             }, {
                 type: CellType.Obscured,
             }, {

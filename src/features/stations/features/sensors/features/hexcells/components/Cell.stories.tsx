@@ -15,12 +15,6 @@ export const Obscured: Story = {
     }
 }
 
-export const Flagged: Story = {
-    args: {
-        cellType: CellType.Flagged
-    }
-}
-
 export const Bomb: Story = {
     args: {
         cellType: CellType.Bomb
@@ -81,8 +75,8 @@ export const Contiguous: Story = {
 
 export const DoubleRadius: Story = {
     args: {
-        cellType: CellType.Empty,
-        countType: CountType.DoubleRadius,
+        cellType: CellType.RadiusClue,
+        countType: CountType.Normal,
         number: 3,
     }
 }
@@ -108,5 +102,17 @@ export const Indicator3: Story = {
         cellType: CellType.IndicatorTRBL,
         countType: CountType.Split,
         number: 3,
+    }
+}
+
+export const Exploded: Story = {
+    args: {
+        cellType: CellType.Exploded,
+    }
+}
+
+export const Hint: Story = {
+    args: {
+        cellType: CellType.Hint,
     }
 }
