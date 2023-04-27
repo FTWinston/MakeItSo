@@ -5,7 +5,7 @@ import { getAdjacentIndexes } from './getAdjacentIndexes';
 
 export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns'> & Partial<Pick<CellBoardInfo, 'numBombs'>>;
 
-interface CellWithIndex {
+export interface CellWithIndex {
     index: number;
     cell: CellState;
 }
@@ -27,16 +27,16 @@ interface RevealedCellInfo {
     adjacentCells: Array<CellWithIndex | null>;
 }
 
-export function getAdjacentCells(cellIndex: number, board: MinimumResolvableBoardInfo, rows: number) {
-    return getAdjacentIndexes(cellIndex, board.columns, rows)
+export function getAdjacentCells(cellIndex: number, cells: Array<CellState | null>, columns: number, rows: number): Array<CellWithIndex | null> {
+    return getAdjacentIndexes(cellIndex, columns, rows)
         .reduce((output, index) => {
             if (index === null) {
                 output.push(null);
             }
             else {
-                const cell = board.cells[index];
+                const cell = cells[index];
                 
-                if (cell !== null) {
+                if (cell != null) {
                     output.push({ index, cell });
                 }
                 else {
@@ -48,7 +48,7 @@ export function getAdjacentCells(cellIndex: number, board: MinimumResolvableBoar
 }
 
 function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
-    const adjacentCells = getAdjacentCells(cellIndex, board, rows);
+    const adjacentCells = getAdjacentCells(cellIndex, board.cells, board.columns, rows);
         
     const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Bomb).length;
 

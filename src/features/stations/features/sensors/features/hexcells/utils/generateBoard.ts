@@ -1,7 +1,7 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
 import { CellState, CellType, CountType, UnderlyingCellState } from '../types/CellState';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
-import { getAdjacentCells, getResolvableCells } from './getResolvableCells';
+import { CellWithIndex, getAdjacentCells, getResolvableCells } from './getResolvableCells';
 import { getRandom, getRandomInt } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
 
@@ -28,11 +28,9 @@ export interface GenerationConfig extends ShapeConfig {
     splitClueFraction?: number;
 }
 
-interface GeneratingState {
+interface GeneratingState extends CellBoardDefinition {
     config: GenerationConfig;
     rows: number;
-    columns: number;
-    cells: (CellState | null)[];
     numBombs?: number;
     numBombsSoFar: number;
     initiallyRevealedIndexes: Set<number>;
@@ -42,18 +40,24 @@ interface GeneratingState {
 
 /** Prepare the shape of the board, with every cell obscured, and any extra info needed for generation purposes. */
 function createInitialState(config: GenerationConfig): GeneratingState {
-    const shape = generateBoardShape<CellState>(config, { type: CellType.Obscured });
+    const { cells, rows, columns } = generateBoardShape<CellState>(config, { type: CellType.Obscured });
 
     const obscuredIndexes = new Set<number>();
-    for (let i = 0; i < shape.cells.length; i++) {
-        if (shape.cells[i] !== null) {
-            obscuredIndexes.add(i);
+    const underlying = cells.map((cell, index) => {
+        if (cell === null) {
+            return null;
         }
-    }
+
+        obscuredIndexes.add(index);
+        return { type: CellType.Exploded };
+    }) as Array<UnderlyingCellState | null>;
 
     return {
-        ...shape,
         config,
+        rows,
+        columns,
+        cells,
+        underlying,
         numBombsSoFar: 0,
         initiallyRevealedIndexes: new Set(),
         obscuredIndexes,
@@ -61,22 +65,22 @@ function createInitialState(config: GenerationConfig): GeneratingState {
     };
 }
 
-/** Determine what cells can be resolved. If they're bombs, mark them as such. If they're empty, mark them unknown. Return the "empty" cell indexes. */
-function resolveCells(state: GeneratingState): number[] {
+/** Determine what cells can be resolved. If they're bombs, mark them as such. If they're empty, mark them unknown, and add to state.revealableIndexes. */
+function resolveCells(state: GeneratingState) {
     const resolvableCells = getResolvableCells(state);
-
     const revealableIndexes: number[] = [];
 
-    // Reveal any just-resolved cells, but don't yet complete the clue on any empty cells. (Bombs must be resolved first, as they may affect the clues!)
+    // Allocate and reveal any just-resolved bombs. Allocate just-resolved empty cells to unknown, and don't reveal them yet.
+    // (All just-resolved bombs must be resolved before these can be allocated to Empty, as these may affect the clues!)
     for (const [index, cellType] of resolvableCells) {
         state.obscuredIndexes.delete(index);
 
         if (cellType === CellType.Bomb) {
-            state.cells[index] = { type: CellType.Bomb };
+            state.cells[index] = state.underlying[index] = { type: CellType.Bomb };
             state.numBombsSoFar++;
         }
-        else if (cellType === CellType.Empty) {
-            state.cells[index] = { type: CellType.Unknown };
+        else {
+            state.underlying[index] = { type: CellType.Unknown };
             revealableIndexes.push(index);
         }
     }
@@ -86,30 +90,49 @@ function resolveCells(state: GeneratingState): number[] {
 
 function chooseInitiallyRevealedCell(state: GeneratingState): number {
     // TODO: it's inefficient for this to be a Set here. But it's helpful elsewhere!
-    const obscuredIndexes = [...state.obscuredIndexes];
+    const obscuredIndexes = [...state.obscuredIndexes]
+        .filter(index => state.underlying[index]?.type !== CellType.Bomb);
 
-    // TODO: pick an obscured cell with less than six adjacent obscured cells?
+    // TODO: pick an obscured cell that allows us to resolve more cells. (Or try all obscuredIndexes and just pick randomly.)
+    
     return getRandom(obscuredIndexes);
 }
 
-
 function addEmptyCellClue(state: GeneratingState, index: number) {
-    const adjacentCells = getAdjacentCells(index, state, state.rows);
+    const adjacentCells = getAdjacentCells(index, state.underlying, state.columns, state.rows);
     
-    const numBombs = adjacentCells.filter(cell => cell?.cell.type === CellType.Bomb).length;
-    const numObscured = adjacentCells.filter(cell => cell?.cell.type === CellType.Obscured).length;
+    let numBombs = adjacentCells.filter(cell => cell?.cell.type === CellType.Bomb).length;
+    const unallocated = adjacentCells.filter(cell => cell?.cell.type === CellType.Exploded) as CellWithIndex[];
+
+    // Allocate adjacent cells now, so that our clue won't be made incorrect by a later allocation.
+    // But leave these cells obscured, for now.
+    for (const unallocatedCell of unallocated) {
+        // TODO: account for varying bomb density, in state.config?
+        const addBomb = getRandomInt(5) < 2;
+
+        if (addBomb) {
+            numBombs ++;
+
+            state.underlying[unallocatedCell.index] = {
+                type: CellType.Bomb,
+            }
+        }
+        else {
+            state.underlying[unallocatedCell.index] = {
+                type: CellType.Unknown,
+            }
+        }
+    }
 
     // TODO: generate "excess" contiguous / split clues here?
 
-    const flagNum = numBombs + getRandomInt(numObscured + 1);
-
-    state.cells[index] = {
+    state.cells[index] = state.underlying[index] = {
         type: CellType.Empty,
         countType: CountType.Normal,
-        number: flagNum,
+        number: numBombs,
     };
 
-    if (flagNum > 1) {
+    if (numBombs > 1) {
         state.normalClueIndexes.push(index);
     }
 }
@@ -132,14 +155,16 @@ function addClues(state: GeneratingState, revealableIndexes: number[]) {
         shuffle(revealableIndexes);
     }
 
-    for (const index of revealableIndexes) {
-        addEmptyCellClue(state, index);
+    for (const indexToReveal of revealableIndexes) {
+        addEmptyCellClue(state, indexToReveal);
     }
+
+    // TODO: consider removing some indexes from revealableIndexes, if there are a lot. This will leave "unknown" cells on the board.
 }
 
 /** Prepare the initial "display" version of the board, which has all cells obscured except for initially-revealed ones. */
 function createBoardDefinition(state: GeneratingState) {    
-    const display: Array<CellState | null> = state.cells
+    const display: Array<CellState | null> = state.underlying
         .map((cell, index) => {
             if (cell === null || state.initiallyRevealedIndexes.has(index)) {
                 return cell;
@@ -151,7 +176,7 @@ function createBoardDefinition(state: GeneratingState) {
     return {
         cells: display,
         columns: state.columns,
-        underlying: state.cells as Array<UnderlyingCellState | null>, // No underlying cells are still obscured, and none were ever flagged.
+        underlying: state.underlying,
     };
 }
 
@@ -160,7 +185,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
 
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
     while (state.obscuredIndexes.size > 0) {
-        const revealableIndexes: number[] = resolveCells(state);
+        const revealableIndexes = resolveCells(state);
         
         addClues(state, revealableIndexes);
     }
