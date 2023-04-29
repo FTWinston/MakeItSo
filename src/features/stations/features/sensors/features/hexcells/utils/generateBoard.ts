@@ -1,5 +1,6 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
 import { CellState, CellType, CountType, UnderlyingCellState } from '../types/CellState';
+import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { CellWithIndex, getAdjacentCells, getResolvableCells } from './getResolvableCells';
 import { getRandom, getRandomInt } from 'src/utils/random';
@@ -35,7 +36,8 @@ interface GeneratingState extends CellBoardDefinition {
     numBombsSoFar: number;
     initiallyRevealedIndexes: Set<number>;
     obscuredIndexes: Set<number>;
-    normalClueIndexes: number[];
+    potentialContiguousClueIndexes: number[];
+    potentialSplitClueIndexes: number[];
 }
 
 /** Prepare the shape of the board, with every cell obscured, and any extra info needed for generation purposes. */
@@ -61,7 +63,8 @@ function createInitialState(config: GenerationConfig): GeneratingState {
         numBombsSoFar: 0,
         initiallyRevealedIndexes: new Set(),
         obscuredIndexes,
-        normalClueIndexes: [],
+        potentialContiguousClueIndexes: [],
+        potentialSplitClueIndexes: [],
     };
 }
 
@@ -123,17 +126,25 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
         }
     }
 
-    // TODO: generate "excess" contiguous / split clues here?
+    let countType = CountType.Normal;
+
+    if (numBombs > 1) {
+        const contiguous = areValuesContiguous(adjacentCells, cell => cell?.cell.type === CellType.Bomb, true);
+        if (contiguous) {
+            state.potentialContiguousClueIndexes.push(index);
+        }
+        else {
+            state.potentialSplitClueIndexes.push(index);
+        }
+        
+        // TODO: generate "excess" contiguous / split clues here?
+    }
 
     state.cells[index] = state.underlying[index] = {
         type: CellType.Empty,
-        countType: CountType.Normal,
+        countType,
         number: numBombs,
     };
-
-    if (numBombs > 1) {
-        state.normalClueIndexes.push(index);
-    }
 }
 
 /** Put an "empty" clue into each provided cell index. If they're empty, add a new initial clue instead. */
