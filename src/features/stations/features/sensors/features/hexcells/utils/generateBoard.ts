@@ -130,7 +130,7 @@ function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], 
     for (let tryIndex = 0; tryIndex < cellsToTry.length; tryIndex++) {
         const { cell, adjacentIndexes } = cellsToTry[tryIndex];
 
-        if (!adjacentIndexes.some(state.obscuredIndexes.has)) {
+        if (!adjacentIndexes.some(index => state.obscuredIndexes.has(index))) {
             // Nothing obscured next to this cell, it can't give us more info
             // if it is upgraded now, or in the future.
             cellsToTry.splice(tryIndex, 1);
