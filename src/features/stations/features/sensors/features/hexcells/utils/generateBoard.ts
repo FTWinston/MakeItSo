@@ -155,17 +155,31 @@ function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], 
     return false;
 }
 
-function revealInitialCell(state: GeneratingState) {
+function revealInitialCell(state: GeneratingState): GeneratingState {
     // TODO: it's inefficient for this to be a Set here. But it's helpful elsewhere!
     const obscuredIndexes = [...state.obscuredIndexes]
         .filter(index => state.underlying[index]?.type !== CellType.Bomb);
 
-    // TODO: pick an obscured cell that allows us to resolve more cells. (Or try all obscuredIndexes and just pick randomly.)
-    const index = getRandom(obscuredIndexes);
+    // Reveal an obscured cell that allows us to resolve cells.
+    const attempts = 5;
+    for (let attempt = 1; attempt <= attempts; attempt++) {
+        const draftState = copyState(state);
+        const index = getRandom(obscuredIndexes);
 
-    state.initiallyRevealedIndexes.add(index);
-    state.obscuredIndexes.delete(index);
-    addEmptyCellClue(state, index);
+        draftState.initiallyRevealedIndexes.add(index);
+        draftState.obscuredIndexes.delete(index);
+        addEmptyCellClue(draftState, index);
+
+        // If cells can be resolved after revealing this cell, or this was our last attempt,
+        // return this draft state. Otherwise, discard it.
+        if (attempt < attempts && getResolvableCells(draftState).size === 0) {
+            continue;
+        }
+
+        return draftState;
+    }
+
+    return state;
 }
 
 function addEmptyCellClue(state: GeneratingState, index: number) {
@@ -243,34 +257,34 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
 }
 
 /** Add an initial clue of any allowed type onto the board, or enhance an existing clue. */
-function addClue(state: GeneratingState) {
+function addClue(state: GeneratingState): GeneratingState {
     const chance = Math.random() * state.config.fullChance;
 
     if (chance <= state.config.contiguousClueChance) {
         if (tryModifyClue(state, state.potentialContiguousClueCells, CountType.Contiguous)) {
-            return;
+            return state;
         }
     }
     else if (chance <= state.config.splitClueChance) {
         if (tryModifyClue(state, state.potentialSplitClueCells, CountType.Split)) {
-            return;
+            return state;
         }
     }
     /*
     else if (chance <= state.config.rowClueChance) {
         // TODO
 
-        return;
+        return state;
     }
     else if (chance <= state.config.radiusClueChance) {
         // TODO
 
-        return;
+        return state;
     }
     */
 
     // When no other type of clue has been added, reveal an additional cell.
-    revealInitialCell(state);
+    return revealInitialCell(state);
 }
 
 /** Prepare the initial "display" version of the board, which has all cells obscured except for initially-revealed ones. */
@@ -294,7 +308,7 @@ function createBoardDefinition(state: GeneratingState) {
 export function generateBoard(config: GenerationConfig): CellBoardDefinition {
     const fullConfig = expandConfig(config);
 
-    const state: GeneratingState = createInitialState(fullConfig);
+    let state: GeneratingState = createInitialState(fullConfig);
 
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
     while (state.obscuredIndexes.size > 0) {
@@ -304,9 +318,22 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
             revealCells(state, revealableIndexes);
         }
         else {
-            addClue(state);
+            state = addClue(state);
         }
     }
 
     return createBoardDefinition(state);
 }
+
+function copyState(state: GeneratingState): GeneratingState {
+    return {
+        ...state,
+        cells: [...state.cells],
+        underlying: [...state.underlying],
+        initiallyRevealedIndexes: new Set(state.initiallyRevealedIndexes),
+        obscuredIndexes: new Set(state.obscuredIndexes),
+        potentialContiguousClueCells: [...state.potentialContiguousClueCells],
+        potentialSplitClueCells: [...state.potentialSplitClueCells],
+    };
+}
+
