@@ -49,14 +49,14 @@ export const Component: React.FC = () => {
                 <Alert severity="error" sx={{ width: '100%' }} action={
                     <Button color="inherit" size="small" onClick={regenerate}>Regenerate</Button>
                 }>
-                    You failed!
+                    You lose!
                 </Alert>
             </Snackbar>
             <Snackbar open={board.result === 'success'} transitionDuration={1000}>
                 <Alert severity="success" sx={{ width: '100%' }} action={
                     <Button color="inherit" size="small" onClick={regenerate}>Regenerate</Button>
                 }>
-                    You succeeded!
+                    You win!
                 </Alert>
             </Snackbar>
         </>
