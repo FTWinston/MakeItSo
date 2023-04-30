@@ -7,12 +7,13 @@ import { useToggle } from 'src/hooks/useToggle';
 import { Alert, Button, Snackbar } from 'src/lib/mui';
 
 const config: GenerationConfig = {
-    orientation: 'portrait',
-    numCells: 34,
+    orientation: 'landscape',
+    numCells: 50,
     gapFraction: 0.3,
-    bombFraction: 0.25,
-    unknownFraction: 0.15,
-    radiusClueChance: 0.05,
+    bombFraction: 0.38,
+    unknownFraction: 0.05,
+    rowClueChance: 0,
+    radiusClueChance: 0,
     revealChance: 0.1,
     contiguousClueChance: 0.5,
     splitClueChance: 0.4,

@@ -228,10 +228,17 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
 function revealCells(state: GeneratingState, revealableIndexes: number[]) {
     shuffle(revealableIndexes);
 
-    // TODO: Consider putting "unknown" clues into some of revealableIndexes, if there are a lot.
+    // TODO: Consider putting extra "unknown" clues into some of revealableIndexes, if there are a lot.
 
     for (const indexToReveal of revealableIndexes) {
-        addEmptyCellClue(state, indexToReveal);
+        if (Math.random() <= state.config.unknownFraction) {
+            state.cells[indexToReveal] = state.underlying[indexToReveal] = {
+                type: CellType.Unknown,
+            };
+        }
+        else {
+            addEmptyCellClue(state, indexToReveal);
+        }
     }
 }
 
