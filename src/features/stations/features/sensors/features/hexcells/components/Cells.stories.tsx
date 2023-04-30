@@ -46,9 +46,9 @@ export const Complex: Story = {
         gapFraction: 0.3,
         bombFraction: 0.25,
         unknownFraction: 0.15,
-        radiusClueFraction: 0.05,
-        revealFraction: 0.1,
-        contiguousClueFraction: 0.5,
-        splitClueFraction: 0.4,
+        radiusClueChance: 0.05,
+        revealChance: 0.1,
+        contiguousClueChance: 0.5,
+        splitClueChance: 0.4,
     },
 }
