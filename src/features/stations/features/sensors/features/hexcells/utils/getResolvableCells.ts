@@ -1,5 +1,5 @@
 import type { CellBoardInfo } from '../types/CellBoard';
-import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
+import { CellState, CellType, CountType, EmptyCell, RowClue } from '../types/CellState';
 import { areValuesContiguous } from './areValuesContiguous';
 import { getAdjacentIndexes } from './getAdjacentIndexes';
 
@@ -213,6 +213,16 @@ function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board
     return results;
 }
 
+function resolveIndividualRowClues(board: MinimumResolvableBoardInfo) {
+    const results: ResolvableCells = new Map();
+
+    const rowClues = board.cells.filter(cell => cell?.type === CellType.RowClue);
+
+    // TODO: this
+
+    return results;
+}
+
 function getAllObscuredCellIndexes(board: MinimumResolvableBoardInfo): Set<number> {
     const indexes = board.cells
         .reduce((output, cell, index) => {
@@ -368,6 +378,14 @@ export function getResolvableCells(board: MinimumResolvableBoardInfo): Resolvabl
     results = resolveIndividualCellCounts(revealedCells, board);
 
     // If the simplest scenario gave us any resolutions, return those.
+    if (results.size > 0) {
+        return results;
+    }
+
+    // Try resolving row clues next.
+    results = resolveIndividualRowClues(board);
+
+    // If rows gave us any resolutions, return those.
     if (results.size > 0) {
         return results;
     }

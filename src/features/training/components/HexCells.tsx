@@ -10,7 +10,7 @@ const config: GenerationConfig = {
     orientation: 'landscape',
     numCells: 50,
     gapFraction: 0.3,
-    bombFraction: 0.38,
+    bombFraction: 0.45,
     unknownFraction: 0.05,
     rowClueChance: 0,
     radiusClueChance: 0,
