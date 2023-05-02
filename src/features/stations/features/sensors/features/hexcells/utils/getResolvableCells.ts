@@ -1,9 +1,7 @@
-import type { CellBoardInfo } from '../types/CellBoard';
-import { CellState, CellType, CountType, EmptyCell, RowClue } from '../types/CellState';
+import { MinimumResolvableBoardInfo } from '../types/CellBoard';
+import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { areValuesContiguous } from './areValuesContiguous';
 import { getAdjacentIndexes } from './getAdjacentIndexes';
-
-export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns'> & Partial<Pick<CellBoardInfo, 'numBombs'>>;
 
 export interface CellWithIndex {
     index: number;

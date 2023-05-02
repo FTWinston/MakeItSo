@@ -17,6 +17,9 @@ export type CellBoardInfo = Omit<CellBoardDefinition, 'underlying'> & InstanceIn
 
 export type CellBoard = CellBoardDefinition & InstanceInfo;
 
+export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns'>
+    & Partial<Pick<CellBoardInfo, 'numBombs'>>;
+
 export type CellBoardAction = {
     type: 'reveal';
     index: number;

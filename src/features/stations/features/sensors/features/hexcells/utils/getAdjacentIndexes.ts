@@ -1,3 +1,5 @@
+import { RowDirection } from '../types/CellState';
+
 interface Coordinate {
     row: number;
     col: number;
@@ -114,4 +116,9 @@ export function getIndexesInRadius(index: number, columns: number, rows: number)
 
     return coordsInRadius
         .map(coord => indexFromCoordinate(coord, columns));
+}
+
+export function getIndexesInRow(fromIndex: number, direction: RowDirection, columns: number, rows: number): Array<number | null> {
+    // TODO: this
+    return [];
 }
