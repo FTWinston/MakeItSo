@@ -1,6 +1,6 @@
 import { MinimumResolvableBoardInfo } from '../types/CellBoard';
-import { CellType } from '../types/CellState';
-import { ClueMap } from '../types/Clue';
+import { CellType, EmptyCell, RadiusClue, RowClue } from '../types/CellState';
+import { Clue, ClueMap } from '../types/Clue';
 import { getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
 /** Get a map of all clues currently on the board. */
@@ -12,13 +12,33 @@ export function getClues(board: MinimumResolvableBoardInfo): ClueMap {
     return info;
 }
 
-/** Any clue with no associated obscured cells is resolved. */
-function resolveSolvedClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
-    for (const clue of clues.values()) {
-        if (!clue.associatedIndexes.some(index => index !== null && board.cells[index]?.type === CellType.Obscured)) {
-            clue.resolved = true;
+/** Get the number of indexes provided that represent obscured cells. */
+function updateClue(clue: Clue, board: MinimumResolvableBoardInfo) {
+    let obscuredIndexes: number[] = [];
+    let numBombsRevealed = 0;
+
+    for (const index of clue.associatedIndexes) {
+        if (index === null) {
+            continue;
+        }
+
+        const cell = board.cells[index];
+        if (cell === null) {
+            continue;
+        }
+
+        if (cell.type === CellType.Obscured) {
+            obscuredIndexes.push(index);
+        }
+        else if (cell.type === CellType.Bomb) {
+            numBombsRevealed ++;
         }
     }
+
+    const cell = board.cells[clue.clueIndex] as EmptyCell | RowClue | RadiusClue;
+
+    clue.associatedObscuredIndexes = obscuredIndexes;
+    clue.numObscuredBombs = cell.number - numBombsRevealed;
 }
 
 /** Any empty, row or radius clue cell without an associated clue should have one added. */
@@ -55,19 +75,29 @@ function addAvailableClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
         }
 
         if (associatedIndexes.some(index => index !== null && board.cells[index]?.type === CellType.Obscured)) {
-            clues.set(index, {
+            const clue: Clue = {
                 clueIndex: index,
                 associatedIndexes,
                 countType: cell.countType,
                 loop,
-                resolved: false,
-            });
+                associatedObscuredIndexes: [],
+                numObscuredBombs: 0,
+            };
+
+            updateClue(clue, board);
+
+            clues.set(index, clue);
         }
     }
 }
 
-/** Resolve clues where appropriate, add any new ones. */
+/** Update numUnresolved on existing clues, and add any new clues. */
 export function updateClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
-    resolveSolvedClues(board, clues);
+    for (const clue of clues.values()) {
+        if (clue.numObscuredBombs !== 0) { // If a clue previously resolved all of its bombs, don't bother updating it.
+            updateClue(clue, board);
+        }
+    }
+
     addAvailableClues(board, clues);
 }

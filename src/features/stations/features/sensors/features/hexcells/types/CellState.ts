@@ -37,13 +37,15 @@ export type RowClue = {
     number: number;
 }
 
-export type UnderlyingCellState = EmptyCell | RowClue
- | {
-    type: CellType.Unknown | CellType.Bomb;
-} | {
+export type RadiusClue = {
     type: CellType.RadiusClue;
     countType: CountType.Normal;
     number: number;
+}
+
+export type UnderlyingCellState = EmptyCell | RowClue | RadiusClue
+ | {
+    type: CellType.Unknown | CellType.Bomb;
 }
 
 export type CellState = UnderlyingCellState | {

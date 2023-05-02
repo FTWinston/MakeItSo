@@ -1,87 +1,16 @@
 import { MinimumResolvableBoardInfo } from '../types/CellBoard';
-import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
+import { CellState, CellType, CountType } from '../types/CellState';
+import { Clue, ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
-import { getAdjacentIndexes } from './indexes';
 
 export interface CellWithIndex {
     index: number;
     cell: CellState;
 }
 
-interface EmptyCellWithIndex {
-    index: number;
-    cell: EmptyCell;
-}
-
 export type ResolutionResult = CellType.Empty | CellType.Bomb;
 
 export type ResolvableCells = Map<number, ResolutionResult>;
-
-interface RevealedCellInfo {
-    cellIndex: number;
-    countType: CountType;
-    numUnrevealedBombsAdjacent: number;
-    adjacentObscuredCellIndexes: number[];
-    adjacentCells: Array<CellWithIndex | null>;
-}
-
-export function getAdjacentCells(cellIndex: number, cells: Array<CellState | null>, columns: number, rows: number): Array<CellWithIndex | null> {
-    return getAdjacentIndexes(cellIndex, columns, rows)
-        .reduce((output, index) => {
-            if (index === null) {
-                output.push(null);
-            }
-            else {
-                const cell = cells[index];
-                
-                if (cell != null) {
-                    output.push({ index, cell });
-                }
-                else {
-                    output.push(null);
-                }
-            }
-            return output;
-        }, [] as Array<CellWithIndex | null>);
-}
-
-function getCellInfo(cellIndex: number, cell: EmptyCell, board: MinimumResolvableBoardInfo, rows: number): RevealedCellInfo {
-    const adjacentCells = getAdjacentCells(cellIndex, board.cells, board.columns, rows);
-        
-    const numRevealedBombsAdjacent = adjacentCells.filter(adjacent => adjacent?.cell.type === CellType.Bomb).length;
-
-    return {
-        cellIndex,
-        countType: cell.countType,
-        numUnrevealedBombsAdjacent: cell.number - numRevealedBombsAdjacent,
-        adjacentCells,
-        adjacentObscuredCellIndexes: adjacentCells
-            .reduce((adjacencyResults, adjacent) => {
-                if (adjacent?.cell.type === CellType.Obscured) {
-                    adjacencyResults.push(adjacent.index);
-                }
-                return adjacencyResults;
-            }, [] as number[]),
-    };
-}
-
-export function getRevealedCellInfo(board: MinimumResolvableBoardInfo) {
-    const rows = Math.ceil(board.cells.length / board.columns);
-
-    const allRevealedCells = board.cells
-        .reduce((output, cell, index) => {
-            if (cell?.type === CellType.Empty) {
-                output.push({ index, cell });
-            }
-            return output;
-        }, [] as EmptyCellWithIndex[]);
-
-    return new Set(
-        allRevealedCells
-            .map(revealedCell => getCellInfo(revealedCell.index, revealedCell.cell, board, rows))
-            .filter(revealedCell => revealedCell.adjacentObscuredCellIndexes.length > 0)
-    );
-}
 
 function incrementCombination<TOtherValue = never>(combination: Array<ResolutionResult | TOtherValue>) {
     // Treat combination as a binary number, but potentially with holes in it. (i.e. indexes that aren't empty or bomb, to be ignored.)
@@ -106,11 +35,12 @@ function incrementCombination<TOtherValue = never>(combination: Array<Resolution
 
 function resolveContiguousOrSplitCells(
     results: ResolvableCells,
-    numUnrevealedBombs: number,
-    cells: (CellWithIndex | null)[],
-    contiguous: boolean,
-    cellsAreLooped: boolean
+    clue: Clue,
+    board: MinimumResolvableBoardInfo
 ) {
+    const cells = clue.associatedIndexes
+        .map(index => (index === null || board.cells[index] === null ? null : { index, cell: board.cells[index]! }));
+
     const cellsThatCanBeEmpty = new Array<boolean>(cells.length).fill(false);
     const cellsThatCanBeBombs = new Array<boolean>(cells.length).fill(false);
 
@@ -129,11 +59,12 @@ function resolveContiguousOrSplitCells(
     });
 
     const isBomb = (type: CellType) => type === CellType.Bomb || type === CellType.Exploded;
+    const contiguous = clue.countType === CountType.Contiguous;
 
     // Consider every valid combination (right number of bombs, bombs are contiguous or not).
     while (true) {
-        if (currentCombination.filter(value => value === CellType.Bomb).length === numUnrevealedBombs
-            && areValuesContiguous(currentCombination, isBomb, cellsAreLooped) === contiguous) {
+        if (currentCombination.filter(value => value === CellType.Bomb).length === clue.numObscuredBombs
+            && areValuesContiguous(currentCombination, isBomb, clue.loop) === contiguous) {
             
             // Update cellsThatCanBeEmpty & cellsThatCanBeBombs with the results of this combination.
             for (let i = 0; i < currentCombination.length; i++) {
@@ -168,55 +99,39 @@ function resolveContiguousOrSplitCells(
     }
 }
 
-function resolveIndividualCellCounts(revealedCells: Set<RevealedCellInfo>, board: MinimumResolvableBoardInfo) {
+function resolveIndividualClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
     const results: ResolvableCells = new Map();
 
-    for (const revealedCell of revealedCells) {
-        // Where the number on an empty cell exactly matches the number of adjacent obscured cells minus the number of adjacent bombs,
-        // all adjacent obscured cells can be resolved to be bombs.
-        if (revealedCell.adjacentObscuredCellIndexes.length === revealedCell.numUnrevealedBombsAdjacent) {
-            for (const adjacentObscuredCellIndex of revealedCell.adjacentObscuredCellIndexes) {
-                results.set(adjacentObscuredCellIndex, CellType.Bomb);
+    for (const clue of clues.values()) {
+        // Where the number on a clue exactly matches the number of associated obscured cells minus the number of (associated) revealed bombs,
+        // all associated obscured cells can be resolved to be bombs.
+        if (clue.associatedObscuredIndexes.length === clue.numObscuredBombs) {
+            for (const associatedObscuredCellIndex of clue.associatedObscuredIndexes) {
+                results.set(associatedObscuredCellIndex, CellType.Bomb);
             }
         }
 
-        // Where the number on an empty cell exactly matches the number of adjacent (flagged) bombs,
-        // all adjacent obscured cells can be resolved to be empty.
-        else if (revealedCell.numUnrevealedBombsAdjacent === 0) {
-            for (const adjacentObscuredCellIndex of revealedCell.adjacentObscuredCellIndexes) {
-                results.set(adjacentObscuredCellIndex, CellType.Empty);
+        // Where the number on a clue exactly matches the number of (associated) revealed bombs,
+        // all associated obscured cells can be resolved to be empty.
+        else if (clue.numObscuredBombs === 0) {
+            for (const associatedObscuredCellIndex of clue.associatedObscuredIndexes) {
+                results.set(associatedObscuredCellIndex, CellType.Empty);
             }
         }
 
         // If we have more bombs than we have obscured cells, we have a problem.
-        else if (revealedCell.numUnrevealedBombsAdjacent > revealedCell.adjacentObscuredCellIndexes.length) {
-            throw new Error(`Cell ${revealedCell.cellIndex}'s number is greater than the number of bombs that could surround it. (${revealedCell.adjacentObscuredCellIndexes.length} obscured cells, ${revealedCell.numUnrevealedBombsAdjacent} bombs in them)`);
+        else if (clue.numObscuredBombs > clue.associatedObscuredIndexes.length) {
+            throw new Error(`Cell ${clue.clueIndex}'s number is greater than the number of associated obscured cells. (${clue.associatedObscuredIndexes.length} obscured cells, ${clue.numObscuredBombs} bombs in them)`);
         }
 
-        else if (board.numBombs !== undefined && revealedCell.numUnrevealedBombsAdjacent > board.numBombs) {
-            throw new Error(`Cell ${revealedCell.cellIndex} has more bombs still to reveal (${revealedCell.numUnrevealedBombsAdjacent}) than the number of bombs remaining on the board (${board.numBombs}).`);
+        else if (board.numBombs !== undefined && clue.numObscuredBombs > board.numBombs) {
+            throw new Error(`Cell ${clue.clueIndex} has more bombs still to reveal (${clue.numObscuredBombs}) than the number of bombs remaining on the board (${board.numBombs}).`);
         }
 
-        else if (revealedCell.countType === CountType.Contiguous || revealedCell.countType === CountType.Split) {
-            resolveContiguousOrSplitCells(
-                results,
-                revealedCell.numUnrevealedBombsAdjacent,
-                revealedCell.adjacentCells,
-                revealedCell.countType === CountType.Contiguous,
-                true
-            );
+        else if (clue.countType === CountType.Contiguous || clue.countType === CountType.Split) {
+            resolveContiguousOrSplitCells(results, clue, board);
         }
     }
-
-    return results;
-}
-
-function resolveIndividualRowClues(board: MinimumResolvableBoardInfo) {
-    const results: ResolvableCells = new Map();
-
-    const rowClues = board.cells.filter(cell => cell?.type === CellType.RowClue);
-
-    // TODO: this
 
     return results;
 }
@@ -256,36 +171,36 @@ function resolveCellsUsingBombCount(obscuredCellIndexes: Set<number>, numBombs: 
     return results;
 }
 
-function discardObscuredCellsAdjacentToOnlyOneRevealedCell(
+function discardObscuredCellsAssociatedWithOnlyOneRevealedCell(
     obscuredCellIndexes: Set<number>,
-    revealedCells: Set<RevealedCellInfo>,
+    clues: ClueMap,
 ): number {
-    const revealedCellsByExclusiveAdjacentObscuredCellIndex = new Map<number, RevealedCellInfo>();
-    const revealedCellsWithOnlyExclusiveAdjacentObscuredCells = new Set<RevealedCellInfo>(revealedCells);
+    const cluesByExclusiveAssociatedObscuredCellIndex = new Map<number, Clue>();
+    const cluesWithOnlyExclusiveAssociatedObscuredCells = new Set<Clue>(clues.values());
 
-    // Filter out any revealed cells whose adjacent cells aren't exclusive.
-    for (const revealedCell of revealedCells.values()) {
-        for (const obscuredCell of revealedCell.adjacentObscuredCellIndexes) {
-            if (revealedCellsByExclusiveAdjacentObscuredCellIndex.has(obscuredCell)) {
+    // Filter out any revealed cells whose associated cells aren't exclusive.
+    for (const clue of clues.values()) {
+        for (const obscuredCell of clue.associatedObscuredIndexes) {
+            if (cluesByExclusiveAssociatedObscuredCellIndex.has(obscuredCell)) {
                 // This cell index isn't exclusive! gasp.
-                revealedCellsWithOnlyExclusiveAdjacentObscuredCells.delete(revealedCell);
+                cluesWithOnlyExclusiveAssociatedObscuredCells.delete(clue);
             }
             else {
                 // This cell index is exclusive, so far.
-                revealedCellsByExclusiveAdjacentObscuredCellIndex.set(obscuredCell, revealedCell);
+                cluesByExclusiveAssociatedObscuredCellIndex.set(obscuredCell, clue);
             }
         }
     }
 
-    if (revealedCellsWithOnlyExclusiveAdjacentObscuredCells.size === 0) {
+    if (cluesWithOnlyExclusiveAssociatedObscuredCells.size === 0) {
         return 0;
     }
 
-    // For each "all exclusive" revealed cell, reduce the bomb count by its value, and remove its adjacent cells from the set.
+    // For each "all exclusive" revealed cell, reduce the bomb count by its value, and remove its associated cells from the set.
     let numBombsDiscarded = 0;
-    for (const revealedCell of revealedCellsWithOnlyExclusiveAdjacentObscuredCells) {
-        numBombsDiscarded += revealedCell.numUnrevealedBombsAdjacent;
-        for (const obscuredCellIndex of revealedCell.adjacentObscuredCellIndexes) {
+    for (const clue of cluesWithOnlyExclusiveAssociatedObscuredCells) {
+        numBombsDiscarded += clue.numObscuredBombs;
+        for (const obscuredCellIndex of clue.associatedObscuredIndexes) {
             obscuredCellIndexes.delete(obscuredCellIndex);
         }
     }
@@ -293,7 +208,7 @@ function discardObscuredCellsAdjacentToOnlyOneRevealedCell(
     return numBombsDiscarded;
 }
 
-function groupRelatedCells(revealedCells: Set<RevealedCellInfo>): RevealedCellInfo[][] {
+function groupRelatedClues(clues: ClueMap): Clue[][] {
     /*
     const results: RevealedCellInfo[][] = [];
 
@@ -304,20 +219,20 @@ function groupRelatedCells(revealedCells: Set<RevealedCellInfo>): RevealedCellIn
     return results;
     */
 
-    return [[...revealedCells]];
+    return [[...clues.values()]];
 }
 
-function cellCheckIsSatified(cellCheck: RevealedCellInfo, resolutions: ResolvableCells) {
-    const numBombsInResolution = cellCheck.adjacentObscuredCellIndexes
+function cellCheckIsSatified(clue: Clue, resolutions: ResolvableCells) {
+    const numBombsInResolution = clue.associatedObscuredIndexes
         .filter(cellIndex => resolutions.get(cellIndex) === CellType.Bomb)
         .length;
 
-    return numBombsInResolution === cellCheck.numUnrevealedBombsAdjacent;
+    return numBombsInResolution === clue.numObscuredBombs;
 }
 
-function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs?: number): ResolvableCells | null {
-    const allObscuredCellIndexes = [...cellChecks.reduce((obscuredCellIndexes, cell) => {
-        for (const obscuredCellIndex of cell.adjacentObscuredCellIndexes) {
+function resolveRelatedClueGroup(clues: Clue[], maxNumBombs?: number): ResolvableCells | null {
+    const allObscuredCellIndexes = [...clues.reduce((obscuredCellIndexes, cell) => {
+        for (const obscuredCellIndex of cell.associatedObscuredIndexes) {
             obscuredCellIndexes.add(obscuredCellIndex);
         }
         return obscuredCellIndexes;
@@ -336,8 +251,8 @@ function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs?: n
 
             // For each combination, check that every cell in cellChecks is satisfied.
             let isValid = true;
-            for (const cellCheck of cellChecks) {
-                if (!cellCheckIsSatified(cellCheck, potentialResult)) {
+            for (const clue of clues) {
+                if (!cellCheckIsSatified(clue, potentialResult)) {
                     isValid = false;
                     break;
                 }
@@ -363,27 +278,16 @@ function resolveRelatedCellGroup(cellChecks: RevealedCellInfo[], maxNumBombs?: n
     };
 
     return validResults;
-    
-    // From reading around, this could also be done with matrices.
 }
 
-export function getResolvableCells(board: MinimumResolvableBoardInfo): ResolvableCells {
+export function getResolvableCells(board: MinimumResolvableBoardInfo, clues: ClueMap): ResolvableCells {
     let results: ResolvableCells;
-    const revealedCells = getRevealedCellInfo(board);
 
-    // For the simplest scenario, look at each revealed cell (with adjacent unrevealed cells) individually.
+    // For the simplest scenario, look at each revealed cell (with associated unrevealed cells) individually.
     // If any have the same number of outstanding bombs as they have unrevealed cells, those unrevealed cells can all resolve.
-    results = resolveIndividualCellCounts(revealedCells, board);
+    results = resolveIndividualClues(board, clues);
 
     // If the simplest scenario gave us any resolutions, return those.
-    if (results.size > 0) {
-        return results;
-    }
-
-    // Try resolving row clues next.
-    results = resolveIndividualRowClues(board);
-
-    // If rows gave us any resolutions, return those.
     if (results.size > 0) {
         return results;
     }
@@ -402,11 +306,11 @@ export function getResolvableCells(board: MinimumResolvableBoardInfo): Resolvabl
     }
 
     // Now resolve "related" groups of cells, where some info is known. Each group should not overlap at all.
-    const relatedCellGroups = groupRelatedCells(revealedCells);
+    const relatedClueGroups = groupRelatedClues(clues);
 
-    for (const relatedCellGroup of relatedCellGroups) {
+    for (const relatedClueGroup of relatedClueGroups) {
         // See if there's a single, unique combination for all cells in this group.
-        const groupResults = resolveRelatedCellGroup(relatedCellGroup, numBombs);
+        const groupResults = resolveRelatedClueGroup(relatedClueGroup, numBombs);
         
         if (groupResults) {
             groupResults.forEach((value, index) => results.set(index, value));
@@ -417,9 +321,9 @@ export function getResolvableCells(board: MinimumResolvableBoardInfo): Resolvabl
         return results;
     }
 
-    // Discard any cells from obscuredCellIndexes that are adjacent to only one revealed cell, reduce numBombs by that cell's amount, and re-run resolveCellsUsingBombCount on the obscured cells that remain.
+    // Discard any cells from obscuredCellIndexes that are associated to only one revealed cell, reduce numBombs by that cell's amount, and re-run resolveCellsUsingBombCount on the obscured cells that remain.
     if (numBombs !== undefined) {
-        const numRemainingBombsDiscarded = discardObscuredCellsAdjacentToOnlyOneRevealedCell(obscuredCellIndexes, revealedCells);
+        const numRemainingBombsDiscarded = discardObscuredCellsAssociatedWithOnlyOneRevealedCell(obscuredCellIndexes, clues);
         if (numRemainingBombsDiscarded > 0) {
             results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs - numRemainingBombsDiscarded);
         }

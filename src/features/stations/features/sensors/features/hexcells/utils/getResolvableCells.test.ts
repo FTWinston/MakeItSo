@@ -1,5 +1,7 @@
+import { MinimumResolvableBoardInfo } from '../types/CellBoard';
 import { CellType, CountType } from '../types/CellState';
-import { MinimumResolvableBoardInfo, getResolvableCells } from './getResolvableCells';
+import { getClues } from './getClues';
+import { getResolvableCells } from './getResolvableCells';
 
 describe('two cells', () => {
     test('obscured, 1', () => {
@@ -13,9 +15,11 @@ describe('two cells', () => {
                 number: 1,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ]
         ]));
     });
@@ -31,9 +35,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ]
         ]));
     });
@@ -49,9 +55,11 @@ describe('two cells', () => {
                 number: 0,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ]
         ]));
     });
@@ -67,9 +75,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ]
         ]));
     });
@@ -83,9 +93,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 1, CellType.Bomb ]
         ]));
@@ -100,9 +112,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ],
             [ 1, CellType.Empty ]
         ]));
@@ -117,9 +131,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
     
     test('flag, flag', () => {
@@ -131,9 +147,11 @@ describe('two cells', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
     
     test('2, obscured', () => {
@@ -147,9 +165,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(() => getResolvableCells(board)).toThrowError();
+        expect(() => getResolvableCells(board, clues)).toThrowError();
     });
 
     test('obscured, 2', () => {
@@ -163,9 +183,11 @@ describe('two cells', () => {
                 number: 2,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(() => getResolvableCells(board)).toThrowError();
+        expect(() => getResolvableCells(board, clues)).toThrowError();
     });
     
     test('flagged, 1', () => {
@@ -179,9 +201,11 @@ describe('two cells', () => {
                 number: 1,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
 
     test('1, flagged', () => {
@@ -195,9 +219,11 @@ describe('two cells', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
     
     test('flagged, 0', () => {
@@ -211,9 +237,11 @@ describe('two cells', () => {
                 number: 0,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(() => getResolvableCells(board)).toThrowError();
+        expect(() => getResolvableCells(board, clues)).toThrowError();
     });
     
     test('0, flagged', () => {
@@ -227,9 +255,11 @@ describe('two cells', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(() => getResolvableCells(board)).toThrowError();
+        expect(() => getResolvableCells(board, clues)).toThrowError();
     });
     
     test('flagged, obscured: one bomb', () => {
@@ -241,9 +271,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ]
         ]));
     });
@@ -257,9 +289,11 @@ describe('two cells', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ]
         ]));
     });
@@ -272,9 +306,11 @@ describe('two cells', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ]
         ]));
     });
@@ -288,9 +324,11 @@ describe('two cells', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ]
         ]));
     });
@@ -312,9 +350,11 @@ describe('four cells in a line', () => {
                 number: 0,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Empty ],
         ]));
     });
@@ -334,9 +374,11 @@ describe('four cells in a line', () => {
                 number: 0,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Empty ],
         ]));
     });
@@ -356,9 +398,11 @@ describe('four cells in a line', () => {
                 number: 0,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Empty ],
         ]));
     });
@@ -378,9 +422,11 @@ describe('four cells in a line', () => {
                 number: 1,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Bomb ],
         ]));
     });
@@ -398,9 +444,11 @@ describe('four cells in a line', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ],
             [ 1, CellType.Empty ],
         ]));
@@ -419,9 +467,11 @@ describe('four cells in a line', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
 
     test('obscured, obscured, bomb, bomb: two bombs', () => {
@@ -437,9 +487,11 @@ describe('four cells in a line', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 1, CellType.Bomb ],
         ]));
@@ -460,9 +512,11 @@ describe('four cells in a line', () => {
                 number: 1,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Bomb ],
         ]));
     });
@@ -482,9 +536,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
             [ 3, CellType.Empty ],
         ]));
@@ -505,9 +561,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
             [ 3, CellType.Empty ],
         ]));
@@ -528,9 +586,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(() => getResolvableCells(board)).toThrowError();
+        expect(() => getResolvableCells(board, clues)).toThrowError();
     });
 
     test('obscured, obscured, 1, obscured: one bomb', () => {
@@ -548,9 +608,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ], // Infer this from the only bomb being one of the other two.
         ]));
     });
@@ -570,9 +632,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ], // Infer this from one bomb being one of the other two.
         ]));
     });
@@ -592,9 +656,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(() => getResolvableCells(board)).toThrowError();
+        expect(() => getResolvableCells(board, clues)).toThrowError();
     });
 
     test('obscured, obscured, 2, obscured: two bombs', () => {
@@ -612,9 +678,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -635,9 +703,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 3,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -660,9 +730,11 @@ describe('four cells in a line', () => {
                 number: 1,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ],
             [ 2, CellType.Bomb ],
         ]));
@@ -685,9 +757,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -710,9 +784,11 @@ describe('four cells in a line', () => {
                 number: 0,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
             [ 2, CellType.Empty ],
         ]));
@@ -735,9 +811,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ],
             [ 3, CellType.Empty ],
         ]));
@@ -760,9 +838,11 @@ describe('four cells in a line', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -785,9 +865,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ],
             [ 3, CellType.Empty ],
         ]));
@@ -808,9 +890,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ], // Infer this from the bomb being one of the other two.
         ]));
     });
@@ -830,9 +914,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -853,9 +939,11 @@ describe('two by two', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
         ]));
     });
@@ -875,9 +963,11 @@ describe('two by two', () => {
                 type: CellType.Bomb,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ],
         ]));
     });
@@ -897,9 +987,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 3,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -922,9 +1014,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 3, CellType.Bomb ],
         ]));
@@ -947,9 +1041,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
 
     test('1, 1, 1, obscured', () => {
@@ -971,9 +1067,11 @@ describe('two by two', () => {
                 type: CellType.Obscured,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 3, CellType.Bomb ],
         ]));
     });
@@ -1002,9 +1100,11 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 0,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Empty ],
             [ 1, CellType.Empty ],
             [ 2, CellType.Empty ],
@@ -1036,9 +1136,11 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map());
+        expect(getResolvableCells(board, clues)).toEqual(new Map());
     });
     
     test('6 in the middle', () => {
@@ -1063,9 +1165,11 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 6,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 1, CellType.Bomb ],
             [ 2, CellType.Bomb ],
@@ -1099,11 +1203,13 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
         // This is one of those "overlapping set" situations.
         // Only the cell in both sets can be the bomb.
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
             [ 2, CellType.Empty ],
             [ 3, CellType.Empty ],
@@ -1138,11 +1244,13 @@ describe('Circle of seven cells', () => {
                 number: 1,
             }, null],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
         // This is the same "overlapping set" situation as above.
         // Only the cell in all three sets sets can be the bomb.
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
             [ 3, CellType.Empty ],
             [ 4, CellType.Bomb ],
@@ -1174,12 +1282,14 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
         // FIXME: More complicated "overlapping set" situation.
         // If the cell in both sets was the bomb, no one other cell could be the remaining bomb.
         // So the cell in both sets cannot be the bomb.
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 4, CellType.Empty ],
         ]));
     });
@@ -1210,13 +1320,15 @@ describe('Circle of seven cells', () => {
                 number: 2,
             }, null],
             numBombs: 3,
-        }
+        };
+
+        const clues = getClues(board);
         
         // More complicated version of the "overlapping set" situation as above.
         // If the cell in all three sets was the bomb, no combination of other cells leaves two bombs touching each clue.
         // So the cell in all three sets cannot be the bomb.
         // Hence, the other three cells must be bombs.
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Bomb ],
             [ 3, CellType.Bomb ],
             [ 4, CellType.Empty ],
@@ -1248,9 +1360,11 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 3,
-        }
+        };
 
-        expect(getResolvableCells(board)).toEqual(new Map([
+        const clues = getClues(board);
+
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Bomb ],
             [ 4, CellType.Bomb ],
         ]));
@@ -1280,9 +1394,11 @@ describe('Circle of seven cells', () => {
                 type: CellType.Obscured,
             }, null],
             numBombs: 3,
-        }
+        };
 
-        expect(getResolvableCells(board)).toEqual(new Map([
+        const clues = getClues(board);
+
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 3, CellType.Bomb ],
             [ 4, CellType.Bomb ],
         ]));
@@ -1305,9 +1421,11 @@ describe('contiguous & split', () => {
                 number: 2,
             }],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 1, CellType.Empty ],
         ]));
@@ -1330,9 +1448,11 @@ describe('contiguous & split', () => {
                 number: 2,
             }, null],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 2, CellType.Empty ],
         ]));
     });
@@ -1354,9 +1474,11 @@ describe('contiguous & split', () => {
                 number: 2,
             }, null],
             numBombs: 1,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 1, CellType.Empty ],
             [ 2, CellType.Bomb ],
             [ 3, CellType.Empty ],
@@ -1380,9 +1502,11 @@ describe('contiguous & split', () => {
                 number: 2,
             }, null],
             numBombs: 2,
-        }
+        };
+
+        const clues = getClues(board);
         
-        expect(getResolvableCells(board)).toEqual(new Map([
+        expect(getResolvableCells(board, clues)).toEqual(new Map([
             [ 0, CellType.Bomb ],
             [ 2, CellType.Empty ],
             [ 3, CellType.Bomb ],

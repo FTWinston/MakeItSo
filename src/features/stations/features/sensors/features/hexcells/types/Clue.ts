@@ -5,7 +5,8 @@ export interface Clue {
     associatedIndexes: Array<number | null>;
     loop: boolean;
     countType: CountType;
-    resolved: boolean;
+    numObscuredBombs: number;
+    associatedObscuredIndexes: number[];
 }
 
 export type ClueMap = Map<number, Clue>;

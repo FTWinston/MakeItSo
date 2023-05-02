@@ -1,8 +1,10 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell, UnderlyingCellState } from '../types/CellState';
+import { ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
-import { CellWithIndex, getAdjacentCells, getResolvableCells } from './getResolvableCells';
+import { updateClues } from './getClues';
+import { CellWithIndex, getResolvableCells } from './getResolvableCells';
 import { getRandom, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
 
@@ -40,6 +42,7 @@ interface PotentialClueInfo {
 
 interface GeneratingState extends CellBoardDefinition {
     config: FullConfig;
+    clues: ClueMap;
     rows: number;
     numBombs?: number;
     numBombsSoFar: number;
@@ -91,6 +94,7 @@ function createInitialState(config: FullConfig): GeneratingState {
 
     return {
         config,
+        clues: new Map(),
         rows,
         columns,
         cells,
@@ -105,7 +109,7 @@ function createInitialState(config: FullConfig): GeneratingState {
 
 /** Determine what cells can be resolved. If they're bombs, mark them as such. If they're empty, mark them unknown, and add to state.revealableIndexes. */
 function resolveCells(state: GeneratingState) {
-    const resolvableCells = getResolvableCells(state);
+    const resolvableCells = getResolvableCells(state, state.clues);
     const revealableIndexes: number[] = [];
 
     // Allocate and reveal any just-resolved bombs. Allocate just-resolved empty cells to unknown, and don't reveal them yet.
@@ -144,7 +148,7 @@ function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], 
         cell.countType = countType;
 
         // TODO: would be nice to avoid throwing the result of this away.
-        if (getResolvableCells(state).size > 0) {
+        if (getResolvableCells(state, state.clues).size > 0) {
             return true;
         }
 
@@ -172,7 +176,7 @@ function revealInitialCell(state: GeneratingState): GeneratingState {
 
         // If cells can be resolved after revealing this cell, or this was our last attempt,
         // return this draft state. Otherwise, discard it.
-        if (attempt < attempts && getResolvableCells(draftState).size === 0) {
+        if (attempt < attempts && getResolvableCells(draftState, draftState.clues).size === 0) {
             continue;
         }
 
@@ -182,8 +186,33 @@ function revealInitialCell(state: GeneratingState): GeneratingState {
     return state;
 }
 
+function getAssociatedCells(cellIndex: number, cells: Array<CellState | null>, clues: ClueMap): Array<CellWithIndex | null> {
+    const clue = clues.get(cellIndex);
+    if (!clue) {
+        return [];
+    }
+
+    return clue.associatedIndexes
+        .reduce((output, index) => {
+            if (index === null) {
+                output.push(null);
+            }
+            else {
+                const cell = cells[index];
+                
+                if (cell != null) {
+                    output.push({ index, cell });
+                }
+                else {
+                    output.push(null);
+                }
+            }
+            return output;
+        }, [] as Array<CellWithIndex | null>);
+}
+
 function addEmptyCellClue(state: GeneratingState, index: number) {
-    const adjacentCells = getAdjacentCells(index, state.underlying, state.columns, state.rows);
+    const adjacentCells = getAssociatedCells(index, state.underlying, state.clues);
     
     let numBombs = adjacentCells.filter(cell => cell?.cell.type === CellType.Bomb).length;
     const unallocated = adjacentCells.filter(cell => cell?.cell.type === CellType.Exploded) as CellWithIndex[];
@@ -320,6 +349,8 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
         else {
             state = addClue(state);
         }
+
+        updateClues(state, state.clues);
     }
 
     return createBoardDefinition(state);
@@ -328,6 +359,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
 function copyState(state: GeneratingState): GeneratingState {
     return {
         ...state,
+        clues: new Map(state.clues),
         cells: [...state.cells],
         underlying: [...state.underlying],
         initiallyRevealedIndexes: new Set(state.initiallyRevealedIndexes),
