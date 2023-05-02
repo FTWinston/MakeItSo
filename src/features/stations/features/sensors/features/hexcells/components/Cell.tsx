@@ -1,6 +1,6 @@
 import { useLongPress } from 'src/hooks/useLongPress';
 import { Box, styled } from 'src/lib/mui'
-import { CellType, CountType } from '../types/CellState';
+import { CellType, CountType, RowDirection } from '../types/CellState';
 import './Cell.css';
 
 export enum Special {
@@ -11,6 +11,7 @@ export enum Special {
 interface Props {
     cellType: CellType;
     countType?: CountType;
+    direction?: RowDirection;
     number?: number;
     special?: Special;
     onClick?: () => void;
@@ -26,9 +27,7 @@ const OuterBorderHexagon = styled(Box,
 (({ state, error, theme }) => {
     let backgroundColor, cursor;
     switch (state) {
-        case CellType.IndicatorVertical:
-        case CellType.IndicatorTLBR:
-        case CellType.IndicatorTRBL:
+        case CellType.RowClue:
             break;
         case CellType.Obscured:
             cursor = 'pointer';
@@ -58,8 +57,8 @@ const OuterBorderHexagon = styled(Box,
 
 const InnerFillHexagon = styled(Box,
     { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })
-    <{ state: CellType }>
-(({ state, theme }) => {
+    <{ state: CellType, direction?: RowDirection }>
+(({ state, direction, theme }) => {
     let backgroundColor, color, transform;
     switch (state) {
         case CellType.Obscured:
@@ -82,16 +81,25 @@ const InnerFillHexagon = styled(Box,
             backgroundColor = theme.palette.primary.dark;
             color = theme.palette.text.primary;
             break;
-        case CellType.IndicatorVertical:
+        case CellType.RowClue:
             color = theme.palette.background.paper;
-            break;
-        case CellType.IndicatorTLBR:
-            color = theme.palette.background.paper;
-            transform = 'rotate(-60deg)';
-            break;
-        case CellType.IndicatorTRBL:
-            color = theme.palette.background.paper;
-            transform = 'rotate(60deg)';
+            switch (direction) {
+                case RowDirection.TLBR:
+                    transform = 'rotate(-60deg)';
+                    break;
+                case RowDirection.TRBL:
+                    transform = 'rotate(60deg)';
+                    break;
+                case RowDirection.BottomToTop:
+                    transform = 'rotate(-180deg)';
+                    break;
+                case RowDirection.BLTR:
+                    transform = 'rotate(-120deg)';
+                    break;
+                case RowDirection.BRTL:
+                    transform = 'rotate(120deg)';
+                    break;
+            }
             break;
         case CellType.Exploded:
             backgroundColor = theme.palette.error.dark;
@@ -122,16 +130,10 @@ const GlowHexagon = styled(Box,
     { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'revealing' })<{ state: CellType, revealing: boolean }>(({ state, revealing }) => {
     let backgroundColor;
 
-    switch (state) {
-        case CellType.IndicatorVertical:
-        case CellType.IndicatorTLBR:
-        case CellType.IndicatorTRBL:
-            break;
-        default:
-            backgroundColor = revealing
-                ? 'rgba(255,255,255, 0.75)'
-                : 'rgba(255,255,255, 0.15)';
-            break;
+    if (state !== CellType.RowClue) {
+        backgroundColor = revealing
+            ? 'rgba(255,255,255, 0.75)'
+            : 'rgba(255,255,255, 0.15)';
     }
 
     return {
@@ -157,10 +159,8 @@ export const Cell: React.FC<Props> = props => {
 
     switch (props.cellType) {
         case CellType.Empty:
+        case CellType.RowClue:
         case CellType.RadiusClue:
-        case CellType.IndicatorVertical:
-        case CellType.IndicatorTLBR:
-        case CellType.IndicatorTRBL:
             switch (props.countType) {
                 case CountType.Split:
                     content = `-${props.number}-`;
@@ -187,7 +187,7 @@ export const Cell: React.FC<Props> = props => {
             error={props.special === Special.Error}
             {...handlers}
         >
-            <InnerFillHexagon state={props.cellType}>
+            <InnerFillHexagon state={props.cellType} direction={props.direction}>
                 <GlowHexagon state={props.cellType} revealing={props.special === Special.Revealing}>
                     <Text>
                         {content}

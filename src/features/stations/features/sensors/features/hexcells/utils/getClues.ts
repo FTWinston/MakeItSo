@@ -1,18 +1,10 @@
 import { MinimumResolvableBoardInfo } from '../types/CellBoard';
-import { CellType, CountType } from '../types/CellState';
-import { getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './getAdjacentIndexes';
+import { CellType } from '../types/CellState';
+import { ClueMap } from '../types/Clue';
+import { getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
-export interface ClueSolverInfo {
-    clueIndex: number;
-    associatedIndexes: Array<number | null>;
-    loop: boolean;
-    countType: CountType;
-    resolved: boolean;
-}
-
-export type SolverInfo = Map<number, ClueSolverInfo>;
-
-export function getSolverInfo(board: MinimumResolvableBoardInfo): SolverInfo {
+/** Get a map of all clues currently on the board. */
+export function getClues(board: MinimumResolvableBoardInfo): ClueMap {
     const info = new Map();
     
     addAvailableClues(board, info);
@@ -20,20 +12,21 @@ export function getSolverInfo(board: MinimumResolvableBoardInfo): SolverInfo {
     return info;
 }
 
-export function resolveSolvedClues(board: MinimumResolvableBoardInfo, clueSolvers: SolverInfo) {
-    const toResolve = [...clueSolvers.values()]
-        .filter(clue => !clue.associatedIndexes.some(index => index !== null && board.cells[index]?.type === CellType.Obscured))
-    
-    for (const clue of toResolve) {
-        clue.resolved = true;
+/** Any clue with no associated obscured cells is resolved. */
+function resolveSolvedClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
+    for (const clue of clues.values()) {
+        if (!clue.associatedIndexes.some(index => index !== null && board.cells[index]?.type === CellType.Obscured)) {
+            clue.resolved = true;
+        }
     }
 }
 
-export function addAvailableClues(board: MinimumResolvableBoardInfo, clueSolvers: SolverInfo) {
+/** Any empty, row or radius clue cell without an associated clue should have one added. */
+function addAvailableClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
     const rows = Math.ceil(board.cells.length / board.columns);
 
     for (let index = 0; index < board.cells.length; index++) {
-        if (clueSolvers.has(index)) {
+        if (clues.has(index)) {
             continue;
         }
 
@@ -62,7 +55,7 @@ export function addAvailableClues(board: MinimumResolvableBoardInfo, clueSolvers
         }
 
         if (associatedIndexes.some(index => index !== null && board.cells[index]?.type === CellType.Obscured)) {
-            clueSolvers.set(index, {
+            clues.set(index, {
                 clueIndex: index,
                 associatedIndexes,
                 countType: cell.countType,
@@ -71,4 +64,10 @@ export function addAvailableClues(board: MinimumResolvableBoardInfo, clueSolvers
             });
         }
     }
+}
+
+/** Resolve clues where appropriate, add any new ones. */
+export function updateClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
+    resolveSolvedClues(board, clues);
+    addAvailableClues(board, clues);
 }

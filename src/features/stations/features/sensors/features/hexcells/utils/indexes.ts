@@ -118,7 +118,64 @@ export function getIndexesInRadius(index: number, columns: number, rows: number)
         .map(coord => indexFromCoordinate(coord, columns));
 }
 
-export function getIndexesInRow(fromIndex: number, direction: RowDirection, columns: number, rows: number): Array<number | null> {
-    // TODO: this
-    return [];
+function step(coord: Coordinate, direction: RowDirection): Coordinate {
+    switch (direction) {
+        case RowDirection.TopToBottom:
+            return {
+                row: coord.row + 1,
+                col: coord.col,
+            };
+        case RowDirection.BottomToTop:    
+            return {
+                row: coord.row - 1,
+                col: coord.col,
+            };
+        case RowDirection.BLTR:
+            return {
+                row: coord.col % 2 === 0
+                    ? coord.row
+                    : coord.row - 1,
+                col: coord.col + 1,
+            };
+        case RowDirection.BRTL:
+            return {
+                row: coord.col % 2 === 0
+                    ? coord.row
+                    : coord.row - 1,
+                col: coord.col - 1,
+            };
+        case RowDirection.TLBR:
+            return {
+                row: coord.col % 2 === 0
+                    ? coord.row + 1
+                    : coord.row,
+                col: coord.col + 1,
+            };
+        case RowDirection.TRBL:
+            return {
+                row: coord.col % 2 === 0
+                    ? coord.row + 1
+                    : coord.row,
+                col: coord.col - 1,
+            };
+    }
+}
+
+export function getIndexesInRow(fromIndex: number, direction: RowDirection, columns: number, rows: number): number[] {
+    let coord = coordinateFromIndex(fromIndex, columns);
+
+    const results: number[] = [];
+
+    while (true) {
+        coord = step(coord, direction);
+
+        if (coord.col >= 0 && coord.col < columns && coord.row >= 0 && coord.row < rows) {
+            results.push(indexFromCoordinate(coord, columns));
+        }
+        else {
+            break;
+        }
+    }
+
+    return results;
 }

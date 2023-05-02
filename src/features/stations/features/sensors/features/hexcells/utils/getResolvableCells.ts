@@ -1,7 +1,7 @@
 import { MinimumResolvableBoardInfo } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell } from '../types/CellState';
 import { areValuesContiguous } from './areValuesContiguous';
-import { getAdjacentIndexes } from './getAdjacentIndexes';
+import { getAdjacentIndexes } from './indexes';
 
 export interface CellWithIndex {
     index: number;

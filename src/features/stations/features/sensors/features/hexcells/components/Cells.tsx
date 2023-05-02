@@ -75,6 +75,7 @@ export const Cells: React.FC<Props> = props => {
                 <Cell
                     cellType={explosionCascadeCells.has(index) ? CellType.Exploded : cell.type}
                     countType={(cell as any).countType}
+                    direction={(cell as any).direction}
                     number={(cell as any).number}
                     special={special}
                     onClick={() => {
@@ -82,9 +83,7 @@ export const Cells: React.FC<Props> = props => {
                             setRevealingIndex(index);
                             props.revealCell(index);
                         }
-                        if (cell.type === CellType.IndicatorVertical
-                            || cell.type === CellType.IndicatorTLBR
-                            || cell.type === CellType.IndicatorTRBL
+                        if (cell.type === CellType.RowClue
                             || cell.type === CellType.RadiusClue) {
                             // TODO: toggle indicator
                         }

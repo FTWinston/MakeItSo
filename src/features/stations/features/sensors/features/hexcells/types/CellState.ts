@@ -16,9 +16,12 @@ export enum CountType {
 }
 
 export enum RowDirection {
-    Vertical = 1,
-    TLBR = 2,
-    BLTR = 3,
+    TopToBottom = 1,
+    BottomToTop = 2,
+    TLBR = 3,
+    BLTR = 4,
+    BRTL = 5,
+    TRBL = 6,
 }
 
 export type EmptyCell = {

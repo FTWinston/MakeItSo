@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import { CellType, CountType } from '../types/CellState';
+import { CellType, CountType, RowDirection } from '../types/CellState';
 import { Cell, Special } from './Cell';
 
 export default {
@@ -81,25 +81,55 @@ export const DoubleRadius: Story = {
     }
 }
 
-export const Indicator1: Story = {
+export const RowTopToBottom: Story = {
     args: {
-        cellType: CellType.IndicatorVertical,
+        cellType: CellType.RowClue,
+        direction: RowDirection.TopToBottom,
         countType: CountType.Contiguous,
         number: 3,
     }
 }
 
-export const Indicator2: Story = {
+export const RowBottomToTop: Story = {
     args: {
-        cellType: CellType.IndicatorTLBR,
+        cellType: CellType.RowClue,
+        direction: RowDirection.BottomToTop,
         countType: CountType.Normal,
         number: 3,
     }
 }
 
-export const Indicator3: Story = {
+export const RowTLBR: Story = {
     args: {
-        cellType: CellType.IndicatorTRBL,
+        cellType: CellType.RowClue,
+        direction: RowDirection.TLBR,
+        countType: CountType.Split,
+        number: 3,
+    }
+}
+
+export const RowTRBL: Story = {
+    args: {
+        cellType: CellType.RowClue,
+        direction: RowDirection.TRBL,
+        countType: CountType.Split,
+        number: 3,
+    }
+}
+
+export const RowBLTR: Story = {
+    args: {
+        cellType: CellType.RowClue,
+        direction: RowDirection.BLTR,
+        countType: CountType.Split,
+        number: 3,
+    }
+}
+
+export const RowBRTL: Story = {
+    args: {
+        cellType: CellType.RowClue,
+        direction: RowDirection.BRTL,
         countType: CountType.Split,
         number: 3,
     }

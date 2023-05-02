@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAdjacentIndexes } from '../utils/getAdjacentIndexes';
+import { getAdjacentIndexes } from '../utils/indexes';
 
 /** Return a set of cell indexes that, once cascading is true, expands at a regular interval, adding all adjacent cells each time. */
 export function useCellCascade(
