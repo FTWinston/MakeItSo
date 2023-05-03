@@ -216,7 +216,7 @@ function revealInitialCell(state: GeneratingState): GeneratingState {
     return state;
 }
 
-function addClueFromAssociatedIndexes(
+function completeNewClue(
     state: GeneratingState,
     index: number,
     cell: EmptyCell | RowClue | RadiusClue,
@@ -289,7 +289,7 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
 
     const associatedIndexes = getAdjacentIndexes(index, state.columns, state.rows);
 
-    addClueFromAssociatedIndexes(state, index, cell, associatedIndexes);
+    completeNewClue(state, index, cell, associatedIndexes);
 }
 
 function addRowClue(state: GeneratingState, index: number, direction: RowDirection) {
@@ -302,7 +302,7 @@ function addRowClue(state: GeneratingState, index: number, direction: RowDirecti
 
     const associatedIndexes = getIndexesInRow(index, direction, state.columns, state.rows);
 
-    addClueFromAssociatedIndexes(state, index, cell, associatedIndexes);
+    completeNewClue(state, index, cell, associatedIndexes);
 }
 
 function addRadiusClue(state: GeneratingState, index: number) {
@@ -314,7 +314,7 @@ function addRadiusClue(state: GeneratingState, index: number) {
 
     const associatedIndexes = getIndexesInRadius(index, state.columns, state.rows);
 
-    addClueFromAssociatedIndexes(state, index, cell, associatedIndexes);
+    completeNewClue(state, index, cell, associatedIndexes);
 }
 
 /** Add a "normal" empty cell clue into each cell index provided. */
