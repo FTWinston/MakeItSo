@@ -4,7 +4,7 @@ import { ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { updateClues } from './getClues';
-import { CellWithIndex, getResolvableCells } from './getResolvableCells';
+import { CellWithIndex, ResolvableCells, getResolvableCells } from './getResolvableCells';
 import { getRandom, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
 
@@ -50,6 +50,7 @@ interface GeneratingState extends CellBoardDefinition {
     obscuredIndexes: Set<number>;
     potentialContiguousClueCells: PotentialClueInfo[];
     potentialSplitClueCells: PotentialClueInfo[];
+    nextResolvableCells?: ResolvableCells;
 }
 
 function expandConfig(config: GenerationConfig): FullConfig {
@@ -109,7 +110,11 @@ function createInitialState(config: FullConfig): GeneratingState {
 
 /** Determine what cells can be resolved. If they're bombs, mark them as such. If they're empty, mark them unknown, and add to state.revealableIndexes. */
 function resolveCells(state: GeneratingState) {
-    const resolvableCells = getResolvableCells(state, state.clues);
+    // If a previous step left some "pre-computed" resolvable cells, reuse those. Otherwise, resolve.
+    const resolvableCells = state.nextResolvableCells
+        ?? getResolvableCells(state, state.clues);
+    delete state.nextResolvableCells;
+
     const revealableIndexes: number[] = [];
 
     // Allocate and reveal any just-resolved bombs. Allocate just-resolved empty cells to unknown, and don't reveal them yet.
@@ -127,7 +132,12 @@ function resolveCells(state: GeneratingState) {
         }
     }
 
-    return revealableIndexes;
+    if (resolvableCells.size === 0) {
+        return false;
+    }
+    
+    revealCells(state, revealableIndexes);
+    return true;
 }
 
 function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], countType: CountType): boolean {
@@ -147,8 +157,10 @@ function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], 
         const prevType = cell.countType;
         cell.countType = countType;
 
-        // TODO: would be nice to avoid throwing the result of this away.
-        if (getResolvableCells(state, state.clues).size > 0) {
+        updateClues(state, state.clues);
+        const nextResolvableCells = getResolvableCells(state, state.clues);
+        if (nextResolvableCells.size > 0) {
+            state.nextResolvableCells = nextResolvableCells;
             return true;
         }
 
@@ -156,6 +168,16 @@ function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], 
         cell.countType = prevType;
     }
     
+    return false;
+}
+
+function tryAddRowClue(state: GeneratingState): boolean {
+    // TODO: this
+    return false;
+}
+
+function tryAddRadiusClue(state: GeneratingState): boolean {
+    // TODO: this
     return false;
 }
 
@@ -271,16 +293,17 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
 function revealCells(state: GeneratingState, revealableIndexes: number[]) {
     shuffle(revealableIndexes);
 
-    // TODO: Consider putting extra "unknown" clues into some of revealableIndexes, if there are a lot.
-
+    // Ensure that at least one cell is revealed to be a empty (i.e. a clue), rather than unknown.
+    let firstReveal = true;
     for (const indexToReveal of revealableIndexes) {
-        if (Math.random() <= state.config.unknownFraction) {
+        if (!firstReveal && Math.random() <= state.config.unknownFraction) {
             state.cells[indexToReveal] = state.underlying[indexToReveal] = {
                 type: CellType.Unknown,
             };
         }
         else {
             addEmptyCellClue(state, indexToReveal);
+            firstReveal = false;
         }
     }
 }
@@ -299,18 +322,16 @@ function addClue(state: GeneratingState): GeneratingState {
             return state;
         }
     }
-    /*
     else if (chance <= state.config.rowClueChance) {
-        // TODO
-
-        return state;
+        if (tryAddRowClue(state)) {
+            return state;
+        }
     }
     else if (chance <= state.config.radiusClueChance) {
-        // TODO
-
-        return state;
+        if (tryAddRadiusClue(state)) {
+            return state;
+        }
     }
-    */
 
     // When no other type of clue has been added, reveal an additional cell.
     return revealInitialCell(state);
@@ -341,12 +362,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
 
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
     while (state.obscuredIndexes.size > 0) {
-        const revealableIndexes = resolveCells(state);
-        
-        if (revealableIndexes.length > 0) {
-            revealCells(state, revealableIndexes);
-        }
-        else {
+        if (!resolveCells(state)) {
             state = addClue(state);
         }
 
