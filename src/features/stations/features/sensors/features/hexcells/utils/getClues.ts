@@ -23,14 +23,11 @@ function updateClue(clue: Clue, board: MinimumResolvableBoardInfo) {
         }
 
         const cell = board.cells[index];
-        if (cell === null) {
-            continue;
-        }
-
-        if (cell.type === CellType.Obscured) {
+        
+        if (cell?.type === CellType.Obscured) {
             obscuredIndexes.push(index);
         }
-        else if (cell.type === CellType.Bomb) {
+        else if (cell?.type === CellType.Bomb) {
             numBombsRevealed ++;
         }
     }

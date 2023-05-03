@@ -1,12 +1,13 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
-import { CellState, CellType, CountType, EmptyCell, UnderlyingCellState } from '../types/CellState';
+import { CellState, CellType, CountType, EmptyCell, RadiusClue, RowClue, RowDirection, UnderlyingCellState } from '../types/CellState';
 import { ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { updateClues } from './getClues';
-import { CellWithIndex, ResolvableCells, getResolvableCells } from './getResolvableCells';
+import { ResolvableCells, getResolvableCells } from './getResolvableCells';
 import { getRandom, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
+import { getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
 export interface GenerationConfig extends ShapeConfig {
     /** Fraction of obscured cells that will be revealed to be bombs. Lower values are easier. */
@@ -36,7 +37,7 @@ type FullConfig = Required<GenerationConfig> & {
 }
 
 interface PotentialClueInfo {
-    cell: EmptyCell;
+    cell: EmptyCell | RowClue;
     adjacentIndexes: number[]
 }
 
@@ -178,11 +179,13 @@ function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], 
 
 function tryAddRowClue(state: GeneratingState): boolean {
     // TODO: this
+    // addRowClue(state, index, direction)
     return false;
 }
 
 function tryAddRadiusClue(state: GeneratingState): boolean {
     // TODO: this
+    // addRadiusClue(state, index);
     return false;
 }
 
@@ -213,71 +216,54 @@ function revealInitialCell(state: GeneratingState): GeneratingState {
     return state;
 }
 
-function getAssociatedCells(cellIndex: number, cells: Array<CellState | null>, clues: ClueMap): Array<CellWithIndex | null> {
-    const clue = clues.get(cellIndex);
-    if (!clue) {
-        return [];
-    }
+function addClueFromAssociatedIndexes(
+    state: GeneratingState,
+    index: number,
+    cell: EmptyCell | RowClue | RadiusClue,
+    associatedIndexes: Array<number | null>,
+) {
+    const associatedCells = associatedIndexes
+        .map(index => index === null ? null : state.cells[index]);
+    
+    let numBombs = associatedCells.filter(cell => cell?.type === CellType.Bomb).length;
+    let hasAnyUnallocated = false;
 
-    return clue.associatedIndexes
-        .reduce((output, index) => {
-            if (index === null) {
-                output.push(null);
+    // Allocate associated cells now, so that our clue won't be made incorrect by a later allocation.
+    // But leave these cells obscured, for now.
+    for (let associationIndex = 0; associationIndex < associatedCells.length; associationIndex++) {
+        const associatedCell = associatedCells[associationIndex];
+
+        if (associatedCell?.type === CellType.Exploded) {
+            hasAnyUnallocated = true;
+
+            const associatedCellIndex = associatedIndexes[associationIndex]!;
+            const addBomb = Math.random() < state.config.bombFraction;
+
+            if (addBomb) {
+                numBombs ++;
+    
+                state.underlying[associatedCellIndex] = {
+                    type: CellType.Bomb,
+                }
             }
             else {
-                const cell = cells[index];
-                
-                if (cell != null) {
-                    output.push({ index, cell });
+                state.underlying[associatedCellIndex] = {
+                    type: CellType.Unknown,
                 }
-                else {
-                    output.push(null);
-                }
-            }
-            return output;
-        }, [] as Array<CellWithIndex | null>);
-}
-
-function addEmptyCellClue(state: GeneratingState, index: number) {
-    const adjacentCells = getAssociatedCells(index, state.underlying, state.clues);
-    
-    let numBombs = adjacentCells.filter(cell => cell?.cell.type === CellType.Bomb).length;
-    const unallocated = adjacentCells.filter(cell => cell?.cell.type === CellType.Exploded) as CellWithIndex[];
-
-    // Allocate adjacent cells now, so that our clue won't be made incorrect by a later allocation.
-    // But leave these cells obscured, for now.
-    for (const unallocatedCell of unallocated) {
-        const addBomb = Math.random() < state.config.bombFraction;
-
-        if (addBomb) {
-            numBombs ++;
-
-            state.underlying[unallocatedCell.index] = {
-                type: CellType.Bomb,
-            }
-        }
-        else {
-            state.underlying[unallocatedCell.index] = {
-                type: CellType.Unknown,
             }
         }
     }
 
-    const cell: EmptyCell = {
-        type: CellType.Empty,
-        countType: CountType.Normal,
-        number: numBombs,
-    }
+    cell.number = numBombs;
 
-    if (numBombs > 1) {
-        const contiguous = areValuesContiguous(adjacentCells, cell => cell?.cell.type === CellType.Bomb, true);
+    if (cell.type !== CellType.RadiusClue && numBombs > 1) {
+        const contiguous = areValuesContiguous(associatedCells, cell => cell?.type === CellType.Bomb, true);
         
-        if (unallocated.length > 0) {
+        if (hasAnyUnallocated) {
             const potentialUpgradeInfo: PotentialClueInfo = {
                 cell,
-                adjacentIndexes: adjacentCells
-                    .filter(cell => cell !== null)
-                    .map(cell => cell!.index)
+                adjacentIndexes: associatedIndexes
+                    .filter(index => index !== null) as number[],
             }
 
             if (contiguous) {
@@ -292,6 +278,43 @@ function addEmptyCellClue(state: GeneratingState, index: number) {
     }
 
     state.cells[index] = state.underlying[index] = cell;
+}
+
+function addEmptyCellClue(state: GeneratingState, index: number) {
+    const cell: EmptyCell = {
+        type: CellType.Empty,
+        countType: CountType.Normal,
+        number: 0,
+    }
+
+    const associatedIndexes = getAdjacentIndexes(index, state.columns, state.rows);
+
+    addClueFromAssociatedIndexes(state, index, cell, associatedIndexes);
+}
+
+function addRowClue(state: GeneratingState, index: number, direction: RowDirection) {
+    const cell: RowClue = {
+        type: CellType.RowClue,
+        countType: CountType.Normal,
+        direction,
+        number: 0,
+    }
+
+    const associatedIndexes = getIndexesInRow(index, direction, state.columns, state.rows);
+
+    addClueFromAssociatedIndexes(state, index, cell, associatedIndexes);
+}
+
+function addRadiusClue(state: GeneratingState, index: number) {
+    const cell: RadiusClue = {
+        type: CellType.RadiusClue,
+        countType: CountType.Normal,
+        number: 0,
+    }
+
+    const associatedIndexes = getIndexesInRadius(index, state.columns, state.rows);
+
+    addClueFromAssociatedIndexes(state, index, cell, associatedIndexes);
 }
 
 /** Add a "normal" empty cell clue into each cell index provided. */

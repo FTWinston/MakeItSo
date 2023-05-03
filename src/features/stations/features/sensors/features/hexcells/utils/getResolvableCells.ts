@@ -3,11 +3,6 @@ import { CellState, CellType, CountType } from '../types/CellState';
 import { Clue, ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 
-export interface CellWithIndex {
-    index: number;
-    cell: CellState;
-}
-
 export type ResolutionResult = CellType.Empty | CellType.Bomb;
 
 export type ResolvableCells = Map<number, ResolutionResult>;
