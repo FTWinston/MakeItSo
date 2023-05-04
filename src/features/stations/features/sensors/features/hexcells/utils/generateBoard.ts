@@ -223,9 +223,9 @@ function completeNewClue(
     associatedIndexes: Array<number | null>,
 ) {
     const associatedCells = associatedIndexes
-        .map(index => index === null ? null : state.cells[index]);
+        .map(index => index === null ? null : state.underlying[index]) as Array<CellState | null>;
     
-    let numBombs = associatedCells.filter(cell => cell?.type === CellType.Bomb).length;
+    let numBombs = 0;
     let hasAnyUnallocated = false;
 
     // Allocate associated cells now, so that our clue won't be made incorrect by a later allocation.
@@ -251,6 +251,9 @@ function completeNewClue(
                     type: CellType.Unknown,
                 }
             }
+        }
+        else if (associatedCell?.type === CellType.Bomb) {
+            numBombs++;
         }
     }
 
