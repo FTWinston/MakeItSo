@@ -116,6 +116,10 @@ function resolveCells(state: GeneratingState) {
         ?? getResolvableCells(state, state.clues);
     delete state.nextResolvableCells;
 
+    if (resolvableCells.size === 0) {
+        return false;
+    }
+    
     const revealableIndexes: number[] = [];
 
     // Allocate and reveal any just-resolved bombs. Allocate just-resolved empty cells to unknown, and don't reveal them yet.
@@ -133,10 +137,6 @@ function resolveCells(state: GeneratingState) {
         }
     }
 
-    if (resolvableCells.size === 0) {
-        return false;
-    }
-    
     revealCells(state, revealableIndexes);
     return true;
 }
