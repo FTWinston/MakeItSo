@@ -91,7 +91,7 @@ function addAvailableClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
 /** Update numUnresolved on existing clues, and add any new clues. */
 export function updateClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
     for (const clue of clues.values()) {
-        if (clue.numObscuredBombs !== 0) { // If a clue previously resolved all of its bombs, don't bother updating it.
+        if (clue.associatedObscuredIndexes.length !== 0) { // If a clue previously resolved all of its associated cells, don't bother updating it further.
             updateClue(clue, board);
         }
     }
