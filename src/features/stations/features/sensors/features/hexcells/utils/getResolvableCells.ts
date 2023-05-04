@@ -143,7 +143,7 @@ function getAllObscuredCellIndexes(board: MinimumResolvableBoardInfo): Set<numbe
     return new Set(indexes);
 }
 
-function resolveCellsUsingBombCount(obscuredCellIndexes: Set<number>, numBombs: number): ResolvableCells {
+function resolveCellsUsingBombCount(obscuredCellIndexes: ReadonlySet<number>, numBombs: number): ResolvableCells {
     const results: ResolvableCells = new Map();
     
     if (numBombs === 0) {
@@ -166,23 +166,23 @@ function resolveCellsUsingBombCount(obscuredCellIndexes: Set<number>, numBombs: 
     return results;
 }
 
-function discardObscuredCellsAssociatedWithOnlyOneRevealedCell(
+function discardObscuredCellsAssociatedWithOnlyOneClue(
     obscuredCellIndexes: Set<number>,
     clues: ClueMap,
 ): number {
-    const cluesByExclusiveAssociatedObscuredCellIndex = new Map<number, Clue>();
-    const cluesWithOnlyExclusiveAssociatedObscuredCells = new Set<Clue>(clues.values());
+    const obscuredCellIndexesAssociatedWithAnyClue = new Set<number>();
+    const cluesWithOnlyExclusiveAssociatedObscuredCells = new Set<Clue>([...clues.values()].filter(clue => clue.associatedObscuredIndexes.length > 0));
 
     // Filter out any revealed cells whose associated cells aren't exclusive.
     for (const clue of clues.values()) {
-        for (const obscuredCell of clue.associatedObscuredIndexes) {
-            if (cluesByExclusiveAssociatedObscuredCellIndex.has(obscuredCell)) {
-                // This cell index isn't exclusive! gasp.
+        for (const obscuredIndex of clue.associatedObscuredIndexes) {
+            if (obscuredCellIndexesAssociatedWithAnyClue.has(obscuredIndex)) {
+                // This cell index is already associated with another clue: it isn't exclusive!
                 cluesWithOnlyExclusiveAssociatedObscuredCells.delete(clue);
             }
             else {
                 // This cell index is exclusive, so far.
-                cluesByExclusiveAssociatedObscuredCellIndex.set(obscuredCell, clue);
+                obscuredCellIndexesAssociatedWithAnyClue.add(obscuredIndex);
             }
         }
     }
@@ -214,7 +214,7 @@ function groupRelatedClues(clues: ClueMap): Clue[][] {
     return results;
     */
 
-    return [[...clues.values()]];
+    return [[...clues.values()].filter(clue => clue.associatedObscuredIndexes.length > 0)];
 }
 
 function isClueSatisfied(clue: Clue, resolutions: ResolvableCells) {
@@ -244,9 +244,10 @@ function resolveRelatedClueGroup(clues: Clue[], maxNumBombs?: number): Resolvabl
     while (true) {
         // Don't consider combinations with more bombs than remain on the board.
         if (maxNumBombs === undefined || currentCombination.filter(value => value === CellType.Bomb).length <= maxNumBombs) {
-            const potentialResult = new Map(
-                allObscuredCellIndexes.map((obscuredCellIndex, lookupIndex) => [obscuredCellIndex, currentCombination[lookupIndex]])
-            );
+            const potentialResult = new Map();
+            for (let lookupIndex = 0; lookupIndex < currentCombination.length; lookupIndex++) {
+                potentialResult.set(allObscuredCellIndexes[lookupIndex], currentCombination[lookupIndex]);
+            }
 
             // For each combination, check that every cell in cellChecks is satisfied.
             let isValid = true;
@@ -322,7 +323,7 @@ export function getResolvableCells(board: MinimumResolvableBoardInfo, clues: Clu
 
     // Discard any cells from obscuredCellIndexes that are associated to only one revealed cell, reduce numBombs by that cell's amount, and re-run resolveCellsUsingBombCount on the obscured cells that remain.
     if (numBombs !== undefined) {
-        const numRemainingBombsDiscarded = discardObscuredCellsAssociatedWithOnlyOneRevealedCell(obscuredCellIndexes, clues);
+        const numRemainingBombsDiscarded = discardObscuredCellsAssociatedWithOnlyOneClue(obscuredCellIndexes, clues);
         if (numRemainingBombsDiscarded > 0) {
             results = resolveCellsUsingBombCount(obscuredCellIndexes, numBombs - numRemainingBombsDiscarded);
         }
