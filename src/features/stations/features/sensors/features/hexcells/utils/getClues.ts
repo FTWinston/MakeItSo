@@ -38,6 +38,31 @@ function updateClue(clue: Clue, board: MinimumResolvableBoardInfo) {
     clue.numObscuredBombs = cell.number - numBombsRevealed;
 }
 
+export function addClue(
+    board: MinimumResolvableBoardInfo,
+    clues: ClueMap,
+    index: number,
+    cell: EmptyCell | RowClue | RadiusClue,
+    associatedIndexes: Array<number | null>
+) {
+    const loop = cell.type === CellType.Empty;
+    
+    const clue: Clue = {
+        clueIndex: index,
+        associatedIndexes,
+        countType: cell.countType,
+        loop,
+        associatedObscuredIndexes: [],
+        numObscuredBombs: 0,
+    };
+
+    updateClue(clue, board);
+
+    clues.set(index, clue);
+
+    return clue;
+}
+
 /** Any empty, row or radius clue cell without an associated clue should have one added. */
 function addAvailableClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
     const rows = Math.ceil(board.cells.length / board.columns);
@@ -53,38 +78,21 @@ function addAvailableClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
         }
 
         let associatedIndexes: Array<number | null>;
-        let loop: boolean;
 
         if (cell.type === CellType.Empty) {
             associatedIndexes = getAdjacentIndexes(index, board.columns, rows);
-            loop = true;
         }
         else if (cell.type === CellType.RowClue) {
             associatedIndexes = getIndexesInRow(index, cell.direction, board.columns, rows)
-            loop = false;
         }
         else if (cell.type === CellType.RadiusClue) {
             associatedIndexes = getIndexesInRadius(index, board.columns, rows);
-            loop = false;
         }
         else {
             continue;
         }
 
-        if (associatedIndexes.some(index => index !== null && board.cells[index]?.type === CellType.Obscured)) {
-            const clue: Clue = {
-                clueIndex: index,
-                associatedIndexes,
-                countType: cell.countType,
-                loop,
-                associatedObscuredIndexes: [],
-                numObscuredBombs: 0,
-            };
-
-            updateClue(clue, board);
-
-            clues.set(index, clue);
-        }
+        addClue(board, clues, index, cell, associatedIndexes);
     }
 }
 
@@ -96,5 +104,4 @@ export function updateClues(board: MinimumResolvableBoardInfo, clues: ClueMap) {
         }
     }
 
-    addAvailableClues(board, clues);
 }

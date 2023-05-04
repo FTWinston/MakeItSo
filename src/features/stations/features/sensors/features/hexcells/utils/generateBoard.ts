@@ -1,9 +1,9 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
 import { CellState, CellType, CountType, EmptyCell, RadiusClue, RowClue, RowDirection, UnderlyingCellState } from '../types/CellState';
-import { ClueMap } from '../types/Clue';
+import { Clue, ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
-import { updateClues } from './getClues';
+import { addClue, updateClues } from './getClues';
 import { ResolvableCells, getResolvableCells } from './getResolvableCells';
 import { getRandom, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
@@ -36,11 +36,6 @@ type FullConfig = Required<GenerationConfig> & {
     fullChance: number;
 }
 
-interface PotentialClueInfo {
-    cell: EmptyCell | RowClue;
-    adjacentIndexes: number[]
-}
-
 interface GeneratingState extends CellBoardDefinition {
     config: FullConfig;
     clues: ClueMap;
@@ -49,8 +44,8 @@ interface GeneratingState extends CellBoardDefinition {
     numBombsSoFar: number;
     initiallyRevealedIndexes: Set<number>;
     obscuredIndexes: Set<number>;
-    potentialContiguousClueCells: PotentialClueInfo[];
-    potentialSplitClueCells: PotentialClueInfo[];
+    potentialContiguousClueCells: Clue[];
+    potentialSplitClueCells: Clue[];
     nextResolvableCells?: ResolvableCells;
 }
 
@@ -122,15 +117,16 @@ function resolveCells(state: GeneratingState) {
     
     const revealableIndexes: number[] = [];
 
-    // Allocate and reveal any just-resolved bombs. Allocate just-resolved empty cells to unknown, and don't reveal them yet.
-    // (All just-resolved bombs must be resolved before these can be allocated to Empty, as these may affect the clues!)
     for (const [index, cellType] of resolvableCells) {
         state.obscuredIndexes.delete(index);
 
+        // Allocate and reveal any just-resolved bombs.
         if (cellType === CellType.Bomb) {
             state.cells[index] = state.underlying[index] = { type: CellType.Bomb };
             state.numBombsSoFar++;
         }
+        // Allocate just-resolved empty cells to unknown, but don't reveal them yet.
+        // (All just-resolved bombs must be resolved before these can be allocated to Empty, as these may affect the clues we allocate!)
         else {
             state.underlying[index] = { type: CellType.Unknown };
             revealableIndexes.push(index);
@@ -141,27 +137,23 @@ function resolveCells(state: GeneratingState) {
     return true;
 }
 
-function tryModifyClue(state: GeneratingState, cellsToTry: PotentialClueInfo[], countType: CountType): boolean {
-    for (let tryIndex = 0; tryIndex < cellsToTry.length; tryIndex++) {
-        const { cell, adjacentIndexes } = cellsToTry[tryIndex];
+function tryModifyClue(state: GeneratingState, cluesToTry: Clue[], countType: CountType): boolean {
+    for (let tryIndex = 0; tryIndex < cluesToTry.length; tryIndex++) {
+        const clue = cluesToTry[tryIndex];
 
-        if (!adjacentIndexes.some(index => state.obscuredIndexes.has(index))) {
+        if (clue.associatedObscuredIndexes.length === 0) {
             // Nothing obscured next to this cell, it can't give us more info
             // if it is upgraded now, or in the future.
-            cellsToTry.splice(tryIndex, 1);
+            cluesToTry.splice(tryIndex, 1);
             tryIndex--;
             continue;
         }
-    
-        const clue = state.clues.get(tryIndex);
 
-        if (!clue) {
-            continue;
-        }
+        const cell = state.cells[clue.clueIndex] as EmptyCell | RowClue;
 
         // Try each that remains, until we find one that lets more cells
         // be revealed if its type is changed.
-        const prevType = cell.countType;
+        const prevType = clue.countType;
         clue.countType = cell.countType = countType;
 
         const nextResolvableCells = getResolvableCells(state, state.clues);
@@ -206,11 +198,9 @@ function revealInitialCell(state: GeneratingState): GeneratingState {
 
         // If cells can be resolved after revealing this cell, or this was our last attempt,
         // return this draft state. Otherwise, discard it.
-        if (attempt < attempts && getResolvableCells(draftState, draftState.clues).size === 0) {
-            continue;
+        if (attempt === attempts || getResolvableCells(draftState, draftState.clues).size > 0) {
+            return draftState;
         }
-
-        return draftState;
     }
 
     return state;
@@ -259,21 +249,17 @@ function completeNewClue(
 
     cell.number = numBombs;
 
+    const clue = addClue(state, state.clues, index, cell, associatedIndexes);
+
     if (cell.type !== CellType.RadiusClue && numBombs > 1) {
         const contiguous = areValuesContiguous(associatedCells, cell => cell?.type === CellType.Bomb, true);
         
         if (hasAnyUnallocated) {
-            const potentialUpgradeInfo: PotentialClueInfo = {
-                cell,
-                adjacentIndexes: associatedIndexes
-                    .filter(index => index !== null) as number[],
-            }
-
             if (contiguous) {
-                insertRandom(state.potentialContiguousClueCells, potentialUpgradeInfo);
+                insertRandom(state.potentialContiguousClueCells, clue);
             }
             else {
-                insertRandom(state.potentialSplitClueCells, potentialUpgradeInfo);
+                insertRandom(state.potentialSplitClueCells, clue);
             }
         }
         
@@ -340,7 +326,7 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
 }
 
 /** Add an initial clue of any allowed type onto the board, or enhance an existing clue. */
-function addClue(state: GeneratingState): GeneratingState {
+function pickAndAddClue(state: GeneratingState): GeneratingState {
     const chance = Math.random() * state.config.fullChance;
 
     if (chance <= state.config.contiguousClueChance) {
@@ -394,7 +380,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
     while (state.obscuredIndexes.size > 0) {
         if (!resolveCells(state)) {
-            state = addClue(state);
+            state = pickAndAddClue(state);
         }
 
         updateClues(state, state.clues);

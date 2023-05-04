@@ -217,10 +217,14 @@ function groupRelatedClues(clues: ClueMap): Clue[][] {
     return [[...clues.values()]];
 }
 
-function cellCheckIsSatified(clue: Clue, resolutions: ResolvableCells) {
-    const numBombsInResolution = clue.associatedObscuredIndexes
-        .filter(cellIndex => resolutions.get(cellIndex) === CellType.Bomb)
-        .length;
+function isClueSatisfied(clue: Clue, resolutions: ResolvableCells) {
+    let numBombsInResolution = 0;
+
+    for (const obscuredCellIndex of clue.associatedObscuredIndexes) {
+        if (resolutions.get(obscuredCellIndex) === CellType.Bomb) {
+            numBombsInResolution++;
+        }
+    }
 
     return numBombsInResolution === clue.numObscuredBombs;
 }
@@ -247,7 +251,7 @@ function resolveRelatedClueGroup(clues: Clue[], maxNumBombs?: number): Resolvabl
             // For each combination, check that every cell in cellChecks is satisfied.
             let isValid = true;
             for (const clue of clues) {
-                if (!cellCheckIsSatified(clue, potentialResult)) {
+                if (!isClueSatisfied(clue, potentialResult)) {
                     isValid = false;
                     break;
                 }
