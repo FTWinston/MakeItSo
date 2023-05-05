@@ -203,18 +203,56 @@ function discardObscuredCellsAssociatedWithOnlyOneClue(
     return numBombsDiscarded;
 }
 
-function groupRelatedClues(clues: ClueMap): Clue[][] {
-    /*
-    const results: RevealedCellInfo[][] = [];
+interface ClueGroup {
+    clues: Clue[];
+    obscuredCellIndexes: number[];
+}
 
-    for (const cell of revealedCells.values()) {
-        // TODO: work this out properly! Great performance gains for doing so!
+function groupRelatedClues(clues: ClueMap) {
+    const results = new Set<ClueGroup>();
+    const groupByObscuredCellIndex = new Map<number, ClueGroup>();
+
+    for (const clue of clues.values()) {
+        // Ignore fully-resolved clues.
+        if (clue.associatedObscuredIndexes.length === 0) {
+            continue;
+        }
+
+        // Create a new group immediately.
+        let currentGroup: ClueGroup = {
+            clues: [clue],
+            obscuredCellIndexes: [...clue.associatedObscuredIndexes]
+        }
+        results.add(currentGroup);
+
+        // For each of the current clue's cells, add a reference to the current group.
+        // If a cell is already linked to an existing group, merge the current group into that.
+        for (const obscuredCellIndex of clue.associatedObscuredIndexes) {
+            const moveToGroup = groupByObscuredCellIndex.get(obscuredCellIndex);
+            if (moveToGroup && moveToGroup !== currentGroup) {
+                // Dump currentGroup, merge it into moveToGroup.
+                for (const movingCellIndex of currentGroup.obscuredCellIndexes) {
+                    groupByObscuredCellIndex.set(movingCellIndex, moveToGroup);
+                }
+                moveToGroup.obscuredCellIndexes.push(...currentGroup.obscuredCellIndexes);
+                results.delete(currentGroup);
+
+                currentGroup = moveToGroup;
+            }
+            else {
+                groupByObscuredCellIndex.set(obscuredCellIndex, currentGroup);
+            }
+        }
+    }
+
+    // Remove any single-cell groups, cos they'll have been resolved individually already.
+    for (const group of results) {
+        if (group.clues.length === 1) {
+            results.delete(group);
+        }
     }
 
     return results;
-    */
-
-    return [[...clues.values()].filter(clue => clue.associatedObscuredIndexes.length > 0)];
 }
 
 function isClueSatisfied(clue: Clue, resolutions: ResolvableCells) {
@@ -229,29 +267,26 @@ function isClueSatisfied(clue: Clue, resolutions: ResolvableCells) {
     return numBombsInResolution === clue.numObscuredBombs;
 }
 
-function resolveRelatedClueGroup(clues: Clue[], maxNumBombs?: number): ResolvableCells | null {
-    const allObscuredCellIndexes = [...clues.reduce((obscuredCellIndexes, cell) => {
-        for (const obscuredCellIndex of cell.associatedObscuredIndexes) {
-            obscuredCellIndexes.add(obscuredCellIndex);
-        }
-        return obscuredCellIndexes;
-    }, new Set<number>())];
+function resolveRelatedClueGroup(group: ClueGroup, maxNumBombs?: number): ResolvableCells | null {
+    if (group.obscuredCellIndexes.length > 8) {
+        return null;
+    }
 
     let validResults: ResolvableCells | null = null;
 
-    const currentCombination = new Array<ResolutionResult>(allObscuredCellIndexes.length).fill(CellType.Empty);
+    const currentCombination = new Array<ResolutionResult>(group.obscuredCellIndexes.length).fill(CellType.Empty);
 
     while (true) {
         // Don't consider combinations with more bombs than remain on the board.
         if (maxNumBombs === undefined || currentCombination.filter(value => value === CellType.Bomb).length <= maxNumBombs) {
             const potentialResult = new Map();
             for (let lookupIndex = 0; lookupIndex < currentCombination.length; lookupIndex++) {
-                potentialResult.set(allObscuredCellIndexes[lookupIndex], currentCombination[lookupIndex]);
+                potentialResult.set(group.obscuredCellIndexes[lookupIndex], currentCombination[lookupIndex]);
             }
 
             // For each combination, check that every cell in cellChecks is satisfied.
             let isValid = true;
-            for (const clue of clues) {
+            for (const clue of group.clues) {
                 if (!isClueSatisfied(clue, potentialResult)) {
                     isValid = false;
                     break;
