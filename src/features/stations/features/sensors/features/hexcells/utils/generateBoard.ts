@@ -215,29 +215,22 @@ function tryAddRadiusClue(state: GeneratingState): boolean {
     return true;
 }
 
-function revealInitialCell(state: GeneratingState): GeneratingState {
+function revealInitialCell(state: GeneratingState) {
     // TODO: it's inefficient for this to be a Set here. But it's helpful elsewhere!
     const obscuredIndexes = [...state.obscuredIndexes]
         .filter(index => state.underlying[index]?.type !== CellType.Bomb);
 
-    // Reveal an obscured cell that allows us to resolve cells.
-    const attempts = 5;
-    for (let attempt = 1; attempt <= attempts; attempt++) {
-        const draftState = copyState(state);
-        const index = getRandom(obscuredIndexes)!;
-
-        draftState.initiallyRevealedIndexes.add(index);
-        draftState.obscuredIndexes.delete(index);
-        addEmptyCellClue(draftState, index);
-
-        // If cells can be resolved after revealing this cell, or this was our last attempt,
-        // return this draft state. Otherwise, discard it.
-        if (attempt === attempts || getResolvableCells(draftState, draftState.clues).size > 0) {
-            return draftState;
-        }
+    // If there's no cells that can be revealed, don't reveal any.
+    // (Won't we know that they're all bombs?)
+    if (obscuredIndexes.length === 0) {
+        return;
     }
 
-    return state;
+    // Reveal an obscured cell at random.
+    const index = getRandom(obscuredIndexes)!;
+    state.initiallyRevealedIndexes.add(index);
+    state.obscuredIndexes.delete(index);
+    addEmptyCellClue(state, index);
 }
 
 function completeNewClue(
@@ -360,32 +353,32 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
 }
 
 /** Add an initial clue of any allowed type onto the board, or enhance an existing clue. */
-function pickAndAddClue(state: GeneratingState): GeneratingState {
+function pickAndAddClue(state: GeneratingState) {
     const chance = Math.random() * state.config.fullChance;
 
     if (chance <= state.config.contiguousClueChance) {
         if (tryModifyClue(state, state.potentialContiguousClueCells, CountType.Contiguous)) {
-            return state;
+            return;
         }
     }
     else if (chance <= state.config.splitClueChance) {
         if (tryModifyClue(state, state.potentialSplitClueCells, CountType.Split)) {
-            return state;
+            return;
         }
     }
     else if (chance <= state.config.rowClueChance) {
         if (tryAddRowClue(state)) {
-            return state;
+            return;
         }
     }
     else if (chance <= state.config.radiusClueChance) {
         if (tryAddRadiusClue(state)) {
-            return state;
+            return;
         }
     }
 
     // When no other type of clue has been added, reveal an additional cell.
-    return revealInitialCell(state);
+    revealInitialCell(state);
 }
 
 /** Prepare the initial "display" version of the board, which has all cells obscured except for initially-revealed ones. */
@@ -410,11 +403,27 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
     const fullConfig = expandConfig(config);
 
     let state: GeneratingState = createInitialState(fullConfig);
+    let prevState = state;
+    let turnsSinceLastResolution = 0;
 
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
     while (state.obscuredIndexes.size > 0) {
         if (!resolveCells(state)) {
-            state = pickAndAddClue(state);
+            console.log('resolve cells failed, adding clue');
+
+            // If a new clue was just added and it didn't help, discard it, unless we've been stuck for a while.
+            if (++turnsSinceLastResolution < 20) {
+                state = prevState;
+            }
+
+            // Copy the state when adding a clue, so we can roll back if the clue we add isn't helpful.
+            state = copyState(state);
+            pickAndAddClue(state);
+        }
+        else {
+            prevState = state;
+            turnsSinceLastResolution = 0;
+            console.log('resolve cells succeeded');
         }
 
         updateClues(state, state.clues);
