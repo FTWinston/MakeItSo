@@ -181,9 +181,8 @@ function tryAddRadiusClue(state: GeneratingState): boolean {
         
         const coordinate = coordinateFromIndex(index, state.columns);
 
-        if (coordinate.col > 1 && coordinate.col < state.columns - 1
-            && coordinate.row > 1 && coordinate.row < state.rows - 1) {
-            // TODO: ensure there's nearby obscured cells?
+        if (coordinate.col > 1 && coordinate.col < state.columns - 2
+            && coordinate.row > 1 && coordinate.row < state.rows - 2) {
             addRadiusClue(state, index);
             return true;
         }
