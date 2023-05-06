@@ -5,7 +5,7 @@ import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { addClue, updateClues } from './getClues';
 import { ResolvableCells, getResolvableCells } from './getResolvableCells';
-import { getRandom, getRandomInt, insertRandom } from 'src/utils/random';
+import { deleteRandom, getRandom, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
 import { coordinateFromIndex, getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
@@ -46,6 +46,8 @@ interface GeneratingState extends CellBoardDefinition {
     obscuredIndexes: Set<number>;
     potentialContiguousClueCells: Clue[];
     potentialSplitClueCells: Clue[];
+    potentialRowClueIndexes: number[];
+    potentialRadiusClueIndexes: number[];
     nextResolvableCells?: ResolvableCells;
 }
 
@@ -89,6 +91,26 @@ function createInitialState(config: FullConfig): GeneratingState {
         return { type: CellType.Exploded };
     }) as Array<UnderlyingCellState | null>;
 
+    const potentialRowClueIndexes = cells.reduce((results, cell, index) => {
+        if (cell === null && getAdjacentIndexes(index, columns, rows)
+            .some(adjacentIndex => adjacentIndex !== null && cells[adjacentIndex] !== null)
+        ) {
+            insertRandom(results, index);
+        }
+        return results;
+    }, [] as number[]);
+
+    const potentialRadiusClueIndexes = cells.reduce((results, _cell, index) => {
+        const coordinate = coordinateFromIndex(index, columns);
+
+        if (coordinate.col > 1 && coordinate.col < columns - 2
+            && coordinate.row > 1 && coordinate.row < rows - 2
+        ) {
+            insertRandom(results, index);
+        }
+        return results;
+    }, [] as number[]);
+
     return {
         config,
         clues: new Map(),
@@ -101,6 +123,8 @@ function createInitialState(config: FullConfig): GeneratingState {
         obscuredIndexes,
         potentialContiguousClueCells: [],
         potentialSplitClueCells: [],
+        potentialRowClueIndexes,
+        potentialRadiusClueIndexes,
     };
 }
 
@@ -171,24 +195,24 @@ function tryModifyClue(state: GeneratingState, cluesToTry: Clue[], countType: Co
 
 function tryAddRowClue(state: GeneratingState): boolean {
     // TODO: this
+    const index = deleteRandom(state.potentialRowClueIndexes);
+    if (index === null) {
+        return false;
+    }
+
     // addRowClue(state, index, direction)
+    // return true;
     return false;
 }
 
 function tryAddRadiusClue(state: GeneratingState): boolean {
-    for (let attempt = 1; attempt <= 10; attempt++) {
-        const index = getRandomInt(state.cells.length);
-        
-        const coordinate = coordinateFromIndex(index, state.columns);
-
-        if (coordinate.col > 1 && coordinate.col < state.columns - 2
-            && coordinate.row > 1 && coordinate.row < state.rows - 2) {
-            addRadiusClue(state, index);
-            return true;
-        }
+    const index = deleteRandom(state.potentialRadiusClueIndexes);
+    if (index === null) {
+        return false;
     }
 
-    return false;
+    addRadiusClue(state, index);
+    return true;
 }
 
 function revealInitialCell(state: GeneratingState): GeneratingState {
@@ -200,7 +224,7 @@ function revealInitialCell(state: GeneratingState): GeneratingState {
     const attempts = 5;
     for (let attempt = 1; attempt <= attempts; attempt++) {
         const draftState = copyState(state);
-        const index = getRandom(obscuredIndexes);
+        const index = getRandom(obscuredIndexes)!;
 
         draftState.initiallyRevealedIndexes.add(index);
         draftState.obscuredIndexes.delete(index);
@@ -409,6 +433,8 @@ function copyState(state: GeneratingState): GeneratingState {
         obscuredIndexes: new Set(state.obscuredIndexes),
         potentialContiguousClueCells: [...state.potentialContiguousClueCells],
         potentialSplitClueCells: [...state.potentialSplitClueCells],
+        potentialRowClueIndexes: [...state.potentialRowClueIndexes],
+        potentialRadiusClueIndexes: [...state.potentialRadiusClueIndexes],
     };
 }
 
