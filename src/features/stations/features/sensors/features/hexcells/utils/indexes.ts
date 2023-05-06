@@ -1,11 +1,11 @@
 import { RowDirection } from '../types/CellState';
 
-interface Coordinate {
+export interface Coordinate {
     row: number;
     col: number;
 }
 
-function coordinateFromIndex(index: number, columns: number): Coordinate {
+export function coordinateFromIndex(index: number, columns: number): Coordinate {
     const col = index % columns;
     const row = Math.floor(index / columns);
 

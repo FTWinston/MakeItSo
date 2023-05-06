@@ -5,9 +5,9 @@ import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { addClue, updateClues } from './getClues';
 import { ResolvableCells, getResolvableCells } from './getResolvableCells';
-import { getRandom, insertRandom } from 'src/utils/random';
+import { getRandom, getRandomInt, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
-import { getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
+import { coordinateFromIndex, getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
 export interface GenerationConfig extends ShapeConfig {
     /** Fraction of obscured cells that will be revealed to be bombs. Lower values are easier. */
@@ -176,8 +176,19 @@ function tryAddRowClue(state: GeneratingState): boolean {
 }
 
 function tryAddRadiusClue(state: GeneratingState): boolean {
-    // TODO: this
-    // addRadiusClue(state, index);
+    for (let attempt = 1; attempt <= 10; attempt++) {
+        const index = getRandomInt(state.cells.length);
+        
+        const coordinate = coordinateFromIndex(index, state.columns);
+
+        if (coordinate.col > 1 && coordinate.col < state.columns - 1
+            && coordinate.row > 1 && coordinate.row < state.rows - 1) {
+            // TODO: ensure there's nearby obscured cells?
+            addRadiusClue(state, index);
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -248,6 +259,8 @@ function completeNewClue(
     }
 
     cell.number = numBombs;
+    
+    state.cells[index] = state.underlying[index] = cell;
 
     const clue = addClue(state, state.clues, index, cell, associatedIndexes);
 
@@ -265,8 +278,6 @@ function completeNewClue(
         
         // TODO: generate "excess" contiguous / split clues here?
     }
-
-    state.cells[index] = state.underlying[index] = cell;
 }
 
 function addEmptyCellClue(state: GeneratingState, index: number) {
