@@ -17,6 +17,7 @@ const config: GenerationConfig = {
     revealChance: 0.1,
     contiguousClueChance: 0.5,
     splitClueChance: 0.4,
+    remainingBombCountFraction: 0.33,
 };
 
 export const Component: React.FC = () => {

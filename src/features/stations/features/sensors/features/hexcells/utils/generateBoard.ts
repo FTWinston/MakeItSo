@@ -30,6 +30,9 @@ export interface GenerationConfig extends ShapeConfig {
 
     /** When generating, chance of upgrading a "normal" clue to indicate that adjacent bombs are not contiguous. */
     splitClueChance?: number;
+
+    /** Fraction of games that will require the remaining bomb count to be used to solve the last obscured cells. */
+    remainingBombCountFraction?: number;
 }
 
 type FullConfig = Required<GenerationConfig> & {
@@ -61,6 +64,7 @@ function expandConfig(config: GenerationConfig): FullConfig {
         rowClueChance: config.rowClueChance ?? 0,
         radiusClueChance: config.radiusClueChance ?? 0,
         revealChance: config.revealChance ?? 0,
+        remainingBombCountFraction: config.remainingBombCountFraction ?? 0,
         fullChance: 0,
     };
 
@@ -215,17 +219,7 @@ function tryAddRadiusClue(state: GeneratingState): boolean {
     return true;
 }
 
-function revealInitialCell(state: GeneratingState) {
-    // TODO: it's inefficient for this to be a Set here. But it's helpful elsewhere!
-    const obscuredIndexes = [...state.obscuredIndexes]
-        .filter(index => state.underlying[index]?.type !== CellType.Bomb);
-
-    // If there's no cells that can be revealed, don't reveal any.
-    // (Won't we know that they're all bombs?)
-    if (obscuredIndexes.length === 0) {
-        return;
-    }
-
+function revealInitialCell(state: GeneratingState, obscuredIndexes: number[]) {
     // Reveal an obscured cell at random.
     const index = getRandom(obscuredIndexes)!;
     state.initiallyRevealedIndexes.add(index);
@@ -376,9 +370,44 @@ function pickAndAddClue(state: GeneratingState) {
             return;
         }
     }
+    
+    // TODO: not helpful that obscuredIndexes is a Set here. Could it be an array? (Or both!?)
+    const allObscuredIndexes = [...state.obscuredIndexes];
+    const revealableIndexes = allObscuredIndexes
+        .filter(index => state.underlying[index]?.type !== CellType.Bomb);
+        
+    if (revealableIndexes.length === 0) {
+        console.log('addClue HAD TO pick remaining bomb count clue');
+        state.numBombs = state.obscuredIndexes.size;
+        return;
+    }
+
+    if (allObscuredIndexes.length <= 5 && Math.random() < state.config.remainingBombCountFraction) {
+        const anyMustBeBombs = allObscuredIndexes
+            .some(index => state.underlying[index]?.type === CellType.Bomb);
+        const anyMustBeEmpty = allObscuredIndexes
+            .some(index => state.underlying[index]?.type === CellType.Unknown);
+
+        if (!(anyMustBeBombs && anyMustBeEmpty)) {
+            let allBombs: boolean;
+            if (anyMustBeBombs) {
+                allBombs = true;
+            }
+            else if (anyMustBeEmpty) {
+                allBombs = false;
+            }
+            else {
+                allBombs = Math.random() < 0.5;
+            }
+            
+            console.log('addClue picked remaining bomb count clue');
+            state.numBombs = allBombs ? allObscuredIndexes.length : 0;
+            return;
+        }
+    }
 
     // When no other type of clue has been added, reveal an additional cell.
-    revealInitialCell(state);
+    revealInitialCell(state, revealableIndexes);
 }
 
 /** Prepare the initial "display" version of the board, which has all cells obscured except for initially-revealed ones. */
@@ -412,7 +441,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
             console.log('resolve cells failed, adding clue');
 
             // If a new clue was just added and it didn't help, discard it, unless we've been stuck for a while.
-            if (++turnsSinceLastResolution < 20) {
+            if (++turnsSinceLastResolution < 100) {
                 state = prevState;
             }
 
@@ -423,7 +452,6 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
         else {
             prevState = state;
             turnsSinceLastResolution = 0;
-            console.log('resolve cells succeeded');
         }
 
         updateClues(state, state.clues);
@@ -446,4 +474,3 @@ function copyState(state: GeneratingState): GeneratingState {
         potentialRadiusClueIndexes: [...state.potentialRadiusClueIndexes],
     };
 }
-
