@@ -39,6 +39,11 @@ type FullConfig = Required<GenerationConfig> & {
     fullChance: number;
 }
 
+interface RowClueOption {
+    index: number;
+    directions: RowDirection[];
+}
+
 interface GeneratingState extends CellBoardDefinition {
     config: FullConfig;
     clues: ClueMap;
@@ -49,7 +54,7 @@ interface GeneratingState extends CellBoardDefinition {
     obscuredIndexes: Set<number>;
     potentialContiguousClueCells: Clue[];
     potentialSplitClueCells: Clue[];
-    potentialRowClueIndexes: number[];
+    potentialRowClueIndexes: RowClueOption[];
     potentialRadiusClueIndexes: number[];
     nextResolvableCells?: ResolvableCells;
 }
@@ -81,6 +86,51 @@ function expandConfig(config: GenerationConfig): FullConfig {
     return fullConfig;
 }
 
+const allDirections = [
+    RowDirection.TopToBottom,
+    RowDirection.BottomToTop,
+    RowDirection.TLBR,
+    RowDirection.BLTR,
+    RowDirection.BRTL,
+    RowDirection.TRBL,
+]
+
+function getPotentialRowClueIndexes(cells: (CellState | null)[], columns: number, rows: number) {
+    return cells.reduce((results, cell, index) => {
+        if (cell === null && getAdjacentIndexes(index, columns, rows)
+            .some(adjacentIndex => adjacentIndex !== null && cells[adjacentIndex] !== null)) {
+            const directions = allDirections
+                .filter(dir => {
+                    const rowCells = getIndexesInRow(index, dir, columns, rows)
+                        .map(index => cells[index]);
+
+                    if (rowCells[0] === null) {
+                        return false;
+                    }
+
+                    return rowCells.filter(cell => cell !== null).length > 3;
+                });
+
+            if (directions.length > 0) {
+                insertRandom(results, { index, directions });
+            }
+        }
+        return results;
+    }, [] as RowClueOption[]);
+}
+
+function getPotentialRadiusClueIndexes(cells: (CellState | null)[], columns: number, rows: number) {
+    return cells.reduce((results, _cell, index) => {
+        const coordinate = coordinateFromIndex(index, columns);
+
+        if (coordinate.col > 1 && coordinate.col < columns - 2
+            && coordinate.row > 1 && coordinate.row < rows - 2) {
+            insertRandom(results, index);
+        }
+        return results;
+    }, [] as number[]);
+}
+
 /** Prepare the shape of the board, with every cell obscured, and any extra info needed for generation purposes. */
 function createInitialState(config: FullConfig): GeneratingState {
     const { cells, rows, columns } = generateBoardShape<CellState>(config, { type: CellType.Obscured });
@@ -95,26 +145,6 @@ function createInitialState(config: FullConfig): GeneratingState {
         return { type: CellType.Exploded };
     }) as Array<UnderlyingCellState | null>;
 
-    const potentialRowClueIndexes = cells.reduce((results, cell, index) => {
-        if (cell === null && getAdjacentIndexes(index, columns, rows)
-            .some(adjacentIndex => adjacentIndex !== null && cells[adjacentIndex] !== null)
-        ) {
-            insertRandom(results, index);
-        }
-        return results;
-    }, [] as number[]);
-
-    const potentialRadiusClueIndexes = cells.reduce((results, _cell, index) => {
-        const coordinate = coordinateFromIndex(index, columns);
-
-        if (coordinate.col > 1 && coordinate.col < columns - 2
-            && coordinate.row > 1 && coordinate.row < rows - 2
-        ) {
-            insertRandom(results, index);
-        }
-        return results;
-    }, [] as number[]);
-
     return {
         config,
         clues: new Map(),
@@ -127,8 +157,8 @@ function createInitialState(config: FullConfig): GeneratingState {
         obscuredIndexes,
         potentialContiguousClueCells: [],
         potentialSplitClueCells: [],
-        potentialRowClueIndexes,
-        potentialRadiusClueIndexes,
+        potentialRowClueIndexes: getPotentialRowClueIndexes(cells, columns, rows),
+        potentialRadiusClueIndexes: getPotentialRadiusClueIndexes(cells, columns, rows),
     };
 }
 
@@ -198,15 +228,18 @@ function tryModifyClue(state: GeneratingState, cluesToTry: Clue[], countType: Co
 }
 
 function tryAddRowClue(state: GeneratingState): boolean {
-    // TODO: this
-    const index = deleteRandom(state.potentialRowClueIndexes);
-    if (index === null) {
+    const clueInfo = deleteRandom(state.potentialRowClueIndexes);
+    if (clueInfo === null) {
         return false;
     }
 
-    // addRowClue(state, index, direction)
-    // return true;
-    return false;
+    const direction = getRandom(clueInfo.directions);
+    if (direction === null) {
+        return false;
+    }
+
+    addRowClue(state, clueInfo.index, direction)
+    return true;
 }
 
 function tryAddRadiusClue(state: GeneratingState): boolean {
@@ -312,6 +345,7 @@ function addRowClue(state: GeneratingState, index: number, direction: RowDirecti
 
     const associatedIndexes = getIndexesInRow(index, direction, state.columns, state.rows);
 
+    state.initiallyRevealedIndexes.add(index);
     completeNewClue(state, index, cell, associatedIndexes);
 }
 
@@ -324,6 +358,7 @@ function addRadiusClue(state: GeneratingState, index: number) {
 
     const associatedIndexes = getIndexesInRadius(index, state.columns, state.rows);
 
+    state.initiallyRevealedIndexes.add(index);
     completeNewClue(state, index, cell, associatedIndexes);
 }
 
