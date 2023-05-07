@@ -1,4 +1,5 @@
 import { getRandomInt } from 'src/utils/random';
+import { indexFromCoordinate } from './indexes';
 
 export interface ShapeConfig {
     orientation?: 'portrait' | 'landscape';
@@ -16,9 +17,9 @@ function determineSize(landscapeOrientation: boolean, numCells: number, numGaps:
     
     let rows = Math.sqrt(totalCells);
     rows *= Math.random() * 0.3 + 0.85;
-    rows = Math.ceil(rows);
+    rows = Math.ceil(rows) + 2;
 
-    let columns = Math.floor(totalCells / rows);
+    let columns = Math.floor(totalCells / rows) + 2;
 
     if (landscapeOrientation) {
         const tmp = rows;
@@ -26,7 +27,11 @@ function determineSize(landscapeOrientation: boolean, numCells: number, numGaps:
         columns = tmp;
     }
 
-    return { rows, columns };
+    return {
+        rows,
+        columns,
+        numIndexesExcludingBorder: (rows - 2) * (columns - 2),
+    };
 }
 
 /** Replace random cells with null, but do so symmetrically, either rotationally or mirrored. */
@@ -45,7 +50,7 @@ function placeNulls<TCellState>(board: Array<TCellState | null>, rows: number, c
         const middlestColumn = Math.ceil(columns / 2);
         const getIndex = (row: number, col: number) => row * columns + col;
 
-        for (let row = 0; row <= rows; row++) {
+        for (let row = 0; row < rows; row++) {
             for (let col = 0; col <= middlestColumn; col++) {
                 primaryIndexes.push(getIndex(row, col));
                 mirroredIndexes.push(getIndex(row, columns - col - 1));
@@ -73,12 +78,28 @@ function placeNulls<TCellState>(board: Array<TCellState | null>, rows: number, c
 }
 
 export function generateBoardShape<TCellState>(config: ShapeConfig, cell: TCellState) {
-    const { rows, columns } = determineSize(config.orientation === 'landscape', config.numCells, Math.round(config.gapFraction * config.numCells));
+    const numGaps = Math.round(config.gapFraction * config.numCells);
+
+    const {
+        rows,
+        columns,
+        numIndexesExcludingBorder 
+    } = determineSize(config.orientation === 'landscape', config.numCells, numGaps);
 
     const cells: Array<TCellState | null> = new Array(rows * columns)
         .fill(cell);
     
-    const numToRemove = cells.length - config.numCells
+    // Fill in nulls around the outer edge.
+    for (let col = 0; col < columns; col++) {
+        cells[indexFromCoordinate({ col, row: 0 }, columns)] = null;
+        cells[indexFromCoordinate({ col, row: rows - 1 }, columns)] = null;
+    }
+    for (let row = 1; row < rows - 1; row++) {
+        cells[indexFromCoordinate({ col: 0, row }, columns)] = null;
+        cells[indexFromCoordinate({ col: columns - 1, row }, columns)] = null;
+    }
+
+    const numToRemove = Math.round(config.gapFraction * numIndexesExcludingBorder);
     if (numToRemove > 0) {
         placeNulls(cells, rows, columns, numToRemove);
     }

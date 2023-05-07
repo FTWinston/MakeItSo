@@ -20,6 +20,7 @@ const Root = styled(Box)({
     alignItems: 'center',
     height: '100svh',
     position: 'relative',
+    overflow: 'hidden',
     padding: '0.25em 0.25em 3em 0.25em', // Extra bottom padding to fit letters in.
 });
 
@@ -99,8 +100,8 @@ export const Cells: React.FC<Props> = props => {
         )
     });
 
-    const cellSizeLimitByWidth = `calc((100vw - 0.5em) / ${columns + 1} / ${cellWidth * 0.75 - gapSize})`;
-    const cellSizeLimitByHeight = `calc((100svh - 3.5em) / ${rows + 0.75} / ${cellHeight + gapSize})`;
+    const cellSizeLimitByWidth = `calc((100vw - 0.5em) / ${columns} / ${cellWidth * 0.75 - gapSize})`;
+    const cellSizeLimitByHeight = `calc((100svh - 3.5em) / ${rows - 0.25} / ${cellHeight + gapSize})`;
     const containerStyle: React.CSSProperties = {
         gridTemplateColumns: `repeat(${columns}, ${cellWidth * 0.25 + gapSize * 0.5}em ${cellWidth * 0.5 + gapSize}em ) ${cellWidth * 0.25 + gapSize * 0.5}em`,
         gridTemplateRows: `repeat(${rows * 2}, ${cellHeight / 2 + gapSize}em)`,

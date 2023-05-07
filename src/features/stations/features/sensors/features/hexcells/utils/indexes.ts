@@ -12,7 +12,7 @@ export function coordinateFromIndex(index: number, columns: number): Coordinate 
     return { row, col };
 }
 
-function indexFromCoordinate(coordinate: Coordinate, columns: number): number {
+export function indexFromCoordinate(coordinate: Coordinate, columns: number): number {
     return coordinate.row * columns + coordinate.col;
 }
 
