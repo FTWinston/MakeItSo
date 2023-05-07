@@ -82,7 +82,7 @@ const InnerFillHexagon = styled(Box,
             color = theme.palette.text.primary;
             break;
         case CellType.RowClue:
-            color = theme.palette.background.paper;
+            color = theme.palette.text.disabled;
             switch (direction) {
                 case RowDirection.TLBR:
                     transform = 'rotate(-60deg)';
