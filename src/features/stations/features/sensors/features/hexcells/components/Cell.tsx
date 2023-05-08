@@ -84,20 +84,23 @@ const InnerFillHexagon = styled(Box,
         case CellType.RowClue:
             color = theme.palette.text.disabled;
             switch (direction) {
+                case RowDirection.TopToBottom:
+                    transform = 'translate(0, 0.6em)';
+                    break;
                 case RowDirection.TLBR:
-                    transform = 'rotate(-60deg)';
+                    transform = 'rotate(-60deg) translate(0, 0.6em)';
                     break;
                 case RowDirection.TRBL:
-                    transform = 'rotate(60deg)';
+                    transform = 'rotate(60deg) translate(0, 0.6em)';
                     break;
                 case RowDirection.BottomToTop:
-                    transform = 'rotate(-180deg)';
+                    transform = 'rotate(-180deg) translate(0, 0.6em)';
                     break;
                 case RowDirection.BLTR:
-                    transform = 'rotate(-120deg)';
+                    transform = 'rotate(-120deg) translate(0, 0.6em)';
                     break;
                 case RowDirection.BRTL:
-                    transform = 'rotate(120deg)';
+                    transform = 'rotate(120deg) translate(0, 0.6em)';
                     break;
             }
             break;
