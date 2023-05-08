@@ -1,5 +1,5 @@
 import { MinimumResolvableBoardInfo } from '../types/CellBoard';
-import { CellType, EmptyCell, RadiusClue, RowClue } from '../types/CellState';
+import { CellType, ClueCell } from '../types/CellState';
 import { Clue, ClueMap } from '../types/Clue';
 import { getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
@@ -32,7 +32,7 @@ function updateClue(clue: Clue, board: MinimumResolvableBoardInfo) {
         }
     }
 
-    const cell = board.cells[clue.clueIndex] as EmptyCell | RowClue | RadiusClue;
+    const cell = board.cells[clue.clueIndex] as ClueCell;
 
     clue.associatedObscuredIndexes = obscuredIndexes;
     clue.numObscuredBombs = cell.number - numBombsRevealed;
@@ -42,7 +42,7 @@ export function addClue(
     board: MinimumResolvableBoardInfo,
     clues: ClueMap,
     index: number,
-    cell: EmptyCell | RowClue | RadiusClue,
+    cell: ClueCell,
     associatedIndexes: Array<number | null>
 ) {
     const loop = cell.type === CellType.Empty;

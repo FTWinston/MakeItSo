@@ -1,4 +1,4 @@
-import { CellState, UnderlyingCellState } from './CellState';
+import { CellState, DisplayCellState, UnderlyingCellState } from './CellState';
 
 export interface CellBoardDefinition {
     columns: number;
@@ -7,18 +7,22 @@ export interface CellBoardDefinition {
 }
 
 interface InstanceInfo {
+    cells: Array<DisplayCellState | null>;
     numBombs: number;
     numErrors: number;
     result?: 'success' | 'failure';
     errorIndex?: number;
 }
 
-export type CellBoardInfo = Omit<CellBoardDefinition, 'underlying'> & InstanceInfo
+export interface MinimumResolvableBoardInfo {
+    columns: number;
+    cells: Array<CellState | null>;
+    numBombs?: number;
+}
 
-export type CellBoard = CellBoardDefinition & InstanceInfo;
+export type CellBoard = Omit<CellBoardDefinition, 'cells'> & InstanceInfo;
 
-export type MinimumResolvableBoardInfo = Pick<CellBoardInfo, 'cells' | 'columns'>
-    & Partial<Pick<CellBoardInfo, 'numBombs'>>;
+export type CellBoardInfo = Omit<CellBoardDefinition, 'cells' | 'underlying'> & InstanceInfo;
 
 export type CellBoardAction = {
     type: 'reveal';

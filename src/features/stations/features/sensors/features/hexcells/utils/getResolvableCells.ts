@@ -1,5 +1,5 @@
 import { MinimumResolvableBoardInfo } from '../types/CellBoard';
-import { CellState, CellType, CountType } from '../types/CellState';
+import { CellType, CountType } from '../types/CellState';
 import { Clue, ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 

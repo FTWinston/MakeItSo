@@ -35,19 +35,31 @@ export type RowClue = {
     direction: RowDirection;
     countType: CountType;
     number: number;
-}
+};
 
 export type RadiusClue = {
     type: CellType.RadiusClue;
     countType: CountType.Normal;
     number: number;
-}
+};
 
-export type UnderlyingCellState = EmptyCell | RowClue | RadiusClue
- | {
-    type: CellType.Unknown | CellType.Bomb;
-}
+type FixedClueCell = RowClue | RadiusClue;
+type NonClueCell = { type: CellType.Unknown | CellType.Bomb };
+type DisplayOnlyCell = { type: CellType.Obscured | CellType.Exploded | CellType.Hint }
+export type ClueCell = EmptyCell | FixedClueCell;
 
-export type CellState = UnderlyingCellState | {
-    type: CellType.Obscured | CellType.Exploded | CellType.Hint;
-}
+export type CellState = ClueCell | NonClueCell | DisplayOnlyCell;
+
+type ClueCellExtraUnderlying = { targetIndexes: number[]; };
+type RevealableCellExtraUnderlying = { clueIndexes: number[] };
+
+type ClueCellExtraDisplay = { resolved: boolean };
+
+export type UnderlyingCellState = 
+    (FixedClueCell & ClueCellExtraUnderlying)
+ |  (NonClueCell & RevealableCellExtraUnderlying)
+ |  (EmptyCell & ClueCellExtraUnderlying & RevealableCellExtraUnderlying);
+
+export type DisplayCellState = (ClueCell & ClueCellExtraDisplay)
+    | NonClueCell
+    | DisplayOnlyCell;

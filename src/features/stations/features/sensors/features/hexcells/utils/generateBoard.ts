@@ -1,5 +1,5 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
-import { CellState, CellType, CountType, EmptyCell, RadiusClue, RowClue, RowDirection, UnderlyingCellState } from '../types/CellState';
+import { DisplayCellState, CellType, CountType, EmptyCell, RadiusClue, RowClue, RowDirection, UnderlyingCellState, CellState, ClueCell } from '../types/CellState';
 import { Clue, ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
@@ -44,10 +44,13 @@ interface RowClueOption {
     directions: RowDirection[];
 }
 
-interface GeneratingState extends CellBoardDefinition {
+interface GeneratingState {
+    cells: Array<CellState | null>;
+    underlying: Array<CellState | null>;
     config: FullConfig;
     clues: ClueMap;
     rows: number;
+    columns: number;
     numBombs?: number;
     numBombsSoFar: number;
     initiallyRevealedIndexes: Set<number>;
@@ -207,7 +210,7 @@ function tryModifyClue(state: GeneratingState, cluesToTry: Clue[], countType: Co
             continue;
         }
 
-        const cell = state.cells[clue.clueIndex] as EmptyCell | RowClue;
+        const cell = state.cells[clue.clueIndex] as ClueCell;
 
         // Try each that remains, until we find one that lets more cells
         // be revealed if its type is changed.
@@ -263,7 +266,7 @@ function revealInitialCell(state: GeneratingState, obscuredIndexes: number[]) {
 function completeNewClue(
     state: GeneratingState,
     index: number,
-    cell: EmptyCell | RowClue | RadiusClue,
+    cell: ClueCell,
     associatedIndexes: Array<number | null>,
 ) {
     const associatedCells = associatedIndexes
@@ -445,21 +448,49 @@ function pickAndAddClue(state: GeneratingState) {
     revealInitialCell(state, revealableIndexes);
 }
 
-/** Prepare the initial "display" version of the board, which has all cells obscured except for initially-revealed ones. */
-function createBoardDefinition(state: GeneratingState) {    
-    const display: Array<CellState | null> = state.underlying
-        .map((cell, index) => {
-            if (cell === null || state.initiallyRevealedIndexes.has(index)) {
-                return cell;
-            }
+function createDisplayCell(state: GeneratingState, cell: CellState | null, index: number): CellState | null {
+    if (cell === null) {
+        return null;
+    }
 
-            return { type: CellType.Obscured };
-        });
+    // Only return state for revealed cells.
+    if (!state.initiallyRevealedIndexes.has(index)) {
+        return { type: CellType.Obscured };
+    }
 
+    return cell;
+}
+
+function createUnderlyingCell(state: GeneratingState, cell: CellState | null, index: number): UnderlyingCellState | null {
+    if (cell === null) {
+        return null;
+    }
+
+    const result = {
+        ...cell,
+    } as UnderlyingCellState;
+
+    if (result.type === CellType.Empty || result.type === CellType.RowClue || result.type === CellType.RadiusClue) {
+        result.targetIndexes = state.clues.get(index)?.associatedIndexes
+            .filter(index => index !== null) as number[]
+            ?? [];
+    }
+
+    if (result.type === CellType.Empty || result.type === CellType.Bomb || result.type === CellType.Unknown) {
+        result.clueIndexes = [...state.clues.values()]
+            .filter(clue => clue.associatedIndexes.includes(index))
+            .map(clue => clue.clueIndex);
+    }
+
+    return result;
+}
+
+/** Prepare the extra info that goes into "display" and "underlying" versions of the cells, such as obscuring display cells that aren't initially-revealed ones. */
+function createBoardDefinition(state: GeneratingState): CellBoardDefinition {
     return {
-        cells: display,
+        cells: state.underlying.map((cell, index) => createDisplayCell(state, cell, index)),
+        underlying: state.underlying.map((cell, index) => createUnderlyingCell(state, cell, index)),
         columns: state.columns,
-        underlying: state.underlying,
     };
 }
 

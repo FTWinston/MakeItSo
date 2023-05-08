@@ -14,6 +14,7 @@ interface Props {
     direction?: RowDirection;
     number?: number;
     special?: Special;
+    resolved?: boolean;
     onClick?: () => void;
     onLongPress?: () => void;
 }
@@ -56,9 +57,9 @@ const OuterBorderHexagon = styled(Box,
 });
 
 const InnerFillHexagon = styled(Box,
-    { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'countType' })
-    <{ state: CellType, direction?: RowDirection }>
-(({ state, direction, theme }) => {
+    { shouldForwardProp: (prop) => prop !== 'state' && prop !== 'fullyResolved' && prop !== 'countType' })
+    <{ state: CellType, fullyResolved?: boolean, direction?: RowDirection }>
+(({ state, fullyResolved, direction, theme }) => {
     let backgroundColor, color, transform;
     switch (state) {
         case CellType.Obscured:
@@ -71,7 +72,9 @@ const InnerFillHexagon = styled(Box,
             break;
         case CellType.Empty:
             backgroundColor = theme.palette.background.paper;
-            color = theme.palette.text.primary;
+            color = fullyResolved
+                ? theme.palette.text.disabled
+                : theme.palette.text.primary;
             break;
         case CellType.Unknown:
             backgroundColor = theme.palette.background.paper;
@@ -79,10 +82,14 @@ const InnerFillHexagon = styled(Box,
             break;
         case CellType.RadiusClue:
             backgroundColor = theme.palette.primary.dark;
-            color = theme.palette.text.primary;
+            color = fullyResolved
+                ? theme.palette.text.disabled
+                : theme.palette.text.primary;
             break;
         case CellType.RowClue:
-            color = theme.palette.text.disabled;
+            color = fullyResolved
+                ? theme.palette.text.disabled
+                : theme.palette.text.primary;
             switch (direction) {
                 case RowDirection.TopToBottom:
                     transform = 'translate(0, 0.6em)';
@@ -190,7 +197,7 @@ export const Cell: React.FC<Props> = props => {
             error={props.special === Special.Error}
             {...handlers}
         >
-            <InnerFillHexagon state={props.cellType} direction={props.direction}>
+            <InnerFillHexagon state={props.cellType} fullyResolved={props.resolved} direction={props.direction}>
                 <GlowHexagon state={props.cellType} revealing={props.special === Special.Revealing}>
                     <Text>
                         {content}
