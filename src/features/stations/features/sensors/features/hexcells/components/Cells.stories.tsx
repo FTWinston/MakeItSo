@@ -15,6 +15,7 @@ const CellsWithReducer: React.FC<GenerationConfig> = config => {
             columns={board.columns}
             revealCell={index => setTimeout(() => dispatch({ type: 'reveal', index }), 200)}
             flagCell={index => setTimeout(() => dispatch({ type: 'flag', index }), 200)}
+            getHint={() => dispatch({ type: 'hint' })}
             numBombs={board.numBombs}
             numErrors={board.numErrors}
             result={board.result}

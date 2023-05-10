@@ -14,6 +14,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
             // Intentionally skip resolved property now, will handle in subsequent loop.
             return { ...cell } as DisplayCellState;
         }),
+        hints: definition.hints,
         numErrors: 0,
         numBombs: definition.underlying
             .filter(cell => cell?.type === CellType.Bomb)

@@ -1,7 +1,7 @@
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { CellBoard, CellBoardAction } from '../types/CellBoard';
 import { CellType, DisplayCellState } from '../types/CellState';
-import { isClueResolved, markCluesAsResolved } from './resolved';
+import { isClueResolved, isObscured, markCluesAsResolved } from './resolved';
 
 export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellBoard | void {
     switch (action.type) {
@@ -11,7 +11,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
             
             const currentState = state.cells[action.index];
-            if (!currentState || currentState?.type !== CellType.Obscured) {
+            if (!isObscured(currentState)) {
                 return;
             }
 
@@ -64,7 +64,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
 
             const currentState = state.cells[action.index];
-            if (!currentState || currentState?.type !== CellType.Obscured) {
+            if (!isObscured(currentState)) {
                 return;
             }
 
@@ -95,6 +95,20 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
 */
             }
 
+            return;
+        }
+        case 'hint': {
+            for (let i = 0; i < state.hints.length; i++) {
+                const hintIndex = state.hints[i];
+                const hintCell = state.cells[hintIndex];
+
+                // When we find a still-valid hint, apply that, and remove any prior hints, as they're all no longer valid.
+                if (isObscured(hintCell)) {
+                    state.cells[hintIndex] = { type: CellType.Hint };
+                    state.hints.splice(0, i);
+                    break;
+                }
+            }
             return;
         }
         case 'new': {

@@ -1,15 +1,18 @@
 import { CellBoard } from '../types/CellBoard';
-import { CellType } from '../types/CellState';
+import { CellType, DisplayCellState } from '../types/CellState';
+
+export function isObscured(cell: DisplayCellState | null) {
+    if (cell === null) {
+        return false;
+    }
+    
+    return cell.type === CellType.Obscured || cell.type === CellType.Hint;
+}
 
 export function isClueResolved(state: CellBoard, targetIndexes: number[]): boolean {
-    const numResolved = targetIndexes.filter(index => {
-        const cell = state.cells[index];
-        return cell?.type !== CellType.Obscured;
-    }).length;
-
     return targetIndexes.every(index => {
         const cell = state.cells[index];
-        return cell?.type !== CellType.Obscured;
+        return !isObscured(cell);
     });
 }
 

@@ -41,6 +41,7 @@ export const Component: React.FC = () => {
                 columns={board.columns}
                 revealCell={index => dispatch({ type: 'reveal', index })}
                 flagCell={index => dispatch({ type: 'flag', index })}
+                getHint={() => dispatch({ type: 'hint' })}
                 numBombs={board.numBombs}
                 numErrors={board.numErrors}
                 result={board.result}

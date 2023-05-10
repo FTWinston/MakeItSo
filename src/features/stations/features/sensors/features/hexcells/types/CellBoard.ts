@@ -4,6 +4,7 @@ export interface CellBoardDefinition {
     columns: number;
     cells: Array<CellState | null>;
     underlying: Array<UnderlyingCellState | null>;
+    hints: number[];
 }
 
 interface InstanceInfo {
@@ -22,7 +23,7 @@ export interface MinimumResolvableBoardInfo {
 
 export type CellBoard = Omit<CellBoardDefinition, 'cells'> & InstanceInfo;
 
-export type CellBoardInfo = Omit<CellBoardDefinition, 'cells' | 'underlying'> & InstanceInfo;
+export type CellBoardInfo = Omit<CellBoardDefinition, 'cells' | 'underlying' | 'hints'> & InstanceInfo;
 
 export type CellBoardAction = {
     type: 'reveal';
@@ -30,6 +31,8 @@ export type CellBoardAction = {
 } | {
     type: 'flag';
     index: number;
+} | {
+    type: 'hint';
 } | {
     type: 'new';
     board: CellBoard;

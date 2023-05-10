@@ -31,6 +31,7 @@ const OuterBorderHexagon = styled(Box,
         case CellType.RowClue:
             break;
         case CellType.Obscured:
+        case CellType.Hint:
             cursor = 'pointer';
         default:
             backgroundColor = theme.palette.text.primary;
@@ -148,6 +149,7 @@ const GlowHexagon = styled(Box,
 
     return {
         fontSize: '0.85em',
+        fontWeight: state === CellType.Hint ? undefined : 'bold',
         width: `${cellWidth}em`,
         height: `${cellHeight}em`,
         clipPath: 'polygon(75% 0, 100% 50%, 75% 100%, 25% 100%, 0 50%, 25% 0)',
@@ -160,7 +162,6 @@ const GlowHexagon = styled(Box,
 });
 
 const Text = styled(Box)({
-    fontWeight: 'bold',
     fontSize: '1.2em',
 })
 
@@ -186,6 +187,9 @@ export const Cell: React.FC<Props> = props => {
             break;
         case CellType.Unknown:
             content = '?';
+            break;
+        case CellType.Hint:
+            content = '!';
             break;
     }
 

@@ -1,5 +1,5 @@
 import type { CellBoardDefinition } from '../types/CellBoard';
-import { DisplayCellState, CellType, CountType, EmptyCell, RadiusClue, RowClue, RowDirection, UnderlyingCellState, CellState, ClueCell } from '../types/CellState';
+import { CellType, CountType, EmptyCell, RadiusClue, RowClue, RowDirection, UnderlyingCellState, CellState, ClueCell } from '../types/CellState';
 import { Clue, ClueMap } from '../types/Clue';
 import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
@@ -48,6 +48,7 @@ interface GeneratingState {
     cells: Array<CellState | null>;
     underlying: Array<CellState | null>;
     config: FullConfig;
+    hints: number[];
     clues: ClueMap;
     rows: number;
     columns: number;
@@ -155,6 +156,7 @@ function createInitialState(config: FullConfig): GeneratingState {
         columns,
         cells,
         underlying,
+        hints: [],
         numBombsSoFar: 0,
         initiallyRevealedIndexes: new Set(),
         obscuredIndexes,
@@ -178,8 +180,14 @@ function resolveCells(state: GeneratingState) {
     
     const revealableIndexes: number[] = [];
 
+    // Add the index of every resolvable cell to the hints, in a random order.
+    const resolvableIndexes = [...resolvableCells.keys()];
+    shuffle(resolvableIndexes)
+    state.hints.push(...resolvableIndexes);
+
     for (const [index, cellType] of resolvableCells) {
         state.obscuredIndexes.delete(index);
+        state.hints.push(index);
 
         // Allocate and reveal any just-resolved bombs.
         if (cellType === CellType.Bomb) {
@@ -367,8 +375,6 @@ function addRadiusClue(state: GeneratingState, index: number) {
 
 /** Add a "normal" empty cell clue into each cell index provided. */
 function revealCells(state: GeneratingState, revealableIndexes: number[]) {
-    shuffle(revealableIndexes);
-
     // Ensure that at least one cell is revealed to be a empty (i.e. a clue), rather than unknown.
     let firstReveal = true;
     for (const indexToReveal of revealableIndexes) {
@@ -489,6 +495,7 @@ function createBoardDefinition(state: GeneratingState): CellBoardDefinition {
         cells: state.underlying.map((cell, index) => createDisplayCell(state, cell, index)),
         underlying: state.underlying.map((cell, index) => createUnderlyingCell(state, cell, index)),
         columns: state.columns,
+        hints: state.hints,
     };
 }
 
@@ -528,6 +535,7 @@ function copyState(state: GeneratingState): GeneratingState {
         clues: new Map(state.clues),
         cells: [...state.cells],
         underlying: [...state.underlying],
+        hints: [...state.hints],
         initiallyRevealedIndexes: new Set(state.initiallyRevealedIndexes),
         obscuredIndexes: new Set(state.obscuredIndexes),
         potentialContiguousClueCells: [...state.potentialContiguousClueCells],

@@ -1,14 +1,16 @@
-import { Box, styled, Typography } from 'src/lib/mui'
+import { Box, Button, styled, Typography } from 'src/lib/mui'
 import { useCellCascade } from '../hooks/useCellCascade';
 import { useTemporaryValue } from 'src/hooks/useTemporaryValue';
 import { CellBoardInfo } from '../types/CellBoard';
 import { CellType } from '../types/CellState';
 import { Cell, cellHeight, cellWidth, Special } from './Cell';
 import { useState } from 'react';
+import { isObscured } from '../utils/resolved';
 
 interface Props extends CellBoardInfo {
     revealCell: (index: number) => void;
     flagCell: (index: number) => void;
+    getHint: () => void;
     errorIndex?: number;
 }
 
@@ -35,6 +37,14 @@ const CellContainer = styled('ul')(({ theme }) => ({
 const CellWrapper = styled('li')({
     position: 'relative',
 });
+
+const HintButton = styled(Button)({
+    position: 'absolute',
+    bottom: 0,
+    left: 'auto',
+    right: 'auto',
+    marginBottom: '0.25em',
+})
 
 export const Cells: React.FC<Props> = props => {
     const { columns, cells } = props;
@@ -81,7 +91,7 @@ export const Cells: React.FC<Props> = props => {
                     number={(cell as any).number}
                     special={special}
                     onClick={() => {
-                        if (cell.type === CellType.Obscured && !props.result) {
+                        if (isObscured(cell) && !props.result) {
                             setRevealingIndex(index);
                             props.revealCell(index);
                         }
@@ -91,7 +101,7 @@ export const Cells: React.FC<Props> = props => {
                         }
                     }}
                     onLongPress={() => {
-                        if (cell.type === CellType.Obscured && !props.result) {
+                        if (isObscured(cell) && !props.result) {
                             setRevealingIndex(index);
                             props.flagCell(index);
                         }
@@ -127,6 +137,12 @@ export const Cells: React.FC<Props> = props => {
             >
                 {props.numBombs}
             </Typography>
+            <HintButton
+                color="success"
+                onClick={props.getHint}
+            >
+                hint
+            </HintButton>
             <Typography
                 fontSize="2em !important"
                 color="secondary"
