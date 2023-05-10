@@ -1,7 +1,7 @@
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { CellBoard, CellBoardAction } from '../types/CellBoard';
 import { CellType, DisplayCellState } from '../types/CellState';
-import { areCluesResolved, markCluesAsResolved } from './resolved';
+import { isClueResolved, markCluesAsResolved } from './resolved';
 
 export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellBoard | void {
     switch (action.type) {
@@ -37,7 +37,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                     type: underlyingState.type,
                     countType: underlyingState.countType,
                     number: underlyingState.number,
-                    resolved: areCluesResolved(state, underlyingState.clueIndexes),
+                    resolved: isClueResolved(state, underlyingState.targetIndexes),
                 };
 
                 state.cells[action.index] = display;

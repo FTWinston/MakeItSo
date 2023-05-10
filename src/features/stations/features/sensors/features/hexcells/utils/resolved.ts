@@ -13,21 +13,6 @@ export function isClueResolved(state: CellBoard, targetIndexes: number[]): boole
     });
 }
 
-export function areCluesResolved(state: CellBoard, clueIndexes: number[]): boolean {
-    return clueIndexes.every(clueIndex => {
-        const clueCell = state.underlying[clueIndex];
-        if (!clueCell) {
-            return true;
-        }
-
-        if (clueCell.type === CellType.Empty || clueCell.type === CellType.RowClue || clueCell.type === CellType.RadiusClue) {
-            return isClueResolved(state, clueCell.targetIndexes);
-        }
-
-        return true;
-    }); 
-}
-
 export function markCluesAsResolved(state: CellBoard, clueIndexes: number[]) {
     for (const clueIndex of clueIndexes) {
         const clueCell = state.underlying[clueIndex];
