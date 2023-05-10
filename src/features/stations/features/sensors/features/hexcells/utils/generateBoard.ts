@@ -415,7 +415,6 @@ function pickAndAddClue(state: GeneratingState) {
         .filter(index => state.underlying[index]?.type !== CellType.Bomb);
         
     if (revealableIndexes.length === 0) {
-        console.log('addClue HAD TO pick remaining bomb count clue');
         state.numBombs = state.obscuredIndexes.size;
         return;
     }
@@ -438,7 +437,6 @@ function pickAndAddClue(state: GeneratingState) {
                 allBombs = Math.random() < 0.5;
             }
             
-            console.log('addClue picked remaining bomb count clue');
             state.numBombs = allBombs ? allObscuredIndexes.length : 0;
             return;
         }
@@ -504,8 +502,6 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
     // Repeat the following until there are no obscured cells left. Then the whole board has been resolved!
     while (state.obscuredIndexes.size > 0) {
         if (!resolveCells(state)) {
-            console.log('resolve cells failed, adding clue');
-
             // If a new clue was just added and it didn't help, discard it, unless we've been stuck for a while.
             if (++turnsSinceLastResolution < 100) {
                 state = prevState;
