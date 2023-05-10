@@ -263,12 +263,20 @@ function tryAddRadiusClue(state: GeneratingState): boolean {
     return true;
 }
 
-function revealInitialCell(state: GeneratingState, obscuredIndexes: number[]) {
-    // Reveal an obscured cell at random.
-    const index = getRandom(obscuredIndexes)!;
-    state.initiallyRevealedIndexes.add(index);
-    state.obscuredIndexes.delete(index);
-    addEmptyCellClue(state, index);
+function revealInitialCell(state: GeneratingState, obscuredIndexes: number[]): boolean {
+    // Reveal an obscured cell at random. Ensure that it's not an entirely isolated zero on its own.
+    // Try this a few times before giving up.
+    for (let attempt = 1; attempt < 5; attempt++) {
+        const index = getRandom(obscuredIndexes)!;
+
+        if (addEmptyCellClue(state, index, true)) {
+            state.initiallyRevealedIndexes.add(index);
+            state.obscuredIndexes.delete(index);
+            return true;
+        }
+    }
+
+    return false;
 }
 
 function completeNewClue(
@@ -334,16 +342,21 @@ function completeNewClue(
     }
 }
 
-function addEmptyCellClue(state: GeneratingState, index: number) {
+function addEmptyCellClue(state: GeneratingState, index: number, requireAdjacentCells: boolean = false) {
+    const associatedIndexes = getAdjacentIndexes(index, state.columns, state.rows);
+
+    if (requireAdjacentCells && !associatedIndexes.some(assoc => assoc !== null && state.underlying[assoc])) {
+        return false;
+    }
+
     const cell: EmptyCell = {
         type: CellType.Empty,
         countType: CountType.Normal,
         number: 0,
     }
 
-    const associatedIndexes = getAdjacentIndexes(index, state.columns, state.rows);
-
     completeNewClue(state, index, cell, associatedIndexes);
+    return true;
 }
 
 function addRowClue(state: GeneratingState, index: number, direction: RowDirection) {
@@ -391,27 +404,27 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
 }
 
 /** Add an initial clue of any allowed type onto the board, or enhance an existing clue. */
-function pickAndAddClue(state: GeneratingState) {
+function pickAndAddClue(state: GeneratingState): boolean {
     const chance = Math.random() * state.config.fullChance;
 
     if (chance <= state.config.contiguousClueChance) {
         if (tryModifyClue(state, state.potentialContiguousClueCells, CountType.Contiguous)) {
-            return;
+            return true;
         }
     }
     else if (chance <= state.config.splitClueChance) {
         if (tryModifyClue(state, state.potentialSplitClueCells, CountType.Split)) {
-            return;
+            return true;
         }
     }
     else if (chance <= state.config.rowClueChance) {
         if (tryAddRowClue(state)) {
-            return;
+            return true;
         }
     }
     else if (chance <= state.config.radiusClueChance) {
         if (tryAddRadiusClue(state)) {
-            return;
+            return true;
         }
     }
     
@@ -422,7 +435,7 @@ function pickAndAddClue(state: GeneratingState) {
         
     if (revealableIndexes.length === 0) {
         state.numBombs = state.obscuredIndexes.size;
-        return;
+        return true;
     }
 
     if (allObscuredIndexes.length <= 5 && Math.random() < state.config.remainingBombCountFraction) {
@@ -444,12 +457,12 @@ function pickAndAddClue(state: GeneratingState) {
             }
             
             state.numBombs = allBombs ? allObscuredIndexes.length : 0;
-            return;
+            return true;
         }
     }
 
     // When no other type of clue has been added, reveal an additional cell.
-    revealInitialCell(state, revealableIndexes);
+    return revealInitialCell(state, revealableIndexes);
 }
 
 function createDisplayCell(state: GeneratingState, cell: CellState | null, index: number): CellState | null {
@@ -515,8 +528,10 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
             }
 
             // Copy the state when adding a clue, so we can roll back if the clue we add isn't helpful.
+            // If adding a clue fails, try again. (It can pick a different clue type.)
             state = copyState(state);
-            pickAndAddClue(state);
+            while (!pickAndAddClue(state))
+                ;
         }
         else {
             prevState = state;
