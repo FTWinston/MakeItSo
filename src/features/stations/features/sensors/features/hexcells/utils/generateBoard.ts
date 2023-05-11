@@ -289,17 +289,23 @@ function completeNewClue(
         .map(index => index === null ? null : state.underlying[index]) as Array<CellState | null>;
     
     let numBombs = 0;
-    let hasAnyUnallocated = false;
+    let hasAnyObscured = false;
 
     // Allocate associated cells now, so that our clue won't be made incorrect by a later allocation.
     // But leave these cells obscured, for now.
     for (let associationIndex = 0; associationIndex < associatedCells.length; associationIndex++) {
         const associatedCell = associatedCells[associationIndex];
 
-        if (associatedCell?.type === CellType.Exploded) {
-            hasAnyUnallocated = true;
+        if (associatedCell === null) {
+            continue;
+        }
 
-            const associatedCellIndex = associatedIndexes[associationIndex]!;
+        const associatedCellIndex = associatedIndexes[associationIndex]!;
+        if (state.obscuredIndexes.has(associatedCellIndex)) {
+            hasAnyObscured = true;
+        }
+
+        if (associatedCell.type === CellType.Exploded) {
             const addBomb = getRandomFloat() < state.config.bombFraction;
 
             if (addBomb) {
@@ -315,7 +321,7 @@ function completeNewClue(
                 }
             }
         }
-        else if (associatedCell?.type === CellType.Bomb) {
+        else if (associatedCell.type === CellType.Bomb) {
             numBombs++;
         }
     }
@@ -329,7 +335,7 @@ function completeNewClue(
     if (cell.type !== CellType.RadiusClue && numBombs > 1) {
         const contiguous = areValuesContiguous(associatedCells, cell => cell?.type === CellType.Bomb, true);
         
-        if (hasAnyUnallocated) {
+        if (hasAnyObscured) {
             if (contiguous) {
                 insertRandom(state.potentialContiguousClueCells, clue);
             }
