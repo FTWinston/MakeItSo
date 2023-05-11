@@ -84,7 +84,7 @@ export const Cells: React.FC<Props> = props => {
         return (
             <CellWrapper key={index} style={wrapperStyle}>
                 <Cell
-                    cellType={explosionCascadeCells.has(index) ? CellType.Exploded : cell.type}
+                    cellType={explosionCascadeCells.has(index) && cell.type !== CellType.RowClue ? CellType.Exploded : cell.type}
                     resolved={(cell as any).resolved}
                     countType={(cell as any).countType}
                     direction={(cell as any).direction}
