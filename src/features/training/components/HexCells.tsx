@@ -1,8 +1,8 @@
 import produce from 'immer';
 import { useReducer } from 'react';
 import { Cells, hexCellReducer } from 'src/features/stations/features/sensors/features/hexcells';
-import { createCellBoardInstance } from 'src/features/stations/features/sensors/features/hexcells/utils/createCellBoardInstance';
-import { GenerationConfig, generateBoard } from 'src/features/stations/features/sensors/features/hexcells/utils/generateBoard';
+import { generateInstance } from 'src/features/stations/features/sensors/features/hexcells/utils/createCellBoardInstance';
+import { GenerationConfig } from 'src/features/stations/features/sensors/features/hexcells/utils/generateBoard';
 import { useToggle } from 'src/hooks/useToggle';
 import { Alert, Button, Snackbar } from 'src/lib/mui';
 
@@ -21,17 +21,17 @@ const config: GenerationConfig = {
 };
 
 export const Component: React.FC = () => {
-    const [board, dispatch] = useReducer(produce(hexCellReducer), undefined, () => createCellBoardInstance(generateBoard(config)));
+    const [board, dispatch] = useReducer(produce(hexCellReducer), config, generateInstance);
 
     const [generatedToggle, onRegenerated] = useToggle();
     
     const regenerate = () => {
         dispatch({
             type: 'new',
-            board: createCellBoardInstance(generateBoard(config)),
+            board: generateInstance(config),
         });
         onRegenerated();
-    }
+    };
 
     return (
         <>

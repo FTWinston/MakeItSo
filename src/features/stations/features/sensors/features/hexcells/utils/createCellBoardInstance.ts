@@ -1,5 +1,6 @@
 import { CellBoard, CellBoardDefinition } from "../types/CellBoard";
 import { CellType, DisplayCellState } from '../types/CellState';
+import { GenerationConfig, generateBoard } from './generateBoard';
 import { isClueResolved } from './resolved';
 
 export function createCellBoardInstance(definition: CellBoardDefinition): CellBoard {
@@ -34,4 +35,8 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
     }
 
     return board;
+}
+
+export function generateInstance(config: GenerationConfig) {
+    return createCellBoardInstance(generateBoard(config));
 }

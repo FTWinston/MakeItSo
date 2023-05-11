@@ -40,7 +40,7 @@ export function getAdjacentIndexes(index: number, columns: number, rows: number)
     const { row, col } = coordinateFromIndex(index, columns);
 
     return getAdjacentCoordinates(col, row, columns, rows)
-        .map(coord => coord === null ? null : indexFromCoordinate(coord!, columns));
+        .map(coord => coord === null ? null : indexFromCoordinate(coord, columns));
 }
 
 export function getIndexesInRadius(index: number, columns: number, rows: number): number[] {

@@ -1,13 +1,13 @@
 import { StoryObj } from '@storybook/react';
 import produce from 'immer';
 import { useReducer } from 'react';
-import { createCellBoardInstance } from '../utils/createCellBoardInstance';
-import { generateBoard, GenerationConfig } from '../utils/generateBoard';
+import { generateInstance } from '../utils/createCellBoardInstance';
+import { GenerationConfig } from '../utils/generateBoard';
 import { hexCellReducer } from '../utils/hexCellReducer';
 import { Cells } from './Cells';
 
 const CellsWithReducer: React.FC<GenerationConfig> = config => {
-    const [board, dispatch] = useReducer(produce(hexCellReducer), undefined, () => createCellBoardInstance(generateBoard(config)));
+    const [board, dispatch] = useReducer(produce(hexCellReducer), undefined, () => generateInstance(config));
 
     return (
         <Cells
