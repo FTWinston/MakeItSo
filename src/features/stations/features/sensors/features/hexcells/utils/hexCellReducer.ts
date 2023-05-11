@@ -85,14 +85,26 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             // Success when the last bomb is flagged.
             if (state.numBombs === 0) {
                 state.result = 'success';
-/*
+
                 // Reveal all remaining obscured cells.
                 for (let i = 0; i < state.cells.length; i++) {
                     if (state.cells[i]?.type === CellType.Obscured) {
-                        state.cells[i] = state.underlying[i];
+                        const underlying = state.underlying[i];
+                        if (underlying?.type === CellType.Empty) {
+                            state.cells[i] = {
+                                type: underlying.type,
+                                countType: underlying.countType,
+                                number: underlying.number,
+                                resolved: isClueResolved(state, underlying.targetIndexes),
+                            };
+                        }
+                        else if (underlying) {
+                            state.cells[i] = {
+                                type: underlying.type as CellType.Bomb | CellType.Unknown
+                            };
+                        }
                     }
                 }
-*/
             }
 
             return;

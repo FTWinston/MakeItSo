@@ -12,7 +12,7 @@ const config: GenerationConfig = {
     gapFraction: 0.3,
     bombFraction: 0.45,
     unknownFraction: 0.05,
-    rowClueChance: 0.1,
+    rowClueChance: 5,
     radiusClueChance: 0.025,
     revealChance: 0.1,
     contiguousClueChance: 0.5,
