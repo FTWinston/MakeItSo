@@ -1,4 +1,4 @@
-import { getRandomInt } from 'src/utils/random';
+import { getRandomFloat, getRandomInt } from 'src/utils/random';
 import { indexFromCoordinate } from './indexes';
 
 export interface ShapeConfig {
@@ -16,7 +16,7 @@ function determineSize(landscapeOrientation: boolean, numCells: number, numGaps:
     const totalCells = numCells + numGaps;
     
     let rows = Math.sqrt(totalCells);
-    rows *= Math.random() * 0.3 + 0.85;
+    rows *= getRandomFloat() * 0.3 + 0.85;
     rows = Math.ceil(rows) + 2;
 
     let columns = Math.floor(totalCells / rows) + 2;

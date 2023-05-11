@@ -5,7 +5,7 @@ import { areValuesContiguous } from './areValuesContiguous';
 import { ShapeConfig, generateBoardShape } from './generateBoardShape';
 import { addClue, updateClues } from './getClues';
 import { ResolvableCells, getResolvableCells } from './getResolvableCells';
-import { deleteRandom, getRandom, insertRandom } from 'src/utils/random';
+import { deleteRandom, getRandom, getRandomFloat, insertRandom } from 'src/utils/random';
 import { shuffle } from 'src/utils/shuffle';
 import { coordinateFromIndex, getAdjacentIndexes, getIndexesInRadius, getIndexesInRow } from './indexes';
 
@@ -300,7 +300,7 @@ function completeNewClue(
             hasAnyUnallocated = true;
 
             const associatedCellIndex = associatedIndexes[associationIndex]!;
-            const addBomb = Math.random() < state.config.bombFraction;
+            const addBomb = getRandomFloat() < state.config.bombFraction;
 
             if (addBomb) {
                 numBombs ++;
@@ -391,7 +391,7 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
     // Ensure that at least one cell is revealed to be a empty (i.e. a clue), rather than unknown.
     let firstReveal = true;
     for (const indexToReveal of revealableIndexes) {
-        if (!firstReveal && Math.random() <= state.config.unknownFraction) {
+        if (!firstReveal && getRandomFloat() <= state.config.unknownFraction) {
             state.cells[indexToReveal] = state.underlying[indexToReveal] = {
                 type: CellType.Unknown,
             };
@@ -405,7 +405,7 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
 
 /** Add an initial clue of any allowed type onto the board, or enhance an existing clue. */
 function pickAndAddClue(state: GeneratingState): boolean {
-    const chance = Math.random() * state.config.fullChance;
+    const chance = getRandomFloat() * state.config.fullChance;
 
     if (chance <= state.config.contiguousClueChance) {
         if (tryModifyClue(state, state.potentialContiguousClueCells, CountType.Contiguous)) {
@@ -438,7 +438,7 @@ function pickAndAddClue(state: GeneratingState): boolean {
         return true;
     }
 
-    if (allObscuredIndexes.length <= 5 && Math.random() < state.config.remainingBombCountFraction) {
+    if (allObscuredIndexes.length <= 5 && getRandomFloat() < state.config.remainingBombCountFraction) {
         const anyMustBeBombs = allObscuredIndexes
             .some(index => state.underlying[index]?.type === CellType.Bomb);
         const anyMustBeEmpty = allObscuredIndexes
@@ -453,7 +453,7 @@ function pickAndAddClue(state: GeneratingState): boolean {
                 allBombs = false;
             }
             else {
-                allBombs = Math.random() < 0.5;
+                allBombs = getRandomFloat() < 0.5;
             }
             
             state.numBombs = allBombs ? allObscuredIndexes.length : 0;

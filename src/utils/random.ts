@@ -1,3 +1,7 @@
+export function getRandomFloat() {
+    return Math.random();
+}
+
 export function getRandomInt(maxExclusive: number) {
     return Math.floor(Math.random() * maxExclusive);
 }

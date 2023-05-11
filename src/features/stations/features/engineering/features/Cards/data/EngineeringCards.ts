@@ -1,7 +1,7 @@
 import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../types/EngineeringCard';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { applyPrimaryEffect, applySecondaryEffect, applySingleEffect, removeEffect } from '../../../utils/systemActions';
-import { getRandomInt } from 'src/utils/random';
+import { getRandomFloat, getRandomInt } from 'src/utils/random';
 import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
@@ -380,7 +380,7 @@ const cumulativeRareChance = cumulativeUncommonChance + rareChance;
 const cumulativeTotalChance = cumulativeRareChance + epicChance;
 
 export function createRandomCard(id: number): EngineeringCard {
-    const randomValue = Math.random() * cumulativeTotalChance;
+    const randomValue = getRandomFloat() * cumulativeTotalChance;
     let rarity: EngineeringCardRarity;
 
     if (randomValue < cumulativeCommonChance) {
