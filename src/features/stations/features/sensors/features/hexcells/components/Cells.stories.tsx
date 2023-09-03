@@ -1,5 +1,5 @@
 import { StoryObj } from '@storybook/react';
-import produce from 'immer';
+import { produce } from 'immer';
 import { useReducer } from 'react';
 import { generateInstance } from '../utils/createCellBoardInstance';
 import { GenerationConfig } from '../utils/generateBoard';

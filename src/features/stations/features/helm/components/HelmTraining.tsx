@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { useReducer } from 'react';
 import { GameObject } from 'src/classes/GameObject';
 import { Ship } from 'src/classes/Ship';

@@ -1,4 +1,4 @@
-import produce from 'immer';
+import { produce } from 'immer';
 import { useReducer } from 'react';
 import { Cells, hexCellReducer } from 'src/features/stations/features/sensors/features/hexcells';
 import { generateInstance } from 'src/features/stations/features/sensors/features/hexcells/utils/createCellBoardInstance';
