@@ -13,7 +13,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
                 return null;
             }
             
-            // Intentionally skip resolved property now, will handle in subsequent loop.
+            // Intentionally skip targetIndexes and resolved properties now, will handle in subsequent loop.
             return { ...cell } as DisplayCellState;
         }),
         hints: definition.hints,
@@ -30,6 +30,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
             const underlying = board.underlying[index];
 
             if (isClueCell(underlying)) {
+                cell.targetIndexes = underlying.targetIndexes;
                 cell.resolved = isClueResolved(board, underlying.targetIndexes);
             }
         }

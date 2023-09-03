@@ -31,12 +31,13 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                 return;
             }
             
-            if (underlyingState.type === CellType.Empty) {
+            if (underlyingState.type === CellType.AdjacentClue) {
                 // Copy the underlying cell, without copying linked/associated cell data.
                 const display: DisplayCellState = {
                     type: underlyingState.type,
                     countType: underlyingState.countType,
                     number: underlyingState.number,
+                    targetIndexes: underlyingState.targetIndexes,
                     resolved: isClueResolved(state, underlyingState.targetIndexes),
                 };
 
@@ -48,7 +49,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
 
             // Mark any associated clues as fully resolved.
-            if (underlyingState.type === CellType.Empty || underlyingState.type === CellType.Unknown) {
+            if (underlyingState.type === CellType.AdjacentClue || underlyingState.type === CellType.Unknown) {
                 markCluesAsResolved(state, underlyingState.clueIndexes);
             }
 
@@ -93,11 +94,12 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                         if (!underlying) {
                             continue;
                         }
-                        if (underlying.type === CellType.Empty) {
+                        if (underlying.type === CellType.AdjacentClue) {
                             state.cells[i] = {
                                 type: underlying.type,
                                 countType: underlying.countType,
                                 number: underlying.number,
+                                targetIndexes: underlying.targetIndexes,
                                 resolved: isClueResolved(state, underlying.targetIndexes),
                             };
                         }
@@ -107,7 +109,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                             };
                         }
 
-                        if (underlying.type === CellType.Empty || underlying.type === CellType.Unknown) {
+                        if (underlying.type === CellType.AdjacentClue || underlying.type === CellType.Unknown) {
                             markCluesAsResolved(state, underlying.clueIndexes);
                         }
                     }
