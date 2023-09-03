@@ -138,7 +138,7 @@ function determineValidTargets(card: EngineeringCardInfo, repairMode: boolean, s
         );
     }
     
-    return card.allowedSystems === undefined
-        ? allSystems
-        : card.allowedSystems;
+    return card.allowedSystems // undefined or None.None, i.e. 0
+        ? card.allowedSystems
+        : allSystems;
 }

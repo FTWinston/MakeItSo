@@ -1,5 +1,5 @@
 import { ShipInfo } from 'src/types/ShipInfo';
-import { ShipSystem } from 'src/types/ShipSystem';
+import { ShipSystemWithNone } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 
 export enum EngineeringCardRarity {
@@ -42,11 +42,11 @@ export interface EngineeringCardInfo {
     id: number;
     type: EngineeringCardType;
     rarity: EngineeringCardRarity;
-    allowedSystems?: ShipSystem;
+    allowedSystems?: ShipSystemWithNone;
     descParams?: Partial<Record<string, number | string>>;
 }
 
 export interface EngineeringCard extends EngineeringCardInfo {
     play: (system: SystemState, ship: ShipInfo) => void | false;
-    determineAllowedSystems?: (ship: ShipInfo) => ShipSystem;
+    determineAllowedSystems?: (ship: ShipInfo) => ShipSystemWithNone;
 }

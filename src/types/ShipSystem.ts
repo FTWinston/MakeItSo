@@ -7,6 +7,12 @@ export enum ShipSystem {
     Shields = 32,
 }
 
+export enum None {
+    None = 0,
+}
+
+export type ShipSystemWithNone = ShipSystem | None;
+
 export const allSystems: ShipSystem = ShipSystem.Hull | ShipSystem.Engines | ShipSystem.Sensors | ShipSystem.Weapons | ShipSystem.Reactor | ShipSystem.Shields;
 
 export enum CrewStation {

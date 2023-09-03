@@ -3,7 +3,7 @@ import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { applyPrimaryEffect, applySecondaryEffect, applySingleEffect, removeEffect } from '../../../utils/systemActions';
 import { getRandomFloat, getRandomInt } from 'src/utils/random';
 import { ShipInfo } from 'src/types/ShipInfo';
-import { ShipSystem } from 'src/types/ShipSystem';
+import { ShipSystem, ShipSystemWithNone } from 'src/types/ShipSystem';
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { DefiniteMap } from 'src/types/DefiniteMap';
 import { getTime } from 'src/utils/timeSpans';
@@ -12,7 +12,7 @@ function filterSystems(filter: (system: SystemState) => boolean) {
     return (ship: ShipInfo) =>
         [...ship.systems.values()]
         .filter(filter)
-        .reduce((prev, current) => prev | current.system, 0 as ShipSystem);
+        .reduce((prev, current) => prev | current.system, 0 as ShipSystemWithNone);
 }
 
 const onlyDamagedSystems = filterSystems(system => system.health < maxSystemHealth);
@@ -55,7 +55,7 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
         determineAllowedSystems: ship => ship.systems.get(fromSystem).power >= 2
             ? [...ship.systems.values()]
                 .filter(system => system.system !== fromSystem && system.health > 0)
-                .reduce((prev, current) => prev | current.system, 0 as ShipSystem)
+                .reduce((prev, current) => prev | current.system, 0 as ShipSystemWithNone)
             : 0,
         descParams: {
             power: 2,
@@ -163,7 +163,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
             .map(system => ship.engineering.systemOrder.indexOf(system)) // indexes with effect
             .flatMap(index => getAdjacentIndices(index)) // adjacent indexes to effect
             .map(index => ship.engineering.systemOrder[index]) // adjacent systems to effect
-            .reduce((prev, current) => prev | current, 0 as ShipSystem)
+            .reduce((prev, current) => prev | current, 0 as ShipSystemWithNone)
     }],
 
     [EngineeringCardType.DivertHull, createDivertBehavior(ShipSystem.Hull)],
