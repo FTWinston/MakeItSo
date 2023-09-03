@@ -3,14 +3,14 @@ import { Ship } from 'src/classes/Ship';
 import { SensorsTraining } from './SensorsTraining';
 
 export default {
-    title: 'Sensors',
-    component: SensorsTraining,
+  title: 'Sensors',
+  component: SensorsTraining,
 };
 
 type Story = StoryObj<typeof SensorsTraining>;
 
 export const Empty: Story = {
-    args: {
-        getInitialState: () => new Ship(1),
-    }
-}
+  args: {
+    getInitialState: () => new Ship(1),
+  },
+};
