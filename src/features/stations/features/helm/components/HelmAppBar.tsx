@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import ManeuverIcon from '@mui/icons-material/Moving';
 import { SystemAppBar } from '../../appbar';
 import { CrewStation, PowerLevel } from 'src/types/ShipSystem';
-import { Chip, styled } from 'src/lib/mui';
+import { Chip, Tooltip, styled } from 'src/lib/mui';
 
 interface Props {
     power: PowerLevel;
@@ -33,12 +33,13 @@ export const HelmAppBar: React.FC<Props> = (props) => {
             power={props.power}
             health={props.health}
         >
-            <EvasionChip
-                variant="filled"
-                icon={<ManeuverIcon color="primary" />}
-                label={Math.round(props.evasion/* * 100 */)}
-                title={t('evasion')}
-            />
+            <Tooltip title={t('evasion')}>
+                <EvasionChip
+                    variant="filled"
+                    icon={<ManeuverIcon color="primary" />}
+                    label={Math.round(props.evasion/* * 100 */)}
+                />
+            </Tooltip>
         </SystemAppBar>
     );
 }
