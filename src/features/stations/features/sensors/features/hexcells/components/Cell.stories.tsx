@@ -3,7 +3,7 @@ import { CellType, CountType, RowDirection } from '../types/CellState';
 import { Cell, Special } from './Cell';
 
 export default {
-  title: 'Sensors/Cell',
+  title: 'Sensors/Hexcells/Cell',
   component: Cell,
 };
 

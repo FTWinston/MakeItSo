@@ -11,7 +11,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         case 'reset':
             const newState = new Ship(1);
             newState.sensors = {
-
+                possibleTargets: [],
             };
             return newState;
             

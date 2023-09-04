@@ -27,7 +27,7 @@ const CellsWithReducer: React.FC<GenerationConfig> = (config) => {
 };
 
 export default {
-  title: 'Sensors/Cells',
+  title: 'Sensors/Hexcells/Cells',
   component: CellsWithReducer,
 };
 
