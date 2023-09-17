@@ -3,13 +3,14 @@ import { EngineeringTraining } from 'src/features/stations/features/engineering'
 import { useFullscreen } from 'src/hooks/useFullscreen';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { BackButton } from './BackButton';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export const Component: React.FC = () => {
     useFullscreen();
 
     return (
     <EngineeringTraining
-        getInitialState={() => new Ship(1)}
+        getInitialState={() => new Ship(1, RelationshipType.Friendly)}
         getEffects={() => [
             {
                 type: 'damage',

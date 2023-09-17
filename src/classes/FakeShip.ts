@@ -5,6 +5,7 @@ import { pruneKeyframes } from 'src/utils/interpolate';
 import { getManeuver, ManeuverInfo, ManeuverType, getManeuverStartPosition, MotionConfiguration } from 'src/features/stations/features/helm';
 import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export class FakeShip extends MobileObject {
     constructor(
@@ -12,7 +13,7 @@ export class FakeShip extends MobileObject {
         startPosition: Position,
         readonly maneuverSequence: readonly ManeuverType[]
     ) {
-        super(id, 'neutral', startPosition);
+        super(id, 'chevron', RelationshipType.Unknown, startPosition);
     }
 
     private nextManeuverIndex = 0;

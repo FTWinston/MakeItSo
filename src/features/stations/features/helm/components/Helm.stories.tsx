@@ -5,6 +5,7 @@ import { Ship } from 'src/classes/Ship';
 import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export default {
   title: 'Helm',
@@ -16,7 +17,7 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(1);
+      const ship = new Ship(1, RelationshipType.Friendly);
 
       const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
       const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);

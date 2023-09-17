@@ -5,7 +5,8 @@ import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { Vector2D } from 'src/types/Vector2D';
 import { Canvas } from 'src/components';
-import { drawFunctions } from '../utils/drawObject';
+import { drawFunctions, getColors } from '../utils/drawObject';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export default { title: 'Common/Space Map' };
 
@@ -32,7 +33,8 @@ export const example = () => {
   const objects: GameObjectInfo[] = [
     {
       id: 1,
-      draw: 'ship',
+      draw: 'chevron',
+      rel: RelationshipType.Neutral,
       motion: [
         {
           time: getTime(),
@@ -78,7 +80,8 @@ export const appearances = () => {
       draw={(ctx, bounds) => {
         ctx.scale(bounds.width / 2, bounds.height / 2);
         ctx.translate(1, 1);
-        entry[1](ctx, theme);
+        const { mainColor, highlight } = getColors(RelationshipType.Neutral, theme);
+        entry[1](ctx, mainColor, highlight);
       }}
       ref={canvasRefs.current[index]}
       key={entry[0]}

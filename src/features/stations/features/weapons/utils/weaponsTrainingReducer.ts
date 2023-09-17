@@ -1,6 +1,7 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { WeaponsAction } from '../types/WeaponsState';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship {
     if (state.destroyed) {
@@ -9,7 +10,7 @@ export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(state.id);
+            const newState = new Ship(state.id, RelationshipType.Friendly);
             newState.weapons = {
 
             };

@@ -1,6 +1,7 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsState';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship {
     if (state.destroyed) {
@@ -9,7 +10,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(1);
+            const newState = new Ship(1, RelationshipType.Friendly);
             newState.sensors = {
                 possibleTargets: [],
             };

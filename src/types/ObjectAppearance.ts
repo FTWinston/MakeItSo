@@ -1,5 +1,4 @@
 export type ObjectAppearance =
-  'ship'
-| 'neutral'
-| 'enemy'
+  'chevron'
+| 'circle'
 ;

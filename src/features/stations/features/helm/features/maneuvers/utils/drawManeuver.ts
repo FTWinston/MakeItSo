@@ -1,4 +1,4 @@
-import { drawHexGrid, getBackgroundColor, shipPath } from '../../../../../features/spacemap';
+import { drawChevron, drawHexGrid, getBackgroundColor } from '../../../../../features/spacemap';
 import { Theme } from 'src/lib/mui';
 import { Keyframes } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
@@ -163,15 +163,13 @@ export function drawManeuverWithGrid(
     drawManeuver(ctx, motion, minPower, true);
 
     if (ghostFrames) {
-        ctx.fillStyle = getBackgroundColor(theme);
+        const fillStyle = getBackgroundColor(theme);
         ctx.strokeStyle = '#aaa';
         for (const index of ghostFrames) {
             const position = motion[index].val;
             ctx.translate(position.x, position.y);
             ctx.rotate(position.angle);
-            ctx.beginPath();
-            shipPath(ctx);
-            ctx.fill();
+            drawChevron(ctx, fillStyle, fillStyle);
             ctx.stroke();
             ctx.rotate(-position.angle);
             ctx.translate(-position.x, -position.y);

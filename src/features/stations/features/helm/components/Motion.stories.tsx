@@ -4,6 +4,7 @@ import { SpaceMap } from '../../../features/spacemap';
 import { GameObjectInfo } from 'src/types/GameObjectInfo';
 import { durationToTicks, getTime } from 'src/utils/timeSpans';
 import { getManeuver, ManeuverType } from '../features/maneuvers';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 type PartialPropsWithMotion = Partial<GameObjectInfo> & Pick<GameObjectInfo, 'motion'>;
 
@@ -14,7 +15,8 @@ const ShipMotion: React.FC<PartialPropsWithMotion> = (props) => {
 
   const ship: GameObjectInfo = {
     id: 1,
-    draw: 'ship',
+    draw: 'chevron',
+    rel: RelationshipType.Neutral,
     ...props,
     motion: props.motion.map((frame) => ({
       ...frame,

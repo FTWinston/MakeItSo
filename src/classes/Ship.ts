@@ -9,10 +9,11 @@ import { getDefaultEngineeringState, getDefaultHelmState, getDefaultSensorsState
 import { getLast } from 'src/utils/arrays';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { pruneKeyframes } from 'src/utils/interpolate';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export class Ship extends GameObject implements ShipInfo {
-    constructor(id: ObjectId) {
-        super(id, 'ship');
+    constructor(id: ObjectId, rel: RelationshipType) {
+        super(id, 'chevron', rel);
 
         this.systems = getDefaultSystemStates();
         this.engineering = getDefaultEngineeringState();

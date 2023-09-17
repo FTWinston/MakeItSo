@@ -3,6 +3,7 @@ import { HelmTraining } from 'src/features/stations/features/helm';
 import { useFullscreen } from 'src/hooks/useFullscreen';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 import { BackButton } from './BackButton';
+import { RelationshipType } from 'src/types/RelationshipType';
 
 export const Component: React.FC = () => {
     useFullscreen();
@@ -10,7 +11,7 @@ export const Component: React.FC = () => {
     return (
     <HelmTraining
         getInitialState={() => {
-            const ship = new Ship(1);
+            const ship = new Ship(1, RelationshipType.Friendly);
             
             const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
             const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);

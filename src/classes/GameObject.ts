@@ -1,18 +1,19 @@
+import { immerable } from 'immer';
 import { Keyframes } from 'src/types/Keyframes';
-import { Position } from 'src/types/Position';
 import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
 import { ObjectAppearance } from 'src/types/ObjectAppearance';
-import { immerable } from 'immer';
-import { durationToTicks } from 'src/utils/timeSpans';
+import { Position } from 'src/types/Position';
+import { RelationshipType } from 'src/types/RelationshipType';
 import { Vector2D } from 'src/types/Vector2D';
 import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
+import { durationToTicks } from 'src/utils/timeSpans';
 
 const twoTicks = durationToTicks(2);
 
 export abstract class GameObject implements GameObjectInfo {
     [immerable] = true;
 
-    constructor(public readonly id: ObjectId, public readonly draw: ObjectAppearance) {}
+    constructor(public readonly id: ObjectId, public readonly draw: ObjectAppearance, public rel: RelationshipType) {}
 
     motion: Keyframes<Position> = [];
 

@@ -1,17 +1,5 @@
-import { ObjectId } from 'src/types/GameObjectInfo';
-import { ObjectAppearance } from 'src/types/ObjectAppearance';
+import { GameObjectInfo } from 'src/types/GameObjectInfo';
 
-// TODO: this should be saved somewhere more general
-export enum RelationshipType {
-    Unknown = 0,
-    Hostile = 1,
-    Neutral = 2,
-    Friendly = 3,
-}
-
-export interface SensorTarget {
-    id: ObjectId;
-    relationship: RelationshipType;
-    appearance: ObjectAppearance;
+export interface SensorTarget extends Omit<GameObjectInfo, 'motion'> {
     description: string;
 }

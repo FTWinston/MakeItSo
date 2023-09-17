@@ -1,4 +1,4 @@
-import { drawHex, getBackgroundColor, getClosestCellCenter, shipPath } from '../../../features/spacemap';
+import { drawChevron, drawHex, getBackgroundColor, getClosestCellCenter } from '../../../features/spacemap';
 import { DiscreteColorName, Theme } from 'src/lib/mui';
 import { Position } from 'src/types/Position';
 
@@ -26,13 +26,11 @@ export function drawDestination(
 
     ctx.globalAlpha = 1;
 
-    ctx.fillStyle = getBackgroundColor(theme);
+    const color = getBackgroundColor(theme);
 
     ctx.rotate(destination.angle);
 
-    ctx.beginPath();
-    shipPath(ctx);
-    ctx.fill();
+    drawChevron(ctx, color, color)
 
     ctx.rotate(-destination.angle);
     ctx.translate(-cell.x, -cell.y);
