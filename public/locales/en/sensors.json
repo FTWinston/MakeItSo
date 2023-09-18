@@ -1,3 +1,6 @@
 {
-    "blah": "Blah"
+    "targetSelect": "Select Target",
+    "scanSelect": "Select Scan",
+    "scanning": "Scanning",
+    "scanResult": "Result"
 }
