@@ -15,6 +15,7 @@ export { LinearTimer } from './LinearTimer';
 export { List } from './List';
 export { ListItem } from './ListItem';
 export { ListItemAvatar } from './ListItemAvatar';
+export { ListItemButton } from './ListItemButton';
 export { ListItemIcon } from './ListItemIcon';
 export { ListItemText } from './ListItemText';
 export { Menu } from './Menu';
