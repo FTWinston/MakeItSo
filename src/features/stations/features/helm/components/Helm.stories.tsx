@@ -17,7 +17,7 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(1, RelationshipType.Friendly);
+      const ship = new Ship(1, RelationshipType.Self);
 
       const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
       const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
@@ -62,6 +62,7 @@ export const Others: Story = {
           ...getClosestCellCenter(103, 5, worldScaleCellRadius),
           angle: (Math.PI * 4) / 3,
         },
+        RelationshipType.Unknown,
         [ManeuverType.HardLeft, ManeuverType.SlowForward]
       );
       const other2 = new FakeShip(
@@ -70,6 +71,7 @@ export const Others: Story = {
           ...getClosestCellCenter(98, -5, worldScaleCellRadius),
           angle: Math.PI / 3,
         },
+        RelationshipType.Neutral,
         [ManeuverType.SweepRight]
       );
 

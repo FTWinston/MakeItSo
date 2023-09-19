@@ -18,15 +18,17 @@ type Colors = {
 export function getColors(relationship: RelationshipType, theme: Theme): Colors {
     switch (relationship) {
         case RelationshipType.None: 
-            return { mainColor: theme.palette.grey[600], highlight: theme.palette.grey[400] };
+            return { mainColor: theme.palette.grey[700], highlight: theme.palette.grey[400] };
         case RelationshipType.Hostile:
             return { mainColor: theme.palette.error.dark, highlight: theme.palette.error.light };
         case RelationshipType.Neutral:
-            return { mainColor: theme.palette.grey[400], highlight: theme.palette.info.light };
+            return { mainColor: theme.palette.info.main, highlight: theme.palette.info.light };
         case RelationshipType.Friendly:
-            return { mainColor: theme.palette.text.primary, highlight: theme.palette.success.light };
+            return { mainColor: theme.palette.success.main, highlight: theme.palette.success.light };
         case RelationshipType.Unknown:
             return { mainColor: theme.palette.warning.dark, highlight: theme.palette.warning.light };
+        case RelationshipType.Self:
+            return { mainColor: theme.palette.text.primary, highlight: theme.palette.success.light };
     }
 }
 

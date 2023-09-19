@@ -25,7 +25,7 @@ type Story = StoryObj<typeof EngineeringTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(1, RelationshipType.Friendly),
+    getInitialState: () => new Ship(1, RelationshipType.Self),
     getEffects: () => [
       {
         type: 'damage',
@@ -39,7 +39,7 @@ export const Empty: Story = {
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(1, RelationshipType.Friendly);
+      const ship = new Ship(1, RelationshipType.Self);
       const systems = getComplexStoryTiles();
 
       ship.systems = arrayToMap(systems, (info) => info.system) as DefiniteMap<
@@ -70,7 +70,7 @@ export const Busy: Story = {
 
 export const Custom: Story = {
   args: {
-    getInitialState: () => new Ship(1, RelationshipType.Friendly),
+    getInitialState: () => new Ship(1, RelationshipType.Self),
     getEffects: () => [],
   },
   render: (props) => {

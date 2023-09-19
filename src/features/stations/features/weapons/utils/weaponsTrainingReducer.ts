@@ -10,7 +10,7 @@ export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(state.id, RelationshipType.Friendly);
+            const newState = new Ship(state.id, RelationshipType.Self);
             newState.weapons = {
 
             };

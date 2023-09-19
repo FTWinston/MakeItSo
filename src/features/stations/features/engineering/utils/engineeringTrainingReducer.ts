@@ -22,7 +22,7 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(state.id, RelationshipType.Friendly);
+            const newState = new Ship(state.id, RelationshipType.Self);
             newState.systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
             newState.engineering = {
                 systemOrder: action.systems.map(system => system.system),

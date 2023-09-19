@@ -10,7 +10,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(1, RelationshipType.Friendly);
+            const newState = new Ship(1, RelationshipType.Self);
             newState.sensors = {
                 possibleTargets: [],
             };

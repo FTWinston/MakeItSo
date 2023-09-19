@@ -11,9 +11,10 @@ export class FakeShip extends MobileObject {
     constructor(
         id: ObjectId,
         startPosition: Position,
+        rel: RelationshipType,
         readonly maneuverSequence: readonly ManeuverType[]
     ) {
-        super(id, 'chevron', RelationshipType.Unknown, startPosition);
+        super(id, 'chevron', rel, startPosition);
     }
 
     private nextManeuverIndex = 0;

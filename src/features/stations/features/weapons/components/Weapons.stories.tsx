@@ -12,6 +12,6 @@ type Story = StoryObj<typeof WeaponsTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(1, RelationshipType.Friendly),
+    getInitialState: () => new Ship(1, RelationshipType.Self),
   },
 };

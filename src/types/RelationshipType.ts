@@ -4,4 +4,5 @@ export enum RelationshipType {
     Neutral = 2,
     Friendly = 3,
     Unknown = 4,
+    Self = 5,
 }
