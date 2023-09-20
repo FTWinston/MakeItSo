@@ -19,6 +19,7 @@ export const ScanSelection: React.FC<Props> = props => {
             <FormControlLabel control={
                     <Switch
                         checked={props.isViewTarget}
+                        color="secondary"
                         onChange={e => props.view(e.target.checked ? props.target : undefined)}
                     />
                 }

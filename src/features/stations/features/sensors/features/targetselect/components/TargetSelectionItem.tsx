@@ -28,7 +28,7 @@ export const TargetSelectionItem: React.FC<Props> = (props) => {
             edge="end"
             aria-label="delete"
             onClick={props.view}
-            color={props.isCurrentViewTarget ? 'primary' : undefined}
+            color={props.isCurrentViewTarget ? 'secondary' : undefined}
             sx={props.isCurrentViewTarget ? undefined : { opacity: 0.6 }}
             title={t('onScreen')}
         >
