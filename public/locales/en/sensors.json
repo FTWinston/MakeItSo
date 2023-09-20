@@ -1,6 +1,7 @@
 {
-    "targetSelect": "Select Target",
-    "scanSelect": "Select Scan",
+    "targetSelect": "Nearby Targets",
+    "scanSelect": "Target Info",
     "scanning": "Scanning",
-    "scanResult": "Result"
+    "scanResult": "Result",
+    "onScreen": "Focus view screen on target"
 }

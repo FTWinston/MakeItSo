@@ -1,4 +1,4 @@
-import { Divider, List } from 'src/lib/mui';
+import { Divider, List, styled  } from 'src/lib/mui';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../../../types/SensorTarget'
 import { TargetSelectionItem } from './TargetSelectionItem';
@@ -9,6 +9,11 @@ interface Props {
     view: (targetId?: ObjectId) => void;
     select: (targetId: ObjectId) => void;
 }
+
+const Root = styled(List)({
+    overflowY: 'scroll',
+    flexGrow: 1,
+})
 
 export const TargetSelection: React.FC<Props> = (props) => {
     const listItems = props.targets
@@ -27,8 +32,8 @@ export const TargetSelection: React.FC<Props> = (props) => {
     // TODO: "no targets" message when list items are empty.
 
     return (
-        <List>
+        <Root>
             {listItems}
-        </List>
+        </Root>
     )
 }

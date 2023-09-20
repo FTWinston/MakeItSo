@@ -3,7 +3,7 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsState';
 import { RelationshipType } from 'src/types/RelationshipType';
 
-export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship {
+export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
         return state;
     }
@@ -18,6 +18,23 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             
         case 'tick': {
             return state;
+        }
+
+        case 'view': {
+            state.viewTarget = action.target;
+            break;
+        }
+
+        case 'target': {
+            state.sensors.currentTarget = action.target;
+            state.sensors.currentScan = undefined;
+            break;
+        }
+
+        case 'scan': {
+            // TODO: this
+            state.sensors.currentScan = undefined;
+            break;
         }
 
         default:

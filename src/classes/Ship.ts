@@ -28,6 +28,7 @@ export class Ship extends GameObject implements ShipInfo {
     helm: HelmState;
     sensors: SensorsState;
     weapons: WeaponsState;
+    viewTarget?: ObjectId;
 
     /** Remove destination if it is in the past. Return true if it is removed. */
     private pruneDestination(currentTime: number) {

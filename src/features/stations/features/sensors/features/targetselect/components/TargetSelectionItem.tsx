@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import TargetIcon from '@mui/icons-material/NearMe';
-import ViewIcon from '@mui/icons-material/Visibility';
-import ViewOffIcon from '@mui/icons-material/VisibilityOff';
+import ViewCurrentIcon from '@mui/icons-material/Visibility';
+import ViewNotCurrentIcon from '@mui/icons-material/VisibilityOff';
 import { Avatar, IconButton, ListItem, ListItemAvatar, ListItemButton, ListItemText, styled, useTheme } from 'src/lib/mui';
 import { SensorTarget } from '../../../types/SensorTarget'
 import { getObjectColors } from 'src/features/stations/features/spacemap';
@@ -28,9 +28,11 @@ export const TargetSelectionItem: React.FC<Props> = (props) => {
             edge="end"
             aria-label="delete"
             onClick={props.view}
-            color={props.isCurrentViewTarget ? 'primary' : 'secondary'}
+            color={props.isCurrentViewTarget ? 'primary' : undefined}
+            sx={props.isCurrentViewTarget ? undefined : { opacity: 0.6 }}
+            title={t('onScreen')}
         >
-            {props.isCurrentViewTarget ? <ViewOffIcon /> : <ViewIcon />}
+            {props.isCurrentViewTarget ? <ViewCurrentIcon /> : <ViewNotCurrentIcon />}
         </IconButton>
     );
 

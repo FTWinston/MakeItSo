@@ -21,13 +21,18 @@ export const SensorsTraining: React.FC<Props> = (props) => {
     useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
 
     const { power, health } = state.systems.get(ShipSystem.Sensors);
-
+    
     const defaultRender = () => (
         <Sensors
             {...state.sensors}
             power={power}
             health={health}
             shipDestroyed={state.destroyed}
+            targets={state.sensors.possibleTargets}
+            scanTarget={state.sensors.currentTarget}
+            viewTarget={state.viewTarget}
+            setScanTarget={target => dispatch({ type: 'target', target })}
+            setViewTarget={target => dispatch({ type: 'view', target })}
         />
     );
 
