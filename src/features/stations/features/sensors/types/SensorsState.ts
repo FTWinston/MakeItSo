@@ -4,7 +4,7 @@ import { SensorTarget } from './SensorTarget';
 export interface SensorsState {
     possibleTargets: SensorTarget[];
     currentTarget?: ObjectId;
-    currentScan?: undefined; // TODO: define this
+    currentScan?: string;
 }
 
 export type SensorsAction = {
@@ -20,5 +20,5 @@ export type SensorsAction = {
     target?: ObjectId;
 } | {
     type: 'scan';
-    scan: number;
+    scan?: string;
 };;

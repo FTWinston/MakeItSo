@@ -16,11 +16,14 @@ interface Props {
     health: number;
     targets: SensorTarget[];
 
+    viewTarget?: ObjectId;
+    setViewTarget: (id: ObjectId | undefined) => void;
+
     scanTarget?: ObjectId;
     setScanTarget: (id: ObjectId | undefined) => void;
 
-    viewTarget?: ObjectId;
-    setViewTarget: (id: ObjectId | undefined) => void;
+    scanSystem?: string;
+    setScanSystem: (id: string | undefined) => void;
 }
 
 const Root = styled(Page)({
@@ -37,25 +40,12 @@ const CrumbWrapper = styled('div')({
 export const Sensors: React.FC<Props> = (props) => {
     const { t } = useTranslation('sensors');
 
-    const stage = props.scanTarget === undefined
-        ? 0
-        : true/*props.scanSystem === undefined*/
-            ? 1
-            : 2;
+    let stage: number;
+    let content: JSX.Element;
 
-    const setStage = (stage: number) => {
-        if (stage === 0) {
-            props.setScanTarget(undefined);
-        }
-        /*
-        else if (stage === 1) {
-            props.setScanSystem(undefined);
-        }
-        */
-    }
-
-    const contentComponent = stage === 0
-        ? (
+    if (props.scanTarget === undefined) {
+        stage = 0;
+        content = (
             <TargetSelection
                 targets={props.targets}
                 select={props.setScanTarget}
@@ -63,22 +53,40 @@ export const Sensors: React.FC<Props> = (props) => {
                 viewTarget={props.viewTarget}
             />
         )
-        : stage === 1
-            ? (
-                <ScanSelection />
-            )
-            : stage === 2
-                ? (
-                    <div>scanning...</div>
-                )
-                : <div>scan result</div>;
+    }
+    else if (props.scanSystem === undefined) {
+        stage = 1;
+        content = (
+            <ScanSelection
+                target={props.scanTarget}
+                selectScan={props.setScanSystem}
+                isViewTarget={props.viewTarget === props.scanTarget}
+                view={props.setViewTarget}
+            />
+        )
+    }
+    else {
+        stage = 2;
+        content = (
+            <div>scanning...</div>
+        )
+    }
+
+    const setStage = (stage: number) => {
+        if (stage === 0) {
+            props.setScanTarget(undefined);
+        }
+        else if (stage === 1) {
+            props.setScanSystem(undefined);
+        }
+    }
     
     return (
         <Root shipDestroyed={props.shipDestroyed}>
             <SensorsAppBar power={props.power} health={props.health} />
             <CrumbWrapper>
                 <SensorBreadcrumbs depth={stage} setDepth={setStage} />
-                {contentComponent}
+                {content}
             </CrumbWrapper>
         </Root>
     );

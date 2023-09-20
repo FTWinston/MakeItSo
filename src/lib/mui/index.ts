@@ -10,6 +10,7 @@ export { CircularTimer } from './CircularTimer';
 export type { ColorName, DiscreteColorName, IconColorName, MuiColor } from './Colors';
 export { Divider } from './Divider';
 export { Fab } from './Fab';
+export { FormControlLabel } from './FormControlLabel';
 export { IconButton } from './IconButton';
 export { LinearProgress } from './LinearProgress';
 export { LinearTimer } from './LinearTimer';

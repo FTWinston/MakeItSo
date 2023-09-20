@@ -32,8 +32,8 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         }
 
         case 'scan': {
-            // TODO: this
-            state.sensors.currentScan = undefined;
+            // TODO: validate that scan is an allowed option
+            state.sensors.currentScan = action.scan;
             break;
         }
 
