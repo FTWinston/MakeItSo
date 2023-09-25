@@ -1,10 +1,19 @@
 import MuiCard from '@mui/material/Card';
-import MuiCardHeader from '@mui/material/CardHeader';
+import MuiCardActionArea from '@mui/material/CardActionArea';
 import MuiCardContent from '@mui/material/CardContent';
+import MuiCardHeader from '@mui/material/CardHeader';
 import { styled } from '@mui/material/styles';
 
 export const Card = styled(MuiCard)({
     borderRadius: '0.225em',
+});
+
+export const CardActionArea = styled(MuiCardActionArea)({
+    padding: '0.8em',
+});
+
+export const CardContent = styled(MuiCardContent)({
+    padding: '0.8em',
 });
 
 export const CardHeader = styled(MuiCardHeader)({
@@ -15,8 +24,4 @@ export const CardHeader = styled(MuiCardHeader)({
     '& .MuiCardHeader-avatar': {
         marginRight: '0.7em',
     },
-});
-
-export const CardContent = styled(MuiCardContent)({
-    padding: '0.8em',
 });
