@@ -28,6 +28,6 @@ export interface ScanTreeDefinition {
 // Scan of a specific ship, by another ship.
 export interface ScanTreeState {
     tree: ScanTreeDefinition;
-    selectedItemsByColumn: ScanItemId[];
+    selectedItems: Set<ScanItemId>;
     hiddenItems: Set<ScanItemId>;
 }

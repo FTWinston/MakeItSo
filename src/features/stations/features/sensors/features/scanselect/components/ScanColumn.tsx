@@ -1,31 +1,32 @@
-import { Box, styled } from 'src/lib/mui';
+import { Box, SxProps, Theme, styled } from 'src/lib/mui';
 import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
-import { ScanItem } from './ScanItem';
+import { ScanItem, itemWidth } from './ScanItem';
 
 interface Props {
     items: ShipScanItem[];
-    selectedItem?: ScanItemId;
-    availableItems: Set<ScanItemId>;
+    selectedItemId?: ScanItemId;
+    availableItemIds: ScanItemId[];
     selectItem: (id: ScanItemId) => void;
+    sx?: SxProps<Theme>;
 }
 
 const Root = styled(Box)({
-    padding: '0.5em 0',
     display: 'grid',
     gridTemplateColumns: '1fr',
     gridAutoRows: '1fr',
     gap: '0.15em',
+    width: itemWidth,
 });
 
 export const ScanColumn: React.FC<Props> = props => {
     return (
-        <Root>
+        <Root sx={props.sx}>
             {props.items.map(item => (
                 <ScanItem
                     key={item.id}
                     sx={{gridRow: item.row}}
                     title="Some scan item"
-                    status={props.selectedItem === item.id ? 'active' : (props.availableItems.has(item.id) ? (props.selectedItem ? 'inactive' : 'available') : 'unavailable')}
+                    status={props.selectedItemId === item.id ? 'active' : (props.availableItemIds.includes(item.id) ? (props.selectedItemId ? 'inactive' : 'available') : 'unavailable')}
                     clicked={() => props.selectItem(item.id)}
                 >
                     Active item content

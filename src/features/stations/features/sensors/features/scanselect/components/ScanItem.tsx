@@ -11,8 +11,10 @@ interface Props {
     sx?: SxProps<Theme>;
 }
 
+export const itemWidth = '15em';
+
 const Root = styled(Card)({
-    width: '15em',
+    width: itemWidth,
     height: '3em',
 });
 
@@ -76,7 +78,7 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
                         component="div"
                         left={active ? '-0.6em' : 0}
                         top={active ? '-1.6em' : 0}
-                        color={unavailable ? 'text.disabled' : inactive ? 'text.secondary' : active ? 'secondary.light' : undefined}
+                        color={unavailable ? 'text.disabled' : inactive ? 'text.secondary' : active ? 'primary.main' : undefined}
                         fontSize={active ? '0.75em !important' : '1em'}
                     >
                         {props.title}

@@ -43,14 +43,14 @@ export const Available: Story = {
         type: 'info'
       }
     ],
-    availableItems: new Set(['1', '2', '4', '5']),
+    availableItemIds: ['1', '2', '4', '5'],
   },
   render: (args) => {
-    const [selectedItem, setSelectedItem] = useState(args.selectedItem);
+    const [selectedItem, setSelectedItem] = useState(args.selectedItemId);
     return (
       <ScanColumn
         {...args}
-        selectedItem={selectedItem}
+        selectedItemId={selectedItem}
         selectItem={setSelectedItem}
       />
     );
@@ -61,7 +61,7 @@ export const Enabled: Story = {
   ...Available,
   args: {
     ...Available.args,
-    selectedItem: '4',
+    selectedItemId: '4',
   },
 };
 
@@ -69,6 +69,6 @@ export const Disabled: Story = {
   ...Available,
   args: {
     ...Enabled.args,
-    availableItems: new Set(),
+    availableItemIds: [],
   },
 };
