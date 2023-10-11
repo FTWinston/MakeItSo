@@ -73,8 +73,8 @@ export const ItemLink: React.FC<PropsWithChildren<Props>> = props => {
     const rootStyle = {
         gridRowStart: Math.min(props.fromRow, props.toRow),
         gridRowEnd: Math.max(props.fromRow, props.toRow) + 1,
-        gridColumnStart: 2 + props.fromColumn * 2,
-        gridColumnEnd: 1 + props.toColumn * 2,
+        gridColumnStart: props.fromColumn * 2,
+        gridColumnEnd: props.toColumn * 2 - 1,
     };
 
     if (props.fromRow === props.toRow) {
