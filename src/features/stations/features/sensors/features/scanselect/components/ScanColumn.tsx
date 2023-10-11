@@ -11,9 +11,11 @@ interface Props {
 }
 
 const Root = styled(Box)({
+    gridRowStart: 1,
+    gridRowEnd: 9,
     display: 'grid',
     gridTemplateColumns: '1fr',
-    gridAutoRows: '1fr',
+    gridTemplateRows: 'subgrid',
     gap: '0.15em',
     width: itemWidth,
 });

@@ -12,10 +12,11 @@ interface Props {
 }
 
 export const itemWidth = '15em';
+export const itemHeight = '3em';
 
 const Root = styled(Card)({
     width: itemWidth,
-    height: '3em',
+    height: itemHeight,
 });
 
 const Clickable = styled(CardActionArea)({

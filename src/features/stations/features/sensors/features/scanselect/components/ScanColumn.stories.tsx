@@ -1,6 +1,7 @@
 import { StoryObj } from '@storybook/react';
 import { ScanColumn } from './ScanColumn';
 import { useState } from 'react';
+import { Box } from 'src/lib/mui';
 
 export default {
   title: 'Sensors/Scan Selection/Scan Column',
@@ -48,11 +49,13 @@ export const Available: Story = {
   render: (args) => {
     const [selectedItem, setSelectedItem] = useState(args.selectedItemId);
     return (
-      <ScanColumn
-        {...args}
-        selectedItemId={selectedItem}
-        selectItem={setSelectedItem}
-      />
+      <Box sx={{ display: 'grid', gridTemplateRows: 'repeat(8, 1fr)' }}>
+        <ScanColumn
+          {...args}
+          selectedItemId={selectedItem}
+          selectItem={setSelectedItem}
+        />
+      </Box>
     );
   }
 };
