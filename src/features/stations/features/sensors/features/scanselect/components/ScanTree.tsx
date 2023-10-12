@@ -1,6 +1,6 @@
 import { Box, styled } from 'src/lib/mui';
 import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
-import { ScanItem, itemWidth } from './ScanItem';
+import { ItemStatus, ScanItem, itemWidth } from './ScanItem';
 import { ItemLink } from './ItemLink';
 
 interface Props {
@@ -20,22 +20,43 @@ const Root = styled(Box)({
     gridTemplateRows: 'repeat(8, 1fr)',
 });
 
+function getColumnsWithSelections(items: ShipScanItem[], selectedItemIds: ScanItemId[]) {
+    return selectedItemIds
+        .reduce((accumulator, selectedItemId) => {
+            const selectedItem = items.find(item => item.id === selectedItemId);
+            if (selectedItem) {
+                accumulator.add(selectedItem.column);
+            }
+            return accumulator;
+        }, new Set<number>());
+}
+
 export const ScanTree: React.FC<Props> = props => {
     const columnsWithSelections = getColumnsWithSelections(props.items, props.selectedItemIds);
 
     return (
         <Root>
-            {props.items.map((item) => (
-                <ScanItem
-                    key={item.id}
-                    sx={{ gridRow: item.row, gridColumn: item.column * 2 - 1}}
-                    title="Some scan item"
-                    status={props.selectedItemIds.includes(item.id) ? 'active' : (props.availableItemIds.includes(item.id) ? (columnsWithSelections.has(item.column) ? 'inactive' : 'available') : 'unavailable')}
-                    clicked={() => props.selectItem(item.id)}
-                >
-                    Active item content
-                </ScanItem>
-            ))}
+            {props.items.map((item) => {
+                const status: ItemStatus = props.selectedItemIds.includes(item.id)
+                    ? 'active'
+                    : (
+                        props.availableItemIds.includes(item.id)
+                            ? (columnsWithSelections.has(item.column) ? 'inactive' : 'available')
+                            : 'unavailable'
+                    );
+
+                return (
+                    <ScanItem
+                        key={item.id}
+                        sx={{ gridRow: item.row, gridColumn: item.column * 2 - 1}}
+                        title="Some scan item"
+                        status={status}
+                        clicked={() => props.selectItem(item.id)}
+                    >
+                        Active item content
+                    </ScanItem>
+                )
+            })}
 
             {props.unlocks.map(([fromItemId, toItemId], index) => {
                 const fromItem = props.items.find(item => item.id === fromItemId);
@@ -58,13 +79,3 @@ export const ScanTree: React.FC<Props> = props => {
     );
 }
 
-function getColumnsWithSelections(items: ShipScanItem[], selectedItemIds: ScanItemId[]) {
-    return selectedItemIds
-        .reduce((accumulator, selectedItemId) => {
-            const selectedItem = items.find(item => item.id === selectedItemId);
-            if (selectedItem) {
-                accumulator.add(selectedItem.column);
-            }
-            return accumulator;
-        }, new Set<number>());
-}

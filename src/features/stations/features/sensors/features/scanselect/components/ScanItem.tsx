@@ -62,10 +62,14 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
 
     return (
         <Root
-            variant={available || inactive ? 'outlined' : undefined}
+            variant={unavailable ? undefined : 'outlined'}
             sx={{
                 ...props.sx,
-                borderColor: available ? 'primary.dark' : undefined,
+                borderColor: active
+                    ? 'primary.dark'
+                    : available 
+                        ? 'secondary.main'
+                        : undefined,
                 cursor: unavailable ? 'not-allowed' : undefined,
             }}
         >
@@ -87,7 +91,7 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
                     
                     <IconAvatar
                         variant="rounded"
-                        sx={{ bgcolor: available ? 'primary.main' : unavailable ? 'text.disabled' : 'secondary.main', opacity: active ? 0 : 1 }}
+                        sx={{ bgcolor: unavailable ? 'text.disabled' : 'secondary.main', opacity: active ? 0 : 1 }}
                         aria-hidden={active}
                     >
                         {props.icon}    
