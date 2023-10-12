@@ -29,6 +29,7 @@ export interface ScanTreeMinimalState extends ScanTreeDefinition {
 export interface ScanTreeState extends ScanTreeMinimalState {
     //hiddenItemIds: ScanItemId[];
     availableItemIds: ScanItemId[];
+    itemInfo: Partial<Record<ScanItemId, string>>;
 }
 
 export type ScanTreeStateAction = {
@@ -39,4 +40,8 @@ export type ScanTreeStateAction = {
 } | {
     type: 'select';
     item: ScanItemId;
+} | {
+    type: 'set info';
+    item: ScanItemId;
+    info: string;
 }

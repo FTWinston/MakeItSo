@@ -11,12 +11,19 @@ export function scanTreeReducer(state: ScanTreeState, action: ScanTreeStateActio
         case 'select': {
             // Deselect any items in the same column.
             const selectedItemSet = new Set(state.selectedItemIds);
-            adjustSelectedItems(selectedItemSet, state.items, state.unlocks, action.item);
+            adjustSelectedItems(selectedItemSet, state.items, state.unlocks, state.itemInfo, action.item);
             state.selectedItemIds = [...selectedItemSet];
 
             // Update item availability based on the selection change.
             state.availableItemIds = getAvailableItems(state.items, selectedItemSet, state.unlocks);
-            return state;
+            break;
+        }
+
+        case 'set info': {
+            if (state.selectedItemIds.includes(action.item)) {
+                state.itemInfo[action.item] = action.info;
+            }
+            break;
         }
     }
 }

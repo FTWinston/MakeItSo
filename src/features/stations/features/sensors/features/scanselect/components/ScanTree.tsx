@@ -5,10 +5,11 @@ import { TreeLinks } from './TreeLinks';
 
 interface Props {
     items: ShipScanItem[];
+    unlocks: [ScanItemId, ScanItemId][];
     selectedItemIds: ScanItemId[];
     //hiddenItemIds: ScanItemId[];
     availableItemIds: ScanItemId[];
-    unlocks: [ScanItemId, ScanItemId][];
+    itemInfo: Partial<Record<ScanItemId, string>>;
     selectItem: (id: ScanItemId) => void;
 }
 
@@ -37,13 +38,20 @@ export const ScanTree: React.FC<Props> = props => {
     return (
         <Root>
             {props.items.map((item) => {
-                const status: ItemStatus = props.selectedItemIds.includes(item.id)
+                const itemIsActive = props.selectedItemIds.includes(item.id);
+                const status: ItemStatus = itemIsActive
                     ? 'active'
                     : (
                         props.availableItemIds.includes(item.id)
                             ? (columnsWithSelections.has(item.column) ? 'inactive' : 'available')
                             : 'unavailable'
                     );
+
+                const info = itemIsActive
+                    ? props.itemInfo[item.id]
+                    : undefined;
+
+                // TODO: use info
 
                 return (
                     <ScanItem

@@ -7,5 +7,6 @@ export function expandState(state: ScanTreeMinimalState): ScanTreeState {
     return {
         ...state,
         availableItemIds: getAvailableItems(state.items, selectedItemSet, state.unlocks),
+        itemInfo: {},
     }
 }

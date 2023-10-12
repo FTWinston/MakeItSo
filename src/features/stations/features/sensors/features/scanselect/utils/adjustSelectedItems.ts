@@ -1,7 +1,13 @@
 import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
 import { canBeSelected } from './canBeSelected';
 
-export function adjustSelectedItems(selectedItems: Set<ScanItemId>, items: ShipScanItem[], unlocks: [ScanItemId, ScanItemId][], itemIdToSelect: ScanItemId) {
+export function adjustSelectedItems(
+    selectedItems: Set<ScanItemId>,
+    items: ShipScanItem[],
+    unlocks: [ScanItemId, ScanItemId][],
+    itemInfo: Partial<Record<ScanItemId, string>>,
+    itemIdToSelect: ScanItemId
+) {
     // Ensure item exists and isn't already selected.
     const itemToSelect = items.find(item => item.id === itemIdToSelect);
     if (!itemToSelect || selectedItems.has(itemIdToSelect)) {
@@ -14,6 +20,7 @@ export function adjustSelectedItems(selectedItems: Set<ScanItemId>, items: ShipS
 
         if (!item || item.column === itemToSelect.column) {
             selectedItems.delete(itemId);
+            delete itemInfo[itemId];
         }
     }
     
@@ -29,6 +36,7 @@ export function adjustSelectedItems(selectedItems: Set<ScanItemId>, items: ShipS
         for (const itemId of selectedItems) {
             if (!canBeSelected(selectedItems, items, unlocks, itemId)) {
                 selectedItems.delete(itemId);
+                delete itemInfo[itemId];
                 deselectedAny = true;
             }
         }
