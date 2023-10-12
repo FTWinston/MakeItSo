@@ -59,6 +59,7 @@ export const ScanTree: React.FC<Props> = props => {
                         sx={{ gridRow: item.row, gridColumn: item.column * 2 - 1}}
                         title="Some scan item"
                         status={status}
+                        itemType={item.type}
                         clicked={() => props.selectItem(item.id)}
                     >
                         Active item content
