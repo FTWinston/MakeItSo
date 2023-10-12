@@ -1,7 +1,7 @@
 import { Box, styled } from 'src/lib/mui';
 import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
 import { ItemStatus, ScanItem, itemWidth } from './ScanItem';
-import { ItemLink } from './ItemLink';
+import { TreeLinks } from './TreeLinks';
 
 interface Props {
     items: ShipScanItem[];
@@ -58,23 +58,7 @@ export const ScanTree: React.FC<Props> = props => {
                 )
             })}
 
-            {props.unlocks.map(([fromItemId, toItemId], index) => {
-                const fromItem = props.items.find(item => item.id === fromItemId);
-                const toItem = props.items.find(item => item.id === toItemId);
-                if (!fromItem || !toItem) {
-                    return;
-                }
-
-                return (
-                    <ItemLink
-                        key={index}
-                        fromColumn={fromItem.column}
-                        fromRow={fromItem.row}
-                        toColumn={toItem.column}
-                        toRow={toItem.row}
-                    />
-                );
-            })}
+            <TreeLinks items={props.items} unlocks={props.unlocks} />
         </Root>
     );
 }
