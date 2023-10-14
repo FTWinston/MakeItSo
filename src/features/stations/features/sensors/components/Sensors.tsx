@@ -5,7 +5,7 @@ import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { SensorsAppBar } from './SensorsAppBar';
 import { useTranslation } from 'react-i18next';
 import { SensorBreadcrumbs } from './SensorBreadcrumbs';
-import { ScanSelection } from '../features/scanselect';
+import { ScanSelection, ScanTreeState } from '../features/scanselect';
 import { TargetSelection } from '../features/targetselect';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../types/SensorTarget';
@@ -21,6 +21,7 @@ interface Props {
 
     scanTarget?: ObjectId;
     setScanTarget: (id: ObjectId | undefined) => void;
+    scanTargetTree?: ScanTreeState;
 
     scanSystem?: string;
     setScanSystem: (id: string | undefined) => void;
@@ -43,7 +44,7 @@ export const Sensors: React.FC<Props> = (props) => {
     let stage: number;
     let content: JSX.Element;
 
-    if (props.scanTarget === undefined) {
+    if (props.scanTarget === undefined || props.scanTargetTree === undefined) {
         stage = 0;
         content = (
             <TargetSelection
@@ -59,9 +60,8 @@ export const Sensors: React.FC<Props> = (props) => {
         content = (
             <ScanSelection
                 target={props.scanTarget}
+                scanTree={props.scanTargetTree}
                 selectScan={props.setScanSystem}
-                isViewTarget={props.viewTarget === props.scanTarget}
-                view={props.setViewTarget}
             />
         )
     }

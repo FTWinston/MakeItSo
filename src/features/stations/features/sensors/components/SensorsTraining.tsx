@@ -24,7 +24,6 @@ export const SensorsTraining: React.FC<Props> = (props) => {
     
     const defaultRender = () => (
         <Sensors
-            {...state.sensors}
             power={power}
             health={health}
             shipDestroyed={state.destroyed}
@@ -33,6 +32,7 @@ export const SensorsTraining: React.FC<Props> = (props) => {
             setViewTarget={target => dispatch({ type: 'view', target })}
             scanTarget={state.sensors.currentTarget}
             setScanTarget={target => dispatch({ type: 'target', target })}
+            scanTargetTree={state.sensors.currentTarget ? state.sensors.scanTreesByTarget.get(state.sensors.currentTarget) : undefined}
             scanSystem={state.sensors.currentScan}
             setScanSystem={scan => dispatch({ type: 'scan', scan })}
         />

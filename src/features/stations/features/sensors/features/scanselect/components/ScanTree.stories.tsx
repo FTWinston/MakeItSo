@@ -24,7 +24,7 @@ export const Simple: Story = {
       {
         id: '2',
         column: 1,
-        row: 6,
+        row: 7,
         type: 'info'
       },
       {

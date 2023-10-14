@@ -13,6 +13,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             const newState = new Ship(1, RelationshipType.Self);
             newState.sensors = {
                 possibleTargets: [],
+                scanTreesByTarget: new Map(),
             };
             return newState;
             
@@ -28,6 +29,8 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         case 'target': {
             state.sensors.currentTarget = action.target;
             state.sensors.currentScan = undefined;
+            // TODO: get and/or update state.sensors.scanTreesByTarget here.
+            // ... plus any "info" values for that tree needs to be updated at intervals hereafter.
             break;
         }
 
