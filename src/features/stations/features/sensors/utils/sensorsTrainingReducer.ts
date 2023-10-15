@@ -3,6 +3,7 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { RelationshipType } from 'src/types/RelationshipType';
 import { SensorsAction } from '../types/SensorsStateInfo';
 import { Reference } from 'src/classes/Reference';
+import { expandScanTreeState } from '../features/scanselect';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -36,7 +37,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
                 if (targetObject) {
                     state.sensors.currentTarget = state.space.createReference(targetObject);
-                    state.sensors.scanTree = state.getScanTreeForTarget(action.target);
+                    state.sensors.scanTree = expandScanTreeState(targetObject.getScanTree());
                     break;
                 }
             }

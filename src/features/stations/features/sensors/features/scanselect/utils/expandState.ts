@@ -1,11 +1,16 @@
-import { ScanTreeState, ScanTreeMinimalState } from '../types/ScanTreeState';
+import { ScanTreeState, ScanTreeMinimalState, ScanTreeDefinition, ScanItemId } from '../types/ScanTreeState';
 import { getAvailableItems } from './getAvailableItems';
 
-export function expandState(state: ScanTreeMinimalState): ScanTreeState {
-    const selectedItemSet = new Set(state.selectedItemIds);
+export function expandState(state: ScanTreeDefinition | ScanTreeMinimalState): ScanTreeState {
+    const selectedItemIds: ScanItemId[] = Object.hasOwn(state, 'selectedItemIds')
+        ? (state as ScanTreeMinimalState).selectedItemIds
+        : [];
+
+    const selectedItemSet = new Set(selectedItemIds);
 
     return {
         ...state,
+        selectedItemIds,
         availableItemIds: getAvailableItems(state.items, selectedItemSet, state.unlocks),
         itemInfo: {},
     }
