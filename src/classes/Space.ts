@@ -1,6 +1,7 @@
 import type { ObjectId } from 'src/types/GameObjectInfo';
 import { SpaceInfo } from 'src/types/SpaceInfo';
 import { GameObject } from './GameObject';
+import { Clearable, Reference } from './Reference';
 
 export class Space implements SpaceInfo {
     private readonly _objects = new Map<ObjectId, GameObject>();
@@ -19,5 +20,31 @@ export class Space implements SpaceInfo {
 
     public remove (id: ObjectId) {
         this._objects.delete(id);
+        
+        // Clear all references to an object when that object itself is removed.
+        const references = this.referencesByObject.get(id);
+
+        if (references) {
+            for (const reference of references) {
+                reference.clear();
+            }
+        }
+    }
+
+    private readonly referencesByObject = new Map<ObjectId, Set<Clearable>>();
+
+    public createReference<T extends GameObject>(object: T): Reference<T> {
+        const reference = new Reference(object);
+        
+        let references = this.referencesByObject.get(object.id);
+
+        if (!references) {
+            references = new Set();
+            this.referencesByObject.set(object.id, references);
+        }
+        
+        references.add(reference);
+
+        return reference;
     }
 }

@@ -1,4 +1,4 @@
-import type { EngineeringState, HelmState, SensorsState, WeaponsState } from 'src/features/stations';
+import type { EngineeringState, HelmState, SensorsStateInfo, WeaponsState } from 'src/features/stations';
 import type { DefiniteMap } from './DefiniteMap';
 import type { ShipDestroyingSystem, ShipSystem } from './ShipSystem';
 import type { SystemState } from './SystemState';
@@ -9,6 +9,6 @@ export interface ShipInfo extends GameObjectInfo {
     systems: DefiniteMap<ShipSystem, SystemState>;
     engineering: EngineeringState;
     helm: HelmState;
-    sensors: SensorsState;
+    sensors: SensorsStateInfo;
     weapons: WeaponsState;
 }

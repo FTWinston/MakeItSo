@@ -1,2 +1,2 @@
 export { ScanSelection } from './components/ScanSelection';
-export type { ScanTreeState } from './types/ScanTreeState';
+export type { ScanTreeDefinition, ScanTreeState } from './types/ScanTreeState';

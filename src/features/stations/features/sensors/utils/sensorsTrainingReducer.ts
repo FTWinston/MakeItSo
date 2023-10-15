@@ -1,7 +1,8 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { SensorsAction } from '../types/SensorsState';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { SensorsAction } from '../types/SensorsStateInfo';
+import { Reference } from 'src/classes/Reference';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -16,6 +17,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             const newState = new Ship(space, RelationshipType.Self);
             newState.sensors = {
                 possibleTargets: [],
+                currentTarget: Reference.empty(),
             };
             return newState;
             
@@ -30,14 +32,16 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
         case 'target': {
             if (action.target) {
-                state.sensors.currentTarget = {
-                    id: action.target,
-                    scanTree: state.getScanTreeForTarget(action.target),
+                const targetObject = state.space.objects.get(action.target);
+
+                if (targetObject) {
+                    state.sensors.currentTarget = state.space.createReference(targetObject);
+                    state.sensors.scanTree = state.getScanTreeForTarget(action.target);
+                    break;
                 }
             }
-            else {
-                delete action.target;
-            }
+            
+            delete action.target;
             break;
         }
 
@@ -47,10 +51,10 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             }
             if (action.scan) {
                 // TODO: validate that scan is an allowed option
-                state.sensors.currentTarget.currentScan = action.scan;
+                state.sensors.currentScan = action.scan;
             }
             else {
-                delete state.sensors.currentTarget?.currentScan;
+                delete state.sensors.currentScan;
             }
             break;
         }

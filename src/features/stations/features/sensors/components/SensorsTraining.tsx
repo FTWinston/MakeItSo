@@ -32,8 +32,8 @@ export const SensorsTraining: React.FC<Props> = (props) => {
             setViewTarget={target => dispatch({ type: 'view', target })}
             scanTarget={state.sensors.currentTarget?.id}
             setScanTarget={target => dispatch({ type: 'target', target })}
-            scanTargetTree={state.sensors.currentTarget?.scanTree}
-            scanSystem={state.sensors.currentTarget?.currentScan}
+            scanTargetTree={state.sensors.scanTree}
+            scanSystem={state.sensors.currentScan}
             setScanSystem={scan => dispatch({ type: 'scan', scan })}
         />
     );

@@ -1,28 +1,13 @@
-import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from './SensorTarget';
 import { ScanTreeState } from '../features/scanselect';
+import { SensorsStateInfo } from './SensorsStateInfo';
+import { GameObject } from 'src/classes/GameObject';
+import { Reference } from 'src/classes/Reference';
 
-export interface SensorsState {
+export interface SensorsState extends SensorsStateInfo {
     possibleTargets: SensorTarget[];
-    currentTarget?: {
-        id: ObjectId;
-        scanTree: ScanTreeState;
-        currentScan?: string;
-    }
-}
 
-export type SensorsAction = {
-    type: 'reset';
-} | {
-    type: 'tick';
-    currentTime: number;
-} | {
-    type: 'view';
-    target?: ObjectId;
-} | {
-    type: 'target';
-    target?: ObjectId;
-} | {
-    type: 'scan';
-    scan?: string;
-};;
+    currentTarget: Reference<GameObject>;
+    scanTree?: ScanTreeState;
+    currentScan?: string;
+}

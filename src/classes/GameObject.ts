@@ -8,7 +8,7 @@ import { Vector2D } from 'src/types/Vector2D';
 import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { Space } from './Space';
-import { ScanTreeDefinition } from 'src/features/stations/features/sensors/features/scanselect/types/ScanTreeState';
+import { ScanTreeDefinition } from 'src/features/stations';
 
 const twoTicks = durationToTicks(2);
 
