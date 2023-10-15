@@ -4,9 +4,11 @@ import { ScanTreeState } from '../features/scanselect';
 
 export interface SensorsState {
     possibleTargets: SensorTarget[];
-    currentTarget?: ObjectId;
-    currentScan?: string;
-    scanTreesByTarget: Map<ObjectId, ScanTreeState>; // TODO: either plan to clean these up, or only store one and reset when you change target.
+    currentTarget?: {
+        id: ObjectId;
+        scanTree: ScanTreeState;
+        currentScan?: string;
+    }
 }
 
 export type SensorsAction = {

@@ -17,7 +17,10 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(1, RelationshipType.Self);
+            const space = state.space;
+            state.delete();
+
+            const newState = new Ship(space, RelationshipType.Self);
             return newState;
             
         case 'tick': {

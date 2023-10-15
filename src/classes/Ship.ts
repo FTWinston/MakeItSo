@@ -10,10 +10,12 @@ import { getLast } from 'src/utils/arrays';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { pruneKeyframes } from 'src/utils/interpolate';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { ScanTreeState } from 'src/features/stations/features/sensors/features/scanselect';
+import { Space } from './Space';
 
 export class Ship extends GameObject implements ShipInfo {
-    constructor(id: ObjectId, rel: RelationshipType) {
-        super(id, 'chevron', rel);
+    constructor(space: Space, rel: RelationshipType) {
+        super(space, 'chevron', rel);
 
         this.systems = getDefaultSystemStates();
         this.engineering = getDefaultEngineeringState();
@@ -72,5 +74,17 @@ export class Ship extends GameObject implements ShipInfo {
 
     public get evasionChance(): number {
         return this.helm.maneuvers[0]?.evasion ?? 0;
+    }
+
+    public getScanTreeForTarget(targetId: ObjectId): ScanTreeState {
+        const target = this.space.objects.get(targetId);
+
+        if (!target) {
+            throw new Error('invalid target id');
+        }
+
+        const definition = target.getScanTree();
+
+        throw new Error('not implemented');
     }
 }

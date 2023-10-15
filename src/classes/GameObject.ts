@@ -7,13 +7,23 @@ import { RelationshipType } from 'src/types/RelationshipType';
 import { Vector2D } from 'src/types/Vector2D';
 import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
+import { Space } from './Space';
+import { ScanTreeDefinition } from 'src/features/stations/features/sensors/features/scanselect/types/ScanTreeState';
 
 const twoTicks = durationToTicks(2);
 
 export abstract class GameObject implements GameObjectInfo {
     [immerable] = true;
 
-    constructor(public readonly id: ObjectId, public readonly draw: ObjectAppearance, public rel: RelationshipType) {}
+    constructor(public readonly space: Space, public readonly draw: ObjectAppearance, public rel: RelationshipType) {
+        this.id = space.getNewId();
+    }
+
+    public readonly id: ObjectId;
+
+    public delete() {
+        this.space.remove(this.id);
+    }
 
     motion: Keyframes<Position> = [];
 
@@ -33,5 +43,9 @@ export abstract class GameObject implements GameObjectInfo {
             x: (pos2.x - pos1.x) / twoTicks,
             y: (pos2.y - pos1.y) / twoTicks,
         }
+    }
+
+    getScanTree(): ScanTreeDefinition {
+        throw new Error('not implemented');
     }
 }

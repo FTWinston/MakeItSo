@@ -6,15 +6,16 @@ import { getManeuver, ManeuverInfo, ManeuverType, getManeuverStartPosition, Moti
 import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { Space } from './Space';
 
 export class FakeShip extends MobileObject {
     constructor(
-        id: ObjectId,
+        space: Space,
         startPosition: Position,
         rel: RelationshipType,
         readonly maneuverSequence: readonly ManeuverType[]
     ) {
-        super(id, 'chevron', rel, startPosition);
+        super(space, 'chevron', rel, startPosition);
     }
 
     private nextManeuverIndex = 0;

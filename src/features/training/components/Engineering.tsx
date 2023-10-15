@@ -4,13 +4,18 @@ import { useFullscreen } from 'src/hooks/useFullscreen';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { BackButton } from './BackButton';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { Space } from 'src/classes/Space';
 
 export const Component: React.FC = () => {
     useFullscreen();
 
     return (
     <EngineeringTraining
-        getInitialState={() => new Ship(1, RelationshipType.Self)}
+        getInitialState={() => {
+            const space = new Space();
+            const ship = new Ship(space, RelationshipType.Self);
+            return ship;
+        }}
         getEffects={() => [
             {
                 type: 'damage',

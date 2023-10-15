@@ -2,6 +2,7 @@ import { produce } from 'immer';
 import { useReducer } from 'react';
 import { GameObject } from 'src/classes/GameObject';
 import { Ship } from 'src/classes/Ship';
+import { Space } from 'src/classes/Space';
 import { useInterval } from 'src/hooks/useInterval';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
@@ -11,14 +12,14 @@ import { Helm } from './Helm';
 
 interface Props {
     getInitialState: () => Ship;
-    getOtherObjects: () => GameObject[]
+    getOtherObjects: (space: Space) => GameObject[]
     //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
     renderMenuItems?: () => JSX.Element;
 }
 
 export const HelmTraining: React.FC<Props> = (props) => {
     const [ship, helmDispatch] = useReducer(produce(helmTrainingReducer), undefined, props.getInitialState);
-    const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), undefined, props.getOtherObjects);
+    const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), ship.space, props.getOtherObjects);
 
     // Run tick actions at a regular interval.
     useInterval(() => {

@@ -6,6 +6,7 @@ import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { Space } from 'src/classes/Space';
 
 export default {
   title: 'Helm',
@@ -17,7 +18,8 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(1, RelationshipType.Self);
+      const space = new Space();
+      const ship = new Ship(space, RelationshipType.Self);
 
       const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
       const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
@@ -55,9 +57,9 @@ export const Others: Story = {
       return state;
     },
 
-    getOtherObjects: () => {
+    getOtherObjects: (space) => {
       const other1 = new FakeShip(
-        2,
+        space,
         {
           ...getClosestCellCenter(103, 5, worldScaleCellRadius),
           angle: (Math.PI * 4) / 3,
@@ -66,7 +68,7 @@ export const Others: Story = {
         [ManeuverType.HardLeft, ManeuverType.SlowForward]
       );
       const other2 = new FakeShip(
-        3,
+        space,
         {
           ...getClosestCellCenter(98, -5, worldScaleCellRadius),
           angle: Math.PI / 3,

@@ -10,10 +10,12 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
     switch (action.type) {
         case 'reset':
-            const newState = new Ship(1, RelationshipType.Self);
+            const space = state.space;
+            state.delete();
+
+            const newState = new Ship(space, RelationshipType.Self);
             newState.sensors = {
                 possibleTargets: [],
-                scanTreesByTarget: new Map(),
             };
             return newState;
             
@@ -27,16 +29,29 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         }
 
         case 'target': {
-            state.sensors.currentTarget = action.target;
-            state.sensors.currentScan = undefined;
-            // TODO: get and/or update state.sensors.scanTreesByTarget here.
-            // ... plus any "info" values for that tree needs to be updated at intervals hereafter.
+            if (action.target) {
+                state.sensors.currentTarget = {
+                    id: action.target,
+                    scanTree: state.getScanTreeForTarget(action.target),
+                }
+            }
+            else {
+                delete action.target;
+            }
             break;
         }
 
         case 'scan': {
-            // TODO: validate that scan is an allowed option
-            state.sensors.currentScan = action.scan;
+            if (!state.sensors.currentTarget) {
+                break;
+            }
+            if (action.scan) {
+                // TODO: validate that scan is an allowed option
+                state.sensors.currentTarget.currentScan = action.scan;
+            }
+            else {
+                delete state.sensors.currentTarget?.currentScan;
+            }
             break;
         }
 

@@ -2,6 +2,7 @@ import { StoryObj } from '@storybook/react';
 import { Ship } from 'src/classes/Ship';
 import { SensorsTraining } from './SensorsTraining';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { Space } from 'src/classes/Space';
 
 export default {
   title: 'Sensors',
@@ -12,14 +13,14 @@ type Story = StoryObj<typeof SensorsTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(1, RelationshipType.Self),
+    getInitialState: () => new Ship(new Space(), RelationshipType.Self),
   }
 }
 
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(1, RelationshipType.Self);
+      const ship = new Ship(new Space(), RelationshipType.Self);
 
       ship.sensors.possibleTargets = [
         {

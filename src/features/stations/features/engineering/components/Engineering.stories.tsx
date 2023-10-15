@@ -15,6 +15,7 @@ import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { Space } from 'src/classes/Space';
 
 export default {
   title: 'Engineering',
@@ -25,7 +26,11 @@ type Story = StoryObj<typeof EngineeringTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(1, RelationshipType.Self),
+    getInitialState: () => { 
+      const space = new Space();
+      const ship = new Ship(space, RelationshipType.Self);
+      return ship;
+    },
     getEffects: () => [
       {
         type: 'damage',
@@ -39,7 +44,8 @@ export const Empty: Story = {
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(1, RelationshipType.Self);
+      const space = new Space();
+      const ship = new Ship(space, RelationshipType.Self);
       const systems = getComplexStoryTiles();
 
       ship.systems = arrayToMap(systems, (info) => info.system) as DefiniteMap<
@@ -70,7 +76,11 @@ export const Busy: Story = {
 
 export const Custom: Story = {
   args: {
-    getInitialState: () => new Ship(1, RelationshipType.Self),
+    getInitialState: () => {
+      const space = new Space();
+      const ship = new Ship(space, RelationshipType.Self);
+      return ship;
+    },
     getEffects: () => [],
   },
   render: (props) => {
