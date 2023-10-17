@@ -29,5 +29,5 @@ export class Reference<T extends GameObject> implements Clearable, ReferenceInfo
     static empty<T extends GameObject>(): Reference<T> { return emptyReference; }
 }
 
-const emptyReference = new Reference<any>(undefined);
+const emptyReference = new Reference<any>({ id: -1 });
 emptyReference.clear();
