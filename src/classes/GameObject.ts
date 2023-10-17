@@ -45,7 +45,5 @@ export abstract class GameObject implements GameObjectInfo {
         }
     }
 
-    getScanTree(): ScanTreeDefinition {
-        throw new Error('not implemented');
-    }
+    abstract getScanTree(): ScanTreeDefinition;
 }

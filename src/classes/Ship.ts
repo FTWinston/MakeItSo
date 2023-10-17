@@ -1,4 +1,4 @@
-import type { EngineeringState, HelmState, SensorsState, WeaponsState } from 'src/features/stations';
+import type { EngineeringState, HelmState, ScanTreeDefinition, SensorsState, WeaponsState } from 'src/features/stations';
 import type { DefiniteMap } from 'src/types/DefiniteMap';
 import type { ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
 import type { SystemState } from 'src/types/SystemState';
@@ -73,5 +73,9 @@ export class Ship extends GameObject implements ShipInfo {
 
     public get evasionChance(): number {
         return this.helm.maneuvers[0]?.evasion ?? 0;
+    }
+    
+    getScanTree(): ScanTreeDefinition {
+        throw new Error('not implemented');
     }
 }

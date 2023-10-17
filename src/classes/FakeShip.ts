@@ -1,12 +1,12 @@
 import { updateShipMotion } from '../features/stations/features/helm';
 import { getLast } from 'src/utils/arrays';
-import { ObjectId } from 'src/types/GameObjectInfo';
 import { pruneKeyframes } from 'src/utils/interpolate';
 import { getManeuver, ManeuverInfo, ManeuverType, getManeuverStartPosition, MotionConfiguration } from 'src/features/stations/features/helm';
 import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
 import { RelationshipType } from 'src/types/RelationshipType';
 import { Space } from './Space';
+import { ScanTreeDefinition } from 'src/features/stations';
 
 export class FakeShip extends MobileObject {
     constructor(
@@ -64,5 +64,9 @@ export class FakeShip extends MobileObject {
         }
 
         updateShipMotion(this, this.motionConfig, changeMotion, null, this.maneuvers, currentTime);
+    }
+    
+    getScanTree(): ScanTreeDefinition {
+        throw new Error('not implemented');
     }
 }
