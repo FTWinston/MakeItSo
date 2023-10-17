@@ -25,7 +25,7 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
             const space = state.space;
             state.delete();
 
-            const newState = new Ship(space, RelationshipType.Self);
+            const newState = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
             newState.systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
             newState.engineering = {
                 systemOrder: action.systems.map(system => system.system),

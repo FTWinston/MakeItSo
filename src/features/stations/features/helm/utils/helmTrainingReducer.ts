@@ -20,7 +20,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
             const space = state.space;
             state.delete();
 
-            const newState = new Ship(space, RelationshipType.Self);
+            const newState = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
             return newState;
             
         case 'tick': {

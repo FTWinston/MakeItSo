@@ -1,20 +1,21 @@
 import type { EngineeringState, HelmState, ScanTreeDefinition, SensorsState, WeaponsState } from 'src/features/stations';
-import type { DefiniteMap } from 'src/types/DefiniteMap';
-import type { ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
-import type { SystemState } from 'src/types/SystemState';
-import { GameObject } from './GameObject';
-import { ShipInfo } from 'src/types/ShipInfo';
 import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { getDefaultEngineeringState, getDefaultHelmState, getDefaultSensorsState, getDefaultWeaponsState, updateShipMotion } from 'src/features/stations';
 import { getLast } from 'src/utils/arrays';
-import { ObjectId } from 'src/types/GameObjectInfo';
+import type { DefiniteMap } from 'src/types/DefiniteMap';
+import type { ObjectId } from 'src/types/GameObjectInfo';
+import type { Position } from 'src/types/Position';
+import type { RelationshipType } from 'src/types/RelationshipType';
+import type { ShipInfo } from 'src/types/ShipInfo';
+import type { ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
+import type { SystemState } from 'src/types/SystemState';
 import { pruneKeyframes } from 'src/utils/interpolate';
-import { RelationshipType } from 'src/types/RelationshipType';
 import { Space } from './Space';
+import { MobileObject } from './MobileObject';
 
-export class Ship extends GameObject implements ShipInfo {
-    constructor(space: Space, rel: RelationshipType) {
-        super(space, 'chevron', rel);
+export class Ship extends MobileObject implements ShipInfo {
+    constructor(space: Space, rel: RelationshipType, position: Position) {
+        super(space, 'chevron', rel, position);
 
         this.systems = getDefaultSystemStates();
         this.engineering = getDefaultEngineeringState();

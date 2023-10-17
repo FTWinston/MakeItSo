@@ -13,11 +13,11 @@ export const Component: React.FC = () => {
     <HelmTraining
         getInitialState={() => {
             const space = new Space();
-            const ship = new Ship(space, RelationshipType.Self);
-            
             const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
             const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
 
+            const ship = new Ship(space, RelationshipType.Self, { x: fromPos.x, y: fromPos.y, angle: 0 });
+            
             ship.motion = [
                 {
                     time: 0,

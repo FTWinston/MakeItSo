@@ -13,14 +13,14 @@ type Story = StoryObj<typeof SensorsTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(new Space(), RelationshipType.Self),
+    getInitialState: () => new Ship(new Space(), RelationshipType.Self, { x: 0, y: 0, angle: 0 }),
   }
 }
 
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const ship = new Ship(new Space(), RelationshipType.Self);
+      const ship = new Ship(new Space(), RelationshipType.Self, { x: 0, y: 0, angle: 0 });
 
       ship.sensors.possibleTargets = [
         {

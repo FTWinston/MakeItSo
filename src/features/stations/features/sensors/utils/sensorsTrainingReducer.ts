@@ -15,7 +15,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             const space = state.space;
             state.delete();
 
-            const newState = new Ship(space, RelationshipType.Self);
+            const newState = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
             newState.sensors = {
                 possibleTargets: [],
                 currentTarget: Reference.empty(),

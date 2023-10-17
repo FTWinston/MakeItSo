@@ -15,7 +15,7 @@ export const Empty: Story = {
   args: {
     getInitialState: () => {
       const space = new Space();
-      const ship = new Ship(space, RelationshipType.Self);
+      const ship = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
       return ship;
     },
   },

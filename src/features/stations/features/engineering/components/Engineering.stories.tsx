@@ -28,7 +28,7 @@ export const Empty: Story = {
   args: {
     getInitialState: () => { 
       const space = new Space();
-      const ship = new Ship(space, RelationshipType.Self);
+      const ship = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
       return ship;
     },
     getEffects: () => [
@@ -45,7 +45,7 @@ export const Busy: Story = {
   args: {
     getInitialState: () => {
       const space = new Space();
-      const ship = new Ship(space, RelationshipType.Self);
+      const ship = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
       const systems = getComplexStoryTiles();
 
       ship.systems = arrayToMap(systems, (info) => info.system) as DefiniteMap<
@@ -78,7 +78,7 @@ export const Custom: Story = {
   args: {
     getInitialState: () => {
       const space = new Space();
-      const ship = new Ship(space, RelationshipType.Self);
+      const ship = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
       return ship;
     },
     getEffects: () => [],
