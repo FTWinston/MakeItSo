@@ -1,21 +1,21 @@
 import type { EngineeringState, HelmState, ScanTreeDefinition, SensorsState, WeaponsState } from 'src/features/stations';
-import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { getDefaultEngineeringState, getDefaultHelmState, getDefaultSensorsState, getDefaultWeaponsState, updateShipMotion } from 'src/features/stations';
-import { getLast } from 'src/utils/arrays';
 import type { DefiniteMap } from 'src/types/DefiniteMap';
 import type { ObjectId } from 'src/types/GameObjectInfo';
 import type { Position } from 'src/types/Position';
-import type { RelationshipType } from 'src/types/RelationshipType';
 import type { ShipInfo } from 'src/types/ShipInfo';
 import type { ShipDestroyingSystem, ShipSystem } from 'src/types/ShipSystem';
 import type { SystemState } from 'src/types/SystemState';
+import { getLast } from 'src/utils/arrays';
+import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { pruneKeyframes } from 'src/utils/interpolate';
 import { Space } from './Space';
 import { MobileObject } from './MobileObject';
+import { ShipType } from './ShipType';
 
 export class Ship extends MobileObject implements ShipInfo {
-    constructor(space: Space, rel: RelationshipType, position: Position) {
-        super(space, 'chevron', rel, position);
+    constructor(space: Space, readonly shipType: ShipType, position: Position) {
+        super(space, position);
 
         this.systems = getDefaultSystemStates();
         this.engineering = getDefaultEngineeringState();
@@ -23,6 +23,10 @@ export class Ship extends MobileObject implements ShipInfo {
         this.sensors = getDefaultSensorsState();
         this.weapons = getDefaultWeaponsState();
     }
+
+    override get draw() { return this.shipType.draw; }
+
+    override get rel() { return this.shipType.rel; }
 
     destroyed?: ShipDestroyingSystem;
     systems: DefiniteMap<ShipSystem, SystemState>;
@@ -76,7 +80,14 @@ export class Ship extends MobileObject implements ShipInfo {
         return this.helm.maneuvers[0]?.evasion ?? 0;
     }
     
+    private scanTreeDefinition: ScanTreeDefinition | undefined;
+
     getScanTree(): ScanTreeDefinition {
-        throw new Error('not implemented');
+        if (!this.scanTreeDefinition) {
+            // this.scanTreeDefinition = this.createScanTreeInstance(this.shipType.scanTreeLayout);
+            throw new Error('not yet implemented');
+        }
+        
+        return this.scanTreeDefinition;
     }
 }

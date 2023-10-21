@@ -3,8 +3,8 @@ import { EngineeringTraining } from 'src/features/stations/features/engineering'
 import { useFullscreen } from 'src/hooks/useFullscreen';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { BackButton } from './BackButton';
-import { RelationshipType } from 'src/types/RelationshipType';
 import { Space } from 'src/classes/Space';
+import { playerShip } from 'src/classes/ShipType';
 
 export const Component: React.FC = () => {
     useFullscreen();
@@ -13,7 +13,7 @@ export const Component: React.FC = () => {
     <EngineeringTraining
         getInitialState={() => {
             const space = new Space();
-            const ship = new Ship(space, RelationshipType.Self);
+            const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
             return ship;
         }}
         getEffects={() => [

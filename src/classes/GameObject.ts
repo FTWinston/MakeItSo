@@ -15,11 +15,16 @@ const twoTicks = durationToTicks(2);
 export abstract class GameObject implements GameObjectInfo {
     [immerable] = true;
 
-    constructor(public readonly space: Space, public readonly draw: ObjectAppearance, public rel: RelationshipType) {
+    constructor(public readonly space: Space) {
         this.id = space.getNewId();
+        space.add(this);
     }
 
     public readonly id: ObjectId;
+
+    public abstract get draw(): ObjectAppearance;
+
+    public abstract get rel(): RelationshipType;
 
     public delete() {
         this.space.remove(this.id);

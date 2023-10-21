@@ -1,9 +1,9 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { RelationshipType } from 'src/types/RelationshipType';
 import { SensorsAction } from '../types/SensorsStateInfo';
 import { Reference } from 'src/classes/Reference';
 import { expandScanTreeState } from '../features/scanselect';
+import { playerShip } from 'src/classes/ShipType';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -15,7 +15,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             const space = state.space;
             state.delete();
 
-            const newState = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
+            const newState = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
             newState.sensors = {
                 possibleTargets: [],
                 currentTarget: Reference.empty(),
@@ -23,6 +23,13 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             return newState;
             
         case 'tick': {
+            // TODO: update state.sensors.possibleTargets
+            // ... don't just replace it each time, merge existing values.
+            // Map instead of array?
+
+            if (state.sensors.currentTarget.id) {
+                // TODO: validate that state.sensors.currentTarget is in possibleTargets, clear it if not.
+            }
             return state;
         }
 
@@ -42,12 +49,12 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
                 }
             }
             
-            delete action.target;
+            state.sensors.currentTarget.clear();
             break;
         }
 
         case 'scan': {
-            if (!state.sensors.currentTarget) {
+            if (!state.sensors.currentTarget.id) {
                 break;
             }
             if (action.scan) {

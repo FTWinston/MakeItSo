@@ -13,7 +13,7 @@ import { playCard } from './playCard';
 import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffect } from './systemActions';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
-import { RelationshipType } from 'src/types/RelationshipType';
+import { playerShip } from 'src/classes/ShipType';
 
 export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship | void {
     if (state.destroyed) {
@@ -25,7 +25,7 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
             const space = state.space;
             state.delete();
 
-            const newState = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
+            const newState = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
             newState.systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
             newState.engineering = {
                 systemOrder: action.systems.map(system => system.system),

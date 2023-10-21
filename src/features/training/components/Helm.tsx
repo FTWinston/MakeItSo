@@ -3,8 +3,8 @@ import { HelmTraining } from 'src/features/stations/features/helm';
 import { useFullscreen } from 'src/hooks/useFullscreen';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 import { BackButton } from './BackButton';
-import { RelationshipType } from 'src/types/RelationshipType';
 import { Space } from 'src/classes/Space';
+import { playerShip } from 'src/classes/ShipType';
 
 export const Component: React.FC = () => {
     useFullscreen();
@@ -16,7 +16,7 @@ export const Component: React.FC = () => {
             const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
             const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
 
-            const ship = new Ship(space, RelationshipType.Self, { x: fromPos.x, y: fromPos.y, angle: 0 });
+            const ship = new Ship(space, playerShip, { x: fromPos.x, y: fromPos.y, angle: 0 });
             
             ship.motion = [
                 {

@@ -8,7 +8,7 @@ import { HelmAction } from '../types/HelmState';
 import { getManeuverStartPosition } from './getManeuverStartPosition';
 import { getTravelTime } from './getTravelTime';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
-import { RelationshipType } from 'src/types/RelationshipType';
+import { playerShip } from 'src/classes/ShipType';
 
 export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | void {
     if (state.destroyed) {
@@ -20,7 +20,7 @@ export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | voi
             const space = state.space;
             state.delete();
 
-            const newState = new Ship(space, RelationshipType.Self, { x: 0, y: 0, angle: 0 });
+            const newState = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
             return newState;
             
         case 'tick': {
