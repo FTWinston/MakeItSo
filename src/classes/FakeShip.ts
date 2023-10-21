@@ -6,7 +6,7 @@ import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
 import { Space } from './Space';
 import { ScanTreeDefinition } from 'src/features/stations';
-import { ShipType } from './ShipType';
+import { ShipType } from '../types/ShipType';
 
 export class FakeShip extends MobileObject {
     constructor(

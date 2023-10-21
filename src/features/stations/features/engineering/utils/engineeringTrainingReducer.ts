@@ -13,7 +13,7 @@ import { playCard } from './playCard';
 import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffect } from './systemActions';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
-import { playerShip } from 'src/classes/ShipType';
+import { playerShip } from 'src/types/ShipType';
 
 export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship | void {
     if (state.destroyed) {

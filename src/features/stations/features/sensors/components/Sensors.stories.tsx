@@ -5,7 +5,7 @@ import { Space } from 'src/classes/Space';
 import { FakeShip } from 'src/classes/FakeShip';
 import { Position } from 'src/types/Position';
 import { GameObject } from 'src/classes/GameObject';
-import { friendlyShip, hostileShip, neutralShip, playerShip, unknownShip } from 'src/classes/ShipType';
+import { friendlyShip, hostileShip, neutralShip, playerShip, unknownShip } from 'src/types/ShipType';
 
 export default {
   title: 'Sensors',

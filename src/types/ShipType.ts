@@ -1,6 +1,6 @@
-import { RelationshipType } from 'src/types/RelationshipType';
-import { ObjectAppearance } from 'src/types/ObjectAppearance';
 import { ScanTreeLayout } from 'src/features/stations';
+import { RelationshipType } from './RelationshipType';
+import { ObjectAppearance } from './ObjectAppearance';
 
 export interface ShipType {
     id: string;

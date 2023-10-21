@@ -11,7 +11,7 @@ import { getDefaultSystemStates } from 'src/utils/getDefaultSystemStates';
 import { pruneKeyframes } from 'src/utils/interpolate';
 import { Space } from './Space';
 import { MobileObject } from './MobileObject';
-import { ShipType } from './ShipType';
+import { ShipType } from '../types/ShipType';
 
 export class Ship extends MobileObject implements ShipInfo {
     constructor(space: Space, readonly shipType: ShipType, position: Position) {

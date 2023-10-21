@@ -4,7 +4,7 @@ import { useFullscreen } from 'src/hooks/useFullscreen';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 import { BackButton } from './BackButton';
 import { Space } from 'src/classes/Space';
-import { playerShip } from 'src/classes/ShipType';
+import { playerShip } from 'src/types/ShipType';
 
 export const Component: React.FC = () => {
     useFullscreen();

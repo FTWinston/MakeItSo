@@ -3,7 +3,7 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsStateInfo';
 import { Reference } from 'src/classes/Reference';
 import { expandScanTreeState } from '../features/scanselect';
-import { playerShip } from 'src/classes/ShipType';
+import { playerShip } from 'src/types/ShipType';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {

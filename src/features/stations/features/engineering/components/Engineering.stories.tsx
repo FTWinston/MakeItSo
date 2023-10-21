@@ -15,7 +15,7 @@ import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
 import { Space } from 'src/classes/Space';
-import { playerShip } from 'src/classes/ShipType';
+import { playerShip } from 'src/types/ShipType';
 
 export default {
   title: 'Engineering',

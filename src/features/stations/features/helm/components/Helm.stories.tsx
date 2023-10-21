@@ -6,7 +6,7 @@ import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Space } from 'src/classes/Space';
-import { hostileShip, neutralShip, playerShip } from 'src/classes/ShipType';
+import { hostileShip, neutralShip, playerShip } from 'src/types/ShipType';
 
 export default {
   title: 'Helm',
