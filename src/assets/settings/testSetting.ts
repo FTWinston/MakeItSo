@@ -1,10 +1,11 @@
 import { Faction } from 'src/types/Faction';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { ShipType } from 'src/types/ShipType'
 
 type KnownFactionId = 'protectors' | 'civilians'
-| 'mindlessFighters' | 'destructiveFighters' | 'honorableFighters' | 'bullies'
+    | 'mindlessFighters' | 'destructiveFighters' | 'honorableFighters' | 'bullies'
 
-export const standardFactions: Faction<KnownFactionId>[] = [
+export const factions: Faction<KnownFactionId>[] = [
     {
         id: 'protectors',
         relations: {
@@ -73,3 +74,37 @@ export const standardFactions: Faction<KnownFactionId>[] = [
     }
 ];
 
+export const playerShip: ShipType = {
+    id: 'player',
+    draw: 'chevron',
+    faction: 'protectors',
+    scanTreeLayout: { items: [] },
+}
+
+export const neutralShip: ShipType = {
+    id: 'neutral',
+    draw: 'chevron',
+    faction: 'civilians',
+    scanTreeLayout: { items: [] },
+}
+
+export const hostileShip: ShipType = {
+    id: 'hostile',
+    draw: 'chevron',
+    faction: 'destructiveFighters',
+    scanTreeLayout: { items: [] },
+}
+
+export const friendlyShip: ShipType = {
+    id: 'friendly',
+    draw: 'chevron',
+    faction: 'protectors',
+    scanTreeLayout: { items: [] },
+}
+
+export const unknownShip: ShipType = {
+    id: 'unknown',
+    draw: 'chevron',
+    faction: 'bullies',
+    scanTreeLayout: { items: [] },
+}

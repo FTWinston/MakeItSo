@@ -5,8 +5,7 @@ import { Space } from 'src/classes/Space';
 import { FakeShip } from 'src/classes/FakeShip';
 import { Position } from 'src/types/Position';
 import { GameObject } from 'src/classes/GameObject';
-import { playerShip, neutralShip, hostileShip, friendlyShip, unknownShip } from 'src/assets/shipTypes';
-import { standardFactions } from 'src/assets/factions';
+import { factions, playerShip, neutralShip, hostileShip, friendlyShip, unknownShip } from 'src/assets/settings/testSetting';
 
 export default {
   title: 'Sensors',
@@ -17,14 +16,14 @@ type Story = StoryObj<typeof SensorsTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(new Space(standardFactions), playerShip, { x: 0, y: 0, angle: 0 }),
+    getInitialState: () => new Ship(new Space(factions), playerShip, { x: 0, y: 0, angle: 0 }),
   }
 }
 
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space(standardFactions);
+      const space = new Space(factions);
       const zero: Position = { x: 0, y: 0, angle: 0 };
 
       const ship = new Ship(space, playerShip, zero);

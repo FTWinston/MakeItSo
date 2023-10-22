@@ -4,8 +4,7 @@ import { useFullscreen } from 'src/hooks/useFullscreen';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 import { BackButton } from './BackButton';
 import { Space } from 'src/classes/Space';
-import { standardFactions } from 'src/assets/factions';
-import { playerShip } from 'src/assets/shipTypes';
+import { factions, playerShip } from 'src/assets/settings/testSetting';
 
 export const Component: React.FC = () => {
     useFullscreen();
@@ -13,7 +12,7 @@ export const Component: React.FC = () => {
     return (
     <HelmTraining
         getInitialState={() => {
-            const space = new Space(standardFactions);
+            const space = new Space(factions);
             const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
             const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
 

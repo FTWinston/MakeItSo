@@ -8,7 +8,7 @@ import { HelmAction } from '../types/HelmState';
 import { getManeuverStartPosition } from './getManeuverStartPosition';
 import { getTravelTime } from './getTravelTime';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
-import { playerShip } from 'src/assets/shipTypes';
+import { playerShip } from 'src/assets/settings/shipTypes';
 
 export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | void {
     if (state.destroyed) {

@@ -6,9 +6,7 @@ import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Space } from 'src/classes/Space';
-import { hostileShip, neutralShip, playerShip } from 'src/assets/shipTypes';
-import { standardFactions } from 'src/assets/factions';
-
+import { factions, hostileShip, neutralShip, playerShip } from 'src/assets/settings/testSetting';
 export default {
   title: 'Helm',
   component: HelmTraining,
@@ -19,7 +17,7 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space(standardFactions);
+      const space = new Space(factions);
       const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
 
       const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
