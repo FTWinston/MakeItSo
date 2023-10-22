@@ -18,9 +18,9 @@ export class FakeShip extends MobileObject {
         super(space, startPosition);
     }
 
-    public get draw() { return this.shipType.draw; }
+    override get draw() { return this.shipType.draw; }
 
-    public get rel() { return this.shipType.rel; }
+    override get faction() { return this.shipType.faction; }
 
     private nextManeuverIndex = 0;
     private maneuvers: ManeuverInfo[] = [];

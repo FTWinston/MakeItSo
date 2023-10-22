@@ -15,7 +15,8 @@ import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
 import { Space } from 'src/classes/Space';
-import { playerShip } from 'src/types/ShipType';
+import { standardFactions } from 'src/assets/factions';
+import { playerShip } from 'src/assets/shipTypes';
 
 export default {
   title: 'Engineering',
@@ -27,7 +28,7 @@ type Story = StoryObj<typeof EngineeringTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => { 
-      const space = new Space();
+      const space = new Space(standardFactions);
       const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
       return ship;
     },
@@ -44,7 +45,7 @@ export const Empty: Story = {
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space();
+      const space = new Space(standardFactions);
       const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
       const systems = getComplexStoryTiles();
 
@@ -77,7 +78,7 @@ export const Busy: Story = {
 export const Custom: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space();
+      const space = new Space(standardFactions);
       const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
       return ship;
     },

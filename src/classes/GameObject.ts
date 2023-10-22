@@ -9,6 +9,7 @@ import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { Space } from './Space';
 import { ScanTreeDefinition } from 'src/features/stations';
+import { FactionId } from 'src/types/Faction';
 
 const twoTicks = durationToTicks(2);
 
@@ -24,7 +25,15 @@ export abstract class GameObject implements GameObjectInfo {
 
     public abstract get draw(): ObjectAppearance;
 
-    public abstract get rel(): RelationshipType;
+    public abstract get faction(): FactionId | undefined;
+
+    public getRelationship(target: GameObjectInfo): RelationshipType {
+        if (!this.faction || !target.faction) {
+            return RelationshipType.Ignore;
+        }
+
+        return this.space.factions.getRelation(this.faction, target.faction);
+    }
 
     public delete() {
         this.space.remove(this.id);

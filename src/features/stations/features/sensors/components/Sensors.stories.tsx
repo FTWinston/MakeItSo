@@ -5,7 +5,8 @@ import { Space } from 'src/classes/Space';
 import { FakeShip } from 'src/classes/FakeShip';
 import { Position } from 'src/types/Position';
 import { GameObject } from 'src/classes/GameObject';
-import { friendlyShip, hostileShip, neutralShip, playerShip, unknownShip } from 'src/types/ShipType';
+import { playerShip, neutralShip, hostileShip, friendlyShip, unknownShip } from 'src/assets/shipTypes';
+import { standardFactions } from 'src/assets/factions';
 
 export default {
   title: 'Sensors',
@@ -16,14 +17,14 @@ type Story = StoryObj<typeof SensorsTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => new Ship(new Space(), playerShip, { x: 0, y: 0, angle: 0 }),
+    getInitialState: () => new Ship(new Space(standardFactions), playerShip, { x: 0, y: 0, angle: 0 }),
   }
 }
 
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space();
+      const space = new Space(standardFactions);
       const zero: Position = { x: 0, y: 0, angle: 0 };
 
       const ship = new Ship(space, playerShip, zero);
@@ -40,14 +41,13 @@ export const Busy: Story = {
         new FakeShip(space, neutralShip, zero),
 
         // new StaticObject(space, zero, RelationshipType.None), // description: Class K Planet
-
       ];
 
 
       ship.sensors.possibleTargets = otherObjects.map(object => ({
         id: object.id,
         draw: object.draw,
-        rel: object.rel,
+        faction: object.faction,
         description: 'Some Target',
       }));
 

@@ -13,7 +13,7 @@ import { playCard } from './playCard';
 import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffect } from './systemActions';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
-import { playerShip } from 'src/types/ShipType';
+import { playerShip } from 'src/assets/shipTypes';
 
 export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship | void {
     if (state.destroyed) {
@@ -21,7 +21,7 @@ export function engineeringTrainingReducer(state: Ship, action: EngineeringActio
     }
 
     switch (action.type) {
-        case 'reset':
+        case 'reset': // TODO: remove from here
             const space = state.space;
             state.delete();
 

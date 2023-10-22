@@ -4,7 +4,8 @@ import { useFullscreen } from 'src/hooks/useFullscreen';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { BackButton } from './BackButton';
 import { Space } from 'src/classes/Space';
-import { playerShip } from 'src/types/ShipType';
+import { playerShip } from 'src/assets/shipTypes';
+import { standardFactions } from 'src/assets/factions';
 
 export const Component: React.FC = () => {
     useFullscreen();
@@ -12,7 +13,7 @@ export const Component: React.FC = () => {
     return (
     <EngineeringTraining
         getInitialState={() => {
-            const space = new Space();
+            const space = new Space(standardFactions);
             const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
             return ship;
         }}

@@ -26,7 +26,7 @@ export class Ship extends MobileObject implements ShipInfo {
 
     override get draw() { return this.shipType.draw; }
 
-    override get rel() { return this.shipType.rel; }
+    override get faction() { return this.shipType.faction; }
 
     destroyed?: ShipDestroyingSystem;
     systems: DefiniteMap<ShipSystem, SystemState>;

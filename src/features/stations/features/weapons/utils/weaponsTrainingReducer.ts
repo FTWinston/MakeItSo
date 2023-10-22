@@ -1,7 +1,7 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { WeaponsAction } from '../types/WeaponsState';
-import { playerShip } from 'src/types/ShipType';
+import { playerShip } from 'src/assets/shipTypes';
 
 export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship {
     if (state.destroyed) {
@@ -9,7 +9,7 @@ export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship
     }
 
     switch (action.type) {
-        case 'reset':
+        case 'reset': // TODO: remove from here
             const space = state.space;
             state.delete();
 

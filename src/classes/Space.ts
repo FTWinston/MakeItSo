@@ -1,9 +1,17 @@
+import type { Faction } from 'src/types/Faction';
 import type { ObjectId } from 'src/types/GameObjectInfo';
-import { SpaceInfo } from 'src/types/SpaceInfo';
+import type { SpaceInfo } from 'src/types/SpaceInfo';
 import { GameObject } from './GameObject';
+import { Factions } from './Factions';
 import { Clearable, Reference } from './Reference';
 
 export class Space implements SpaceInfo {
+    constructor(factions: Faction[] = []) {
+        this.factions = new Factions(factions);
+    }
+
+    public readonly factions: Factions;
+
     private readonly _objects = new Map<ObjectId, GameObject>();
 
     public get objects(): ReadonlyMap<ObjectId, GameObject> { return this._objects; }
