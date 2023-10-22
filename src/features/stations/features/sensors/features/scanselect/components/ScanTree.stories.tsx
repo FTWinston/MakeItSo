@@ -4,6 +4,8 @@ import { ScanTree } from './ScanTree';
 import { expandState } from '../utils/expandState';
 import { scanTreeReducer } from '../utils/scanTreeReducer';
 import { produce } from 'immer';
+import { createScanTreeDefinitionFromTemplate } from '..';
+import { playerShip } from 'src/assets/settings/testSetting';
 
 export default {
   title: 'Sensors/Scan Selection/Scan Tree',
@@ -12,7 +14,7 @@ export default {
 
 type Story = StoryObj<typeof ScanTree>;
 
-export const Simple: Story = {
+export const Fixed: Story = {
   args: expandState({
     items: [
       {
@@ -64,25 +66,25 @@ export const Simple: Story = {
         type: 'info'
       },
       {
-        id: '17',
+        id: '21',
         column: 3,
         row: 1,
         type: 'info'
       },
       {
-        id: '18',
+        id: '22',
         column: 3,
         row: 3,
         type: 'info'
       },
       {
-        id: '19',
+        id: '23',
         column: 3,
         row: 5,
         type: 'info'
       },
       {
-        id: '20',
+        id: '24',
         column: 3,
         row: 7,
         type: 'info'
@@ -97,19 +99,39 @@ export const Simple: Story = {
       ['2', '14'],
       ['2', '15'],
       ['2', '16'],
-      ['11', '17'],
-      ['12', '17'],
-      ['12', '18'],
-      ['13', '18'],
-      ['13', '19'],
-      ['14', '19'],
-      ['14', '20'],
-      ['15', '20'],
-      ['16', '20'],
+      ['11', '21'],
+      ['12', '21'],
+      ['12', '22'],
+      ['13', '22'],
+      ['13', '23'],
+      ['14', '23'],
+      ['14', '24'],
+      ['15', '24'],
+      ['16', '24'],
     ],
   }),
   render: (args) => {
     const [state, dispatch] = useReducer(produce(scanTreeReducer), args);
+
+    return (
+      <ScanTree
+        {...state}
+        selectItem={item => dispatch({ type: 'select', item })}
+      />
+    );
+  }
+};
+
+export const Random: Story = {
+  render: (args) => {
+    const [state, dispatch] = useReducer(
+      produce(scanTreeReducer),
+      expandState(
+        createScanTreeDefinitionFromTemplate(
+          playerShip.scanTree
+        )
+      )
+    );
 
     return (
       <ScanTree

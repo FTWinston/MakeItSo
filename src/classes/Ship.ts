@@ -1,4 +1,4 @@
-import type { EngineeringState, HelmState, ScanTreeDefinition, SensorsState, WeaponsState } from 'src/features/stations';
+import { EngineeringState, HelmState, ScanTreeDefinition, SensorsState, WeaponsState, createScanTreeDefinitionFromTemplate } from 'src/features/stations';
 import { getDefaultEngineeringState, getDefaultHelmState, getDefaultSensorsState, getDefaultWeaponsState, updateShipMotion } from 'src/features/stations';
 import type { DefiniteMap } from 'src/types/DefiniteMap';
 import type { ObjectId } from 'src/types/GameObjectInfo';
@@ -84,8 +84,7 @@ export class Ship extends MobileObject implements ShipInfo {
 
     getScanTree(): ScanTreeDefinition {
         if (!this.scanTreeDefinition) {
-            // this.scanTreeDefinition = this.createScanTreeInstance(this.shipType.scanTreeLayout);
-            throw new Error('not yet implemented');
+            this.scanTreeDefinition = createScanTreeDefinitionFromTemplate(this.shipType.scanTree);
         }
         
         return this.scanTreeDefinition;

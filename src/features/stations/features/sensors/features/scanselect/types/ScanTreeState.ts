@@ -15,7 +15,12 @@ export interface ScanTreeLayout {
     items: ShipScanItem[];
 }
 
-// Tree definition for a specific ship. Adds links between items, which can vary.
+// Template for all ships of a type. Adds options for sets of links between items.
+export interface ScanTreeTemplate extends ScanTreeLayout {
+    unlockOptionSets: [ScanItemId, ScanItemId][][][];
+}
+
+// Tree definition for a specific ship. Has a specific set of links between items.
 export interface ScanTreeDefinition extends ScanTreeLayout {
     unlocks: [ScanItemId, ScanItemId][];
 }
