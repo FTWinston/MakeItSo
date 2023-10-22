@@ -8,7 +8,7 @@ interface Props {
     toRow: number;
 }
 
-const lineWidth = '1px';
+const lineWidth = '0.1em';
 
 const Root = styled(Box)({
     pointerEvents: 'none',
@@ -20,7 +20,7 @@ const Root = styled(Box)({
 });
 
 const borderStyle = `solid white ${lineWidth}`;
-const borderRadius = '0.25em';
+const borderRadius = '0.4em';
 
 const Straight = styled(Box)({
     borderTop: borderStyle,
