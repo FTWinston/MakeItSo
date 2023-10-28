@@ -4,7 +4,7 @@ import { useFullscreen } from 'src/hooks/useFullscreen';
 import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 import { BackButton } from './BackButton';
 import { Space } from 'src/classes/Space';
-import { factions, playerShip } from 'src/assets/settings/testSetting';
+import { factions, playerShip } from 'src/assets/scenarios/testScenario';
 
 export const Component: React.FC = () => {
     useFullscreen();

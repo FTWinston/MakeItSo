@@ -2,7 +2,7 @@ import { StoryObj } from '@storybook/react';
 import { Ship } from 'src/classes/Ship';
 import { WeaponsTraining } from './WeaponsTraining';
 import { Space } from 'src/classes/Space';
-import { factions, playerShip } from 'src/assets/settings/testSetting';
+import { factions, playerShip } from 'src/assets/scenarios/testScenario';
 
 export default {
   title: 'Weapons',

@@ -6,7 +6,7 @@ import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { Space } from 'src/classes/Space';
-import { factions, hostileShip, neutralShip, playerShip } from 'src/assets/settings/testSetting';
+import { factions, hostileShip, neutralShip, playerShip } from 'src/assets/scenarios/testScenario';
 export default {
   title: 'Helm',
   component: HelmTraining,

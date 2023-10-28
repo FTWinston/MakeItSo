@@ -15,7 +15,7 @@ import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
 import { Space } from 'src/classes/Space';
-import { factions, playerShip } from 'src/assets/settings/testSetting';
+import { factions, playerShip } from 'src/assets/scenarios/testScenario';
 
 export default {
   title: 'Engineering',

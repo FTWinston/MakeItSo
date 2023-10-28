@@ -5,7 +5,7 @@ import { Space } from 'src/classes/Space';
 import { FakeShip } from 'src/classes/FakeShip';
 import { Position } from 'src/types/Position';
 import { GameObject } from 'src/classes/GameObject';
-import { factions, playerShip, neutralShip, hostileShip, friendlyShip, unknownShip } from 'src/assets/settings/testSetting';
+import { factions, playerShip, neutralShip, hostileShip, friendlyShip, unknownShip } from 'src/assets/scenarios/testScenario';
 
 export default {
   title: 'Sensors',

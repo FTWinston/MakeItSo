@@ -5,7 +5,7 @@ import { ScanTree } from './ScanTree';
 import { createDefinitionFromTemplate } from '../utils/createDefinitionFromTemplate';
 import { expandState } from '../utils/expandState';
 import { scanTreeReducer } from '../utils/scanTreeReducer';
-import { playerShip } from 'src/assets/settings/testSetting';
+import { playerShip } from 'src/assets/scenarios/testScenario';
 
 export default {
   title: 'Sensors/Scan Selection/Scan Tree',
