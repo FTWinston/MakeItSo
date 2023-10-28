@@ -1,7 +1,7 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { WeaponsAction } from '../types/WeaponsState';
-import { playerShip } from 'src/assets/settings/shipTypes';
+import { playerShip } from 'src/assets/settings/testSetting';
 
 export function weaponsTrainingReducer(state: Ship, action: WeaponsAction): Ship {
     if (state.destroyed) {

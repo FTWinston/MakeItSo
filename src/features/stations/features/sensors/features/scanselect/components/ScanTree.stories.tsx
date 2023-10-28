@@ -1,10 +1,10 @@
 import { StoryObj } from '@storybook/react';
+import { produce } from 'immer';
 import { useReducer } from 'react';
 import { ScanTree } from './ScanTree';
+import { createDefinitionFromTemplate } from '../utils/createDefinitionFromTemplate';
 import { expandState } from '../utils/expandState';
 import { scanTreeReducer } from '../utils/scanTreeReducer';
-import { produce } from 'immer';
-import { createScanTreeDefinitionFromTemplate } from '..';
 import { playerShip } from 'src/assets/settings/testSetting';
 
 export default {
@@ -127,7 +127,7 @@ export const Random: Story = {
     const [state, dispatch] = useReducer(
       produce(scanTreeReducer),
       expandState(
-        createScanTreeDefinitionFromTemplate(
+        createDefinitionFromTemplate(
           playerShip.scanTree
         )
       )
