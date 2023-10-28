@@ -62,6 +62,7 @@ export const Sensors: React.FC<Props> = (props) => {
                 target={props.scanTarget}
                 scanTree={props.scanTargetTree}
                 selectScan={props.setScanSystem}
+                powerLevel={props.power}
             />
         )
     }

@@ -2,6 +2,7 @@ import { Box, styled } from 'src/lib/mui';
 import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
 import { ItemStatus, ScanItem, itemWidth } from './ScanItem';
 import { TreeLinks } from './TreeLinks';
+import { MaxDepth } from './MaxDepth';
 
 interface Props {
     items: ShipScanItem[];
@@ -11,6 +12,7 @@ interface Props {
     availableItemIds: ScanItemId[];
     itemInfo: Partial<Record<ScanItemId, string>>;
     selectItem: (id: ScanItemId) => void;
+    maxScanDepth?: number;
 }
 
 const Root = styled(Box)({
@@ -35,14 +37,17 @@ function getColumnsWithSelections(items: ShipScanItem[], selectedItemIds: ScanIt
 export const ScanTree: React.FC<Props> = props => {
     const columnsWithSelections = getColumnsWithSelections(props.items, props.selectedItemIds);
 
+    let maxColumn = 0;
+
     return (
         <Root>
             {props.items.map((item) => {
-                const itemIsActive = props.selectedItemIds.includes(item.id);
+                const tooDeep = props.maxScanDepth && props.maxScanDepth > item.column;
+                const itemIsActive = !tooDeep && props.selectedItemIds.includes(item.id);
                 const status: ItemStatus = itemIsActive
                     ? 'active'
                     : (
-                        props.availableItemIds.includes(item.id)
+                        !tooDeep && props.availableItemIds.includes(item.id)
                             ? (columnsWithSelections.has(item.column) ? 'inactive' : 'available')
                             : 'unavailable'
                     );
@@ -53,10 +58,13 @@ export const ScanTree: React.FC<Props> = props => {
 
                 // TODO: use info
 
+                let gridColumn = item.column * 2 - 1;
+                maxColumn = Math.max(gridColumn, maxColumn);
+
                 return (
                     <ScanItem
                         key={item.id}
-                        sx={{ gridRow: item.row, gridColumn: item.column * 2 - 1}}
+                        sx={{ gridRow: item.row, gridColumn }}
                         title="Some scan item"
                         status={status}
                         itemType={item.type}
@@ -68,6 +76,8 @@ export const ScanTree: React.FC<Props> = props => {
             })}
 
             <TreeLinks items={props.items} unlocks={props.unlocks} />
+
+            {props.maxScanDepth === undefined ? undefined : <MaxDepth column={props.maxScanDepth * 2} endColumn={maxColumn + 1} />}
         </Root>
     );
 }
