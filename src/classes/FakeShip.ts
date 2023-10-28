@@ -5,7 +5,7 @@ import { getManeuver, ManeuverInfo, ManeuverType, getManeuverStartPosition, Moti
 import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
 import { Space } from './Space';
-import { ScanTreeDefinition } from 'src/features/stations';
+import { ScanTreeDefinition, createScanTreeDefinitionFromTemplate } from 'src/features/stations';
 import { ShipType } from '../types/ShipType';
 
 export class FakeShip extends MobileObject {
@@ -70,7 +70,13 @@ export class FakeShip extends MobileObject {
         updateShipMotion(this, this.motionConfig, changeMotion, null, this.maneuvers, currentTime);
     }
     
+    private scanTreeDefinition: ScanTreeDefinition | undefined;
+
     getScanTree(): ScanTreeDefinition {
-        throw new Error('not implemented');
+        if (!this.scanTreeDefinition) {
+            this.scanTreeDefinition = createScanTreeDefinitionFromTemplate(this.shipType.scanTree);
+        }
+        
+        return this.scanTreeDefinition;
     }
 }
