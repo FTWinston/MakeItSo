@@ -14,7 +14,7 @@ interface Props {
 }
 
 const Root = styled(Box)({
-    padding: '0.5em',
+    margin: '0.5em',
     display: 'grid',
     rowGap: '0.15em',
     gridAutoColumns: `${itemWidth} 3em`,

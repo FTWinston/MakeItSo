@@ -8,13 +8,13 @@ interface Props {
     toRow: number;
 }
 
-const lineWidth = '0.1em';
+const lineWidth = '2px';
 
 const Root = styled(Box)({
     pointerEvents: 'none',
     display: 'grid',
     gridTemplateColumns: `1fr ${lineWidth} 1fr`,
-    gridTemplateRows: `1.5em ${lineWidth} 1fr ${lineWidth} 1fr ${lineWidth} 1.5em`,
+    gridTemplateRows: `calc(1.5em - ${lineWidth} * 1.5) ${lineWidth} 1fr ${lineWidth} 1fr ${lineWidth} calc(1.5em - ${lineWidth} * 1.5)`,
     justifyItems: 'stretch',
     alignItems: 'stretch',
 });
