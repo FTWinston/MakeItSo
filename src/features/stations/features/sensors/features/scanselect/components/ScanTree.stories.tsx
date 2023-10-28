@@ -5,7 +5,7 @@ import { ScanTree } from './ScanTree';
 import { createDefinitionFromTemplate } from '../utils/createDefinitionFromTemplate';
 import { expandState } from '../utils/expandState';
 import { scanTreeReducer } from '../utils/scanTreeReducer';
-import { playerShip } from 'src/assets/scenarios/testScenario';
+import { hostileShip, playerShip } from 'src/assets/scenarios/testScenario';
 
 export default {
   title: 'Sensors/Scan Selection/Scan Tree',
@@ -129,6 +129,27 @@ export const Random: Story = {
       expandState(
         createDefinitionFromTemplate(
           playerShip.scanTree
+        )
+      )
+    );
+
+    return (
+      <ScanTree
+        {...state}
+        selectItem={item => dispatch({ type: 'select', item })}
+      />
+    );
+  }
+};
+
+
+export const Random2: Story = {
+  render: (args) => {
+    const [state, dispatch] = useReducer(
+      produce(scanTreeReducer),
+      expandState(
+        createDefinitionFromTemplate(
+          hostileShip.scanTree
         )
       )
     );

@@ -259,6 +259,228 @@ const testTree: ScanTreeTemplate = {
     ],
 }
 
+
+const balancedTree: ScanTreeTemplate = {
+    items: [
+        {
+            id: '1',
+            column: 1,
+            row: 1,
+            type: 'info'
+        },
+        {
+            id: '2',
+            column: 1,
+            row: 8,
+            type: 'info'
+        },
+
+
+        {
+            id: '11',
+            column: 2,
+            row: 1,
+            type: 'info'
+        },
+        {
+            id: '12',
+            column: 2,
+            row: 3,
+            type: 'info'
+        },
+        {
+            id: '13',
+            column: 2,
+            row: 6,
+            type: 'info'
+        },
+        {
+            id: '14',
+            column: 2,
+            row: 8,
+            type: 'info'
+        },
+
+        {
+            id: '21',
+            column: 3,
+            row: 2,
+            type: 'info'
+        },
+        {
+            id: '22',
+            column: 3,
+            row: 4,
+            type: 'info'
+        },
+        {
+            id: '23',
+            column: 3,
+            row: 5,
+            type: 'info'
+        },
+        {
+            id: '24',
+            column: 3,
+            row: 7,
+            type: 'info'
+        },
+        
+        {
+            id: '31',
+            column: 4,
+            row: 1,
+            type: 'info'
+        },
+        {
+            id: '32',
+            column: 4,
+            row: 3,
+            type: 'info'
+        },
+        {
+            id: '33',
+            column: 4,
+            row: 6,
+            type: 'info'
+        },
+        {
+            id: '34',
+            column: 4,
+            row: 8,
+            type: 'info'
+        },
+    ],
+    unlockOptionSets: [
+        [ // Fixed options set for second column
+            [
+                ["1", "11"],
+                ["2", "14"],
+            ]
+        ],
+        [ // Possible variations for the second column
+            [
+                ["1", "12"],
+                ["2", "13"],
+            ],
+            [
+                
+                ["1", "12"],
+                ["1", "13"],
+                ["2", "13"],
+            ],
+            [
+                ["1", "12"],
+                ["2", "12"],
+                ["2", "13"],
+            ],
+            [
+                ["1", "12"],
+                ["1", "13"],
+            ],
+            [
+                ["2", "12"],
+                ["2", "13"],
+            ]
+        ],
+        
+        [ // Variations for top half of third column
+            [
+                ["11", "21"],
+                ["12", "21"],
+                ["12", "22"],
+            ],
+            [
+                ["11", "21"],
+                ["12", "21"],
+                ["13", "22"],
+            ],
+            [
+                ["11", "21"],
+                ["12", "22"],
+            ],
+            [
+                ["11", "21"],
+                ["11", "22"],
+            ],
+            [
+                ["12", "21"],
+                ["12", "22"],
+            ],
+            [
+                ["13", "21"],
+                ["13", "22"],
+            ],
+        ],
+        [ // Variations for bottom half of third column
+            [
+                ["14", "24"],
+                ["13", "24"],
+                ["13", "23"],
+            ],
+            [
+                ["14", "24"],
+                ["13", "24"],
+                ["13", "23"],
+            ],
+            [
+                ["14", "24"],
+                ["13", "23"],
+            ],
+            [
+                ["14", "24"],
+                ["14", "23"],
+            ],
+            [
+                ["13", "24"],
+                ["13", "23"],
+            ],
+        ],
+        [ // Variations for top half of fourth column
+            [
+                ["21", "31"],
+                ["21", "32"],
+            ],
+            [
+                ["21", "31"],
+                ["21", "32"],
+                ["22", "32"],
+            ],
+            [
+                ["21", "31"],
+                ["22", "32"],
+            ],
+            [
+                ["22", "31"],
+                ["22", "32"],
+            ]
+        ],
+        [ // Variations for bottom half of fourth column
+            [
+                ["24", "34"],
+                ["24", "33"],
+            ],
+            [
+                ["24", "34"],
+                ["24", "33"],
+                ["23", "33"],
+            ],
+            [
+                ["24", "34"],
+                ["23", "33"],
+            ],
+            [
+                ["23", "34"],
+                ["23", "33"],
+            ],
+            [
+                ["22", "34"],
+                ["22", "33"],
+            ]
+        ]
+    ],
+}
+
 export const playerShip: ShipType = {
     id: 'player',
     draw: 'chevron',
@@ -277,7 +499,7 @@ export const hostileShip: ShipType = {
     id: 'hostile',
     draw: 'chevron',
     faction: 'destructiveFighters',
-    scanTree: testTree,
+    scanTree: balancedTree,
 }
 
 export const friendlyShip: ShipType = {
