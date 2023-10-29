@@ -3,7 +3,7 @@ import { ObjectId } from 'src/types/GameObjectInfo';
 import { ScanTreeState } from '../types/ScanTreeState';
 import { ScanTree } from './ScanTree';
 import { PowerLevel } from 'src/types/ShipSystem';
-import { Box, styled } from 'src/lib/mui';
+import { HorizontalScroll } from 'src/components';
 
 interface Props {
     target: ObjectId;
@@ -12,21 +12,16 @@ interface Props {
     powerLevel: PowerLevel;
 }
 
-const Root = styled(Box)({
-    overflowX: 'auto',
-    flexGrow: 1,
-})
-
 export const ScanSelection: React.FC<Props> = props => {
     const { t } = useTranslation('sensors');
     
     return (
-        <Root>
+        <HorizontalScroll>
             <ScanTree
                 {...props.scanTree}
                 selectItem={props.selectScan}
                 maxScanDepth={props.powerLevel}
             />
-        </Root>
+        </HorizontalScroll>
     );
 }

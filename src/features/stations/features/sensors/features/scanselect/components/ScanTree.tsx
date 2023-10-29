@@ -37,8 +37,6 @@ function getColumnsWithSelections(items: ShipScanItem[], selectedItemIds: ScanIt
 export const ScanTree: React.FC<Props> = props => {
     const columnsWithSelections = getColumnsWithSelections(props.items, props.selectedItemIds);
 
-    let maxColumn = 0;
-
     return (
         <Root>
             {props.items.map((item) => {
@@ -58,13 +56,10 @@ export const ScanTree: React.FC<Props> = props => {
 
                 // TODO: use info
 
-                let gridColumn = item.column * 2 - 1;
-                maxColumn = Math.max(gridColumn, maxColumn);
-
                 return (
                     <ScanItem
                         key={item.id}
-                        sx={{ gridRow: item.row, gridColumn }}
+                        sx={{ gridRow: item.row, gridColumn: item.column * 2 - 1 }}
                         title="Some scan item"
                         status={status}
                         itemType={item.type}
@@ -77,7 +72,7 @@ export const ScanTree: React.FC<Props> = props => {
 
             <TreeLinks items={props.items} unlocks={props.unlocks} />
 
-            {props.maxScanDepth === undefined ? undefined : <MaxDepth column={props.maxScanDepth * 2} endColumn={maxColumn + 1} />}
+            {props.maxScanDepth === undefined ? undefined : <MaxDepth column={props.maxScanDepth} />}
         </Root>
     );
 }
