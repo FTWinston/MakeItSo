@@ -40,7 +40,7 @@ export const ScanTree: React.FC<Props> = props => {
     return (
         <Root>
             {props.items.map((item) => {
-                const tooDeep = props.maxScanDepth && props.maxScanDepth > item.column;
+                const tooDeep = props.maxScanDepth && props.maxScanDepth < item.column;
                 const itemIsActive = !tooDeep && props.selectedItemIds.includes(item.id);
                 const status: ItemStatus = itemIsActive
                     ? 'active'
