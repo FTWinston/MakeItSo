@@ -1,4 +1,4 @@
-import { PropsWithChildren } from 'react';
+import { PropsWithChildren, useRef } from 'react';
 import { Box, styled } from 'src/lib/mui';
 
 const Outer = styled(Box)({
@@ -11,10 +11,22 @@ const Inner = styled(Box)({
     position: 'relative',
 })
 
-export const HorizontalScroll: React.FC<PropsWithChildren> = props => (
-    <Outer>
-        <Inner>
-            {props.children}
-        </Inner>
-    </Outer>
-);
+export const HorizontalScroll: React.FC<PropsWithChildren> = props => {
+    const outerRef = useRef<HTMLDivElement>();
+
+    return (
+        <Outer
+            ref={outerRef}
+            onWheelCapture={e => {    
+                if (outerRef.current && e.deltaY !== 0) {
+                    e.preventDefault();
+                    outerRef.current.scrollLeft += e.deltaY;
+                }
+            }}
+        >
+            <Inner>
+                {props.children}
+            </Inner>
+        </Outer>
+    );
+};
