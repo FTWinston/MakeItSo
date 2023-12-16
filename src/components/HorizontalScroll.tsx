@@ -2,12 +2,13 @@ import { PropsWithChildren, useRef } from 'react';
 import { Box, styled } from 'src/lib/mui';
 
 const Outer = styled(Box)({
+    display: 'flex',
     overflowX: 'auto',
     flexGrow: 1,
 })
 
 const Inner = styled(Box)({
-    display: 'inline-block',
+    display: 'inline-flex',
     position: 'relative',
 })
 

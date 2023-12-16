@@ -10,28 +10,32 @@ type Story = StoryObj<typeof ScanItem>;
 
 export const Active: Story = {
   args: {
-    title: 'This is a scan item',
     status: 'active',
+    itemId: 'basic info',
+    itemType: 'info',
   },
 };
 
 export const Inactive: Story = {
   args: {
-    title: 'This is a scan item',
     status: 'inactive',
+    itemId: 'basic info',
+    itemType: 'info',
   },
 };
 
 export const Available: Story = {
   args: {
-    title: 'This is a scan item',
     status: 'available',
+    itemId: 'basic info',
+    itemType: 'info',
   },
 };
 
 export const Unavailable: Story = {
   args: {
-    title: 'This is a scan item',
     status: 'unavailable',
+    itemId: 'basic info',
+    itemType: 'info',
   },
 };

@@ -20,7 +20,7 @@ export const ScanSelection: React.FC<Props> = props => {
             <ScanTree
                 {...props.scanTree}
                 selectItem={props.selectScan}
-                maxScanDepth={props.powerLevel}
+                maxScanDepth={props.powerLevel + 1}
             />
         </HorizontalScroll>
     );

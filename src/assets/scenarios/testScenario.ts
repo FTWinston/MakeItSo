@@ -78,182 +78,182 @@ export const factions: Faction<KnownFactionId>[] = [
 const testTree: ScanTreeTemplate = {
     items: [
         {
-            id: '1',
-            column: 1,
-            row: 2,
-            type: 'info'
-        },
-        {
-            id: '2',
-            column: 1,
-            row: 7,
-            type: 'info'
-        },
-        {
-            id: '11',
-            column: 2,
+            id: 'basic info',
             row: 1,
-            type: 'info'
-        },
-        {
-            id: '12',
             column: 2,
-            row: 2,
             type: 'info'
         },
         {
-            id: '13',
-            column: 2,
-            row: 4,
-            type: 'info'
-        },
-        {
-            id: '14',
-            column: 2,
-            row: 6,
-            type: 'info'
-        },
-        {
-            id: '15',
-            column: 2,
-            row: 7,
-            type: 'info'
-        },
-        {
-            id: '16',
-            column: 2,
-            row: 8,
-            type: 'info'
-        },
-        {
-            id: '21',
-            column: 3,
+            id: 'shield power',
             row: 1,
+            column: 7,
             type: 'info'
         },
         {
-            id: '22',
-            column: 3,
+            id: 'shield vulnerability',
+            row: 2,
+            column: 1,
+            type: 'info'
+        },
+        {
+            id: 'engine power',
+            row: 2,
+            column: 2,
+            type: 'info'
+        },
+        {
+            id: 'engine vulnerability',
+            row: 2,
+            column: 4,
+            type: 'info'
+        },
+        {
+            id: 'weapon power',
+            row: 2,
+            column: 6,
+            type: 'info'
+        },
+        {
+            id: 'weapon vulnerability',
+            row: 2,
+            column: 7,
+            type: 'info'
+        },
+        {
+            id: 'sensor power',
+            row: 2,
+            column: 8,
+            type: 'info'
+        },
+        {
+            id: 'sensor vulnerability',
             row: 3,
+            column: 1,
             type: 'info'
         },
         {
-            id: '23',
+            id: 'fake extra 1',
+            row: 3,
             column: 3,
-            row: 5,
             type: 'info'
         },
         {
-            id: '24',
-            column: 3,
-            row: 7,
+            id: 'fake extra 2',
+            row: 3,
+            column: 5,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 3',
+            row: 3,
+            column: 7,
             type: 'info'
         }
     ],
     unlockOptionSets: [
         [ // Fixed options set for second column
             [
-                ["1", "11"],
-                ["1", "12"],
-                ["2", "15"],
-                ["2", "16"]
+                ['basic info', 'shield vulnerability'],
+                ['basic info', 'engine power'],
+                ['shield power', 'weapon vulnerability'],
+                ['shield power', 'sensor power']
             ]
         ],
         [ // Possible variations for the second column
             [
-                ["1", "13"],
-                ["2", "14"]
+                ['basic info', 'engine vulnerability'],
+                ['shield power', 'weapon power']
             ],
             [
-                ["1", "13"],
-                ["2", "13"],
-                ["2", "14"]
+                ['basic info', 'engine vulnerability'],
+                ['shield power', 'engine vulnerability'],
+                ['shield power', 'weapon power']
             ],
             [
-                ["1", "13"],
-                ["1", "14"],
-                ["2", "14"]
+                ['basic info', 'engine vulnerability'],
+                ['basic info', 'weapon power'],
+                ['shield power', 'weapon power']
             ],
             [
-                ["1", "13"],
-                ["1", "14"]
+                ['basic info', 'engine vulnerability'],
+                ['basic info', 'weapon power']
             ],
             [
-                ["2", "13"],
-                ["2", "14"]
+                ['shield power', 'engine vulnerability'],
+                ['shield power', 'weapon power']
             ]
         ],
         
         [ // Variations for top half of third column
             [
-                ["11", "21"],
-                ["12", "21"],
-                ["12", "22"],
-                ["13", "22"]
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['engine power', 'sensor vulnerability'],
+                ['engine power', 'fake extra 1'],
+                ['engine vulnerability', 'fake extra 1']
             ],
             [
-                ["11", "21"],
-                ["11", "22"]
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['shield vulnerability', 'fake extra 1']
             ],
             [
-                ["12", "21"],
-                ["12", "22"]
+                ['engine power', 'sensor vulnerability'],
+                ['engine power', 'fake extra 1']
             ],
             [
-                ["13", "21"],
-                ["13", "22"]
+                ['engine vulnerability', 'sensor vulnerability'],
+                ['engine vulnerability', 'fake extra 1']
             ],
             [
-                ["11", "21"],
-                ["11", "22"],
-                ["13", "22"]
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['shield vulnerability', 'fake extra 1'],
+                ['engine vulnerability', 'fake extra 1']
             ],
             [
-                ["11", "21"],
-                ["13", "21"],
-                ["13", "22"]
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['engine vulnerability', 'sensor vulnerability'],
+                ['engine vulnerability', 'fake extra 1']
             ],
         ],
         [ // Variations for bottom half of third column
             [
-                ["13", "23"],
-                ["14", "23"],
-                ["14", "24"],
-                ["15", "24"],
-                ["16", "24"]
+                ['engine vulnerability', 'fake extra 2'],
+                ['weapon power', 'fake extra 2'],
+                ['weapon power', 'fake extra 3'],
+                ['weapon vulnerability', 'fake extra 3'],
+                ['sensor power', 'fake extra 3']
             ],
             [
-                ["13", "23"],
-                ["14", "23"],
-                ["15", "24"],
-                ["16", "24"]
+                ['engine vulnerability', 'fake extra 2'],
+                ['weapon power', 'fake extra 2'],
+                ['weapon vulnerability', 'fake extra 3'],
+                ['sensor power', 'fake extra 3']
             ],
             [
-                ["13", "23"],
-                ["14", "24"],
-                ["15", "24"],
-                ["16", "24"]
+                ['engine vulnerability', 'fake extra 2'],
+                ['weapon power', 'fake extra 3'],
+                ['weapon vulnerability', 'fake extra 3'],
+                ['sensor power', 'fake extra 3']
             ],
             [
-                ["14", "23"],
-                ["14", "24"],
-                ["15", "24"],
-                ["16", "24"]
+                ['weapon power', 'fake extra 2'],
+                ['weapon power', 'fake extra 3'],
+                ['weapon vulnerability', 'fake extra 3'],
+                ['sensor power', 'fake extra 3']
             ],
             [
-                ["13", "23"],
-                ["14", "23"],
-                ["15", "24"]
+                ['engine vulnerability', 'fake extra 2'],
+                ['weapon power', 'fake extra 2'],
+                ['weapon vulnerability', 'fake extra 3']
             ],
             [
-                ["13", "23"],
-                ["14", "24"],
-                ["15", "24"]
+                ['engine vulnerability', 'fake extra 2'],
+                ['weapon power', 'fake extra 3'],
+                ['weapon vulnerability', 'fake extra 3']
             ],
             [
-                ["13", "23"],
-                ["15", "24"],
-                ["16", "24"]
+                ['engine vulnerability', 'fake extra 2'],
+                ['weapon vulnerability', 'fake extra 3'],
+                ['sensor power', 'fake extra 3']
             ]        
         ]
     ],
@@ -263,219 +263,219 @@ const testTree: ScanTreeTemplate = {
 const balancedTree: ScanTreeTemplate = {
     items: [
         {
-            id: '1',
-            column: 1,
+            id: 'basic info',
             row: 1,
-            type: 'info'
-        },
-        {
-            id: '2',
             column: 1,
-            row: 8,
             type: 'info'
         },
-
-
         {
-            id: '11',
-            column: 2,
+            id: 'shield power',
             row: 1,
-            type: 'info'
-        },
-        {
-            id: '12',
-            column: 2,
-            row: 3,
-            type: 'info'
-        },
-        {
-            id: '13',
-            column: 2,
-            row: 6,
-            type: 'info'
-        },
-        {
-            id: '14',
-            column: 2,
-            row: 8,
+            column: 8,
             type: 'info'
         },
 
+
         {
-            id: '21',
-            column: 3,
+            id: 'shield vulnerability',
             row: 2,
+            column: 1,
             type: 'info'
         },
         {
-            id: '22',
+            id: 'engine power',
+            row: 2,
             column: 3,
-            row: 4,
             type: 'info'
         },
         {
-            id: '23',
-            column: 3,
-            row: 5,
+            id: 'engine vulnerability',
+            row: 2,
+            column: 6,
             type: 'info'
         },
         {
-            id: '24',
-            column: 3,
-            row: 7,
+            id: 'weapon power',
+            row: 2,
+            column: 8,
+            type: 'info'
+        },
+
+        {
+            id: 'sensor vulnerability',
+            row: 3,
+            column: 2,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 1',
+            row: 3,
+            column: 4,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 2',
+            row: 3,
+            column: 5,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 3',
+            row: 3,
+            column: 7,
             type: 'info'
         },
         
         {
-            id: '31',
-            column: 4,
-            row: 1,
+            id: 'fake extra 4',
+            row: 4,
+            column: 1,
             type: 'info'
         },
         {
-            id: '32',
-            column: 4,
-            row: 3,
+            id: 'fake extra 5',
+            row: 4,
+            column: 3,
             type: 'info'
         },
         {
-            id: '33',
-            column: 4,
-            row: 6,
+            id: 'fake extra 6',
+            row: 4,
+            column: 6,
             type: 'info'
         },
         {
-            id: '34',
-            column: 4,
-            row: 8,
+            id: 'fake extra 7',
+            row: 4,
+            column: 8,
             type: 'info'
         },
     ],
     unlockOptionSets: [
         [ // Fixed options set for second column
             [
-                ["1", "11"],
-                ["2", "14"],
+                ['basic info', 'shield vulnerability'],
+                ['shield power', 'weapon power'],
             ]
         ],
         [ // Possible variations for the second column
             [
-                ["1", "12"],
-                ["2", "13"],
+                ['basic info', 'engine power'],
+                ['shield power', 'engine vulnerability'],
             ],
             [
                 
-                ["1", "12"],
-                ["1", "13"],
-                ["2", "13"],
+                ['basic info', 'engine power'],
+                ['basic info', 'engine vulnerability'],
+                ['shield power', 'engine vulnerability'],
             ],
             [
-                ["1", "12"],
-                ["2", "12"],
-                ["2", "13"],
+                ['basic info', 'engine power'],
+                ['shield power', 'engine power'],
+                ['shield power', 'engine vulnerability'],
             ],
             [
-                ["1", "12"],
-                ["1", "13"],
+                ['basic info', 'engine power'],
+                ['basic info', 'engine vulnerability'],
             ],
             [
-                ["2", "12"],
-                ["2", "13"],
+                ['shield power', 'engine power'],
+                ['shield power', 'engine vulnerability'],
             ]
         ],
         
         [ // Variations for top half of third column
             [
-                ["11", "21"],
-                ["12", "21"],
-                ["12", "22"],
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['engine power', 'sensor vulnerability'],
+                ['engine power', 'fake extra 1'],
             ],
             [
-                ["11", "21"],
-                ["12", "21"],
-                ["13", "22"],
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['engine power', 'sensor vulnerability'],
+                ['engine vulnerability', 'fake extra 1'],
             ],
             [
-                ["11", "21"],
-                ["12", "22"],
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['engine power', 'fake extra 1'],
             ],
             [
-                ["11", "21"],
-                ["11", "22"],
+                ['shield vulnerability', 'sensor vulnerability'],
+                ['shield vulnerability', 'fake extra 1'],
             ],
             [
-                ["12", "21"],
-                ["12", "22"],
+                ['engine power', 'sensor vulnerability'],
+                ['engine power', 'fake extra 1'],
             ],
             [
-                ["13", "21"],
-                ["13", "22"],
+                ['engine vulnerability', 'sensor vulnerability'],
+                ['engine vulnerability', 'fake extra 1'],
             ],
         ],
         [ // Variations for bottom half of third column
             [
-                ["14", "24"],
-                ["13", "24"],
-                ["13", "23"],
+                ['weapon power', 'fake extra 3'],
+                ['engine vulnerability', 'fake extra 3'],
+                ['engine vulnerability', 'fake extra 2'],
             ],
             [
-                ["14", "24"],
-                ["13", "24"],
-                ["13", "23"],
+                ['weapon power', 'fake extra 3'],
+                ['engine vulnerability', 'fake extra 3'],
+                ['engine vulnerability', 'fake extra 2'],
             ],
             [
-                ["14", "24"],
-                ["13", "23"],
+                ['weapon power', 'fake extra 3'],
+                ['engine vulnerability', 'fake extra 2'],
             ],
             [
-                ["14", "24"],
-                ["14", "23"],
+                ['weapon power', 'fake extra 3'],
+                ['weapon power', 'fake extra 2'],
             ],
             [
-                ["13", "24"],
-                ["13", "23"],
+                ['engine vulnerability', 'fake extra 3'],
+                ['engine vulnerability', 'fake extra 2'],
             ],
         ],
         [ // Variations for top half of fourth column
             [
-                ["21", "31"],
-                ["21", "32"],
+                ['sensor vulnerability', 'fake extra 4'],
+                ['sensor vulnerability', 'fake extra 5'],
             ],
             [
-                ["21", "31"],
-                ["21", "32"],
-                ["22", "32"],
+                ['sensor vulnerability', 'fake extra 4'],
+                ['sensor vulnerability', 'fake extra 5'],
+                ['fake extra 1', 'fake extra 5'],
             ],
             [
-                ["21", "31"],
-                ["22", "32"],
+                ['sensor vulnerability', 'fake extra 4'],
+                ['fake extra 1', 'fake extra 5'],
             ],
             [
-                ["22", "31"],
-                ["22", "32"],
+                ['fake extra 1', 'fake extra 4'],
+                ['fake extra 1', 'fake extra 5'],
             ]
         ],
         [ // Variations for bottom half of fourth column
             [
-                ["24", "34"],
-                ["24", "33"],
+                ['fake extra 3', 'fake extra 7'],
+                ['fake extra 3', 'fake extra 6'],
             ],
             [
-                ["24", "34"],
-                ["24", "33"],
-                ["23", "33"],
+                ['fake extra 3', 'fake extra 7'],
+                ['fake extra 3', 'fake extra 6'],
+                ['fake extra 2', 'fake extra 6'],
             ],
             [
-                ["24", "34"],
-                ["23", "33"],
+                ['fake extra 3', 'fake extra 7'],
+                ['fake extra 2', 'fake extra 6'],
             ],
             [
-                ["23", "34"],
-                ["23", "33"],
+                ['fake extra 2', 'fake extra 7'],
+                ['fake extra 2', 'fake extra 6'],
             ],
             [
-                ["22", "34"],
-                ["22", "33"],
+                ['fake extra 1', 'fake extra 7'],
+                ['fake extra 1', 'fake extra 6'],
             ]
         ]
     ],

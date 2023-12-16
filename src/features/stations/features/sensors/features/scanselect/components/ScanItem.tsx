@@ -1,19 +1,21 @@
 import { PropsWithChildren } from 'react';
-import { Avatar, Box, Card, CardActionArea, CardContent, styled, SxProps, Theme, Typography } from 'src/lib/mui';
+import { Avatar, Box, Card, CardActionArea, CardContent, styled, SxProps, Theme } from 'src/lib/mui';
 import { ScanType } from '../types/ScanTreeState';
+import { ScanItemId } from '../types/ScanItemId';
+import { ScanItemIcon } from './ScanItemIcon';
+import { useTranslation } from 'react-i18next';
 
 export type ItemStatus = 'active' | 'inactive' | 'available' | 'unavailable';
 
 interface Props {
-    title: string;
     status: ItemStatus;
+    itemId: ScanItemId;
     itemType: ScanType;
-    icon?: JSX.Element;
     clicked?: () => void;
     sx?: SxProps<Theme>;
 }
 
-export const itemWidth = '15em';
+export const itemWidth = '3em';
 export const itemHeight = '3em';
 
 const Root = styled(Card)({
@@ -26,16 +28,6 @@ const Clickable = styled(CardActionArea)({
     fontSize: 'inherit',
     margin: '-1px',
     padding: 0,
-})
-
-const Title = styled(Typography)({
-    position: 'relative',
-    transition: 'all 0.5s ease-in-out',
-    flexGrow: 1,
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'center',
-    lineHeight: 1,
 })
 
 const Content = styled(CardContent)({
@@ -91,6 +83,9 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
             ? unavailableIconSx
             : selectableIconSx;
 
+    const { t } = useTranslation('sensors');
+    const title = t(`scan ${props.itemId}`);
+
     return (
         <Root
             variant={unavailable ? undefined : 'outlined'}
@@ -109,29 +104,12 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
                 onClick={props.clicked}
             >
                 <Content>
-                    <Title
-                        variant="h5"
-                        component="div"
-                        left={active ? '-0.6em' : 0}
-                        top={active ? '-1.6em' : 0}
-                        color={unavailable ? 'text.disabled' : inactive ? 'text.secondary' : active ? 'primary.main' : undefined}
-                        fontSize={active ? '0.75em !important' : '1em'}
-                    >
-                        {props.title}
-                    </Title>
-                    
                     <IconAvatar
                         variant="rounded"
                         sx={iconSx}
                     >
-                        {props.icon}    
+                        <ScanItemIcon id={props.itemId} title={title} />
                     </IconAvatar>
-
-                    <ChildWrapper
-                        aria-hidden={!active}
-                        sx={{ opacity: active ? 1 : 0, pointerEvents: active ? undefined : 'none' }}>
-                        {props.children}
-                    </ChildWrapper>
                 </Content>
             </Clickable>
         </Root>

@@ -1,12 +1,12 @@
-export type ScanItemId = string;
+import { ScanItemId } from './ScanItemId';
 
 export type ScanType = 'info' | 'action';
 
 // An item to be scanned. Will need more info added.
 export interface ShipScanItem {
     id: ScanItemId;
-    row: number;
     column: number;
+    row: number;
     type: ScanType;
 }
 

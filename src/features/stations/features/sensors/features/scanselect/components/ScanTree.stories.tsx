@@ -18,96 +18,96 @@ export const Fixed: Story = {
   args: expandState({
     items: [
       {
-        id: '1',
-        column: 1,
-        row: 2,
-        type: 'info'
-      },
-      {
-        id: '2',
-        column: 1,
-        row: 7,
-        type: 'info'
-      },
-      {
-        id: '11',
-        column: 2,
+        id: 'basic info',
         row: 1,
-        type: 'info'
-      },
-      {
-        id: '12',
         column: 2,
-        row: 2,
         type: 'info'
       },
       {
-        id: '13',
-        column: 2,
-        row: 4,
-        type: 'info'
-      },
-      {
-        id: '14',
-        column: 2,
-        row: 6,
-        type: 'info'
-      },
-      {
-        id: '15',
-        column: 2,
-        row: 7,
-        type: 'info'
-      },
-      {
-        id: '16',
-        column: 2,
-        row: 8,
-        type: 'info'
-      },
-      {
-        id: '21',
-        column: 3,
+        id: 'shield power',
         row: 1,
+        column: 7,
         type: 'info'
       },
       {
-        id: '22',
-        column: 3,
+        id: 'engine power',
+        row: 2,
+        column: 1,
+        type: 'info'
+      },
+      {
+        id: 'shield vulnerability',
+        row: 2,
+        column: 2,
+        type: 'info'
+      },
+      {
+        id: 'engine vulnerability',
+        row: 2,
+        column: 4,
+        type: 'info'
+      },
+      {
+        id: 'weapon power',
+        row: 2,
+        column: 6,
+        type: 'info'
+      },
+      {
+        id: 'weapon vulnerability',
+        row: 2,
+        column: 7,
+        type: 'info'
+      },
+      {
+        id: 'sensor power',
+        row: 2,
+        column: 8,
+        type: 'info'
+      },
+      {
+        id: 'sensor vulnerability',
         row: 3,
+        column: 1,
         type: 'info'
       },
       {
-        id: '23',
+        id: 'fake extra 1',
+        row: 3,
         column: 3,
-        row: 5,
         type: 'info'
       },
       {
-        id: '24',
-        column: 3,
-        row: 7,
+        id: 'fake extra 2',
+        row: 3,
+        column: 5,
+        type: 'info'
+      },
+      {
+        id: 'fake extra 3',
+        row: 3,
+        column: 7,
         type: 'info'
       }
     ],
-    selectedItemIds: ['2', '14'],
+    selectedItemIds: ['shield power', 'weapon power'],
     unlocks: [
-      ['1', '11'],
-      ['1', '12'],
-      ['1', '13'],
-      ['2', '13'],
-      ['2', '14'],
-      ['2', '15'],
-      ['2', '16'],
-      ['11', '21'],
-      ['12', '21'],
-      ['12', '22'],
-      ['13', '22'],
-      ['13', '23'],
-      ['14', '23'],
-      ['14', '24'],
-      ['15', '24'],
-      ['16', '24'],
+      ['basic info', 'engine power'],
+      ['basic info', 'shield vulnerability'],
+      ['basic info', 'engine vulnerability'],
+      ['shield power', 'engine vulnerability'],
+      ['shield power', 'weapon power'],
+      ['shield power', 'weapon vulnerability'],
+      ['shield power', 'sensor power'],
+      ['engine power', 'sensor vulnerability'],
+      ['shield vulnerability', 'sensor vulnerability'],
+      ['shield vulnerability', 'fake extra 1'],
+      ['engine vulnerability', 'fake extra 1'],
+      ['engine vulnerability', 'fake extra 2'],
+      ['weapon power', 'fake extra 2'],
+      ['weapon power', 'fake extra 3'],
+      ['weapon vulnerability', 'fake extra 3'],
+      ['sensor power', 'fake extra 3'],
     ],
   }),
   render: (args) => {

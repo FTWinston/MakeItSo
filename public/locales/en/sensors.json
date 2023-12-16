@@ -3,5 +3,22 @@
     "scanSelect": "Target Info",
     "scanning": "Scanning",
     "scanResult": "Result",
-    "onScreen": "Focus view screen on target"
+    "onScreen": "Focus view screen on target",
+
+    "scan basic info": "Basic Information",
+    "scan shield power": "Shield power levels",
+    "scan shield vulnerability": "Shield vulnerability",
+    "scan engine power": "Engine power level",
+    "scan engine vulnerability": "Engine vulnerability",
+    "scan weapon power": "Weapon power level",
+    "scan weapon vulnerability": "Weapon vulnerability",
+    "scan sensor power": "Sensor power level",
+    "scan sensor vulnerability": "Sensor vulnerability",
+    "scan fake extra 1": "Fake extra",
+    "scan fake extra 2": "Fake extra",
+    "scan fake extra 3": "Fake extra",
+    "scan fake extra 4": "Fake extra",
+    "scan fake extra 5": "Fake extra",
+    "scan fake extra 6": "Fake extra",
+    "scan fake extra 7": "Fake extra"
 }

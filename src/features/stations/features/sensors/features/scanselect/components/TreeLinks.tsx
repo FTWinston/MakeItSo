@@ -1,4 +1,5 @@
-import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
+import { ScanItemId } from '../types/ScanItemId';
+import { ShipScanItem } from '../types/ScanTreeState';
 import { ItemLink } from './ItemLink';
 
 interface Props {
@@ -19,10 +20,10 @@ export const TreeLinks: React.FC<Props> = props => {
                 return (
                     <ItemLink
                         key={index}
-                        fromColumn={fromItem.column}
                         fromRow={fromItem.row}
-                        toColumn={toItem.column}
+                        fromColumn={fromItem.column}
                         toRow={toItem.row}
+                        toColumn={toItem.column}
                     />
                 );
             })}

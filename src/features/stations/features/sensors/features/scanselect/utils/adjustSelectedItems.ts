@@ -1,4 +1,5 @@
-import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
+import { ScanItemId } from '../types/ScanItemId';
+import { ShipScanItem } from '../types/ScanTreeState';
 import { canBeSelected } from './canBeSelected';
 
 export function adjustSelectedItems(
@@ -18,7 +19,7 @@ export function adjustSelectedItems(
     for (const itemId of selectedItems) {
         const item = items.find(item => item.id === itemId);
 
-        if (!item || item.column === itemToSelect.column) {
+        if (!item || item.row === itemToSelect.row) {
             selectedItems.delete(itemId);
             delete itemInfo[itemId];
         }
