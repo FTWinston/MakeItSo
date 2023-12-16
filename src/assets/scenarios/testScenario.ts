@@ -75,409 +75,273 @@ export const factions: Faction<KnownFactionId>[] = [
     }
 ];
 
-const testTree: ScanTreeTemplate = {
+const distributedTree: ScanTreeTemplate = {
     items: [
         {
             id: 'basic info',
             row: 1,
-            column: 2,
+            column: 3,
             type: 'info'
         },
+        
         {
             id: 'shield power',
-            row: 1,
-            column: 7,
-            type: 'info'
-        },
-        {
-            id: 'shield vulnerability',
             row: 2,
             column: 1,
             type: 'info'
         },
         {
+            id: 'shield vulnerability',
+            row: 2,
+            column: 3,
+            type: 'info'
+        },
+        {
             id: 'engine power',
             row: 2,
+            column: 5,
+            type: 'info'
+        },
+
+        {
+            id: 'engine vulnerability',
+            row: 3,
             column: 2,
             type: 'info'
         },
         {
-            id: 'engine vulnerability',
-            row: 2,
+            id: 'weapon power',
+            row: 3,
             column: 4,
             type: 'info'
         },
-        {
-            id: 'weapon power',
-            row: 2,
-            column: 6,
-            type: 'info'
-        },
-        {
-            id: 'weapon vulnerability',
-            row: 2,
-            column: 7,
-            type: 'info'
-        },
+
         {
             id: 'sensor power',
-            row: 2,
-            column: 8,
+            row: 4,
+            column: 1,
             type: 'info'
         },
         {
             id: 'sensor vulnerability',
-            row: 3,
-            column: 1,
+            row: 4,
+            column: 3,
             type: 'info'
         },
         {
             id: 'fake extra 1',
-            row: 3,
-            column: 3,
+            row: 4,
+            column: 5,
             type: 'info'
         },
+        
         {
             id: 'fake extra 2',
-            row: 3,
-            column: 5,
+            row: 5,
+            column: 1,
             type: 'info'
         },
         {
             id: 'fake extra 3',
-            row: 3,
-            column: 7,
-            type: 'info'
-        }
-    ],
-    unlockOptionSets: [
-        [ // Fixed options set for second column
-            [
-                ['basic info', 'shield vulnerability'],
-                ['basic info', 'engine power'],
-                ['shield power', 'weapon vulnerability'],
-                ['shield power', 'sensor power']
-            ]
-        ],
-        [ // Possible variations for the second column
-            [
-                ['basic info', 'engine vulnerability'],
-                ['shield power', 'weapon power']
-            ],
-            [
-                ['basic info', 'engine vulnerability'],
-                ['shield power', 'engine vulnerability'],
-                ['shield power', 'weapon power']
-            ],
-            [
-                ['basic info', 'engine vulnerability'],
-                ['basic info', 'weapon power'],
-                ['shield power', 'weapon power']
-            ],
-            [
-                ['basic info', 'engine vulnerability'],
-                ['basic info', 'weapon power']
-            ],
-            [
-                ['shield power', 'engine vulnerability'],
-                ['shield power', 'weapon power']
-            ]
-        ],
-        
-        [ // Variations for top half of third column
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['engine power', 'sensor vulnerability'],
-                ['engine power', 'fake extra 1'],
-                ['engine vulnerability', 'fake extra 1']
-            ],
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['shield vulnerability', 'fake extra 1']
-            ],
-            [
-                ['engine power', 'sensor vulnerability'],
-                ['engine power', 'fake extra 1']
-            ],
-            [
-                ['engine vulnerability', 'sensor vulnerability'],
-                ['engine vulnerability', 'fake extra 1']
-            ],
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['shield vulnerability', 'fake extra 1'],
-                ['engine vulnerability', 'fake extra 1']
-            ],
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['engine vulnerability', 'sensor vulnerability'],
-                ['engine vulnerability', 'fake extra 1']
-            ],
-        ],
-        [ // Variations for bottom half of third column
-            [
-                ['engine vulnerability', 'fake extra 2'],
-                ['weapon power', 'fake extra 2'],
-                ['weapon power', 'fake extra 3'],
-                ['weapon vulnerability', 'fake extra 3'],
-                ['sensor power', 'fake extra 3']
-            ],
-            [
-                ['engine vulnerability', 'fake extra 2'],
-                ['weapon power', 'fake extra 2'],
-                ['weapon vulnerability', 'fake extra 3'],
-                ['sensor power', 'fake extra 3']
-            ],
-            [
-                ['engine vulnerability', 'fake extra 2'],
-                ['weapon power', 'fake extra 3'],
-                ['weapon vulnerability', 'fake extra 3'],
-                ['sensor power', 'fake extra 3']
-            ],
-            [
-                ['weapon power', 'fake extra 2'],
-                ['weapon power', 'fake extra 3'],
-                ['weapon vulnerability', 'fake extra 3'],
-                ['sensor power', 'fake extra 3']
-            ],
-            [
-                ['engine vulnerability', 'fake extra 2'],
-                ['weapon power', 'fake extra 2'],
-                ['weapon vulnerability', 'fake extra 3']
-            ],
-            [
-                ['engine vulnerability', 'fake extra 2'],
-                ['weapon power', 'fake extra 3'],
-                ['weapon vulnerability', 'fake extra 3']
-            ],
-            [
-                ['engine vulnerability', 'fake extra 2'],
-                ['weapon vulnerability', 'fake extra 3'],
-                ['sensor power', 'fake extra 3']
-            ]        
-        ]
-    ],
-}
-
-
-const balancedTree: ScanTreeTemplate = {
-    items: [
-        {
-            id: 'basic info',
-            row: 1,
-            column: 1,
-            type: 'info'
-        },
-        {
-            id: 'shield power',
-            row: 1,
-            column: 8,
-            type: 'info'
-        },
-
-
-        {
-            id: 'shield vulnerability',
-            row: 2,
-            column: 1,
-            type: 'info'
-        },
-        {
-            id: 'engine power',
-            row: 2,
-            column: 3,
-            type: 'info'
-        },
-        {
-            id: 'engine vulnerability',
-            row: 2,
-            column: 6,
-            type: 'info'
-        },
-        {
-            id: 'weapon power',
-            row: 2,
-            column: 8,
-            type: 'info'
-        },
-
-        {
-            id: 'sensor vulnerability',
-            row: 3,
+            row: 5,
             column: 2,
             type: 'info'
         },
         {
-            id: 'fake extra 1',
-            row: 3,
-            column: 4,
-            type: 'info'
-        },
-        {
-            id: 'fake extra 2',
-            row: 3,
-            column: 5,
-            type: 'info'
-        },
-        {
-            id: 'fake extra 3',
-            row: 3,
-            column: 7,
-            type: 'info'
-        },
-        
-        {
             id: 'fake extra 4',
-            row: 4,
-            column: 1,
+            row: 5,
+            column: 4,
             type: 'info'
         },
         {
             id: 'fake extra 5',
-            row: 4,
+            row: 5,
+            column: 5,
+            type: 'info'
+        }
+    ],
+    unlockOptionSets: [
+        // Fixed options for second row
+        [
+            [
+                ['basic info', 'shield vulnerability'],
+                ['basic info', 'engine power'],
+                ['basic info', 'shield power',],
+            ]
+        ],
+
+        // First half of third row
+        [
+            [
+                ['shield vulnerability', 'engine vulnerability']
+            ],
+            [
+                ['shield power', 'engine vulnerability']
+            ],
+            [
+                ['shield vulnerability', 'engine vulnerability'],
+                ['shield power', 'engine vulnerability']
+            ]
+        ],
+
+        // Second half of third row
+        [
+            [
+                ['shield vulnerability', 'weapon power']
+            ],
+            [
+                ['engine power', 'weapon power']
+            ],
+            [
+                ['shield vulnerability', 'weapon power'],
+                ['engine power', 'weapon power']
+            ]
+        ],
+
+        // Fixed options for fourth row
+        [
+            
+            [
+                ['engine vulnerability', 'sensor power'],
+                ['weapon power', 'fake extra 1']
+            ]
+        ],
+
+        // Middle part of fourth row
+        [
+            [
+                ['engine vulnerability', 'sensor vulnerability'],
+            ],
+            [
+                ['weapon power', 'sensor vulnerability']
+            ],
+            [
+                ['engine vulnerability', 'sensor vulnerability'],
+                ['weapon power', 'sensor vulnerability']
+            ]
+        ],
+
+        // First part of fifth row
+        [
+            [
+                ['sensor power', 'fake extra 2'],
+                ['sensor power', 'fake extra 3']
+            ],
+            [
+                ['sensor power', 'fake extra 2'],
+                ['sensor vulnerability', 'fake extra 3']
+            ],
+            [
+                ['sensor vulnerability', 'fake extra 2'],
+                ['sensor vulnerability', 'fake extra 3']
+            ]
+        ],
+
+        // Second part of fifth row
+        [
+            [
+                ['fake extra 1', 'fake extra 4'],
+                ['fake extra 1', 'fake extra 5']
+            ],
+            [
+                ['sensor vulnerability', 'fake extra 4'],
+                ['fake extra 1', 'fake extra 5']
+            ],
+            [
+                ['sensor vulnerability', 'fake extra 4'],
+                ['sensor vulnerability', 'fake extra 5']
+            ]
+        ]
+    ]
+};
+
+const bottomHeavyTree: ScanTreeTemplate = {
+    items: [
+        {
+            id: 'basic info',
+            row: 1,
+            column: 3,
+            type: 'info'
+        },
+        
+        {
+            id: 'shield power',
+            row: 2,
+            column: 2,
+            type: 'info'
+        },
+        {
+            id: 'shield vulnerability',
+            row: 2,
+            column: 4,
+            type: 'info'
+        },
+
+        {
+            id: 'engine power',
+            row: 3,
+            column: 2,
+            type: 'info'
+        },
+        {
+            id: 'engine vulnerability',
+            row: 3,
             column: 3,
             type: 'info'
         },
         {
-            id: 'fake extra 6',
+            id: 'weapon power',
+            row: 3,
+            column: 4,
+            type: 'info'
+        },
+
+        {
+            id: 'sensor power',
             row: 4,
-            column: 6,
+            column: 2,
             type: 'info'
         },
         {
-            id: 'fake extra 7',
+            id: 'sensor vulnerability',
             row: 4,
-            column: 8,
+            column: 4,
             type: 'info'
         },
+
+        {
+            id: 'fake extra 1',
+            row: 5,
+            column: 1,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 2',
+            row: 5,
+            column: 2,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 3',
+            row: 5,
+            column: 3,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 4',
+            row: 5,
+            column: 4,
+            type: 'info'
+        },
+        {
+            id: 'fake extra 5',
+            row: 5,
+            column: 5,
+            type: 'info'
+        }
     ],
     unlockOptionSets: [
-        [ // Fixed options set for second column
-            [
-                ['basic info', 'shield vulnerability'],
-                ['shield power', 'weapon power'],
-            ]
-        ],
-        [ // Possible variations for the second column
-            [
-                ['basic info', 'engine power'],
-                ['shield power', 'engine vulnerability'],
-            ],
-            [
-                
-                ['basic info', 'engine power'],
-                ['basic info', 'engine vulnerability'],
-                ['shield power', 'engine vulnerability'],
-            ],
-            [
-                ['basic info', 'engine power'],
-                ['shield power', 'engine power'],
-                ['shield power', 'engine vulnerability'],
-            ],
-            [
-                ['basic info', 'engine power'],
-                ['basic info', 'engine vulnerability'],
-            ],
-            [
-                ['shield power', 'engine power'],
-                ['shield power', 'engine vulnerability'],
-            ]
-        ],
-        
-        [ // Variations for top half of third column
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['engine power', 'sensor vulnerability'],
-                ['engine power', 'fake extra 1'],
-            ],
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['engine power', 'sensor vulnerability'],
-                ['engine vulnerability', 'fake extra 1'],
-            ],
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['engine power', 'fake extra 1'],
-            ],
-            [
-                ['shield vulnerability', 'sensor vulnerability'],
-                ['shield vulnerability', 'fake extra 1'],
-            ],
-            [
-                ['engine power', 'sensor vulnerability'],
-                ['engine power', 'fake extra 1'],
-            ],
-            [
-                ['engine vulnerability', 'sensor vulnerability'],
-                ['engine vulnerability', 'fake extra 1'],
-            ],
-        ],
-        [ // Variations for bottom half of third column
-            [
-                ['weapon power', 'fake extra 3'],
-                ['engine vulnerability', 'fake extra 3'],
-                ['engine vulnerability', 'fake extra 2'],
-            ],
-            [
-                ['weapon power', 'fake extra 3'],
-                ['engine vulnerability', 'fake extra 3'],
-                ['engine vulnerability', 'fake extra 2'],
-            ],
-            [
-                ['weapon power', 'fake extra 3'],
-                ['engine vulnerability', 'fake extra 2'],
-            ],
-            [
-                ['weapon power', 'fake extra 3'],
-                ['weapon power', 'fake extra 2'],
-            ],
-            [
-                ['engine vulnerability', 'fake extra 3'],
-                ['engine vulnerability', 'fake extra 2'],
-            ],
-        ],
-        [ // Variations for top half of fourth column
-            [
-                ['sensor vulnerability', 'fake extra 4'],
-                ['sensor vulnerability', 'fake extra 5'],
-            ],
-            [
-                ['sensor vulnerability', 'fake extra 4'],
-                ['sensor vulnerability', 'fake extra 5'],
-                ['fake extra 1', 'fake extra 5'],
-            ],
-            [
-                ['sensor vulnerability', 'fake extra 4'],
-                ['fake extra 1', 'fake extra 5'],
-            ],
-            [
-                ['fake extra 1', 'fake extra 4'],
-                ['fake extra 1', 'fake extra 5'],
-            ]
-        ],
-        [ // Variations for bottom half of fourth column
-            [
-                ['fake extra 3', 'fake extra 7'],
-                ['fake extra 3', 'fake extra 6'],
-            ],
-            [
-                ['fake extra 3', 'fake extra 7'],
-                ['fake extra 3', 'fake extra 6'],
-                ['fake extra 2', 'fake extra 6'],
-            ],
-            [
-                ['fake extra 3', 'fake extra 7'],
-                ['fake extra 2', 'fake extra 6'],
-            ],
-            [
-                ['fake extra 2', 'fake extra 7'],
-                ['fake extra 2', 'fake extra 6'],
-            ],
-            [
-                ['fake extra 1', 'fake extra 7'],
-                ['fake extra 1', 'fake extra 6'],
-            ]
-        ]
+        // TODO
     ],
 }
 
@@ -485,33 +349,33 @@ export const playerShip: ShipType = {
     id: 'player',
     draw: 'chevron',
     faction: 'protectors',
-    scanTree: testTree,
+    scanTree: distributedTree,
 }
 
 export const neutralShip: ShipType = {
     id: 'neutral',
     draw: 'chevron',
     faction: 'civilians',
-    scanTree: testTree,
+    scanTree: distributedTree,
 }
 
 export const hostileShip: ShipType = {
     id: 'hostile',
     draw: 'chevron',
     faction: 'destructiveFighters',
-    scanTree: balancedTree,
+    scanTree: bottomHeavyTree,
 }
 
 export const friendlyShip: ShipType = {
     id: 'friendly',
     draw: 'chevron',
     faction: 'protectors',
-    scanTree: testTree,
+    scanTree: distributedTree,
 }
 
 export const unknownShip: ShipType = {
     id: 'unknown',
     draw: 'chevron',
     faction: 'bullies',
-    scanTree: testTree,
+    scanTree: distributedTree,
 }

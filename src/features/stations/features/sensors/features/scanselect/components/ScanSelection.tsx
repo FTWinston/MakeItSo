@@ -3,7 +3,6 @@ import { ObjectId } from 'src/types/GameObjectInfo';
 import { ScanTreeState } from '../types/ScanTreeState';
 import { ScanTree } from './ScanTree';
 import { PowerLevel } from 'src/types/ShipSystem';
-import { HorizontalScroll } from 'src/components';
 
 interface Props {
     target: ObjectId;
@@ -16,12 +15,10 @@ export const ScanSelection: React.FC<Props> = props => {
     const { t } = useTranslation('sensors');
     
     return (
-        <HorizontalScroll>
-            <ScanTree
-                {...props.scanTree}
-                selectItem={props.selectScan}
-                maxScanDepth={props.powerLevel + 1}
-            />
-        </HorizontalScroll>
+        <ScanTree
+            {...props.scanTree}
+            selectItem={props.selectScan}
+            maxScanDepth={props.powerLevel + 1}
+        />
     );
 }
