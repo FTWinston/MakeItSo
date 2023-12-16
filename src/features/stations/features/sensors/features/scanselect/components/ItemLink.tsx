@@ -23,11 +23,25 @@ const Root = styled(Box)({
 const borderStyle = `solid white ${lineWidth}`;
 const borderRadius = '0.4em';
 
+const arrow = {
+    content: '""',
+    display: 'block',
+    width: 0,
+    height: 0,
+    border: '7px solid transparent',
+    borderTopColor: 'white',
+    borderBottom: '0px',
+    position: 'relative',
+    left: '-8px',
+    top: '7px',
+};
+
 const Straight = styled(Box)({
     borderLeft: borderStyle,
     gridRowStart: 1,
     gridRowEnd: 4,
     gridColumn: 3,
+    '&::after': arrow,
 });
 
 const BottomLeft = styled(Box)({
@@ -38,6 +52,7 @@ const BottomLeft = styled(Box)({
     gridRowEnd: 3,
     gridColumnStart: 2,
     gridColumnEnd: 3,
+    '&::after': arrow,
 });
 
 const TopRight = styled(Box)({
@@ -50,16 +65,6 @@ const TopRight = styled(Box)({
     gridColumnEnd: 4,
 });
 
-const TopLeft = styled(Box)({
-    borderTopLeftRadius: borderRadius,
-    borderTop: borderStyle,
-    borderLeft: borderStyle,
-    gridRowStart: 2,
-    gridRowEnd: 4,
-    gridColumnStart: 2,
-    gridColumnEnd: 3,
-});
-
 const BottomRight = styled(Box)({
     borderBottomRightRadius: borderRadius,
     borderBottom: borderStyle,
@@ -68,6 +73,20 @@ const BottomRight = styled(Box)({
     gridRowEnd: 3,
     gridColumnStart: 3,
     gridColumnEnd: 4,
+    '&::after': {
+        ...arrow,
+        left: 'calc(100% - 6px)',
+    }
+});
+
+const TopLeft = styled(Box)({
+    borderTopLeftRadius: borderRadius,
+    borderTop: borderStyle,
+    borderLeft: borderStyle,
+    gridRowStart: 2,
+    gridRowEnd: 4,
+    gridColumnStart: 2,
+    gridColumnEnd: 3,
 });
 
 export const ItemLink: React.FC<PropsWithChildren<Props>> = props => {
