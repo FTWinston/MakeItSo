@@ -14,7 +14,7 @@ import FakeExtra from '@mui/icons-material/DeleteOutline';
 
 type Props = Omit<ComponentProps<typeof Info>, 'titleAccess'> & {
     id: ScanItemId;
-    title: string;
+    title?: string;
 }
 
 export const ScanItemIcon: React.FC<Props> = props => {
@@ -63,5 +63,5 @@ export const ScanItemIcon: React.FC<Props> = props => {
         throw new UnexpectedValueError(id);
     }
 
-    return <Icon {...iconProps} titleAccess={props.title} />;
+    return <Icon {...iconProps} titleAccess={props.title} aria-role={props.title ? undefined : 'presentation'} />;
 };

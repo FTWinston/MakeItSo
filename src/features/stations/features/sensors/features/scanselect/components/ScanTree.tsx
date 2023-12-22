@@ -66,9 +66,7 @@ export const ScanTree: React.FC<Props> = props => {
                         itemId={item.id}
                         itemType={item.type}
                         clicked={() => props.selectItem(item.id)}
-                    >
-                        Active item content
-                    </ScanItem>
+                    />
                 )
             })}
 

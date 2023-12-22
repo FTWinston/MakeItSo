@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Avatar, Box, Card, CardActionArea, CardContent, styled, SxProps, Theme } from 'src/lib/mui';
+import { Button, styled, SxProps, Theme, Typography } from 'src/lib/mui';
 import { ScanType } from '../types/ScanTreeState';
 import { ScanItemId } from '../types/ScanItemId';
 import { ScanItemIcon } from './ScanItemIcon';
@@ -18,57 +18,59 @@ interface Props {
 export const itemWidth = '3em';
 export const itemHeight = '3em';
 
-const Root = styled(Card)({
+const Root = styled(Button)({
     width: itemWidth,
     height: itemHeight,
-    border: 'solid transparent 1px',
-});
-
-const Clickable = styled(CardActionArea)({
-    fontSize: 'inherit',
-    margin: '-1px',
-    padding: 0,
-})
-
-const Content = styled(CardContent)({
-    display: 'flex',
-    padding: '0.525em',
     position: 'relative',
-})
+    overflow: 'visible',
+    display: 'flex',
+    justifyContent: 'center',
+    border: 'solid transparent 1px',
 
-const IconAvatar = styled(Avatar)({
     transition: 'all 0.5s ease-in-out',
     '& > *': {
         transition: 'color 0.5s ease-in-out',
     },
-})
+});
 
-const ChildWrapper = styled(Box)({
+const Title = styled(Typography)(({ theme }) => ({
     position: 'absolute',
-    top: '0.75em',
-    left: '0.4em',
-    right: '2.75em',
-    bottom: 0,
-    transition: 'all 0.5s ease-in-out',
-})
+    fontSize: '0.65em',
+    top: `calc(${itemHeight} + 1.75em)`,
+    lineHeight: '1em',
+    textAlign: 'center',
+    minWidth: `calc(${itemWidth} * 1.75)`,
+    color: theme.palette.text.primary,
+}))
 
-const activeInfoIconSx = {
-    bgcolor: 'background.paper',
-    '& > *': {
-        color: 'primary.main'
+const activeRootSx = {
+    bgcolor: 'primary.main',
+    '& > svg': {
+        color: 'background.paper',
     }
 }
 
-const activeActionIconSx = {
-    bgcolor: 'primary.main'
+const inactiveRootSx = {
+    bgcolor: 'background.paper',
+    borderColor: 'secondary.main',
+    '& > svg': {
+        color: 'secondary.main',
+    }
 }
 
-const selectableIconSx = {
+const availableRootSx = {
     bgcolor: 'secondary.main',
+    '& > svg': {
+        color: 'background.paper',
+    }
 }
 
-const unavailableIconSx = {
-    bgcolor: 'text.disabled'
+const unavailableRootSx = {
+    bgcolor: 'background.paper',
+    borderColor: 'text.disabled',
+    '& > svg': {
+        color: 'text.disabled',
+    }
 }
 
 export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
@@ -77,41 +79,36 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
     const available = props.status === 'available';
     const unavailable = props.status === 'unavailable';
 
-    const iconSx = active
-        ? (props.itemType === 'info' ? activeInfoIconSx : activeActionIconSx)
+    const rootSx = active
+        ? activeRootSx
         : unavailable
-            ? unavailableIconSx
-            : selectableIconSx;
+            ? unavailableRootSx
+            : inactive
+                ? inactiveRootSx
+                : availableRootSx;
 
     const { t } = useTranslation('sensors');
     const title = t(`scan ${props.itemId}`);
 
     return (
         <Root
-            variant={unavailable ? undefined : 'outlined'}
+            variant="outlined"
             sx={{
                 ...props.sx,
-                borderColor: active
-                    ? 'primary.dark'
-                    : available 
-                        ? 'secondary.main'
-                        : undefined,
+                ...rootSx,
+                minWidth: 'unset',
+                //padding: 0,
                 cursor: unavailable ? 'not-allowed' : undefined,
             }}
+            onClick={props.clicked}
         >
-            <Clickable
-                disabled={active || unavailable}
-                onClick={props.clicked}
-            >
-                <Content>
-                    <IconAvatar
-                        variant="rounded"
-                        sx={iconSx}
-                    >
-                        <ScanItemIcon id={props.itemId} title={title} />
-                    </IconAvatar>
-                </Content>
-            </Clickable>
+            <ScanItemIcon
+                id={props.itemId}
+            />
+
+            <Title>
+                {title}
+            </Title>
         </Root>
     );
 }
