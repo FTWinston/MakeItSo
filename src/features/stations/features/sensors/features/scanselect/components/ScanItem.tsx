@@ -19,7 +19,7 @@ export const itemWidth = '3em';
 export const itemHeight = '3em';
 
 const Root = styled(Button)({
-    width: itemWidth,
+    minWidth: itemWidth,
     height: itemHeight,
     position: 'relative',
     overflow: 'visible',
@@ -96,14 +96,13 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
             sx={{
                 ...props.sx,
                 ...rootSx,
-                minWidth: 'unset',
-                //padding: 0,
                 cursor: unavailable ? 'not-allowed' : undefined,
             }}
             onClick={props.clicked}
         >
             <ScanItemIcon
                 id={props.itemId}
+                fontSize="large"
             />
 
             <Title>
