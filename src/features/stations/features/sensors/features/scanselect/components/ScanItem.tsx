@@ -43,30 +43,11 @@ const Title = styled(Typography)(({ theme }) => ({
     color: theme.palette.text.primary,
 }))
 
-const activeRootSx = {
-    bgcolor: 'primary.main',
-    '& > svg': {
-        color: 'background.paper',
-    }
-}
-
 const inactiveRootSx = {
-    bgcolor: 'background.paper',
     borderColor: 'secondary.main',
-    '& > svg': {
-        color: 'secondary.main',
-    }
-}
-
-const availableRootSx = {
-    bgcolor: 'secondary.main',
-    '& > svg': {
-        color: 'background.paper',
-    }
 }
 
 const unavailableRootSx = {
-    bgcolor: 'background.paper',
     borderColor: 'text.disabled',
     '& > svg': {
         color: 'text.disabled',
@@ -79,20 +60,19 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
     const available = props.status === 'available';
     const unavailable = props.status === 'unavailable';
 
-    const rootSx = active
-        ? activeRootSx
-        : unavailable
-            ? unavailableRootSx
+    const rootSx = unavailable
+        ? unavailableRootSx
             : inactive
                 ? inactiveRootSx
-                : availableRootSx;
+                : undefined;
 
     const { t } = useTranslation('sensors');
     const title = t(`scan ${props.itemId}`);
 
     return (
         <Root
-            variant="outlined"
+            variant={active || available ? 'contained' : 'outlined'}
+            color={active ? 'primary' : (available || inactive ? 'secondary' : undefined)}
             sx={{
                 ...props.sx,
                 ...rootSx,
