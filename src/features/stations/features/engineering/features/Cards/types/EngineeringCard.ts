@@ -1,6 +1,7 @@
 import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystemWithNone } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
+import { TextParameters } from 'src/types/TextParameters';
 
 export enum EngineeringCardRarity {
     Common = 1,
@@ -43,7 +44,7 @@ export interface EngineeringCardInfo {
     type: EngineeringCardType;
     rarity: EngineeringCardRarity;
     allowedSystems?: ShipSystemWithNone;
-    descParams?: Partial<Record<string, number | string>>;
+    descParams?: TextParameters;
 }
 
 export interface EngineeringCard extends EngineeringCardInfo {

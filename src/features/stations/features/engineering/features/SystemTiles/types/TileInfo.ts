@@ -1,3 +1,4 @@
+import { TextParameters } from 'src/types/TextParameters';
 import { SystemStatusEffectInfo, SystemStatusEffect } from '../../../types/SystemStatusEffect';
 import { PowerLevel, ShipSystem } from 'src/types/ShipSystem';
 
@@ -31,7 +32,7 @@ export type LogIdentifier = 'play card'
 export interface LogEvent {
     id: number;
     identifier: LogIdentifier;
-    parameters: Record<string, string | number>;
+    parameters: TextParameters;
 }
 
 type SystemEvents = {

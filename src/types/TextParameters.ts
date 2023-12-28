@@ -1,0 +1,1 @@
+export type TextParameters = Partial<Record<string, string | number>>;
