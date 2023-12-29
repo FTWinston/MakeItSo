@@ -25,7 +25,7 @@ export const ScanSelection: React.FC<Props> = props => {
                 <ScanItemDetailDialog
                     itemId={selectedScanId}
                     onClose={() => selectScan(undefined)}
-                    info={props.scanTree.itemInfo[selectedScanId]}
+                    detail={props.scanTree.itemInfo[selectedScanId]}
                 />
             )
             : (

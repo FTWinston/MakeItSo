@@ -8,7 +8,7 @@ export type ItemStatus = 'active' | 'inactive' | 'available' | 'unavailable';
 
 interface Props {
     itemId?: ScanItemId;
-    info: ScanItemDetail;
+    detail?: ScanItemDetail;
     onClose?: () => void;
 }
 
