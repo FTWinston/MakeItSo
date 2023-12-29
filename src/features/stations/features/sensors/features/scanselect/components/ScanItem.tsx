@@ -67,7 +67,7 @@ export const ScanItem: React.FC<PropsWithChildren<Props>> = props => {
                 : undefined;
 
     const { t } = useTranslation('sensors');
-    const title = t(`scan ${props.itemId}`);
+    const title = t(`scan name ${props.itemId}`);
 
     return (
         <Root

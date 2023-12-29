@@ -43,13 +43,18 @@ export const ScanTree: React.FC<Props> = props => {
             {props.items.map((item) => {
                 const tooDeep = props.maxScanDepth && props.maxScanDepth < item.row;
                 const itemIsActive = !tooDeep && props.selectedItemIds.includes(item.id);
+                const itemIsAvailable = !tooDeep && props.availableItemIds.includes(item.id); 
                 const status: ItemStatus = itemIsActive
                     ? 'active'
                     : (
-                        !tooDeep && props.availableItemIds.includes(item.id)
+                        itemIsAvailable
                             ? (columnsWithSelections.has(item.row) ? 'inactive' : 'available')
                             : 'unavailable'
                     );
+
+                const clicked = itemIsActive || itemIsAvailable
+                    ? () => props.selectItem(item.id)
+                    : undefined;
 
                 return (
                     <ScanItem
@@ -58,7 +63,7 @@ export const ScanTree: React.FC<Props> = props => {
                         status={status}
                         itemId={item.id}
                         itemType={item.type}
-                        clicked={() => props.selectItem(item.id)}
+                        clicked={clicked}
                     />
                 )
             })}
