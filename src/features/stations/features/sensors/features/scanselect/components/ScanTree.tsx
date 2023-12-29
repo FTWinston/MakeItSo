@@ -11,7 +11,6 @@ interface Props {
     selectedItemIds: ScanItemId[];
     //hiddenItemIds: ScanItemId[];
     availableItemIds: ScanItemId[];
-    itemInfo: Partial<Record<ScanItemId, string>>;
     selectItem: (id: ScanItemId) => void;
     maxScanDepth?: number;
 }
@@ -51,12 +50,6 @@ export const ScanTree: React.FC<Props> = props => {
                             ? (columnsWithSelections.has(item.row) ? 'inactive' : 'available')
                             : 'unavailable'
                     );
-
-                const info = itemIsActive
-                    ? props.itemInfo[item.id]
-                    : undefined;
-
-                // TODO: ... well, not here. Track the open item and show it in a modal.
 
                 return (
                     <ScanItem

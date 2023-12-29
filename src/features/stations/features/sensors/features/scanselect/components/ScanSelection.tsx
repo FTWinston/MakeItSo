@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { PowerLevel } from 'src/types/ShipSystem';
 import { ScanItemId } from '../types/ScanItemId';
 import { ScanTreeState } from '../types/ScanTreeState';
 import { ScanTree } from './ScanTree';
-import { ScanItemDialog } from './ScanItemDialog';
+import { ScanItemOverviewDialog } from './ScanItemOverviewDialog';
+import { ScanItemDetailDialog } from './ScanItemDetailDialog';
 
 interface Props {
     target: ObjectId;
@@ -15,10 +15,27 @@ interface Props {
 }
 
 export const ScanSelection: React.FC<Props> = props => {
-    const { t } = useTranslation('sensors');
-
     const [selectedScanId, selectScan] = useState<ScanItemId>();
     
+    // If there's a selected item, see if it's an "active" item or not. Show a different dialog, depending.
+    const selectedScanInfo = selectedScanId === undefined
+        ? undefined
+        : props.scanTree.selectedItemIds.includes(selectedScanId)
+            ? (
+                <ScanItemDetailDialog
+                    itemId={selectedScanId}
+                    onClose={() => selectScan(undefined)}
+                    info={props.scanTree.itemInfo[selectedScanId]}
+                />
+            )
+            : (
+                <ScanItemOverviewDialog
+                    itemId={selectedScanId}
+                    onClose={() => selectScan(undefined)}
+                    onConfirm={() => props.selectScan(selectedScanId)}
+                />
+            );
+
     return (
         <>
             <ScanTree
@@ -26,11 +43,7 @@ export const ScanSelection: React.FC<Props> = props => {
                 selectItem={selectScan}
                 maxScanDepth={props.powerLevel + 1}
             />
-            <ScanItemDialog
-                itemId={selectedScanId}
-                onClose={() => selectScan(undefined)}
-                onConfirm={() => props.selectScan(selectedScanId)}
-            />
+            {selectedScanInfo}
         </>
     );
 }

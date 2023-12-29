@@ -11,7 +11,7 @@ interface Props {
     onConfirm?: () => void;
 }
 
-export const ScanItemDialog: React.FC<PropsWithChildren<Props>> = props => {
+export const ScanItemOverviewDialog: React.FC<PropsWithChildren<Props>> = props => {
     const { t } = useTranslation('sensors');
     const title = props.itemId ? t(`scan ${props.itemId}`) : '';
 
@@ -24,7 +24,7 @@ export const ScanItemDialog: React.FC<PropsWithChildren<Props>> = props => {
                 Confirm
             </Button>}
         >
-            
+            item summary here
         </Dialog>
     );
 }

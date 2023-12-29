@@ -1,3 +1,4 @@
+import { ScanItemDetail } from '../types/ScanItemDetail';
 import { ScanItemId } from '../types/ScanItemId';
 import { ShipScanItem } from '../types/ScanTreeState';
 import { canBeSelected } from './canBeSelected';
@@ -6,7 +7,7 @@ export function adjustSelectedItems(
     selectedItems: Set<ScanItemId>,
     items: ShipScanItem[],
     unlocks: [ScanItemId, ScanItemId][],
-    itemInfo: Partial<Record<ScanItemId, string>>,
+    itemInfo: Partial<Record<ScanItemId, ScanItemDetail>>,
     itemIdToSelect: ScanItemId
 ) {
     // Ensure item exists and isn't already selected.

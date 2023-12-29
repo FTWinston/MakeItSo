@@ -1,4 +1,5 @@
-import { ScanTreeState, ScanTreeMinimalState, ScanTreeDefinition, ScanItemId } from '../types/ScanTreeState';
+import { ScanItemId } from '../types/ScanItemId';
+import { ScanTreeState, ScanTreeMinimalState, ScanTreeDefinition } from '../types/ScanTreeState';
 import { getAvailableItems } from './getAvailableItems';
 
 export function expandState(state: ScanTreeDefinition | ScanTreeMinimalState): ScanTreeState {

@@ -1,3 +1,4 @@
+import { ScanItemDetail } from './ScanItemDetail';
 import { ScanItemId } from './ScanItemId';
 
 export type ScanType = 'info' | 'action';
@@ -34,7 +35,7 @@ export interface ScanTreeMinimalState extends ScanTreeDefinition {
 export interface ScanTreeState extends ScanTreeMinimalState {
     //hiddenItemIds: ScanItemId[];
     availableItemIds: ScanItemId[];
-    itemInfo: Partial<Record<ScanItemId, string>>;
+    itemInfo: Partial<Record<ScanItemId, ScanItemDetail>>;
 }
 
 export type ScanTreeStateAction = {
@@ -48,5 +49,5 @@ export type ScanTreeStateAction = {
 } | {
     type: 'set info';
     item: ScanItemId;
-    info: string;
+    info: ScanItemDetail;
 }
