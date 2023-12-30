@@ -20,7 +20,7 @@ const Root = styled(Box)({
 
 export const MaxDepth: React.FC<Props> = props => {
     return (
-        <Root sx={{ height: `calc(100% - (${props.row} * (${itemHeight} + 3em)) + 1.85em)` }} />
+        <Root sx={{ height: `calc(100% - (${props.row} * (${itemHeight} + 3em)) + 2.2em)` }} />
     );
 }
 
