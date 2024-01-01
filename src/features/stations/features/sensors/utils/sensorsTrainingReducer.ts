@@ -1,9 +1,10 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsStateInfo';
-import { Reference } from 'src/classes/Reference';
-import { expandScanTreeState } from '../features/scanselect';
 import { playerShip } from 'src/assets/scenarios/testScenario';
+import { Reference } from 'src/classes/Reference';
+import { generateInstance } from '../features/hexcells';
+import { expandScanTreeState } from '../features/scanselect';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -54,15 +55,21 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         }
 
         case 'scan': {
-            if (!state.sensors.currentTarget.id) {
+            if (!state.sensors.currentTarget.id || !state.sensors.currentTarget.value) {
                 break;
             }
             if (action.scan) {
                 // TODO: validate that scan is an allowed option
                 state.sensors.currentScan = action.scan;
+
+                const scanConfig = state.sensors.currentTarget.value.getScanConfig(action.scan);
+
+                // TODO: does anything about the scanning ship (e.g. sensor damage) affect the board config?
+                state.sensors.scanCellBoard = generateInstance(scanConfig);
             }
             else {
                 delete state.sensors.currentScan;
+                delete state.sensors.scanCellBoard;
             }
             break;
         }

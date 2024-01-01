@@ -1,13 +1,15 @@
 import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from './SensorTarget';
-import { ScanTreeState } from '../features/scanselect';
+import { ScanItemId, ScanTreeState } from '../features/scanselect';
 import { ReferenceInfo } from 'src/types/ReferenceInfo';
+import { CellBoardInfo } from '../features/hexcells';
 
 export interface SensorsStateInfo {
     possibleTargets: SensorTarget[];
     currentTarget: ReferenceInfo<GameObjectInfo>;
     scanTree?: ScanTreeState;
-    currentScan?: string;
+    currentScan?: ScanItemId;
+    scanCellBoard?: CellBoardInfo;
 }
 
 export type SensorsAction = {
@@ -23,5 +25,5 @@ export type SensorsAction = {
     target?: ObjectId;
 } | {
     type: 'scan';
-    scan?: string;
+    scan?: ScanItemId;
 };

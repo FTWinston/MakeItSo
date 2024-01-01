@@ -9,13 +9,14 @@ import { ScanItemDetailDialog } from './ScanItemDetailDialog';
 
 interface Props {
     target: ObjectId;
+    initialSelectedScanId?: ScanItemId;
     selectScan: (scan: ScanItemId | undefined) => void;
     scanTree: ScanTreeState;
     powerLevel: PowerLevel;
 }
 
 export const ScanSelection: React.FC<Props> = props => {
-    const [selectedScanId, selectScan] = useState<ScanItemId>();
+    const [selectedScanId, selectScan] = useState<ScanItemId | undefined>(props.initialSelectedScanId);
     
     // If there's a selected item, see if it's an "active" item or not. Show a different dialog, depending.
     const selectedScanInfo = selectedScanId === undefined

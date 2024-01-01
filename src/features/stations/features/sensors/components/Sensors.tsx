@@ -1,14 +1,15 @@
+import { useTranslation } from 'react-i18next';
 import { styled } from 'src/lib/mui';
 import { AppBarHeight } from '../../appbar';
 import { Page } from '../../../components/Page';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
 import { SensorsAppBar } from './SensorsAppBar';
-import { useTranslation } from 'react-i18next';
 import { SensorBreadcrumbs } from './SensorBreadcrumbs';
-import { ScanSelection, ScanTreeState } from '../features/scanselect';
+import { ScanItemId, ScanSelection, ScanTreeState } from '../features/scanselect';
 import { TargetSelection } from '../features/targetselect';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../types/SensorTarget';
+import { CellBoard, Cells } from '../features/hexcells';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -23,8 +24,10 @@ interface Props {
     setScanTarget: (id: ObjectId | undefined) => void;
     scanTargetTree?: ScanTreeState;
 
-    scanSystem?: string;
-    setScanSystem: (id: string | undefined) => void;
+    scanSystem?: ScanItemId;
+    setScanSystem: (id: ScanItemId | undefined) => void;
+
+    scanCellBoard?: CellBoard;
 }
 
 const Root = styled(Page)({
@@ -55,7 +58,7 @@ export const Sensors: React.FC<Props> = (props) => {
             />
         )
     }
-    else if (props.scanSystem === undefined) {
+    else if (props.scanSystem === undefined || props.scanCellBoard === undefined) {
         stage = 1;
         content = (
             <ScanSelection
@@ -69,7 +72,12 @@ export const Sensors: React.FC<Props> = (props) => {
     else {
         stage = 2;
         content = (
-            <div>scanning...</div>
+            <Cells
+                {...props.scanCellBoard}
+                revealCell={() => {}}
+                flagCell={() => {}}
+                getHint={() => {}}
+            />
         )
     }
 

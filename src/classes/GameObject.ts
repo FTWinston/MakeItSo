@@ -9,6 +9,7 @@ import { interpolatePosition, interpolateVector } from 'src/utils/interpolate';
 import { durationToTicks } from 'src/utils/timeSpans';
 import { Space } from './Space';
 import { ScanTreeDefinition } from 'src/features/stations';
+import type { GenerationConfig, ScanItemId } from 'src/features/stations/features/sensors';
 import { FactionId } from 'src/types/Faction';
 
 const twoTicks = durationToTicks(2);
@@ -60,4 +61,41 @@ export abstract class GameObject implements GameObjectInfo {
     }
 
     abstract getScanTree(): ScanTreeDefinition;
+
+    getScanConfig(scan: ScanItemId): GenerationConfig {
+        // TODO: make this abstract, implement differently on e.g. shipType
+
+        switch (scan) {
+            case 'basic info':
+                return {
+                    numCells: 25,
+                    gapFraction: 0.4,
+
+                    bombFraction: 0.3,
+                    unknownFraction: 0,
+                    revealChance: 0,
+                    radiusClueChance: 0,
+                    rowClueChance: 0,
+                    contiguousClueChance: 0,
+                    splitClueChance: 0,
+                    remainingBombCountFraction: 0,
+                };
+            default:
+                // TODO: randomize. And differently for different scans.
+                return {
+                    orientation: 'portrait',
+                    numCells: 50,
+                    gapFraction: 0.3,
+                    
+                    bombFraction: 0.55,
+                    unknownFraction: 0,
+                    revealChance: 0.1,
+                    radiusClueChance: 0.05,
+                    rowClueChance: 2,
+                    contiguousClueChance: 0.5,
+                    splitClueChance: 0.5,
+                    remainingBombCountFraction: 0.25,
+                };
+        }
+    }
 }

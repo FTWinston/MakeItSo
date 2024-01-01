@@ -1,13 +1,16 @@
 import { SensorTarget } from './SensorTarget';
-import { ScanTreeState } from '../features/scanselect';
+import { ScanItemId, ScanTreeState } from '../features/scanselect';
 import { SensorsStateInfo } from './SensorsStateInfo';
 import { GameObject } from 'src/classes/GameObject';
 import { Reference } from 'src/classes/Reference';
+import { CellBoard } from '../features/hexcells';
 
 export interface SensorsState extends SensorsStateInfo {
     possibleTargets: SensorTarget[];
 
     currentTarget: Reference<GameObject>;
     scanTree?: ScanTreeState;
-    currentScan?: string;
+
+    currentScan?: ScanItemId;
+    scanCellBoard?: CellBoard;
 }
