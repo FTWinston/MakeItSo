@@ -3,7 +3,7 @@ import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { SensorsAction } from '../types/SensorsStateInfo';
 import { playerShip } from 'src/assets/scenarios/testScenario';
 import { Reference } from 'src/classes/Reference';
-import { generateInstance } from '../features/hexcells';
+import { generateInstance, hexCellReducer } from '../features/hexcells';
 import { expandScanTreeState } from '../features/scanselect';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
@@ -73,6 +73,26 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             }
             break;
         }
+
+        case 'reveal':
+        case 'flag':
+        case 'hint':
+        case 'new': // TODO: remove this action?!
+            if (state.sensors.scanCellBoard) {
+                hexCellReducer(state.sensors.scanCellBoard, action);
+
+                if (state.sensors.scanCellBoard.numBombs === 0) {
+                    // TODO: board has been solved! Brief delay before going back to the scan tree.
+                    // Let's just use css for that delay. Do we want the detail dialog on top of the scan result, or on the tree?
+                    // Having it here might be nice. Future "looks" would then still be on the tree.
+                    // (Perhaps the background could change to the tree on its own, after an extra delay?!)
+
+                    // TODO: add values for currentScan to the sensor state! (and keep them updated hereafter!)
+                }
+            }
+            break;
+
+        // TODO: fold scanTreeReducer into this? (it handles ensuring only one item is selected per row, etc)
 
         default:
             throw new UnexpectedValueError(action);

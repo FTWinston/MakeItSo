@@ -36,6 +36,9 @@ export const SensorsTraining: React.FC<Props> = (props) => {
             scanSystem={state.sensors.currentScan}
             scanCellBoard={state.sensors.scanCellBoard}
             setScanSystem={scan => dispatch({ type: 'scan', scan })}
+            revealCell={index => dispatch({ type: 'reveal', index })}
+            flagCell={index => dispatch({ type: 'flag', index })}
+            getHint={() => dispatch({ type: 'hint' })}
         />
     );
 

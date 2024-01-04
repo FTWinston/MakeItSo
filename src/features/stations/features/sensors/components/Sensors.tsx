@@ -28,6 +28,9 @@ interface Props {
     setScanSystem: (id: ScanItemId | undefined) => void;
 
     scanCellBoard?: CellBoard;
+    flagCell: (index: number) => void;
+    revealCell: (index: number) => void;
+    getHint: () => void;
 }
 
 const Root = styled(Page)({
@@ -74,9 +77,9 @@ export const Sensors: React.FC<Props> = (props) => {
         content = (
             <Cells
                 {...props.scanCellBoard}
-                revealCell={() => {}}
-                flagCell={() => {}}
-                getHint={() => {}}
+                revealCell={props.revealCell}
+                flagCell={props.flagCell}
+                getHint={props.getHint}
             />
         )
     }
