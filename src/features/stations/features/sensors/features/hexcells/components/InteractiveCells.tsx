@@ -20,7 +20,7 @@ const Root = styled(Box)({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    width: '100vw',
+    justifySelf: 'stretch',
     position: 'relative',
     overflow: 'hidden',
     padding: '2rem 0 3rem 0',
