@@ -9,7 +9,7 @@ import { ScanItemId, ScanSelection, ScanTreeState } from '../features/scanselect
 import { TargetSelection } from '../features/targetselect';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../types/SensorTarget';
-import { CellBoard, Cells } from '../features/hexcells';
+import { CellBoard, InteractiveCells } from '../features/hexcells';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -75,7 +75,7 @@ export const Sensors: React.FC<Props> = (props) => {
     else {
         stage = 2;
         content = (
-            <Cells
+            <InteractiveCells
                 {...props.scanCellBoard}
                 revealCell={props.revealCell}
                 flagCell={props.flagCell}

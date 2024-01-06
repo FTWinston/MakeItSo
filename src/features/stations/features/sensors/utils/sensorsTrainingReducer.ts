@@ -77,7 +77,6 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         case 'reveal':
         case 'flag':
         case 'hint':
-        case 'new': // TODO: remove this action?!
             if (state.sensors.scanCellBoard) {
                 hexCellReducer(state.sensors.scanCellBoard, action);
 

@@ -31,12 +31,13 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
                 return;
             }
             
-            if (underlyingState.type === CellType.Empty) {
+            if (underlyingState.type === CellType.AdjacentClue) {
                 // Copy the underlying cell, without copying linked/associated cell data.
                 const display: DisplayCellState = {
                     type: underlyingState.type,
                     countType: underlyingState.countType,
                     number: underlyingState.number,
+                    targetIndexes: underlyingState.targetIndexes,
                     resolved: isClueResolved(state, underlyingState.targetIndexes),
                 };
 
@@ -48,7 +49,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             }
 
             // Mark any associated clues as fully resolved.
-            if (underlyingState.type === CellType.Empty || underlyingState.type === CellType.Unknown) {
+            if (underlyingState.type === CellType.AdjacentClue || underlyingState.type === CellType.Unknown) {
                 markCluesAsResolved(state, underlyingState.clueIndexes);
             }
 
@@ -82,36 +83,9 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
             // Mark any associated clues as fully resolved.
             markCluesAsResolved(state, underlyingState.clueIndexes);
             
-            // Success when the last bomb is flagged.
-            if (state.numBombs === 0) {
+            // Success when the last obscured cell is flagged.
+            if (!state.cells.some(cell => cell?.type === CellType.Obscured)) {
                 state.result = 'success';
-
-                // Reveal all remaining obscured cells.
-                for (let i = 0; i < state.cells.length; i++) {
-                    if (state.cells[i]?.type === CellType.Obscured) {
-                        const underlying = state.underlying[i];
-                        if (!underlying) {
-                            continue;
-                        }
-                        if (underlying.type === CellType.Empty) {
-                            state.cells[i] = {
-                                type: underlying.type,
-                                countType: underlying.countType,
-                                number: underlying.number,
-                                resolved: isClueResolved(state, underlying.targetIndexes),
-                            };
-                        }
-                        else {
-                            state.cells[i] = {
-                                type: underlying.type as CellType.Bomb | CellType.Unknown
-                            };
-                        }
-
-                        if (underlying.type === CellType.Empty || underlying.type === CellType.Unknown) {
-                            markCluesAsResolved(state, underlying.clueIndexes);
-                        }
-                    }
-                }
             }
 
             return;
@@ -123,15 +97,16 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
 
                 // When we find a still-valid hint, apply that, and remove any prior hints, as they're all no longer valid.
                 if (isObscured(hintCell)) {
+                    const notAlreadyHinted = state.cells[hintIndex]?.type !== CellType.Hint;
                     state.cells[hintIndex] = { type: CellType.Hint };
                     state.hints.splice(0, i);
+                    if (notAlreadyHinted) {
+                        state.hintsUsed++;
+                    }
                     break;
                 }
             }
             return;
-        }
-        case 'new': {
-            return action.board;
         }
         default:
             throw new UnexpectedValueError(action);

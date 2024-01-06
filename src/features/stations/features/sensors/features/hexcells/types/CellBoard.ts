@@ -11,6 +11,7 @@ interface InstanceInfo {
     cells: Array<DisplayCellState | null>;
     numBombs: number;
     numErrors: number;
+    hintsUsed: number;
     result?: 'success' | 'failure';
     errorIndex?: number;
 }
@@ -33,7 +34,4 @@ export type CellBoardAction = {
     index: number;
 } | {
     type: 'hint';
-} | {
-    type: 'new';
-    board: CellBoard;
 }

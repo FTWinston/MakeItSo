@@ -1,7 +1,7 @@
-import { CellBoard, CellBoardDefinition } from "../types/CellBoard";
+import { CellBoard, CellBoardDefinition } from '../types/CellBoard';
 import { CellType, DisplayCellState } from '../types/CellState';
 import { GenerationConfig, generateBoard } from './generateBoard';
-import { isClueCell } from "./isClueCell";
+import { isClueCell } from './isClueCell';
 import { isClueResolved } from './resolved';
 
 export function createCellBoardInstance(definition: CellBoardDefinition): CellBoard {
@@ -13,10 +13,11 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
                 return null;
             }
             
-            // Intentionally skip resolved property now, will handle in subsequent loop.
+            // Intentionally skip targetIndexes and resolved properties now, will handle in subsequent loop.
             return { ...cell } as DisplayCellState;
         }),
         hints: definition.hints,
+        hintsUsed: 0,
         numErrors: 0,
         numBombs: definition.underlying
             .filter(cell => cell?.type === CellType.Bomb)
@@ -30,6 +31,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
             const underlying = board.underlying[index];
 
             if (isClueCell(underlying)) {
+                cell.targetIndexes = underlying.targetIndexes;
                 cell.resolved = isClueResolved(board, underlying.targetIndexes);
             }
         }
