@@ -30,7 +30,6 @@ interface Props {
     scanCellBoard?: CellBoard;
     flagCell: (index: number) => void;
     revealCell: (index: number) => void;
-    getHint: () => void;
 }
 
 const Root = styled(Page)({
@@ -79,7 +78,6 @@ export const Sensors: React.FC<Props> = (props) => {
                 {...props.scanCellBoard}
                 revealCell={props.revealCell}
                 flagCell={props.flagCell}
-                getHint={props.getHint}
             />
         )
     }

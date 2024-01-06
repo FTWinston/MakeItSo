@@ -32,6 +32,4 @@ export type CellBoardAction = {
 } | {
     type: 'flag';
     index: number;
-} | {
-    type: 'hint';
 }

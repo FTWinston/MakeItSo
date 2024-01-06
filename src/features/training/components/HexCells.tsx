@@ -1,6 +1,6 @@
 import { produce } from 'immer';
 import { useReducer } from 'react';
-import { Cells, hexCellReducer } from 'src/features/stations/features/sensors/features/hexcells';
+import { InteractiveCells, hexCellReducer } from 'src/features/stations/features/sensors/features/hexcells';
 import { generateInstance } from 'src/features/stations/features/sensors/features/hexcells/utils/createCellBoardInstance';
 import { GenerationConfig } from 'src/features/stations/features/sensors/features/hexcells/utils/generateBoard';
 import { useToggle } from 'src/hooks/useToggle';
@@ -26,24 +26,25 @@ export const Component: React.FC = () => {
     const [generatedToggle, onRegenerated] = useToggle();
     
     const regenerate = () => {
+        /*
         dispatch({
             type: 'new',
             board: generateInstance(config),
         });
+        */
         onRegenerated();
     };
 
     return (
         <>
-            <Cells
+            <InteractiveCells
                 key={generatedToggle}
                 cells={board.cells}
                 columns={board.columns}
                 revealCell={index => dispatch({ type: 'reveal', index })}
                 flagCell={index => dispatch({ type: 'flag', index })}
-                getHint={() => dispatch({ type: 'hint' })}
-                numBombs={board.numBombs}
-                numErrors={board.numErrors}
+                //numBombs={board.numBombs}
+                //numErrors={board.numErrors}
                 result={board.result}
                 errorIndex={board.errorIndex}
             />

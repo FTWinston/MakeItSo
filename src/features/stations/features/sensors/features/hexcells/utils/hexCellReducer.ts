@@ -90,24 +90,6 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellB
 
             return;
         }
-        case 'hint': {
-            for (let i = 0; i < state.hints.length; i++) {
-                const hintIndex = state.hints[i];
-                const hintCell = state.cells[hintIndex];
-
-                // When we find a still-valid hint, apply that, and remove any prior hints, as they're all no longer valid.
-                if (isObscured(hintCell)) {
-                    const notAlreadyHinted = state.cells[hintIndex]?.type !== CellType.Hint;
-                    state.cells[hintIndex] = { type: CellType.Hint };
-                    state.hints.splice(0, i);
-                    if (notAlreadyHinted) {
-                        state.hintsUsed++;
-                    }
-                    break;
-                }
-            }
-            return;
-        }
         default:
             throw new UnexpectedValueError(action);
     }
