@@ -1,5 +1,6 @@
 import { StoryObj } from '@storybook/react';
-import { useImmerReducer } from 'use-immer';
+import { produce } from 'immer';
+import { useReducer } from 'react';
 import { generateInstance } from '../utils/createCellBoardInstance';
 import { GenerationConfig } from '../utils/generateBoard';
 import { hexCellReducer } from '../utils/hexCellReducer';
@@ -7,7 +8,7 @@ import { InteractiveCells } from './InteractiveCells';
 import { getConfiguration } from '../utils/getConfiguration';
 
 const CellsWithReducer: React.FC<GenerationConfig> = config => {
-    const [board, dispatch] = useImmerReducer(hexCellReducer, config, generateInstance);
+    const [board, dispatch] = useReducer(produce(hexCellReducer), config, generateInstance);
 
     return (
         <>
