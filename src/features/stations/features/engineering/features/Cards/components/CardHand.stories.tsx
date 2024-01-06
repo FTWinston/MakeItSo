@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { stubHeight } from './CardStub';
 import { action } from '@storybook/addon-actions';
 import { EngineeringCardRarity } from '../types/EngineeringCard';
-import { getRandomInt } from 'src/utils/random';
+import { Random } from 'src/utils/random';
 
 export default {
   title: 'Engineering/Cards/Card Hand',
@@ -12,15 +12,16 @@ export default {
   includeStories: /^[A-Z]/,
 };
 
+const random = new Random();
 export const storyCards = [
-  createCardByRarity(1, EngineeringCardRarity.Common),
-  createCardByRarity(2, EngineeringCardRarity.Epic),
-  createCardByRarity(3, EngineeringCardRarity.Common),
-  createCardByRarity(4, EngineeringCardRarity.Uncommon),
-  createCardByRarity(5, EngineeringCardRarity.Common),
-  createCardByRarity(6, EngineeringCardRarity.Rare),
-  createCardByRarity(7, EngineeringCardRarity.Common),
-  createCardByRarity(8, EngineeringCardRarity.Uncommon),
+  createCardByRarity(random, 1, EngineeringCardRarity.Common),
+  createCardByRarity(random, 2, EngineeringCardRarity.Epic),
+  createCardByRarity(random, 3, EngineeringCardRarity.Common),
+  createCardByRarity(random, 4, EngineeringCardRarity.Uncommon),
+  createCardByRarity(random, 5, EngineeringCardRarity.Common),
+  createCardByRarity(random, 6, EngineeringCardRarity.Rare),
+  createCardByRarity(random, 7, EngineeringCardRarity.Common),
+  createCardByRarity(random, 8, EngineeringCardRarity.Uncommon),
 ];
 
 export const CardHand = () => {
@@ -42,7 +43,7 @@ export const CardHand = () => {
 
       <button
         onClick={() => {
-          setCards([...cards, createRandomCard(nextID)]);
+          setCards([...cards, createRandomCard(new Random(), nextID)]);
           setNextID(nextID + 1);
         }}
       >
@@ -52,7 +53,7 @@ export const CardHand = () => {
       <button
         onClick={() => {
           const newCards = cards.slice();
-          newCards.splice(getRandomInt(newCards.length), 1);
+          newCards.splice(new Random().getInt(newCards.length), 1);
           setCards(newCards);
         }}
       >

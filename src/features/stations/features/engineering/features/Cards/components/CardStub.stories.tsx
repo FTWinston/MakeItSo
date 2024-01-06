@@ -1,3 +1,4 @@
+import { Random } from 'src/utils/random';
 import { createCardByRarity } from '../data/EngineeringCards';
 import { EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardDisplay } from './CardDisplay';
@@ -19,12 +20,12 @@ export const CardStubs = () => (
       alignItems: 'center',
     }}
   >
-    <EngineeringCardStub {...createCardByRarity(1, EngineeringCardRarity.Common)} />
+    <EngineeringCardStub {...createCardByRarity(new Random(), 1, EngineeringCardRarity.Common)} />
 
-    <EngineeringCardStub {...createCardByRarity(2, EngineeringCardRarity.Uncommon)} />
+    <EngineeringCardStub {...createCardByRarity(new Random(), 2, EngineeringCardRarity.Uncommon)} />
 
-    <EngineeringCardStub {...createCardByRarity(3, EngineeringCardRarity.Rare)} />
+    <EngineeringCardStub {...createCardByRarity(new Random(), 3, EngineeringCardRarity.Rare)} />
 
-    <EngineeringCardStub {...createCardByRarity(4, EngineeringCardRarity.Epic)} />
+    <EngineeringCardStub {...createCardByRarity(new Random(), 4, EngineeringCardRarity.Epic)} />
   </div>
 );

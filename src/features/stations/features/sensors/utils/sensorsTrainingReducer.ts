@@ -79,8 +79,8 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             if (state.sensors.scanCellBoard) {
                 hexCellReducer(state.sensors.scanCellBoard, action);
 
-                if (state.sensors.scanCellBoard.numBombs === 0) {
-                    // TODO: board has been solved! Brief delay before going back to the scan tree.
+                if (state.sensors.scanCellBoard.result) {
+                    // TODO: board has been solved, or failed! Brief delay before going back to the scan tree.
                     // Let's just use css for that delay. Do we want the detail dialog on top of the scan result, or on the tree?
                     // Having it here might be nice. Future "looks" would then still be on the tree.
                     // (Perhaps the background could change to the tree on its own, after an extra delay?!)

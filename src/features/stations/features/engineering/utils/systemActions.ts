@@ -6,7 +6,7 @@ import { ShipInfo } from 'src/types/ShipInfo';
 import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffects';
 import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems, ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../features/SystemTiles';
-import { getRandomInt } from 'src/utils/random';
+import { Random } from 'src/utils/random';
 
 export const maxRestorationValue = 100;
 export const defaultPowerLevel = 2;
@@ -374,7 +374,7 @@ export function determineRestoreAmount(cardRarity: EngineeringCardRarity) {
 }
 
 export function getRandomSystem(): ShipSystem {
-    switch (getRandomInt(6)) {
+    switch (new Random().getInt(6)) {
         case 0:
             return ShipSystem.Hull;
         case 1:

@@ -1,30 +1,67 @@
-export function getRandomFloat() {
-    return Math.random();
-}
+import { nanoid } from 'nanoid/non-secure';
+import seedrandom from 'seedrandom';
 
-export function getRandomInt(maxExclusive: number) {
-    return Math.floor(Math.random() * maxExclusive);
-}
+export class Random {
+    private readonly random: seedrandom.PRNG;
 
-export function getRandom<T>(values: T[]): T | null {
-    if (values.length === 0) {
-        return null;
-    }
-    return values[getRandomInt(values.length)];
-}
-
-export function insertRandom<T>(array: T[], value: T) {
-    const index = getRandomInt(array.length + 1);
-    array.splice(index, 0, value);
-}
-
-export function deleteRandom<T>(values: T[]): T | null {
-    if (values.length === 0) {
-        return null;
+    constructor(seed?: string) {
+        this.random = seedrandom(seed);
     }
 
-    const index = getRandomInt(values.length);
-    const result = values[index];
-    values.splice(index, 1);
-    return result;
+    getFloat(min = 0, max = 1) {
+        return min + this.random() * (max - min);
+    }
+
+    getBoolean(chanceOfTrue = 0.5) {
+        return this.random() <= chanceOfTrue;
+    }
+
+    getInt(maxExclusive: number) {
+        return Math.floor(this.random() * maxExclusive);
+    }
+
+    pick<T>(values: T[]): T {
+        if (values.length === 0) {
+            throw new Error('pickRandom passed an empty array');
+        }
+    
+        return values[this.getInt(values.length)];
+    }
+
+    insert<T>(array: T[], value: T) {
+        const index = this.getInt(array.length + 1);
+        array.splice(index, 0, value);
+    }
+
+    delete<T>(values: T[]): T | null {
+        if (values.length === 0) {
+            return null;
+        }
+    
+        const index = this.getInt(values.length);
+        const result = values[index];
+        values.splice(index, 1);
+        return result;
+    }
+
+    shuffle(items: unknown[]) {
+        let currentIndex = items.length;
+        let temporaryValue: unknown;
+        let randomIndex: number;
+    
+        // While there remain elements to shuffle...
+        while (0 !== currentIndex) {
+      
+            // Pick a remaining element...
+            randomIndex = this.getInt(currentIndex);
+            currentIndex -= 1;
+      
+            // And swap it with the current element.
+            temporaryValue = items[currentIndex];
+            items[currentIndex] = items[randomIndex];
+            items[randomIndex] = temporaryValue;
+        }
+    }
 }
+
+export const generateSeed = nanoid;

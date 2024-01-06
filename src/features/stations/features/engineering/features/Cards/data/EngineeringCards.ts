@@ -1,7 +1,7 @@
 import { EngineeringCard, EngineeringCardType, EngineeringCardRarity } from '../types/EngineeringCard';
 import { SystemStatusEffectType } from '../../../types/SystemStatusEffect';
 import { applyPrimaryEffect, applySecondaryEffect, applySingleEffect, removeEffect } from '../../../utils/systemActions';
-import { getRandomFloat, getRandomInt } from 'src/utils/random';
+import { Random } from 'src/utils/random';
 import { ShipInfo } from 'src/types/ShipInfo';
 import { ShipSystem, ShipSystemWithNone } from 'src/types/ShipSystem';
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
@@ -362,9 +362,9 @@ export function createCard(id: number, type: EngineeringCardType, rarity: Engine
     };
 }
 
-export function createCardByRarity(id: number, rarity: EngineeringCardRarity) {
+export function createCardByRarity(random: Random, id: number, rarity: EngineeringCardRarity) {
     const possibleCards = cardsByRarity.get(rarity);
-    const index = getRandomInt(possibleCards.length);
+    const index = random.getInt(possibleCards.length);
     const type = possibleCards[index];
     return createCard(id, type, rarity);
 }
@@ -379,8 +379,8 @@ const cumulativeUncommonChance = cumulativeCommonChance + uncommonChance;
 const cumulativeRareChance = cumulativeUncommonChance + rareChance;
 const cumulativeTotalChance = cumulativeRareChance + epicChance;
 
-export function createRandomCard(id: number): EngineeringCard {
-    const randomValue = getRandomFloat() * cumulativeTotalChance;
+export function createRandomCard(random: Random, id: number): EngineeringCard {
+    const randomValue = random.getFloat() * cumulativeTotalChance;
     let rarity: EngineeringCardRarity;
 
     if (randomValue < cumulativeCommonChance) {
@@ -396,17 +396,18 @@ export function createRandomCard(id: number): EngineeringCard {
         rarity = EngineeringCardRarity.Epic;
     }
 
-    return createCardByRarity(id, rarity);
+    return createCardByRarity(random, id, rarity);
 }
 
 export function createCards(ids: number[]): EngineeringCard[] {
     const results: EngineeringCard[] = [];
+    const random = new Random();
 
     for (const id of ids) {
         let newCard: EngineeringCard;
 
         do {
-            newCard = createRandomCard(id);
+            newCard = createRandomCard(random, id);
         } while (results.some(card => card.type === newCard.type));
 
         results.push(newCard);

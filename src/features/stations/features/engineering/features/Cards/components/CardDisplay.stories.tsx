@@ -1,3 +1,4 @@
+import { Random } from 'src/utils/random';
 import { createCardByRarity } from '../data/EngineeringCards';
 import { EngineeringCardRarity } from '../types/EngineeringCard';
 import { CardDisplay } from './CardDisplay';
@@ -18,12 +19,12 @@ export const FullCards = () => (
       alignItems: 'center',
     }}
   >
-    <CardDisplay {...createCardByRarity(1, EngineeringCardRarity.Common)} />
+    <CardDisplay {...createCardByRarity(new Random(), 1, EngineeringCardRarity.Common)} />
 
-    <CardDisplay {...createCardByRarity(2, EngineeringCardRarity.Uncommon)} />
+    <CardDisplay {...createCardByRarity(new Random(), 2, EngineeringCardRarity.Uncommon)} />
 
-    <CardDisplay {...createCardByRarity(3, EngineeringCardRarity.Rare)} />
+    <CardDisplay {...createCardByRarity(new Random(), 3, EngineeringCardRarity.Rare)} />
 
-    <CardDisplay {...createCardByRarity(4, EngineeringCardRarity.Epic)} />
+    <CardDisplay {...createCardByRarity(new Random(), 4, EngineeringCardRarity.Epic)} />
   </div>
 );

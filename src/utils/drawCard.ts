@@ -1,4 +1,4 @@
-import { shuffle } from './shuffle';
+import { Random } from './random';
 
 export function drawCard<T>(drawPile: T[], discardPile: T[], toDiscard?: T): [T, boolean] {
     if (toDiscard !== undefined) {
@@ -18,7 +18,7 @@ export function drawCard<T>(drawPile: T[], discardPile: T[], toDiscard?: T): [T,
     // Draw pile is now empty, so shuffle the discard pile.
     // Actually shuffle a copy, to avoid generating too much patch difference.
     const copyOfDiscardPile = [...discardPile];
-    shuffle(copyOfDiscardPile);
+    new Random().shuffle(copyOfDiscardPile);
 
     // Move the discard pile's contents into the draw pile.
     discardPile.splice(0, discardPile.length);
