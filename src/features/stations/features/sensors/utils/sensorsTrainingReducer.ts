@@ -4,7 +4,7 @@ import { SensorsAction } from '../types/SensorsStateInfo';
 import { playerShip } from 'src/assets/scenarios/testScenario';
 import { Reference } from 'src/classes/Reference';
 import { generateInstance, hexCellReducer } from '../features/hexcells';
-import { expandScanTreeState } from '../features/scanselect';
+import { expandScanTreeState, scanTreeReducer } from '../features/scanselect';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -40,6 +40,9 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         }
 
         case 'target': {
+            delete state.sensors.currentScan;
+            delete state.sensors.scanCellBoard;
+
             if (action.target) {
                 const targetObject = state.space.objects.get(action.target);
 
@@ -79,18 +82,29 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             if (state.sensors.scanCellBoard) {
                 hexCellReducer(state.sensors.scanCellBoard, action);
 
-                if (state.sensors.scanCellBoard.result) {
-                    // TODO: board has been solved, or failed! Brief delay before going back to the scan tree.
-                    // Let's just use css for that delay. Do we want the detail dialog on top of the scan result, or on the tree?
-                    // Having it here might be nice. Future "looks" would then still be on the tree.
-                    // (Perhaps the background could change to the tree on its own, after an extra delay?!)
+                if (state.sensors.scanCellBoard.result === 'success') {
+                    delete state.sensors.scanCellBoard;
+
+                    // Mark this tree as "selected"
+                    if (state.sensors.scanTree && state.sensors.currentScan) {
+                        scanTreeReducer(state.sensors.scanTree, { type: 'select', item: state.sensors.currentScan });
+                    }
 
                     // TODO: add values for currentScan to the sensor state! (and keep them updated hereafter!)
                 }
+                else if (state.sensors.scanCellBoard.result === 'failure') {
+                    delete state.sensors.currentScan;
+                    delete state.sensors.scanCellBoard;
+
+                    // Deselect all scan items
+                    if (state.sensors.scanTree) {
+                        scanTreeReducer(state.sensors.scanTree, { type: 'reset' });
+                    }
+
+                    // TODO: Clear all scan values from sensor state, damage the sensors slightly, and somehow make it clear to the user why this happened. (A toast?)
+                }
             }
             break;
-
-        // TODO: fold scanTreeReducer into this? (it handles ensuring only one item is selected per row, etc)
 
         default:
             throw new UnexpectedValueError(action);

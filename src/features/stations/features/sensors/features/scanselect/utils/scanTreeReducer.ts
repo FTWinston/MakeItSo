@@ -1,3 +1,4 @@
+import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { ScanTreeState, ScanTreeStateAction } from '../types/ScanTreeState';
 import { adjustSelectedItems } from './adjustSelectedItems';
 import { expandState } from './expandState';
@@ -19,11 +20,20 @@ export function scanTreeReducer(state: ScanTreeState, action: ScanTreeStateActio
             break;
         }
 
+        case 'reset': {
+            state.selectedItemIds = [];
+            state.availableItemIds = getAvailableItems(state.items, new Set(), state.unlocks);
+            break;
+        }
+
         case 'set info': {
             if (state.selectedItemIds.includes(action.item)) {
                 state.itemInfo[action.item] = action.info;
             }
             break;
         }
+        
+        default:
+            throw new UnexpectedValueError(action);
     }
 }

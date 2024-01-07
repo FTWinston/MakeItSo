@@ -1,4 +1,4 @@
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { styled } from 'src/lib/mui';
 import { AppBarHeight } from '../../appbar';
 import { Page } from '../../../components/Page';
@@ -24,8 +24,8 @@ interface Props {
     setScanTarget: (id: ObjectId | undefined) => void;
     scanTargetTree?: ScanTreeState;
 
-    scanSystem?: ScanItemId;
-    setScanSystem: (id: ScanItemId | undefined) => void;
+    scanItem?: ScanItemId;
+    setScanItem: (id: ScanItemId | undefined) => void;
 
     scanCellBoard?: CellBoard;
     flagCell: (index: number) => void;
@@ -44,35 +44,24 @@ const CrumbWrapper = styled('div')({
 })
 
 export const Sensors: React.FC<Props> = (props) => {
-    const { t } = useTranslation('sensors');
+    const [viewStage, setViewStage] = useState(0);
 
-    let stage: number;
+    const backtrackToStage = (stage: number) => {
+        setViewStage(stage);
+
+        if (stage === 0) {
+            props.setScanTarget(undefined);
+        }
+        else if (stage === 1) {
+            props.setScanItem(undefined);
+        }
+    }
+
     let content: JSX.Element;
-
-    if (props.scanTarget === undefined || props.scanTargetTree === undefined) {
-        stage = 0;
-        content = (
-            <TargetSelection
-                targets={props.targets}
-                select={props.setScanTarget}
-                view={props.setViewTarget}
-                viewTarget={props.viewTarget}
-            />
-        )
-    }
-    else if (props.scanSystem === undefined || props.scanCellBoard === undefined) {
-        stage = 1;
-        content = (
-            <ScanSelection
-                target={props.scanTarget}
-                scanTree={props.scanTargetTree}
-                selectScan={props.setScanSystem}
-                powerLevel={props.power}
-            />
-        )
-    }
-    else {
-        stage = 2;
+    let actualViewStage: number;
+    
+    if (viewStage >= 2 && props.scanCellBoard) {
+        actualViewStage = 2;
         content = (
             <InteractiveCells
                 {...props.scanCellBoard}
@@ -81,21 +70,36 @@ export const Sensors: React.FC<Props> = (props) => {
             />
         )
     }
-
-    const setStage = (stage: number) => {
-        if (stage === 0) {
-            props.setScanTarget(undefined);
-        }
-        else if (stage === 1) {
-            props.setScanSystem(undefined);
-        }
+    else if (viewStage >= 1 && props.scanTarget && props.scanTargetTree)
+    {
+        actualViewStage = 1;
+        content = (
+            <ScanSelection
+                target={props.scanTarget}
+                scanTree={props.scanTargetTree}
+                selectScan={scan => { props.setScanItem(scan); setViewStage(2); }}
+                initialSelectedScanId={props.scanItem}
+                powerLevel={props.power}
+            />
+        )
+    }
+    else {
+        actualViewStage = 0;
+        content = (
+            <TargetSelection
+                targets={props.targets}
+                select={target => { props.setScanTarget(target); setViewStage(1); }}
+                view={props.setViewTarget}
+                viewTarget={props.viewTarget}
+            />
+        )
     }
     
     return (
         <Root shipDestroyed={props.shipDestroyed}>
             <SensorsAppBar power={props.power} health={props.health} />
             <CrumbWrapper>
-                <SensorBreadcrumbs depth={stage} setDepth={setStage} />
+                <SensorBreadcrumbs depth={actualViewStage} setDepth={backtrackToStage} />
                 {content}
             </CrumbWrapper>
         </Root>

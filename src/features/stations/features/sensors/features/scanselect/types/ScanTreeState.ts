@@ -47,6 +47,8 @@ export type ScanTreeStateAction = {
     type: 'select';
     item: ScanItemId;
 } | {
+    type: 'reset';
+} | {
     type: 'set info';
     item: ScanItemId;
     info: ScanItemDetail;

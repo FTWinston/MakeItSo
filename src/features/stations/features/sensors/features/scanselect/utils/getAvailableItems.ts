@@ -1,4 +1,5 @@
-import { ScanItemId, ShipScanItem } from '../types/ScanTreeState';
+import { ScanItemId } from '../types/ScanItemId';
+import { ShipScanItem } from '../types/ScanTreeState';
 import { canBeSelected } from './canBeSelected';
 
 /** Items are available if they're not selected, and they're in column 1, or one of their prerequisites is selected. */
