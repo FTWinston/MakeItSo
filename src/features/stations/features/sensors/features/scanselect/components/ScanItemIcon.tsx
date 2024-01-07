@@ -63,5 +63,5 @@ export const ScanItemIcon: React.FC<Props> = props => {
         throw new UnexpectedValueError(id);
     }
 
-    return <Icon {...iconProps} titleAccess={props.title} aria-role={props.title ? undefined : 'presentation'} />;
+    return <Icon {...iconProps} titleAccess={props.title} role={props.title ? undefined : 'presentation'} />;
 };
