@@ -12,7 +12,7 @@ interface Props {
     //hiddenItemIds: ScanItemId[];
     availableItemIds: ScanItemId[];
     selectItem: (id: ScanItemId) => void;
-    maxScanDepth?: number;
+    maxScanDepth: number;
 }
 
 const Root = styled(Box)({
@@ -70,7 +70,7 @@ export const ScanTree: React.FC<Props> = props => {
 
             <TreeLinks items={props.items} unlocks={props.unlocks} />
 
-            {props.maxScanDepth === undefined ? undefined : <MaxDepth row={props.maxScanDepth} />}
+            <MaxDepth row={props.maxScanDepth} />
         </Root>
     );
 }

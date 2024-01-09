@@ -1,15 +1,20 @@
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { ScanTreeState, ScanTreeStateAction } from '../types/ScanTreeState';
 import { adjustSelectedItems } from './adjustSelectedItems';
-import { expandState } from './expandState';
 import { getAvailableItems } from './getAvailableItems';
+import { getItemDepth } from './getItemDepth';
 
 export function scanTreeReducer(state: ScanTreeState, action: ScanTreeStateAction): ScanTreeState | void {
     switch (action.type) {
-        case 'set':
-            return expandState(action);
-
         case 'select': {
+            // TODO: ensure action.item is in availableItems?
+
+            // Ensure action.item's depth isn't beyond maxScanDepth.
+            const itemDepth = getItemDepth(action.item, state.items);
+            if (itemDepth > state.maxScanDepth) {
+                break;
+            }
+
             // Deselect any items in the same column.
             const selectedItemSet = new Set(state.selectedItemIds);
             adjustSelectedItems(selectedItemSet, state.items, state.unlocks, state.itemInfo, action.item);
@@ -33,6 +38,33 @@ export function scanTreeReducer(state: ScanTreeState, action: ScanTreeStateActio
             break;
         }
         
+        case 'max depth': {
+            const oldMax = state.maxScanDepth;
+            state.maxScanDepth = action.depth;
+            
+            if (oldMax > state.maxScanDepth) {
+                // Any selected items beyond the max depth must be deselected.
+                const selectedItemSet = new Set(state.selectedItemIds);
+
+                let anyChange = false;
+                for (let depth = state.maxScanDepth + 1; depth <= oldMax; depth++) {
+                    for (const itemId of state.itemsByDepth[depth]) {
+                        if (selectedItemSet.delete(itemId)) {
+                            anyChange = true;
+                        }
+                    }
+                }
+
+                if (anyChange) {
+                    state.selectedItemIds = [...selectedItemSet];
+
+                    // Update item availability based on the selection change.
+                    state.availableItemIds = getAvailableItems(state.items, selectedItemSet, state.unlocks);
+                }
+            }
+            break;
+        }
+
         default:
             throw new UnexpectedValueError(action);
     }

@@ -79,7 +79,6 @@ export const Sensors: React.FC<Props> = (props) => {
                 scanTree={props.scanTargetTree}
                 selectScan={scan => { props.setScanItem(scan); setViewStage(2); }}
                 initialSelectedScanId={props.scanItem}
-                powerLevel={props.power}
             />
         )
     }

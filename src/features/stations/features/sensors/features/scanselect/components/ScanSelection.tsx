@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { ObjectId } from 'src/types/GameObjectInfo';
-import { PowerLevel } from 'src/types/ShipSystem';
 import { ScanItemId } from '../types/ScanItemId';
 import { ScanTreeState } from '../types/ScanTreeState';
-import { ScanTree } from './ScanTree';
 import { ScanItemOverviewDialog } from './ScanItemOverviewDialog';
 import { ScanItemDetailDialog } from './ScanItemDetailDialog';
+import { ScanTree } from './ScanTree';
+import { getItemDepth } from '../utils/getItemDepth';
 
 interface Props {
     target: ObjectId;
     initialSelectedScanId?: ScanItemId;
     selectScan: (scan: ScanItemId | undefined) => void;
     scanTree: ScanTreeState;
-    powerLevel: PowerLevel;
 }
 
 export const ScanSelection: React.FC<Props> = props => {
@@ -33,7 +32,7 @@ export const ScanSelection: React.FC<Props> = props => {
                 <ScanItemOverviewDialog
                     itemId={selectedScanId}
                     onClose={() => selectScan(undefined)}
-                    onConfirm={() => props.selectScan(selectedScanId)}
+                    onConfirm={getItemDepth(selectedScanId, props.scanTree.items) <= props.scanTree.maxScanDepth ? (() => props.selectScan(selectedScanId)) : undefined}
                 />
             );
 
@@ -42,7 +41,6 @@ export const ScanSelection: React.FC<Props> = props => {
             <ScanTree
                 {...props.scanTree}
                 selectItem={selectScan}
-                maxScanDepth={props.powerLevel + 1}
             />
             {selectedScanInfo}
         </>

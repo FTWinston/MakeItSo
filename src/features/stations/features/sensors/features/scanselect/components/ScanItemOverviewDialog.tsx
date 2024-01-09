@@ -23,7 +23,7 @@ export const ScanItemOverviewDialog: React.FC<PropsWithChildren<Props>> = props 
             onClose={props.onClose}
             title={title}
             actions={(
-            <Button color="primary" variant="contained" onClick={props.onConfirm}>
+            <Button color="primary" variant="contained" onClick={props.onConfirm} disabled={props.onConfirm === undefined}>
                 {t('scan')}
             </Button>)}
             >

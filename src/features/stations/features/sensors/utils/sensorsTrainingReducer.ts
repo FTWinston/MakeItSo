@@ -4,7 +4,8 @@ import { SensorsAction } from '../types/SensorsStateInfo';
 import { playerShip } from 'src/assets/scenarios/testScenario';
 import { Reference } from 'src/classes/Reference';
 import { generateInstance, hexCellReducer } from '../features/hexcells';
-import { expandScanTreeState, scanTreeReducer } from '../features/scanselect';
+import { expandScanTreeState, getMaxDepth, scanTreeReducer } from '../features/scanselect';
+import { ShipSystem } from 'src/types/ShipSystem';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -31,6 +32,15 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             if (state.sensors.currentTarget.id) {
                 // TODO: validate that state.sensors.currentTarget is in possibleTargets, clear it if not.
             }
+            
+            // Update max scan tree depth, based on power level
+            if (state.sensors.scanTree) {
+                const newMaxDepth = getMaxDepth(state.systems.get(ShipSystem.Sensors).power);
+                if (state.sensors.scanTree.maxScanDepth !== newMaxDepth) {
+                    state.sensors.scanTree.maxScanDepth = newMaxDepth;
+                }
+            }
+
             return state;
         }
 
@@ -48,7 +58,8 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
                 if (targetObject) {
                     state.sensors.currentTarget = state.space.createReference(targetObject);
-                    state.sensors.scanTree = expandScanTreeState(targetObject.getScanTree());
+                    const sensorsPower = state.systems.get(ShipSystem.Sensors).power;
+                    state.sensors.scanTree = expandScanTreeState(targetObject.getScanTree(), sensorsPower);
                     break;
                 }
             }

@@ -36,16 +36,16 @@ export interface ScanTreeState extends ScanTreeMinimalState {
     //hiddenItemIds: ScanItemId[];
     availableItemIds: ScanItemId[];
     itemInfo: Partial<Record<ScanItemId, ScanItemDetail>>;
+    maxScanDepth: number;
+    itemsByDepth: Record<number, ScanItemId[]>;
 }
 
 export type ScanTreeStateAction = {
-    type: 'set',
-    items: ShipScanItem[];
-    unlocks: [ScanItemId, ScanItemId][];
-    selectedItemIds: ScanItemId[];
-} | {
     type: 'select';
     item: ScanItemId;
+} | {
+    type: 'max depth';
+    depth: number;
 } | {
     type: 'reset';
 } | {

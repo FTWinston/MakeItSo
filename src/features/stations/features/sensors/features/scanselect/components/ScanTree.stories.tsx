@@ -109,9 +109,9 @@ export const Fixed: Story = {
       ['weapon vulnerability', 'fake extra 3'],
       ['sensor power', 'fake extra 3'],
     ],
-  }),
+  }, 2),
   render: (args) => {
-    const [state, dispatch] = useReducer(produce(scanTreeReducer), args);
+    const [state, dispatch] = useReducer(produce(scanTreeReducer), { ...args, itemsByDepth: {}, itemInfo: {} });
 
     return (
       <ScanTree
@@ -129,7 +129,8 @@ export const Random: Story = {
       expandState(
         createDefinitionFromTemplate(
           playerShip.scanTree
-        )
+        ),
+        2
       )
     );
 
@@ -150,7 +151,8 @@ export const Random2: Story = {
       expandState(
         createDefinitionFromTemplate(
           hostileShip.scanTree
-        )
+        ),
+        2
       )
     );
 
