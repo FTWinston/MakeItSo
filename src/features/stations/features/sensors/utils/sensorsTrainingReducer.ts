@@ -94,8 +94,6 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
                 hexCellReducer(state.sensors.scanCellBoard, action);
 
                 if (state.sensors.scanCellBoard.result === 'success') {
-                    delete state.sensors.scanCellBoard;
-
                     // Mark this tree as "selected"
                     if (state.sensors.scanTree && state.sensors.currentScan) {
                         scanTreeReducer(state.sensors.scanTree, { type: 'select', item: state.sensors.currentScan });
@@ -105,7 +103,6 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
                 }
                 else if (state.sensors.scanCellBoard.result === 'failure') {
                     delete state.sensors.currentScan;
-                    delete state.sensors.scanCellBoard;
 
                     // Deselect all scan items
                     if (state.sensors.scanTree) {

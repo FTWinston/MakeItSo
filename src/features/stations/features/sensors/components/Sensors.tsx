@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { styled } from 'src/lib/mui';
 import { AppBarHeight } from '../../appbar';
 import { Page } from '../../../components/Page';
@@ -60,6 +60,21 @@ export const Sensors: React.FC<Props> = (props) => {
     let content: JSX.Element;
     let actualViewStage: number;
     
+    // Once a scan is finished, leave it.
+    const scanResult = props.scanCellBoard?.result;
+    useEffect(() => {
+        if (viewStage !== 2) {
+            return;
+        }
+
+        if (scanResult === 'success') {
+            setTimeout(() => setViewStage(1), 1500);
+        }
+        else if (scanResult === 'failure') {
+            setTimeout(() => setViewStage(1), 3000);
+        }
+    }, [viewStage, scanResult]);
+
     if (viewStage >= 2 && props.scanCellBoard) {
         actualViewStage = 2;
         content = (
