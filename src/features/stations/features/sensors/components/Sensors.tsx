@@ -10,6 +10,7 @@ import { TargetSelection } from '../features/targetselect';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../types/SensorTarget';
 import { CellBoard, InteractiveCells } from '../features/hexcells';
+import { QuickTransition } from 'src/components/QuickTransition';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -41,18 +42,7 @@ const CrumbWrapper = styled('div')({
     display: 'flex',
     flexDirection: 'column',
     overflowY: 'hidden',
-})
-
-const Transition: React.FC<PropsWithChildren<{ in: boolean, appear: boolean }>> = props => (
-    <Grow
-        in={props.in}
-        appear={props.appear}
-        unmountOnExit={true}
-        exit={false}
-    >
-        {props.children as any}
-    </Grow>
-);
+});
 
 export const Sensors: React.FC<Props> = (props) => {
     const [viewStage, setViewStage] = useState(0);
@@ -102,31 +92,31 @@ export const Sensors: React.FC<Props> = (props) => {
             <CrumbWrapper>
                 <SensorBreadcrumbs depth={actualViewStage} setDepth={backtrackToStage} />
                 
-                <Transition in={actualViewStage === 0} appear={false}>
+                <QuickTransition show={actualViewStage === 0} appear={false}>
                     <TargetSelection
                         targets={props.targets}
                         select={target => { props.setScanTarget(target); setViewStage(1); }}
                         view={props.setViewTarget}
                         viewTarget={props.viewTarget}
                     />
-                </Transition>
+                </QuickTransition>
                 {props.scanTarget && props.scanTargetTree &&
-                <Transition in={actualViewStage === 1} appear={true}>
+                <QuickTransition show={actualViewStage === 1} appear={true}>
                     <ScanSelection
                         target={props.scanTarget}
                         scanTree={props.scanTargetTree}
                         selectScan={scan => { props.setScanItem(scan); setViewStage(2); }}
                         initialSelectedScanId={props.scanItem}
                     />
-                </Transition>}
+                </QuickTransition>}
                 {props.scanCellBoard &&
-                <Transition in={actualViewStage === 2} appear={true}>
+                <QuickTransition show={actualViewStage === 2} appear={true}>
                     <InteractiveCells
                         {...props.scanCellBoard}
                         revealCell={props.revealCell}
                         flagCell={props.flagCell}
                     />
-                </Transition>}
+                </QuickTransition>}
             </CrumbWrapper>
         </Root>
     );
