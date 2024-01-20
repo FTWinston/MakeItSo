@@ -23,7 +23,6 @@ const Root = styled(Box)({
     justifySelf: 'stretch',
     position: 'relative',
     overflow: 'hidden',
-    padding: '2rem 0 3rem 0',
     userSelect: 'none',
 });
 
@@ -55,7 +54,7 @@ export const InteractiveCells: React.FC<Props> = props => {
 
     const rows = Math.ceil(cells.length / columns);
     const cellSizeLimitByWidth = `calc(100vw / ${columns * 1.94})`;
-    const cellSizeLimitByHeight = `calc((100svh - 14rem) / ${rows - 0.25} / ${cellHeight + gapSize})`;
+    const cellSizeLimitByHeight = `calc((100svh - 9rem) / ${rows - 0.25} / ${cellHeight + gapSize})`;
     const containerStyle: React.CSSProperties = {
         fontSize: `min(${cellSizeLimitByWidth}, ${cellSizeLimitByHeight}, 20rem)`,
     };
