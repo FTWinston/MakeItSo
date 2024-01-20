@@ -1,14 +1,15 @@
+import { CSSProperties, Fragment, forwardRef } from 'react';
 import { Divider, List, styled  } from 'src/lib/mui';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../../../types/SensorTarget'
 import { TargetSelectionItem } from './TargetSelectionItem';
-import { Fragment } from 'react';
 
 interface Props {
     targets: SensorTarget[];
     viewTarget?: ObjectId;
     view: (targetId?: ObjectId) => void;
     select: (targetId: ObjectId) => void;
+    style?: CSSProperties;
 }
 
 const Root = styled(List)({
@@ -16,7 +17,7 @@ const Root = styled(List)({
     flexGrow: 1,
 })
 
-export const TargetSelection: React.FC<Props> = (props) => {
+export const TargetSelection = forwardRef<HTMLUListElement, Props>((props, ref) => {
     const listItems = props.targets
         .map((target, index) => (
             <Fragment key={index}>
@@ -33,8 +34,8 @@ export const TargetSelection: React.FC<Props> = (props) => {
     // TODO: "no targets" message when list items are empty.
 
     return (
-        <Root>
+        <Root style={props.style} ref={ref}>
             {listItems}
         </Root>
     )
-}
+});

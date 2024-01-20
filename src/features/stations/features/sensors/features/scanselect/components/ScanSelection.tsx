@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { CSSProperties, forwardRef, useState } from 'react';
+import { Box } from 'src/lib/mui';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { ScanItemId } from '../types/ScanItemId';
 import { ScanTreeState } from '../types/ScanTreeState';
@@ -12,9 +13,10 @@ interface Props {
     initialSelectedScanId?: ScanItemId;
     selectScan: (scan: ScanItemId | undefined) => void;
     scanTree: ScanTreeState;
+    style?: CSSProperties;
 }
 
-export const ScanSelection: React.FC<Props> = props => {
+export const ScanSelection = forwardRef<typeof Box, Props>((props, ref) => {
     const [selectedScanId, selectScan] = useState<ScanItemId | undefined>(props.initialSelectedScanId);
     
     // If there's a selected item, see if it's an "active" item or not. Show a different dialog, depending.
@@ -41,8 +43,10 @@ export const ScanSelection: React.FC<Props> = props => {
             <ScanTree
                 {...props.scanTree}
                 selectItem={selectScan}
+                ref={ref}
+                style={props.style}
             />
             {selectedScanInfo}
         </>
     );
-}
+})

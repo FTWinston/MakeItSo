@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { CSSProperties, forwardRef, useState } from 'react';
 import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
 import { CellBoardInfo } from '../types/CellBoard';
@@ -12,6 +12,7 @@ interface Props extends Omit<CellBoardInfo, 'numBombs' | 'numErrors' | 'hintsUse
     revealCell: (index: number) => void;
     flagCell: (index: number) => void;
     errorIndex?: number;
+    style?: CSSProperties;
 }
 
 const gapSize = 0.025;
@@ -29,10 +30,10 @@ const Root = styled(Box)({
 
 interface Focus {
     index: number;
-    targetIndexes: number[]
+    targetIndexes: number[];
 }
 
-export const InteractiveCells: React.FC<Props> = props => {
+export const InteractiveCells = forwardRef<typeof Box, Props>((props, ref) => {
     const { columns, cells } = props;
 
     const [revealingIndex, setRevealingIndex] = useState<number | undefined>(undefined);
@@ -61,7 +62,7 @@ export const InteractiveCells: React.FC<Props> = props => {
     };
 
     return (
-        <Root>
+        <Root ref={ref} style={props.style}>
             <CellSet
                 columns={columns}
                 cells={cells}
@@ -96,4 +97,4 @@ export const InteractiveCells: React.FC<Props> = props => {
             />
         </Root>
     );
-}
+})

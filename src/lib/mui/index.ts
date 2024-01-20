@@ -29,6 +29,7 @@ export { Stack } from './Stack';
 export { Switch } from './Switch';
 export { Tooltip } from './Tooltip';
 export { Tab, Tabs } from './Tabs';
+export { Grow } from './Transitions';
 export { Typography } from './Typography';
 export { ThemeProvider } from '@mui/material/styles';
 export { alpha, styled, useTheme } from '@mui/material/styles';

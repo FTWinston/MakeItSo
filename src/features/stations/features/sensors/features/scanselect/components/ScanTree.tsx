@@ -4,6 +4,7 @@ import { ShipScanItem } from '../types/ScanTreeState';
 import { ItemStatus, ScanItem, itemHeight, itemWidth } from './ScanItem';
 import { TreeLinks } from './TreeLinks';
 import { MaxDepth } from './MaxDepth';
+import { CSSProperties, forwardRef } from 'react';
 
 interface Props {
     items: ShipScanItem[];
@@ -13,6 +14,7 @@ interface Props {
     availableItemIds: ScanItemId[];
     selectItem: (id: ScanItemId) => void;
     maxScanDepth: number;
+    style?: CSSProperties;
 }
 
 const Root = styled(Box)({
@@ -35,11 +37,11 @@ function getColumnsWithSelections(items: ShipScanItem[], selectedItemIds: ScanIt
         }, new Set<number>());
 }
 
-export const ScanTree: React.FC<Props> = props => {
+export const ScanTree = forwardRef<typeof Box, Props>((props, ref) => {
     const columnsWithSelections = getColumnsWithSelections(props.items, props.selectedItemIds);
 
     return (
-        <Root>
+        <Root ref={ref} style={props.style}>
             {props.items.map((item) => {
                 const tooDeep = props.maxScanDepth && props.maxScanDepth < item.row;
                 const itemIsActive = !tooDeep && props.selectedItemIds.includes(item.id);
@@ -73,5 +75,5 @@ export const ScanTree: React.FC<Props> = props => {
             <MaxDepth row={props.maxScanDepth} />
         </Root>
     );
-}
+})
 
