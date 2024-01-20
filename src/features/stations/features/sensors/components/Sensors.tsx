@@ -1,5 +1,5 @@
-import { PropsWithChildren, useEffect, useState } from 'react';
-import { Grow, styled } from 'src/lib/mui';
+import { useEffect, useState } from 'react';
+import { styled } from 'src/lib/mui';
 import { AppBarHeight } from '../../appbar';
 import { Page } from '../../../components/Page';
 import { PowerLevel, ShipDestroyingSystem } from 'src/types/ShipSystem';
@@ -9,8 +9,9 @@ import { ScanItemId, ScanSelection, ScanTreeState } from '../features/scanselect
 import { TargetSelection } from '../features/targetselect';
 import { ObjectId } from 'src/types/GameObjectInfo';
 import { SensorTarget } from '../types/SensorTarget';
-import { CellBoard, InteractiveCells } from '../features/hexcells';
+import { CellBoard } from '../features/hexcells';
 import { QuickTransition } from 'src/components/QuickTransition';
+import { Scanning } from './Scanning';
 
 interface Props {
     shipDestroyed?: ShipDestroyingSystem;
@@ -111,8 +112,8 @@ export const Sensors: React.FC<Props> = (props) => {
                 </QuickTransition>}
                 {props.scanCellBoard &&
                 <QuickTransition show={actualViewStage === 2} appear={true}>
-                    <InteractiveCells
-                        {...props.scanCellBoard}
+                    <Scanning
+                        scanCellBoard={props.scanCellBoard}
                         revealCell={props.revealCell}
                         flagCell={props.flagCell}
                     />

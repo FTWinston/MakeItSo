@@ -12,7 +12,6 @@ interface Props extends Omit<CellBoardInfo, 'numBombs' | 'numErrors' | 'hintsUse
     revealCell: (index: number) => void;
     flagCell: (index: number) => void;
     errorIndex?: number;
-    style?: CSSProperties;
 }
 
 const gapSize = 0.025;
@@ -33,7 +32,7 @@ interface Focus {
     targetIndexes: number[];
 }
 
-export const InteractiveCells = forwardRef<typeof Box, Props>((props, ref) => {
+export const InteractiveCells: React.FC<Props> = props => {
     const { columns, cells } = props;
 
     const [revealingIndex, setRevealingIndex] = useState<number | undefined>(undefined);
@@ -56,13 +55,13 @@ export const InteractiveCells = forwardRef<typeof Box, Props>((props, ref) => {
 
     const rows = Math.ceil(cells.length / columns);
     const cellSizeLimitByWidth = `calc(100vw / ${columns * 1.94})`;
-    const cellSizeLimitByHeight = `calc((100svh - 5rem) / ${rows - 0.25} / ${cellHeight + gapSize})`;
+    const cellSizeLimitByHeight = `calc((100svh - 14rem) / ${rows - 0.25} / ${cellHeight + gapSize})`;
     const containerStyle: React.CSSProperties = {
         fontSize: `min(${cellSizeLimitByWidth}, ${cellSizeLimitByHeight}, 20rem)`,
     };
 
     return (
-        <Root ref={ref} style={props.style}>
+        <Root>
             <CellSet
                 columns={columns}
                 cells={cells}
@@ -97,4 +96,4 @@ export const InteractiveCells = forwardRef<typeof Box, Props>((props, ref) => {
             />
         </Root>
     );
-})
+}
