@@ -48,14 +48,6 @@ const CrumbWrapper = styled('div')({
 export const Sensors: React.FC<Props> = (props) => {
     const [viewStage, setViewStage] = useState(0);
 
-    const backtrackToStage = (stage: number) => {
-        setViewStage(stage);
-
-        if (stage === 0) {
-            props.setScanTarget(undefined);
-        }
-    }
-
     let actualViewStage: number;
     
     // Once a scan is finished, leave it.
@@ -88,7 +80,7 @@ export const Sensors: React.FC<Props> = (props) => {
         <Root shipDestroyed={props.shipDestroyed}>
             <SensorsAppBar power={props.power} health={props.health} />
             <CrumbWrapper>
-                <SensorBreadcrumbs depth={actualViewStage} setDepth={backtrackToStage} />
+                <SensorBreadcrumbs depth={actualViewStage} setDepth={setViewStage} />
                 
                 <QuickTransition show={actualViewStage === 0} appear={false}>
                     <TargetSelection

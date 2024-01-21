@@ -50,6 +50,10 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         }
 
         case 'target': {
+            if (state.sensors.currentTarget.id === action.target) {
+                break;
+            }
+            
             delete state.sensors.currentScan;
             delete state.sensors.scanCellBoard;
 
