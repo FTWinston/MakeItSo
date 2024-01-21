@@ -311,7 +311,7 @@ function revealInitialCell(state: GeneratingState, revealableIndexes: number[], 
     revealableIndexes = [...revealableIndexes];
 
     let attempt = 0;
-    while (retryLimit === undefined || ++attempt <= retryLimit) {
+    while (revealableIndexes.length > 0 && (retryLimit === undefined || ++attempt <= retryLimit)) {
         const index = state.random.delete(revealableIndexes);
 
         if (addEmptyCellClue(state, index, true)) {
