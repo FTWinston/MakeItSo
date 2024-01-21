@@ -74,12 +74,16 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
             }
             if (action.scan) {
                 // TODO: validate that scan is an allowed option
-                state.sensors.currentScan = action.scan;
 
-                const scanConfig = state.sensors.currentTarget.value.getScanConfig(action.scan);
+                if (state.sensors.currentScan !== action.scan) {
+                    console.log(`current scan is ${state.sensors.currentScan}, ${action.scan}`);
+                    state.sensors.currentScan = action.scan;
 
-                // TODO: does anything about the scanning ship (e.g. sensor damage) affect the board config?
-                state.sensors.scanCellBoard = generateInstance(scanConfig);
+                    const scanConfig = state.sensors.currentTarget.value.getScanConfig(action.scan);
+
+                    // TODO: does anything about the scanning ship (e.g. sensor damage) affect the board config?
+                    state.sensors.scanCellBoard = generateInstance(scanConfig);
+                }
             }
             else {
                 delete state.sensors.currentScan;

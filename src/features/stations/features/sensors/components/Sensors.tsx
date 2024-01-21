@@ -54,9 +54,6 @@ export const Sensors: React.FC<Props> = (props) => {
         if (stage === 0) {
             props.setScanTarget(undefined);
         }
-        else if (stage === 1) {
-            props.setScanItem(undefined);
-        }
     }
 
     let actualViewStage: number;
@@ -107,7 +104,7 @@ export const Sensors: React.FC<Props> = (props) => {
                         target={props.scanTarget}
                         scanTree={props.scanTargetTree}
                         selectScan={scan => { props.setScanItem(scan); setViewStage(2); }}
-                        initialSelectedScanId={props.scanItem}
+                        initialSelectedScanId={props.scanCellBoard?.result ? props.scanItem : undefined}
                     />
                 </QuickTransition>}
                 {props.scanCellBoard &&
