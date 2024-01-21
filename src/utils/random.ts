@@ -33,9 +33,9 @@ export class Random {
         array.splice(index, 0, value);
     }
 
-    delete<T>(values: T[]): T | null {
+    delete<T>(values: T[]): T {
         if (values.length === 0) {
-            return null;
+            throw new Error('delete passed an empty array');
         }
     
         const index = this.getInt(values.length);

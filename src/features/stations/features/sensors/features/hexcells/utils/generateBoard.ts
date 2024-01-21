@@ -82,8 +82,6 @@ function expandConfig(config: GenerationConfig): FullConfig {
         fullChance: 0,
     };
 
-    console.log('generating board with config: ' + JSON.stringify(fullConfig));
-
     // Make the "chance" variables cumulative.
     fullConfig.splitClueChance += fullConfig.contiguousClueChance;
     fullConfig.rowClueChance += fullConfig.splitClueChance;
@@ -267,10 +265,11 @@ function tryModifyClue(state: GeneratingState, cluesToTry: Clue[], countType: Co
 
 function tryAddRowClue(state: GeneratingState): boolean {
     for (let attempt = 1; attempt < 5; attempt++) {
-        const clueInfo = state.random.delete(state.potentialRowClueIndexes);
-        if (clueInfo === null) {
+        if (state.potentialRowClueIndexes.length === 0) {
             return false;
         }
+
+        const clueInfo = state.random.delete(state.potentialRowClueIndexes);
 
         if (clueInfo.directions.length === 0) {
             continue;
@@ -288,10 +287,11 @@ function tryAddRowClue(state: GeneratingState): boolean {
 
 function tryAddRadiusClue(state: GeneratingState): boolean {
     for (let attempt = 1; attempt < 5; attempt++) {
-        const index = state.random.delete(state.potentialRadiusClueIndexes);
-        if (index === null) {
+        if (state.potentialRadiusClueIndexes.length === 0) {
             return false;
         }
+
+        const index = state.random.delete(state.potentialRadiusClueIndexes);
 
         if (addRadiusClue(state, index)) {
             return true;
@@ -301,11 +301,18 @@ function tryAddRadiusClue(state: GeneratingState): boolean {
     return false;
 }
 
-function revealInitialCell(state: GeneratingState, obscuredIndexes: number[]): boolean {
+function revealInitialCell(state: GeneratingState, revealableIndexes: number[], retryLimit?: number): boolean {
     // Reveal an obscured cell at random. Ensure that it's not an entirely isolated zero on its own.
-    // Try this a few times before giving up.
-    for (let attempt = 1; attempt < 5; attempt++) {
-        const index = state.random.pick(obscuredIndexes);
+    if (revealableIndexes.length === 0) {
+        return false;
+    }
+
+    // Copy the array so we don't affect the original.
+    revealableIndexes = [...revealableIndexes];
+
+    let attempt = 0;
+    while (retryLimit === undefined || ++attempt <= retryLimit) {
+        const index = state.random.delete(revealableIndexes);
 
         if (addEmptyCellClue(state, index, true)) {
             state.initiallyRevealedIndexes.add(index);
@@ -466,65 +473,85 @@ function revealCells(state: GeneratingState, revealableIndexes: number[]) {
 }
 
 /** Add an initial clue of any allowed type onto the board, or enhance an existing clue. */
-function pickAndAddClue(state: GeneratingState): boolean {
-    const chance = state.random.getFloat(0, state.config.fullChance);
-
-    if (chance <= state.config.contiguousClueChance) {
-        if (tryModifyClue(state, state.potentialContiguousClueCells, CountType.Contiguous)) {
-            return true;
-        }
-    }
-    else if (chance <= state.config.splitClueChance) {
-        if (tryModifyClue(state, state.potentialSplitClueCells, CountType.Split)) {
-            return true;
-        }
-    }
-    else if (chance <= state.config.rowClueChance) {
-        if (tryAddRowClue(state)) {
-            return true;
-        }
-    }
-    else if (chance <= state.config.radiusClueChance) {
-        if (tryAddRadiusClue(state)) {
-            return true;
-        }
-    }
-    
-    // TODO: not helpful that obscuredIndexes is a Set here. Could it be an array? (Or both!?)
-    const allObscuredIndexes = [...state.obscuredIndexes];
-    const revealableIndexes = allObscuredIndexes
-        .filter(index => state.underlying[index]?.type !== CellType.Bomb);
+function pickAndAddClue(state: GeneratingState) {
+    let revealableIndexes: number[];
         
-    if (revealableIndexes.length === 0) {
-        state.numBombs = state.obscuredIndexes.size;
-        return true;
-    }
+    // Try everything a few times, then if that fails, reveal any cell if possible, and remove all unrevealed cells.
+    let attempt = 0;
+    do {
+        const chance = state.random.getFloat(0, state.config.fullChance);
 
-    if (allObscuredIndexes.length <= 5 && state.random.getBoolean(state.config.remainingBombCountFraction)) {
-        const anyMustBeBombs = allObscuredIndexes
-            .some(index => state.underlying[index]?.type === CellType.Bomb);
-        const anyMustBeEmpty = allObscuredIndexes
-            .some(index => state.underlying[index]?.type === CellType.Unknown);
-
-        if (!(anyMustBeBombs && anyMustBeEmpty)) {
-            let allBombs: boolean;
-            if (anyMustBeBombs) {
-                allBombs = true;
+        if (chance <= state.config.contiguousClueChance) {
+            if (tryModifyClue(state, state.potentialContiguousClueCells, CountType.Contiguous)) {
+                return;
             }
-            else if (anyMustBeEmpty) {
-                allBombs = false;
-            }
-            else {
-                allBombs = state.random.getBoolean();
-            }
-            
-            state.numBombs = allBombs ? allObscuredIndexes.length : 0;
-            return true;
         }
+        else if (chance <= state.config.splitClueChance) {
+            if (tryModifyClue(state, state.potentialSplitClueCells, CountType.Split)) {
+                return;
+            }
+        }
+        else if (chance <= state.config.rowClueChance) {
+            if (tryAddRowClue(state)) {
+                return;
+            }
+        }
+        else if (chance <= state.config.radiusClueChance) {
+            if (tryAddRadiusClue(state)) {
+                return;
+            }
+        }
+        
+        // TODO: not helpful that obscuredIndexes is a Set here. Could it be an array? (Or both!?)
+        const allObscuredIndexes = [...state.obscuredIndexes];
+        revealableIndexes = allObscuredIndexes
+            .filter(index => state.underlying[index]?.type !== CellType.Bomb);
+            
+        if (revealableIndexes.length === 0) {
+            state.numBombs = state.obscuredIndexes.size;
+            return;
+        }
+
+        if (allObscuredIndexes.length <= 5 && state.random.getBoolean(state.config.remainingBombCountFraction)) {
+            const anyMustBeBombs = allObscuredIndexes
+                .some(index => state.underlying[index]?.type === CellType.Bomb);
+            const anyMustBeEmpty = allObscuredIndexes
+                .some(index => state.underlying[index]?.type === CellType.Unknown);
+
+            if (!(anyMustBeBombs && anyMustBeEmpty)) {
+                let allBombs: boolean;
+                if (anyMustBeBombs) {
+                    allBombs = true;
+                }
+                else if (anyMustBeEmpty) {
+                    allBombs = false;
+                }
+                else {
+                    allBombs = state.random.getBoolean();
+                }
+                
+                state.numBombs = allBombs ? allObscuredIndexes.length : 0;
+                return;
+            }
+        }
+
+        // When no other type of clue has been added, reveal an additional cell.
+        if (revealInitialCell(state, revealableIndexes, 3)) {
+            return;
+        }
+    } while (++attempt < 5);
+
+    // Several attempts using normal rules have failed. Reveal a cell if at all possible.
+    if (revealInitialCell(state, revealableIndexes)) {
+        return;
     }
 
-    // When no other type of clue has been added, reveal an additional cell.
-    return revealInitialCell(state, revealableIndexes);
+    // If THAT failed, the only course of action that guarantees success is to delete the revealable cells.
+    for (const index of revealableIndexes) {
+        state.obscuredIndexes.delete(index);
+        state.cells[index] = null;
+        state.underlying[index] = null;
+    }
 }
 
 function createDisplayCell(state: GeneratingState, cell: CellState | null, index: number): CellState | null {
@@ -592,8 +619,7 @@ export function generateBoard(config: GenerationConfig): CellBoardDefinition {
             // Copy the state when adding a clue, so we can roll back if the clue we add isn't helpful.
             // If adding a clue fails, try again. (It can pick a different clue type.)
             state = copyState(state);
-            while (!pickAndAddClue(state))
-                ;
+            pickAndAddClue(state);
         }
         else {
             prevState = state;
@@ -640,7 +666,6 @@ function removeSuperfluousClues(state: GeneratingState) {
         const solvedWithoutClue = isBoardSolvable(state, removeThisClue);
 
         if (solvedWithoutClue) {
-            console.log(`removed clue at index ${indexToObscure}`);
             removeThisClue(state);
             
             // Keep the hints from the state which was solved with this clue removed.
