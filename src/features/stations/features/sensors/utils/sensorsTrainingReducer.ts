@@ -6,6 +6,7 @@ import { Reference } from 'src/classes/Reference';
 import { generateInstance, hexCellReducer } from '../features/hexcells';
 import { expandScanTreeState, getMaxDepth, scanTreeReducer } from '../features/scanselect';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { adjustHealth } from '../../engineering/utils/systemActions';
 
 export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
     if (state.destroyed) {
@@ -99,6 +100,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
         case 'reveal':
         case 'flag':
             if (state.sensors.scanCellBoard) {
+                const errorsBefore = state.sensors.scanCellBoard.numErrors;
                 hexCellReducer(state.sensors.scanCellBoard, action);
 
                 if (state.sensors.scanCellBoard.result === 'success') {
@@ -117,7 +119,14 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
                         scanTreeReducer(state.sensors.scanTree, { type: 'reset' });
                     }
 
-                    // TODO: Clear all scan values from sensor state, damage the sensors slightly, and somehow make it clear to the user why this happened. (A toast?)
+                    // Damage the sensors, by an amount that's bigger if you've already made errors on this scan.
+                    adjustHealth(state.systems.get(ShipSystem.Sensors), state, state.sensors.scanCellBoard.numErrors + 10);
+
+                    // TODO: Clear all scan values from sensor state, and somehow make it clear to the user why this happened. (A toast?)
+                }
+                else if (state.sensors.scanCellBoard.numErrors !== errorsBefore) {
+                    // Just triggered an error. Damage this system, by a small amount that increases with each error the current scan.
+                    adjustHealth(state.systems.get(ShipSystem.Sensors), state, state.sensors.scanCellBoard.numErrors);
                 }
             }
             break;
