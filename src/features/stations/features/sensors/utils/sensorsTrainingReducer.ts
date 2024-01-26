@@ -124,7 +124,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
 
                     // TODO: Clear all scan values from sensor state, and somehow make it clear to the user why this happened. (A toast?)
                 }
-                else if (state.sensors.scanCellBoard.numErrors !== errorsBefore) {
+                else if (state.sensors.scanCellBoard.numErrors > errorsBefore) {
                     // Just triggered an error. Damage this system, by a small amount that increases with each error the current scan.
                     adjustHealth(state.systems.get(ShipSystem.Sensors), state, state.sensors.scanCellBoard.numErrors);
                 }

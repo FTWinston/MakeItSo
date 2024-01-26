@@ -33,7 +33,7 @@ export const Scanning = forwardRef<typeof Box, Props>((props, ref) => {
             />
 
             <ActionBar>
-                bombs remaining: {props.scanCellBoard.numBombs}
+                bombs remaining: {props.scanCellBoard.numBombsLeft}
             </ActionBar>
         </Root>
     );

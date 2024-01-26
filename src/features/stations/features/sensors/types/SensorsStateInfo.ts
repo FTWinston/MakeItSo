@@ -26,4 +26,4 @@ export type SensorsAction = {
 } | {
     type: 'scan';
     scan?: ScanItemId;
-} | CellBoardAction;
+} | Extract<CellBoardAction, { type: 'reveal' | 'flag' }>;

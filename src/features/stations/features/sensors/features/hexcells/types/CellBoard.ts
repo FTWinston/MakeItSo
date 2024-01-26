@@ -9,11 +9,13 @@ export interface CellBoardDefinition {
 
 interface InstanceInfo {
     cells: Array<DisplayCellState | null>;
-    numBombs: number;
+    numBombsLeft: number;
     numErrors: number;
     hintsUsed: number;
     result?: 'success' | 'failure';
     errorIndex?: number;
+    overridableCells: number[];
+    overriddenCells: { index: number, state: UnderlyingCellState | null }[]
 }
 
 export interface MinimumResolvableBoardInfo {
@@ -24,7 +26,7 @@ export interface MinimumResolvableBoardInfo {
 
 export type CellBoard = Omit<CellBoardDefinition, 'cells'> & InstanceInfo;
 
-export type CellBoardInfo = Omit<CellBoardDefinition, 'cells' | 'underlying' | 'hints'> & InstanceInfo;
+export type CellBoardInfo = Omit<CellBoardDefinition, 'cells' | 'underlying' | 'hints'> & Omit<InstanceInfo, 'overriddenCells' | 'overridableCells'>;
 
 export type CellBoardAction = {
     type: 'reveal';
@@ -32,4 +34,9 @@ export type CellBoardAction = {
 } | {
     type: 'flag';
     index: number;
+} | {
+    type: 'restore cell';
+} | {
+    type: 'override cell';
+    state: UnderlyingCellState | null;
 }

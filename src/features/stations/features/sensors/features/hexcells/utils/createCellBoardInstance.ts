@@ -19,9 +19,11 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
         hints: definition.hints,
         hintsUsed: 0,
         numErrors: 0,
-        numBombs: definition.underlying
+        numBombsLeft: definition.underlying
             .filter(cell => cell?.type === CellType.Bomb)
-            .length
+            .length,
+        overriddenCells: [],
+        overridableCells: [],
     };
 
     for (let index = 0; index < board.cells.length; index++) {
@@ -34,6 +36,11 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
                 cell.targetIndexes = underlying.targetIndexes;
                 cell.resolved = isClueResolved(board, underlying.targetIndexes);
             }
+        }
+
+        // Note all cell indexes that can be obscured later.
+        if (cell?.type === CellType.AdjacentClue) {
+            board.overridableCells.push(index);
         }
     }
 

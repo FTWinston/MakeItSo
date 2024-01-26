@@ -21,7 +21,7 @@ const CellsWithReducer: React.FC<GenerationConfig> = config => {
                 errorIndex={board.errorIndex}
             />
             <div style={{position: 'absolute', left: 0, bottom: 0, color: 'white'}}>
-                {board.numBombs}
+                {board.numBombsLeft}
             </div>
         </>
     )
