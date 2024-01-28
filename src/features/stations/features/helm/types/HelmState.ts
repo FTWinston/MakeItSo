@@ -1,6 +1,7 @@
 import { Keyframe } from 'src/types/Keyframes';
 import { Position } from 'src/types/Position';
 import { ManeuverChoice, ManeuverInfo, ManeuverType } from '../features/maneuvers';
+import { HelmConfiguration } from './HelmConfiguration';
 
 export interface MotionConfiguration {
     rotationalSpeed: number;
@@ -9,6 +10,7 @@ export interface MotionConfiguration {
 }
 
 export interface HelmState extends MotionConfiguration {
+    configuration: HelmConfiguration;
     destination: Keyframe<Position> | null;
     maneuvers: ManeuverInfo[];
     replaceMotion: boolean;

@@ -1,4 +1,7 @@
+import { WeaponsConfiguration } from './WeaponsConfiguration';
+
 export interface WeaponsState {
+    configuration: WeaponsConfiguration;
 }
 
 export type WeaponsAction = {

@@ -5,6 +5,7 @@ import { ScanTreeTemplate } from 'src/features/stations';
 import { Faction } from 'src/types/Faction';
 import { Position } from 'src/types/Position';
 import { RelationshipType } from 'src/types/RelationshipType';
+import { ShipConfiguration } from 'src/types/ShipConfiguration';
 import { ShipType } from 'src/types/ShipType'
 
 type KnownFactionId = 'protectors' | 'civilians'
@@ -384,12 +385,12 @@ export const unknownShip: ShipType = {
     scanTree: distributedTree,
 }
 
-export function initialize(): Ship {
+function initialize(shipConfig: ShipConfiguration): Ship {
     const space = new Space(factions);
 
     const zero: Position = { x: 0, y: 0, angle: 0 };
 
-    const ship = new Ship(space, playerShip, zero);
+    const ship = new Ship(space, playerShip, shipConfig, zero);
 
     new FakeShip(space, neutralShip, zero);
     new FakeShip(space, hostileShip, zero);
@@ -401,3 +402,5 @@ export function initialize(): Ship {
 
     return ship;
 }
+
+export default initialize;

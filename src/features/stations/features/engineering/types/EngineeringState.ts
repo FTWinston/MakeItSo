@@ -3,8 +3,10 @@ import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCard } from '../features/Cards';
 import { EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { SystemStatusEffectType } from './SystemStatusEffect';
+import { EngineeringConfiguration } from './EngineeringConfiguration';
 
 export interface EngineeringState {
+    configuration: EngineeringConfiguration;
     systemOrder: ShipSystem[];
     handCards: EngineeringCard[];
     maxHandSize: number;

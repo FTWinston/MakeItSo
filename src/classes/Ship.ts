@@ -1,5 +1,5 @@
 import { EngineeringState, HelmState, ScanTreeDefinition, SensorsState, WeaponsState, createScanTreeDefinitionFromTemplate } from 'src/features/stations';
-import { getDefaultEngineeringState, getDefaultHelmState, getDefaultSensorsState, getDefaultWeaponsState, updateShipMotion } from 'src/features/stations';
+import { getInitialEngineeringState, engineeringReducer, getInitialHelmState, helmReducer, getInitialSensorsState, sensorsReducer, getInitialWeaponsState, weaponsReducer, updateShipMotion } from 'src/features/stations';
 import type { DefiniteMap } from 'src/types/DefiniteMap';
 import type { ObjectId } from 'src/types/GameObjectInfo';
 import type { Position } from 'src/types/Position';
@@ -12,20 +12,17 @@ import { pruneKeyframes } from 'src/utils/interpolate';
 import { Space } from './Space';
 import { MobileObject } from './MobileObject';
 import { ShipType } from '../types/ShipType';
-import { helmReducer } from 'src/features/stations/features/helm';
-import { engineeringReducer } from 'src/features/stations/features/engineering';
-import { sensorsReducer } from 'src/features/stations/features/sensors';
-import { weaponsReducer } from 'src/features/stations/features/weapons';
+import { ShipConfiguration } from 'src/types/ShipConfiguration';
 
 export class Ship extends MobileObject implements ShipInfo {
-    constructor(space: Space, readonly shipType: ShipType, position: Position) {
+    constructor(space: Space, readonly shipType: ShipType, configuration: ShipConfiguration, position: Position) {
         super(space, position);
 
         this.systems = getDefaultSystemStates();
-        this.engineering = getDefaultEngineeringState();
-        this.helm = getDefaultHelmState();
-        this.sensors = getDefaultSensorsState();
-        this.weapons = getDefaultWeaponsState();
+        this.engineering = getInitialEngineeringState(shipType, configuration.engineering);
+        this.helm = getInitialHelmState(shipType, configuration.helm);
+        this.sensors = getInitialSensorsState(shipType, configuration.sensors);
+        this.weapons = getInitialWeaponsState(shipType, configuration.weapons);
     }
 
     override get draw() { return this.shipType.draw; }
