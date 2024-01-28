@@ -4,7 +4,7 @@ import { adjustSelectedItems } from './adjustSelectedItems';
 import { getAvailableItems } from './getAvailableItems';
 import { getItemDepth } from './getItemDepth';
 
-export function scanTreeReducer(state: ScanTreeState, action: ScanTreeStateAction): ScanTreeState | void {
+export function scanTreeReducer(state: ScanTreeState, action: ScanTreeStateAction): void {
     switch (action.type) {
         case 'select': {
             // TODO: ensure action.item is in availableItems?

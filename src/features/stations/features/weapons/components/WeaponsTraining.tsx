@@ -1,10 +1,11 @@
 import { produce } from 'immer';
 import { useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
+import { processCrewAction } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
-import { ShipSystem } from 'src/types/ShipSystem';
+import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
-import { weaponsTrainingReducer } from '../utils/weaponsTrainingReducer';
+import { WeaponsAction } from '../types/WeaponsState';
 import { Weapons } from './Weapons';
 
 interface Props {
@@ -12,10 +13,12 @@ interface Props {
     //customRender?: (dispatch: Dispatch<WeaponsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
+const processWeaponsAction = (ship: Ship, action: WeaponsAction) => processCrewAction(ship, action, CrewStation.Weapons);
+
 export const WeaponsTraining: React.FC<Props> = (props) => {
     const { getInitialState } = props;
 
-    const [state, dispatch] = useReducer(produce(weaponsTrainingReducer), undefined, getInitialState);
+    const [state, dispatch] = useReducer(produce(processWeaponsAction), undefined, getInitialState);
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);

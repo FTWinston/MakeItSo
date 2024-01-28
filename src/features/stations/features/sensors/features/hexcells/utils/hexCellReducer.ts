@@ -3,7 +3,7 @@ import { CellBoard, CellBoardAction } from '../types/CellBoard';
 import { CellType, DisplayCellState } from '../types/CellState';
 import { isClueResolved, isObscured, markCluesAsResolved } from './resolved';
 
-export function hexCellReducer(state: CellBoard, action: CellBoardAction): CellBoard | void {
+export function hexCellReducer(state: CellBoard, action: CellBoardAction): void {
     switch (action.type) {
         case 'reveal': {
             if (state.result) {

@@ -1,4 +1,6 @@
 export { getDefaultSensorsState } from './utils/getDefaultSensorsState';
+export { verifySensorsAction } from './utils/verifySensorsAction';
+export { sensorsReducer } from './utils/sensorsReducer';
 export { generateInstance } from './features/hexcells';
 export { createScanTreeDefinitionFromTemplate } from './features/scanselect';
 export type { GenerationConfig } from './features/hexcells';

@@ -1,30 +1,13 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { SensorsAction } from '../types/SensorsStateInfo';
-import { playerShip } from 'src/assets/scenarios/testScenario';
-import { Reference } from 'src/classes/Reference';
+import type { SensorsAction } from '../types/SensorsState';
 import { generateInstance, hexCellReducer } from '../features/hexcells';
 import { expandScanTreeState, getMaxDepth, scanTreeReducer } from '../features/scanselect';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { adjustHealth } from '../../engineering/utils/systemActions';
 
-export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship | void {
-    if (state.destroyed) {
-        return state;
-    }
-
+export function sensorsReducer(state: Ship, action: SensorsAction): void {
     switch (action.type) {
-        case 'reset': // TODO: remove from here
-            const space = state.space;
-            state.delete();
-
-            const newState = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
-            newState.sensors = {
-                possibleTargets: [],
-                currentTarget: Reference.empty(),
-            };
-            return newState;
-            
         case 'tick': {
             // TODO: update state.sensors.possibleTargets
             // ... don't just replace it each time, merge existing values.
@@ -42,7 +25,7 @@ export function sensorsTrainingReducer(state: Ship, action: SensorsAction): Ship
                 }
             }
 
-            return state;
+            break;
         }
 
         case 'view': {

@@ -1,5 +1,4 @@
 import { ShipSystem } from 'src/types/ShipSystem';
-import { SystemState } from 'src/types/SystemState';
 import { TimeSpan } from 'src/types/TimeSpan';
 import { EngineeringCard } from '../features/Cards';
 import { EngineeringCardType } from '../features/Cards/types/EngineeringCard';
@@ -25,13 +24,6 @@ export type DamageAction = {
 }
 
 export type EngineeringAction = {
-    type: 'reset';
-    handCards: EngineeringCard[];
-    choiceCards: EngineeringCard[];
-    numChoices: number;
-    systems: SystemState[];
-    choiceProcess: TimeSpan | undefined;
-} | {
     type: 'play';
     cardId: number;
     targetSystem: ShipSystem;

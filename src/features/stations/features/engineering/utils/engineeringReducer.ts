@@ -1,8 +1,4 @@
-import { DefiniteMap } from 'src/types/DefiniteMap';
 import { Ship } from 'src/classes/Ship';
-import { ShipSystem } from 'src/types/ShipSystem';
-import { SystemState } from 'src/types/SystemState';
-import { arrayToMap } from 'src/utils/arrays';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { cardsByRarity, createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
@@ -13,32 +9,9 @@ import { playCard } from './playCard';
 import { adjustHealth, removeExpiredEffects, tickOngoingEffects, applySingleEffect } from './systemActions';
 import { updateCardAllowedSystems } from './updateCardAllowedSystems';
 import { updateCardGeneration } from './updateCardGeneration';
-import { playerShip } from 'src/assets/scenarios/testScenario';
 
-export function engineeringTrainingReducer(state: Ship, action: EngineeringAction): Ship | void {
-    if (state.destroyed) {
-        return;
-    }
-
+export function engineeringReducer(state: Ship, action: EngineeringAction): void {
     switch (action.type) {
-        case 'reset': // TODO: remove from here
-            const space = state.space;
-            state.delete();
-
-            const newState = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
-            newState.systems = arrayToMap(action.systems, info => info.system) as DefiniteMap<ShipSystem, SystemState>;
-            newState.engineering = {
-                systemOrder: action.systems.map(system => system.system),
-                choiceCards: action.choiceCards,
-                handCards: action.handCards,
-                maxHandSize: state.engineering.maxHandSize,
-                numChoices: action.numChoices,
-                choiceProgress: action.choiceProcess,
-                nextCardId: 14,
-                nextEffectId: 1,
-            };
-            return newState;
-            
         case 'play':
             playCard(state, action.cardId, action.targetSystem, action.repair);
             break;

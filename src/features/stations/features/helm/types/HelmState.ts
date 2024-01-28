@@ -19,8 +19,6 @@ export interface HelmState extends MotionConfiguration {
 }
 
 export type HelmAction = {
-    type: 'reset';
-} | {
     type: 'tick';
     currentTime: number;
 } | {

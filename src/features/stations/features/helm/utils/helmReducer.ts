@@ -8,21 +8,9 @@ import { HelmAction } from '../types/HelmState';
 import { getManeuverStartPosition } from './getManeuverStartPosition';
 import { getTravelTime } from './getTravelTime';
 import { moveToNextManeuverCard } from './moveToNextManeuverCard';
-import { playerShip } from 'src/assets/scenarios/testScenario';
 
-export function helmTrainingReducer(state: Ship, action: HelmAction): Ship | void {
-    if (state.destroyed) {
-        return;
-    }
-
+export function helmReducer(state: Ship, action: HelmAction): void {
     switch (action.type) {
-        case 'reset': // TODO: remove from here
-            const space = state.space;
-            state.delete();
-
-            const newState = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
-            return newState;
-            
         case 'tick': {
             state.updateMotion(action.currentTime);
             break;
