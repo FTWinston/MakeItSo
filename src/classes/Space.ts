@@ -4,13 +4,16 @@ import type { SpaceInfo } from 'src/types/SpaceInfo';
 import { GameObject } from './GameObject';
 import { Factions } from './Factions';
 import { Clearable, Reference } from './Reference';
+import { Random } from 'src/utils/random';
 
 export class Space implements SpaceInfo {
-    constructor(factions: Faction[] = []) {
+    constructor(factions: Faction[] = [], random: Random) {
         this.factions = new Factions(factions);
+        this.random = random;
     }
 
     public readonly factions: Factions;
+    public readonly random: Random;
 
     private readonly _objects = new Map<ObjectId, GameObject>();
 

@@ -1,12 +1,13 @@
 import { FakeShip } from 'src/classes/FakeShip';
 import { Ship } from 'src/classes/Ship';
 import { Space } from 'src/classes/Space';
-import { ScanTreeTemplate } from 'src/features/stations';
+import { ScanTreeTemplate, getDefaultShipConfiguration } from 'src/features/stations';
 import { Faction } from 'src/types/Faction';
 import { Position } from 'src/types/Position';
 import { RelationshipType } from 'src/types/RelationshipType';
-import { ShipConfiguration } from 'src/types/ShipConfiguration';
+import { ShipConfiguration } from 'src/features/stations';
 import { ShipType } from 'src/types/ShipType'
+import { Random } from 'src/utils/random';
 
 type KnownFactionId = 'protectors' | 'civilians'
     | 'mindlessFighters' | 'destructiveFighters' | 'honorableFighters' | 'bullies'
@@ -385,8 +386,8 @@ export const unknownShip: ShipType = {
     scanTree: distributedTree,
 }
 
-function initialize(shipConfig: ShipConfiguration): Ship {
-    const space = new Space(factions);
+function initialize(shipConfig: ShipConfiguration = getDefaultShipConfiguration(), random = new Random()): Ship {
+    const space = new Space(factions, random);
 
     const zero: Position = { x: 0, y: 0, angle: 0 };
 

@@ -42,10 +42,11 @@ const getAdjacentIndices = (index: number) => {
     }
 }
 
-type CardBehavior = Omit<EngineeringCard, 'id' | 'type' | 'rarity'>;
+type CardBehavior = Omit<EngineeringCard, 'id' | 'type'>;
 
 function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
     return {
+        rarity: EngineeringCardRarity.Uncommon,
         play: (system, ship) => {
             const fromSystemState = ship.systems.get(fromSystem);
             
@@ -66,6 +67,7 @@ function createDivertBehavior(fromSystem: ShipSystem): CardBehavior {
 
 function createReplaceBehavior(system: ShipSystem): CardBehavior {
     return {
+        rarity: EngineeringCardRarity.Epic,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.Replace, system, ship);
         },
@@ -78,6 +80,7 @@ function createReplaceBehavior(system: ShipSystem): CardBehavior {
 
 const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map([
     [EngineeringCardType.AuxPower, {
+        rarity: EngineeringCardRarity.Common,
         play: (system, ship) => {
             for (const otherSystemState of ship.systems.values()) {
                 removeEffect(otherSystemState, ship, SystemStatusEffectType.AuxPower);
@@ -93,6 +96,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     }],
 
     [EngineeringCardType.StoreCharge, {
+        rarity: EngineeringCardRarity.Common,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.StoreCharge, system, ship);
         },
@@ -104,6 +108,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     }],
 
     [EngineeringCardType.StoredCharge, {
+        rarity: EngineeringCardRarity.Uncommon,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.StoredCharge, system, ship);
         },
@@ -115,16 +120,18 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     }],
 
     [EngineeringCardType.Relocate, {
+        rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.Relocating, system, ship);
 
-            const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.RelocateHere, EngineeringCardRarity.Rare);
+            const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.RelocateHere);
             ship.engineering.handCards.push(newCard);
         },
         determineAllowedSystems: onlyOnlineSystems,
     }],
 
     [EngineeringCardType.RelocateHere, {
+        rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
             // Find the system with the "relocating" effect.
             const swapWithSystem = [...ship.systems.values()]
@@ -181,6 +188,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     [EngineeringCardType.ReplaceReactor, createReplaceBehavior(ShipSystem.Reactor)],
 
     [EngineeringCardType.Overcharge, {
+        rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.Overcharge, system, ship);
         },
@@ -192,6 +200,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         }
     }],
     [EngineeringCardType.ReactorOverload, {
+        rarity: EngineeringCardRarity.Epic,
         play: (system, ship) => {
             const reactorEffect = applyPrimaryEffect(SystemStatusEffectType.ReactorOverload, system, ship);
 
@@ -209,6 +218,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         }
     }],
     [EngineeringCardType.Purge, {
+        rarity: EngineeringCardRarity.Uncommon,
         play: (system, ship) => {
             const removeIndex = system.effects.findIndex(effect => effect.positive === false);
             system.effects.splice(removeIndex, 1);
@@ -216,6 +226,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         determineAllowedSystems: onlyOnlineSystemsWithNegativeEffects,
     }],
     [EngineeringCardType.Reset, {
+        rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.Reset, system, ship);
         },
@@ -225,6 +236,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         }
     }],
     [EngineeringCardType.Rebuild, {
+        rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
             applySingleEffect(SystemStatusEffectType.Rebuild, system, ship);
         },
@@ -235,6 +247,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         }
     }],
     [EngineeringCardType.Rewind, {
+        rarity: EngineeringCardRarity.Rare,
         play: (system, ship) => {
             const currentTime = getTime();
             for (const effect of system.effects) {
@@ -246,6 +259,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         determineAllowedSystems: onlyOnlineSystemsWithEffects,
     }],
     [EngineeringCardType.DrawPower, {
+        rarity: EngineeringCardRarity.Uncommon,
         play: (system, ship) => {
             const targetSystemIndex = ship.engineering.systemOrder.indexOf(system.system);
             
@@ -281,6 +295,7 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
         }
     }],
     [EngineeringCardType.FocusShields, {
+        rarity: EngineeringCardRarity.Common,
         play: (system, ship) => {
             for (const otherSystemState of ship.systems.values()) {
                 removeEffect(otherSystemState, ship, SystemStatusEffectType.ShieldFocus);
@@ -288,12 +303,13 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
 
             applySingleEffect(SystemStatusEffectType.ShieldFocus, system, ship);
             
-            const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.BalanceShields, EngineeringCardRarity.Common);
+            const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.BalanceShields);
             ship.engineering.handCards.push(newCard);
         },
         determineAllowedSystems: notHullOrShields,
     }],
     [EngineeringCardType.BalanceShields, {
+        rarity: EngineeringCardRarity.Common,
         play: (system, ship) => {
             removeEffect(system, ship, SystemStatusEffectType.ShieldFocus);
         },
@@ -301,53 +317,43 @@ const cardBehaviorByIdentifier: Map<EngineeringCardType, CardBehavior> = new Map
     }],
 ]);
 
-export const cardsByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
-    [
-        EngineeringCardRarity.Common,
-        [
-            EngineeringCardType.AuxPower,
-            EngineeringCardType.StoreCharge,
-            EngineeringCardType.FocusShields,
-        ]
-    ],
-    [
-        EngineeringCardRarity.Uncommon,
-        [
-            EngineeringCardType.DivertHull,
-            EngineeringCardType.DivertShields,
-            EngineeringCardType.DivertSensors,
-            EngineeringCardType.DivertWeapons,
-            EngineeringCardType.DivertEngines,
-            EngineeringCardType.DivertReactor,
-            EngineeringCardType.Purge,
-            EngineeringCardType.DrawPower,
-        ]
-    ],
-    [
-        EngineeringCardRarity.Rare,
-        [
-            EngineeringCardType.Relocate,
-            EngineeringCardType.Overcharge,
-            EngineeringCardType.Reset,
-            EngineeringCardType.Rebuild,
-            EngineeringCardType.Rewind,
-        ]
-    ],
-    [
-        EngineeringCardRarity.Epic,
-        [
-            EngineeringCardType.ReactorOverload,
-            EngineeringCardType.ReplaceHull,
-            EngineeringCardType.ReplaceShields,
-            EngineeringCardType.ReplaceSensors,
-            EngineeringCardType.ReplaceWeapons,
-            EngineeringCardType.ReplaceEngines,
-            EngineeringCardType.ReplaceReactor,
-        ]
-    ],
+const cardsToCreateRandomlyByRarity = new Map<EngineeringCardRarity, EngineeringCardType[]>([
+    [ EngineeringCardRarity.Common, []],
+    [ EngineeringCardRarity.Uncommon, []],
+    [ EngineeringCardRarity.Rare, []],
+    [ EngineeringCardRarity.Epic, []],
 ]) as DefiniteMap<EngineeringCardRarity, EngineeringCardType[]>;
 
-export function createCard(id: number, type: EngineeringCardType, rarity: EngineeringCardRarity): EngineeringCard {
+// This list of cards are the ones that can be created randomly. Put them in the right bucket of the above map.
+[
+    EngineeringCardType.AuxPower,
+    EngineeringCardType.StoreCharge,
+    EngineeringCardType.DivertHull,
+    EngineeringCardType.DivertShields,
+    EngineeringCardType.DivertSensors,
+    EngineeringCardType.DivertWeapons,
+    EngineeringCardType.DivertEngines,
+    EngineeringCardType.DivertReactor,
+    EngineeringCardType.Purge,
+    EngineeringCardType.DrawPower,
+    EngineeringCardType.Relocate,
+    EngineeringCardType.Overcharge,
+    EngineeringCardType.Reset,
+    EngineeringCardType.Rebuild,
+    EngineeringCardType.Rewind,
+    EngineeringCardType.ReactorOverload,
+    EngineeringCardType.ReplaceHull,
+    EngineeringCardType.ReplaceShields,
+    EngineeringCardType.ReplaceSensors,
+    EngineeringCardType.ReplaceWeapons,
+    EngineeringCardType.ReplaceEngines,
+    EngineeringCardType.ReplaceReactor,
+].forEach(identifier => {
+    const rarity = cardBehaviorByIdentifier.get(identifier)?.rarity ?? EngineeringCardRarity.Common;
+    cardsToCreateRandomlyByRarity.get(rarity).push(identifier);
+});
+
+export function createCard(id: number, type: EngineeringCardType): EngineeringCard {
     const behavior = cardBehaviorByIdentifier.get(type);
 
     if (behavior === undefined) {
@@ -357,16 +363,14 @@ export function createCard(id: number, type: EngineeringCardType, rarity: Engine
     return {
         id,
         type,
-        rarity,
         ...behavior,
     };
 }
 
 export function createCardByRarity(random: Random, id: number, rarity: EngineeringCardRarity) {
-    const possibleCards = cardsByRarity.get(rarity);
-    const index = random.getInt(possibleCards.length);
-    const type = possibleCards[index];
-    return createCard(id, type, rarity);
+    const possibleCards = cardsToCreateRandomlyByRarity.get(rarity);
+    const type = random.pick(possibleCards);
+    return createCard(id, type);
 }
 
 const commonChance = 0.5;

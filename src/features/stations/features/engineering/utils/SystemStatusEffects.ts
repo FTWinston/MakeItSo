@@ -2,7 +2,7 @@ import { ShipInfo } from 'src/types/ShipInfo';
 import { maxSystemHealth, SystemState } from 'src/types/SystemState';
 import { determineEndTime, getTime } from 'src/utils/timeSpans';
 import { createCard } from '../features/Cards/data/EngineeringCards';
-import { EngineeringCardRarity, EngineeringCardType } from '../features/Cards/types/EngineeringCard';
+import { EngineeringCardType } from '../features/Cards/types/EngineeringCard';
 import { BaseStatusEffect, EffectBehavior, PrimaryEffectLink, PrimaryStatusEffect, SecondaryEffectLink, SecondaryStatusEffect, SystemStatusEffect, SystemStatusEffectType, TickingStatusEffect } from '../types/SystemStatusEffect';
 import { adjustHealth, adjustPower, effectTickInterval, removeEffectInstance, scaleShields } from './systemActions';
 
@@ -27,7 +27,7 @@ const effectBehaviorByIdentifier: Map<SystemStatusEffectType, EffectBehaviorWith
             remove: (system: SystemState, ship: ShipInfo) => {
                 adjustPower(system, 1);
 
-                const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.StoredCharge, EngineeringCardRarity.Uncommon);
+                const newCard = createCard(ship.engineering.nextCardId++, EngineeringCardType.StoredCharge);
                 ship.engineering.handCards.push(newCard);
             }
         }

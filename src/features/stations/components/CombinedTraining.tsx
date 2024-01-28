@@ -18,6 +18,7 @@ interface Props {
 
 const Root = styled(Box)({
     display: 'flex',
+    justifyContent: 'space-between',
     gap: '2em',
     flexWrap: 'wrap',
     backgroundColor: '#333',

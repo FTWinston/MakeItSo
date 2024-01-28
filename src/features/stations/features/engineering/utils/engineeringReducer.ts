@@ -1,7 +1,6 @@
 import { Ship } from 'src/classes/Ship';
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
-import { cardsByRarity, createCard } from '../features/Cards/data/EngineeringCards';
-import { EngineeringCardRarity } from '../features/Cards/types/EngineeringCard';
+import { createCard } from '../features/Cards/data/EngineeringCards';
 import { EngineeringAction } from '../types/EngineeringState';
 import { applyReactorDamage } from './applyReactorDamage';
 import { drawCard } from './drawCard';
@@ -28,11 +27,7 @@ export function engineeringReducer(state: Ship, action: EngineeringAction): void
         }
 
         case 'add custom card': {
-            const rarityEntry = [...cardsByRarity.entries()]
-                .find(entry => entry[1].some(type => type === action.cardType));
-            const rarity = rarityEntry?.[0] ?? EngineeringCardRarity.Common;
-
-            const card = createCard(state.engineering.nextCardId++, action.cardType, rarity);
+            const card = createCard(state.engineering.nextCardId++, action.cardType);
 
             state.engineering.handCards.push(card);
 

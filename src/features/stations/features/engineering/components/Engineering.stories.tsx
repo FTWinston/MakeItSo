@@ -2,8 +2,8 @@ import { StoryObj } from '@storybook/react';
 import { Dispatch, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Box, MenuItem, Select } from 'src/lib/mui';
+import initializeTestScenario from 'src/assets/scenarios/testScenario';
 import { DefiniteMap } from 'src/types/DefiniteMap';
-import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { SystemState } from 'src/types/SystemState';
 import { arrayToMap } from 'src/utils/arrays';
@@ -14,8 +14,6 @@ import { getComplexStoryTiles } from '../features/SystemTiles/components/SystemT
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
-import { Space } from 'src/classes/Space';
-import { factions, playerShip } from 'src/assets/scenarios/testScenario';
 
 export default {
   title: 'Engineering',
@@ -26,11 +24,7 @@ type Story = StoryObj<typeof EngineeringTraining>;
 
 export const Empty: Story = {
   args: {
-    getInitialState: () => { 
-      const space = new Space(factions);
-      const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
-      return ship;
-    },
+    getInitialState: initializeTestScenario,
     getEffects: () => [
       {
         type: 'damage',
@@ -44,8 +38,7 @@ export const Empty: Story = {
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space(factions);
-      const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
+      const ship = initializeTestScenario();
       const systems = getComplexStoryTiles();
 
       ship.systems = arrayToMap(systems, (info) => info.system) as DefiniteMap<
@@ -53,6 +46,7 @@ export const Busy: Story = {
         SystemState
       >;
       ship.engineering = {
+        configuration: ship.engineering.configuration,
         systemOrder: systems.map((system) => system.system),
         handCards: storyCards,
         maxHandSize: 7,
@@ -76,11 +70,7 @@ export const Busy: Story = {
 
 export const Custom: Story = {
   args: {
-    getInitialState: () => {
-      const space = new Space(factions);
-      const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
-      return ship;
-    },
+    getInitialState: initializeTestScenario,
     getEffects: () => [],
   },
   render: (props) => {

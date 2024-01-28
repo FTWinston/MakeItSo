@@ -12,17 +12,17 @@ import { pruneKeyframes } from 'src/utils/interpolate';
 import { Space } from './Space';
 import { MobileObject } from './MobileObject';
 import { ShipType } from '../types/ShipType';
-import { ShipConfiguration } from 'src/types/ShipConfiguration';
+import { ShipConfiguration } from 'src/features/stations/types/ShipConfiguration';
 
 export class Ship extends MobileObject implements ShipInfo {
     constructor(space: Space, readonly shipType: ShipType, configuration: ShipConfiguration, position: Position) {
         super(space, position);
 
         this.systems = getDefaultSystemStates();
-        this.engineering = getInitialEngineeringState(shipType, configuration.engineering);
-        this.helm = getInitialHelmState(shipType, configuration.helm);
-        this.sensors = getInitialSensorsState(shipType, configuration.sensors);
-        this.weapons = getInitialWeaponsState(shipType, configuration.weapons);
+        this.engineering = getInitialEngineeringState(shipType, configuration.engineering, space.random);
+        this.helm = getInitialHelmState(shipType, configuration.helm, space.random);
+        this.sensors = getInitialSensorsState(shipType, configuration.sensors, space.random);
+        this.weapons = getInitialWeaponsState(shipType, configuration.weapons, space.random);
     }
 
     override get draw() { return this.shipType.draw; }

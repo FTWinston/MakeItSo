@@ -16,8 +16,9 @@ export interface HelmState extends MotionConfiguration {
     replaceMotion: boolean;
 
     maneuverChoice: ManeuverChoice;
-    manueverDrawPile: ManeuverChoice[];
+    maneuverDrawPile: ManeuverChoice[];
     manueverDiscardPile: ManeuverChoice[];
+    nextTileId: number;
 }
 
 export type HelmAction = {

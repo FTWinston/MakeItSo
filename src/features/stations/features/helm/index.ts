@@ -1,5 +1,6 @@
 export { Helm } from './components/Helm';
 export { HelmTraining } from './components/HelmTraining';
+export { getDefaultHelmConfiguration } from './utils/getDefaultHelmConfiguration';
 export { getInitialHelmState } from './utils/getInitialHelmState';
 export { verifyHelmAction } from './utils/verifyHelmAction';
 export { helmReducer } from './utils/helmReducer';

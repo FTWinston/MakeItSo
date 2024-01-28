@@ -1,12 +1,12 @@
 import { StoryObj } from '@storybook/react';
 import { getClosestCellCenter, worldScaleCellRadius } from '../../../features/spacemap';
 import { FakeShip } from '../../../../../classes/FakeShip';
-import { Ship } from 'src/classes/Ship';
+import initializeTestScenario from 'src/assets/scenarios/testScenario';
 import { ManeuverType } from '../features/maneuvers';
 import { HelmTraining } from './HelmTraining';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { Space } from 'src/classes/Space';
-import { factions, hostileShip, neutralShip, playerShip } from 'src/assets/scenarios/testScenario';
+import { hostileShip, neutralShip } from 'src/assets/scenarios/testScenario';
+
 export default {
   title: 'Helm',
   component: HelmTraining,
@@ -17,8 +17,7 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const space = new Space(factions);
-      const ship = new Ship(space, playerShip, { x: 0, y: 0, angle: 0 });
+      const ship = initializeTestScenario();
 
       const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
       const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);

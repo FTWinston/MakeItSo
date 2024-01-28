@@ -1,4 +1,5 @@
 export { Sensors } from './components/Sensors';
+export { getDefaultSensorsConfiguration } from './utils/getDefaultSensorsConfiguration';
 export { getInitialSensorsState } from './utils/getInitialSensorsState';
 export { verifySensorsAction } from './utils/verifySensorsAction';
 export { sensorsReducer } from './utils/sensorsReducer';
