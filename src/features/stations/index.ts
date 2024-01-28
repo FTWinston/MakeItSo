@@ -6,4 +6,4 @@ export { getDefaultEngineeringState } from './features/engineering';
 export { getDefaultHelmState, updateShipMotion } from './features/helm';
 export { getDefaultSensorsState, createScanTreeDefinitionFromTemplate } from './features/sensors';
 export { getDefaultWeaponsState } from './features/weapons';
-export { processCrewAction } from './utils/processCrewAction';
+export { crewActionReducer } from './utils/crewActionReducer';

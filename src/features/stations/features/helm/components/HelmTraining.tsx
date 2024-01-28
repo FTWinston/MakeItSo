@@ -3,7 +3,7 @@ import { useReducer } from 'react';
 import { GameObject } from 'src/classes/GameObject';
 import { Ship } from 'src/classes/Ship';
 import { Space } from 'src/classes/Space';
-import { processCrewAction } from 'src/features/stations';
+import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
@@ -18,10 +18,10 @@ interface Props {
     renderMenuItems?: () => JSX.Element;
 }
 
-const processHelmAction = (ship: Ship, action: HelmAction) => processCrewAction(ship, action, CrewStation.Helm);
+const helmActionReducer = (ship: Ship, action: HelmAction) => crewActionReducer(ship, { station: CrewStation.Helm, action });
 
 export const HelmTraining: React.FC<Props> = (props) => {
-    const [ship, helmDispatch] = useReducer(produce(processHelmAction), undefined, props.getInitialState);
+    const [ship, helmDispatch] = useReducer(produce(helmActionReducer), undefined, props.getInitialState);
     const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), ship.space, props.getOtherObjects);
 
     // Run tick actions at a regular interval.

@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { Dispatch, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
-import { processCrewAction } from 'src/features/stations';
+import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { CrewStation } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
@@ -15,12 +15,12 @@ interface Props {
     renderMenuItems?: () => JSX.Element;
 }
 
-const processEngineeringAction = (ship: Ship, action: EngineeringAction) => processCrewAction(ship, action, CrewStation.Engineering);
+const engineeringActionReducer = (ship: Ship, action: EngineeringAction) => crewActionReducer(ship, { station: CrewStation.Engineering, action });
 
 export const EngineeringTraining: React.FC<Props> = (props) => {
     const { getEffects, getInitialState } = props;
 
-    const [state, dispatch] = useReducer(produce(processEngineeringAction), undefined, getInitialState);
+    const [state, dispatch] = useReducer(produce(engineeringActionReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);

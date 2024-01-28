@@ -1,7 +1,7 @@
 import { produce } from 'immer';
 import { useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
-import { processCrewAction } from 'src/features/stations';
+import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
 import { getTime } from 'src/utils/timeSpans';
@@ -13,12 +13,12 @@ interface Props {
     //customRender?: (dispatch: Dispatch<SensorsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
-const processSensorsAction = (ship: Ship, action: SensorsAction) => processCrewAction(ship, action, CrewStation.Sensors);
+const sensorsActionReducer = (ship: Ship, action: SensorsAction) => crewActionReducer(ship, { station: CrewStation.Sensors, action });
 
 export const SensorsTraining: React.FC<Props> = (props) => {
     const { getInitialState } = props;
 
-    const [state, dispatch] = useReducer(produce(processSensorsAction), undefined, getInitialState);
+    const [state, dispatch] = useReducer(produce(sensorsActionReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);

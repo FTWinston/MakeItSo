@@ -5,9 +5,12 @@ import { helmReducer, verifyHelmAction } from '../features/helm';
 import { sensorsReducer, verifySensorsAction } from '../features/sensors';
 import { verifyWeaponsAction, weaponsReducer } from '../features/weapons';
 
-// TODO: just calling the reducers here isn't enough. To update state in an immutable way server side, they need to hook into state management! Don't they?
+export interface StationAction {
+    station: CrewStation;
+    action: object;
+}
 
-export function processCrewAction(ship: Ship, action: object, station: CrewStation) {
+export function crewActionReducer(ship: Ship, { station, action }: StationAction): void {
     if (ship.destroyed) {
         return;
     }
@@ -15,22 +18,22 @@ export function processCrewAction(ship: Ship, action: object, station: CrewStati
     switch (station) {
         case CrewStation.Engineering:
             if (verifyEngineeringAction(action)) {
-                engineeringReducer(ship, action);
+                return engineeringReducer(ship, action);
             }
             return;
         case CrewStation.Helm:
             if (verifyHelmAction(action)) {
-                helmReducer(ship, action);
+                return helmReducer(ship, action);
             }
             return;
         case CrewStation.Sensors:
             if (verifySensorsAction(action)) {
-                sensorsReducer(ship, action);
+                return sensorsReducer(ship, action);
             }
             return;
         case CrewStation.Weapons:
             if (verifyWeaponsAction(action)) {
-                weaponsReducer(ship, action);
+                return weaponsReducer(ship, action);
             }
             return;
     }
