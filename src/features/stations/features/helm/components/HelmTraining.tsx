@@ -24,12 +24,8 @@ export const HelmTraining: React.FC<Props> = (props) => {
     const [ship, helmDispatch] = useReducer(produce(helmActionReducer), undefined, props.getInitialState);
     const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), ship.space, props.getOtherObjects);
 
-    // Run tick actions at a regular interval.
-    useInterval(() => {
-        const tick = { type: 'tick', currentTime: getTime() } as const;
-        helmDispatch(tick);
-        otherDispatch(tick);
-    }, 200);
+    // Run tick action at a regular interval.
+    useInterval(() => ship.space.tick(getTime()), 200);
 
     const { power, health } = ship.systems.get(ShipSystem.Engines);
 

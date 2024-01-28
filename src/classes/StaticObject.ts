@@ -12,5 +12,5 @@ export abstract class StaticObject extends GameObject {
 
     override get rel() { return RelationshipType.None; }
     
-    updateMotion() {}
+    protected updateMotion() {}
 }

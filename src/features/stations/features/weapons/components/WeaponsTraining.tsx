@@ -21,7 +21,7 @@ export const WeaponsTraining: React.FC<Props> = (props) => {
     const [state, dispatch] = useReducer(produce(weaponsActionReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
-    useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
+    useInterval(() => state.space.tick(getTime()), 200);
 
     const { power, health } = state.systems.get(ShipSystem.Weapons);
 

@@ -12,7 +12,7 @@ import { moveToNextManeuverCard } from './moveToNextManeuverCard';
 export function helmReducer(state: Ship, action: HelmAction): void {
     switch (action.type) {
         case 'tick': {
-            state.updateMotion(action.currentTime);
+            // state.updateMotion(action.currentTime);
             break;
         }
 

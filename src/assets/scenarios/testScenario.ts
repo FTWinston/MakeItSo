@@ -1,5 +1,9 @@
+import { FakeShip } from 'src/classes/FakeShip';
+import { Ship } from 'src/classes/Ship';
+import { Space } from 'src/classes/Space';
 import { ScanTreeTemplate } from 'src/features/stations';
 import { Faction } from 'src/types/Faction';
+import { Position } from 'src/types/Position';
 import { RelationshipType } from 'src/types/RelationshipType';
 import { ShipType } from 'src/types/ShipType'
 
@@ -378,4 +382,22 @@ export const unknownShip: ShipType = {
     draw: 'chevron',
     faction: 'bullies',
     scanTree: distributedTree,
+}
+
+export function initialize(): Ship {
+    const space = new Space(factions);
+
+    const zero: Position = { x: 0, y: 0, angle: 0 };
+
+    const ship = new Ship(space, playerShip, zero);
+
+    new FakeShip(space, neutralShip, zero);
+    new FakeShip(space, hostileShip, zero);
+    new FakeShip(space, friendlyShip, zero);
+    new FakeShip(space, unknownShip, zero);
+      
+    new FakeShip(space, hostileShip, zero);
+    new FakeShip(space, neutralShip, zero);
+
+    return ship;
 }

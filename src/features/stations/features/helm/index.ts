@@ -5,6 +5,6 @@ export { verifyHelmAction } from './utils/verifyHelmAction';
 export { helmReducer } from './utils/helmReducer';
 export { getManeuverStartPosition } from './utils/getManeuverStartPosition';
 export { updateShipMotion } from './utils/updateShipMotion';
-export type { HelmState, MotionConfiguration } from './types/HelmState';
+export type { HelmAction, HelmState, MotionConfiguration } from './types/HelmState';
 export { getManeuver, ManeuverType } from './features/maneuvers';
 export type { ManeuverInfo } from './features/maneuvers';

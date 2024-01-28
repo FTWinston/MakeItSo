@@ -21,7 +21,7 @@ export const SensorsTraining: React.FC<Props> = (props) => {
     const [state, dispatch] = useReducer(produce(sensorsActionReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
-    useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
+    useInterval(() => state.space.tick(getTime()), 200);
 
     const { power, health } = state.systems.get(ShipSystem.Sensors);
     

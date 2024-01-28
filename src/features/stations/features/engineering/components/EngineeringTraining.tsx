@@ -23,7 +23,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     const [state, dispatch] = useReducer(produce(engineeringActionReducer), undefined, getInitialState);
 
     // Run tick action at a regular interval.
-    useInterval(() => dispatch({ type: 'tick', currentTime: getTime() }), 200);
+    useInterval(() => state.space.tick(getTime()), 200);
 
     // Check for new effects and apply them at a less frequent interval.
     useInterval(() => {

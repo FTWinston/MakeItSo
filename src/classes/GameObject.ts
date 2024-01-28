@@ -42,7 +42,11 @@ export abstract class GameObject implements GameObjectInfo {
 
     motion: Keyframes<Position> = [];
 
-    abstract updateMotion(currentTime: number): void;
+    public tick(currentTime: number) {
+        this.updateMotion(currentTime);
+    }
+
+    protected abstract updateMotion(currentTime: number): void;
 
     public get evasionChance() { return 0; }
 

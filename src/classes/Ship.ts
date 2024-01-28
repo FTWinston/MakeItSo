@@ -12,6 +12,10 @@ import { pruneKeyframes } from 'src/utils/interpolate';
 import { Space } from './Space';
 import { MobileObject } from './MobileObject';
 import { ShipType } from '../types/ShipType';
+import { helmReducer } from 'src/features/stations/features/helm';
+import { engineeringReducer } from 'src/features/stations/features/engineering';
+import { sensorsReducer } from 'src/features/stations/features/sensors';
+import { weaponsReducer } from 'src/features/stations/features/weapons';
 
 export class Ship extends MobileObject implements ShipInfo {
     constructor(space: Space, readonly shipType: ShipType, position: Position) {
@@ -65,7 +69,19 @@ export class Ship extends MobileObject implements ShipInfo {
         return pruned && this.helm.maneuvers.length === 0;
     }
 
-    updateMotion(currentTime: number): void {
+    public override tick(currentTime: number): void {
+        super.tick(currentTime);
+
+        // Tick every ship system. (Each system's reducer handles all of its updates, including ticking.)
+        const action = { type: 'tick', currentTime } as const;
+        
+        engineeringReducer(this, action);
+        helmReducer(this, action);
+        sensorsReducer(this, action);
+        weaponsReducer(this, action);
+    }
+
+    protected updateMotion(currentTime: number): void {
         pruneKeyframes(this.motion, currentTime);
         this.pruneDestination(currentTime);
         const prunedLastManeuver = this.pruneManeuvers(currentTime);

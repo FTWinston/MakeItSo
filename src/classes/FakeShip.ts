@@ -50,7 +50,7 @@ export class FakeShip extends MobileObject {
         }
     }
 
-    updateMotion(currentTime: number): void {
+    protected updateMotion(currentTime: number): void {
         pruneKeyframes(this.motion, currentTime);
 
         this.pruneManeuvers(currentTime);

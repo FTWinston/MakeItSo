@@ -55,4 +55,10 @@ export class Space implements SpaceInfo {
 
         return reference;
     }
+
+    public tick(currentTime: number) {
+        for (const object of this._objects.values()) {
+            object.tick(currentTime);
+        }
+    }
 }

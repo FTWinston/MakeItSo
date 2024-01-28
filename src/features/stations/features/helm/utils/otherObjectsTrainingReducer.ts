@@ -14,7 +14,7 @@ export function otherObjectsTrainingReducer(state: GameObject[], action: OtherOb
     switch (action.type) {
         case 'tick': {
             for (const obj of state) {
-                obj.updateMotion(action.currentTime);
+                obj.tick(action.currentTime);
             }
             break;
         }
