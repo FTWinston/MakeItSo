@@ -1,11 +1,11 @@
 import { updateShipMotion } from '../features/stations/features/helm';
 import { getLast } from 'src/utils/arrays';
 import { pruneKeyframes } from 'src/utils/interpolate';
+import { ScanTreeDefinition, createScanTreeDefinitionFromTemplate } from 'src/features/stations';
 import { getManeuver, ManeuverInfo, ManeuverType, getManeuverStartPosition, MotionConfiguration } from 'src/features/stations/features/helm';
 import { Position } from 'src/types/Position';
 import { MobileObject } from './MobileObject';
 import { Space } from './Space';
-import { ScanTreeDefinition, createScanTreeDefinitionFromTemplate } from 'src/features/stations';
 import { ShipType } from '../types/ShipType';
 
 export class FakeShip extends MobileObject {
@@ -13,7 +13,7 @@ export class FakeShip extends MobileObject {
         space: Space,
         readonly shipType: ShipType,
         startPosition: Position,
-        readonly maneuverSequence: readonly ManeuverType[] = []
+        readonly maneuverSequence: readonly ManeuverType[]
     ) {
         super(space, startPosition);
     }

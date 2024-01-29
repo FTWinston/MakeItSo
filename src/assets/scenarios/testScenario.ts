@@ -8,6 +8,8 @@ import { RelationshipType } from 'src/types/RelationshipType';
 import { ShipConfiguration } from 'src/features/stations';
 import { ShipType } from 'src/types/ShipType'
 import { Random } from 'src/utils/random';
+import { ManeuverType } from 'src/features/stations/features/helm';
+import { getClosestCellCenter, worldScaleCellRadius } from 'src/features/stations/features/spacemap';
 
 type KnownFactionId = 'protectors' | 'civilians'
     | 'mindlessFighters' | 'destructiveFighters' | 'honorableFighters' | 'bullies'
@@ -393,13 +395,49 @@ function initialize(shipConfig: ShipConfiguration = getDefaultShipConfiguration(
 
     const ship = new Ship(space, playerShip, shipConfig, zero);
 
-    new FakeShip(space, neutralShip, zero);
-    new FakeShip(space, hostileShip, zero);
-    new FakeShip(space, friendlyShip, zero);
-    new FakeShip(space, unknownShip, zero);
+    new FakeShip(space, neutralShip,
+        {
+            ...getClosestCellCenter(5, 5, worldScaleCellRadius),
+            angle: (Math.PI * 4) / 3,
+        },
+        [ManeuverType.HardLeft, ManeuverType.SlowForward]
+    );
+    new FakeShip(space, hostileShip,
+        {
+            ...getClosestCellCenter(5, -5, worldScaleCellRadius),
+            angle: Math.PI / 3,
+        },
+        [ManeuverType.SweepRight]
+    );
+    new FakeShip(space, friendlyShip,
+        {
+            ...getClosestCellCenter(-5, 5, worldScaleCellRadius),
+            angle: Math.PI,
+        },
+        [ManeuverType.SweepLeft]
+    );
+    new FakeShip(space, unknownShip,
+        {
+            ...getClosestCellCenter(-5, -5, worldScaleCellRadius),
+            angle: Math.PI / 2,
+        },
+        [ManeuverType.SweepRight, ManeuverType.DriftRight, ManeuverType.SlowForward]
+    );
       
-    new FakeShip(space, hostileShip, zero);
-    new FakeShip(space, neutralShip, zero);
+    new FakeShip(space, hostileShip,
+        {
+            ...getClosestCellCenter(10, 0, worldScaleCellRadius),
+            angle: Math.PI * 1.5,
+        },
+        [ManeuverType.SweepLeft, ManeuverType.DriftLeft, ManeuverType.SlowForward]
+    );
+    new FakeShip(space, neutralShip,
+        {
+            ...getClosestCellCenter(-10, 0, worldScaleCellRadius),
+            angle: Math.PI,
+        },
+        [ManeuverType.SweepRight, ManeuverType.HardLeft, ManeuverType.SweepRight]
+    );
 
     return ship;
 }
