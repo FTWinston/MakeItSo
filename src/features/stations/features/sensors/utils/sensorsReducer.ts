@@ -5,16 +5,27 @@ import { generateInstance, hexCellReducer } from '../features/hexcells';
 import { expandScanTreeState, getMaxDepth, scanTreeReducer } from '../features/scanselect';
 import { ShipSystem } from 'src/types/ShipSystem';
 import { adjustHealth } from '../../engineering/utils/systemActions';
+import { projectValuesBetweenArrays } from 'src/utils/projectValuesBetweenArrays';
+import { anyMatches } from 'src/utils/arrays';
 
 export function sensorsReducer(state: Ship, action: SensorsAction): void {
     switch (action.type) {
         case 'tick': {
-            // TODO: update state.sensors.possibleTargets
-            // ... don't just replace it each time, merge existing values.
-            // Map instead of array?
+            // TODO: filter by whether objects are visible
+            const visibleObjects = [...state.space.objects.values()]
+                .filter(object => object.id !== state.id);
 
-            if (state.sensors.currentTarget.id) {
-                // TODO: validate that state.sensors.currentTarget is in possibleTargets, clear it if not.
+            // Keep list of possible targets up-to-date with this list of visible objects.
+            projectValuesBetweenArrays(visibleObjects, state.sensors.possibleTargets, object => object.id, object => ({
+                id: object.id,
+                draw: object.draw,
+                faction: object.faction,
+                description: 'Some Target',
+            }));
+            
+            // Validate that state.sensors.currentTarget is in possibleTargets, clear it if not.
+            if (state.sensors.currentTarget.id && !anyMatches(state.sensors.possibleTargets, target => target.id === state.sensors.currentTarget.id)) {
+                state.sensors.currentTarget.clear();
             }
             
             // Update max scan tree depth, based on power level

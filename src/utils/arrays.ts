@@ -72,3 +72,13 @@ export function arrayToMap<TKey, TValue>(
 export function getLast<TValue>(values: TValue[]) {
     return values[values.length - 1];
 }
+
+export function anyMatches<TValue>(values: TValue[], match: (value: TValue) => boolean): boolean {
+    for (const value of values) {
+        if (match(value)) {
+            return true;
+        }
+    }
+
+    return false;
+}
