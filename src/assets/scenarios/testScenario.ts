@@ -388,7 +388,7 @@ export const unknownShip: ShipType = {
     scanTree: distributedTree,
 }
 
-function initialize(shipConfig: ShipConfiguration = getDefaultShipConfiguration(), random = new Random()): Ship {
+function initialize(shipConfig: ShipConfiguration = getDefaultShipConfiguration(), random = new Random()): Space {
     const space = new Space(factions, random);
 
     const zero: Position = { x: 0, y: 0, angle: 0 };
@@ -439,7 +439,7 @@ function initialize(shipConfig: ShipConfiguration = getDefaultShipConfiguration(
         [ManeuverType.SweepRight, ManeuverType.HardLeft, ManeuverType.SweepRight]
     );
 
-    return ship;
+    return space;
 }
 
 export default initialize;

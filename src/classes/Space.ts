@@ -1,3 +1,4 @@
+import { immerable } from 'immer';
 import type { Faction } from 'src/types/Faction';
 import type { ObjectId } from 'src/types/GameObjectInfo';
 import type { SpaceInfo } from 'src/types/SpaceInfo';
@@ -7,6 +8,8 @@ import { Clearable, Reference } from './Reference';
 import { Random } from 'src/utils/random';
 
 export class Space implements SpaceInfo {
+    [immerable] = true;
+    
     constructor(factions: Faction[] = [], random: Random) {
         this.factions = new Factions(factions);
         this.random = random;

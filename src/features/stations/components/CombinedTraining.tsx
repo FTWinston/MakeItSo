@@ -1,7 +1,6 @@
 import { produce } from 'immer';
 import { useMemo, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
-import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { Box, styled } from 'src/lib/mui';
 import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
@@ -10,10 +9,11 @@ import { Helm, HelmAction } from '../features/helm';
 import { Sensors, SensorsAction } from '../features/sensors';
 import { WeaponsAction } from '../features/weapons';
 import { Weapons } from '../features/weapons/components/Weapons';
-import { getTime } from 'src/utils/timeSpans';
+import { Space } from 'src/classes/Space';
+import { spaceCrewActionReducer } from '../utils/spaceCrewActionReducer';
 
 interface Props {
-    getInitialState: () => Ship;
+    getInitialState: () => Space;
 }
 
 const Root = styled(Box)({
@@ -25,15 +25,17 @@ const Root = styled(Box)({
 });
 
 export const CombinedTraining: React.FC<Props> = (props) => {
-    const [ship, dispatch] = useReducer(produce(crewActionReducer), undefined, props.getInitialState);
+    const shipId = 1;
+    const [space, dispatch] = useReducer(produce(spaceCrewActionReducer), undefined, props.getInitialState);
+    const ship = space.objects.get(shipId) as Ship; // TODO: well this could be tidier, couldn't it.
 
-    const engineeringDispatch = (action: EngineeringAction) => dispatch({ station: CrewStation.Engineering, action });
-    const helmDispatch = (action: HelmAction) => dispatch({ station: CrewStation.Helm, action });
-    const sensorsDispatch = (action: SensorsAction) => dispatch({ station: CrewStation.Sensors, action });
-    const weaponsDispatch = (action: WeaponsAction) => dispatch({ station: CrewStation.Weapons, action });
+    const engineeringDispatch = (action: EngineeringAction) => dispatch({ shipId, station: CrewStation.Engineering, action });
+    const helmDispatch = (action: HelmAction) => dispatch({ shipId, station: CrewStation.Helm, action });
+    const sensorsDispatch = (action: SensorsAction) => dispatch({ shipId, station: CrewStation.Sensors, action });
+    const weaponsDispatch = (action: WeaponsAction) => dispatch({ shipId, station: CrewStation.Weapons, action });
     
-    // Tick the ship, and all of its systems, at a regular interva;.
-    useInterval(() => ship.space.tick(getTime()), 200);
+    // Tick the everything in space, including the ship and all of its systems, at a regular interval.
+    useInterval(() => dispatch({ station: null, type: 'tick' }), 200);
 
     const { systemOrder: engineeringSystemOrder, ...otherEngineeringState } = ship.engineering;
     const engineeringSystemInfo = engineeringSystemOrder.map(system => ship.systems.get(system));
@@ -42,10 +44,8 @@ export const CombinedTraining: React.FC<Props> = (props) => {
     const { power: sensorPower, health: sensorHealth } = ship.systems.get(ShipSystem.Sensors);
     const { power: weaponPower, health: weaponHealth } = ship.systems.get(ShipSystem.Weapons);
 
-    const otherObjects = useMemo(() => {
-        return [...ship.space.objects.values()]
-            .filter(obj => obj.id !== ship.id);
-    }, [ship.space.objects]);
+    const otherObjects = [...space.objects.values()]
+        .filter(obj => obj.id !== ship.id);
 
     return (
         <Root>

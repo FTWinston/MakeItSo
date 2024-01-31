@@ -5,12 +5,12 @@ import { helmReducer, verifyHelmAction } from '../features/helm';
 import { sensorsReducer, verifySensorsAction } from '../features/sensors';
 import { verifyWeaponsAction, weaponsReducer } from '../features/weapons';
 
-export interface StationAction {
+export interface CrewAction {
     station: CrewStation;
     action: object;
 }
 
-export function crewActionReducer(ship: Ship, { station, action }: StationAction): void {
+export function crewActionReducer(ship: Ship, { station, action }: CrewAction): void {
     if (ship.destroyed) {
         return;
     }
@@ -20,20 +20,34 @@ export function crewActionReducer(ship: Ship, { station, action }: StationAction
             if (verifyEngineeringAction(action)) {
                 return engineeringReducer(ship, action);
             }
-            return;
+            else {
+                console.error('Invalid engineering action', action);
+                return;
+            }
         case CrewStation.Helm:
             if (verifyHelmAction(action)) {
                 return helmReducer(ship, action);
             }
-            return;
+            else {
+                console.error('Invalid helm action', action);
+                return;
+            }
         case CrewStation.Sensors:
             if (verifySensorsAction(action)) {
                 return sensorsReducer(ship, action);
+            }
+            else {
+                console.error('Invalid sensors action', action);
+                return;
             }
             return;
         case CrewStation.Weapons:
             if (verifyWeaponsAction(action)) {
                 return weaponsReducer(ship, action);
+            }
+            else {
+                console.error('Invalid weapons action', action);
+                return;
             }
             return;
     }
