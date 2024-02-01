@@ -34,9 +34,28 @@ export const Empty: Story = {
       } as DamageAction,
     ],
   },
+  argTypes: {
+    cardToAdd: {
+      control: 'select',
+      options: Object.values(EngineeringCardType),
+    },
+    systemToAffect: {
+      control: 'inline-radio',
+      options: Object.keys(ShipSystem)
+        .filter(val => isNaN(Number(val))),
+    },
+    effectToApply: {
+      control: 'select',
+      options: Object.values(SystemStatusEffectType),
+    }
+  },
+  parameters: {
+    controls: { exclude: ['getInitialState', 'getEffects', 'renderMenuItems'] },
+  },
 };
 
 export const Busy: Story = {
+  ...Empty,
   args: {
     getInitialState: () => {
       const space = initializeTestScenario();
@@ -67,73 +86,5 @@ export const Busy: Story = {
         healthChange: -1,
       } as DamageAction,
     ],
-  },
-};
-
-export const Custom: Story = {
-  args: {
-    getInitialState: initializeTestScenario,
-    getEffects: () => [],
-  },
-  render: (props) => {
-    const { t } = useTranslation('engineering');
-
-    const [targetSystem, setTargetSystem] = useState<ShipSystem>(ShipSystem.Hull);
-
-    const customRender = (
-      dispatch: Dispatch<EngineeringAction>,
-      defaultRender: () => JSX.Element
-    ) => {
-      return (
-        <Box sx={{ display: 'flex', flexDirection: 'row', gap: '1em', backgroundColor: '#000' }}>
-          <Box sx={{ fontSize: '0.8em' }}>
-            <h2>Add cards</h2>
-            <ul>
-              {Object.values(EngineeringCardType).map((type, index) => (
-                <li
-                  key={index}
-                  onClick={() => dispatch({ type: 'add custom card', cardType: type })}
-                >
-                  {t(`card ${type} title`)}
-                </li>
-              ))}
-            </ul>
-          </Box>
-
-          {defaultRender()}
-
-          <Box sx={{ fontSize: '0.8em' }}>
-            <h2>Add effects</h2>
-            <Select
-              value={targetSystem}
-              onChange={(e) => setTargetSystem(e.target.value as ShipSystem)}
-            >
-              {Object.keys(ShipSystem)
-                .map((key) => Number(key) as ShipSystem)
-                .filter((key) => !isNaN(key))
-                .map((type, index) => (
-                  <MenuItem key={index} value={type}>
-                    {t(`system ${type}`)}
-                  </MenuItem>
-                ))}
-            </Select>
-            <ul>
-              {Object.values(SystemStatusEffectType).map((type, index) => (
-                <li
-                  key={index}
-                  onClick={() =>
-                    dispatch({ type: 'add custom effect', system: targetSystem, effectType: type })
-                  }
-                >
-                  {t(`effect ${type}`)}
-                </li>
-              ))}
-            </ul>
-          </Box>
-        </Box>
-      );
-    };
-
-    return <EngineeringTraining {...props} customRender={customRender} />;
   },
 };

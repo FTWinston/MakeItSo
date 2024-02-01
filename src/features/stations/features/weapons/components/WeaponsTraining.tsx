@@ -11,7 +11,6 @@ import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/g
 
 interface Props {
     getInitialState: () => Space;
-    //customRender?: (dispatch: Dispatch<WeaponsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
 const shipId = 1;
@@ -29,7 +28,7 @@ export const WeaponsTraining: React.FC<Props> = (props) => {
 
     const { power, health } = ship.systems.get(ShipSystem.Weapons);
 
-    const defaultRender = () => (
+    return (
         <Weapons
             {...ship.weapons}
             power={power}
@@ -37,6 +36,4 @@ export const WeaponsTraining: React.FC<Props> = (props) => {
             shipDestroyed={ship.destroyed}
         />
     );
-
-    return /*props.customRender?.(dispatch, defaultRender) ??*/ defaultRender();
 };

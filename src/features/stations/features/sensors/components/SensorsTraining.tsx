@@ -11,7 +11,6 @@ import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/g
 
 interface Props {
     getInitialState: () => Space;
-    //customRender?: (dispatch: Dispatch<SensorsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
 const shipId = 1;
@@ -27,7 +26,7 @@ export const SensorsTraining: React.FC<Props> = (props) => {
 
     const { power, health } = ship.systems.get(ShipSystem.Sensors);
     
-    const defaultRender = () => (
+    return (
         <Sensors
             power={power}
             health={health}
@@ -45,6 +44,4 @@ export const SensorsTraining: React.FC<Props> = (props) => {
             flagCell={index => dispatch({ type: 'flag', index })}
         />
     );
-
-    return /*props.customRender?.(dispatch, defaultRender) ??*/ defaultRender();
 };

@@ -11,7 +11,6 @@ import { SpaceAction, getStorySpaceReducer } from '../../../utils/getStorySpaceR
 
 interface Props {
     getInitialState: () => Space;
-    //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
     renderMenuItems?: () => JSX.Element;
 }
 
@@ -31,7 +30,7 @@ export const HelmTraining: React.FC<Props> = (props) => {
     const otherObjects = [...space.objects.values()]
         .filter(obj => obj.id !== ship.id);
 
-    const defaultRender = () => (
+    return (
         <Helm
             power={power}
             health={health}
@@ -52,6 +51,4 @@ export const HelmTraining: React.FC<Props> = (props) => {
             renderMenuItems={props.renderMenuItems}
         />
     );
-
-    return /*props.customRender?.(dispatch, defaultRender) ??*/ defaultRender();
 };
