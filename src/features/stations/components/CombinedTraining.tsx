@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { useMemo, useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
 import { useInterval } from 'src/hooks/useInterval';
 import { Box, styled } from 'src/lib/mui';
@@ -9,8 +9,10 @@ import { Helm, HelmAction } from '../features/helm';
 import { Sensors, SensorsAction } from '../features/sensors';
 import { WeaponsAction } from '../features/weapons';
 import { Weapons } from '../features/weapons/components/Weapons';
+import { FakeShip } from 'src/classes/FakeShip';
 import { Space } from 'src/classes/Space';
-import { spaceCrewActionReducer } from '../utils/spaceCrewActionReducer';
+import { getStorySpaceReducer } from '../utils/getStorySpaceReducer';
+import { crewActionReducer } from '../utils/crewActionReducer';
 
 interface Props {
     getInitialState: () => Space;
@@ -24,17 +26,21 @@ const Root = styled(Box)({
     backgroundColor: '#333',
 });
 
+const shipId = 1;
+const spaceReducer = getStorySpaceReducer(shipId, crewActionReducer);
+
 export const CombinedTraining: React.FC<Props> = (props) => {
     const shipId = 1;
-    const [space, dispatch] = useReducer(produce(spaceCrewActionReducer), undefined, props.getInitialState);
+    const [space, dispatch] = useReducer(produce(spaceReducer), undefined, props.getInitialState);
     const ship = space.objects.get(shipId) as Ship; // TODO: well this could be tidier, couldn't it.
 
-    const engineeringDispatch = (action: EngineeringAction) => dispatch({ shipId, station: CrewStation.Engineering, action });
-    const helmDispatch = (action: HelmAction) => dispatch({ shipId, station: CrewStation.Helm, action });
-    const sensorsDispatch = (action: SensorsAction) => dispatch({ shipId, station: CrewStation.Sensors, action });
-    const weaponsDispatch = (action: WeaponsAction) => dispatch({ shipId, station: CrewStation.Weapons, action });
+    const engineeringDispatch = (action: EngineeringAction) => dispatch({ station: CrewStation.Engineering, action });
+    const helmDispatch = (action: HelmAction) => dispatch({ station: CrewStation.Helm, action });
+    const sensorsDispatch = (action: SensorsAction) => dispatch({ station: CrewStation.Sensors, action });
+    const weaponsDispatch = (action: WeaponsAction) => dispatch({ station: CrewStation.Weapons, action });
     
     // Tick the everything in space, including the ship and all of its systems, at a regular interval.
+    useInterval(() => dispatch({ type: 'tick' }), 200);
     useInterval(() => dispatch({ station: null, type: 'tick' }), 200);
 
     const { systemOrder: engineeringSystemOrder, ...otherEngineeringState } = ship.engineering;

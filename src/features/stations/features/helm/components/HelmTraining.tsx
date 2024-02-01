@@ -1,33 +1,35 @@
 import { produce } from 'immer';
 import { useReducer } from 'react';
-import { GameObject } from 'src/classes/GameObject';
 import { Ship } from 'src/classes/Ship';
 import { Space } from 'src/classes/Space';
 import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
-import { getTime } from 'src/utils/timeSpans';
-import { otherObjectsTrainingReducer } from '../utils/otherObjectsTrainingReducer';
 import { HelmAction } from '../types/HelmState';
 import { Helm } from './Helm';
+import { SpaceAction, getStorySpaceReducer } from '../../../utils/getStorySpaceReducer';
 
 interface Props {
-    getInitialState: () => Ship;
-    getOtherObjects: (space: Space) => GameObject[]
+    getInitialState: () => Space;
     //customRender?: (dispatch: Dispatch<HelmAction>, defaultRender: () => JSX.Element) => JSX.Element;
     renderMenuItems?: () => JSX.Element;
 }
 
-const helmActionReducer = (ship: Ship, action: HelmAction) => crewActionReducer(ship, { station: CrewStation.Helm, action });
+const shipId = 1;
+const spaceReducer = getStorySpaceReducer(shipId, crewActionReducer);
+const helmActionReducer = (space: Space, action: SpaceAction<HelmAction>) => spaceReducer(space, action.type === 'tick' ? action : { station: CrewStation.Helm, action });
 
 export const HelmTraining: React.FC<Props> = (props) => {
-    const [ship, helmDispatch] = useReducer(produce(helmActionReducer), undefined, props.getInitialState);
-    const [otherObjects, otherDispatch] = useReducer(produce(otherObjectsTrainingReducer), ship.space, props.getOtherObjects);
+    const [space, dispatch] = useReducer(produce(helmActionReducer), undefined, props.getInitialState);
+    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
-    useInterval(() => ship.space.tick(getTime()), 200);
+    useInterval(() => dispatch({ type: 'tick' }), 200);
 
     const { power, health } = ship.systems.get(ShipSystem.Engines);
+
+    const otherObjects = [...space.objects.values()]
+        .filter(obj => obj.id !== ship.id);
 
     const defaultRender = () => (
         <Helm
@@ -37,16 +39,16 @@ export const HelmTraining: React.FC<Props> = (props) => {
             ship={ship}
             shipDestroyed={ship.destroyed}
             otherObjects={otherObjects}
-            stop={() => helmDispatch({ type: 'stop' })}
-            discardManeuverCard={() => helmDispatch({ type: 'discard' })}
+            stop={() => dispatch({ type: 'stop' })}
+            discardManeuverCard={() => dispatch({ type: 'discard' })}
             maneuvers={ship.helm.maneuvers}
             maneuverChoice={ship.helm.maneuverChoice}
             speed={ship.helm.speed}
             speedWhileRotating={ship.helm.speedWhileRotating}
             rotationalSpeed={ship.helm.rotationalSpeed}
             destination={ship.helm.destination?.val ?? null}
-            setDestination={destination => helmDispatch({ type: 'set destination', destination })}
-            maneuver={choice => helmDispatch({ type: 'maneuver', choice })}
+            setDestination={destination => dispatch({ type: 'set destination', destination })}
+            maneuver={choice => dispatch({ type: 'maneuver', choice })}
             renderMenuItems={props.renderMenuItems}
         />
     );

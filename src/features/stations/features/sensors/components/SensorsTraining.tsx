@@ -4,40 +4,42 @@ import { Ship } from 'src/classes/Ship';
 import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
-import { getTime } from 'src/utils/timeSpans';
 import { SensorsAction } from '../types/SensorsState';
 import { Sensors } from './Sensors';
+import { Space } from 'src/classes/Space';
+import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/getStorySpaceReducer';
 
 interface Props {
-    getInitialState: () => Ship;
+    getInitialState: () => Space;
     //customRender?: (dispatch: Dispatch<SensorsAction>, defaultRender: () => JSX.Element) => JSX.Element;
 }
 
-const sensorsActionReducer = (ship: Ship, action: SensorsAction) => crewActionReducer(ship, { station: CrewStation.Sensors, action });
+const shipId = 1;
+const spaceReducer = getStorySpaceReducer(shipId, crewActionReducer);
+const sensorsActionReducer = (space: Space, action: SpaceAction<SensorsAction>) => spaceReducer(space, action.type === 'tick' ? action : { station: CrewStation.Sensors, action });
 
 export const SensorsTraining: React.FC<Props> = (props) => {
-    const { getInitialState } = props;
-
-    const [state, dispatch] = useReducer(produce(sensorsActionReducer), undefined, getInitialState);
+    const [space, dispatch] = useReducer(produce(sensorsActionReducer), undefined, props.getInitialState);
+    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
-    useInterval(() => state.space.tick(getTime()), 200);
+    useInterval(() => dispatch({ type: 'tick' }), 200);
 
-    const { power, health } = state.systems.get(ShipSystem.Sensors);
+    const { power, health } = ship.systems.get(ShipSystem.Sensors);
     
     const defaultRender = () => (
         <Sensors
             power={power}
             health={health}
-            shipDestroyed={state.destroyed}
-            targets={state.sensors.possibleTargets}
-            viewTarget={state.viewTarget}
+            shipDestroyed={ship.destroyed}
+            targets={ship.sensors.possibleTargets}
+            viewTarget={ship.viewTarget}
             setViewTarget={target => dispatch({ type: 'view', target })}
-            scanTarget={state.sensors.currentTarget?.id}
+            scanTarget={ship.sensors.currentTarget?.id}
             setScanTarget={target => dispatch({ type: 'target', target })}
-            scanTargetTree={state.sensors.scanTree}
-            scanItem={state.sensors.currentScan}
-            scanCellBoard={state.sensors.scanCellBoard}
+            scanTargetTree={ship.sensors.scanTree}
+            scanItem={ship.sensors.currentScan}
+            scanCellBoard={ship.sensors.scanCellBoard}
             setScanItem={scan => dispatch({ type: 'scan', scan })}
             revealCell={index => dispatch({ type: 'reveal', index })}
             flagCell={index => dispatch({ type: 'flag', index })}

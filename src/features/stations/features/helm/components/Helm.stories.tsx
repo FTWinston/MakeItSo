@@ -1,11 +1,8 @@
 import { StoryObj } from '@storybook/react';
-import { getClosestCellCenter, worldScaleCellRadius } from '../../../features/spacemap';
-import { FakeShip } from '../../../../../classes/FakeShip';
 import initializeTestScenario from 'src/assets/scenarios/testScenario';
-import { ManeuverType } from '../features/maneuvers';
-import { HelmTraining } from './HelmTraining';
+import { Ship } from 'src/classes/Ship';
 import { ShipSystem } from 'src/types/ShipSystem';
-import { hostileShip, neutralShip } from 'src/assets/scenarios/testScenario';
+import { HelmTraining } from './HelmTraining';
 
 export default {
   title: 'Helm',
@@ -17,65 +14,27 @@ type Story = StoryObj<typeof HelmTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const ship = initializeTestScenario();
+      const space = initializeTestScenario();
 
-      const fromPos = getClosestCellCenter(0, 0, worldScaleCellRadius);
-      const toPos = getClosestCellCenter(100, 0, worldScaleCellRadius);
+      const idsToRemove = [...space.objects.keys()]
+        .filter(id => id !== 1);
 
-      ship.motion = [
-        {
-          time: 0,
-          val: {
-            ...fromPos,
-            angle: 0,
-          },
-        },
-        {
-          time: 5000,
-          val: {
-            ...toPos,
-            angle: 0,
-          },
-        },
-      ];
+      for (const id of idsToRemove) {
+        space.objects.get(id)?.delete();
+      }
 
-      return ship;
-    },
-    getOtherObjects: () => {
-      return [];
-    },
+      return space;
+    }
   },
 };
 
 export const Others: Story = {
   args: {
     getInitialState: () => {
-      const state = Empty.args!.getInitialState!();
-      state.systems.get(ShipSystem.Engines).power = 4;
-      return state;
-    },
-
-    getOtherObjects: (space) => {
-      const other1 = new FakeShip(
-        space,
-        neutralShip,
-        {
-          ...getClosestCellCenter(103, 5, worldScaleCellRadius),
-          angle: (Math.PI * 4) / 3,
-        },
-        [ManeuverType.HardLeft, ManeuverType.SlowForward]
-      );
-      const other2 = new FakeShip(
-        space,
-        hostileShip,
-        {
-          ...getClosestCellCenter(98, -5, worldScaleCellRadius),
-          angle: Math.PI / 3,
-        },
-        [ManeuverType.SweepRight]
-      );
-
-      return [other1, other2];
+      const space = initializeTestScenario();
+      const ship = space.objects.get(1) as Ship;
+      ship.systems.get(ShipSystem.Engines).power = 4;
+      return space;
     },
   },
 };

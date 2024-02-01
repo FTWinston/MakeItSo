@@ -4,26 +4,30 @@ import { Ship } from 'src/classes/Ship';
 import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
 import { CrewStation } from 'src/types/ShipSystem';
-import { getTime } from 'src/utils/timeSpans';
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { Engineering } from './Engineering';
+import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/getStorySpaceReducer';
+import { Space } from 'src/classes/Space';
 
 interface Props {
-    getInitialState: () => Ship;
+    getInitialState: () => Space;
     getEffects: () => DamageAction[];
     customRender?: (dispatch: Dispatch<EngineeringAction>, defaultRender: () => JSX.Element) => JSX.Element;
     renderMenuItems?: () => JSX.Element;
 }
 
-const engineeringActionReducer = (ship: Ship, action: EngineeringAction) => crewActionReducer(ship, { station: CrewStation.Engineering, action });
+const shipId = 1;
+const spaceReducer = getStorySpaceReducer(shipId, crewActionReducer);
+const engineeringActionReducer = (space: Space, action: SpaceAction<EngineeringAction>) => spaceReducer(space, action.type === 'tick' ? action : { station: CrewStation.Engineering, action });
 
 export const EngineeringTraining: React.FC<Props> = (props) => {
     const { getEffects, getInitialState } = props;
 
-    const [state, dispatch] = useReducer(produce(engineeringActionReducer), undefined, getInitialState);
+    const [space, dispatch] = useReducer(produce(engineeringActionReducer), undefined, getInitialState);
+    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
-    useInterval(() => state.space.tick(getTime()), 200);
+    useInterval(() => dispatch({ type: 'tick' }), 200);
 
     // Check for new effects and apply them at a less frequent interval.
     useInterval(() => {
@@ -34,14 +38,14 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
         }
     }, 1500, [getEffects]);
 
-    const { systemOrder, ...otherState } = state.engineering;
-    const orderedSystemInfo = systemOrder.map(system => state.systems.get(system));
+    const { systemOrder, ...otherState } = ship.engineering;
+    const orderedSystemInfo = systemOrder.map(system => ship.systems.get(system));
 
     const defaultRender = () => (
         <Engineering
             {...otherState}
             renderMenuItems={props.renderMenuItems}
-            shipDestroyed={state.destroyed}
+            shipDestroyed={ship.destroyed}
             systems={orderedSystemInfo}
             chooseCard={cardId => dispatch({ type: 'draw', cardId })}
             playCard={(card, targetSystem, repair) => dispatch({ type: 'play', cardId: card.id, targetSystem, repair })}

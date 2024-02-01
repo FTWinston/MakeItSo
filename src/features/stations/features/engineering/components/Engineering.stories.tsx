@@ -14,6 +14,7 @@ import { getComplexStoryTiles } from '../features/SystemTiles/components/SystemT
 import { DamageAction, EngineeringAction } from '../types/EngineeringState';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { EngineeringTraining } from './EngineeringTraining';
+import { Ship } from 'src/classes/Ship';
 
 export default {
   title: 'Engineering',
@@ -38,7 +39,8 @@ export const Empty: Story = {
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const ship = initializeTestScenario();
+      const space = initializeTestScenario();
+      const ship = space.objects.get(1) as Ship;
       const systems = getComplexStoryTiles();
 
       ship.systems = arrayToMap(systems, (info) => info.system) as DefiniteMap<
@@ -56,7 +58,7 @@ export const Busy: Story = {
         nextEffectId: 1,
       };
 
-      return ship;
+      return space;
     },
     getEffects: () => [
       {

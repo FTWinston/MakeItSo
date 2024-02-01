@@ -12,13 +12,16 @@ type Story = StoryObj<typeof SensorsTraining>;
 export const Empty: Story = {
   args: {
     getInitialState: () => {
-      const ship = initializeTestScenario();
+      const space = initializeTestScenario();
       
-      for (const other of ship.space.objects.keys()) {
-        ship.space.remove(other);
+      const idsToRemove = [...space.objects.keys()]
+        .filter(id => id !== 1);
+
+      for (const id of idsToRemove) {
+        space.objects.get(id)?.delete();
       }
 
-      return ship;
+      return space;
     }
   }
 }
@@ -26,19 +29,9 @@ export const Empty: Story = {
 export const Busy: Story = {
   args: {
     getInitialState: () => {
-      const ship = initializeTestScenario();
-
-      const otherObjects = [...ship.space.objects.values()]
-        .filter(object => object.id !== ship.id);
-
-      ship.sensors.possibleTargets = otherObjects.map(object => ({
-        id: object.id,
-        draw: object.draw,
-        faction: object.faction,
-        description: 'Some Target',
-      }));
-
-      return ship;
+      const space = initializeTestScenario();
+      
+      return space;
     },
   },
 };
