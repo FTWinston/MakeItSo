@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { useEffect, useReducer, useRef } from 'react';
+import { Dispatch, useEffect, useReducer, useRef } from 'react';
 import { Ship } from 'src/classes/Ship';
 import { engineeringReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
@@ -33,25 +33,7 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
 
-    const initialRender = useRef(true);
-
-    // Check for a card being added manually.
-    useEffect(() => {
-        if (cardToAdd && !initialRender.current) {
-            dispatch({ type: 'add custom card', cardType: cardToAdd });
-        }
-    }, [cardToAdd]);
-
-    // Check for an effect being added manually.
-    useEffect(() => {
-        if (systemToAffect && effectToApply && !initialRender.current) {
-            const system = Number(Object.keys(ShipSystem).filter(x => ShipSystem[x as any] == systemToAffect)[0]);
-            dispatch({ type: 'add custom effect', system, effectType: effectToApply, });
-        }
-        else {
-            initialRender.current = false;
-        }
-    }, [systemToAffect, effectToApply])
+    useEngineeringStoryControls(dispatch, cardToAdd, systemToAffect, effectToApply);
 
     // Check for new automatic effects and apply them at a less frequent interval.
     useInterval(() => {
@@ -76,3 +58,25 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
         />
     );
 };
+
+export function useEngineeringStoryControls(dispatch: Dispatch<EngineeringAction>, cardToAdd?: EngineeringCardType, systemToAffect?: string, effectToApply?: SystemStatusEffectType) {
+    const initialRender = useRef(true);
+
+    // Check for a card being added manually.
+    useEffect(() => {
+        if (cardToAdd && !initialRender.current) {
+            dispatch({ type: 'add custom card', cardType: cardToAdd });
+        }
+    }, [cardToAdd]);
+
+    // Check for an effect being added manually.
+    useEffect(() => {
+        if (systemToAffect && effectToApply && !initialRender.current) {
+            const system = Number(Object.keys(ShipSystem).filter(x => ShipSystem[x as any] == systemToAffect)[0]);
+            dispatch({ type: 'add custom effect', system, effectType: effectToApply, });
+        }
+        else {
+            initialRender.current = false;
+        }
+    }, [systemToAffect, effectToApply]);
+}

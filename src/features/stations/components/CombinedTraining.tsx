@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { useReducer } from 'react';
+import { useEffect, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
 import { useInterval } from 'src/hooks/useInterval';
 import { Box, styled } from 'src/lib/mui';
@@ -8,12 +8,21 @@ import { Engineering, EngineeringAction } from '../features/engineering';
 import { Helm, HelmAction } from '../features/helm';
 import { Sensors, SensorsAction } from '../features/sensors';
 import { Weapons, WeaponsAction } from '../features/weapons';
+import { FakeShip } from 'src/classes/FakeShip';
 import { Space } from 'src/classes/Space';
 import { getStorySpaceReducer } from '../utils/getStorySpaceReducer';
 import { storySystemReducer } from '../utils/storySystemReducer';
+import { SystemStatusEffectType } from '../features/engineering/types/SystemStatusEffect';
+import { EngineeringCardType } from '../features/engineering/features/Cards';
+import { useEngineeringStoryControls } from '../features/engineering/components/EngineeringTraining';
 
 interface Props {
     getInitialState: () => Space;
+    otherShipState: 'idle' | 'mobile' | 'hostile';
+
+    engineering_CardToAdd?: EngineeringCardType;
+    engineering_SystemToAffect?: string;
+    engineering_EffectToApply?: SystemStatusEffectType;
 }
 
 const Root = styled(Box)({
@@ -39,6 +48,30 @@ export const CombinedTraining: React.FC<Props> = (props) => {
     
     // Tick the everything in space, including the ship and all of its systems, at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
+
+    useEffect(() => {
+        const otherObj = space.objects.get(2);
+        
+        if (otherObj === undefined) {
+            return;
+        }
+        
+        const otherShip = otherObj as FakeShip;
+
+        switch (props.otherShipState) {
+            case 'idle':
+                // TODO: make otherShip neutral, make it stop.
+                break;
+            case 'mobile':
+                // TODO: make otherShip friendly, give it movement.
+                break;
+            case 'hostile':
+                // TODO: make otherShip hostile, give it movement.
+                break;
+        }
+    }, [props.otherShipState]);
+
+    useEngineeringStoryControls(engineeringDispatch, props.engineering_CardToAdd, props.engineering_SystemToAffect, props.engineering_EffectToApply);
 
     const { systemOrder: engineeringSystemOrder, ...otherEngineeringState } = ship.engineering;
     const engineeringSystemInfo = engineeringSystemOrder.map(system => ship.systems.get(system));
