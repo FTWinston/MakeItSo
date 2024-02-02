@@ -14,6 +14,7 @@ import { QuickTransition } from 'src/components/QuickTransition';
 import { Scanning } from './Scanning';
 
 interface Props {
+    renderMenuItems?: () => JSX.Element;
     shipDestroyed?: ShipDestroyingSystem;
     power: PowerLevel;
     health: number;
@@ -78,7 +79,11 @@ export const Sensors: React.FC<Props> = (props) => {
     
     return (
         <Root shipDestroyed={props.shipDestroyed}>
-            <SensorsAppBar power={props.power} health={props.health} />
+            <SensorsAppBar
+                power={props.power}
+                health={props.health}
+                renderMenuItems={props.renderMenuItems}
+            />
             <CrumbWrapper>
                 <SensorBreadcrumbs depth={actualViewStage} setDepth={setViewStage} />
                 

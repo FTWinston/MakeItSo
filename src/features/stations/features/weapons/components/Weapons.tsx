@@ -6,6 +6,7 @@ import { WeaponsAppBar } from './WeaponsAppBar';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
+    renderMenuItems?: () => JSX.Element;
     shipDestroyed?: ShipDestroyingSystem;
     power: PowerLevel;
     health: number;
@@ -21,7 +22,11 @@ export const Weapons: React.FC<Props> = (props) => {
     
     return (
         <Root shipDestroyed={props.shipDestroyed}>
-            <WeaponsAppBar power={props.power} health={props.health} />
+            <WeaponsAppBar
+                power={props.power}
+                health={props.health}
+                renderMenuItems={props.renderMenuItems}
+            />
 
         </Root>
     );

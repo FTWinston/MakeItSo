@@ -1,5 +1,5 @@
 import { produce } from 'immer';
-import { useReducer } from 'react';
+import { Dispatch, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
 import { crewActionReducer } from 'src/features/stations';
 import { useInterval } from 'src/hooks/useInterval';
@@ -11,6 +11,7 @@ import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/g
 
 interface Props {
     getInitialState: () => Space;
+    renderMenuItems?: () => JSX.Element;
 }
 
 const shipId = 1;
@@ -24,6 +25,23 @@ export const SensorsTraining: React.FC<Props> = (props) => {
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
 
+    return (
+        <CoreSensorsTraining
+            dispatch={dispatch}
+            renderMenuItems={props.renderMenuItems}
+            ship={ship}
+        />
+    );
+};
+
+interface CoreProps {
+    dispatch: Dispatch<SensorsAction>;
+    renderMenuItems?: () => JSX.Element;
+    ship: Ship;
+}
+
+export const CoreSensorsTraining: React.FC<CoreProps> = (props) => {
+    const { dispatch, renderMenuItems, ship } = props;
     const { power, health } = ship.systems.get(ShipSystem.Sensors);
     
     return (
@@ -42,6 +60,7 @@ export const SensorsTraining: React.FC<Props> = (props) => {
             setScanItem={scan => dispatch({ type: 'scan', scan })}
             revealCell={index => dispatch({ type: 'reveal', index })}
             flagCell={index => dispatch({ type: 'flag', index })}
+            renderMenuItems={renderMenuItems}
         />
     );
-};
+}

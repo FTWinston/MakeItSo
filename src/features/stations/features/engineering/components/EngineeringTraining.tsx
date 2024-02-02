@@ -25,17 +25,14 @@ const spaceReducer = getStorySpaceReducer(shipId, engineeringReducer);
 const engineeringActionReducer = (space: Space, action: SpaceAction<EngineeringAction>) => spaceReducer(space, action);
 
 export const EngineeringTraining: React.FC<Props> = (props) => {
-    const { getEffects, getInitialState, cardToAdd, systemToAffect, effectToApply } = props;
-
-    const [space, dispatch] = useReducer(produce(engineeringActionReducer), undefined, getInitialState);
+    const [space, dispatch] = useReducer(produce(engineeringActionReducer), undefined, props.getInitialState);
     const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
 
-    useEngineeringStoryControls(dispatch, cardToAdd, systemToAffect, effectToApply);
-
     // Check for new automatic effects and apply them at a less frequent interval.
+    const { getEffects } = props;
     useInterval(() => {
         const effects = getEffects();
 
@@ -44,22 +41,30 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
         }
     }, 1500, [getEffects]);
 
-    const { systemOrder, ...otherState } = ship.engineering;
-    const orderedSystemInfo = systemOrder.map(system => ship.systems.get(system));
-
     return (
-        <Engineering
-            {...otherState}
+        <CoreEngineeringTraining
+            dispatch={dispatch}
+            ship={ship}
             renderMenuItems={props.renderMenuItems}
-            shipDestroyed={ship.destroyed}
-            systems={orderedSystemInfo}
-            chooseCard={cardId => dispatch({ type: 'draw', cardId })}
-            playCard={(card, targetSystem, repair) => dispatch({ type: 'play', cardId: card.id, targetSystem, repair })}
+            cardToAdd={props.cardToAdd}
+            systemToAffect={props.systemToAffect}
+            effectToApply={props.effectToApply}
         />
     );
 };
 
-export function useEngineeringStoryControls(dispatch: Dispatch<EngineeringAction>, cardToAdd?: EngineeringCardType, systemToAffect?: string, effectToApply?: SystemStatusEffectType) {
+interface CoreProps {
+    ship: Ship;
+    dispatch: Dispatch<EngineeringAction>;
+    renderMenuItems?: () => JSX.Element;
+    cardToAdd?: EngineeringCardType;
+    systemToAffect?: string;
+    effectToApply?: SystemStatusEffectType;
+}
+
+export const CoreEngineeringTraining: React.FC<CoreProps> = (props) => {    
+    const { dispatch, renderMenuItems, ship, cardToAdd, systemToAffect, effectToApply } = props;
+
     const initialRender = useRef(true);
 
     // Check for a card being added manually.
@@ -79,4 +84,18 @@ export function useEngineeringStoryControls(dispatch: Dispatch<EngineeringAction
             initialRender.current = false;
         }
     }, [systemToAffect, effectToApply]);
-}
+
+    const { systemOrder, ...otherState } = ship.engineering;
+    const orderedSystemInfo = systemOrder.map(system => ship.systems.get(system));
+
+    return (
+        <Engineering
+            {...otherState}
+            renderMenuItems={renderMenuItems}
+            shipDestroyed={ship.destroyed}
+            systems={orderedSystemInfo}
+            chooseCard={cardId => dispatch({ type: 'draw', cardId })}
+            playCard={(card, targetSystem, repair) => dispatch({ type: 'play', cardId: card.id, targetSystem, repair })}
+        />
+    );
+};

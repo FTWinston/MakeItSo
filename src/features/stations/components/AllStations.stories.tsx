@@ -23,21 +23,19 @@ export const TestScenario: Story = {
       options: ['idle', 'mobile', 'hostile'],
     },
 
-    
-    engineering_CardToAdd: {
+    engineeringCardToAdd: {
       control: 'select',
       options: Object.values(EngineeringCardType),
     },
-    engineering_SystemToAffect: {
+    engineeringSystemToAffect: {
       control: 'inline-radio',
       options: Object.keys(ShipSystem)
         .filter(val => isNaN(Number(val))),
     },
-    engineering_EffectToApply: {
+    engineeringEffectToApply: {
       control: 'select',
       options: Object.values(SystemStatusEffectType),
-    }
-
+    },
   },
   parameters: {
     controls: { exclude: 'getInitialState' },

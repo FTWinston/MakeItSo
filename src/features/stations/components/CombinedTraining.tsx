@@ -3,26 +3,29 @@ import { useEffect, useReducer } from 'react';
 import { Ship } from 'src/classes/Ship';
 import { useInterval } from 'src/hooks/useInterval';
 import { Box, styled } from 'src/lib/mui';
-import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
-import { Engineering, EngineeringAction } from '../features/engineering';
-import { Helm, HelmAction } from '../features/helm';
-import { Sensors, SensorsAction } from '../features/sensors';
-import { Weapons, WeaponsAction } from '../features/weapons';
+import { CrewStation } from 'src/types/ShipSystem';
+import { EngineeringAction } from '../features/engineering';
+import { HelmAction } from '../features/helm';
+import { SensorsAction } from '../features/sensors';
+import { WeaponsAction } from '../features/weapons';
 import { FakeShip } from 'src/classes/FakeShip';
 import { Space } from 'src/classes/Space';
 import { getStorySpaceReducer } from '../utils/getStorySpaceReducer';
 import { storySystemReducer } from '../utils/storySystemReducer';
 import { SystemStatusEffectType } from '../features/engineering/types/SystemStatusEffect';
 import { EngineeringCardType } from '../features/engineering/features/Cards';
-import { useEngineeringStoryControls } from '../features/engineering/components/EngineeringTraining';
+import { CoreEngineeringTraining } from '../features/engineering/components/EngineeringTraining';
+import { CoreWeaponsTraining } from '../features/weapons/components/WeaponsTraining';
+import { CoreSensorsTraining } from '../features/sensors/components/SensorsTraining';
+import { CoreHelmTraining } from '../features/helm/components/HelmTraining';
 
 interface Props {
     getInitialState: () => Space;
     otherShipState: 'idle' | 'mobile' | 'hostile';
 
-    engineering_CardToAdd?: EngineeringCardType;
-    engineering_SystemToAffect?: string;
-    engineering_EffectToApply?: SystemStatusEffectType;
+    engineeringCardToAdd?: EngineeringCardType;
+    engineeringSystemToAffect?: string;
+    engineeringEffectToApply?: SystemStatusEffectType;
 }
 
 const Root = styled(Box)({
@@ -71,66 +74,27 @@ export const CombinedTraining: React.FC<Props> = (props) => {
         }
     }, [props.otherShipState]);
 
-    useEngineeringStoryControls(engineeringDispatch, props.engineering_CardToAdd, props.engineering_SystemToAffect, props.engineering_EffectToApply);
-
-    const { systemOrder: engineeringSystemOrder, ...otherEngineeringState } = ship.engineering;
-    const engineeringSystemInfo = engineeringSystemOrder.map(system => ship.systems.get(system));
-
-    const { power: enginePower, health: engineHealth } = ship.systems.get(ShipSystem.Engines);
-    const { power: sensorPower, health: sensorHealth } = ship.systems.get(ShipSystem.Sensors);
-    const { power: weaponPower, health: weaponHealth } = ship.systems.get(ShipSystem.Weapons);
-
-    const otherObjects = [...space.objects.values()]
-        .filter(obj => obj.id !== ship.id);
-
     return (
         <Root>
-            <Helm
-                power={enginePower}
-                health={engineHealth}
-                evasion={ship.evasionChance}
+            <CoreHelmTraining
+                dispatch={helmDispatch}
                 ship={ship}
-                shipDestroyed={ship.destroyed}
-                otherObjects={otherObjects}
-                stop={() => helmDispatch({ type: 'stop' })}
-                discardManeuverCard={() => helmDispatch({ type: 'discard' })}
-                maneuvers={ship.helm.maneuvers}
-                maneuverChoice={ship.helm.maneuverChoice}
-                speed={ship.helm.speed}
-                speedWhileRotating={ship.helm.speedWhileRotating}
-                rotationalSpeed={ship.helm.rotationalSpeed}
-                destination={ship.helm.destination?.val ?? null}
-                setDestination={destination => helmDispatch({ type: 'set destination', destination })}
-                maneuver={choice => helmDispatch({ type: 'maneuver', choice })}
+                objects={space.objects}
             />
-            <Sensors
-                power={sensorPower}
-                health={sensorHealth}
-                shipDestroyed={ship.destroyed}
-                targets={ship.sensors.possibleTargets}
-                viewTarget={ship.viewTarget}
-                setViewTarget={target => sensorsDispatch({ type: 'view', target })}
-                scanTarget={ship.sensors.currentTarget?.id}
-                setScanTarget={target => sensorsDispatch({ type: 'target', target })}
-                scanTargetTree={ship.sensors.scanTree}
-                scanItem={ship.sensors.currentScan}
-                scanCellBoard={ship.sensors.scanCellBoard}
-                setScanItem={scan => sensorsDispatch({ type: 'scan', scan })}
-                revealCell={index => sensorsDispatch({ type: 'reveal', index })}
-                flagCell={index => sensorsDispatch({ type: 'flag', index })}
+            <CoreSensorsTraining
+                dispatch={sensorsDispatch}
+                ship={ship}
             />
-            <Engineering
-                {...otherEngineeringState}
-                shipDestroyed={ship.destroyed}
-                systems={engineeringSystemInfo}
-                chooseCard={cardId => engineeringDispatch({ type: 'draw', cardId })}
-                playCard={(card, targetSystem, repair) => engineeringDispatch({ type: 'play', cardId: card.id, targetSystem, repair })}
+            <CoreEngineeringTraining
+                dispatch={engineeringDispatch}
+                ship={ship}
+                cardToAdd={props.engineeringCardToAdd}
+                systemToAffect={props.engineeringSystemToAffect}
+                effectToApply={props.engineeringEffectToApply}
             />
-            <Weapons
-                {...ship.weapons}
-                power={weaponPower}
-                health={weaponHealth}
-                shipDestroyed={ship.destroyed}
+            <CoreWeaponsTraining
+                dispatch={weaponsDispatch}
+                ship={ship}
             />
         </Root>
     )
