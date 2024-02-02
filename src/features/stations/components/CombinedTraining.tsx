@@ -17,6 +17,7 @@ import { CoreEngineeringTraining } from '../features/engineering/components/Engi
 import { CoreWeaponsTraining } from '../features/weapons/components/WeaponsTraining';
 import { CoreSensorsTraining } from '../features/sensors/components/SensorsTraining';
 import { CoreHelmTraining } from '../features/helm/components/HelmTraining';
+import { ErrorBoundary } from 'src/components/ErrorBoundary';
 
 interface Props {
     getInitialState: () => Space;
@@ -73,29 +74,37 @@ export const CombinedTraining: React.FC<Props> = (props) => {
 
     return (
         <Root>
-            <CoreHelmTraining
-                dispatch={helmDispatch}
-                space={space}
-                shipId={shipId}
-            />
-            <CoreSensorsTraining
-                dispatch={sensorsDispatch}
-                space={space}
-                shipId={shipId}
-            />
-            <CoreEngineeringTraining
-                dispatch={engineeringDispatch}
-                space={space}
-                shipId={shipId}
-                cardToAdd={props.engineeringCardToAdd}
-                systemToAffect={props.engineeringSystemToAffect}
-                effectToApply={props.engineeringEffectToApply}
-            />
-            <CoreWeaponsTraining
-                dispatch={weaponsDispatch}
-                space={space}
-                shipId={shipId}
-            />
+            <ErrorBoundary>
+                <CoreHelmTraining
+                    dispatch={helmDispatch}
+                    space={space}
+                    shipId={shipId}
+                />
+            </ErrorBoundary>
+            <ErrorBoundary>
+                <CoreSensorsTraining
+                    dispatch={sensorsDispatch}
+                    space={space}
+                    shipId={shipId}
+                />
+            </ErrorBoundary>
+            <ErrorBoundary>
+                <CoreEngineeringTraining
+                    dispatch={engineeringDispatch}
+                    space={space}
+                    shipId={shipId}
+                    cardToAdd={props.engineeringCardToAdd}
+                    systemToAffect={props.engineeringSystemToAffect}
+                    effectToApply={props.engineeringEffectToApply}
+                />
+            </ErrorBoundary>
+            <ErrorBoundary>
+                <CoreWeaponsTraining
+                    dispatch={weaponsDispatch}
+                    space={space}
+                    shipId={shipId}
+                />
+            </ErrorBoundary>
         </Root>
     )
 };
