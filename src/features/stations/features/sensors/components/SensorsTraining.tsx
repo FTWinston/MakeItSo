@@ -8,6 +8,7 @@ import { SensorsAction } from '../types/SensorsState';
 import { Sensors } from './Sensors';
 import { Space } from 'src/classes/Space';
 import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/getStorySpaceReducer';
+import { ObjectId } from 'src/types/GameObjectInfo';
 
 interface Props {
     getInitialState: () => Space;
@@ -20,7 +21,6 @@ const sensorsActionReducer = (space: Space, action: SpaceAction<SensorsAction>) 
 
 export const SensorsTraining: React.FC<Props> = (props) => {
     const [space, dispatch] = useReducer(produce(sensorsActionReducer), undefined, props.getInitialState);
-    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
@@ -29,7 +29,8 @@ export const SensorsTraining: React.FC<Props> = (props) => {
         <CoreSensorsTraining
             dispatch={dispatch}
             renderMenuItems={props.renderMenuItems}
-            ship={ship}
+            space={space}
+            shipId={shipId}
         />
     );
 };
@@ -37,11 +38,13 @@ export const SensorsTraining: React.FC<Props> = (props) => {
 interface CoreProps {
     dispatch: Dispatch<SensorsAction>;
     renderMenuItems?: () => JSX.Element;
-    ship: Ship;
+    space: Space;
+    shipId: ObjectId;
 }
 
 export const CoreSensorsTraining: React.FC<CoreProps> = (props) => {
-    const { dispatch, renderMenuItems, ship } = props;
+    const { dispatch, renderMenuItems, space, shipId } = props;
+    const ship = space.objects.get(shipId) as Ship;
     const { power, health } = ship.systems.get(ShipSystem.Sensors);
     
     return (

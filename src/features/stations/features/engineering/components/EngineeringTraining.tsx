@@ -10,6 +10,7 @@ import { Space } from 'src/classes/Space';
 import { EngineeringCardType } from '../features/Cards';
 import { SystemStatusEffectType } from '../types/SystemStatusEffect';
 import { ShipSystem } from 'src/types/ShipSystem';
+import { ObjectId } from 'src/types/GameObjectInfo';
 
 interface Props {
     getInitialState: () => Space;
@@ -26,7 +27,6 @@ const engineeringActionReducer = (space: Space, action: SpaceAction<EngineeringA
 
 export const EngineeringTraining: React.FC<Props> = (props) => {
     const [space, dispatch] = useReducer(produce(engineeringActionReducer), undefined, props.getInitialState);
-    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
@@ -44,8 +44,9 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
     return (
         <CoreEngineeringTraining
             dispatch={dispatch}
-            ship={ship}
             renderMenuItems={props.renderMenuItems}
+            space={space}
+            shipId={shipId}
             cardToAdd={props.cardToAdd}
             systemToAffect={props.systemToAffect}
             effectToApply={props.effectToApply}
@@ -54,16 +55,18 @@ export const EngineeringTraining: React.FC<Props> = (props) => {
 };
 
 interface CoreProps {
-    ship: Ship;
     dispatch: Dispatch<EngineeringAction>;
     renderMenuItems?: () => JSX.Element;
+    space: Space;
+    shipId: ObjectId;
     cardToAdd?: EngineeringCardType;
     systemToAffect?: string;
     effectToApply?: SystemStatusEffectType;
 }
 
 export const CoreEngineeringTraining: React.FC<CoreProps> = (props) => {    
-    const { dispatch, renderMenuItems, ship, cardToAdd, systemToAffect, effectToApply } = props;
+    const { dispatch, renderMenuItems, space, shipId, cardToAdd, systemToAffect, effectToApply } = props;
+    const ship = space.objects.get(shipId) as Ship;
 
     const initialRender = useRef(true);
 

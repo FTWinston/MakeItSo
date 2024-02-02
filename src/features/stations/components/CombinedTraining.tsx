@@ -1,6 +1,5 @@
 import { produce } from 'immer';
 import { useEffect, useReducer } from 'react';
-import { Ship } from 'src/classes/Ship';
 import { useInterval } from 'src/hooks/useInterval';
 import { Box, styled } from 'src/lib/mui';
 import { CrewStation } from 'src/types/ShipSystem';
@@ -40,9 +39,7 @@ const shipId = 1;
 const spaceReducer = getStorySpaceReducer(shipId, storySystemReducer);
 
 export const CombinedTraining: React.FC<Props> = (props) => {
-    const shipId = 1;
     const [space, dispatch] = useReducer(produce(spaceReducer), undefined, props.getInitialState);
-    const ship = space.objects.get(shipId) as Ship; // TODO: well this could be tidier, couldn't it.
 
     const engineeringDispatch = (action: EngineeringAction) => dispatch({ station: CrewStation.Engineering, action });
     const helmDispatch = (action: HelmAction) => dispatch({ station: CrewStation.Helm, action });
@@ -78,23 +75,26 @@ export const CombinedTraining: React.FC<Props> = (props) => {
         <Root>
             <CoreHelmTraining
                 dispatch={helmDispatch}
-                ship={ship}
-                objects={space.objects}
+                space={space}
+                shipId={shipId}
             />
             <CoreSensorsTraining
                 dispatch={sensorsDispatch}
-                ship={ship}
+                space={space}
+                shipId={shipId}
             />
             <CoreEngineeringTraining
                 dispatch={engineeringDispatch}
-                ship={ship}
+                space={space}
+                shipId={shipId}
                 cardToAdd={props.engineeringCardToAdd}
                 systemToAffect={props.engineeringSystemToAffect}
                 effectToApply={props.engineeringEffectToApply}
             />
             <CoreWeaponsTraining
                 dispatch={weaponsDispatch}
-                ship={ship}
+                space={space}
+                shipId={shipId}
             />
         </Root>
     )

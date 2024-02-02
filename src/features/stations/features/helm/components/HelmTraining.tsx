@@ -8,7 +8,7 @@ import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
 import { HelmAction } from '../types/HelmState';
 import { Helm } from './Helm';
 import { SpaceAction, getStorySpaceReducer } from '../../../utils/getStorySpaceReducer';
-import { GameObjectInfo, ObjectId } from 'src/types/GameObjectInfo';
+import { ObjectId } from 'src/types/GameObjectInfo';
 
 interface Props {
     getInitialState: () => Space;
@@ -21,7 +21,6 @@ const helmActionReducer = (space: Space, action: SpaceAction<HelmAction>) => spa
 
 export const HelmTraining: React.FC<Props> = (props) => {
     const [space, dispatch] = useReducer(produce(helmActionReducer), undefined, props.getInitialState);
-    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
@@ -30,8 +29,8 @@ export const HelmTraining: React.FC<Props> = (props) => {
         <CoreHelmTraining
             dispatch={dispatch}
             renderMenuItems={props.renderMenuItems}
-            ship={ship}
-            objects={space.objects}
+            space={space}
+            shipId={shipId}
         />
     );
 };
@@ -39,16 +38,16 @@ export const HelmTraining: React.FC<Props> = (props) => {
 interface CoreProps {
     dispatch: Dispatch<HelmAction>;
     renderMenuItems?: () => JSX.Element;
-    ship: Ship;
-    objects: ReadonlyMap<ObjectId, GameObjectInfo>;
+    space: Space;
+    shipId: ObjectId;
 }
 
 export const CoreHelmTraining: React.FC<CoreProps> = (props) => {
-    const { dispatch, renderMenuItems, ship, objects } = props;
-
+    const { dispatch, renderMenuItems, space, shipId } = props;
+    const ship = space.objects.get(shipId) as Ship;
     const { power, health } = ship.systems.get(ShipSystem.Engines);
 
-    const otherObjects = [...objects.values()]
+    const otherObjects = [...space.objects.values()]
         .filter(obj => obj.id !== ship.id);
 
     return (

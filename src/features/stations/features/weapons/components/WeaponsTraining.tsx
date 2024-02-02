@@ -8,6 +8,7 @@ import { WeaponsAction } from '../types/WeaponsState';
 import { Weapons } from './Weapons';
 import { Space } from 'src/classes/Space';
 import { SpaceAction, getStorySpaceReducer } from 'src/features/stations/utils/getStorySpaceReducer';
+import { ObjectId } from 'src/types/GameObjectInfo';
 
 interface Props {
     getInitialState: () => Space;
@@ -20,7 +21,6 @@ const weaponsActionReducer = (space: Space, action: SpaceAction<WeaponsAction>) 
 
 export const WeaponsTraining: React.FC<Props> = (props) => {
     const [space, dispatch] = useReducer(produce(weaponsActionReducer), undefined, props.getInitialState);
-    const ship = space.objects.get(shipId) as Ship;
 
     // Run tick action at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);
@@ -29,7 +29,8 @@ export const WeaponsTraining: React.FC<Props> = (props) => {
         <CoreWeaponsTraining
             dispatch={dispatch}
             renderMenuItems={props.renderMenuItems}
-            ship={ship}
+            space={space}
+            shipId={shipId}
         />
     )
 };
@@ -37,12 +38,13 @@ export const WeaponsTraining: React.FC<Props> = (props) => {
 interface CoreProps {
     dispatch: Dispatch<WeaponsAction>;
     renderMenuItems?: () => JSX.Element;
-    ship: Ship;
+    space: Space;
+    shipId: ObjectId;
 }
 
 export const CoreWeaponsTraining: React.FC<CoreProps> = (props) => {
-    const { dispatch, renderMenuItems, ship } = props;
-
+    const { dispatch, renderMenuItems, space, shipId } = props;
+    const ship = space.objects.get(shipId) as Ship;
     const { power, health } = ship.systems.get(ShipSystem.Weapons);
 
     return (
