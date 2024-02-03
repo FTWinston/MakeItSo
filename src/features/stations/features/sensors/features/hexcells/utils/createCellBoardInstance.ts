@@ -28,18 +28,15 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
 
     for (let index = 0; index < board.cells.length; index++) {
         const cell = board.cells[index];
+        const underlying = board.underlying[index];
         
-        if (isClueCell(cell)) {
-            const underlying = board.underlying[index];
-
-            if (isClueCell(underlying)) {
-                cell.targetIndexes = underlying.targetIndexes;
-                cell.resolved = isClueResolved(board, underlying.targetIndexes);
-            }
+        if (isClueCell(cell) && isClueCell(underlying)) {
+            cell.targetIndexes = underlying.targetIndexes;
+            cell.resolved = isClueResolved(board, underlying.targetIndexes);
         }
 
         // Note all cell indexes that can be obscured later.
-        if (cell?.type === CellType.AdjacentClue) {
+        if (underlying?.type === CellType.AdjacentClue) {
             board.overridableCells.push(index);
         }
     }

@@ -7,6 +7,13 @@ import { ShipSystem } from 'src/types/ShipSystem';
 import { adjustHealth } from '../../engineering/utils/systemActions';
 import { projectValuesBetweenArrays } from 'src/utils/projectValuesBetweenArrays';
 import { anyMatches } from 'src/utils/arrays';
+import { maxSystemHealth } from 'src/types/SystemState';
+
+function getObscuredCellFractionForHealth(sensorsHealth: number) {
+    // A quadratic relationship ensures that the punishment isn't too harsh when health is high.
+    const fraction = sensorsHealth / maxSystemHealth;
+    return 0.9836241 - 1.483475 * fraction + 0.4998383 * fraction * fraction;
+}
 
 export function sensorsReducer(state: Ship, action: SensorsAction): void {
     switch (action.type) {
@@ -75,13 +82,17 @@ export function sensorsReducer(state: Ship, action: SensorsAction): void {
                 // TODO: validate that scan is an allowed option
 
                 if (state.sensors.currentScan !== action.scan) {
-                    console.log(`current scan is ${state.sensors.currentScan}, ${action.scan}`);
                     state.sensors.currentScan = action.scan;
 
+                    // Generate a hexcell board for this scan.
                     const scanConfig = state.sensors.currentTarget.value.getScanConfig(action.scan);
-
-                    // TODO: does anything about the scanning ship (e.g. sensor damage) affect the board config?
                     state.sensors.scanCellBoard = generateInstance(scanConfig);
+
+                    // If sensors health isn't at max, override some cells so that their contents is obscured.
+                    const sensorsHealth = state.systems.get(ShipSystem.Sensors).health;
+                    if (sensorsHealth !== maxSystemHealth) {
+                        hexCellReducer(state.sensors.scanCellBoard, { type: 'override cells', fraction: getObscuredCellFractionForHealth(sensorsHealth) });
+                    }
                 }
             }
             else {
@@ -114,13 +125,13 @@ export function sensorsReducer(state: Ship, action: SensorsAction): void {
                     }
 
                     // Damage the sensors, by an amount that's bigger if you've already made errors on this scan.
-                    adjustHealth(state.systems.get(ShipSystem.Sensors), state, state.sensors.scanCellBoard.numErrors + 10);
+                    adjustHealth(state.systems.get(ShipSystem.Sensors), state, -state.sensors.scanCellBoard.numErrors - 10);
 
                     // TODO: Clear all scan values from sensor state, and somehow make it clear to the user why this happened. (A toast?)
                 }
                 else if (state.sensors.scanCellBoard.numErrors > errorsBefore) {
                     // Just triggered an error. Damage this system, by a small amount that increases with each error the current scan.
-                    adjustHealth(state.systems.get(ShipSystem.Sensors), state, state.sensors.scanCellBoard.numErrors);
+                    adjustHealth(state.systems.get(ShipSystem.Sensors), state, -state.sensors.scanCellBoard.numErrors);
                 }
             }
             break;

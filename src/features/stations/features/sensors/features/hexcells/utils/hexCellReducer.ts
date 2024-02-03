@@ -90,41 +90,53 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
 
             return;
         }
-        case 'override cell': {
-            // Get the first overridable cell index.
-            const indexToOverride = state.overridableCells.shift();
-            if (indexToOverride === undefined) {
-                return;
+        case 'override cells': {
+            const fraction = Math.min(1, Math.max(0, action.fraction));
+            const targetOverridenNumber = Math.round(fraction * (state.overridableCells.length + state.overriddenCells.length));
+            
+            if (targetOverridenNumber > state.overriddenCells.length) {
+                // Override this many cells.
+                const numToOverride = targetOverridenNumber - state.overriddenCells.length;
+
+                for (let i = 0; i < numToOverride; i++) {
+                    // Get the first overridable cell index.
+                    const indexToOverride = state.overridableCells.shift()!;
+
+                    // Put state of that actual cell into overriddenCells.
+                    const overriddenCell = state.underlying[indexToOverride]!;
+                    state.overriddenCells.push({ index: indexToOverride, state: overriddenCell });
+
+                    // Replace the underlying cell with the action's cell state.
+                    state.underlying[indexToOverride] = { type: CellType.Unknown, clueIndexes: overriddenCell.type === CellType.AdjacentClue ? overriddenCell.clueIndexes : [] };
+
+                    // Additionally, replace the cell's display state if it isn't obscured.
+                    if (state.cells[indexToOverride]?.type !== CellType.Obscured) {
+                        state.cells[indexToOverride] = { type: CellType.Unknown }
+                    }
+                }
             }
+            else {
+                // Restore this many cells.
+                const numToRestore = state.overriddenCells.length - targetOverridenNumber;
 
-            // Put state of that actual cell into overriddenCells.
-            state.overriddenCells.push({ index: indexToOverride, state: state.underlying[indexToOverride]! });
+                for (let i = 0; i < numToRestore; i++) {
+                    // Get the first overridden cell.
+                    const overriddenCell = state.overriddenCells.shift();
+                    if (overriddenCell === undefined) {
+                        return;
+                    }
 
-            // Replace the underlying cell with the action's cell state.
-            state.underlying[indexToOverride] = action.state;
+                    // Put its index into overridable cells, so it can be reused.
+                    state.overridableCells.push(overriddenCell.index);
 
-            // Additionally, replace the cell's display state if it isn't obscured.
-            if (action.state === null || state.cells[indexToOverride]?.type !== CellType.Obscured) {
-                state.cells[indexToOverride] = action.state as DisplayCellState;
-            }
-            return;
-        }
-        case 'restore cell': {
-            // Get the first overridden cell.
-            const overriddenCell = state.overriddenCells.shift();
-            if (overriddenCell === undefined) {
-                return;
-            }
+                    // Replace the underlying cell state with this saved overridden state.
+                    state.underlying[overriddenCell.index] = overriddenCell.state;
 
-            // Put its index into overridable cells, so it can be reused.
-            state.overridableCells.push(overriddenCell.index);
-
-            // Replace the underlying cell state with this saved overridden state.
-            state.underlying[overriddenCell.index] = overriddenCell.state;
-
-            // Additionally, replace the cell's display state if it isn't obscured.
-            if (overriddenCell.state === null || state.cells[overriddenCell.index]?.type !== CellType.Obscured) {
-                state.cells[overriddenCell.index] = overriddenCell.state as DisplayCellState;
+                    // Additionally, replace the cell's display state if it isn't obscured.
+                    if (overriddenCell.state === null || state.cells[overriddenCell.index]?.type !== CellType.Obscured) {
+                        state.cells[overriddenCell.index] = overriddenCell.state as DisplayCellState;
+                    }
+                }
             }
             return;
         }

@@ -35,8 +35,6 @@ export type CellBoardAction = {
     type: 'flag';
     index: number;
 } | {
-    type: 'restore cell';
-} | {
-    type: 'override cell';
-    state: UnderlyingCellState | null;
+    type: 'override cells';
+    fraction: number;
 }
