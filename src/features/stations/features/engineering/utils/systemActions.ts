@@ -7,6 +7,8 @@ import { createEffect, isPrimary, isSecondary, ticks } from './SystemStatusEffec
 import { PowerLevel, ShipDestroyingSystem, ShipDestroyingSystems, ShipSystem } from 'src/types/ShipSystem';
 import { LogEvent } from '../features/SystemTiles';
 import { Random } from 'src/utils/random';
+import { sensorsReducer } from '../../sensors';
+import { Ship } from 'src/classes/Ship';
 
 export const maxRestorationValue = 100;
 export const defaultPowerLevel = 2;
@@ -83,7 +85,7 @@ function destroyShip(ship: ShipInfo, destroyedVia: ShipDestroyingSystem) {
     }
 }
 
-export function adjustHealth(system: SystemState, ship: ShipInfo, adjustment: number) {
+export function adjustHealth(system: SystemState, ship: Ship, adjustment: number) {
     const hadHealth = system.health > 0;
 
     const newHealth = Math.max(Math.min(system.health + adjustment, maxSystemHealth), 0);
@@ -138,6 +140,12 @@ export function adjustHealth(system: SystemState, ship: ShipInfo, adjustment: nu
                 health: newHealth,
             }
         });
+    }
+
+    switch (system.system) {
+        case ShipSystem.Sensors:
+            sensorsReducer(ship, { type: 'health', newHealth });
+            break;
     }
 }
 

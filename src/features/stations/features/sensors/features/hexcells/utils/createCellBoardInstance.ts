@@ -1,10 +1,11 @@
+import { Random } from 'src/utils/random';
 import { CellBoard, CellBoardDefinition } from '../types/CellBoard';
 import { CellType, DisplayCellState } from '../types/CellState';
 import { GenerationConfig, generateBoard } from './generateBoard';
 import { isClueCell } from './isClueCell';
 import { isClueResolved } from './resolved';
 
-export function createCellBoardInstance(definition: CellBoardDefinition): CellBoard {
+export function createCellBoardInstance(definition: CellBoardDefinition, random: Random): CellBoard {
     const board: CellBoard = {
         columns: definition.columns,
         underlying: definition.underlying,
@@ -41,9 +42,12 @@ export function createCellBoardInstance(definition: CellBoardDefinition): CellBo
         }
     }
 
+    // Ensure that cells aren't just obscured from top to bottom.
+    random.shuffle(board.overridableCells);
+
     return board;
 }
 
 export function generateInstance(config: GenerationConfig) {
-    return createCellBoardInstance(generateBoard(config));
+    return createCellBoardInstance(generateBoard(config), new Random(config.seed));
 }

@@ -20,6 +20,9 @@ export type SensorsAction = {
     type: 'tick';
     currentTime: number;
 } | {
+    type: 'health';
+    newHealth: number;
+} | {
     type: 'view';
     target?: ObjectId;
 } | {

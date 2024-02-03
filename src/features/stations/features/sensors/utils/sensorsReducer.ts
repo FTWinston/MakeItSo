@@ -46,6 +46,14 @@ export function sensorsReducer(state: Ship, action: SensorsAction): void {
             break;
         }
 
+        case 'health': {
+            // If there's a current scan, adjust the overridden cells based on this change in sensor system health.
+            if (state.sensors.scanCellBoard) {
+                hexCellReducer(state.sensors.scanCellBoard, { type: 'override cells', fraction: getObscuredCellFractionForHealth(action.newHealth) });
+            }
+            break;
+        }
+
         case 'view': {
             state.viewTarget = action.target;
             break;
