@@ -1,7 +1,7 @@
 import { CSSProperties, forwardRef } from 'react';
 import { Box, styled } from 'src/lib/mui';
-import { AppBarHeight } from '../../appbar';
 import { CellBoard, InteractiveCells } from '../features/hexcells';
+import { ScanBoosts } from './ScanBoosts';
 
 interface Props {
     scanCellBoard: CellBoard;
@@ -17,12 +17,6 @@ const Root = styled(Box)({
     gridTemplateRows: `1fr ${actionBarHeight}`,
 });
 
-const ActionBar = styled(Box)({
-    display: 'flex',
-    flexDirection: 'row',
-    height: actionBarHeight,
-})
-
 export const Scanning = forwardRef<typeof Box, Props>((props, ref) => {
     return (
         <Root ref={ref} style={props.style}>
@@ -32,9 +26,9 @@ export const Scanning = forwardRef<typeof Box, Props>((props, ref) => {
                 flagCell={props.flagCell}
             />
 
-            <ActionBar>
-                bombs remaining: {props.scanCellBoard.numBombsLeft}
-            </ActionBar>
+            <ScanBoosts
+                bombsLeft={props.scanCellBoard.numBombsLeft}
+            />
         </Root>
     );
 });
