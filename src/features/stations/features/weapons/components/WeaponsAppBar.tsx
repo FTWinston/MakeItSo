@@ -14,7 +14,7 @@ export const WeaponsAppBar: React.FC<Props> = (props) => {
     return (
         <SystemAppBar
             renderMenuItems={props.renderMenuItems}
-            station={CrewStation.Weapons}
+            station={CrewStation.Tactical}
             justifyContent="flex-end"
             power={props.power}
             health={props.health}

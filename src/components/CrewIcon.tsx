@@ -23,11 +23,11 @@ export const CrewIcon: React.FC<Props> = props => {
         Icon = HelmIcon;
         title = t('station helm');
         break;
-    case CrewStation.Weapons:
+    case CrewStation.Tactical:
         Icon = WeaponsIcon;
         title = t('station tactical');
         break;
-    case CrewStation.Sensors:
+    case CrewStation.Science:
         Icon = SensorsIcon;
         title = t('station science');
         break;

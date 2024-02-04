@@ -17,7 +17,7 @@ interface Props {
 
 const shipId = 1;
 const spaceReducer = getStorySpaceReducer(shipId, crewActionReducer);
-const weaponsActionReducer = (space: Space, action: SpaceAction<WeaponsAction>) => spaceReducer(space, action.type === 'tick' ? action : { station: CrewStation.Weapons, action });
+const weaponsActionReducer = (space: Space, action: SpaceAction<WeaponsAction>) => spaceReducer(space, action.type === 'tick' ? action : { station: CrewStation.Tactical, action });
 
 export const WeaponsTraining: React.FC<Props> = (props) => {
     const [space, dispatch] = useReducer(produce(weaponsActionReducer), undefined, props.getInitialState);

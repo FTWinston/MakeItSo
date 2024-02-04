@@ -17,8 +17,8 @@ export const allSystems: ShipSystem = ShipSystem.Hull | ShipSystem.Engines | Shi
 
 export enum CrewStation {
     Helm = ShipSystem.Engines,
-    Sensors = ShipSystem.Sensors,
-    Weapons = ShipSystem.Weapons,
+    Science = ShipSystem.Sensors,
+    Tactical = ShipSystem.Weapons,
     Engineering = ShipSystem.Reactor,
 }
 

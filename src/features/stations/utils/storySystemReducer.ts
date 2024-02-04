@@ -12,10 +12,10 @@ export type CrewAction = {
     station: CrewStation.Helm;
     action: HelmAction;
 } | {
-    station: CrewStation.Sensors;
+    station: CrewStation.Science;
     action: SensorsAction;
 } | {
-    station: CrewStation.Weapons;
+    station: CrewStation.Tactical;
     action: WeaponsAction;
 }
 
@@ -30,9 +30,9 @@ export function storySystemReducer(ship: Ship, { station, action }: CrewAction):
             return engineeringReducer(ship, action);
         case CrewStation.Helm:
             return helmReducer(ship, action);
-        case CrewStation.Sensors:
+        case CrewStation.Science:
             return sensorsReducer(ship, action);
-        case CrewStation.Weapons:
+        case CrewStation.Tactical:
             return weaponsReducer(ship, action);
     }
 }

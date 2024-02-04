@@ -14,7 +14,7 @@ export const SensorsAppBar: React.FC<Props> = (props) => {
     return (
         <SystemAppBar
             renderMenuItems={props.renderMenuItems}
-            station={CrewStation.Sensors}
+            station={CrewStation.Science}
             power={props.power}
             health={props.health}
         >

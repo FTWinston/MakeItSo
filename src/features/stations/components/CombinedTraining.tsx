@@ -44,8 +44,8 @@ export const CombinedTraining: React.FC<Props> = (props) => {
 
     const engineeringDispatch = (action: EngineeringAction) => dispatch({ station: CrewStation.Engineering, action });
     const helmDispatch = (action: HelmAction) => dispatch({ station: CrewStation.Helm, action });
-    const sensorsDispatch = (action: SensorsAction) => dispatch({ station: CrewStation.Sensors, action });
-    const weaponsDispatch = (action: WeaponsAction) => dispatch({ station: CrewStation.Weapons, action });
+    const sensorsDispatch = (action: SensorsAction) => dispatch({ station: CrewStation.Science, action });
+    const weaponsDispatch = (action: WeaponsAction) => dispatch({ station: CrewStation.Tactical, action });
     
     // Tick the everything in space, including the ship and all of its systems, at a regular interval.
     useInterval(() => dispatch({ type: 'tick' }), 200);

@@ -32,7 +32,7 @@ export function crewActionReducer(ship: Ship, { station, action }: CrewAction): 
                 console.error('Invalid helm action', action);
                 return;
             }
-        case CrewStation.Sensors:
+        case CrewStation.Science:
             if (verifySensorsAction(action)) {
                 return sensorsReducer(ship, action);
             }
@@ -40,7 +40,7 @@ export function crewActionReducer(ship: Ship, { station, action }: CrewAction): 
                 console.error('Invalid sensors action', action);
                 return;
             }
-        case CrewStation.Weapons:
+        case CrewStation.Tactical:
             if (verifyWeaponsAction(action)) {
                 return weaponsReducer(ship, action);
             }
