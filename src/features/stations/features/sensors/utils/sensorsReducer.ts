@@ -18,9 +18,8 @@ function getObscuredCellFractionForHealth(sensorsHealth: number) {
 export function sensorsReducer(state: Ship, action: SensorsAction): void {
     switch (action.type) {
         case 'tick': {
-            // TODO: filter by whether objects are visible
             const visibleObjects = [...state.space.objects.values()]
-                .filter(object => object.id !== state.id);
+                .filter(object => object.id !== state.id && object.isVisibleTo(state));
 
             // Keep list of possible targets up-to-date with this list of visible objects.
             projectValuesBetweenArrays(visibleObjects, state.sensors.possibleTargets, object => object.id, object => ({

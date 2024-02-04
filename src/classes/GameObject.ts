@@ -28,6 +28,10 @@ export abstract class GameObject implements GameObjectInfo {
 
     public abstract get faction(): FactionId | undefined;
 
+    public isVisibleTo(observer: GameObject) {
+        return true;
+    }
+
     public getRelationship(target: GameObjectInfo): RelationshipType {
         if (!this.faction || !target.faction) {
             return RelationshipType.Ignore;
