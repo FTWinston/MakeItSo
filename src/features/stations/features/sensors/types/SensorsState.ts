@@ -5,9 +5,11 @@ import { GameObject } from 'src/classes/GameObject';
 import { Reference } from 'src/classes/Reference';
 import { CellBoard, CellBoardAction } from '../features/hexcells';
 import { ObjectId } from 'src/types/GameObjectInfo';
+import { SensorBoostInfo } from './SensorBoost';
 
 export interface SensorsState extends SensorsStateInfo {
     possibleTargets: SensorTarget[];
+    boosts: SensorBoostInfo[];
 
     currentTarget: Reference<GameObject>;
     scanTree?: ScanTreeState;

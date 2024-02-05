@@ -1,13 +1,16 @@
-import { Box, Button, ButtonGroup, Paper, Typography, styled } from 'src/lib/mui';
+import { Button, ButtonGroup, Typography, styled } from 'src/lib/mui';
+import { SensorBoostInfo } from '../types/SensorBoost';
 
 interface Props {
     bombsLeft: number;
+    boosts: SensorBoostInfo[];
 }
 
 const actionBarHeight = '3em';
 
 const Root = styled(ButtonGroup)({
     height: actionBarHeight,
+    overflow: 'hidden',
 })
 
 const Item = styled(Button)({
@@ -40,9 +43,8 @@ export const ScanBoosts: React.FC<Props>= props => {
                 <CountLabel component="div">bombs left</CountLabel>
                 <CountValue component="div" color={countColor}>{props.bombsLeft}</CountValue>
             </CountItem>
-            <Item>Hint</Item>
-            <Item>Safety</Item>
-            <Item>Reveal</Item>
+
+            {props.boosts.map((boost, index) => (<Item key={index}>{boost.type}</Item>))}
         </Root>
     );
 }

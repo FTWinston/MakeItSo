@@ -53,6 +53,7 @@ export const CoreSensorsTraining: React.FC<CoreProps> = (props) => {
             health={health}
             shipDestroyed={ship.destroyed}
             targets={ship.sensors.possibleTargets}
+            boosts={ship.sensors.boosts}
             viewTarget={ship.viewTarget}
             setViewTarget={target => dispatch({ type: 'view', target })}
             scanTarget={ship.sensors.currentTarget?.id}

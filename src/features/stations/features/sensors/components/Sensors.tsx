@@ -12,6 +12,7 @@ import { SensorTarget } from '../types/SensorTarget';
 import { CellBoard } from '../features/hexcells';
 import { QuickTransition } from 'src/components/QuickTransition';
 import { Scanning } from './Scanning';
+import { SensorBoostInfo } from '../types/SensorBoost';
 
 interface Props {
     renderMenuItems?: () => JSX.Element;
@@ -19,6 +20,7 @@ interface Props {
     power: PowerLevel;
     health: number;
     targets: SensorTarget[];
+    boosts: SensorBoostInfo[];
 
     viewTarget?: ObjectId;
     setViewTarget: (id: ObjectId | undefined) => void;
@@ -108,6 +110,7 @@ export const Sensors: React.FC<Props> = (props) => {
                 <QuickTransition show={actualViewStage === 2} appear={true}>
                     <Scanning
                         scanCellBoard={props.scanCellBoard}
+                        boosts={props.boosts}
                         revealCell={props.revealCell}
                         flagCell={props.flagCell}
                     />
