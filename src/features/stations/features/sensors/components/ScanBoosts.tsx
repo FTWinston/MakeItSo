@@ -33,9 +33,12 @@ const Item = styled(Button)({
 })
 
 const CountValue = styled(Typography)({
-    fontSize: '1.5em',
+    fontSize: '1.5em !important',
     lineHeight: '1em',
     fontWeight: 'bold',
+    height: '1.25em',
+    display: 'flex',
+    alignItems: 'center',
 })
 
 export const ScanBoosts: React.FC<Props>= props => {
@@ -43,7 +46,7 @@ export const ScanBoosts: React.FC<Props>= props => {
 
     return (
         <Root variant="text">
-            <Item disabled startIcon={<CountValue color={countColor}>{props.bombsLeft}</CountValue>}>
+            <Item disabled startIcon={<CountValue component="div" color={countColor}>{props.bombsLeft}</CountValue>}>
                 bombs left
             </Item>
 
