@@ -1,5 +1,6 @@
 import { Button, ButtonGroup, Typography, styled } from 'src/lib/mui';
 import { SensorBoostInfo } from '../types/SensorBoost';
+import HintIcon from '@mui/icons-material/Help';
 
 interface Props {
     bombsLeft: number;
@@ -16,16 +17,19 @@ const Root = styled(ButtonGroup)({
 const Item = styled(Button)({
     flexGrow: 1,
     flexBasis: 0,
-})
-
-const CountItem = styled(Item)({
     flexDirection: 'column',
-})
-
-const CountLabel = styled(Typography)({
+    alignItems: 'center',
     fontSize: '0.8em',
-    lineHeight: '1em',
+    lineHeight: '1.2em',
     whiteSpace: 'nowrap',
+
+    '& > .MuiButton-startIcon': {
+        margin: 0,
+        '& > svg': {
+            width: '1.25em',
+            height: '1.25em',
+        }
+    }
 })
 
 const CountValue = styled(Typography)({
@@ -39,12 +43,11 @@ export const ScanBoosts: React.FC<Props>= props => {
 
     return (
         <Root variant="text">
-            <CountItem disabled>
-                <CountLabel component="div">bombs left</CountLabel>
-                <CountValue component="div" color={countColor}>{props.bombsLeft}</CountValue>
-            </CountItem>
+            <Item disabled startIcon={<CountValue color={countColor}>{props.bombsLeft}</CountValue>}>
+                bombs left
+            </Item>
 
-            {props.boosts.map((boost, index) => (<Item key={index}>{boost.type}</Item>))}
+            {props.boosts.map((boost, index) => (<Item key={index} startIcon={<HintIcon fontSize="large" />}>{boost.type}</Item>))}
         </Root>
     );
 }
