@@ -1,6 +1,7 @@
 import { Button, ButtonGroup, Typography, styled } from 'src/lib/mui';
 import { ScanBoostInfo } from '../types/ScanBoost';
 import { ScanBoostIcon } from './ScanBoostIcon';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
     bombsLeft: number;
@@ -42,12 +43,13 @@ const CountValue = styled(Typography)({
 })
 
 export const ScanBoosts: React.FC<Props>= props => {
+    const { t } = useTranslation('sensors');
     const countColor = props.bombsLeft !== 0 ? 'secondary' : undefined;
 
     return (
         <Root variant="text">
             <Item disabled startIcon={<CountValue component="div" color={countColor}>{props.bombsLeft}</CountValue>}>
-                bombs left
+                {t('bombsLeft', { count: props.bombsLeft })}
             </Item>
 
             {props.boosts.map((boost, index) => (<Item key={index} startIcon={<ScanBoostIcon boost={boost.type} />}>{boost.type}</Item>))}

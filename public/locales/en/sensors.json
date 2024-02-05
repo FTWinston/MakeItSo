@@ -4,6 +4,8 @@
     "scanning": "Scanning",
     "scanResult": "Result",
     "scan": "Scan",
+    "bombsLeft": "Bombs left",
+    "bombsLeft_one": "Bomb left",
     "onScreen": "Focus view screen on target",
     "scan name basic info": "Basic Information",
     "scan name shield power": "Shield power",
