@@ -6,7 +6,7 @@ export enum SensorBoostPowerSlot {
     Third = 4,
 }
 
-export enum SensorBoostType {
+export enum ScanBoostType {
     Hint = 'hint',
     RevealCell = 'revealCell',
     Takeback = 'takeback',
@@ -18,8 +18,8 @@ export enum SensorBoostType {
     RadiusClue = 'radius',
 }
 
-export interface SensorBoostInfo {
-    type: SensorBoostType;
+export interface ScanBoostInfo {
+    type: ScanBoostType;
     minimumSlot:SensorBoostPowerSlot;
     chargeDuration: number;
     targetCellTypes?: CellType[];
@@ -28,6 +28,6 @@ export interface SensorBoostInfo {
 
 // TODO: the above is a definition ... still need to account for ACTUAL slot, plus (pausable) charge status
 
-export interface SensorBoost extends SensorBoostInfo {
+export interface ScanBoost extends ScanBoostInfo {
     canTargetCell: (cell: CellState) => boolean;
 }

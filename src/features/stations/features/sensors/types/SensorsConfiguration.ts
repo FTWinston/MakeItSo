@@ -1,6 +1,6 @@
-import { SensorBoostType } from './SensorBoost';
+import { ScanBoostType } from './ScanBoost';
 
 export interface SensorsConfiguration {
-    activeBoosts: SensorBoostType[];
-    inactiveBoosts: SensorBoostType[];
+    activeBoosts: ScanBoostType[];
+    inactiveBoosts: ScanBoostType[];
 }

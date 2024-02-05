@@ -12,7 +12,7 @@ import { SensorTarget } from '../types/SensorTarget';
 import { CellBoard } from '../features/hexcells';
 import { QuickTransition } from 'src/components/QuickTransition';
 import { Scanning } from './Scanning';
-import { SensorBoostInfo } from '../types/SensorBoost';
+import { ScanBoostInfo } from '../types/ScanBoost';
 
 interface Props {
     renderMenuItems?: () => JSX.Element;
@@ -20,7 +20,7 @@ interface Props {
     power: PowerLevel;
     health: number;
     targets: SensorTarget[];
-    boosts: SensorBoostInfo[];
+    boosts: ScanBoostInfo[];
 
     viewTarget?: ObjectId;
     setViewTarget: (id: ObjectId | undefined) => void;

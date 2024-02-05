@@ -1,10 +1,10 @@
 import { Button, ButtonGroup, Typography, styled } from 'src/lib/mui';
-import { SensorBoostInfo } from '../types/SensorBoost';
-import HintIcon from '@mui/icons-material/Help';
+import { ScanBoostInfo } from '../types/ScanBoost';
+import { ScanBoostIcon } from './ScanBoostIcon';
 
 interface Props {
     bombsLeft: number;
-    boosts: SensorBoostInfo[];
+    boosts: ScanBoostInfo[];
 }
 
 const actionBarHeight = '3em';
@@ -33,10 +33,10 @@ const Item = styled(Button)({
 })
 
 const CountValue = styled(Typography)({
-    fontSize: '1.5em !important',
+    fontSize: '1.8em !important',
     lineHeight: '1em',
     fontWeight: 'bold',
-    height: '1.25em',
+    maxHeight: '1.25em',
     display: 'flex',
     alignItems: 'center',
 })
@@ -50,7 +50,7 @@ export const ScanBoosts: React.FC<Props>= props => {
                 bombs left
             </Item>
 
-            {props.boosts.map((boost, index) => (<Item key={index} startIcon={<HintIcon fontSize="large" />}>{boost.type}</Item>))}
+            {props.boosts.map((boost, index) => (<Item key={index} startIcon={<ScanBoostIcon boost={boost.type} />}>{boost.type}</Item>))}
         </Root>
     );
 }
