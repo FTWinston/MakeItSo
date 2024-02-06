@@ -44,15 +44,23 @@ const CountValue = styled(Typography)({
 
 export const ScanBoosts: React.FC<Props>= props => {
     const { t } = useTranslation('sensors');
-    const countColor = props.bombsLeft !== 0 ? 'secondary' : undefined;
+
+    const countValue = (
+        <CountValue
+            component="div"
+            color={props.bombsLeft !== 0 ? 'secondary' : undefined}
+        >
+            {props.bombsLeft}
+        </CountValue>
+    );
 
     return (
         <Root variant="text">
-            <Item disabled startIcon={<CountValue component="div" color={countColor}>{props.bombsLeft}</CountValue>}>
+            <Item disabled startIcon={countValue}>
                 {t('bombsLeft', { count: props.bombsLeft })}
             </Item>
 
-            {props.boosts.map((boost, index) => (<Item key={index} startIcon={<ScanBoostIcon boost={boost.type} />}>{boost.type}</Item>))}
+            {props.boosts.map((boost, index) => (<Item key={index} startIcon={<ScanBoostIcon boost={boost.type} />}>{t(`boost ${boost.type}`)}</Item>))}
         </Root>
     );
 }
