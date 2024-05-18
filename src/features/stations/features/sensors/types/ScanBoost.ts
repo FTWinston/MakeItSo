@@ -1,4 +1,6 @@
+import { TextParameters } from 'src/types/TextParameters';
 import { CellState, CellType, CountType } from '../features/hexcells/types/CellState';
+import { Ship } from 'src/classes/Ship';
 
 export enum SensorBoostPowerSlot {
     First = 2,
@@ -19,15 +21,17 @@ export enum ScanBoostType {
 }
 
 export interface ScanBoostInfo {
+    id: number;
     type: ScanBoostType;
     minimumSlot:SensorBoostPowerSlot;
     chargeDuration: number;
-    targetCellTypes?: CellType[];
-    targetCountTypes?: CountType[];
+    targetCellTypes?: Set<CellType>;
+    targetCountTypes?: Set<CountType>;
+    descParams?: TextParameters;
 }
 
 // TODO: the above is a definition ... still need to account for ACTUAL slot, plus (pausable) charge status
 
 export interface ScanBoost extends ScanBoostInfo {
-    canTargetCell: (cell: CellState) => boolean;
+    use: (ship: Ship, cell?: CellState) => void | false;
 }
