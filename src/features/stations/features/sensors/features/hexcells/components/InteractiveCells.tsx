@@ -8,7 +8,7 @@ import { isClueCell } from '../utils/isClueCell';
 import { cellHeight } from './Cell';
 import { CellSet } from './CellSet';
 
-interface Props extends Omit<CellBoardInfo, 'numBombs' | 'numErrors' | 'hintsUsed'> {
+interface Props extends Omit<CellBoardInfo, 'numBombsLeft' | 'numErrors'> {
     revealCell: (index: number) => void;
     flagCell: (index: number) => void;
     errorIndex?: number;

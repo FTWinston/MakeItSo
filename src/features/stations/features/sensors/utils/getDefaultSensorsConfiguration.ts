@@ -1,9 +1,9 @@
-import { ScanBoostType } from '../types/ScanBoost';
+import { BoostType } from '../features/hexcells';
 import { SensorsConfiguration } from '../types/SensorsConfiguration';
 
 export function getDefaultSensorsConfiguration(): SensorsConfiguration {
     return {
-        activeBoosts: [ScanBoostType.Hint, ScanBoostType.EnhanceClue, ScanBoostType.RadiusClue],
+        activeBoosts: [BoostType.Hint, BoostType.EnhanceClue, BoostType.RadiusClue],
         inactiveBoosts: [],
     };
 }

@@ -9,23 +9,23 @@ import DetectorIcon from '@mui/icons-material/SavedSearch';
 import EnhanceCluesIcon from '@mui/icons-material/TrendingUp';
 import UnknownIcon from '@mui/icons-material/HelpOutline';
 import { IconType } from 'src/lib/mui';
-import { ScanBoostType } from '../types/ScanBoost';
+import { BoostType } from '../features/hexcells';
 
 interface Props {
     className?: string;
-    boost: ScanBoostType;
+    boost: BoostType;
 }
 
-const iconsByEffectType = new Map<ScanBoostType, IconType>([
-    [ScanBoostType.Hint, HintIcon],
-    [ScanBoostType.RevealCell, RevealCellIcon],
-    [ScanBoostType.Takeback, TakebackIcon],
-    [ScanBoostType.Detector, DetectorIcon],
-    [ScanBoostType.SolveSmall, SolveSmallIcon],
-    [ScanBoostType.SolveLarge, SolveLargeIcon],
-    [ScanBoostType.EnhanceClue, EnhanceClueIcon],
-    [ScanBoostType.EnhanceClues, EnhanceCluesIcon],
-    [ScanBoostType.RadiusClue, RadiusClueIcon],
+const iconsByEffectType = new Map<BoostType, IconType>([
+    [BoostType.Hint, HintIcon],
+    [BoostType.RevealCell, RevealCellIcon],
+    [BoostType.Takeback, TakebackIcon],
+    [BoostType.Detector, DetectorIcon],
+    [BoostType.SolveSmall, SolveSmallIcon],
+    [BoostType.SolveLarge, SolveLargeIcon],
+    [BoostType.EnhanceClue, EnhanceClueIcon],
+    [BoostType.EnhanceClues, EnhanceCluesIcon],
+    [BoostType.RadiusClue, RadiusClueIcon],
 ]);
 
 export const ScanBoostIcon: React.FC<Props> = props => {

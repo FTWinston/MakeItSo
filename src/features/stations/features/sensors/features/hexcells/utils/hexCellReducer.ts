@@ -1,7 +1,10 @@
 import { UnexpectedValueError } from 'src/utils/UnexpectedValueError';
 import { CellBoard, CellBoardAction } from '../types/CellBoard';
 import { CellType, DisplayCellState } from '../types/CellState';
-import { isClueResolved, isObscured, markCluesAsResolved } from './resolved';
+import { isObscured } from './resolved';
+import { applyBoost } from './applyBoost';
+import { revealCell } from './revealCell';
+import { flagCell } from './flagCell';
 
 export function hexCellReducer(state: CellBoard, action: CellBoardAction): void {
     switch (action.type) {
@@ -31,32 +34,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
                 return;
             }
             
-            if (underlyingState.type === CellType.AdjacentClue) {
-                // Copy the underlying cell, without copying linked/associated cell data.
-                const display: DisplayCellState = {
-                    type: underlyingState.type,
-                    countType: underlyingState.countType,
-                    number: underlyingState.number,
-                    targetIndexes: underlyingState.targetIndexes,
-                    resolved: isClueResolved(state, underlyingState.targetIndexes),
-                };
-
-                state.cells[action.index] = display;
-            }
-            else {
-                // Should just be "unknown" cells.
-                state.cells[action.index] = underlyingState as DisplayCellState;
-            }
-
-            // Mark any associated clues as fully resolved.
-            if (underlyingState.type === CellType.AdjacentClue || underlyingState.type === CellType.Unknown) {
-                markCluesAsResolved(state, underlyingState.clueIndexes);
-            }
-
-            // Success when the last obscured cell is revealed.
-            if (!state.cells.some(cell => cell?.type === CellType.Obscured)) {
-                state.result = 'success';
-            }
+            state.cells[action.index] = revealCell(state, underlyingState);
             return;
         }
         case 'flag': {
@@ -70,22 +48,12 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
             }
 
             const underlyingState = state.underlying[action.index];
-            if (underlyingState?.type !== CellType.Bomb) {
+            if (underlyingState?.type === CellType.Bomb) {
+                state.cells[action.index] = flagCell(state, underlyingState);
+            }
+            else {
                 state.errorIndex = action.index;
                 state.numErrors ++;
-                return;
-            }
-
-            state.cells[action.index] = { type: CellType.Bomb };
-
-            state.numBombsLeft--;
-
-            // Mark any associated clues as fully resolved.
-            markCluesAsResolved(state, underlyingState.clueIndexes);
-            
-            // Success when the last obscured cell is flagged.
-            if (!state.cells.some(cell => cell?.type === CellType.Obscured)) {
-                state.result = 'success';
             }
 
             return;
@@ -138,6 +106,10 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
                     }
                 }
             }
+            return;
+        }
+        case 'boost': {
+            applyBoost(state, action.boost, action.index);
             return;
         }
         default:

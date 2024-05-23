@@ -1,3 +1,4 @@
+import { BoostType } from './BoostType';
 import { CellState, DisplayCellState, UnderlyingCellState } from './CellState';
 
 export interface CellBoardDefinition {
@@ -11,7 +12,6 @@ interface InstanceInfo {
     cells: Array<DisplayCellState | null>;
     numBombsLeft: number;
     numErrors: number;
-    hintsUsed: number;
     result?: 'success' | 'failure';
     errorIndex?: number;
     overridableCells: number[];
@@ -37,4 +37,8 @@ export type CellBoardAction = {
 } | {
     type: 'override cells';
     fraction: number;
+} | {
+    type: 'boost';
+    boost: BoostType;
+    index: number;
 }

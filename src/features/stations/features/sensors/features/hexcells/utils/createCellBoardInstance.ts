@@ -18,7 +18,6 @@ export function createCellBoardInstance(definition: CellBoardDefinition, random:
             return { ...cell } as DisplayCellState;
         }),
         hints: definition.hints,
-        hintsUsed: 0,
         numErrors: 0,
         numBombsLeft: definition.underlying
             .filter(cell => cell?.type === CellType.Bomb)

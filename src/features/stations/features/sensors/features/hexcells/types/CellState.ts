@@ -44,8 +44,8 @@ export type RadiusClue = {
 };
 
 type FixedClueCell = RowClue | RadiusClue;
-type NonClueCell = { type: CellType.Unknown | CellType.Bomb };
-type DisplayOnlyCell = { type: CellType.Obscured | CellType.Exploded | CellType.Hint }
+type NonClueCell = { type: CellType.Unknown } | { type: CellType.Bomb };
+type DisplayOnlyCell = { type: CellType.Obscured } | { type: CellType.Exploded } | { type: CellType.Hint };
 export type ClueCell = EmptyCell | FixedClueCell;
 
 export type CellState = ClueCell | NonClueCell | DisplayOnlyCell;

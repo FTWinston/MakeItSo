@@ -1,6 +1,6 @@
-import { ScanBoostType } from './ScanBoost';
+import { BoostType } from '../features/hexcells';
 
 export interface SensorsConfiguration {
-    activeBoosts: ScanBoostType[];
-    inactiveBoosts: ScanBoostType[];
+    activeBoosts: BoostType[];
+    inactiveBoosts: BoostType[];
 }

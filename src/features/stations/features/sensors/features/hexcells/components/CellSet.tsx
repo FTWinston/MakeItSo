@@ -7,7 +7,7 @@ import { CellType, DisplayCellState } from '../types/CellState';
 import { Cell, cellHeight, cellWidth, Special } from './Cell';
 import { isObscured } from '../utils/resolved';
 
-interface Props extends Omit<CellBoardInfo, 'numBombs' | 'numErrors' | 'hintsUsed'> {
+interface Props extends Omit<CellBoardInfo, 'numBombsLeft' | 'numErrors'> {
     onClick?: (cell: DisplayCellState, index: number) => void;
     onLongPress?: (cell: DisplayCellState, index: number) => void;
     revealingIndex?: number;
