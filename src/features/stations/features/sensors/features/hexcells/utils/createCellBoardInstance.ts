@@ -24,6 +24,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition, random:
             .length,
         overriddenCells: [],
         overridableCells: [],
+        protectErrors: false,
     };
 
     for (let index = 0; index < board.cells.length; index++) {

@@ -12,6 +12,7 @@ interface InstanceInfo {
     cells: Array<DisplayCellState | null>;
     numBombsLeft: number;
     numErrors: number;
+    protectErrors: boolean;
     result?: 'success' | 'failure';
     errorIndex?: number;
     overridableCells: number[];

@@ -24,13 +24,19 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
             }
 
             if (underlyingState.type === CellType.Bomb) {
-                state.cells[action.index] = {
-                    type: CellType.Exploded,
-                };
-
-                state.result = 'failure';
                 state.errorIndex = action.index;
-                state.numErrors ++;
+                
+                if (state.protectErrors) {
+                    state.protectErrors = false;
+                }
+                else {
+                    state.cells[action.index] = {
+                        type: CellType.Exploded,
+                    };
+                    
+                    state.result = 'failure';
+                    state.numErrors ++;
+                }
                 return;
             }
             
@@ -53,7 +59,12 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
             }
             else {
                 state.errorIndex = action.index;
-                state.numErrors ++;
+                if (state.protectErrors) {
+                    state.protectErrors = false;
+                }
+                else {
+                    state.numErrors ++;
+                }
             }
 
             return;

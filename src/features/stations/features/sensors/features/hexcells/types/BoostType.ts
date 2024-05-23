@@ -1,6 +1,7 @@
 export enum BoostType {
     Hint = 'hint',
     RevealCell = 'revealCell',
+    RevealMulti = 'revealMulti',
     Takeback = 'takeback',
     Detector = 'detector',
     SolveSmall = 'solveSmall',

@@ -9,6 +9,7 @@
     "onScreen": "Focus view screen on target",
     "boost hint": "Hint",
     "boost revealCell": "Reveal cell",
+    "boost revealMulti": "Reveal multi",
     "boost takeback": "Take-back",
     "boost detector": "Detector",
     "boost solveSmall": "Solve area",

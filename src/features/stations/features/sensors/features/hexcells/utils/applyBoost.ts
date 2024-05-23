@@ -26,6 +26,28 @@ export function applyBoost(state: CellBoard, type: BoostType, index?: number): v
             });
             return;
         }
+        case BoostType.RevealMulti: {
+            let canContinue = true;
+            while (canContinue) {
+                canContinue &&= applyHint(state, hintIndex => {
+                    const underlyingCell = state.underlying[hintIndex];
+                    if (underlyingCell == null) {
+                        return false;
+                    }
+    
+                    if (underlyingCell.type === CellType.Bomb) {
+                        canContinue = false;
+                        return flagCell(state, underlyingCell);
+                    }
+
+                    return revealCell(state, underlyingCell);
+                });
+            }
+            return;
+        }
+        case BoostType.Takeback:
+            state.protectErrors = true;
+            return;
         default:
             throw new UnexpectedValueError(type);
     }
