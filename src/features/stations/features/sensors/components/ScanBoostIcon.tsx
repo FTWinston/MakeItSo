@@ -19,7 +19,9 @@ interface Props {
 const iconsByEffectType = new Map<BoostType, IconType>([
     [BoostType.Hint, HintIcon],
     [BoostType.RevealCell, RevealCellIcon],
+    [BoostType.RevealMulti, RevealCellIcon], // TODO: new icon
     [BoostType.Takeback, TakebackIcon],
+    [BoostType.RerouteDamage, RevealCellIcon], // TODO: new icon
     [BoostType.Detector, DetectorIcon],
     [BoostType.SolveSmall, SolveSmallIcon],
     [BoostType.SolveLarge, SolveLargeIcon],

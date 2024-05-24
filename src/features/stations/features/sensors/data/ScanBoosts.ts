@@ -12,6 +12,30 @@ const boostBehaviorByIdentifier: Map<BoostType, BoostBehavior> = new Map([
             duration: 60,
         }
     }],
+    [BoostType.RevealCell, {
+        minimumSlot: SensorBoostPowerSlot.Second,
+        chargeDuration: 25,
+        descParams: {
+            power: 1,
+            duration: 60,
+        }
+    }],
+    [BoostType.RevealMulti, {
+        minimumSlot: SensorBoostPowerSlot.Third,
+        chargeDuration: 30,
+        descParams: {
+            power: 1,
+            duration: 60,
+        }
+    }],
+    [BoostType.Takeback, {
+        minimumSlot: SensorBoostPowerSlot.Second,
+        chargeDuration: 20,
+    }],
+    [BoostType.RerouteDamage, {
+        minimumSlot: SensorBoostPowerSlot.Second,
+        chargeDuration: 10,
+    }]
 ]);
 
 export function createBoost(id: number, type: BoostType): ScanBoost {

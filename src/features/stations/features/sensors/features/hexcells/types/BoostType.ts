@@ -3,6 +3,7 @@ export enum BoostType {
     RevealCell = 'revealCell',
     RevealMulti = 'revealMulti',
     Takeback = 'takeback',
+    RerouteDamage = 'rerouteDamage',
     Detector = 'detector',
     SolveSmall = 'solveSmall',
     SolveLarge = 'solveLarge',
