@@ -5,6 +5,7 @@ import { isObscured } from './resolved';
 import { applyBoost } from './applyBoost';
 import { revealCell } from './revealCell';
 import { flagCell } from './flagCell';
+import { clearOverride } from './clearOverride';
 
 export function hexCellReducer(state: CellBoard, action: CellBoardAction): void {
     switch (action.type) {
@@ -106,17 +107,9 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
                     }
 
                     const [overriddenIndex, overriddenState] = firstOverride;
+                    state.overriddenCells.delete(overriddenIndex);
 
-                    // Put its index into overridable cells, so it can be reused.
-                    state.overridableCells.push(overriddenIndex);
-
-                    // Replace the underlying cell state with this saved overridden state.
-                    state.underlying[overriddenIndex] = overriddenState;
-
-                    // Additionally, replace the cell's display state if it isn't obscured.
-                    if (overriddenState === null || state.cells[overriddenIndex]?.type !== CellType.Obscured) {
-                        state.cells[overriddenIndex] = overriddenState as DisplayCellState;
-                    }
+                    clearOverride(state, overriddenIndex, overriddenState);
                 }
             }
             return;
