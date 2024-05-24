@@ -71,11 +71,11 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
         }
         case 'override cells': {
             const fraction = Math.min(1, Math.max(0, action.fraction));
-            const targetOverridenNumber = Math.round(fraction * (state.overridableCells.length + state.overriddenCells.length));
+            const targetOverridenNumber = Math.round(fraction * (state.overridableCells.length + state.overriddenCells.size));
             
-            if (targetOverridenNumber > state.overriddenCells.length) {
+            if (targetOverridenNumber > state.overriddenCells.size) {
                 // Override this many cells.
-                const numToOverride = targetOverridenNumber - state.overriddenCells.length;
+                const numToOverride = targetOverridenNumber - state.overriddenCells.size;
 
                 for (let i = 0; i < numToOverride; i++) {
                     // Get the first overridable cell index.
@@ -83,7 +83,7 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
 
                     // Put state of that actual cell into overriddenCells.
                     const overriddenCell = state.underlying[indexToOverride]!;
-                    state.overriddenCells.push({ index: indexToOverride, state: overriddenCell });
+                    state.overriddenCells.set(indexToOverride, overriddenCell);
 
                     // Replace the underlying cell with the action's cell state.
                     state.underlying[indexToOverride] = { type: CellType.Unknown, clueIndexes: overriddenCell.type === CellType.AdjacentClue ? overriddenCell.clueIndexes : [] };
@@ -96,24 +96,26 @@ export function hexCellReducer(state: CellBoard, action: CellBoardAction): void 
             }
             else {
                 // Restore this many cells.
-                const numToRestore = state.overriddenCells.length - targetOverridenNumber;
+                const numToRestore = state.overriddenCells.size - targetOverridenNumber;
 
                 for (let i = 0; i < numToRestore; i++) {
-                    // Get the first overridden cell.
-                    const overriddenCell = state.overriddenCells.shift();
-                    if (overriddenCell === undefined) {
+                    // Get the first overridden cell.                
+                    const [firstOverride] = state.overriddenCells;
+                    if (firstOverride === undefined) {
                         return;
                     }
 
+                    const [overriddenIndex, overriddenState] = firstOverride;
+
                     // Put its index into overridable cells, so it can be reused.
-                    state.overridableCells.push(overriddenCell.index);
+                    state.overridableCells.push(overriddenIndex);
 
                     // Replace the underlying cell state with this saved overridden state.
-                    state.underlying[overriddenCell.index] = overriddenCell.state;
+                    state.underlying[overriddenIndex] = overriddenState;
 
                     // Additionally, replace the cell's display state if it isn't obscured.
-                    if (overriddenCell.state === null || state.cells[overriddenCell.index]?.type !== CellType.Obscured) {
-                        state.cells[overriddenCell.index] = overriddenCell.state as DisplayCellState;
+                    if (overriddenState === null || state.cells[overriddenIndex]?.type !== CellType.Obscured) {
+                        state.cells[overriddenIndex] = overriddenState as DisplayCellState;
                     }
                 }
             }

@@ -22,7 +22,7 @@ export function createCellBoardInstance(definition: CellBoardDefinition, random:
         numBombsLeft: definition.underlying
             .filter(cell => cell?.type === CellType.Bomb)
             .length,
-        overriddenCells: [],
+        overriddenCells: new Map(),
         overridableCells: [],
         protectErrors: false,
     };

@@ -16,7 +16,7 @@ interface InstanceInfo {
     result?: 'success' | 'failure';
     errorIndex?: number;
     overridableCells: number[];
-    overriddenCells: { index: number, state: UnderlyingCellState | null }[]
+    overriddenCells: Map<number, UnderlyingCellState | null>;
 }
 
 export interface MinimumResolvableBoardInfo {
