@@ -45,7 +45,7 @@ const Straight = styled(Box)({
     '&::after': {
         ...arrow,
         position: 'absolute',
-        bottom: 0,
+        bottom: -1,
     }
 });
 
@@ -70,6 +70,7 @@ const TopRight = styled(Box)({
     '&::after': {
         ...arrow,
         left: 'calc(100% - 6px)',
+        top: '17px',
     }
 });
 
@@ -91,7 +92,10 @@ const TopLeft = styled(Box)({
     gridRowEnd: 5,
     gridColumnStart: 2,
     gridColumnEnd: 3,
-    '&::after': arrow,
+    '&::after': {
+        ...arrow,
+        top: '17px',
+    }
 });
 
 export const ItemLink: React.FC<PropsWithChildren<Props>> = props => {
