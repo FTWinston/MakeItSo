@@ -22,7 +22,7 @@ export class Random {
 
     pick<T>(values: T[]): T {
         if (values.length === 0) {
-            throw new Error('pickRandom passed an empty array');
+            throw new Error('pick passed an empty array');
         }
     
         return values[this.getInt(values.length)];

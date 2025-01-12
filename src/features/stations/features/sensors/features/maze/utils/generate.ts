@@ -6,12 +6,20 @@ export type GenerationConfig = {
     height: number;
     /** A number between 0 and 1, indicating the chance, on reaching a dead end while generating, of "punching through" a wall to an already-visited cell. */
     connectivity: number;
+    /** How many "sub mazes" should be generated. Each sub-maze should only connect to the rest of the maze at e.g. a locked door. */
+    numGroups: number;
+}
+
+type GeneratingLink = {
+    linked: boolean;
+    adjacentCell: GeneratingCellState | null;
 }
 
 type GeneratingCellState = {
-    links: [GeneratingCellState | null, GeneratingCellState | null, GeneratingCellState | null, GeneratingCellState | null];
+    links: [GeneratingLink, GeneratingLink, GeneratingLink, GeneratingLink];
     content?: 'start' | 'item' | 'goal';
     visited: boolean;
+    group: number;
     x: number;
     y: number;
 }
@@ -34,52 +42,93 @@ const orthogonalDirectionsMap = new Map<Direction, [Direction, Direction]>(
     ]
 );
 
-const cardinalOffsets = [
-    { x: 0, y: -1 },
-    { x: 1, y: 0 },
-    { x: 0, y: 1 },
-    { x: -1, y: 0 },
-]
-
 export function generate(config: GenerationConfig, random: Random): Maze {
+    // Create a set of unlinked cells, and assign them to groups.
     const cells: GeneratingCellState[][] = createEmptyState(config.width, config.height);
 
-    const startCell = getRandomCell(cells, random);
+    const cellGroups = assignGroups(cells, config.numGroups);
 
-    iterateCells(startCell, cells, random, config.connectivity);
+    // Generate an independent mini-maze in each group.
+    for (const cellGroup of cellGroups) {
+        const startCell = random.pick(cellGroup);
+
+        iterateCells(startCell, random, config.connectivity);
+    }
+
+    // TODO: link up each group to the rest of the maze, but only have one "door" between each group.
 
     return {
         cells: cells.map(col => col.map(cell => ({
             content: cell.content,
-            links: cell.links.map(link => !!link) as CellLinks,
+            group: cell.group,
+            links: cell.links.map(link => link.linked) as CellLinks,
         }))),
     };
 }
 
 function createEmptyState(width: number, height: number): GeneratingCellState[][] {
-    return new Array(height)
+    // Create 2d array of cells.
+    const cells: GeneratingCellState[][] = new Array(height)
         .fill(null)
         .map((_, y) => new Array(width)
             .fill(null)
             .map((_, x) => ({
-                links: [null, null, null, null],
+                links: [{ linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }],
                 visited: false,
+                group: 1,
                 x,
                 y,
             }))
         );
+
+    // Add links to each cell's adjacent cells.
+    for (let fromY = 0; fromY < height; fromY++) {
+        const row = cells[fromY];
+        for (let fromX = 0; fromX < width; fromX++) {
+            const fromCell = row[fromX];
+
+            if (fromY > 0) {
+                const toCellNorth = cells[fromY - 1][fromX];
+                fromCell.links[north].adjacentCell = toCellNorth;
+                toCellNorth.links[south].adjacentCell = fromCell;
+            }
+
+            if (fromX > 0) {
+                const toCellWest = row[fromX - 1];
+                fromCell.links[west].adjacentCell = toCellWest;
+                toCellWest.links[east].adjacentCell = fromCell;
+            }
+        }
+    }
+
+    return cells;
 }
 
-function getRandomCell(cells: GeneratingCellState[][], random: Random) {
-    const row = cells[random.getInt(cells.length)];
-    const cell = row[random.getInt(row.length)];
+function assignGroups(cells: GeneratingCellState[][], numGroups: number): GeneratingCellState[][] {
+    const cellsByGroup: GeneratingCellState[][] = new Array<GeneratingCellState[]>(numGroups)
+        .fill(null!)
+        .map(() => []);
 
-    return cell;
+    // Split cells into a given number of groups.
+    // For now, just split them into horizontal bands.
+    // TODO: do this in a more interesting way.
+    for (let cellY = 0; cellY < cells.length; cellY++) {
+        const row = cells[cellY];
+        let group = Math.round(cellY * (numGroups - 1) / cells.length);
+
+        for (let cellX = 0; cellX < row.length; cellX++) {
+            const cell = row[cellX];
+            cell.group = group;
+
+            cellsByGroup[group].push(cell);
+        }
+    }
+
+    return cellsByGroup;
 }
 
 function iterateCells(
     startCell: GeneratingCellState,
-    cells: GeneratingCellState[][],
     random: Random,
     punchThroughChance: number
 ) {
@@ -102,7 +151,7 @@ function iterateCells(
 
         for (const direction of directions) {
             if (nextCell == null) {
-                nextCell = attemptToAddLink(currentCell, direction, cells);
+                nextCell = attemptToAddLink(currentCell, direction);
             }
             else {
                 // TODO: only push steps to the backlog if they point at an unvisited cell?
@@ -113,13 +162,13 @@ function iterateCells(
         // At the end of a branch, consider punching through a wall to an already-visited cell.
         if (nextCell === null && random.getFloat() < punchThroughChance) {
             for (const direction of directions) {
-                if (currentCell.links[direction]) {
+                if (currentCell.links[direction].linked) {
                     continue;
                 }
 
-                const potentialNextCell = getAdjacentCell(currentCell, direction, cells);
+                const potentialNextCell: GeneratingCellState | null = currentCell.links[direction].adjacentCell;
 
-                if (potentialNextCell) {
+                if (potentialNextCell && potentialNextCell.group === currentCell.group) {
                     // If the current cell and the cell we're potentially punching through to are both linked in the same orthogonal direction,
                     // then we don't link to it so as to avoid creating an "open area" in the maze.
                     const [orthogonalDir1, orthogonalDir2] = orthogonalDirectionsMap.get(direction)!;
@@ -156,7 +205,7 @@ function iterateCells(
             }
 
             const [backtrackCell, direction] = stepToTest;
-            nextCell = attemptToAddLink(backtrackCell, direction, cells);
+            nextCell = attemptToAddLink(backtrackCell, direction);
             
             if (nextCell) {            
                 junctionCells.add(backtrackCell); // A cell we've backtracked from is a junction.
@@ -170,11 +219,11 @@ function iterateCells(
     // Pick a random junction to be the start cell.
     random.pick([...junctionCells]).content = 'start';
 
-    // Any linear cels (i.e. cells that are not dead ends or junctions) that are adjacent to other linear cells count as isolated. They're good places for items.
+    // Any linear cells (i.e. cells that are not dead ends or junctions) that are only linked to other linear cells count as isolated. They're good places for items.
     for (const linearCell of linearCells) {
         let isolated = true;
-        for (const linkedCell of linearCell.links) {
-            if (linkedCell && !linearCells.has(linkedCell)) {
+        for (const { linked, adjacentCell } of linearCell.links) {
+            if (linked && adjacentCell && !linearCells.has(adjacentCell)) {
                 isolated = false;
             }
         }
@@ -184,10 +233,10 @@ function iterateCells(
     }
 }
 
-function attemptToAddLink(currentCell: GeneratingCellState, direction: Direction, cells: GeneratingCellState[][]): GeneratingCellState | null {
-    const testCell = getAdjacentCell(currentCell, direction, cells);
+function attemptToAddLink(currentCell: GeneratingCellState, direction: Direction): GeneratingCellState | null {
+    const testCell = currentCell.links[direction].adjacentCell;
 
-    if (testCell && !testCell.visited) {
+    if (testCell && testCell.group === currentCell.group && !testCell.visited) {
         linkCells(currentCell, testCell, direction);
 
         return testCell;
@@ -196,13 +245,7 @@ function attemptToAddLink(currentCell: GeneratingCellState, direction: Direction
     return null;
 }
 
-function getAdjacentCell(fromCell: GeneratingCellState, direction: Direction, cells: GeneratingCellState[][]): GeneratingCellState | undefined {
-    const offset = cardinalOffsets[direction];
-
-    return cells[fromCell.y + offset.y]?.[fromCell.x + offset.x];
-}
-
 function linkCells(from: GeneratingCellState, to: GeneratingCellState, direction: Direction) {
-    from.links[direction] = to;
-    to.links[oppositeDirectionsMap.get(direction)!] = from;
+    from.links[direction].linked = true;
+    to.links[oppositeDirectionsMap.get(direction)!].linked = true;
 }

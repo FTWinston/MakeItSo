@@ -9,6 +9,7 @@ export type CellLinks = [boolean, boolean, boolean, boolean];
 
 export type CellState = {
     links: CellLinks;
+    group: number;
     content?: 'start' | 'item' | 'goal';
 }
 
