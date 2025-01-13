@@ -35,7 +35,7 @@ export const CellDisplay: React.FC<Props> = props => {
             </Typography>
         );
 
-    const hue = props.group * 100;
+    const hue = props.group * 70;
 
     return (
         <Box

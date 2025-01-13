@@ -2,6 +2,7 @@ import { Random } from 'src/utils/random';
 import { CellLinks, Direction, Maze, north, east, south, west } from '../types/Maze';
 
 export type GenerationConfig = {
+    seed?: string;
     width: number;
     height: number;
     /** A number between 0 and 1, indicating the chance, on reaching a dead end while generating, of "punching through" a wall to an already-visited cell. */
@@ -24,6 +25,13 @@ type GeneratingCellState = {
     y: number;
 }
 
+type GeneratingCellGroup = {
+    startCell: GeneratingCellState;
+    targetNumCells: number;
+    cells: GeneratingCellState[];
+    nonGroupCellsByPriority: GeneratingCellState[];
+}
+
 const oppositeDirectionsMap = new Map<Direction, Direction>(
     [
         [north, south],
@@ -42,17 +50,17 @@ const orthogonalDirectionsMap = new Map<Direction, [Direction, Direction]>(
     ]
 );
 
-export function generate(config: GenerationConfig, random: Random): Maze {
+export function generate(config: GenerationConfig): Maze {
+    const random = new Random(config.seed);
+
     // Create a set of unlinked cells, and assign them to groups.
     const cells: GeneratingCellState[][] = createEmptyState(config.width, config.height);
 
-    const cellGroups = assignGroups(cells, config.numGroups);
+    const cellGroups = assignGroups(cells, config.numGroups, random);
 
     // Generate an independent mini-maze in each group.
     for (const cellGroup of cellGroups) {
-        const startCell = random.pick(cellGroup);
-
-        iterateCells(startCell, random, config.connectivity);
+        iterateCells(cellGroup.startCell, random, config.connectivity);
     }
 
     // TODO: link up each group to the rest of the maze, but only have one "door" between each group.
@@ -66,6 +74,8 @@ export function generate(config: GenerationConfig, random: Random): Maze {
     };
 }
 
+const unassignedGroup = -1;
+
 function createEmptyState(width: number, height: number): GeneratingCellState[][] {
     // Create 2d array of cells.
     const cells: GeneratingCellState[][] = new Array(height)
@@ -75,7 +85,7 @@ function createEmptyState(width: number, height: number): GeneratingCellState[][
             .map((_, x) => ({
                 links: [{ linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }],
                 visited: false,
-                group: 1,
+                group: unassignedGroup,
                 x,
                 y,
             }))
@@ -104,27 +114,123 @@ function createEmptyState(width: number, height: number): GeneratingCellState[][
     return cells;
 }
 
-function assignGroups(cells: GeneratingCellState[][], numGroups: number): GeneratingCellState[][] {
-    const cellsByGroup: GeneratingCellState[][] = new Array<GeneratingCellState[]>(numGroups)
-        .fill(null!)
-        .map(() => []);
+function distanceSquared(from: { x: number, y: number }, to: { x: number, y: number }) {
+    return (from.x - to.x) ** 2 + (from.y - to.y) ** 2;
+}
 
-    // Split cells into a given number of groups.
-    // For now, just split them into horizontal bands.
-    // TODO: do this in a more interesting way.
-    for (let cellY = 0; cellY < cells.length; cellY++) {
-        const row = cells[cellY];
-        let group = Math.round(cellY * (numGroups - 1) / cells.length);
+function getRandomDirections(random: Random) {
+    const directions = [north, east, south, west];
+    random.shuffle(directions);
+    return directions;
+}
 
-        for (let cellX = 0; cellX < row.length; cellX++) {
-            const cell = row[cellX];
-            cell.group = group;
+function assignGroups(
+    cells: GeneratingCellState[][],
+    numGroups: number,
+    random: Random
+): GeneratingCellGroup[] {
+    const allNonGroupStartCells = cells.flat();
 
-            cellsByGroup[group].push(cell);
+    if (numGroups <= 1) {
+        // If there's not to be multiple groups, just put everything into one group.
+        const startCell = random.delete(allNonGroupStartCells);
+        const group = {
+            targetNumCells: allNonGroupStartCells.length,
+            startCell,
+            cells: [startCell, ...allNonGroupStartCells],
+            nonGroupCellsByPriority: [],
+        }
+        group.cells = [startCell, ...allNonGroupStartCells];
+        for (const cell of group.cells) {
+            cell.group = 0;
+        }
+        return [group];
+    }
+
+    const groups: GeneratingCellGroup[] = new Array(numGroups).fill(null)
+        .map((_, groupNum) => {
+            // Pick a random cell to be the start of each group, and assign it into the group.
+            const startCell = random.delete(allNonGroupStartCells);
+            startCell.group = groupNum;
+
+            // Give each group a target size.
+            const targetNumCells = allNonGroupStartCells.length / numGroups;
+            
+            // Order all non-group cells by proximity to the start cell.
+            const nonGroupCellsByPriority = [...allNonGroupStartCells]
+                .sort((a, b) => distanceSquared(startCell, a) - distanceSquared(startCell, b))
+
+            return {
+                targetNumCells,
+                startCell,
+                cells: [startCell],
+                nonGroupCellsByPriority,
+            };
+        });
+
+    const unallocatedCells = new Set(allNonGroupStartCells);
+
+    function addCellToGroup(cell: GeneratingCellState, adjacentCell: GeneratingCellState) {
+        cell.group = adjacentCell.group;
+        groups[adjacentCell.group].cells.push(cell);
+        unallocatedCells.delete(cell);
+    }
+    
+    const incompleteGroups = [...groups];
+
+    // Repeatedly assign the closest non-group cell to the group with the most remaining unfilled size.
+    while (true) {
+        let anyGroupHasGrown = false;
+        // TODO: at each step, order the groups by "remaining unfilled size".
+        // Otherwise, this only really achieves equal distribution of cells between groups, but as their target sizes are also equal right now, that doesn't matter much.    
+        for (const group of incompleteGroups) {
+            for (let iTestCell = 0; iTestCell < group.nonGroupCellsByPriority.length; iTestCell++) {
+                const testCell = group.nonGroupCellsByPriority[iTestCell];
+
+                // Don't assign a cell to a group if it's already in another group.
+                // (TODO: remove it from the list of cells to test in the future.)
+                if (testCell.group !== unassignedGroup) {
+                    continue;
+                }
+
+                // Don't assign a cell to a group if it's not adjacent to a cell that's already in that group.
+                if (testCell.group !== unassignedGroup || !testCell.links.some(link => link.adjacentCell?.group === group.startCell.group)) {
+                    continue;
+                }
+
+                group.nonGroupCellsByPriority.splice(iTestCell, 1);
+                addCellToGroup(testCell, group.startCell)
+                anyGroupHasGrown = true;
+
+                // Remove groups from the list of incomplete groups once they've reached their target size.
+                if (group.cells.length >= group.targetNumCells) {
+                    incompleteGroups.splice(incompleteGroups.indexOf(group), 1);
+                }
+
+                break;
+            }   
+        }
+
+        if (!anyGroupHasGrown) {
+            break;
         }
     }
 
-    return cellsByGroup;
+    // Any unallocated cells should be assigned to the group of a random adjacent (allocated) cell, 
+    // repeating until all cells are allocated.
+    while (unallocatedCells.size > 0) {
+        for (const cell of unallocatedCells) {
+            for (const direction of getRandomDirections(random)) {
+                const adjacentCell = cell.links[direction].adjacentCell;
+                if (adjacentCell && adjacentCell.group !== unassignedGroup) {
+                    addCellToGroup(cell, adjacentCell);
+                    break;
+                }
+            }
+        }
+    }
+
+    return groups;
 }
 
 function iterateCells(
@@ -144,8 +250,7 @@ function iterateCells(
     while (currentCell) {
         currentCell.visited = true;
 
-        const directions = [north, east, south, west];
-        random.shuffle(directions);
+        const directions = getRandomDirections(random);
 
         let nextCell: GeneratingCellState | null = null;
 
@@ -217,7 +322,9 @@ function iterateCells(
     }
 
     // Pick a random junction to be the start cell.
-    random.pick([...junctionCells]).content = 'start';
+    if (junctionCells.size > 0) {
+        random.pick([...junctionCells]).content = 'start';
+    }
 
     // Any linear cells (i.e. cells that are not dead ends or junctions) that are only linked to other linear cells count as isolated. They're good places for items.
     for (const linearCell of linearCells) {
