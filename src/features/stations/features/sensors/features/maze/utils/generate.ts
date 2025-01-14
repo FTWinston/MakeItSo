@@ -30,6 +30,7 @@ type GeneratingCellGroup = {
     targetNumCells: number;
     cells: GeneratingCellState[];
     nonGroupCellsByPriority: GeneratingCellState[];
+    borderCellsByGroup: Map<number, GeneratingCellState[]>;
 }
 
 const oppositeDirectionsMap = new Map<Direction, Direction>(
@@ -63,7 +64,8 @@ export function generate(config: GenerationConfig): Maze {
         iterateCells(cellGroup.startCell, random, config.connectivity);
     }
 
-    // TODO: link up each group to the rest of the maze, but only have one "door" between each group.
+    // Link up each group to the rest of the maze, but only have one "door" between each group.
+    connectGroups(cellGroups, random);
 
     return {
         cells: cells.map(col => col.map(cell => ({
@@ -139,6 +141,7 @@ function assignGroups(
             startCell,
             cells: [startCell, ...allNonGroupStartCells],
             nonGroupCellsByPriority: [],
+            borderCellsByGroup: new Map(),
         }
         group.cells = [startCell, ...allNonGroupStartCells];
         for (const cell of group.cells) {
@@ -165,6 +168,7 @@ function assignGroups(
                 startCell,
                 cells: [startCell],
                 nonGroupCellsByPriority,
+                borderCellsByGroup: new Map(),
             };
         });
 
@@ -187,18 +191,18 @@ function assignGroups(
             for (let iTestCell = 0; iTestCell < group.nonGroupCellsByPriority.length; iTestCell++) {
                 const testCell = group.nonGroupCellsByPriority[iTestCell];
 
-                // Don't assign a cell to a group if it's already in another group.
-                // (TODO: remove it from the list of cells to test in the future.)
-                if (testCell.group !== unassignedGroup) {
-                    continue;
-                }
-
                 // Don't assign a cell to a group if it's not adjacent to a cell that's already in that group.
-                if (testCell.group !== unassignedGroup || !testCell.links.some(link => link.adjacentCell?.group === group.startCell.group)) {
+                if (!testCell.links.some(link => link.adjacentCell?.group === group.startCell.group)) {
                     continue;
                 }
 
                 group.nonGroupCellsByPriority.splice(iTestCell, 1);
+
+                // Don't assign a cell to a group if it's already in another group.
+                if (testCell.group !== unassignedGroup) {
+                    continue;
+                }
+
                 addCellToGroup(testCell, group.startCell)
                 anyGroupHasGrown = true;
 
@@ -224,6 +228,24 @@ function assignGroups(
                 const adjacentCell = cell.links[direction].adjacentCell;
                 if (adjacentCell && adjacentCell.group !== unassignedGroup) {
                     addCellToGroup(cell, adjacentCell);
+                    break;
+                }
+            }
+        }
+    }
+
+    // Once all group cells are assigned, each group's "border" cells, so we know what groups touch.
+    for (const group of groups) {
+        for (const groupCell of group.cells) {
+            for (const { adjacentCell } of groupCell.links) {
+                if (adjacentCell && adjacentCell.group !== group.startCell.group) {
+                    const groupNum = adjacentCell.group;
+                    let groupBorderCells = group.borderCellsByGroup.get(groupNum);
+                    if (!groupBorderCells) {
+                        groupBorderCells = [];
+                        group.borderCellsByGroup.set(groupNum, groupBorderCells);
+                    }
+                    groupBorderCells.push(groupCell);
                     break;
                 }
             }
@@ -356,3 +378,35 @@ function linkCells(from: GeneratingCellState, to: GeneratingCellState, direction
     from.links[direction].linked = true;
     to.links[oppositeDirectionsMap.get(direction)!].linked = true;
 }
+
+function connectGroups(unconnectedGroups: GeneratingCellGroup[], random: Random) {
+    const connectedGroups = new Set<GeneratingCellGroup>();
+    connectedGroups.add(random.delete(unconnectedGroups));
+
+    while (unconnectedGroups.length > 0) {
+        const groupToConnect = random.delete(unconnectedGroups);
+        
+        for (const targetGroup of connectedGroups) {
+            const cellsBorderingTargetGroup = groupToConnect.borderCellsByGroup.get(targetGroup.startCell.group);
+            if (!cellsBorderingTargetGroup) {
+                continue;
+            }
+
+            const cellToLinkToTargetGroup = random.pick(cellsBorderingTargetGroup);
+
+            for (const direction of getRandomDirections(random)) {
+                const link = cellToLinkToTargetGroup.links[direction];
+                if (link.linked || !link.adjacentCell || link.adjacentCell.group !== targetGroup.startCell.group) {
+                    continue;
+                }
+
+                linkCells(cellToLinkToTargetGroup, link.adjacentCell, direction);
+                break;
+            }
+            
+            connectedGroups.add(groupToConnect);
+            break;
+        }
+    }
+}
+
