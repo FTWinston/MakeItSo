@@ -13,6 +13,13 @@ export type CellState = {
     content?: 'start' | 'item' | 'goal';
 }
 
+export type MazeEntity = {
+    x: number;
+    y: number;
+    type: 'player';
+}
+
 export type Maze = {
     cells: CellState[][];
+    entities: Partial<Record<number, MazeEntity>>;
 }

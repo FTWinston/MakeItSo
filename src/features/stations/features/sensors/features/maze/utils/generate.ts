@@ -1,5 +1,6 @@
 import { Random } from 'src/utils/random';
 import { CellLinks, Direction, Maze, north, east, south, west } from '../types/Maze';
+import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 
 export type GenerationConfig = {
     seed?: string;
@@ -33,24 +34,6 @@ type GeneratingCellGroup = {
     borderCellsByGroup: Map<number, GeneratingCellState[]>;
 }
 
-const oppositeDirectionsMap = new Map<Direction, Direction>(
-    [
-        [north, south],
-        [south, north],
-        [east, west],
-        [west, east],
-    ]
-);
-
-const orthogonalDirectionsMap = new Map<Direction, [Direction, Direction]>(
-    [
-        [north, [east, west]],
-        [south, [east, west]],
-        [east, [north, south]],
-        [west, [north, south]],
-    ]
-);
-
 export function generate(config: GenerationConfig): Maze {
     const random = new Random(config.seed);
 
@@ -73,6 +56,7 @@ export function generate(config: GenerationConfig): Maze {
             group: cell.group,
             links: cell.links.map(link => link.linked) as CellLinks,
         }))),
+        entities: {},
     };
 }
 
