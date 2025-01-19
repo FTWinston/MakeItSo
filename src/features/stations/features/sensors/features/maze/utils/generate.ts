@@ -1,6 +1,7 @@
 import { Random } from 'src/utils/random';
 import { CellLinks, Direction, Maze, north, east, south, west } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
+import { dir } from 'i18next';
 
 export type GenerationConfig = {
     seed?: string;
@@ -13,7 +14,10 @@ export type GenerationConfig = {
 }
 
 type GeneratingLink = {
-    linked: boolean;
+    linked: true;
+    adjacentCell: GeneratingCellState;
+} | {
+    linked: false;
     adjacentCell: GeneratingCellState | null;
 }
 
@@ -281,12 +285,14 @@ function iterateCells(
 
                 const potentialNextCell: GeneratingCellState | null = currentCell.links[direction].adjacentCell;
 
+                // The current cell and the cell we're potentially punching through to must be in the same group.
                 if (potentialNextCell && potentialNextCell.group === currentCell.group) {
-                    // If the current cell and the cell we're potentially punching through to are both linked in the same orthogonal direction,
+                    // If both cells are linked in the same orthogonal direction, to cells that also link to each other,
                     // then we don't link to it so as to avoid creating an "open area" in the maze.
-                    const [orthogonalDir1, orthogonalDir2] = orthogonalDirectionsMap.get(direction)!;
-                    if ((currentCell.links[orthogonalDir1] && potentialNextCell.links[orthogonalDir1])
-                        || (currentCell.links[orthogonalDir2] && potentialNextCell.links[orthogonalDir2])) {
+                    const [orthogonalDirLeft, orthogonalDirRight] = orthogonalDirectionsMap.get(direction)!;
+                    
+                    if (isLinkedRoundCorner(currentCell, orthogonalDirLeft, 1)
+                        || isLinkedRoundCorner(currentCell, orthogonalDirRight, 0)) {
                         continue;
                     }
 
@@ -365,6 +371,23 @@ function linkCells(from: GeneratingCellState, to: GeneratingCellState, direction
     to.links[oppositeDirectionsMap.get(direction)!].linked = true;
 }
 
+function isLinkedRoundCorner(fromCell: GeneratingCellState, direction: Direction, subsequentLeftOrRight: 0 | 1): boolean {
+    
+    const firstLink = fromCell.links[direction];
+
+    if (!firstLink.linked) {
+        return false;
+    }
+
+    const nextCell = firstLink.adjacentCell;
+
+    const orthogonalDirs = orthogonalDirectionsMap.get(direction)!;
+
+    const secondLink = nextCell.links[orthogonalDirs[subsequentLeftOrRight]];
+
+    return secondLink.linked;
+}
+
 function connectGroups(unconnectedGroups: GeneratingCellGroup[], random: Random) {
     const connectedGroups = new Set<GeneratingCellGroup>();
     connectedGroups.add(random.delete(unconnectedGroups));
@@ -395,4 +418,3 @@ function connectGroups(unconnectedGroups: GeneratingCellGroup[], random: Random)
         }
     }
 }
-

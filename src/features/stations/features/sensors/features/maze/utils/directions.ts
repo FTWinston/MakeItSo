@@ -11,9 +11,9 @@ export const oppositeDirectionsMap: ReadonlyMap<Direction, Direction> = new Map<
 
 export const orthogonalDirectionsMap: ReadonlyMap<Direction, [Direction, Direction]> = new Map<Direction, [Direction, Direction]>(
     [
-        [north, [east, west]],
+        [north, [west, east]],
         [south, [east, west]],
         [east, [north, south]],
-        [west, [north, south]],
+        [west, [south, north]],
     ]
 );
