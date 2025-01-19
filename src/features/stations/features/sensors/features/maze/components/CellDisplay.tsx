@@ -4,11 +4,11 @@ import { Box } from 'src/lib/mui';
 type Props = {
     content?: 'start' | 'item' | 'goal';
     group: number;
+    x: number;
+    y: number;
 
     rightmost: boolean;
     bottommost: boolean;
-    leftmost: boolean;
-    topmost: boolean;
 
     borderRight: boolean;
     borderBottom: boolean;
@@ -46,13 +46,16 @@ export const CellDisplay: React.FC<Props> = props => {
                 borderColor: 'primary.dark',
                 borderStyle: 'solid',
                 borderWidth: 0,
+                
+                gridColumn: `${props.x + 1}`,
+                gridRow: `${props.y + 1}`,
 
                 backgroundColor: `hsla(${hue}, 100%, 50%, 0.1)`,
 
                 borderRightWidth: props.rightmost ? 0 : 1,
                 borderBottomWidth: props.bottommost ? 0 : 1,
-                borderLeftWidth: props.leftmost ? 0 : 1,
-                borderTopWidth: props.topmost ? 0 : 1,
+                borderLeftWidth: props.x === 0 ? 0 : 1,
+                borderTopWidth: props.y === 0 ? 0 : 1,
 
                 borderRightColor: props.borderRight ? undefined : 'transparent',
                 borderBottomColor: props.borderBottom ? undefined : 'transparent',

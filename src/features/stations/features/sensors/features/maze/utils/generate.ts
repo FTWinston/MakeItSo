@@ -56,7 +56,9 @@ export function generate(config: GenerationConfig): Maze {
             group: cell.group,
             links: cell.links.map(link => link.linked) as CellLinks,
         }))),
-        entities: {},
+        entities: {
+            1: { x: 0, y: 0, type: 'player' }
+        },
     };
 }
 

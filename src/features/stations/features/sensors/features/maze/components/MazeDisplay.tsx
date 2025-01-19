@@ -1,15 +1,28 @@
 import { Box } from 'src/lib/mui';
 import { Maze } from '../types/Maze';
 import { CellDisplay } from './CellDisplay';
+import { EntityDisplay } from './EntityDisplay';
 
 type Props = {
     maze: Maze;
 }
 
 export const MazeDisplay: React.FC<Props> = props => {
-    const cells = props.maze.cells;
+    const { cells, entities } = props.maze;
     const height = cells.length;
     const width = cells[0].length;
+
+    const entityDisplay: JSX.Element[] = [];
+    for (const [id, entity] of Object.entries(entities)) {
+        entityDisplay.push((
+            <EntityDisplay
+                key={id}
+                x={entity!.x}
+                y={entity!.y}
+                type={entity!.type}
+            />
+        ));
+    }
 
     return (
         <Box sx={{
@@ -29,8 +42,8 @@ export const MazeDisplay: React.FC<Props> = props => {
                         key={`${x}_${y}`}
                         rightmost={x === width - 1}
                         bottommost={y === height - 1}
-                        leftmost={x === 0}
-                        topmost={y === 0}
+                        x={x}
+                        y={y}
                         content={cell.content}
                         group={cell.group}
                         borderBottom={!cell.links[2]}
@@ -40,6 +53,7 @@ export const MazeDisplay: React.FC<Props> = props => {
                     />
                 ))
             )}
+            {entityDisplay}
         </Box>
     );
 }

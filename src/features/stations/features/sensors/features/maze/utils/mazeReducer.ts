@@ -1,5 +1,4 @@
 import { CellState, Direction, east, Maze, MazeEntity, north, south, west } from '../types/Maze';
-import { orthogonalDirectionsMap } from './directions';
 
 export type MazeAction = {
     type: 'move';
@@ -12,27 +11,11 @@ export function mazeReducer(state: Maze, action: MazeAction): Maze {
         case 'move':
             const entity = state.entities[action.entity];
             if (entity !== undefined) {
-                moveRepeatedly(entity, state, action.direction);
+                tryMove(entity, state, action.direction);
             }
             break;
     }
     return state;
-}
-
-function moveRepeatedly(entity: MazeEntity, maze: Maze, direction: Direction) {
-    while (true) {
-        const movedTo = tryMove(entity, maze, direction);
-
-        if (movedTo === null) {
-            break;
-        }
-
-        // Stop if destination cell has links in a perpendicular direction.
-        const [perpDir1, perpDir2] = orthogonalDirectionsMap.get(direction)!;
-        if (movedTo.links[perpDir1] || movedTo.links[perpDir2]) {
-            break;
-        }
-    }
 }
 
 function tryMove(entity: MazeEntity, maze: Maze, direction: Direction): CellState | null {
@@ -57,7 +40,7 @@ function tryMove(entity: MazeEntity, maze: Maze, direction: Direction): CellStat
             y += 1;
             break;
         case west:
-            x += 1;
+            x -= 1;
             break;
     }
 
