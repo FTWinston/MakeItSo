@@ -61,7 +61,11 @@ export function generate(config: GenerationConfig): Maze {
             links: cell.links.map(link => link.linked) as CellLinks,
         }))),
         entities: {
-            1: { x: 0, y: 0, type: 'player' }
+            1: {
+                x: 0,//startCell.x,
+                y: 0,//startCell.y,
+                type: 'player'
+            }
         },
     };
 }
@@ -371,19 +375,17 @@ function linkCells(from: GeneratingCellState, to: GeneratingCellState, direction
     to.links[oppositeDirectionsMap.get(direction)!].linked = true;
 }
 
-function isLinkedRoundCorner(fromCell: GeneratingCellState, direction: Direction, subsequentLeftOrRight: 0 | 1): boolean {
-    
+function isLinkedRoundCorner(fromCell: GeneratingCellState, direction: Direction, subsequentLeftOrRight: 0 | 1): boolean {    
     const firstLink = fromCell.links[direction];
 
     if (!firstLink.linked) {
         return false;
     }
 
-    const nextCell = firstLink.adjacentCell;
-
     const orthogonalDirs = orthogonalDirectionsMap.get(direction)!;
-
-    const secondLink = nextCell.links[orthogonalDirs[subsequentLeftOrRight]];
+    const orthogonalDir = orthogonalDirs[subsequentLeftOrRight];
+    const nextCell = firstLink.adjacentCell;
+    const secondLink = nextCell.links[orthogonalDir];
 
     return secondLink.linked;
 }
@@ -410,6 +412,10 @@ function connectGroups(unconnectedGroups: GeneratingCellGroup[], random: Random)
                 }
 
                 linkCells(cellToLinkToTargetGroup, link.adjacentCell, direction);
+                
+                // Neither cell is a dead end anymore.
+                delete cellToLinkToTargetGroup.content;
+                delete link.adjacentCell.content;
                 break;
             }
             
