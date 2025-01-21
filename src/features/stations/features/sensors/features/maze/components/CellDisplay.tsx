@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { Box } from 'src/lib/mui';
 
 type Props = {
-    content?: 'start' | 'item' | 'goal';
+    content?: 'entrance' | 'item' | 'goal';
     group: number;
     x: number;
     y: number;
@@ -21,7 +21,7 @@ export const CellDisplay: React.FC<Props> = props => {
         ? undefined
         : (
             <Typography 
-                color={props.content === 'start' ?
+                color={props.content === 'entrance' ?
                     'info.light'
                     : props.content === 'item'
                         ? 'secondary.dark'
@@ -31,7 +31,7 @@ export const CellDisplay: React.FC<Props> = props => {
                 fontSize="0.75em"
                 lineHeight="1em"
             >
-                {props.content === 'start' ? 'S' : props.content === 'item' ? '·' : props.content === 'goal' ? 'X' : undefined}
+                {props.content === 'entrance' ? '█' : props.content === 'item' ? '·' : props.content === 'goal' ? 'X' : undefined}
             </Typography>
         );
 
@@ -46,7 +46,7 @@ export const CellDisplay: React.FC<Props> = props => {
                 borderColor: 'primary.dark',
                 borderStyle: 'solid',
                 borderWidth: 0,
-                
+
                 gridColumn: `${props.x + 1}`,
                 gridRow: `${props.y + 1}`,
 

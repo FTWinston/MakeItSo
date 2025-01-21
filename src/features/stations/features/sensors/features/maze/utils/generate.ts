@@ -1,7 +1,6 @@
 import { Random } from 'src/utils/random';
 import { CellLinks, Direction, Maze, north, east, south, west } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
-import { dir } from 'i18next';
 
 export type GenerationConfig = {
     seed?: string;
@@ -23,7 +22,7 @@ type GeneratingLink = {
 
 type GeneratingCellState = {
     links: [GeneratingLink, GeneratingLink, GeneratingLink, GeneratingLink];
-    content?: 'start' | 'item' | 'goal';
+    content?: 'entrance' | 'item' | 'goal';
     visited: boolean;
     group: number;
     x: number;
@@ -36,6 +35,8 @@ type GeneratingCellGroup = {
     cells: GeneratingCellState[];
     nonGroupCellsByPriority: GeneratingCellState[];
     borderCellsByGroup: Map<number, GeneratingCellState[]>;
+    goalCells: Set<GeneratingCellState>;
+    midPathCells: Set<GeneratingCellState>;
 }
 
 export function generate(config: GenerationConfig): Maze {
@@ -48,8 +49,11 @@ export function generate(config: GenerationConfig): Maze {
 
     // Generate an independent mini-maze in each group.
     for (const cellGroup of cellGroups) {
-        iterateCells(cellGroup.startCell, random, config.connectivity);
+        iterateCells(cellGroup, random, config.connectivity);
     }
+
+    const startCell = random.pick([...cellGroups[0].midPathCells]);
+    startCell.content = 'entrance';
 
     // Link up each group to the rest of the maze, but only have one "door" between each group.
     connectGroups(cellGroups, random);
@@ -62,8 +66,8 @@ export function generate(config: GenerationConfig): Maze {
         }))),
         entities: {
             1: {
-                x: 0,//startCell.x,
-                y: 0,//startCell.y,
+                x: startCell.x,
+                y: startCell.y,
                 type: 'player'
             }
         },
@@ -130,12 +134,14 @@ function assignGroups(
     if (numGroups <= 1) {
         // If there's not to be multiple groups, just put everything into one group.
         const startCell = random.delete(allNonGroupStartCells);
-        const group = {
+        const group: GeneratingCellGroup = {
             targetNumCells: allNonGroupStartCells.length,
             startCell,
             cells: [startCell, ...allNonGroupStartCells],
             nonGroupCellsByPriority: [],
             borderCellsByGroup: new Map(),
+            goalCells: new Set(),
+            midPathCells: new Set(),
         }
         group.cells = [startCell, ...allNonGroupStartCells];
         for (const cell of group.cells) {
@@ -163,6 +169,8 @@ function assignGroups(
                 cells: [startCell],
                 nonGroupCellsByPriority,
                 borderCellsByGroup: new Map(),
+                goalCells: new Set(),
+                midPathCells: new Set(),
             };
         });
 
@@ -250,17 +258,16 @@ function assignGroups(
 }
 
 function iterateCells(
-    startCell: GeneratingCellState,
+    cellGroup: GeneratingCellGroup,
     random: Random,
     punchThroughChance: number
 ) {
     const stepsToProcess = new Array<[GeneratingCellState, Direction]>();
-
-    startCell.content = 'goal';
-
     const junctionCells = new Set<GeneratingCellState>();
     const linearCells = new Set<GeneratingCellState>();
 
+    const startCell = cellGroup.startCell;
+    cellGroup.goalCells.add(startCell);
     let currentCell: GeneratingCellState | null = startCell;
 
     while (currentCell) {
@@ -312,7 +319,7 @@ function iterateCells(
         if (!junctionCells.has(currentCell)) {
             if (nextCell === null) {
                 // The end of a cul-de-sac is a good place for a goal.
-                currentCell.content = 'goal';
+                cellGroup.goalCells.add(currentCell);
             }
             else {
                 linearCells.add(currentCell);
@@ -331,17 +338,13 @@ function iterateCells(
             nextCell = attemptToAddLink(backtrackCell, direction);
             
             if (nextCell) {            
-                junctionCells.add(backtrackCell); // A cell we've backtracked from is a junction.
+                // A cell we've backtracked from is a junction.
+                junctionCells.add(backtrackCell);
                 linearCells.delete(backtrackCell);
             }
         }
 
         currentCell = nextCell;
-    }
-
-    // Pick a random junction to be the start cell.
-    if (junctionCells.size > 0) {
-        random.pick([...junctionCells]).content = 'start';
     }
 
     // Any linear cells (i.e. cells that are not dead ends or junctions) that are only linked to other linear cells count as isolated. They're good places for items.
@@ -352,9 +355,17 @@ function iterateCells(
                 isolated = false;
             }
         }
-        if (isolated) {
-            linearCell.content = 'item';
+        if (isolated && !cellGroup.goalCells.has(linearCell)) {
+            cellGroup.midPathCells.add(linearCell);
         }
+    }
+
+    // Display the important cells, for debugging.
+    for (const cell of cellGroup.goalCells) {
+        cell.content = 'goal';
+    }
+    for (const cell of cellGroup.midPathCells) {
+        cell.content = 'item';
     }
 }
 
