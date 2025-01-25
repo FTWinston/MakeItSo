@@ -82,3 +82,7 @@ export function anyMatches<TValue>(values: TValue[], match: (value: TValue) => b
 
     return false;
 }
+
+export function filterNotNull<TValue>(values: (TValue | null)[]): TValue[] {
+    return values.filter(value => value !== null) as TValue[];
+}

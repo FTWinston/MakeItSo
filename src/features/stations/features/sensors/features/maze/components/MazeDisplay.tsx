@@ -1,5 +1,5 @@
 import { Box } from 'src/lib/mui';
-import { Maze } from '../types/Maze';
+import { CellType, Maze } from '../types/Maze';
 import { CellDisplay } from './CellDisplay';
 import { EntityDisplay } from './EntityDisplay';
 
@@ -26,32 +26,35 @@ export const MazeDisplay: React.FC<Props> = props => {
 
     return (
         <Box sx={{
-            borderColor: 'primary.dark',
-            borderStyle: 'solid',
-            borderWidth: 2,
-
             display: 'grid',
             gridTemplateColumns: `repeat(${width}, 1fr)`,
             gridTemplateRows: `repeat(${height}, 1fr)`,
             width: `${width}em`,
             height: `${height}em`,
+            margin: '0.25em',
         }}>
             {cells.flatMap((row, y) =>
-                row.map((cell, x) => (
-                    <CellDisplay
-                        key={`${x}_${y}`}
-                        rightmost={x === width - 1}
-                        bottommost={y === height - 1}
-                        x={x}
-                        y={y}
-                        content={cell.content}
-                        group={cell.group}
-                        borderBottom={!cell.links[2]}
-                        borderRight={!cell.links[1]}
-                        borderLeft={!cell.links[3]}
-                        borderTop={!cell.links[0]}
-                    />
-                ))
+                row.map((cell, x) => {
+                    const rightmost = x === width - 1;
+                    const bottommost = y === height - 1;
+
+                    return (
+                        <CellDisplay
+                            key={`${x}_${y}`}
+                            rightmost={rightmost}
+                            bottommost={bottommost}
+                            x={x}
+                            y={y}
+                            type={cell.type}
+                            content={cell.content}
+                            group={cell.group}
+                            borderBottom={!cell.links[2] && (!bottommost || cell.type !== CellType.Outside)}
+                            borderRight={!cell.links[1] && (!rightmost || cell.type !== CellType.Outside)}
+                            borderLeft={!cell.links[3] && (x !== 0 || cell.type !== CellType.Outside)}
+                            borderTop={!cell.links[0] && (y !== 0 || cell.type !== CellType.Outside)}
+                        />
+                    )
+                })
             )}
             {entityDisplay}
         </Box>

@@ -1,7 +1,9 @@
 import { Typography } from '@mui/material';
 import { Box } from 'src/lib/mui';
+import { CellType } from '../types/Maze';
 
 type Props = {
+    type: CellType;
     content?: 'entrance' | 'item' | 'goal';
     group: number;
     x: number;
@@ -50,12 +52,12 @@ export const CellDisplay: React.FC<Props> = props => {
                 gridColumn: `${props.x + 1}`,
                 gridRow: `${props.y + 1}`,
 
-                backgroundColor: `hsla(${hue}, 100%, 50%, 0.1)`,
+                backgroundColor: props.type === CellType.Outside ? undefined : `hsla(${hue}, 100%, 50%, 0.1)`,
 
-                borderRightWidth: props.rightmost ? 0 : 1,
-                borderBottomWidth: props.bottommost ? 0 : 1,
-                borderLeftWidth: props.x === 0 ? 0 : 1,
-                borderTopWidth: props.y === 0 ? 0 : 1,
+                borderRightWidth: props.rightmost ? 2 : 1,
+                borderBottomWidth: props.bottommost ? 2 : 1,
+                borderLeftWidth: props.x === 0 ? 2 : 1,
+                borderTopWidth: props.y === 0 ? 2 : 1,
 
                 borderRightColor: props.borderRight ? undefined : 'transparent',
                 borderBottomColor: props.borderBottom ? undefined : 'transparent',

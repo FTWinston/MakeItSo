@@ -1,11 +1,13 @@
 import { Random } from 'src/utils/random';
-import { CellLinks, Direction, Maze, north, east, south, west } from '../types/Maze';
+import { CellLinks, Direction, Maze, north, east, south, west, CellType } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
+import { filterNotNull } from 'src/utils/arrays';
 
 export type GenerationConfig = {
     seed?: string;
     width: number;
     height: number;
+    shapeOutline?: (boolean | 1 | 0)[][];
     /** A number between 0 and 1, indicating the chance, on reaching a dead end while generating, of "punching through" a wall to an already-visited cell. */
     connectivity: number;
     /** How many "sub mazes" should be generated. Each sub-maze should only connect to the rest of the maze at e.g. a locked door. */
@@ -21,6 +23,7 @@ type GeneratingLink = {
 }
 
 type GeneratingCellState = {
+    type: CellType;
     links: [GeneratingLink, GeneratingLink, GeneratingLink, GeneratingLink];
     content?: 'entrance' | 'item' | 'goal';
     visited: boolean;
@@ -43,7 +46,7 @@ export function generate(config: GenerationConfig): Maze {
     const random = new Random(config.seed);
 
     // Create a set of unlinked cells, and assign them to groups.
-    const cells: GeneratingCellState[][] = createEmptyState(config.width, config.height);
+    const cells: GeneratingCellState[][] = createEmptyState(config.width, config.height, config.shapeOutline);
 
     const cellGroups = assignGroups(cells, config.numGroups, random);
 
@@ -60,6 +63,7 @@ export function generate(config: GenerationConfig): Maze {
 
     return {
         cells: cells.map(col => col.map(cell => ({
+            type: cell.type,
             content: cell.content,
             group: cell.group,
             links: cell.links.map(link => link.linked) as CellLinks,
@@ -76,13 +80,14 @@ export function generate(config: GenerationConfig): Maze {
 
 const unassignedGroup = -1;
 
-function createEmptyState(width: number, height: number): GeneratingCellState[][] {
+function createEmptyState(width: number, height: number, shapeOutline?: (boolean | 1 | 0)[][]): GeneratingCellState[][] {
     // Create 2d array of cells.
     const cells: GeneratingCellState[][] = new Array(height)
         .fill(null)
         .map((_, y) => new Array(width)
             .fill(null)
             .map((_, x) => ({
+                type: (shapeOutline && !shapeOutline[y][x]) ? CellType.Outside : CellType.Normal,
                 links: [{ linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }],
                 visited: false,
                 group: unassignedGroup,
@@ -96,17 +101,30 @@ function createEmptyState(width: number, height: number): GeneratingCellState[][
         const row = cells[fromY];
         for (let fromX = 0; fromX < width; fromX++) {
             const fromCell = row[fromX];
+            if (fromCell === null) {
+                continue;
+            }
 
             if (fromY > 0) {
                 const toCellNorth = cells[fromY - 1][fromX];
                 fromCell.links[north].adjacentCell = toCellNorth;
                 toCellNorth.links[south].adjacentCell = fromCell;
+
+                if (fromCell.type === CellType.Outside && toCellNorth.type === CellType.Outside) {
+                    fromCell.links[north].linked = true;
+                    toCellNorth.links[south].linked = true;
+                }
             }
 
             if (fromX > 0) {
                 const toCellWest = row[fromX - 1];
                 fromCell.links[west].adjacentCell = toCellWest;
                 toCellWest.links[east].adjacentCell = fromCell;
+
+                if (fromCell.type === CellType.Outside && toCellWest.type === CellType.Outside) {
+                    fromCell.links[west].linked = true;
+                    toCellWest.links[east].linked = true;
+                }
             }
         }
     }
@@ -129,7 +147,8 @@ function assignGroups(
     numGroups: number,
     random: Random
 ): GeneratingCellGroup[] {
-    const allNonGroupStartCells = cells.flat();
+    const allNonGroupStartCells = cells.flat()
+        .filter(cell => cell.type !== CellType.Outside);
 
     if (numGroups <= 1) {
         // If there's not to be multiple groups, just put everything into one group.

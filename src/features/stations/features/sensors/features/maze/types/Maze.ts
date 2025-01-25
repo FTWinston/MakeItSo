@@ -7,7 +7,13 @@ export const west: Direction = 3;
 
 export type CellLinks = [boolean, boolean, boolean, boolean];
 
+export enum CellType {
+    Normal,
+    Outside,
+}
+
 export type CellState = {
+    type: CellType;
     links: CellLinks;
     group: number;
     content?: 'entrance' | 'item' | 'goal';
