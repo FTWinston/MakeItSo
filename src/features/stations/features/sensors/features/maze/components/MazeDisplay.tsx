@@ -27,10 +27,8 @@ export const MazeDisplay: React.FC<Props> = props => {
     return (
         <Box sx={{
             display: 'grid',
-            gridTemplateColumns: `repeat(${width}, 1fr)`,
-            gridTemplateRows: `repeat(${height}, 1fr)`,
-            width: `${width}em`,
-            height: `${height}em`,
+            gridTemplateColumns: `repeat(${width}, 1em)`,
+            gridTemplateRows: `repeat(${height}, 1em)`,
             margin: '0.25em',
         }}>
             {cells.flatMap((row, y) =>
