@@ -1,10 +1,10 @@
 import { Box } from 'src/lib/mui';
-import { CellType, Maze } from '../types/Maze';
+import { CellType, MazeClientState } from '../types/Maze';
 import { CellDisplay } from './CellDisplay';
 import { EntityDisplay } from './EntityDisplay';
 
 type Props = {
-    maze: Maze;
+    maze: MazeClientState;
 }
 
 export const MazeDisplay: React.FC<Props> = props => {

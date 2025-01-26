@@ -8,8 +8,10 @@ export const west: Direction = 3;
 export type CellLinks = [boolean, boolean, boolean, boolean];
 
 export enum CellType {
-    Normal,
     Outside,
+    Unseen,
+    Obscured,
+    Visible,
 }
 
 export type CellState = {
@@ -19,13 +21,34 @@ export type CellState = {
     content?: 'entrance' | 'item' | 'goal';
 }
 
+export type UnderylingCellLink = {
+    linked: true;
+    adjacentCell: UnderylingCellState;
+} | {
+    linked: false;
+    adjacentCell: UnderylingCellState | null;
+}
+
+export type UnderylingCellState = Omit<CellState, 'links'> & {
+    links: [UnderylingCellLink, UnderylingCellLink, UnderylingCellLink, UnderylingCellLink];
+    x: number;
+    y: number;
+}
+
 export type MazeEntity = {
     x: number;
     y: number;
     type: 'player';
 }
 
-export type Maze = {
+export type MazeClientState = {
     cells: CellState[][];
     entities: Partial<Record<number, MazeEntity>>;
 }
+
+export type MazeState = MazeClientState & {
+    visibilityRange: number;
+    visibleCells: Set<UnderylingCellState>;
+    underlyingCells: UnderylingCellState[][];
+    underlyingEntities: Partial<Record<number, MazeEntity>>;
+};

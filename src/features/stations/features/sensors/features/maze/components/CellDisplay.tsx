@@ -39,6 +39,23 @@ export const CellDisplay: React.FC<Props> = props => {
 
     const hue = props.group * 70;
 
+    let alpha: number;
+
+    switch (props.type) {
+        case CellType.Outside:
+            alpha = 0;
+            break;
+        case CellType.Unseen:
+            alpha = 0.05;
+            break;
+        case CellType.Obscured:
+            alpha = 0.1;
+            break;
+        case CellType.Visible:
+            alpha = 0.2;
+            break;
+    }
+
     return (
         <Box
             display="flex"
@@ -52,7 +69,8 @@ export const CellDisplay: React.FC<Props> = props => {
                 gridColumn: `${props.x + 1}`,
                 gridRow: `${props.y + 1}`,
 
-                backgroundColor: props.type === CellType.Outside ? undefined : `hsla(${hue}, 100%, 50%, 0.1)`,
+                backgroundColor: props.type === CellType.Outside ? undefined : `hsla(${hue}, 100%, 50%, ${alpha})`,
+                transition: 'background-color 0.33s ease',
 
                 borderRightWidth: props.rightmost ? 2 : 1,
                 borderBottomWidth: props.bottommost ? 2 : 1,

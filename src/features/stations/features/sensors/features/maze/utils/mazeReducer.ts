@@ -1,4 +1,6 @@
-import { CellState, Direction, east, Maze, MazeEntity, north, south, west } from '../types/Maze';
+import { Direction, east, MazeState, north, south, west } from '../types/Maze';
+import { getCell } from './getCell';
+import { updateVisibility } from './updateVisibility';
 
 export type MazeAction = {
     type: 'move';
@@ -6,28 +8,32 @@ export type MazeAction = {
     entity: number;    
 }
 
-export function mazeReducer(state: Maze, action: MazeAction): Maze {
+export function mazeReducer(state: MazeState, action: MazeAction): MazeState {
     switch (action.type) {
         case 'move':
-            const entity = state.entities[action.entity];
-            if (entity !== undefined) {
-                tryMove(entity, state, action.direction);
-            }
+            tryMove(state, action.entity, action.direction);
             break;
     }
     return state;
 }
 
-function tryMove(entity: MazeEntity, maze: Maze, direction: Direction): CellState | null {
-    const entityCell = maze.cells[entity.y][entity.x];
-    const link = entityCell?.links[direction];
+function tryMove(state: MazeState, entityId: number, direction: Direction) {
+    const underlyingEntity = state.underlyingEntities[entityId];
 
-    if (!link) {
-        return null;
+    if (!underlyingEntity) {
+        return;
     }
 
-    let x = entity.x;
-    let y = entity.y;
+    const entityCell = getCell(state, underlyingEntity.x, underlyingEntity.y);
+
+    const link = entityCell?.links[direction];
+
+    if (!link?.linked) {
+        return;
+    }
+
+    let x = underlyingEntity.x;
+    let y = underlyingEntity.y;
 
     switch (direction) {
         case north:
@@ -44,15 +50,23 @@ function tryMove(entity: MazeEntity, maze: Maze, direction: Direction): CellStat
             break;
     }
 
-    let nextCell = maze.cells[y][x];
-
+    const nextCell = getCell(state, x, y);
+    
     if (!nextCell) {
         return null;
     }
 
     // TODO: check nextCell is empty?
-    entity.x = x;
-    entity.y = y;
 
-    return nextCell;
+    underlyingEntity.x = x;
+    underlyingEntity.y = y;
+
+    const clientEntity = state.entities[entityId];
+
+    if (clientEntity) {
+        clientEntity.x = x;
+        clientEntity.y = y;
+    }
+
+    updateVisibility(state, nextCell);
 }
