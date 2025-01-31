@@ -1,3 +1,4 @@
+import { distance } from 'src/types/Vector2D';
 import { MazeState, CellType, UnderylingCellState, CellLinks } from '../types/Maze';
 import { getCell } from './getCell';
 
@@ -5,11 +6,17 @@ export function updateVisibility(state: MazeState, playerCell: UnderylingCellSta
     const noLongerVisibleCells = new Set(state.visibleCells);
     const newlyVisibleCells = new Set<UnderylingCellState>();
 
-    for (let y = playerCell.y - state.visibilityRange; y <= playerCell.y + state.visibilityRange; y++) {
-        for (let x = playerCell.x - state.visibilityRange; x <= playerCell.x + state.visibilityRange; x++) {
+    const range = state.visibilityRange;
+
+    for (let y = playerCell.y - range; y <= playerCell.y + range; y++) {
+        for (let x = playerCell.x - range; x <= playerCell.x + range; x++) {
             const underlyingCell = getCell(state, x, y);
-            
+
             if (!underlyingCell || underlyingCell.type === CellType.Outside) {
+                continue;
+            }
+            
+            if (distance(underlyingCell, playerCell) > range + 0.25) {
                 continue;
             }
 
