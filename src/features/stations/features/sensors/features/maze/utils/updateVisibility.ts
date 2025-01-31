@@ -1,6 +1,7 @@
 import { distance } from 'src/types/Vector2D';
-import { MazeState, CellType, UnderylingCellState, CellLinks } from '../types/Maze';
+import { MazeState, CellType, UnderylingCellState, CellLinks, north, east, south, west } from '../types/Maze';
 import { getCell } from './getCell';
+import { oppositeDirectionsMap } from './directions';
 
 export function updateVisibility(state: MazeState, playerCell: UnderylingCellState) {
     const noLongerVisibleCells = new Set(state.visibleCells);
@@ -45,10 +46,32 @@ function obscureCell(state: MazeState, underlyingCell: UnderylingCellState) {
     delete cell.content;
 }
 
+const directions = [north, east, south, west];
+
 function revealCell(state: MazeState, underlyingCell: UnderylingCellState) {
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
     cell.type = underlyingCell.type;
     cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
     cell.content = underlyingCell.content;
+
+    // Where a cell is NOT linked to an adjacent cell, reveal the adjacent cell's adjoining wall.
+    // This stops us from displaying "half width" walls.
+    for (const direction of directions) {
+        const link = underlyingCell.links[direction];
+
+        if (link.linked) {
+            continue;
+        }
+
+        const adjacentUnderlying = link.adjacentCell;
+
+        if (!adjacentUnderlying) {
+            continue;
+        }
+
+        const adjacentCell = state.cells[adjacentUnderlying.y][adjacentUnderlying.x];
+        const oppositeDir = oppositeDirectionsMap.get(direction)!;
+        adjacentCell.links[oppositeDir] = adjacentUnderlying.links[oppositeDir].linked;
+    }
 }
 

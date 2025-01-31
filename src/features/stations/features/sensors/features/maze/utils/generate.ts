@@ -1,5 +1,5 @@
 import { Random } from 'src/utils/random';
-import { CellLinks, Direction, MazeState, north, east, south, west, CellType, CellState, UnderylingCellState } from '../types/Maze';
+import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderylingCellState } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 import { updateVisibility } from './updateVisibility';
 
