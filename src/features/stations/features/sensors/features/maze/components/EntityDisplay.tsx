@@ -1,5 +1,5 @@
 import { Typography } from '@mui/material';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useLayoutEffect } from 'react';
 import { Box } from 'src/lib/mui';
 
 type Props = {
@@ -13,7 +13,7 @@ export const EntityDisplay: React.FC<Props> = props => {
     const prevX = useRef(props.x);
     const prevY = useRef(props.y);
   
-    useEffect(() => {
+    useLayoutEffect(() => {
       if (entityRef.current) {
         const deltaX = props.x - prevX.current;
         const deltaY = props.y - prevY.current;
@@ -22,8 +22,10 @@ export const EntityDisplay: React.FC<Props> = props => {
           entityRef.current.style.transition = 'none';
           entityRef.current.style.left = `${-deltaX * 1}em`;
           requestAnimationFrame(() => {
-            entityRef.current!.style.transition = 'left 0.33s ease';
-            entityRef.current!.style.left = '0';
+            setTimeout(() => {
+              entityRef.current!.style.transition = 'left 0.33s ease';
+              entityRef.current!.style.left = '0';
+            }, 0);
           });
         }
   
@@ -31,8 +33,10 @@ export const EntityDisplay: React.FC<Props> = props => {
           entityRef.current.style.transition = 'none';
           entityRef.current.style.top = `${-deltaY * 1}em`;
           requestAnimationFrame(() => {
-            entityRef.current!.style.transition = 'top 0.33s ease';
-            entityRef.current!.style.top = '0';
+            setTimeout(() => {
+              entityRef.current!.style.transition = 'top 0.33s ease';
+              entityRef.current!.style.top = '0';
+            }, 0);
           });
         }
   

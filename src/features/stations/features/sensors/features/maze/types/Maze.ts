@@ -52,4 +52,7 @@ export type MazeState = MazeClientState & {
     visibleCells: Set<UnderylingCellState>;
     underlyingCells: UnderylingCellState[][];
     underlyingEntities: Partial<Record<number, MazeEntity>>;
+    moveQueue: Direction[];
 };
+
+export const playerEntityID = 1;
