@@ -48,6 +48,7 @@ export type MazeClientState = {
 
 export type MazeState = MazeClientState & {
     visibilityRange: number;
+    visibilityType: 'los' | 'range' | 'range-allseen' | 'all';
     visibleCells: Set<UnderylingCellState>;
     underlyingCells: UnderylingCellState[][];
     underlyingEntities: Partial<Record<number, MazeEntity>>;

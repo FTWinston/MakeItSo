@@ -47,7 +47,7 @@ export const CellDisplay: React.FC<Props> = props => {
             backgroundColor = alpha(theme.palette.primary.dark, 0.02);
             break;
         case CellType.Visible:
-            backgroundColor = alpha(theme.palette.primary.dark, 0.2);
+            backgroundColor = alpha(theme.palette.primary.dark, 0.25);
             break;
     }
 

@@ -7,6 +7,8 @@ export type GenerationConfig = {
     seed?: string;
     width: number;
     height: number;
+    visibilityType: 'los' | 'range' | 'range-allseen' | 'all';
+    visibilityRange: number;
     shapeOutline?: (boolean | 1 | 0)[][];
     /** A number between 0 and 1, indicating the chance, on reaching a dead end while generating, of "punching through" a wall to an already-visited cell. */
     connectivity: number;
@@ -49,7 +51,8 @@ export function generate(config: GenerationConfig): MazeState {
             links: getInitialLinkVisibility(cell),
         }))),
         visibleCells: new Set(),
-        visibilityRange: 3,
+        visibilityType: config.visibilityType,
+        visibilityRange: config.visibilityRange,
         underlyingCells: cells,
         entities: {
             1: {
