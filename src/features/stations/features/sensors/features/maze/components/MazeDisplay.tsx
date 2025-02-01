@@ -45,7 +45,6 @@ export const MazeDisplay: React.FC<Props> = props => {
                             y={y}
                             type={cell.type}
                             content={cell.content}
-                            group={cell.group}
                             borderBottom={!cell.links[2] && (!bottommost || cell.type !== CellType.Outside)}
                             borderRight={!cell.links[1] && (!rightmost || cell.type !== CellType.Outside)}
                             borderLeft={!cell.links[3] && (x !== 0 || cell.type !== CellType.Outside)}

@@ -46,7 +46,6 @@ export function generate(config: GenerationConfig): MazeState {
     const mazeState: MazeState = {
         cells: cells.map(col => col.map(cell => ({
             type: cell.type === CellType.Outside ? cell.type : CellType.Unseen,
-            group: cell.group,
             links: getInitialLinkVisibility(cell),
         }))),
         visibleCells: new Set(),

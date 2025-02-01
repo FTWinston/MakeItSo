@@ -60,27 +60,7 @@ export default {
 
 type Story = StoryObj<typeof MazeFromConfig>;
 
-export const LowConnectivity: Story = {
-  args: {
-    width: 16,
-    height: 16,
-    connectivity: 0.001,
-    numGroups: 2,
-    seed: 'y',
-  }
-}
-
-export const HighConnectivity: Story = {
-  args: {
-    width: 16,
-    height: 16,
-    connectivity: 0.95,
-    numGroups: 4,
-    seed: 'x',
-  }
-}
-
-export const SingleGroup: Story = {
+export const ShipOverview: Story = {
   args: {
     width: 27,
     height: 10,
@@ -99,5 +79,15 @@ export const SingleGroup: Story = {
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
     ]
+  }
+}
+
+export const SystemDetail: Story = {
+  args: {
+    width: 16,
+    height: 16,
+    connectivity: 0.95,
+    numGroups: 4,
+    seed: 'x',
   }
 }

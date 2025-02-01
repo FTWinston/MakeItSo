@@ -1,11 +1,9 @@
-import { Typography } from '@mui/material';
-import { Box } from 'src/lib/mui';
+import { Box, Typography, alpha, useTheme } from 'src/lib/mui';
 import { CellType } from '../types/Maze';
 
 type Props = {
     type: CellType;
     content?: 'entrance' | 'item' | 'goal';
-    group: number;
     x: number;
     y: number;
 
@@ -19,6 +17,8 @@ type Props = {
 }
 
 export const CellDisplay: React.FC<Props> = props => {
+    const theme = useTheme();
+    
     const content = props.content === undefined
         ? undefined
         : (
@@ -37,22 +37,17 @@ export const CellDisplay: React.FC<Props> = props => {
             </Typography>
         );
 
-    const hue = props.group * 70;
-
-    let alpha: number;
+    let backgroundColor: string | undefined;
 
     switch (props.type) {
-        case CellType.Outside:
-            alpha = 0;
-            break;
         case CellType.Unseen:
-            alpha = 0.05;
+            backgroundColor = alpha(theme.palette.secondary.dark, 0.3);
             break;
         case CellType.Obscured:
-            alpha = 0.1;
+            backgroundColor = alpha(theme.palette.primary.dark, 0.02);
             break;
         case CellType.Visible:
-            alpha = 0.2;
+            backgroundColor = alpha(theme.palette.primary.dark, 0.2);
             break;
     }
 
@@ -69,7 +64,7 @@ export const CellDisplay: React.FC<Props> = props => {
                 gridColumn: `${props.x + 1}`,
                 gridRow: `${props.y + 1}`,
 
-                backgroundColor: props.type === CellType.Outside ? undefined : `hsla(${hue}, 100%, 50%, ${alpha})`,
+                backgroundColor,
                 transition: 'background-color 0.33s ease',
 
                 borderRightWidth: props.rightmost ? 2 : 1,

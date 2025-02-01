@@ -17,7 +17,6 @@ export enum CellType {
 export type CellState = {
     type: CellType;
     links: CellLinks;
-    group: number;
     content?: 'entrance' | 'item' | 'goal';
 }
 
@@ -31,6 +30,7 @@ export type UnderylingCellLink = {
 
 export type UnderylingCellState = Omit<CellState, 'links'> & {
     links: [UnderylingCellLink, UnderylingCellLink, UnderylingCellLink, UnderylingCellLink];
+    group: number;
     x: number;
     y: number;
 }
