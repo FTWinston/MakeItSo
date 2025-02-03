@@ -45,8 +45,8 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
                 }
                 
                 if (distance(underlyingCell, playerCell) > range + 0.25) {
-                    if (underlyingCell.type !== CellType.Obscured) {       
-                        noLongerVisibleCells.add(underlyingCell.id);             
+                    if (underlyingCell.type !== CellType.Obscured) {
+                        noLongerVisibleCells.add(underlyingCell.id);
                         const cell = state.cells[underlyingCell.y][underlyingCell.x];
                         cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
                     }
