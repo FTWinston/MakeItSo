@@ -1,4 +1,4 @@
-import { Direction, east, MazeState, north, south, west } from '../types/Maze';
+import { Direction, MazeState, playerEntityID } from '../types/Maze';
 import { getCell } from './getCell';
 import { updateVisibility } from './updateVisibility';
 
@@ -6,22 +6,34 @@ export type MazeAction = {
     type: 'move';
     direction: Direction;
     entity: number;    
+} | {
+    type: 'tick';
 }
 
-export function mazeReducer(state: MazeState, action: MazeAction): MazeState {
+export function mazeReducer(state: MazeState, action: MazeAction): void {
     switch (action.type) {
         case 'move':
-            tryMove(state, action.entity, action.direction);
+            state.moveQueue.push(action.direction);
+            //tryMove(state, playerEntityID, action.direction);
             break;
+        case 'tick': {
+            let moved: boolean;
+            do {
+                const moveDir = state.moveQueue.shift();
+                if (moveDir === undefined) {
+                    break;
+                }
+                moved = tryMove(state, playerEntityID, moveDir);
+            } while (!moved);
+        }
     }
-    return state;
 }
 
-function tryMove(state: MazeState, entityId: number, direction: Direction) {
+function tryMove(state: MazeState, entityId: number, direction: Direction): boolean {
     const underlyingEntity = state.underlyingEntities[entityId];
 
     if (!underlyingEntity) {
-        return;
+        return false;
     }
 
     const entityCell = getCell(state, underlyingEntity.x, underlyingEntity.y);
@@ -29,44 +41,23 @@ function tryMove(state: MazeState, entityId: number, direction: Direction) {
     const link = entityCell?.links[direction];
 
     if (!link?.linked) {
-        return;
+        return false;
     }
 
-    let x = underlyingEntity.x;
-    let y = underlyingEntity.y;
-
-    switch (direction) {
-        case north:
-            y -= 1;
-            break;
-        case east:
-            x += 1;
-            break;
-        case south:
-            y += 1;
-            break;
-        case west:
-            x -= 1;
-            break;
-    }
-
-    const nextCell = getCell(state, x, y);
-    
-    if (!nextCell) {
-        return null;
-    }
+    const nextCell = link.adjacentCell;
 
     // TODO: check nextCell is empty?
 
-    underlyingEntity.x = x;
-    underlyingEntity.y = y;
+    underlyingEntity.x = nextCell.x;
+    underlyingEntity.y = nextCell.y;
 
     const clientEntity = state.entities[entityId];
 
     if (clientEntity) {
-        clientEntity.x = x;
-        clientEntity.y = y;
+        clientEntity.x = nextCell.x;
+        clientEntity.y = nextCell.y;
     }
 
     updateVisibility(state, nextCell);
+    return true;
 }

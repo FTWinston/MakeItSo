@@ -1,5 +1,5 @@
 import { Random } from 'src/utils/random';
-import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderylingCellState } from '../types/Maze';
+import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderylingCellState, playerEntityID } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 import { updateVisibility } from './updateVisibility';
 
@@ -55,19 +55,20 @@ export function generate(config: GenerationConfig): MazeState {
         visibilityRange: config.visibilityRange,
         underlyingCells: cells,
         entities: {
-            1: {
+            [playerEntityID]: {
                 x: startCell.x,
                 y: startCell.y,
                 type: 'player'
             }
         },
         underlyingEntities: {
-            1: {
+            [playerEntityID]: {
                 x: startCell.x,
                 y: startCell.y,
                 type: 'player'
             }
         },
+        moveQueue: [],
     };
 
     updateVisibility(mazeState, startCell);

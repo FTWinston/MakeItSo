@@ -1,11 +1,11 @@
 import { StoryObj } from '@storybook/react';
+import { produce } from 'immer';
+import { useEffect, useReducer, useRef } from 'react';
+import { Box, Button } from 'src/lib/mui';
 import { MazeDisplay } from './MazeDisplay';
 import { generate, GenerationConfig } from '../utils/generate';
-import { useEffect, useReducer, useRef } from 'react';
 import { mazeReducer } from '../utils/mazeReducer';
-import { produce } from 'immer';
 import { north, west, south, east } from '../types/Maze';
-import { Box, Button } from 'src/lib/mui';
 
 const MazeFromConfig: React.FC<GenerationConfig> = (config) => {
   const [maze, dispatch] = useReducer(produce(mazeReducer), config, generate);
@@ -33,9 +33,12 @@ const MazeFromConfig: React.FC<GenerationConfig> = (config) => {
       }
     };
 
+    const tickInterval = setInterval(() => dispatch({ type: 'tick' }), 500);
+
     window.addEventListener('keydown', handleKeyDown);
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      clearInterval(tickInterval);
     };
   }, [dispatch]);
   
