@@ -40,6 +40,9 @@ export const CellDisplay: React.FC<Props> = props => {
     let backgroundColor: string | undefined;
 
     switch (props.type) {
+        case CellType.Damaged:
+            backgroundColor = alpha(theme.palette.warning.dark, 0.3);
+            break;
         case CellType.Unseen:
             backgroundColor = alpha(theme.palette.secondary.dark, 0.3);
             break;

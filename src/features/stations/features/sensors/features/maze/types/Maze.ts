@@ -9,10 +9,13 @@ export type CellLinks = [boolean, boolean, boolean, boolean];
 
 export enum CellType {
     Outside,
+    Damaged,
     Unseen,
     Obscured,
     Visible,
 }
+
+export type CellId = number;
 
 export type CellState = {
     type: CellType;
@@ -22,13 +25,14 @@ export type CellState = {
 
 export type UnderylingCellLink = {
     linked: true;
-    adjacentCell: UnderylingCellState;
+    adjacentCellId: CellId;
 } | {
     linked: false;
-    adjacentCell: UnderylingCellState | null;
+    adjacentCellId: CellId | null;
 }
 
-export type UnderylingCellState = Omit<CellState, 'links'> & {
+export type UnderlyingCellState = Omit<CellState, 'links'> & {
+    id: CellId;
     links: [UnderylingCellLink, UnderylingCellLink, UnderylingCellLink, UnderylingCellLink];
     group: number;
     x: number;
@@ -49,10 +53,13 @@ export type MazeClientState = {
 export type MazeState = MazeClientState & {
     visibilityRange: number;
     visibilityType: 'los' | 'range' | 'range-allseen' | 'all';
-    visibleCells: Set<UnderylingCellState>;
-    underlyingCells: UnderylingCellState[][];
+    visibleCells: Set<CellId>;
+    underlyingCells: CellId[][];
+    cellsById: Map<CellId, UnderlyingCellState>;
     underlyingEntities: Partial<Record<number, MazeEntity>>;
     moveQueue: Direction[];
+    cellDamageOrder: CellId[];
+    damagedCells: Set<CellId>;
 };
 
 export const playerEntityID = 1;

@@ -1,6 +1,6 @@
 import { Direction, MazeState, playerEntityID } from '../types/Maze';
-import { getCell } from './getCell';
-import { updateVisibility } from './updateVisibility';
+import { findCell } from './getCell';
+import { updateDamage, updateVisibility } from './updateVisibility';
 
 export type MazeAction = {
     type: 'move';
@@ -8,6 +8,9 @@ export type MazeAction = {
     entity: number;    
 } | {
     type: 'tick';
+} | {
+    type: 'damage';
+    fraction: number;
 }
 
 export function mazeReducer(state: MazeState, action: MazeAction): void {
@@ -25,6 +28,11 @@ export function mazeReducer(state: MazeState, action: MazeAction): void {
                 }
                 moved = tryMove(state, playerEntityID, moveDir);
             } while (!moved);
+            break;
+        }
+        case 'damage': {
+            updateDamage(state, action.fraction);
+            break;
         }
     }
 }
@@ -36,7 +44,7 @@ function tryMove(state: MazeState, entityId: number, direction: Direction): bool
         return false;
     }
 
-    const entityCell = getCell(state, underlyingEntity.x, underlyingEntity.y);
+    const entityCell = findCell(state, underlyingEntity.x, underlyingEntity.y);
 
     const link = entityCell?.links[direction];
 
@@ -44,7 +52,7 @@ function tryMove(state: MazeState, entityId: number, direction: Direction): bool
         return false;
     }
 
-    const nextCell = link.adjacentCell;
+    const nextCell = state.cellsById.get(link.adjacentCellId)!;
 
     // TODO: check nextCell is empty?
 

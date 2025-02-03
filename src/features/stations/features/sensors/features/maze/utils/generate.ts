@@ -1,7 +1,8 @@
 import { Random } from 'src/utils/random';
-import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderylingCellState, playerEntityID } from '../types/Maze';
+import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderlyingCellState, playerEntityID, CellId } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 import { updateVisibility } from './updateVisibility';
+import { getCell, getCellById } from './getCell';
 
 export type GenerationConfig = {
     seed?: string;
@@ -17,43 +18,55 @@ export type GenerationConfig = {
 }
 
 type GeneratingCellGroup = {
-    startCell: UnderylingCellState;
+    startCell: UnderlyingCellState;
     targetNumCells: number;
-    cells: UnderylingCellState[];
-    nonGroupCellsByPriority: UnderylingCellState[];
-    borderCellsByGroup: Map<number, UnderylingCellState[]>;
-    goalCells: Set<UnderylingCellState>;
-    midPathCells: Set<UnderylingCellState>;
+    cells: UnderlyingCellState[];
+    nonGroupCellsByPriority: UnderlyingCellState[];
+    borderCellsByGroup: Map<number, UnderlyingCellState[]>;
+    goalCells: Set<UnderlyingCellState>;
+    midPathCells: Set<UnderlyingCellState>;
 }
 
 export function generate(config: GenerationConfig): MazeState {
     const random = new Random(config.seed);
 
     // Create a set of unlinked cells, and assign them to groups.
-    const cells: UnderylingCellState[][] = createEmptyState(config.width, config.height, config.shapeOutline);
+    const cells: UnderlyingCellState[][] = createEmptyState(config.width, config.height, config.shapeOutline);
 
-    const cellGroups = assignGroups(cells, config.numGroups, random);
+    const allCells = cells.flat();
+
+    const cellsById = new Map(allCells.map(cell => [cell.id, cell]));
+
+    const internalCells = allCells
+        .filter(cell => cell.type !== CellType.Outside);
+
+    const cellGroups = assignGroups(cellsById, internalCells, config.numGroups, random);
 
     // Generate an independent mini-maze in each group.
     for (const cellGroup of cellGroups) {
-        iterateCells(cellGroup, random, config.connectivity);
+        iterateCells(cellsById, cellGroup, random, config.connectivity);
     }
 
     const startCell = random.pick([...cellGroups[0].midPathCells]);
     startCell.content = 'entrance';
 
     // Link up each group to the rest of the maze, but only have one "door" between each group.
-    connectGroups(cellGroups, random);
+    connectGroups(cellsById, cellGroups, random);
+
+    random.shuffle(internalCells);
 
     const mazeState: MazeState = {
         cells: cells.map(col => col.map(cell => ({
             type: cell.type === CellType.Outside ? cell.type : CellType.Unseen,
-            links: getInitialLinkVisibility(cell),
+            links: getInitialLinkVisibility(cellsById, cell),
         }))),
+        cellsById,
         visibleCells: new Set(),
         visibilityType: config.visibilityType,
         visibilityRange: config.visibilityRange,
-        underlyingCells: cells,
+        underlyingCells: cells.map(row => row.map(cell => cell.id)),
+        cellDamageOrder: internalCells.map(cell => cell.id),
+        damagedCells: new Set(),
         entities: {
             [playerEntityID]: {
                 x: startCell.x,
@@ -78,7 +91,7 @@ export function generate(config: GenerationConfig): MazeState {
 
 const unassignedGroup = -1;
 
-function getInitialLinkVisibility(cell: UnderylingCellState): CellLinks {
+function getInitialLinkVisibility(cellsById: Map<CellId, UnderlyingCellState>, cell: UnderlyingCellState): CellLinks {
     if (cell.type === CellType.Outside) {
         return cell.links.map(link => link.linked) as CellLinks;
     }
@@ -88,7 +101,7 @@ function getInitialLinkVisibility(cell: UnderylingCellState): CellLinks {
 
     for (let i = 0; i < 4; i++) {
         const link = cell.links[i];
-        if (!link.adjacentCell || link.adjacentCell.type === CellType.Outside) {
+        if (link.adjacentCellId === null || getCellById(cellsById, link.adjacentCellId).type === CellType.Outside) {
             visibleLinks[i] = false;
         }
     }
@@ -96,15 +109,18 @@ function getInitialLinkVisibility(cell: UnderylingCellState): CellLinks {
     return visibleLinks;
 }
 
-function createEmptyState(width: number, height: number, shapeOutline?: (boolean | 1 | 0)[][]): UnderylingCellState[][] {
+function createEmptyState(width: number, height: number, shapeOutline?: (boolean | 1 | 0)[][]): UnderlyingCellState[][] {
+    let nextId = 1;
+
     // Create 2d array of cells.
-    const cells: UnderylingCellState[][] = new Array(height)
+    const cells: UnderlyingCellState[][] = new Array(height)
         .fill(null)
         .map((_, y) => new Array(width)
             .fill(null)
             .map((_, x) => ({
+                id: nextId++,
                 type: (shapeOutline && !shapeOutline[y][x]) ? CellType.Outside : CellType.Visible,
-                links: [{ linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }, { linked: false, adjacentCell: null }],
+                links: [{ linked: false, adjacentCellId: null }, { linked: false, adjacentCellId: null }, { linked: false, adjacentCellId: null }, { linked: false, adjacentCellId: null }],
                 group: unassignedGroup,
                 x,
                 y,
@@ -122,8 +138,8 @@ function createEmptyState(width: number, height: number, shapeOutline?: (boolean
 
             if (fromY > 0) {
                 const toCellNorth = cells[fromY - 1][fromX];
-                fromCell.links[north].adjacentCell = toCellNorth;
-                toCellNorth.links[south].adjacentCell = fromCell;
+                fromCell.links[north].adjacentCellId = toCellNorth.id;
+                toCellNorth.links[south].adjacentCellId = fromCell.id;
 
                 if (fromCell.type === CellType.Outside && toCellNorth.type === CellType.Outside) {
                     fromCell.links[north].linked = true;
@@ -133,8 +149,8 @@ function createEmptyState(width: number, height: number, shapeOutline?: (boolean
 
             if (fromX > 0) {
                 const toCellWest = row[fromX - 1];
-                fromCell.links[west].adjacentCell = toCellWest;
-                toCellWest.links[east].adjacentCell = fromCell;
+                fromCell.links[west].adjacentCellId = toCellWest.id;
+                toCellWest.links[east].adjacentCellId = fromCell.id;
 
                 if (fromCell.type === CellType.Outside && toCellWest.type === CellType.Outside) {
                     fromCell.links[west].linked = true;
@@ -158,12 +174,12 @@ function getRandomDirections(random: Random) {
 }
 
 function assignGroups(
-    cells: UnderylingCellState[][],
+    cellsById: Map<CellId, UnderlyingCellState>,
+    internalCells: UnderlyingCellState[],
     numGroups: number,
     random: Random
 ): GeneratingCellGroup[] {
-    const allNonGroupStartCells = cells.flat()
-        .filter(cell => cell.type !== CellType.Outside);
+    const allNonGroupStartCells = [...internalCells];
 
     if (numGroups <= 1) {
         // If there's not to be multiple groups, just put everything into one group.
@@ -210,7 +226,7 @@ function assignGroups(
 
     const unallocatedCells = new Set(allNonGroupStartCells);
 
-    function addCellToGroup(cell: UnderylingCellState, adjacentCell: UnderylingCellState) {
+    function addCellToGroup(cell: UnderlyingCellState, adjacentCell: UnderlyingCellState) {
         cell.group = adjacentCell.group;
         groups[adjacentCell.group].cells.push(cell);
         unallocatedCells.delete(cell);
@@ -228,7 +244,8 @@ function assignGroups(
                 const testCell = group.nonGroupCellsByPriority[iTestCell];
 
                 // Don't assign a cell to a group if it's not adjacent to a cell that's already in that group.
-                if (!testCell.links.some(link => link.adjacentCell?.group === group.startCell.group)) {
+                if (!testCell.links.some(link => link.adjacentCellId !== null
+                        && cellsById.get(link.adjacentCellId) ?.group === group.startCell.group)) {
                     continue;
                 }
 
@@ -261,8 +278,12 @@ function assignGroups(
     while (unallocatedCells.size > 0) {
         for (const cell of unallocatedCells) {
             for (const direction of getRandomDirections(random)) {
-                const adjacentCell = cell.links[direction].adjacentCell;
-                if (adjacentCell && adjacentCell.group !== unassignedGroup) {
+                const adjacentCellId = cell.links[direction].adjacentCellId;
+                if (adjacentCellId === null) {
+                    continue;
+                }
+                const adjacentCell = getCellById(cellsById, adjacentCellId);
+                if (adjacentCell.group !== unassignedGroup) {
                     addCellToGroup(cell, adjacentCell);
                     break;
                 }
@@ -273,8 +294,12 @@ function assignGroups(
     // Once all group cells are assigned, each group's "border" cells, so we know what groups touch.
     for (const group of groups) {
         for (const groupCell of group.cells) {
-            for (const { adjacentCell } of groupCell.links) {
-                if (adjacentCell && adjacentCell.group !== group.startCell.group) {
+            for (const { adjacentCellId } of groupCell.links) {
+                if (adjacentCellId === null) {
+                    continue;
+                }
+                const adjacentCell = getCellById(cellsById, adjacentCellId);
+                if (adjacentCell.group !== group.startCell.group) {
                     const groupNum = adjacentCell.group;
                     let groupBorderCells = group.borderCellsByGroup.get(groupNum);
                     if (!groupBorderCells) {
@@ -292,30 +317,31 @@ function assignGroups(
 }
 
 function iterateCells(
+    cellsById: Map<CellId, UnderlyingCellState>,
     cellGroup: GeneratingCellGroup,
     random: Random,
     punchThroughChance: number
 ) {
-    const stepsToProcess = new Array<[UnderylingCellState, Direction]>();
-    const junctionCells = new Set<UnderylingCellState>();
-    const linearCells = new Set<UnderylingCellState>();
+    const stepsToProcess = new Array<[UnderlyingCellState, Direction]>();
+    const junctionCells = new Set<UnderlyingCellState>();
+    const linearCells = new Set<UnderlyingCellState>();
 
     const startCell = cellGroup.startCell;
     cellGroup.goalCells.add(startCell);
-    let currentCell: UnderylingCellState | null = startCell;
+    let currentCell: UnderlyingCellState | null = startCell;
 
-    const visitedCells = new Set<UnderylingCellState>();
+    const visitedCells = new Set<UnderlyingCellState>();
 
     while (currentCell) {
         visitedCells.add(currentCell);
 
         const directions = getRandomDirections(random);
 
-        let nextCell: UnderylingCellState | null = null;
+        let nextCell: UnderlyingCellState | null = null;
 
         for (const direction of directions) {
             if (nextCell == null) {
-                nextCell = attemptToAddLink(currentCell, direction, visitedCells);
+                nextCell = attemptToAddLink(cellsById, currentCell, direction, visitedCells);
             }
             else {
                 // TODO: only push steps to the backlog if they point at an unvisited cell?
@@ -330,16 +356,21 @@ function iterateCells(
                     continue;
                 }
 
-                const potentialNextCell: UnderylingCellState | null = currentCell.links[direction].adjacentCell;
+                const potentialNextCellId: CellId | null = currentCell.links[direction].adjacentCellId;
+                if (potentialNextCellId === null) {
+                    continue;
+                }
+
+                const potentialNextCell = getCellById(cellsById, potentialNextCellId);
 
                 // The current cell and the cell we're potentially punching through to must be in the same group.
-                if (potentialNextCell && potentialNextCell.group === currentCell.group) {
+                if (potentialNextCell.group === currentCell.group) {
                     // If both cells are linked in the same orthogonal direction, to cells that also link to each other,
                     // then we don't link to it so as to avoid creating an "open area" in the maze.
                     const [orthogonalDirLeft, orthogonalDirRight] = orthogonalDirectionsMap.get(direction)!;
                     
-                    if (isLinkedRoundCorner(currentCell, orthogonalDirLeft, 1)
-                        || isLinkedRoundCorner(currentCell, orthogonalDirRight, 0)) {
+                    if (isLinkedRoundCorner(cellsById, currentCell, orthogonalDirLeft, 1)
+                        || isLinkedRoundCorner(cellsById, currentCell, orthogonalDirRight, 0)) {
                         continue;
                     }
 
@@ -371,7 +402,7 @@ function iterateCells(
             }
 
             const [backtrackCell, direction] = stepToTest;
-            nextCell = attemptToAddLink(backtrackCell, direction, visitedCells);
+            nextCell = attemptToAddLink(cellsById, backtrackCell, direction, visitedCells);
             
             if (nextCell) {            
                 // A cell we've backtracked from is a junction.
@@ -386,8 +417,12 @@ function iterateCells(
     // Any linear cells (i.e. cells that are not dead ends or junctions) that are only linked to other linear cells count as isolated. They're good places for items.
     for (const linearCell of linearCells) {
         let isolated = true;
-        for (const { linked, adjacentCell } of linearCell.links) {
-            if (linked && adjacentCell && !linearCells.has(adjacentCell)) {
+        for (const { linked, adjacentCellId } of linearCell.links) {
+            if (!linked || adjacentCellId === null) {
+                continue;
+            }
+            const adjacentCell = getCellById(cellsById, adjacentCellId);
+            if (!linearCells.has(adjacentCell)) {
                 isolated = false;
             }
         }
@@ -405,10 +440,20 @@ function iterateCells(
     }
 }
 
-function attemptToAddLink(currentCell: UnderylingCellState, direction: Direction, visitedCells: Set<UnderylingCellState>): UnderylingCellState | null {
-    const testCell = currentCell.links[direction].adjacentCell;
+function attemptToAddLink(
+    cellsById: Map<CellId, UnderlyingCellState>,
+    currentCell: UnderlyingCellState,
+    direction: Direction,
+    visitedCells: Set<UnderlyingCellState>
+): UnderlyingCellState | null {
+    const testCellId = currentCell.links[direction].adjacentCellId;
+    if (testCellId === null) {
+        return null;
+    }
 
-    if (testCell && testCell.group === currentCell.group && !visitedCells.has(testCell)) {
+    const testCell = getCellById(cellsById, testCellId);
+
+    if (testCell.group === currentCell.group && !visitedCells.has(testCell)) {
         linkCells(currentCell, testCell, direction);
 
         return testCell;
@@ -417,12 +462,17 @@ function attemptToAddLink(currentCell: UnderylingCellState, direction: Direction
     return null;
 }
 
-function linkCells(from: UnderylingCellState, to: UnderylingCellState, direction: Direction) {
+function linkCells(from: UnderlyingCellState, to: UnderlyingCellState, direction: Direction) {
     from.links[direction].linked = true;
     to.links[oppositeDirectionsMap.get(direction)!].linked = true;
 }
 
-function isLinkedRoundCorner(fromCell: UnderylingCellState, direction: Direction, subsequentLeftOrRight: 0 | 1): boolean {    
+function isLinkedRoundCorner(
+    cellsById: Map<CellId, UnderlyingCellState>,
+    fromCell: UnderlyingCellState,
+    direction: Direction,
+    subsequentLeftOrRight: 0 | 1
+): boolean {    
     const firstLink = fromCell.links[direction];
 
     if (!firstLink.linked) {
@@ -431,13 +481,14 @@ function isLinkedRoundCorner(fromCell: UnderylingCellState, direction: Direction
 
     const orthogonalDirs = orthogonalDirectionsMap.get(direction)!;
     const orthogonalDir = orthogonalDirs[subsequentLeftOrRight];
-    const nextCell = firstLink.adjacentCell;
+    const nextCellId = firstLink.adjacentCellId;
+    const nextCell = getCellById(cellsById, nextCellId);
     const secondLink = nextCell.links[orthogonalDir];
 
     return secondLink.linked;
 }
 
-function connectGroups(unconnectedGroups: GeneratingCellGroup[], random: Random) {
+function connectGroups(cellsById: Map<CellId, UnderlyingCellState>, unconnectedGroups: GeneratingCellGroup[], random: Random) {
     const connectedGroups = new Set<GeneratingCellGroup>();
     connectedGroups.add(random.delete(unconnectedGroups));
 
@@ -454,15 +505,21 @@ function connectGroups(unconnectedGroups: GeneratingCellGroup[], random: Random)
 
             for (const direction of getRandomDirections(random)) {
                 const link = cellToLinkToTargetGroup.links[direction];
-                if (link.linked || !link.adjacentCell || link.adjacentCell.group !== targetGroup.startCell.group) {
+                if (link.linked || link.adjacentCellId === null) {
                     continue;
                 }
 
-                linkCells(cellToLinkToTargetGroup, link.adjacentCell, direction);
+                const adjacentCell = getCellById(cellsById, link.adjacentCellId);
+
+                if (adjacentCell.group !== targetGroup.startCell.group) {
+                    continue;
+                }
+
+                linkCells(cellToLinkToTargetGroup, adjacentCell, direction);
                 
                 // Neither cell is a dead end anymore.
                 delete cellToLinkToTargetGroup.content;
-                delete link.adjacentCell.content;
+                delete adjacentCell.content;
                 break;
             }
             

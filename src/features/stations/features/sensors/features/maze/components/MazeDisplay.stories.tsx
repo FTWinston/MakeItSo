@@ -7,8 +7,12 @@ import { generate, GenerationConfig } from '../utils/generate';
 import { mazeReducer } from '../utils/mazeReducer';
 import { north, west, south, east } from '../types/Maze';
 
-const MazeFromConfig: React.FC<GenerationConfig> = (config) => {
-  const [maze, dispatch] = useReducer(produce(mazeReducer), config, generate);
+type Props = GenerationConfig & {
+  damageFraction: number;
+}
+
+const MazeFromConfig: React.FC<Props> = (props) => {
+  const [maze, dispatch] = useReducer(produce(mazeReducer), props, generate);
 
   const upButton = useRef<HTMLButtonElement>(null);
   const downButton = useRef<HTMLButtonElement>(null);
@@ -42,6 +46,10 @@ const MazeFromConfig: React.FC<GenerationConfig> = (config) => {
     };
   }, [dispatch]);
   
+  useEffect(() => {
+    dispatch({ type: 'damage', fraction: props.damageFraction });
+  }, [props.damageFraction]);
+
   return (
     <div>
       <MazeDisplay maze={maze} />
@@ -72,6 +80,7 @@ export const ShipOverviewLos: Story = {
     visibilityRange: 3,
     visibilityType: 'los',
     seed: 'w',
+    damageFraction: 0,
     shapeOutline: [
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
@@ -96,6 +105,7 @@ export const ShipOverviewRange: Story = {
     visibilityRange: 3,
     visibilityType: 'range',
     seed: 'x',
+    damageFraction: 0,
     shapeOutline: [
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
@@ -120,6 +130,7 @@ export const ShipOverviewAllSeen: Story = {
     visibilityRange: 3,
     visibilityType: 'range-allseen',
     seed: 'y',
+    damageFraction: 0,
     shapeOutline: [
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
@@ -144,6 +155,7 @@ export const ShipOverviewAllVisible: Story = {
     visibilityRange: 3,
     visibilityType: 'all',
     seed: 'z',
+    damageFraction: 0,
     shapeOutline: [
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
@@ -167,6 +179,7 @@ export const SystemDetail: Story = {
     numGroups: 4,
     visibilityRange: 6,
     visibilityType: 'los',
+    damageFraction: 0,
     seed: 'x',
   }
 }
