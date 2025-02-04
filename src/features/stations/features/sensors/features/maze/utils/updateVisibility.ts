@@ -20,18 +20,10 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
             if (distance(underlyingCell, playerCell) > range) {
                 if (underlyingCell.type !== CellType.Obscured) {
                     state.visibleCells.delete(underlyingCell.id);
-                    if (state.damagedCells.has(underlyingCell.id)) {
-                        damageCell(state, underlyingCell.id);
-                    }
-                    else {
-                        obscureCell(state, underlyingCell.id);
-                    }
-
-                    const cell = state.cells[underlyingCell.y][underlyingCell.x];
-                    cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
+                    obscureCell(state, underlyingCell.id);
                 }
             }
-            else {
+            else if (underlyingCell === playerCell || !state.damagedCells.has(underlyingCell.id)) {
                 state.visibleCells.add(underlyingCell.id);
                 revealCell(state, underlyingCell.id);
             }
@@ -42,8 +34,10 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
 function obscureCell(state: MazeState, cellId: CellId) {
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
-    cell.type = CellType.Obscured;
+    cell.type = state.damagedCells.has(cellId) ? CellType.Damaged : CellType.Obscured;
     delete cell.content;
+
+    cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
 }
 
 function revealCell(state: MazeState, cellId: CellId) {
@@ -108,10 +102,6 @@ export function updateDamage(state: MazeState, fraction: number) {
 }
 
 function damageCell(state: MazeState, cellId: CellId) {
-    if (state.visibleCells.has(cellId)) {
-        return;
-    }
-    
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
 
@@ -150,6 +140,5 @@ function repairCell(state: MazeState, cellId: CellId) {
     }
     else {
         obscureCell(state, cellId);
-        // cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
     }
 }
