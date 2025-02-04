@@ -8,7 +8,7 @@ const directions = [north, east, south, west];
 export function updateVisibility(state: MazeState, playerCell: UnderlyingCellState) {
     const range = state.visibilityRange + 0.25;
 
-    // All cells within range are visible. All others are obscured.
+    // All cells within range are visible, unless they're damaged. All others are obscured.
     for (let y = 0; y <= state.cells.length; y++) {
         for (let x = 0; x <= state.cells[0].length; x++) {
             const underlyingCell = findCell(state, x, y);
@@ -17,13 +17,12 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
                 continue;
             }
             
-            if (distance(underlyingCell, playerCell) > range) {
-                if (underlyingCell.type !== CellType.Obscured) {
-                    state.visibleCells.delete(underlyingCell.id);
-                    obscureCell(state, underlyingCell.id);
-                }
+            const distanceFromPlayer = distance(underlyingCell, playerCell);
+            if (distanceFromPlayer > range || (state.damagedCells.has(underlyingCell.id) && distanceFromPlayer > 0)) {
+                state.visibleCells.delete(underlyingCell.id);
+                obscureCell(state, underlyingCell.id);
             }
-            else if (underlyingCell === playerCell || !state.damagedCells.has(underlyingCell.id)) {
+            else {
                 state.visibleCells.add(underlyingCell.id);
                 revealCell(state, underlyingCell.id);
             }
@@ -32,20 +31,31 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
 }
 
 function obscureCell(state: MazeState, cellId: CellId) {
+    if (state.damagedCells.has(cellId)) {
+        damageCell(state, cellId);
+        return;
+    }
+
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
-    cell.type = state.damagedCells.has(cellId) ? CellType.Damaged : CellType.Obscured;
-    delete cell.content;
-
+    cell.type = CellType.Obscured;
     cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
+    delete cell.content;
 }
 
 function revealCell(state: MazeState, cellId: CellId) {
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
+
+    if (cell.type === CellType.Visible) {
+        return;    
+    }
+
     cell.type = underlyingCell.type;
     cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
     cell.content = underlyingCell.content;
+
+    console.log(`revealed ${state.damagedCells.has(cellId)? 'DAMAGED ' : ''}cell at ${underlyingCell.x}, ${underlyingCell.y}`);
 
     // Where a cell is NOT linked to an adjacent cell, reveal the adjacent cell's adjoining wall.
     // This stops us from displaying "half width" walls.
@@ -56,14 +66,15 @@ function revealCell(state: MazeState, cellId: CellId) {
             continue;
         }
 
-        const adjacentUnderlyingId = link.adjacentCellId;
+        const adjacentCellId = link.adjacentCellId;
 
-        if (adjacentUnderlyingId === null) {
+        if (adjacentCellId === null) {
             continue;
         }
 
-        const adjacentUnderlying = getCell(state, adjacentUnderlyingId);
+        const adjacentUnderlying = getCell(state, adjacentCellId);
         const adjacentCell = state.cells[adjacentUnderlying.y][adjacentUnderlying.x];
+        
         const oppositeDir = oppositeDirectionsMap.get(direction)!;
         adjacentCell.links[oppositeDir] = adjacentUnderlying.links[oppositeDir].linked;
     }
@@ -131,10 +142,6 @@ function damageCell(state: MazeState, cellId: CellId) {
 }
 
 function repairCell(state: MazeState, cellId: CellId) {
-    if (state.visibleCells.has(cellId)) {
-        return;
-    }
-    
     if (state.visibleCells.has(cellId)) {
         revealCell(state, cellId);
     }
