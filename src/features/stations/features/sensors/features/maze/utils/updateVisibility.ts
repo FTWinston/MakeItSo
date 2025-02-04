@@ -1,123 +1,41 @@
 import { distance } from 'src/types/Vector2D';
 import { MazeState, CellType, UnderlyingCellState, CellLinks, north, east, south, west, CellId } from '../types/Maze';
 import { findCell, getCell } from './getCell';
-import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
+import { oppositeDirectionsMap } from './directions';
 
 const directions = [north, east, south, west];
 
 export function updateVisibility(state: MazeState, playerCell: UnderlyingCellState) {
-    const noLongerVisibleCells = new Set(state.visibleCells);
-    const newlyVisibleCells = new Set<CellId>();
+    const range = state.visibilityRange + 0.25;
 
-    const range = state.visibilityRange;
+    // All cells within range are visible. All others are obscured.
+    for (let y = 0; y <= state.cells.length; y++) {
+        for (let x = 0; x <= state.cells[0].length; x++) {
+            const underlyingCell = findCell(state, x, y);
 
-    const makeVisible = (cellId: CellId) => {
-        if (state.visibleCells.has(cellId)) {
-            noLongerVisibleCells.delete(cellId);
-        }
-        else {
-            newlyVisibleCells.add(cellId);
-        }
-    }
-
-    if (state.visibilityType === 'all') {
-        // All cells are visible.
-        for (let y = 0; y <= state.cells.length; y++) {
-            for (let x = 0; x <= state.cells[0].length; x++) {
-                const underlyingCell = findCell(state, x, y);
-    
-                if (!underlyingCell || underlyingCell.type === CellType.Outside) {
-                    continue;
-                }
-                
-                makeVisible(underlyingCell.id);
+            if (!underlyingCell || underlyingCell.type === CellType.Outside) {
+                continue;
             }
-        }
-    }
-    else if (state.visibilityType === 'range-allseen') {
-        // All cells within range are visible. All others are obscured.
-        for (let y = 0; y <= state.cells.length; y++) {
-            for (let x = 0; x <= state.cells[0].length; x++) {
-                const underlyingCell = findCell(state, x, y);
-    
-                if (!underlyingCell || underlyingCell.type === CellType.Outside) {
-                    continue;
-                }
-                
-                if (distance(underlyingCell, playerCell) > range + 0.25) {
-                    if (underlyingCell.type !== CellType.Obscured) {
-                        noLongerVisibleCells.add(underlyingCell.id);
-                        const cell = state.cells[underlyingCell.y][underlyingCell.x];
-                        cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
+            
+            if (distance(underlyingCell, playerCell) > range) {
+                if (underlyingCell.type !== CellType.Obscured) {
+                    state.visibleCells.delete(underlyingCell.id);
+                    if (state.damagedCells.has(underlyingCell.id)) {
+                        damageCell(state, underlyingCell.id);
                     }
-                }
-                else {
-                    newlyVisibleCells.add(underlyingCell.id);
-                }
-            }
-        }
-    }
-    else if (state.visibilityType === 'range') {
-        // All cells within range are visible. All others are unseen, or obscured if seen previously.
-        for (let y = playerCell.y - range; y <= playerCell.y + range; y++) {
-            for (let x = playerCell.x - range; x <= playerCell.x + range; x++) {
-                const underlyingCell = findCell(state, x, y);
-    
-                if (!underlyingCell || underlyingCell.type === CellType.Outside) {
-                    continue;
-                }
-                
-                if (distance(underlyingCell, playerCell) > range + 0.25) {
-                    continue;
-                }
-    
-                makeVisible(underlyingCell.id);
-            }
-        }
-    }
-    else {
-        // Cells within line of sight are visible. All others are unseen, or obscured if seen previously.
-        makeVisible(playerCell.id);
-    
-        for (const direction of directions) {
-            let viewCell = playerCell;
-            for (let distance = 1; distance <= range; distance++) {
-                const link = viewCell.links[direction];
-                if (!link.linked) {
-                    break;
-                }
-    
-                viewCell = getCell(state, link.adjacentCellId);
-                makeVisible(link.adjacentCellId);
-    
-                // Also do diagonal visibility.
-                if (distance === 1) {
-                    const orthogonalDirections = orthogonalDirectionsMap.get(direction)!;
-                    
-                    for (const orthogonalDirection of orthogonalDirections) {
-                        const orthogonalLink = viewCell.links[orthogonalDirection];
-                        if (orthogonalLink.linked) {
-                            makeVisible(orthogonalLink.adjacentCellId);
-                        }
+                    else {
+                        obscureCell(state, underlyingCell.id);
                     }
+
+                    const cell = state.cells[underlyingCell.y][underlyingCell.x];
+                    cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
                 }
             }
+            else {
+                state.visibleCells.add(underlyingCell.id);
+                revealCell(state, underlyingCell.id);
+            }
         }
-    }
-
-    for (const cellId of noLongerVisibleCells) {
-        state.visibleCells.delete(cellId);
-        if (state.damagedCells.has(cellId)) {
-            damageCell(state, cellId);
-        }
-        else {
-            obscureCell(state, cellId);
-        }
-    }
-
-    for (const cellId of newlyVisibleCells) {
-        state.visibleCells.add(cellId);
-        revealCell(state, cellId);
     }
 }
 
@@ -158,7 +76,7 @@ function revealCell(state: MazeState, cellId: CellId) {
 }
 
 export function updateDamage(state: MazeState, fraction: number) {
-    const numDamageCells = state.cellDamageOrder.length * fraction;
+    const numDamageCells = Math.max(0, Math.min(state.cellDamageOrder.length * fraction, state.cellDamageOrder.length));
     const prevNumDamageCells = state.damagedCells.size;
 
     // We need to fully update damagedCells before marking individual cells as damaged,
@@ -212,7 +130,7 @@ function damageCell(state: MazeState, cellId: CellId) {
 
         const adjacentId = link.adjacentCellId;
 
-        if (!adjacentId || state.damagedCells.has(adjacentId)) {
+        if (adjacentId && state.damagedCells.has(adjacentId)) {
             continue;
         }
 

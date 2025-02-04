@@ -52,7 +52,6 @@ export type MazeClientState = {
 
 export type MazeState = MazeClientState & {
     visibilityRange: number;
-    visibilityType: 'los' | 'range' | 'range-allseen' | 'all';
     visibleCells: Set<CellId>;
     underlyingCells: CellId[][];
     cellsById: Map<CellId, UnderlyingCellState>;
