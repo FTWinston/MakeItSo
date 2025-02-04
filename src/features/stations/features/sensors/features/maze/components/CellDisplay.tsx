@@ -68,7 +68,7 @@ export const CellDisplay: React.FC<Props> = props => {
                 gridRow: `${props.y + 1}`,
 
                 backgroundColor,
-                transition: 'background-color 0.33s ease',
+                transition: 'all 0.33s ease',
 
                 borderRightWidth: props.rightmost ? 2 : 1,
                 borderBottomWidth: props.bottommost ? 2 : 1,
