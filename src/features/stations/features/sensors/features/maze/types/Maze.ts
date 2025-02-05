@@ -59,6 +59,7 @@ export type MazeState = MazeClientState & {
     moveQueue: Direction[];
     cellDamageOrder: CellId[];
     damagedCells: Set<CellId>;
+    ignoreDamageCells: Set<CellId>;
 };
 
 export const playerEntityID = 1;

@@ -17,13 +17,13 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
                 continue;
             }
             
-            const distanceFromPlayer = distance(underlyingCell, playerCell);
-            if (distanceFromPlayer > range || (state.damagedCells.has(underlyingCell.id) && distanceFromPlayer > 0)) {
-                state.visibleCells.delete(underlyingCell.id);
+            if (state.damagedCells.has(underlyingCell.id) && !state.ignoreDamageCells.has(underlyingCell.id)) {
+                damageCell(state, underlyingCell.id);
+            }
+            else if (distance(underlyingCell, playerCell) > range) {
                 obscureCell(state, underlyingCell.id);
             }
             else {
-                state.visibleCells.add(underlyingCell.id);
                 revealCell(state, underlyingCell.id);
             }
         }
@@ -31,19 +31,21 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
 }
 
 function obscureCell(state: MazeState, cellId: CellId) {
-    if (state.damagedCells.has(cellId)) {
-        damageCell(state, cellId);
-        return;
+    if (state.visibleCells.has(cellId)) {
+        state.visibleCells.delete(cellId);
     }
 
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
     cell.type = CellType.Obscured;
-    cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
     delete cell.content;
 }
 
 function revealCell(state: MazeState, cellId: CellId) {
+    if (!state.visibleCells.has(cellId)) {
+        state.visibleCells.add(cellId);
+    }
+
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
 
@@ -52,12 +54,14 @@ function revealCell(state: MazeState, cellId: CellId) {
     }
 
     cell.type = underlyingCell.type;
-    cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
+
+    if (state.damagedCells.has(cellId)) {
+        cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
+    }
+
     cell.content = underlyingCell.content;
 
-    console.log(`revealed ${state.damagedCells.has(cellId)? 'DAMAGED ' : ''}cell at ${underlyingCell.x}, ${underlyingCell.y}`);
-
-    // Where a cell is NOT linked to an adjacent cell, reveal the adjacent cell's adjoining wall.
+    // Where an adjacent cells is damaged, and this cell does NOT link to it, reveal the adjacent cell's adjoining wall.
     // This stops us from displaying "half width" walls.
     for (const direction of directions) {
         const link = underlyingCell.links[direction];
@@ -68,7 +72,7 @@ function revealCell(state: MazeState, cellId: CellId) {
 
         const adjacentCellId = link.adjacentCellId;
 
-        if (adjacentCellId === null) {
+        if (adjacentCellId === null || !state.damagedCells.has(adjacentCellId)) {
             continue;
         }
 
@@ -113,6 +117,10 @@ export function updateDamage(state: MazeState, fraction: number) {
 }
 
 function damageCell(state: MazeState, cellId: CellId) {
+    if (state.visibleCells.has(cellId)) {
+        state.visibleCells.delete(cellId);
+    }
+
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
 
@@ -131,7 +139,7 @@ function damageCell(state: MazeState, cellId: CellId) {
 
         const adjacentId = link.adjacentCellId;
 
-        if (adjacentId && state.damagedCells.has(adjacentId)) {
+        if (adjacentId && state.damagedCells.has(adjacentId) && !state.ignoreDamageCells.has(adjacentId)) {
             continue;
         }
 
@@ -142,10 +150,15 @@ function damageCell(state: MazeState, cellId: CellId) {
 }
 
 function repairCell(state: MazeState, cellId: CellId) {
+    const underlyingCell = getCell(state, cellId);
+    const cell = state.cells[underlyingCell.y][underlyingCell.x];
+
     if (state.visibleCells.has(cellId)) {
         revealCell(state, cellId);
     }
     else {
         obscureCell(state, cellId);
     }
+
+    cell.links = underlyingCell.links.map(link => link.linked) as CellLinks;
 }

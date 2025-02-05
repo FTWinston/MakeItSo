@@ -1,5 +1,5 @@
 import { Direction, MazeState, playerEntityID } from '../types/Maze';
-import { findCell } from './getCell';
+import { findCell, getCell } from './getCell';
 import { updateDamage, updateVisibility } from './updateVisibility';
 
 export type MazeAction = {
@@ -46,13 +46,17 @@ function tryMove(state: MazeState, entityId: number, direction: Direction): bool
 
     const entityCell = findCell(state, underlyingEntity.x, underlyingEntity.y);
 
-    const link = entityCell?.links[direction];
+    if (!entityCell) {
+        return false;
+    }
+
+    const link = entityCell.links[direction];
 
     if (!link?.linked) {
         return false;
     }
 
-    const nextCell = state.cellsById.get(link.adjacentCellId)!;
+    const nextCell = getCell(state, link.adjacentCellId);
 
     // TODO: check nextCell is empty?
 
@@ -64,6 +68,11 @@ function tryMove(state: MazeState, entityId: number, direction: Direction): bool
     if (clientEntity) {
         clientEntity.x = nextCell.x;
         clientEntity.y = nextCell.y;
+    }
+
+    if (entityId === playerEntityID) {
+        state.ignoreDamageCells.delete(entityCell.id);
+        state.ignoreDamageCells.add(nextCell.id);
     }
 
     updateVisibility(state, nextCell);

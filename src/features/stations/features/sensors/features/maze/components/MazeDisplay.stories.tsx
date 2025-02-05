@@ -1,6 +1,6 @@
 import { StoryObj } from '@storybook/react';
 import { produce } from 'immer';
-import { useEffect, useReducer, useRef } from 'react';
+import { useEffect, useLayoutEffect, useReducer, useRef } from 'react';
 import { Box, Button } from 'src/lib/mui';
 import { MazeDisplay } from './MazeDisplay';
 import { generate, GenerationConfig } from '../utils/generate';
@@ -46,7 +46,7 @@ const MazeFromConfig: React.FC<Props> = (props) => {
     };
   }, [dispatch]);
   
-  useEffect(() => {
+  useLayoutEffect(() => {
     dispatch({ type: 'damage', fraction: props.damageFraction });
   }, [props.damageFraction]);
 

@@ -57,7 +57,7 @@ export function generate(config: GenerationConfig): MazeState {
     const mazeState: MazeState = {
         cells: cells.map(col => col.map(cell => ({
             type: cell.type === CellType.Outside ? cell.type : CellType.Unseen,
-            links: getInitialLinkVisibility(cellsById, cell),
+            links: cell.links.map(link => link.linked) as CellLinks,
         }))),
         cellsById,
         visibleCells: new Set(),
@@ -65,6 +65,7 @@ export function generate(config: GenerationConfig): MazeState {
         underlyingCells: cells.map(row => row.map(cell => cell.id)),
         cellDamageOrder: internalCells.map(cell => cell.id),
         damagedCells: new Set(),
+        ignoreDamageCells: new Set(),
         entities: {
             [playerEntityID]: {
                 x: startCell.x,
@@ -88,24 +89,6 @@ export function generate(config: GenerationConfig): MazeState {
 }
 
 const unassignedGroup = -1;
-
-function getInitialLinkVisibility(cellsById: Map<CellId, UnderlyingCellState>, cell: UnderlyingCellState): CellLinks {
-    if (cell.type === CellType.Outside) {
-        return cell.links.map(link => link.linked) as CellLinks;
-    }
-
-    // You can't typically see borders for an unseen cell, but you can for borders on the outer edge of the maze.
-    const visibleLinks = [true, true, true, true] as CellLinks;
-
-    for (let i = 0; i < 4; i++) {
-        const link = cell.links[i];
-        if (link.adjacentCellId === null || getCellById(cellsById, link.adjacentCellId).type === CellType.Outside) {
-            visibleLinks[i] = false;
-        }
-    }
-
-    return visibleLinks;
-}
 
 function createEmptyState(width: number, height: number, shapeOutline?: (boolean | 1 | 0)[][]): UnderlyingCellState[][] {
     let nextId = 1;

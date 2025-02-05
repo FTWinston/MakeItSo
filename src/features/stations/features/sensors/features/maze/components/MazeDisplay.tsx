@@ -1,5 +1,5 @@
 import { Box } from 'src/lib/mui';
-import { CellType, MazeClientState } from '../types/Maze';
+import { CellType, east, MazeClientState, north, south, west } from '../types/Maze';
 import { CellDisplay } from './CellDisplay';
 import { EntityDisplay } from './EntityDisplay';
 
@@ -45,10 +45,10 @@ export const MazeDisplay: React.FC<Props> = props => {
                             y={y}
                             type={cell.type}
                             content={cell.content}
-                            borderBottom={!cell.links[2] && (!bottommost || cell.type !== CellType.Outside)}
-                            borderRight={!cell.links[1] && (!rightmost || cell.type !== CellType.Outside)}
-                            borderLeft={!cell.links[3] && (x !== 0 || cell.type !== CellType.Outside)}
-                            borderTop={!cell.links[0] && (y !== 0 || cell.type !== CellType.Outside)}
+                            borderBottom={!cell.links[south] && (!bottommost || cell.type !== CellType.Outside)}
+                            borderRight={!cell.links[east] && (!rightmost || cell.type !== CellType.Outside)}
+                            borderLeft={!cell.links[west] && (x !== 0 || cell.type !== CellType.Outside)}
+                            borderTop={!cell.links[north] && (y !== 0 || cell.type !== CellType.Outside)}
                         />
                     )
                 })
