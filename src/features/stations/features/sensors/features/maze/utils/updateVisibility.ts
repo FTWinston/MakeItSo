@@ -42,16 +42,14 @@ function obscureCell(state: MazeState, cellId: CellId) {
 }
 
 function revealCell(state: MazeState, cellId: CellId) {
-    if (!state.visibleCells.has(cellId)) {
-        state.visibleCells.add(cellId);
+    if (state.visibleCells.has(cellId)) {
+        return;
     }
+
+    state.visibleCells.add(cellId);
 
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
-
-    if (cell.type === CellType.Visible) {
-        return;    
-    }
 
     cell.type = underlyingCell.type;
 
@@ -61,6 +59,7 @@ function revealCell(state: MazeState, cellId: CellId) {
 
     cell.content = underlyingCell.content;
 
+    /*
     // Where an adjacent cells is damaged, and this cell does NOT link to it, reveal the adjacent cell's adjoining wall.
     // This stops us from displaying "half width" walls.
     for (const direction of directions) {
@@ -82,6 +81,7 @@ function revealCell(state: MazeState, cellId: CellId) {
         const oppositeDir = oppositeDirectionsMap.get(direction)!;
         adjacentCell.links[oppositeDir] = adjacentUnderlying.links[oppositeDir].linked;
     }
+    */
 }
 
 export function updateDamage(state: MazeState, fraction: number) {
