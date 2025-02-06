@@ -19,9 +19,21 @@ type Props = {
 export const CellDisplay: React.FC<Props> = props => {
     const theme = useTheme();
     
-    const content = props.content === undefined
-        ? undefined
-        : (
+    let content: JSX.Element | undefined;
+    
+    if (props.type === CellType.Damaged) {
+        content = (
+            <Typography 
+                color={alpha(theme.palette.warning.dark, 0.3)}
+                lineHeight="1em"
+                style={{fontSize: '0.5em'}}
+            >
+                ?
+            </Typography>
+        );
+    }
+    else if (props.content !== undefined) {
+        content = (
             <Typography 
                 color={props.content === 'entrance' ?
                     'info.light'
@@ -30,12 +42,13 @@ export const CellDisplay: React.FC<Props> = props => {
                         : props.content === 'goal'
                             ? 'secondary'
                             : undefined}
-                fontSize="0.75em"
+                style={{fontSize: '0.75em'}}
                 lineHeight="1em"
             >
                 {props.content === 'entrance' ? '█' : props.content === 'item' ? '·' : props.content === 'goal' ? 'X' : undefined}
             </Typography>
         );
+    }
 
     let backgroundColor: string | undefined;
 
@@ -43,11 +56,8 @@ export const CellDisplay: React.FC<Props> = props => {
         case CellType.Damaged:
             backgroundColor = alpha(theme.palette.warning.dark, 0.3);
             break;
-        case CellType.Unseen:
-            backgroundColor = alpha(theme.palette.secondary.dark, 0.3);
-            break;
         case CellType.Obscured:
-            backgroundColor = alpha(theme.palette.primary.dark, 0.02);
+            backgroundColor = alpha(theme.palette.primary.dark, 0.075);
             break;
         case CellType.Visible:
             backgroundColor = alpha(theme.palette.primary.dark, 0.25);

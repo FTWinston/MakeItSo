@@ -10,7 +10,6 @@ export type CellLinks = [boolean, boolean, boolean, boolean];
 export enum CellType {
     Outside,
     Damaged,
-    Unseen,
     Obscured,
     Visible,
 }
