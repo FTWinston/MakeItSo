@@ -2,7 +2,7 @@ import { Random } from 'src/utils/random';
 import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderlyingCellState, playerEntityID, CellId } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 import { updateVisibility } from './updateVisibility';
-import { getCell, getCellById } from './getCell';
+import { getCellById } from './getCell';
 
 export type GenerationConfig = {
     seed?: string;
@@ -56,7 +56,7 @@ export function generate(config: GenerationConfig): MazeState {
 
     const mazeState: MazeState = {
         cells: cells.map(col => col.map(cell => ({
-            type: cell.type === CellType.Outside ? cell.type : CellType.Obscured,
+            type: cell.type,
             links: cell.links.map(link => link.linked) as CellLinks,
         }))),
         cellsById,
@@ -100,7 +100,7 @@ function createEmptyState(width: number, height: number, shapeOutline?: (boolean
             .fill(null)
             .map((_, x) => ({
                 id: nextId++,
-                type: (shapeOutline && !shapeOutline[y][x]) ? CellType.Outside : CellType.Visible,
+                type: (shapeOutline && !shapeOutline[y][x]) ? CellType.Outside : CellType.Normal,
                 links: [{ linked: false, adjacentCellId: null }, { linked: false, adjacentCellId: null }, { linked: false, adjacentCellId: null }, { linked: false, adjacentCellId: null }],
                 group: unassignedGroup,
                 x,

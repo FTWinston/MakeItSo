@@ -3,6 +3,7 @@ import { CellType } from '../types/Maze';
 
 type Props = {
     type: CellType;
+    visible: boolean;
     content?: 'entrance' | 'item' | 'goal';
     x: number;
     y: number;
@@ -54,13 +55,10 @@ export const CellDisplay: React.FC<Props> = props => {
 
     switch (props.type) {
         case CellType.Damaged:
-            backgroundColor = alpha(theme.palette.warning.dark, 0.3);
+            backgroundColor = alpha(theme.palette.warning.dark, props.visible ? 0.4 : 0.2);
             break;
-        case CellType.Obscured:
-            backgroundColor = alpha(theme.palette.primary.dark, 0.075);
-            break;
-        case CellType.Visible:
-            backgroundColor = alpha(theme.palette.primary.dark, 0.25);
+        case CellType.Normal:
+            backgroundColor = alpha(theme.palette.primary.dark, props.visible ? 0.25 : 0.075);
             break;
     }
 

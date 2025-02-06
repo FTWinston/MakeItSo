@@ -9,15 +9,15 @@ export type CellLinks = [boolean, boolean, boolean, boolean];
 
 export enum CellType {
     Outside,
+    Normal,
     Damaged,
-    Obscured,
-    Visible,
 }
 
 export type CellId = number;
 
 export type CellState = {
     type: CellType;
+    visible?: true;
     links: CellLinks;
     content?: 'entrance' | 'item' | 'goal';
 }
@@ -30,9 +30,11 @@ export type UnderylingCellLink = {
     adjacentCellId: CellId | null;
 }
 
+export type UnderlyingCellLinks = [UnderylingCellLink, UnderylingCellLink, UnderylingCellLink, UnderylingCellLink];
+
 export type UnderlyingCellState = Omit<CellState, 'links'> & {
     id: CellId;
-    links: [UnderylingCellLink, UnderylingCellLink, UnderylingCellLink, UnderylingCellLink];
+    links: UnderlyingCellLinks;
     group: number;
     x: number;
     y: number;

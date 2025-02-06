@@ -1,6 +1,6 @@
-import { Direction, MazeState, playerEntityID } from '../types/Maze';
+import { CellType, Direction, MazeState, playerEntityID, UnderlyingCellState } from '../types/Maze';
 import { findCell, getCell } from './getCell';
-import { updateDamage, updateVisibility } from './updateVisibility';
+import { disableDamage, enableDamage, updateDamage, updateVisibility } from './updateVisibility';
 
 export type MazeAction = {
     type: 'move';
@@ -71,10 +71,10 @@ function tryMove(state: MazeState, entityId: number, direction: Direction): bool
     }
 
     if (entityId === playerEntityID) {
-        state.ignoreDamageCells.delete(entityCell.id);
-        state.ignoreDamageCells.add(nextCell.id);
+        enableDamage(state, entityCell);
+        disableDamage(state, nextCell);
+        updateVisibility(state, nextCell);
     }
 
-    updateVisibility(state, nextCell);
     return true;
 }
