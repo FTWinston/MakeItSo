@@ -39,6 +39,9 @@ function obscureCell(state: MazeState, cellId: CellId) {
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
     delete cell.visible;
     delete cell.content;
+    if (cell.system) {
+        delete cell.system;
+    }
     
     if (state.damagedCells.has(cellId)) {
         cell.type = CellType.Damaged;
@@ -57,6 +60,9 @@ function revealCell(state: MazeState, cellId: CellId) {
     cell.visible = true;
 
     cell.content = underlyingCell.content;
+    if (underlyingCell.system) {
+        cell.system = underlyingCell.system;
+    }
 }
 
 export function updateDamage(state: MazeState, fraction: number) {
@@ -101,6 +107,9 @@ function damageCell(state: MazeState, cellId: CellId) {
 
     cell.type = CellType.Damaged;
     delete cell.content;
+    if (cell.system) {
+        delete cell.system;
+    }
 
     cell.links = setDamagedCellBorders(state, underlyingCell);
 }

@@ -3,6 +3,7 @@ import { CellLinks, Direction, MazeState, north, east, south, west, CellType, Un
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 import { updateVisibility } from './updateVisibility';
 import { getCellById } from './getCell';
+import { allSystems, ShipSystem } from 'src/types/ShipSystem';
 
 export type GenerationConfig = {
     seed?: string;
@@ -14,6 +15,9 @@ export type GenerationConfig = {
     connectivity: number;
     /** How many "sub mazes" should be generated. Each sub-maze should only connect to the rest of the maze at e.g. a locked door. */
     numGroups: number;
+
+    /** Whether ship system "doors" should be placed as goals. */
+    shipSystemsAsGoals: boolean;
 }
 
 type GeneratingCellGroup = {
@@ -41,13 +45,32 @@ export function generate(config: GenerationConfig): MazeState {
 
     const cellGroups = assignGroups(cellsById, internalCells, config.numGroups, random);
 
+    const allGoalCells: UnderlyingCellState[] = [];
+
     // Generate an independent mini-maze in each group.
     for (const cellGroup of cellGroups) {
         iterateCells(cellsById, cellGroup, random, config.connectivity);
+        allGoalCells.push(...cellGroup.goalCells);
     }
 
     const startCell = random.pick([...cellGroups[0].midPathCells]);
     startCell.content = 'entrance';
+
+    if (config.shipSystemsAsGoals) {
+        // Ensure we have enough goal cells for each system, then assign random goal cells to be ship systems.
+        while (allGoalCells.length < 5) {
+            allGoalCells.push(random.pick([...random.pick(cellGroups).midPathCells]));
+        }
+        random.delete(allGoalCells).system = ShipSystem.Engines;
+        random.delete(allGoalCells).system = ShipSystem.Weapons;
+        random.delete(allGoalCells).system = ShipSystem.Reactor;
+        random.delete(allGoalCells).system = ShipSystem.Sensors;
+        // random.delete(allGoalCells).system = ShipSystem.Shields;
+
+        for (const emptyGoal of allGoalCells) {
+            delete emptyGoal.content;
+        }
+    }
 
     // Link up each group to the rest of the maze, but only have one "door" between each group.
     connectGroups(cellsById, cellGroups, random);

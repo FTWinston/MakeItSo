@@ -1,3 +1,5 @@
+import { ShipSystem } from 'src/types/ShipSystem';
+
 export type Direction = 0 | 1 | 2 | 3;
 
 export const north: Direction = 0;
@@ -20,6 +22,7 @@ export type CellState = {
     visible?: true;
     links: CellLinks;
     content?: 'entrance' | 'item' | 'goal';
+    system?: ShipSystem;
 }
 
 export type UnderylingCellLink = {
@@ -43,8 +46,10 @@ export type UnderlyingCellState = Omit<CellState, 'links'> & {
 export type MazeEntity = {
     x: number;
     y: number;
-    type: 'player';
-}
+} & ({
+        type: 'player';
+    }
+);
 
 export type MazeClientState = {
     cells: CellState[][];

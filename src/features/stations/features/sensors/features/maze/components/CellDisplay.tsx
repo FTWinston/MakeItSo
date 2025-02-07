@@ -1,56 +1,87 @@
 import { Box, Typography, alpha, useTheme } from 'src/lib/mui';
 import { CellType } from '../types/Maze';
+import { CrewStation, ShipSystem } from 'src/types/ShipSystem';
+import { CrewIcon } from 'src/components';
 
-type Props = {
+type ContentProps = {
     type: CellType;
     visible: boolean;
     content?: 'entrance' | 'item' | 'goal';
+    system?: ShipSystem;
+}
+
+type Props = ContentProps & {
     x: number;
     y: number;
-
     rightmost: boolean;
     bottommost: boolean;
-
     borderRight: boolean;
     borderBottom: boolean;
     borderLeft: boolean;
     borderTop: boolean;
 }
 
+const useCellContent: React.FC<ContentProps> = props => {
+    let color: string;
+    let fontSize: string;
+    let content: string | JSX.Element;
+
+    const theme = useTheme();
+
+    if (props.type === CellType.Damaged) {
+        color = alpha(theme.palette.warning.dark, 0.3);
+        fontSize = '0.5em';
+        content = '?';
+    }
+    else if (props.content === 'goal' && props.system) {
+        console.log(`cell.system: ${props.system}`);
+        color = theme.palette.secondary.main;
+        content = 'X';
+        fontSize = '0.75em';
+        content = <CrewIcon fontSize='small' station={props.system as unknown as CrewStation} />; // TODO: CrewIcon should be adapted to be SystemIcon, cos we want an icon for shields, and maybe for the hull too, if that's even a system.
+    }
+    else if (props.content) {
+        fontSize = '0.75em';
+
+        switch (props.content) {
+            case 'entrance':
+                color = theme.palette.info.light;
+                content = '█';
+                break;
+            case 'item':
+                color = theme.palette.secondary.dark;
+                content = '·';
+                break;
+            case 'goal':
+                color = theme.palette.secondary.main;
+                content = 'X';
+                break;
+            default:
+                color = theme.palette.error.main;
+                content = '!';
+                break;
+        }
+    }
+    else {
+        return undefined;
+    }
+
+    return (
+        <Typography 
+            color={color}
+            lineHeight="1em"
+            style={{fontSize}}
+        >
+            {content}
+        </Typography>
+    );
+}
+
 export const CellDisplay: React.FC<Props> = props => {
     const theme = useTheme();
     
-    let content: JSX.Element | undefined;
+    const content = useCellContent(props);
     
-    if (props.type === CellType.Damaged) {
-        content = (
-            <Typography 
-                color={alpha(theme.palette.warning.dark, 0.3)}
-                lineHeight="1em"
-                style={{fontSize: '0.5em'}}
-            >
-                ?
-            </Typography>
-        );
-    }
-    else if (props.content !== undefined) {
-        content = (
-            <Typography 
-                color={props.content === 'entrance' ?
-                    'info.light'
-                    : props.content === 'item'
-                        ? 'secondary.dark'
-                        : props.content === 'goal'
-                            ? 'secondary'
-                            : undefined}
-                style={{fontSize: '0.75em'}}
-                lineHeight="1em"
-            >
-                {props.content === 'entrance' ? '█' : props.content === 'item' ? '·' : props.content === 'goal' ? 'X' : undefined}
-            </Typography>
-        );
-    }
-
     let backgroundColor: string | undefined;
 
     switch (props.type) {

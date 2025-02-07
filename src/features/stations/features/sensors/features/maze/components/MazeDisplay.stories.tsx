@@ -84,6 +84,7 @@ export const ShipOverview: Story = {
     visibilityRange: 3,
     seed: 'x',
     damageFraction: 0,
+    shipSystemsAsGoals: true,
     shapeOutline: [
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
@@ -108,5 +109,6 @@ export const SystemDetail: Story = {
     visibilityRange: 6,
     damageFraction: 0,
     seed: 'x',
+    shipSystemsAsGoals: false,
   }
 }
