@@ -1,12 +1,13 @@
-import { distance } from 'src/types/Vector2D';
+import { distanceSq, Vector2D } from 'src/types/Vector2D';
 import { MazeState, CellType, UnderlyingCellState, CellLinks, north, east, south, west, CellId, UnderlyingCellLinks } from '../types/Maze';
 import { findCell, getCell } from './getCell';
 import { oppositeDirectionsMap } from './directions';
 
 const directions = [north, east, south, west];
 
-export function updateVisibility(state: MazeState, playerCell: UnderlyingCellState) {
+export function updateVisibility(state: MazeState, playerPosition: Vector2D) {
     const range = state.visibilityRange + 0.25;
+    const rangeSq = range * range;
 
     // All cells within range are visible, and all cells outside range are obscured.
     for (let y = 0; y <= state.cells.length; y++) {
@@ -17,7 +18,7 @@ export function updateVisibility(state: MazeState, playerCell: UnderlyingCellSta
                 continue;
             }
             
-            if (distance(underlyingCell, playerCell) > range) {
+            if (distanceSq(underlyingCell, playerPosition) > rangeSq) {
                 obscureCell(state, underlyingCell.id);
             }
             else {

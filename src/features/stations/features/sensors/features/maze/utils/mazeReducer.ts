@@ -11,13 +11,17 @@ export type MazeAction = {
 } | {
     type: 'damage';
     fraction: number;
+} | {
+    type: 'visibility';
+    range: number;
 }
 
 export function mazeReducer(state: MazeState, action: MazeAction): void {
     switch (action.type) {
         case 'move':
-            state.moveQueue.push(action.direction);
-            //tryMove(state, playerEntityID, action.direction);
+            if (state.moveQueue.length < 3) {
+                state.moveQueue.push(action.direction);
+            }
             break;
         case 'tick': {
             let moved: boolean;
@@ -32,6 +36,11 @@ export function mazeReducer(state: MazeState, action: MazeAction): void {
         }
         case 'damage': {
             updateDamage(state, action.fraction);
+            break;
+        }
+        case 'visibility': {
+            state.visibilityRange = action.range;
+            updateVisibility(state, state.underlyingEntities[playerEntityID]!);
             break;
         }
     }

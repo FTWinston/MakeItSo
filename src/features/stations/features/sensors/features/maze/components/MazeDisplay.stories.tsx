@@ -49,6 +49,10 @@ const MazeFromConfig: React.FC<Props> = (props) => {
   useLayoutEffect(() => {
     dispatch({ type: 'damage', fraction: props.damageFraction });
   }, [props.damageFraction]);
+  
+  useLayoutEffect(() => {
+    dispatch({ type: 'visibility', range: props.visibilityRange });
+  }, [props.visibilityRange]);
 
   return (
     <div>
