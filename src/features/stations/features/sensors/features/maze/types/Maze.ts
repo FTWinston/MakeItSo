@@ -21,7 +21,7 @@ export type CellState = {
     type: CellType;
     visible?: true;
     links: CellLinks;
-    content?: 'entrance' | 'item' | 'goal';
+    content?: 'entrance' | 'item' | 'exit';
     system?: ShipSystem;
 }
 

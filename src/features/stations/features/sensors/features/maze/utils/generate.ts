@@ -1,9 +1,9 @@
 import { Random } from 'src/utils/random';
-import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderlyingCellState, playerEntityID, CellId } from '../types/Maze';
+import { CellLinks, Direction, MazeState, north, east, south, west, CellType, UnderlyingCellState, playerEntityID, CellId, CellState } from '../types/Maze';
 import { oppositeDirectionsMap, orthogonalDirectionsMap } from './directions';
 import { updateVisibility } from './updateVisibility';
 import { getCellById } from './getCell';
-import { allSystems, ShipSystem } from 'src/types/ShipSystem';
+import { ShipSystem } from 'src/types/ShipSystem';
 
 export type GenerationConfig = {
     seed?: string;
@@ -18,6 +18,7 @@ export type GenerationConfig = {
 
     /** Whether ship system "doors" should be placed as goals. */
     shipSystemsAsGoals: boolean;
+    numFakeGoals: number;
 }
 
 type GeneratingCellGroup = {
@@ -45,31 +46,16 @@ export function generate(config: GenerationConfig): MazeState {
 
     const cellGroups = assignGroups(cellsById, internalCells, config.numGroups, random);
 
-    const allGoalCells: UnderlyingCellState[] = [];
-
     // Generate an independent mini-maze in each group.
     for (const cellGroup of cellGroups) {
         iterateCells(cellsById, cellGroup, random, config.connectivity);
-        allGoalCells.push(...cellGroup.goalCells);
     }
 
     const startCell = random.pick([...cellGroups[0].midPathCells]);
     startCell.content = 'entrance';
 
     if (config.shipSystemsAsGoals) {
-        // Ensure we have enough goal cells for each system, then assign random goal cells to be ship systems.
-        while (allGoalCells.length < 5) {
-            allGoalCells.push(random.pick([...random.pick(cellGroups).midPathCells]));
-        }
-        random.delete(allGoalCells).system = ShipSystem.Engines;
-        random.delete(allGoalCells).system = ShipSystem.Weapons;
-        random.delete(allGoalCells).system = ShipSystem.Reactor;
-        random.delete(allGoalCells).system = ShipSystem.Sensors;
-        // random.delete(allGoalCells).system = ShipSystem.Shields;
-
-        for (const emptyGoal of allGoalCells) {
-            delete emptyGoal.content;
-        }
+        assignExits(cellGroups, config.numFakeGoals, random);
     }
 
     // Link up each group to the rest of the maze, but only have one "door" between each group.
@@ -77,15 +63,30 @@ export function generate(config: GenerationConfig): MazeState {
 
     random.shuffle(internalCells);
 
-    const mazeState: MazeState = {
-        cells: cells.map(col => col.map(cell => ({
+    const displayCells = cells.map(col => col.map(cell => {
+        const result: CellState = {
             type: cell.type,
             links: cell.links.map(link => link.linked) as CellLinks,
-        }))),
+        };
+
+        // Exit cells should show hints (exit content but no associated system) from the outset when obscured.
+        // As should exit hints (i.e. with no associated system), but they only ever show on obscured cells.
+        if (cell.content === 'exit') {
+            result.content = 'exit';
+            if (cell.system === undefined) {
+                delete cell.content;
+            }
+        }
+
+        return result;
+    }));
+
+    const mazeState: MazeState = {
+        cells: displayCells,
+        underlyingCells: cells.map(row => row.map(cell => cell.id)),
         cellsById,
         visibleCells: new Set(),
         visibilityRange: config.visibilityRange,
-        underlyingCells: cells.map(row => row.map(cell => cell.id)),
         cellDamageOrder: internalCells.map(cell => cell.id),
         damagedCells: new Set(),
         ignoreDamageCells: new Set(),
@@ -112,6 +113,48 @@ export function generate(config: GenerationConfig): MazeState {
 }
 
 const unassignedGroup = -1;
+
+function assignExits(cellGroups: GeneratingCellGroup[], numFakeGoals: number, random: Random) {
+    const allGoalCells: UnderlyingCellState[] = [];
+
+    for (const cellGroup of cellGroups) {
+        allGoalCells.push(...cellGroup.goalCells);
+    }
+
+    const goalSystems: ShipSystem[] = [
+        ShipSystem.Engines,
+        ShipSystem.Weapons,
+        ShipSystem.Reactor,
+        ShipSystem.Sensors,
+        //ShipSystem.Shields,
+    ]
+
+    // Ensure there are enough goal cells. If not, take some additional cells.
+    const numGoalsIncludingFakes = numFakeGoals + goalSystems.length;
+    while (allGoalCells.length < numGoalsIncludingFakes) {
+        allGoalCells.push(random.delete([...random.delete(cellGroups).midPathCells]));
+    }
+
+    random.shuffle(allGoalCells);
+
+    // An exit cell for each ship system.
+    for (const goalSystem of goalSystems) {
+        const goalCell = allGoalCells.pop()!;
+        goalCell.content = 'exit';
+        goalCell.system = goalSystem;
+    }
+
+    // Some extra cells should look like hints while obscured, to make the real goals less obvious.
+    for (let i = 0; i < numFakeGoals; i++) {
+        const goalCell = allGoalCells.pop()!
+        goalCell.content = 'exit';
+    }
+
+    // Any unused extra goal cells have no content.
+    for (const emptyGoal of allGoalCells) {
+        delete emptyGoal.content;
+    }
+}
 
 function createEmptyState(width: number, height: number, shapeOutline?: (boolean | 1 | 0)[][]): UnderlyingCellState[][] {
     let nextId = 1;
@@ -436,9 +479,6 @@ function iterateCells(
     }
 
     // Display the important cells, for debugging.
-    for (const cell of cellGroup.goalCells) {
-        cell.content = 'goal';
-    }
     for (const cell of cellGroup.midPathCells) {
         cell.content = 'item';
     }

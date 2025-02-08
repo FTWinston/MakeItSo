@@ -6,7 +6,7 @@ import { CrewIcon } from 'src/components';
 type ContentProps = {
     type: CellType;
     visible: boolean;
-    content?: 'entrance' | 'item' | 'goal';
+    content?: 'entrance' | 'exit' | 'item';
     system?: ShipSystem;
 }
 
@@ -29,12 +29,9 @@ const useCellContent: React.FC<ContentProps> = props => {
     const theme = useTheme();
 
     if (props.type === CellType.Damaged) {
-        color = alpha(theme.palette.warning.dark, 0.3);
-        fontSize = '0.5em';
-        content = '?';
+        return undefined;
     }
-    else if (props.content === 'goal' && props.system) {
-        console.log(`cell.system: ${props.system}`);
+    else if (props.content === 'exit' && props.system) {
         color = theme.palette.secondary.main;
         content = 'X';
         fontSize = '0.75em';
@@ -48,13 +45,13 @@ const useCellContent: React.FC<ContentProps> = props => {
                 color = theme.palette.info.light;
                 content = '█';
                 break;
+            case 'exit':
+                color = theme.palette.secondary.main;
+                content = '?';
+                break;
             case 'item':
                 color = theme.palette.secondary.dark;
                 content = '·';
-                break;
-            case 'goal':
-                color = theme.palette.secondary.main;
-                content = 'X';
                 break;
             default:
                 color = theme.palette.error.main;

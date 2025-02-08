@@ -85,6 +85,7 @@ export const ShipOverview: Story = {
     seed: 'x',
     damageFraction: 0,
     shipSystemsAsGoals: true,
+    numFakeGoals: 5,
     shapeOutline: [
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0],
       [0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
@@ -110,5 +111,6 @@ export const SystemDetail: Story = {
     damageFraction: 0,
     seed: 'x',
     shipSystemsAsGoals: false,
+    numFakeGoals: 0,
   }
 }

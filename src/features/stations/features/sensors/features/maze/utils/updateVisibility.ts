@@ -38,9 +38,8 @@ function obscureCell(state: MazeState, cellId: CellId) {
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
     delete cell.visible;
-    delete cell.content;
-    if (cell.system) {
-        delete cell.system;
+    if (cell.content !== 'entrance' && cell.content !== 'exit') {
+        delete cell.content;
     }
     
     if (state.damagedCells.has(cellId)) {
@@ -105,10 +104,9 @@ function damageCell(state: MazeState, cellId: CellId) {
     const underlyingCell = getCell(state, cellId);
     const cell = state.cells[underlyingCell.y][underlyingCell.x];
 
-    cell.type = CellType.Damaged;
-    delete cell.content;
-    if (cell.system) {
-        delete cell.system;
+    cell.type = CellType.Damaged; 
+    if (cell.content !== 'entrance' && cell.content !== 'exit') {
+        delete cell.content;
     }
 
     cell.links = setDamagedCellBorders(state, underlyingCell);
