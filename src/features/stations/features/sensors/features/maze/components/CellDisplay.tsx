@@ -28,10 +28,7 @@ const useCellContent: React.FC<ContentProps> = props => {
 
     const theme = useTheme();
 
-    if (props.type === CellType.Damaged) {
-        return undefined;
-    }
-    else if (props.content === 'exit' && props.system) {
+    if (props.content === 'exit' && props.system) {
         color = theme.palette.secondary.main;
         content = 'X';
         fontSize = '0.75em';
