@@ -5,20 +5,24 @@ import { updateVisibility } from './updateVisibility';
 import { getCellById } from './getCell';
 import { ShipSystem } from 'src/types/ShipSystem';
 
-export type GenerationConfig = {
+type CommonGenerationConfig = {
     seed?: string;
     width: number;
     height: number;
-    visibilityRange: number;
-    shapeOutline?: (boolean | 1 | 0)[][];
+}
+
+export type ShipOverviewGenerationConfig = CommonGenerationConfig & {
+    shapeOutline: (boolean | 1 | 0)[][];
+    /** A number between 0 and 1, indicating the chance, on reaching a dead end while generating, of "punching through" a wall to an already-visited cell. */
+    connectivity: number;
+    numFakeGoals: number;
+}
+
+export type SystemGenerationConfig = CommonGenerationConfig & {
     /** A number between 0 and 1, indicating the chance, on reaching a dead end while generating, of "punching through" a wall to an already-visited cell. */
     connectivity: number;
     /** How many "sub mazes" should be generated. Each sub-maze should only connect to the rest of the maze at e.g. a locked door. */
     numGroups: number;
-
-    /** Whether ship system "doors" should be placed as goals. */
-    shipSystemsAsGoals: boolean;
-    numFakeGoals: number;
 }
 
 type GeneratingCellGroup = {
@@ -31,7 +35,7 @@ type GeneratingCellGroup = {
     midPathCells: Set<UnderlyingCellState>;
 }
 
-export function generate(config: GenerationConfig): MazeState {
+export function generateShipOverview(config: ShipOverviewGenerationConfig): MazeState {
     const random = new Random(config.seed);
 
     // Create a set of unlinked cells, and assign them to groups.
@@ -44,7 +48,7 @@ export function generate(config: GenerationConfig): MazeState {
     const internalCells = allCells
         .filter(cell => cell.type !== CellType.Outside);
 
-    const cellGroups = assignGroups(cellsById, internalCells, config.numGroups, random);
+    const cellGroups = assignGroups(cellsById, internalCells, 1, random);
 
     // Generate an independent mini-maze in each group.
     for (const cellGroup of cellGroups) {
@@ -54,39 +58,16 @@ export function generate(config: GenerationConfig): MazeState {
     const startCell = random.pick([...cellGroups[0].midPathCells]);
     startCell.content = 'entrance';
 
-    if (config.shipSystemsAsGoals) {
-        assignExits(cellGroups, config.numFakeGoals, random);
-    }
-
-    // Link up each group to the rest of the maze, but only have one "door" between each group.
-    connectGroups(cellsById, cellGroups, random);
+    assignExits(cellGroups, config.numFakeGoals, random);
 
     random.shuffle(internalCells);
 
-    const displayCells = cells.map(col => col.map(cell => {
-        const result: CellState = {
-            type: cell.type,
-            links: cell.links.map(link => link.linked) as CellLinks,
-        };
-
-        // Exit cells should show hints (exit content but no associated system) from the outset when obscured.
-        // As should exit hints (i.e. with no associated system), but they only ever show on obscured cells.
-        if (cell.content === 'exit') {
-            result.content = 'exit';
-            if (cell.system === undefined) {
-                delete cell.content;
-            }
-        }
-
-        return result;
-    }));
-
-    const mazeState: MazeState = {
-        cells: displayCells,
+    return {
+        cells: getCellsForDisplay(cells),
         underlyingCells: cells.map(row => row.map(cell => cell.id)),
         cellsById,
         visibleCells: new Set(),
-        visibilityRange: config.visibilityRange,
+        visibilityRange: 0,
         cellDamageOrder: internalCells.map(cell => cell.id),
         damagedCells: new Set(),
         ignoreDamageCells: new Set(),
@@ -106,13 +87,84 @@ export function generate(config: GenerationConfig): MazeState {
         },
         moveQueue: [],
     };
+}
 
-    updateVisibility(mazeState, startCell);
+export function generateSystem(config: SystemGenerationConfig): MazeState {
+    const random = new Random(config.seed);
 
-    return mazeState;
+    // Create a set of unlinked cells, and assign them to groups.
+    const cells: UnderlyingCellState[][] = createEmptyState(config.width, config.height);
+
+    const allCells = cells.flat();
+
+    const cellsById = new Map(allCells.map(cell => [cell.id, cell]));
+
+    const internalCells = allCells
+        .filter(cell => cell.type !== CellType.Outside);
+
+    const cellGroups = assignGroups(cellsById, internalCells, config.numGroups, random);
+
+    // Generate an independent mini-maze in each group.
+    for (const cellGroup of cellGroups) {
+        iterateCells(cellsById, cellGroup, random, config.connectivity);
+    }
+
+    const startCell = random.pick([...cellGroups[0].midPathCells]);
+    startCell.content = 'entrance';
+
+    // Link up each group to the rest of the maze, but only have one "door" between each group.
+    connectGroups(cellsById, cellGroups, random);
+
+    random.shuffle(internalCells);
+
+    return {
+        cells: getCellsForDisplay(cells),
+        underlyingCells: cells.map(row => row.map(cell => cell.id)),
+        cellsById,
+        visibleCells: new Set(),
+        visibilityRange: 0,
+        cellDamageOrder: internalCells.map(cell => cell.id),
+        damagedCells: new Set(),
+        ignoreDamageCells: new Set(),
+        entities: {
+            [playerEntityID]: {
+                x: startCell.x,
+                y: startCell.y,
+                type: 'player'
+            }
+        },
+        underlyingEntities: {
+            [playerEntityID]: {
+                x: startCell.x,
+                y: startCell.y,
+                type: 'player'
+            }
+        },
+        moveQueue: [],
+    };
 }
 
 const unassignedGroup = -1;
+
+function getCellsForDisplay(cells: UnderlyingCellState[][]) {
+    return cells.map(col => col.map(cell => {
+        const result: CellState = {
+            type: cell.type,
+            links: cell.links.map(link => link.linked) as CellLinks,
+        };
+
+        // Exit cells should show hints (exit content but no associated system) from the outset when obscured.
+        // As should exit hints (i.e. with no associated system), but they only ever show on obscured cells.
+        if (cell.content === 'exit') {
+            result.content = 'exit';
+            if (cell.system === undefined) {
+                delete cell.content;
+            }
+        }
+
+        return result;
+    }));
+}
 
 function assignExits(cellGroups: GeneratingCellGroup[], numFakeGoals: number, random: Random) {
     const allGoalCells: UnderlyingCellState[] = [];
