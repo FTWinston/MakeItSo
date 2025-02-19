@@ -76,42 +76,55 @@ export const CellDisplay: React.FC<Props> = props => {
     
     const content = useCellContent(props);
     
-    let backgroundColor: string | undefined;
+    const backgroundColor = props.type === CellType.Outside
+        ? undefined
+        : alpha(theme.palette.primary.dark, props.visible ? 0.25 : 0.075);
 
-    switch (props.type) {
-        case CellType.Damaged:
-            backgroundColor = alpha(theme.palette.warning.dark, props.visible ? 0.4 : 0.2);
-            break;
-        case CellType.Normal:
-            backgroundColor = alpha(theme.palette.primary.dark, props.visible ? 0.25 : 0.075);
-            break;
-    }
+
+    const borderRightWidth = props.rightmost ? 2 : 1;
+    const borderBottomWidth = props.bottommost ? 2 : 1;
+    const borderLeftWidth = props.x === 0 ? 2 : 1;
+    const borderTopWidth = props.y === 0 ? 2 : 1;
 
     return (
         <Box
             display="flex"
             alignItems="center"
             justifyContent="center"
+            position="relative"
             sx={{
                 borderColor: 'primary.dark',
                 borderStyle: 'solid',
-                borderWidth: 0,
 
                 gridColumn: `${props.x + 1}`,
                 gridRow: `${props.y + 1}`,
 
-                backgroundColor,
                 transition: 'all 0.33s ease',
 
-                borderRightWidth: props.rightmost ? 2 : 1,
-                borderBottomWidth: props.bottommost ? 2 : 1,
-                borderLeftWidth: props.x === 0 ? 2 : 1,
-                borderTopWidth: props.y === 0 ? 2 : 1,
+                borderRightWidth,
+                borderBottomWidth,
+                borderLeftWidth,
+                borderTopWidth,
 
                 borderRightColor: props.borderRight ? undefined : 'transparent',
                 borderBottomColor: props.borderBottom ? undefined : 'transparent',
                 borderLeftColor: props.borderLeft ? undefined : 'transparent',
                 borderTopColor: props.borderTop ? undefined : 'transparent',
+
+                '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: -borderTopWidth,
+                    left: -borderLeftWidth,
+                    right: -borderRightWidth,
+                    bottom: -borderBottomWidth,
+                    backgroundColor,
+                    backgroundImage: props.type === CellType.Damaged
+                        ? 'repeating-linear-gradient(0deg, transparent, transparent 0.05em, #600 0.05em, #c00 0.15em, transparent 0.15em, transparent 0.2em)'
+                        : undefined,
+                    transition: 'all 0.33s ease',
+                    zIndex: -1, /* Place it behind the content */
+                }
             }}
         >
             {content}
